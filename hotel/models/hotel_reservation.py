@@ -153,7 +153,6 @@ class HotelReservation(models.Model):
         user = self.env['res.users'].browse(self.env.uid)
         rec.call_center = user.has_group('hotel.group_hotel_call')
 
-    @api.multi
     def _get_default_checkin(self):
         folio = False
         # default_arrival_hour = self.env['ir.default'].sudo().get(
@@ -177,7 +176,6 @@ class HotelReservation(models.Model):
             # return fields.Date.today() ¿?
             return fields.Date.context_today(self)
 
-    @api.multi
     def _get_default_checkout(self):
         folio = False
         # default_departure_hour = self.env['ir.default'].sudo().get(
@@ -201,7 +199,6 @@ class HotelReservation(models.Model):
             # return fields.Date.today() ¿?
             return fields.Date.context_today(self, datetime.now() + timedelta(days=1))
 
-    @api.multi
     def _get_default_arrival_hour(self):
         folio = False
         default_arrival_hour = self.env['ir.default'].sudo().get(
@@ -215,7 +212,6 @@ class HotelReservation(models.Model):
         else:
             return default_arrival_hour
 
-    @api.multi
     def _get_default_departure_hour(self):
         folio = False
         default_departure_hour = self.env['ir.default'].sudo().get(
@@ -322,6 +318,7 @@ class HotelReservation(models.Model):
                                  help="Default Departure Hour (HH:MM)")
     room_type_id = fields.Many2one('hotel.room.type', string='Room Type',
                                    required=True, track_visibility='onchange')
+
     partner_id = fields.Many2one(related='folio_id.partner_id')
     company_id = fields.Many2one('res.company', 'Company')
     reservation_line_ids = fields.One2many('hotel.reservation.line',
@@ -497,10 +494,9 @@ class HotelReservation(models.Model):
     def _computed_nights(self):
         for res in self:
             if res.checkin and res.checkout:
-                nights = days_diff = date_utils.date_diff(
-                    res.checkin,
-                    res.checkout, hours=False)
-                res.nights = nights
+                timedelta = fields.Date.from_string(res.checkout) - \
+                            fields.Date.from_string(res.checkin)
+                res.nights = timedelta.days
 
     @api.model
     def recompute_reservation_totals(self):
