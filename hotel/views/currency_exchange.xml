@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--==================================================== Currency ==================================================== -->
+    <!-- Form view of currency exchange -->
+    <record model="ir.ui.view" id="view_currency_exchange_form">
+        <field name="name">currency.exchange.form</field>
+        <field name="model">currency.exchange</field>
+        <field name="arch" type="xml">
+            <form string=" Currency Exchange">
+                <header>
+                    <button name="cur_confirm" string="Done" states='draft' icon="gtk-ok" />
+                    <button name="cur_cancel" string="Cancel" states='draft' icon="gtk-cancel" />
+                    <button name="cur_cancel_draft" string="do_draft" states='cancel' icon="gtk-ok" />
+                    <button name="%(report_hotel_currency)d" states='done' type="action" string="Print" class="oe_highlight" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done" />
+                </header>
+                <sheet>
+                    <div class="oe_title ">
+                        <label for="name" string="Name" />
+                        <h1>
+                            <field name="name" select="1" />
+                        </h1>
+                    </div>
+                    <separator string="Details" />
+                    <newline />
+                    <group colspan="2" col="4">
+                        <field name="today_date" />
+                        <newline />
+                    </group>
+                    <group colspan="2" col="4">
+                        <field name="folio_no" required="1" />
+                        <field name="guest_name" required="1" />
+                        <field name="room_number" required="1" />
+                        <field name="hotel_id" />
+                        <field name="type" />
+                    </group>
+                    <separator string="Currency Exchange" />
+                    <newline />
+                    <group colspan="2" col="4">
+                        <field name="input_curr" />
+                        <field name="in_amount" select="1" widget="monetary"
+                            options="{'currency_field': 'input_curr'}" />
+                        <field name="out_curr" />
+                        <field name="rate" />
+                    </group>
+                    <group colspan="2" col="4">
+                        <field name="out_amount" widget="monetary"
+                            options="{'currency_field': 'out_curr'}" />
+                        <newline />
+                        <field name="tax" style="width:15%%;" />
+                    </group>
+                    <separator string="Total Amount" />
+                    <newline />
+                    <h1>
+                        <field name="total" widget="monetary" options="{'currency_field': 'out_curr'}" />
+                    </h1>
+                    <group colspan="2" col="4"></group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view of currency exchange -->
+    <record model="ir.ui.view" id="view_currency_exchange_tree">
+        <field name="name">currency.exchange.tree</field>
+        <field name="model">currency.exchange</field>
+        <field name="arch" type="xml">
+            <tree string=" Currency Exchange">
+                <field name="name" />
+                <field name="today_date" />
+                <field name="guest_name" />
+                <field name="total" sum="Total" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action of currency exchange -->
+    <record model="ir.actions.act_window" id="open_currency_exchange_tree">
+        <field name="name">Currency Exchange</field>
+        <field name="res_model">currency.exchange</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

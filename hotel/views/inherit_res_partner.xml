@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hotel_partner_reservations" model="ir.actions.act_window">
+        <field name="name">Reservations</field>
+            <field name="res_model">hotel.reservation</field>
+        <field name="domain">[('partner_id', '=',active_id)]</field>
+    </record>
+
+    <record id="hotel_partner_folios" model="ir.actions.act_window">
+        <field name="name">Folios</field>
+            <field name="res_model">hotel.folio</field>
+        <field name="domain">[('partner_id', '=',active_id)]</field>
+    </record>
+
+    <record id="view_partner_form" model="ir.ui.view">
+        <field name="name"> hotel.view.partner.form </field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr='//div[@name="button_box"]' position='inside'>
+                <button class="oe_stat_button" type="action" icon="fa-bed"
+                    name="%(hotel.hotel_partner_reservations)d"
+                    help="Reservations related with this contact">
+                    <field string="Reservations" name="reservations_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr='//div[@name="button_box"]' position='inside'>
+                <button class="oe_stat_button" type="action" icon="fa-file"
+                    name="%(hotel.hotel_partner_folios)d"
+                    help="Folios related with this contact">
+                    <field string="Folios" name="folios_count" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem name="Customers" id="menu_hotel_customer"
+        action="base.action_partner_form" sequence="500"
+        parent="menu_all_folio"/>
+
+</odoo>

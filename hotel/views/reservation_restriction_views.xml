@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<odoo>
+
+  <!-- FORM restriction -->
+  <record id="reservation_restriction_view_form" model="ir.ui.view">
+    <field name="name">hotel.virtual.room.restriction.form</field>
+    <field name="model">hotel.virtual.room.restriction</field>
+    <field name="arch" type="xml">
+      <form string="Restrictions">
+        <sheet>
+          <group>
+            <h1><field name="name"/></h1>
+          </group>
+          <group>
+            <field name="active"/>
+          </group>
+          <div>
+            <separator string="Pricelist Items"/>
+            <field name="item_ids" nolabel="1">
+              <tree string="Restriction Items">
+                <field name="applied_on"/>
+                <!-- <field name="virtual_room_id" attr="{'invisible':[['applied_on', '=', '1_virtual_room']]}"/> -->
+                <field name="room_type_id" attr="{'invisible':[['applied_on', '=', '0_room_type']]}"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="min_stay"/>
+                <field name="closed"/>
+              </tree>
+            </field>
+          </div>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- TREE restriction -->
+  <record id="reservation_restriction_view_tree" model="ir.ui.view">
+    <field name="name">hotel.virtual.room.restriction.tree</field>
+    <field name="model">hotel.virtual.room.restriction</field>
+    <field name="arch" type="xml">
+      <tree string="Restrictions">
+        <field name="name"/>
+        <field name="active"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- Action of reservation restriction -->
+  <record model="ir.actions.act_window" id="reservation_restriction_action">
+    <field name="name">Reservation restrictions</field>
+    <field name="res_model">hotel.virtual.room.restriction</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <!-- MENUS -->
+  <menuitem name="Restrictions" id="reservation_restriction_menu"
+    action="reservation_restriction_action" sequence="22"
+    parent="hotel.configuration_others"/>
+
+ </odoo>

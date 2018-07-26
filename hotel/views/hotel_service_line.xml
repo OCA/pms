@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--=== Hotel Service Line ==== -->
+    <!-- Form view of Service Line -->
+    <record model="ir.ui.view" id="view_hotel_service_line_form">
+        <field name="name">hotel.service.line.form</field>
+        <field name="model">hotel.service.line</field>
+        <field name="arch" type="xml">
+            <form string="Service Line">
+                <notebook>
+                    <page string="Service Line">
+                        <group col="4" colspan="4">
+                            <field name="name" />
+                            <!-- <field name="ser_room_line" options="{'create': False, 'create_edit': False}"/> -->
+                            <!-- <field name="product_uom" options="{'create': False, 'create_edit': False}" invisible="1"/> -->
+                            <!-- <field name="order_partner_id" invisible="1"/> -->
+                            <field name="folio_id" invisible="1"/>
+                            <field name="list_price" />
+                            <!-- <field name="tax_id" widget="many2many_tags"  invisible="1"/> -->
+
+                        </group>
+                        <separator string="Manual Description" colspan="4" invisible="1"/>
+                        <!-- <field name="name" colspan="4" select="2"
+                            placeholder="-Description-" invisible="1"/> -->
+                        <newline />
+                        <group invisible="1">
+                            <separator string="States" colspan="4" />
+                            <!-- <field name="state" select="2" /> -->
+                        </group>
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view of hotel service -->
+    <record model="ir.ui.view" id="view_hotel_service_line_tree">
+        <field name="name">hotel.service.line.tree</field>
+        <field name="model">hotel.service.line</field>
+        <field name="arch" type="xml">
+            <tree string="Hotel Services">
+                <field name="name" />
+                <field name="list_price" string="Service rate" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for hotel service -->
+    <record model="ir.actions.act_window" id="action_hotel_service_line_form">
+        <field name="name">Hotel Services</field>
+        <field name="res_model">hotel.service.line</field>
+        <field name="view_type">form</field>
+        <!-- <field name="context">{'default_isservice':1}
+        </field> -->
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Services as Products" id="menu_open_hotel_service_line_form"
+        action="action_hotel_service_line_form" sequence="8"
+        parent="hotel.menu_hotel_service" />
+
+</odoo>

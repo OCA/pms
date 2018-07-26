@@ -1,0 +1,113 @@
+<?xml version="1.0" ?>
+<odoo>
+
+	<record model="ir.ui.view" id="view_hotel_massive_changes_wizard">
+		<field name="name">hotel.wizard.massive.changes</field>
+		<field name="model">hotel.wizard.massive.changes</field>
+		<field name="arch" type="xml">
+			<form string="Massive Changes" >
+				<!-- Common Fields -->
+				<group>
+					<field name="section" required="1" />
+					<field name="applied_on" required="1" />
+					<!-- <field name="virtual_room_ids" widget="many2many_tags" attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}" /> -->
+					<field name="room_type_ids" widget="many2many_tags" attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}" />
+				</group>
+				<group colspan="8" col="8">
+					<field name="date_start" required="1"  colspan="4"/>
+					<field name="date_end" required="1" colspan="4" />
+					<field name="dmo" colspan="1" />
+					<field name="dtu" colspan="1" />
+					<field name="dwe" colspan="1" />
+					<field name="dth" colspan="1" />
+					<field name="dfr" colspan="1" />
+					<field name="dsa" colspan="1" />
+					<field name="dsu" colspan="1" />
+				</group>
+				<!-- Availability Fields -->
+				<group col="3" colspan="3" attrs="{'invisible':[('section', '!=', '0')]}">
+					<table class="oe_form_group">
+						<thead>
+							<th width="12%"></th>
+							<th></th>
+						</thead>
+						<tbody>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_avail" /> <strong> Avail</strong></td>
+								<td class="oe_form_group_cell" colspan="3"><field name="avail" attrs="{'readonly':[('change_avail', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_no_ota" /> <strong> No OTA</strong></td>
+								<td class="oe_form_group_cell"><field name="no_ota" attrs="{'readonly':[('change_no_ota', '=', False)]}" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</group>
+				<!-- Restricion Fields -->
+				<group col="4" colspan="4" attrs="{'invisible':[('section', '!=', '1')]}">
+					<field name="restriction_id" colspan="4" attrs="{'required':[('section', '=', '1')]}" />
+					<table class="oe_form_group" colspan="4">
+						<thead>
+							<th width="20%"></th>
+							<th></th>
+						</thead>
+						<tbody>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_min_stay" /> <strong> Stay Min.</strong></td>
+								<td class="oe_form_group_cell" colspan="3"><field name="min_stay" attrs="{'readonly':[('change_min_stay', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_max_stay" /> <strong> Stay Max.</strong></td>
+								<td class="oe_form_group_cell"><field name="max_stay" attrs="{'readonly':[('change_max_stay', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_min_stay_arrival" /> <strong> Stay Min. Arrival</strong></td>
+								<td class="oe_form_group_cell"><field name="min_stay_arrival" attrs="{'readonly':[('change_min_stay_arrival', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_max_stay_arrival" /> <strong> Stay Max. Arrival</strong></td>
+								<td class="oe_form_group_cell"><field name="max_stay_arrival" attrs="{'readonly':[('change_max_stay_arrival', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_closed" /> <strong> Closed</strong></td>
+								<td class="oe_form_group_cell"><field name="closed" attrs="{'readonly':[('change_closed', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_closed_departure" /> <strong> Closed Departure</strong></td>
+								<td class="oe_form_group_cell"><field name="closed_departure" attrs="{'readonly':[('change_closed_departure', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_closed_arrival" /> <strong> Closed Arrival</strong></td>
+								<td class="oe_form_group_cell"><field name="closed_arrival" attrs="{'readonly':[('change_closed_arrival', '=', False)]}" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</group>
+				<!-- Priclist Fields -->
+				<group attrs="{'invisible':[('section', '!=', '2')]}">
+					<field name="pricelist_id" attrs="{'required':[('section', '=', '2')]}"/>
+					<field name="price" attrs="{'required':[('section', '=', '2')]}"/>
+				</group>
+				<footer>
+					<button name="massive_change" string="Massive Change" type="object"
+						class="oe_highlight" />
+					<button name="massive_change_close" string="Massive Change &amp; Close" type="object"
+						class="oe_highlight" />
+					or
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_hotel_massive_change" model="ir.actions.act_window">
+		<field name="name">Hotel Massive Change</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">hotel.wizard.massive.changes</field>
+		<field name="view_id" ref="view_hotel_massive_changes_wizard"/>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>

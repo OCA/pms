@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="checkin_wizard_form_2" model="ir.ui.view">
+        <field name="name">wizard.form2</field>
+        <field name="model">checkin.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Checkin">
+            <sheet>
+                <group col="4">
+                <field options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open': True}"
+                       name="reservation_id" nolabel="1"
+                       domain="[('folio_id','=',context.get('folio')), ('state', '!=', 'cancelled'), ('cardex_pending', '=', True)]"
+                       style="max-width: 95%; width: 32.2em"/>
+                </group>
+                <group col="4">
+                    <field name="enter_date" colspan="2"/>
+                    <field name="exit_date" colspan="2"/>
+                </group>
+                <group attrs="{'invisible':[('checkin_mode', '>', 0)]}">
+                    <field name="op_select_partner" widget="radio" options="{'horizontal': true}"/>
+                    <field options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open': True}"
+                           name="partner_id" string="Client name"
+                           style="max-width: 95%; width: 20em"/>
+                </group>
+
+                  <group col="4" attrs="{'invisible':[('checkin_mode', '=', 0)]}" >
+                    <field name="firstname_cardex" colspan="2"/>
+                    <field name="lastname_cardex" colspan="2"/>
+                  </group>
+
+                <group col="4" attrs="{'invisible':[('checkin_mode', '=', 0)]}" >
+                    <field name="email_cardex" colspan="2"/>
+                    <field name="mobile_cardex" colspan="2"/>
+                </group>
+
+                <footer>
+                    <button name="action_save_check" string="Save Checkin and Print" type="object"
+                            attrs="{'invisible':[('checkin_mode', '=', 0)]}" />
+                    <button name="cancel" string="Cancel" special="cancel"/>
+
+                    <field name="checkin_mode" invisible="True"/>
+                    <!-- <field name="checkin_show" invisible="True"/> -->
+                    <!-- <field name="edit_checkin_cardex" invisible="True"/> -->
+                </footer>
+            </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="launch_checkin_wizard_add" model="ir.actions.act_window">
+        <field name="name">Add Check</field>
+        <field name="res_model">checkin.wizard</field>
+        <field name="view_id" ref="checkin_wizard_form_2"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- TODO: clean-up
+    <record id="checkin_wizard_form_view" model="ir.ui.view">
+        <field name="name">wizard.form</field>
+        <field name="model">checkin.wizard</field>
+        <field name="arch" type="xml">
+            <form string="List Checkin">
+            <sheet>
+                <group col="4">
+                <label for="reservation_id" string="Resevation"/>
+                <field name="reservation_id" nolabel="1" domain="[('folio_id','=',context.get('folio'))]"/>
+                <button type="action" class="oe_stat_button"
+                    id="cardex_smart_button"
+                    icon="fa-user-plus"
+                    name="%(launch_checkin_wizard_add)d"
+                    context="{'reservation_id': reservation_id, 'hidden_cardex': True}">
+                    <div>
+                        <field name="pending_cardex"
+                        string="Pending" widget="statinfo"/>
+                    </div>
+                </button>
+                </group>
+                    <field name="cardex_ids" readonly="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    -->
+    <!-- TODO: clean-up
+    <act_window id="launch_checkin_wizard_list"
+                name="List Checks"
+                res_model="checkin.wizard"
+                view_mode="form"
+                view_id="checkin_wizard_form_view"
+                target="new"
+                key2="client_action_multi"/>
+    -->
+
+    <!-- TODO: clean-up
+    <act_window id="launch_checkin_wizard"
+                name="List Checkin"
+                res_model="checkin.wizard"
+                view_mode="form"
+                target="new"
+                key2="client_action_multi"/>
+    -->
+
+</odoo>

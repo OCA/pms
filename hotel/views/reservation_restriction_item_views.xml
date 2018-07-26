@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<odoo>
+
+  <!-- FORM restriction -->
+  <record id="reservation_restriction_item_view_form" model="ir.ui.view">
+    <field name="name">hotel.virtual.room.restriction.item.form</field>
+    <field name="model">hotel.virtual.room.restriction.item</field>
+    <field name="arch" type="xml">
+      <form string="Restrictions">
+        <group>
+          <field name="applied_on" widget="radio"/>
+          <!-- <field name="virtual_room_id" attrs="{'invisible':[['applied_on', '=', '1_global']]}" required="True"/> -->
+          <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '1_global']]}" required="True"/>
+        </group>
+        <group>
+          <group>
+            <field name="date_start"/>
+          </group>
+          <group>
+            <field name="date_end"/>
+          </group>
+        </group>
+        <group>
+          <group>
+            <field name="min_stay"/>
+            <field name="min_stay_arrival"/>
+            <field name="max_stay"/>
+          </group>
+          <group>
+            <field name="closed"/>
+            <field name="closed_departure"/>
+            <field name="closed_arrival"/>
+          </group>
+        </group>
+      </form>
+    </field>
+  </record>
+
+  <!-- TREE restriction -->
+  <record id="reservation_restriction_item_view_tree" model="ir.ui.view">
+    <field name="name">hotel.virtual.room.restriction.item.tree</field>
+    <field name="model">hotel.virtual.room.restriction.item</field>
+    <field name="arch" type="xml">
+      <tree string="Restrictions">
+        <field name="applied_on"/>
+        <!-- <field name="virtual_room_id" attrs="{'invisible':[['applied_on', '=', '1_virtual_room']]}"/> -->
+        <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '0_room_type']]}"/>
+        <field name="date_start"/>
+        <field name="date_end"/>
+        <field name="min_stay"/>
+        <field name="closed"/>
+      </tree>
+    </field>
+  </record>
+
+</odoo>

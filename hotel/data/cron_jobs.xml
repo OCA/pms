@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+
+        <record id="daily_plan_checkin_out" model="ir.cron">
+            <field name="name">Daily Plan</field>
+            <field name="active" eval="True" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">0</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"/>
+            <field name="model_id" ref="model_hotel_reservation" />
+            <field name="code">model.daily_plan()</field>
+        </record>
+
+          <!-- Scheduler For To Inform Guest About Reservation Before 24 Hours -->
+        <record model="ir.cron" id="Guest_reservation_reminder_24hrs">
+            <field name="name">Inform Guest About Reservation Before 24 Hours</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="model_id" ref="model_hotel_reservation" />
+            <field name="code">model.reservation_reminder_24hrs()</field>
+        </record>
+
+    </data>
+
+</odoo>

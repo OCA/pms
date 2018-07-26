@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <report
+        id="action_report_viajero"
+        model="cardex"
+        string="Parte de Viajero"
+        report_type="qweb-pdf"
+        name="report.viajero"
+        file="report.viajero" />
+    <record id="action_report_viajero" model="ir.actions.report.xml">
+        <field name="paperformat_id" ref="report_viajero_paperformat"/>
+        <field name="report_type">qweb-pdf</field>
+        <field name="pdfjs_enabled">1</field>
+        <field name="pdfjs_auto_print">1</field>
+        <field name="pdfjs_print_dpi">201</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="hotel_management_menu" name="Hotel Management"
+        sequence="8" web_icon="hotel,static/description/icon.png"
+        groups="hotel.group_hotel_user,hotel.group_hotel_call"/>
+
+    <menuitem id="hotel_configuration_menu" name="Configuration"
+        sequence="20" parent="hotel_management_menu"
+        groups="hotel.group_hotel_user"/>
+
+     <menuitem id="hotel_reports_menu" name="Reports"
+        sequence="15" parent="hotel_management_menu"
+        groups="hotel.group_hotel_user"/>
+
+    <menuitem id="menu_account_finance_xls_reports" name="XLS Reports" parent="hotel.hotel_reports_menu" sequence="50"/>
+    <menuitem id="cash_daily_report_wizard" name="Cash Daily Report Wizard"
+        parent="hotel.menu_account_finance_xls_reports"
+        action="cash_daily_report.action_open_cash_daily_report_wizard" sequence="1" />
+
+    <menuitem id="configuration_others" name="Configuration"
+        parent="hotel.hotel_configuration_menu" sequence="10"
+         groups="hotel.group_hotel_manager" />
+
+    <menuitem id="hotel_massive_change" parent="hotel.configuration_others"
+        sequence="10" action="action_hotel_massive_change" name="Massive Changes"/>
+
+</odoo>
