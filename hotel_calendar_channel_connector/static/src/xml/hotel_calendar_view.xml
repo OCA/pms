@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+	<t t-extend="hotel_calendar.HotelCalendarView">
+		<t t-jquery="button#btn_action_checkout" t-operation="before">
+			<button class="btn col-xs-12 col-lg-12" id="btn_channel_manager_request">
+				<div class="fa-stack fa-2x">
+					<i class="fa fa-cloud fa-stack-2x"> </i>
+					<span class="fa-stack-1x cloud-text">0</span>
+				</div>
+			</button>
+		</t>
+		<t t-jquery="input#bookings_search" t-operation="after">
+			<button class="btn btn-default col-xs-12 col-lg-12" id="btn_action_issues" data-action="hotel_calendar_channel_connector.calendar_channel_connector_issues_action">
+				<div class="ninfo"><span class="badge badge-danger">0</span></div>
+				ISSUES
+			</button>
+		</t>
+	</t>
+
+	<t t-extend="HotelCalendar.Notification">
+		<t t-jquery="ul > li:first-child" t-operation="before">
+			<t t-if="wchannel">
+				<li><b>Channel:</b> <t t-esc="wchannel"/></li>
+			</t>
+		</t>
+	</t>
+
+</templates>

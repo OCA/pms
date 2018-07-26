@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="hotel_calendar.HotelCalendarManagementView">
+    	<div class="col-xs-12 col-lg-12 nopadding">
+    		<div class="col-xs-12 col-lg-12 nopadding">
+    			<div class="col-xs-12 col-lg-12 nopadding" id="mpms-search">
+    				<table class="col-xs-12 col-lg-12 nopadding" id="pms-search-table">
+    					<tbody>
+    						<tr>
+									<td class="col-xs-1 col-lg-1">
+										<button class="btn col-xs-12 col-lg-12" id="btn_save_changes" title="Save Changes">
+												<i class="fa fa-save fa-stack-2x"> </i> &amp;nbsp;
+										</button>
+									</td>
+    							<td class="col-xs-4 col-lg-3">
+										<div class="col-xs-12 col-lg-12 nopadding">
+											<div class="col-xs-3 col-lg-3 nopadding text-right filter-title">
+					    						<strong style="line-height:2em">PRICELIST:</strong>
+					    				</div>
+					    				<div class="col-xs-9 col-lg-9">
+					    					<select class="list form-control" id="price_list"/>
+					    				</div>
+					    			</div>
+					    			<div class="col-xs-12 col-lg-12 nopadding">
+					    				<div class="col-xs-3 col-lg-3 nopadding text-right filter-title">
+					    					<strong style="line-height:2em">RESTRICTIONS:</strong>
+					    				</div>
+					    				<div class="col-xs-9 col-lg-9">
+					    					<select class="list form-control" id="restriction_list"/>
+					    				</div>
+						    		</div>
+    							</td>
+    							<td class="col-xs-4 col-lg-4">
+    								<div class="col-xs-12 col-lg-12">
+					    				<table style="margin: 0 auto">
+					    					<tbody>
+					    						<tr>
+					    							<td>
+					    								FROM<br/>
+					    								<div class="input-group date" id="date_begin">
+											                <input type="text" class="form-control" name="date_begin" required="required" readonly="1"/>
+											                <span class="input-group-addon">
+											                    <span class="fa fa-calendar"></span>
+											                </span>
+											            </div>
+					    							</td>
+					    							<td>
+					    								TO<br/>
+					    								<div class="input-group date" id="date_end">
+											                <input type="text" class="form-control" name="date_end" required="required" readonly="1"/>
+											                <span class="input-group-addon">
+											                    <span class="fa fa-calendar"></span>
+											                </span>
+											            </div>
+					    							</td>
+					    						</tr>
+					    					</tbody>
+					    				</table>
+					    			</div>
+    							</td>
+									<td class="col-xs-1 col-lg-1">
+										<strong style="line-height:2em">View Mode:</strong>
+										<select class="list form-control" id="mode_list">
+											<option value="all">All</option>
+											<option value="medium">Medium</option>
+											<option value="low">Low</option>
+										</select>
+									</td>
+    							<td class="col-xs-2 col-lg-2">
+    								<div class="col-xs-12 col-lg-12" id="pms-search-cal-pag">
+					    				<button id="cal-pag-prev-plus" class="btn"><i class="fa fa-3x fa-angle-double-left"></i></button>
+					    				<button id="cal-pag-prev" class="btn"><i class="fa fa-3x fa-angle-left"></i></button>
+					    				<button id="cal-pag-selector" class="btn"><i class="fa fa-3x fa-calendar"></i></button>
+					    				<button id="cal-pag-next" class="btn"><i class="fa fa-3x fa-angle-right"></i></button>
+					    				<button id="cal-pag-next-plus" class="btn"><i class="fa fa-3x fa-angle-double-right"></i></button>
+					    			</div>
+    							</td>
+                  <td class="col-xs-1 col-lg-1">
+                    <button class="btn btn-default col-xs-12 col-lg-12" id="btn_massive_changes" title="Launch Massive Changes">
+                        <i class="fa fa-bolt fa-stack-2x"> </i> &amp;nbsp;
+                    </button>
+                  </td>
+    						</tr>
+    					</tbody>
+    				</table>
+    			</div>
+    			<div id="hcal_management_widget" class="col-xs-12 col-lg-12 nopadding"></div>
+    			<div style="clear:both;" />
+    		</div>
+    	</div>
+    </t>
+
+</templates>

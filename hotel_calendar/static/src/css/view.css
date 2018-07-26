@@ -1,0 +1,96 @@
+/*
+ * Hotel Calendar JS v0.0.1a - 2017
+ * GNU Public License
+ * Aloxa Solucions S.L. <info@aloxa.eu>
+ *     Alexandre Díaz <alex@aloxa.eu>
+ */
+
+
+/* .openerp .oe-view-manager {
+	overflow: initial !important;
+}
+ */
+.nopadding {
+   padding: 0 !important;
+   margin: 0 !important;
+}
+
+#pms-menu {
+	padding: 0 0.2em !important;
+}
+#pms-menu button {
+	min-height: 45px;
+	margin: 0.2em 0;
+}
+
+#pms-search {
+	padding: 0.5em !important;
+	background-color: white;
+	box-shadow: 10px 1px 12px #333;
+}
+#pms-search fieldset {
+	display: inline-block;
+}
+#pms-search fieldset legend {
+	font-size: initial !important;
+	margin: initial !important;
+}
+#pms-search .list {
+	overflow-y: auto;
+	text-align: left;
+}
+#pms-search label {
+	font-size: 12px;
+}
+
+#pms-search-table > tbody > tr > td {
+	background-color: white;
+	padding: 0.1em;
+	border: 1px solid #efefef;
+	border-width: 0 2px;
+	vertical-align: middle;
+	text-align: center;
+}
+#pms-search-table > tbody > tr > td:first-child {
+	border-width: 0 2px 0 0;
+}
+#pms-search-table > tbody > tr > td:last-child {
+	border-width: 0 0 0 2px;
+}
+
+#pms-search-cal-pag .btn {
+	background-color: transparent;
+	padding: 0.1em;
+}
+
+.input-group {
+	padding: 0.1em;
+}
+
+/** SELECT 2 **/
+#pms-search .select2-search-choice {
+	padding-top: 1px !important;
+	padding-bottom: 1px !important;
+	font-size: 10px !important;
+}
+#pms-search .select2-search-choice-close {
+	top: 1px !important;
+}
+
+/** BOOTSTRAP **/
+.badge-danger {
+	background-color: #d34f2a !important;
+}
+
+/** FONT AWESOME **/
+.cloud-text {
+	margin-top: .12em;
+	font-size: 26px;
+	font-family: sans-serif;
+	font-weight: bold;
+}
+
+/** ODOO **/
+.o_chat_window {
+  z-index: 8 !important;
+}

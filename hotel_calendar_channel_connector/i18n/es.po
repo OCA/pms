@@ -1,0 +1,111 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* hotel_calendar_wubook
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-22 06:41+0000\n"
+"PO-Revision-Date: 2018-05-22 06:41+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: hotel_calendar_wubook
+#. openerp-web
+#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_templates.xml:10
+#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_view.xml:24
+#, python-format
+msgid "Channel:"
+msgstr "Canal:"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Final Price"
+msgstr "Precio Final"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Folio Pending Amount"
+msgstr "Pendiente en Ficha"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Hotel Reservation"
+msgstr "Reserva"
+
+#. module: hotel_calendar_wubook
+#. openerp-web
+#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_view.xml:15
+#, python-format
+msgid "ISSUES"
+msgstr "AVISOS"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.hotel_reservation_view_form
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Mark as Read"
+msgstr "Marcar como leídp"
+
+#. module: hotel_calendar_wubook
+#: code:addons/hotel_calendar_wubook/models/inherited_wubook_issue.py:33
+#, python-format
+msgid "Oops! Issue Reported!!"
+msgstr "Oops! ¡Aviso generado!"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Persons"
+msgstr "Personas"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Reservation Price"
+msgstr "Precio de Reserva"
+
+#. module: hotel_calendar_wubook
+#: model:ir.actions.act_window,name:hotel_calendar_wubook.hotel_reservation_action_manager_request
+msgid "Reservations to Assign from WuBook"
+msgstr "Reservas por Asignar desde WuBook"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Reserved Room Type"
+msgstr "Tipo Habitación Reservada"
+
+#. module: hotel_calendar_wubook
+#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+msgid "Room"
+msgstr "Habitación"
+
+#. module: hotel_calendar_wubook
+#. openerp-web
+#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_templates.xml:4
+#, python-format
+msgid "Section:"
+msgstr "Sección"
+
+#. module: hotel_calendar_wubook
+#: model:ir.actions.act_window,name:hotel_calendar_wubook.calendar_wubook_issues_action
+msgid "WuBook Issues"
+msgstr "Problemas de WuBook"
+
+#. module: hotel_calendar_wubook
+#: model:ir.model,name:hotel_calendar_wubook.model_bus_hotel_calendar
+msgid "bus.hotel.calendar"
+msgstr "bus.hotel.calendar"
+
+#. module: hotel_calendar_wubook
+#: model:ir.model,name:hotel_calendar_wubook.model_hotel_reservation
+msgid "hotel reservation"
+msgstr "Reserva"
+
+#. module: hotel_calendar_wubook
+#: model:ir.model,name:hotel_calendar_wubook.model_wubook_issue
+msgid "wubook.issue"
+msgstr "wubook.issue"
+

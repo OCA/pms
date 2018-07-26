@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wubook_issue_call,hotel_wubook_proto.wubook.issue.call,hotel_wubook_proto.model_wubook_issue,hotel.group_hotel_call,1,1,1,1
+access_wubook_issue_user,hotel_wubook_proto.wubook.issue.user,hotel_wubook_proto.model_wubook_issue,hotel.group_hotel_user,1,1,1,1
+access_hotel_channel_info_manager,hotel_wubook_proto.channel.info.manager,hotel_wubook_proto.model_wubook_channel_info,hotel.group_hotel_manager,1,1,1,1
+access_hotel_channel_info_availabity_user,hotel_wubook_proto.channel.info.user,hotel_wubook_proto.model_wubook_channel_info,hotel.group_hotel_user,1,1,1,0
+access_hotel_channel_info_availabity_call,hotel_wubook_proto.channel.info.call,hotel_wubook_proto.model_wubook_channel_info,hotel.group_hotel_call,1,1,1,0

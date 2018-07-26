@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record id="hotel_reservation_action_manager_request" model="ir.actions.act_window">
+             <field name="name">Reservations to Assign from WuBook</field>
+             <field name="res_model">hotel.reservation</field>
+             <field name="view_mode">tree,form</field>
+             <field name="view_id" ref="view_hotel_toassign_reservation_tree" />
+             <field name="domain">[('to_assign','=',True),('to_read','=',True)]</field>
+        </record>
+
+
+
+        <record id="calendar_channel_connector_issues_action" model="ir.actions.act_window">
+            <field name="name">Channel Connector Issues</field>
+            <field name="res_model">hotel.channel.connector.issue</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('to_read','=',True)]</field>
+        </record>
+
+    </data>
+ </openerp>

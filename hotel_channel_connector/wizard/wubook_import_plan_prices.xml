@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<odoo>
+
+	<record model="ir.ui.view" id="view_wubook_import_plan_prics_wizard">
+		<field name="name">wubook.wizard.plan.prices</field>
+		<field name="model">wubook.wizard.plan.prices</field>
+		<field name="arch" type="xml">
+			<form string="Import WuBook Plan Prices" >
+				<group>
+					<group>
+						<field name="date_start" required="1" />
+					</group>
+					<group>
+						<field name="date_end" required="1" />
+					</group>
+				</group>
+				<footer>
+					<button name="import_plan_prices" string="Import" type="object"
+						class="oe_highlight" />
+					or
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_wubook_import_plan_prices" model="ir.actions.act_window">
+		<field name="name">Import Plan Prices</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">wubook.wizard.plan.prices</field>
+		<field name="view_id" ref="view_wubook_import_plan_prics_wizard"/>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>

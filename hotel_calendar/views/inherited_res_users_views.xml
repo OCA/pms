@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_users_form" model="ir.ui.view">
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form" />
+				<field name="arch" type="xml">
+					<xpath expr="//page/group/group[@name='preferences']" position="before">
+						<group string="Calendar (PMS)" name="calendar">
+							<group colspan="4">
+								<field name="pms_show_notifications" />
+								<field name="pms_show_pricelist" />
+								<field name="pms_show_availability" />
+								<field name="pms_show_num_rooms" />
+							</group>
+							<group colspan="4">
+									<field name="pms_divide_rooms_by_capacity" />
+									<field name="pms_end_day_week" required="True" />
+									<field name="pms_end_day_week_offset" required="True" />
+									<field name="pms_type_move" required="True" />
+									<field name="pms_default_num_days" required="True" />
+							</group>
+							<group colspan="4">
+									<field name="pms_allowed_events_tags" widget="many2many_tags" />
+									<field name="pms_denied_events_tags" widget="many2many_tags" />
+							</group>
+						</group>
+						<group string="Calendar Management (Revenue PMS)" name="calendar">
+							<group colspan="4">
+									<field name="npms_end_day_week" required="True" />
+									<field name="npms_end_day_week_offset" required="True" />
+									<field name="npms_default_num_days" required="True" />
+							</group>
+							<group colspan="4">
+									<field name="npms_allowed_events_tags" widget="many2many_tags" />
+									<field name="npms_denied_events_tags" widget="many2many_tags" />
+							</group>
+						</group>
+					</xpath>
+        </field>
+    </record>
+
+</odoo>
