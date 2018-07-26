@@ -155,6 +155,7 @@ class HotelReservation(models.Model):
 
     @api.multi
     def _get_default_checkin(self):
+        import wdb; wdb.set_trace()
         folio = False
         default_arrival_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_arrival_hour')
@@ -276,12 +277,16 @@ class HotelReservation(models.Model):
     folio_id = fields.Many2one('hotel.folio', string='Folio',
                                ondelete='cascade')
 
-    checkin = fields.Datetime('Check In', required=True,
-                              default=_get_default_checkin,
-                              track_visibility='onchange')
-    checkout = fields.Datetime('Check Out', required=True,
-                               default=_get_default_checkout,
-                               track_visibility='onchange')
+    checkin = fields.Date('Check In', required=True,
+                          default=_get_default_checkin,
+                          track_visibility='onchange')
+    checkout = fields.Date('Check Out', required=True,
+                           default=_get_default_checkout,
+                           track_visibility='onchange')
+    arrival_hour = fields.Char('Arrival Hour',
+                               help="HH:MM Format")
+    departure_hour = fields.Char('Departure Hour',
+                                 help="HH:MM Format")
     room_type_id = fields.Many2one('hotel.room.type', string='Room Type',
                                    required=True, track_visibility='onchange')
     partner_id = fields.Many2one(related='folio_id.partner_id')
