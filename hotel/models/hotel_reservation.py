@@ -155,7 +155,54 @@ class HotelReservation(models.Model):
 
     @api.multi
     def _get_default_checkin(self):
-        import wdb; wdb.set_trace()
+        folio = False
+        # default_arrival_hour = self.env['ir.default'].sudo().get(
+        #     'res.config.settings', 'default_arrival_hour')
+        if 'folio_id' in self._context:
+            folio = self.env['hotel.folio'].search([
+                ('id', '=', self._context['folio_id'])
+            ])
+        if folio and folio.room_lines:
+            return folio.room_lines[0].checkin
+        else:
+            # tz_hotel = self.env['ir.default'].sudo().get(
+            #     'res.config.settings', 'tz_hotel')
+            # now_utc_dt = date_utils.now()
+            # ndate = "%s %s:00" % \
+            #     (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
+            #      default_arrival_hour)
+            # ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
+            # ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
+            # return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            # return fields.Date.today() ¿?
+            return fields.Date.context_today(self)
+
+    @api.multi
+    def _get_default_checkout(self):
+        folio = False
+        # default_departure_hour = self.env['ir.default'].sudo().get(
+        #     'res.config.settings', 'default_departure_hour')
+        if 'folio_id' in self._context:
+            folio = self.env['hotel.folio'].search([
+                ('id', '=', self._context['folio_id'])
+            ])
+        if folio and folio.room_lines:
+            return folio.room_lines[0].checkout
+        else:
+            # tz_hotel = self.env['ir.default'].sudo().get(
+            #     'res.config.settings', 'tz_hotel')
+            # now_utc_dt = date_utils.now() + timedelta(days=1)
+            # ndate = "%s %s:00" % \
+            #     (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
+            #      default_departure_hour)
+            # ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
+            # ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
+            # return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            # return fields.Date.today() ¿?
+            return fields.Date.context_today(self, datetime.now() + timedelta(days=1))
+
+    @api.multi
+    def _get_default_arrival_hour(self):
         folio = False
         default_arrival_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_arrival_hour')
@@ -164,20 +211,12 @@ class HotelReservation(models.Model):
                 ('id', '=', self._context['folio_id'])
             ])
         if folio and folio.room_lines:
-            return folio.room_lines[0].checkin
+            return folio.room_lines[0].arrival_hour
         else:
-            tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
-            now_utc_dt = date_utils.now()
-            ndate = "%s %s:00" % \
-                (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                 default_arrival_hour)
-            ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
-            ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
-            return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            return default_arrival_hour
 
-    @api.model
-    def _get_default_checkout(self):
+    @api.multi
+    def _get_default_departure_hour(self):
         folio = False
         default_departure_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_departure_hour')
@@ -186,17 +225,9 @@ class HotelReservation(models.Model):
                 ('id', '=', self._context['folio_id'])
             ])
         if folio and folio.room_lines:
-            return folio.room_lines[0].checkout
+            return folio.room_lines[0].departure_hour
         else:
-            tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
-            now_utc_dt = date_utils.now() + timedelta(days=1)
-            ndate = "%s %s:00" % \
-                (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                 default_departure_hour)
-            ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
-            ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
-            return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            return default_departure_hour
 
     # @api.constrains('checkin', 'checkout') #Why dont run api.depends?¿?
     # def _computed_nights(self):
@@ -284,9 +315,11 @@ class HotelReservation(models.Model):
                            default=_get_default_checkout,
                            track_visibility='onchange')
     arrival_hour = fields.Char('Arrival Hour',
-                               help="HH:MM Format")
+                               default=_get_default_arrival_hour,
+                               help="Default Arrival Hour (HH:MM)")
     departure_hour = fields.Char('Departure Hour',
-                                 help="HH:MM Format")
+                                 default=_get_default_departure_hour,
+                                 help="Default Departure Hour (HH:MM)")
     room_type_id = fields.Many2one('hotel.room.type', string='Room Type',
                                    required=True, track_visibility='onchange')
     partner_id = fields.Many2one(related='folio_id.partner_id')

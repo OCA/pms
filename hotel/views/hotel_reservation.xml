@@ -181,6 +181,8 @@
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
                         </group>
                         <group colspan="4" string="Reservation Details" name="reservation_details">
+                            <field name="arrival_hour"/>
+                            <field name="departure_hour"/>
                             <field name="name"/>
                             <field name="adults"/>
                             <field name="children"/>
