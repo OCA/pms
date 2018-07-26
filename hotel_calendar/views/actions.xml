@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<odoo>
+
+        <record model="ir.actions.act_window" id="hotel_reservation_action_checkin">
+            <field name="name">Hotel folio checkin</field>
+            <field name="res_model">hotel.reservation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_checkin','=', True)]</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="hotel_reservation_action_checkout">
+            <field name="name">Hotel folio checkout</field>
+            <field name="res_model">hotel.reservation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_checkout','=', True)]</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="hotel_virtual_room_pricelist_cached_action_form_tree">
+            <field name="name">Virtual Room Pricelist Cached</field>
+            <field name="res_model">virtual.room.pricelist.cached</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+ </odoo>

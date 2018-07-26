@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="hotel_calendar.HotelCalendarView">
+        <div class="col-xs-12 col-md-12 nopadding">
+            <div class="col-lg-1 hidden-xs hidden-sm nopadding" id="pms-menu">
+                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_checkout" data-action="hotel_calendar.hotel_reservation_action_checkout">
+                    <div class="ninfo"><span class="badge badge-danger">0</span></div>
+                    CHECK-OUT
+                </button>
+                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_checkin" data-action="hotel_calendar.hotel_reservation_action_checkin">
+                    <div class="ninfo"><span class="badge badge-danger">0</span></div>
+                    CHECK-IN
+                </button>
+                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_bookings">
+                    <!--div class="ninfo"><span class="badge badge-danger">0</span></div-->
+                    BOOKS<br/>
+                </button>
+                <input type="edit" id="bookings_search" placeholder="Search..." style="width:100%; border:1px solid lightgray;" />
+                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_control" data-action="hotel_calendar.open_wizard_reservations">
+                    WIZARD
+                </button>
+                <button class="btn btn-default col-xs-12 col-md-12" id="btn_swap">
+                    <div class="ninfo"><span class="badge badge-danger">0</span></div>
+                    <span class="ntext">START SWAP</span>
+                </button>
+                <!--button class="btn btn-default col-xs-12 col-md-12" id="btn_action_refresh">
+                    <i class="fa fa-4x fa-refresh"> </i>
+                </button-->
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-11 nopadding">
+                <div class="col-xs-11 col-md-11 nopadding" id="pms-search">
+                    <table class="col-xs-12 col-md-12 nopadding" id="pms-search-table">
+                        <tbody>
+                            <tr>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="col-xs-12 col-md-12 text-left">
+                                        <label for="type_list">SEGMENTATION:</label>
+                                        <select class="form-control" id="type_list" multiple="multiple"/>
+                                    </div>
+                                    <div class="col-xs-12 col-md-12 text-left">
+                                        <label for="floor_list">LOCATION:</label>
+                                        <select class="list form-control" id="floor_list" multiple="multiple"/>
+                                    </div>
+                                </td>
+                                <td class="col-xs-3 col-md-4">
+                                    <div class="col-xs-12 col-md-12 text-left">
+                                        <label for="amenities_list">AMENITIES:</label>
+                                        <select class="list form-control" id="amenities_list" multiple="multiple"/>
+                                    </div>
+                                    <div class="col-xs-12 col-md-12 text-left">
+                                        <label for="virtual_list">VIRTUAL:</label>
+                                        <select class="list form-control" id="virtual_list" multiple="multiple"/>
+                                    </div>
+                                </td>
+                                <td class="col-xs-6 col-md-4">
+                                    <div class="col-xs-12 col-md-12">
+                                        <table style="margin: 0 auto">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <label for="date_begin">FROM</label>
+                                                        <div class="input-group date" id="date_begin">
+                                                            <input type="text" class="o_datepicker_input form-control" name="date_begin" required="required"/>
+                                                            <span class="input-group-addon">
+                                                                <span class="fa fa-calendar"></span>
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <label for="date_end">TO</label>
+                                                        <div class="input-group date" id="date_end">
+                                                            <input type="text" class="o_datepicker_input form-control" name="date_end" required="required"/>
+                                                            <span class="input-group-addon">
+                                                                <span class="fa fa-calendar"></span>
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="hcal_widget" class="col-xs-12 col-md-12 nopadding">
+                    <div id="hcal_load">
+                        <span>
+                            <i class="fa fa-refresh fa-spin fa-5x fa-fw"></i><br/>
+                            <h1>Loading Calendar...</h1>
+                        </span>
+                    </div>
+                </div>
+                <div style="clear:both;" />
+            </div>
+        </div>
+    </t>
+
+</templates>

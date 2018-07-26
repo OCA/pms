@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- WuBook config wizard -->
+    <record id="view_wubook_config_settings" model="ir.ui.view">
+        <field name="name">WuBook Settings</field>
+        <field name="model">wubook.config.settings</field>
+        <field name="arch" type="xml">
+            <form string="Configure WuBook" class="oe_form_configuration">
+                <header>
+                    <button string="Apply" type="object" name="execute" class="oe_highlight"/>
+                    <button string="Cancel" type="object" name="cancel" class="oe_link"/>
+                </header>
+                <sheet>
+                    <div class=" oe_button_box">
+                        <button type="object" class="oe_stat_button"
+                              icon="fa-recycle"
+                              name="resync"
+                              context="">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_text">ReSync</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div id="main">
+    				    <group name="wubook_details" string="WuBook Details">
+    				    	<group>
+    				    		<field name="wubook_server" />
+    				    		<field name="wubook_pkey" />
+    				    		<field name="wubook_lcode" />
+    				    	</group>
+    				    	<group>
+    				    		<field name="wubook_user" />
+    				    		<field name="wubook_passwd" password="True" />
+    				    	</group>
+    			        </group>
+    		        </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

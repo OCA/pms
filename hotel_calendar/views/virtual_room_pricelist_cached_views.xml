@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+       <!--======= Room Type ======= -->
+        <!-- Form view of hotel room type -->
+        <record model="ir.ui.view" id="view_hotel_virtual_room_pricelist_cached_form">
+            <field name="name">hotel.virtual.room.pricelist.cached.form</field>
+            <field name="model">virtual.room.pricelist.cached</field>
+            <field name="arch" type="xml">
+                <form string=" Virtual Room Pricelist Cached">
+                    <sheet>
+                        <group>
+                            <field name="virtual_room_id" />
+                            <field name="date" />
+                            <field name="price" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree view of hotel room type -->
+        <record model="ir.ui.view" id="view_hotel_virtual_room_pricelist_cached_tree">
+            <field name="name">hotel.virtual.room.pricelist.cached.tree</field>
+            <field name="model">virtual.room.pricelist.cached</field>
+            <field name="arch" type="xml">
+                <tree string=" Virtual Room Pricelist Cached">
+                    <field name="virtual_room_id" />
+                    <field name="date" />
+                    <field name="price" />
+                </tree>
+            </field>
+        </record>
+
+</odoo>

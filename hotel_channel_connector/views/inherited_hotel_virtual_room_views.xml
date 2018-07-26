@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<odoo>
+
+	<record id="virtual_room_view_form" model="ir.ui.view">
+        <field name="model">hotel.virtual.room</field>
+        <field name="inherit_id" ref="hotel.virtual_room_view_form" />
+        <field name="arch" type="xml">
+        	<xpath expr="//field[@name='name']" position="after">
+        		<field name="wscode" maxlength="4" readonly="True" />
+        		<field name="wrid" readonly="True"  />
+        		<field name="wcapacity" />
+        	</xpath>
+        </field>
+    </record>
+    
+</odoo>

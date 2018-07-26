@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<odoo>
+
+	<record id="reservation_restriction_view" model="ir.ui.view">
+        <field name="model">hotel.virtual.room.restriction</field>
+        <field name="inherit_id" ref="hotel.reservation_restriction_view_form" />
+        <field name="arch" type="xml">
+					<xpath expr="//form[1]//sheet" position="before">
+	        	<header>
+	        		<button name="%(action_wubook_import_plan_restrictions)d" string="Import Restrictions From WuBook" type="action" class="oe_highlight" />
+	        	</header>
+					</xpath>
+        	<xpath expr="//field[@name='active']" position="after">
+        		<field name="wpid" />
+						<field name="wdaily" />
+        	</xpath>
+        </field>
+    </record>
+
+</odoo>

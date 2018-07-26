@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+    
+	<record model="ir.sequence" id="seq_vroom_id">
+	    <field name="name">Virtual Room Short Code</field>
+	    <field name="code">hotel.virtual.room</field>
+	    <field name="prefix"></field>
+	    <field name="padding">4</field>
+	</record>
+	
+	</data>
+</openerp>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<data noupdate="1">
+
+    <record model="ir.rule" id="issue_hotel_user_view">
+        <field name="name">View Issues Wubook Only Reservations</field>
+        <field name="model_id" ref="hotel_wubook_proto.model_wubook_issue"/>
+        <field name="groups" eval="[(4, ref('hotel.group_hotel_user'))]"/>
+        <field name="domain_force">[('section','=','reservation')]</field>
+    </record>
+
+    <record model="ir.rule" id="issue_hotel_manager_view">
+        <field name="name">View Issues Wubook All</field>
+        <field name="model_id" ref="hotel_wubook_proto.model_wubook_issue"/>
+        <field name="groups" eval="[(4, ref('hotel.group_hotel_manager'))]"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+    </record>
+
+</data>
+</odoo>

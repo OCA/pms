@@ -1,0 +1,50 @@
+/*
+ * Hotel Calendar JS v0.0.1a - 2017
+ * GNU Public License
+ * Aloxa Solucions S.L. <info@aloxa.eu>
+ *     Alexandre Díaz <alex@aloxa.eu>
+ */
+ 
+ /** ANIMATIONS **/
+ @keyframes channel-manager-changes {
+    0% {
+    	color: red;
+    }
+    5% {
+    	transform: rotate(10deg);
+    }
+    10% {
+    	transform: rotate(0deg);
+    }
+    15% {
+    	transform: rotate(-10deg);
+    }
+    20% {
+    	transform: rotate(0deg);
+    }
+    100% {
+    	color: yellow;
+    }
+}
+@keyframes channel-manager-changes-text {
+    from {
+    	color: white;
+    }
+    to {
+    	color: black;
+    }
+}
+ 
+ 
+#pms-menu #btn_channel_manager_request.incoming i {
+	animation-name: channel-manager-changes;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+#pms-menu #btn_channel_manager_request.incoming span {
+	animation-name: channel-manager-changes-text;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}

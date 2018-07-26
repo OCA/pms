@@ -1,0 +1,168 @@
+<template>
+
+<t t-name="HotelCalendar.ConfirmReservationChanges">
+	<div class="content">
+		<p>The following changes will be made...</p>
+		<p t-if="hasReservsLinked" style="color:red">This reservation belongs to a folio with more reservations!</p>
+		<div class="row">
+			<div class="col-xl-6 col-lg-6">
+				<strong>Reserve unchanged:</strong>
+				<div class="well well-small">
+					<t t-if="ocheckin != ncheckin">
+						<strong>Checkin:</strong> <t t-esc="ocheckin"/><br/>
+					</t>
+					<t t-if="ocheckout != ncheckout">
+						<strong>Checkout:</strong> <t t-esc="ocheckout"/><br/>
+					</t>
+					<t t-if="oroom != nroom">
+						<strong>Room:</strong> <t t-esc="oroom"/><br/>
+					</t>
+<!--
+					<t t-if="oprice != nprice">
+						<strong>Price:</strong> <t t-esc="oprice" widget="monetary"/><br/>
+					</t>
+-->
+				</div>
+			</div>
+			<div class="col-xl-6 col-lg-6">
+				<strong>Reserve changed:</strong>
+				<div class="well well-small">
+					<t t-if="ocheckin != ncheckin">
+						<strong>Checkin:</strong> <t t-esc="ncheckin"/><br/>
+					</t>
+					<t t-if="ocheckout != ncheckout">
+						<strong>Checkout:</strong> <t t-esc="ncheckout"/><br/>
+					</t>
+					<t t-if="oroom != nroom">
+						<strong>Room:</strong> <t t-esc="nroom"/><br/>
+					</t>
+<!--
+					<t t-if="oprice != nprice">
+						<strong>Price:</strong> <t t-esc="nprice" widget="monetary"/><br/>
+					</t>
+-->
+				</div>
+			</div>
+		</div>
+		<p>Are you sure you want to make this changes?</p>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.ConfirmPriceChange">
+	<div class="content">
+		<p>Are you sure you want to change these prices?</p>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.ConfirmSwapOperation">
+	<div class="content">
+		<p>The following changes will be made...</p>
+		<span><strong>Swap Reservations</strong></span><br/>
+		<p>Are you sure you want to make this changes?</p>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.InvalidSwapOperation">
+	<div class="content">
+		<p>Invalid Swap Operation, can't make this movement :/</p>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.TooltipReservation">
+	<div class="oe_tooltip_string"><t t-esc="name"/></div>
+	<ul class="oe_tooltip_technical">
+		<li><b>Phone:</b> <t t-esc="phone"/></li>
+		<li><b>Arrival Hour:</b> <t t-esc="arrival_hour"/></li>
+		<t t-if="num_split &gt; 1">
+			<li><b>Splitted:</b> <t t-esc="num_split"/></li>
+		</t>
+		<!-- FIXME: HARD CURRENCY -->
+		<li><b>Total Amount:</b> <t t-esc="amount_total" t-widget="monetary"/>€</li>
+	</ul>
+</t>
+
+<t t-name="HotelCalendar.TooltipRoom">
+	<div class="oe_tooltip_string"><t t-esc="name"/></div>
+	<p><b>Price From:</b> <t t-esc="price_from"/></p>
+	<t t-if="num_inside_rooms > 0">
+		<b>Belongs to the Virtual Rooms:</b>
+		<ul>
+			<li t-foreach="inside_rooms" t-as="room_name">
+				<t t-esc="room_name"/>
+			</li>
+		</ul>
+	</t>
+</t>
+
+<t t-name="HotelCalendar.TooltipEvent">
+	<div class="oe_tooltip_string"><t t-esc="date"/></div>
+	<ul>
+		<li t-foreach="events" t-as="event">
+			<t t-esc="event.name"/>
+		</li>
+	</ul>
+</t>
+
+<t t-name="HotelCalendar.TooltipRoomOverbooking">
+	<div class="oe_tooltip_string"><t t-esc="name"/></div>
+	<p><b>Overbooking Management</b></p>
+</t>
+
+<t t-name="HotelCalendar.TooltipSelection">
+	<!-- FIXME: HARD CURRENCY -->
+	<span><b t-esc="nights"/> Nights: <b t-esc="total_price" t-widget="monetary"/>€</span>
+</t>
+
+<t t-name="HotelCalendar.TooltipRestriction">
+	<ul class="oe_tooltip_technical">
+		<li><b>Min. Stay:</b> <t t-esc="min_stay"/></li>
+		<li><b>Max. Stay:</b> <t t-esc="max_stay"/></li>
+		<li><b>Max. Stay Arrival:</b> <t t-esc="max_stay_arrival"/></li>
+		<li><b>Closed:</b> <t t-esc="closed"/></li>
+		<li><b>Closed Arrival:</b> <t t-esc="closed_arrival"/></li>
+		<li><b>Closed Departure:</b> <t t-esc="closed_departure"/></li>
+	</ul>
+</t>
+
+<t t-name="HotelCalendar.ConfirmFolio">
+	<div class="content">
+		<p>Do you want to confirm this folio?</p>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.Notification">
+	<ul>
+		<li><b>Name:</b> <t t-esc="partner_name"/></li>
+		<li><b>Room:</b> <t t-esc="room_name"/></li>
+		<li><b>Check-In:</b> <t t-esc="checkin"/></li>
+		<li><b>Check-Out:</b> <t t-esc="checkout"/></li>
+		<li><b>Made by:</b> <t t-esc="username"/></li>
+	</ul>
+</t>
+
+<t t-name="HotelCalendarManagement.UnsavedChanges">
+	<div class="content">
+		<p>Have unsaved changes!</p>
+		<p>Do you want to save these changes?</p>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.SettingsMenu">
+    <li class="o_calendar_settings">
+        <a href="#" title="Calendar Settings" class="dropdown-toggle" data-toggle="dropdown">
+            <span class="fa fa-calendar"/>
+        </a>
+        <ul class="dropdown-menu o_calendar_settings_dropdown" role="menu"/>
+    </li>
+</t>
+
+<t t-name="HotelCalendar.SettingsMenu.Global">
+		<li><a href="#" data-action="toggle_show_adv_controls">Toggle Advance Controls</a></li>
+		<li class="divider"/>
+    <li><a href="#" data-action="toggle_show_notification"><span t-if="manager._show_notifications" class="fa fa-check"/> Show Notifications</a></li>
+		<li><a href="#" data-action="toggle_show_pricelist"><span t-if="manager._show_pricelist" class="fa fa-check"/> Show Pricelist</a></li>
+		<li><a href="#" data-action="toggle_show_availability"><span t-if="manager._show_availability" class="fa fa-check"/> Show Availability</a></li>
+		<li><a href="#" data-action="toggle_show_divide_rooms_by_capacity"><span t-if="manager._show_divide_rooms_by_capacity" class="fa fa-check"/> Divide Rooms by Capacity</a></li>
+</t>
+
+</template>

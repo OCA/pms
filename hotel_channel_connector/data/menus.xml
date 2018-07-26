@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+	<record model="ir.actions.act_window" id="open_wubook_channel_info_tree_all">
+		<field name="name">WuBook Channel Info</field>
+		<field name="res_model">wubook.channel.info</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+	</record>
+
+	<record model="ir.actions.act_window" id="open_wubook_issues_tree_all">
+		<field name="name">WuBook Issues</field>
+		<field name="res_model">wubook.issue</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+		<field name="search_view_id" ref="view_wubook_issue_form_search"/>
+		<field name="context">{"search_default_to_read":True}</field>
+	</record>
+
+    <record model="ir.actions.act_window" id="action_wubook_config">
+        <field name="name">Configure WuBook</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wubook.config.settings</field>
+        <field name="view_id" ref="view_wubook_config_settings"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+
+	<menuitem id="wubook_menu" name="WuBook"
+	    sequence="25" parent="base.menu_administration" />
+
+	<menuitem id="wubook_channels_info_menu" name="Channels Info"
+		sequence="1" action="open_wubook_channel_info_tree_all" parent="wubook_menu"/>
+	<menuitem id="wubook_issues_menu" name="Issues"
+		sequence="2" action="open_wubook_issues_tree_all" parent="wubook_menu"/>
+	<menuitem id="wubook_config_menu" name="Settings"
+			sequence="3" action="action_wubook_config" parent="wubook_menu"/>
+
+	</data>
+</openerp>

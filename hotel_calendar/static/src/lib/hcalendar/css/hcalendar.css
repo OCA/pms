@@ -1,0 +1,499 @@
+/*
+ * Hotel Calendar JS v0.0.1a - 2017-2018
+ * GNU Public License
+ * Aloxa Solucions S.L. <info@aloxa.eu>
+ *     Alexandre Díaz <alex@aloxa.eu>
+ */
+
+
+/** ANIMATIONS **/
+@keyframes cell-invalid {
+	0% {
+		background: #ff0000;
+		background: repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 40%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+		background: -webkit-repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 40%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+		background: -moz-repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 40%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+    }
+	50% {
+		background: #ff0000;
+		background: repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 40%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+		background: -webkit-repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 35%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+		background: -moz-repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 40%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+    }
+    100% {
+		background: #ff0000;
+		background: repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 30%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+		background: -webkit-repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 30%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+		background: -moz-repeating-linear-gradient(141deg,#ff0000 10%, #ff0000 30%, rgba(255,0,0,0.51) 30%, rgba(255,0,0,0.51) 50%);
+    }
+}
+
+#hcal_load {
+	width: 100%;
+	height: 90vh;
+  text-align: center;
+  line-height: 90vh;
+	color: darkgray;
+}
+#hcal_load > span {
+	line-height: 24px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#pms-search {
+	position: fixed;
+	z-index: 9;
+}
+
+#pms-menu {
+	background-color: white;
+	height: 100%;
+}
+
+#hcal_widget {
+  max-height: 100%;
+}
+
+#cal-pag-prev-plus, #cal-pag-prev, #cal-pag-selector, #cal-pag-next, #cal-pag-next-plus {
+	min-height: 0px;
+}
+
+.table-reservations-header {
+	order: 1;
+	flex-grow: 1;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+.table-reservations {
+	order: 2;
+	flex-grow: 2;
+  overflow-y: scroll;
+	overflow-x: hidden;
+  position: relative;
+  max-height: 57vh;
+}
+.table-calcs-header {
+	order: 3;
+	flex-grow: 1;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+.table-calcs {
+	order: 4;
+	flex-grow: 2;
+  overflow-y: scroll;
+	overflow-x: hidden;
+  max-height: 20vh;
+}
+.table-calcs input, .table-reservations-header input {
+	border-radius: 0;
+	border: 1px solid lightgray;
+	width: 100%;
+}
+.table-calcs input {
+	text-align: center;
+}
+
+.hcal-event-day {
+	background-color: #6ebcff !important;
+}
+
+.btn-hcal { }
+.btn-hcal.hcal-cell-current-day {
+ 	background-color: #7c7bad66;
+ 	color: #654a37;
+}
+.btn-hcal.hcal-cell-end-week {
+	background-color: #0D5A8F;
+}
+.btn-hcal-3d {
+ 	color: white;
+ 	background-color: #7c7bad;
+ 	border: 1px solid #cfcfdd;
+ 	/*border-color: white black black white !important;*/
+}
+.btn-hcal-flat {
+	background-color: #cfcfdd;
+ 	border: 1px solid #cfcfdd;
+}
+
+.hcal-warn-ob-indicator {
+	position: absolute;
+	background-color: red;
+	color: yellow;
+	border: 1px solid black;
+	z-index: 9;
+	width: 25px;
+	height: 20px;
+	text-align: center;
+}
+
+.table-calcs-header .hcal-table, .table-reservations-header .hcal-table {
+	height: 46px;
+}
+
+.hcal-table, .hcal-table-day {
+	border-collapse: initial !important;
+	width: 100%;
+	table-layout: fixed;
+}
+.hcal-table > tbody {
+	max-height: 50vh;
+	overflow: scroll;
+}
+.hcal-table td {
+	text-align: center;
+	min-width: 100px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.hcal-table a {
+	text-decoration: none;
+}
+.hcal-table tr:hover td:not(.hcal-unused-zone):not(.hcal-cell-highlight):not(.hcal-cell-current-day):not(.hcal-cell-end-week):not(.btn-hcal):not(.hcal-cell-invalid) {
+	/*background-color: #F6F6F6;
+	border: 5px solid red;*/
+}
+
+.hcal-table tr:hover td.hcal-cell-room-type-group-item {
+  background-color: #7c7bad80;
+	color: white;
+}
+
+.hcal-restriction-room-day {
+	background-color: #b3218366 !important;
+}
+
+.hcal-table-day {
+	height: 100%;
+	border-collapse: collapse !important;
+	border: 0 dotted #cfcfcf;
+  border-width: 2px 0;
+}
+/*.hcal-table-day tr:first-child td{
+	border: 1px solid #727272 !important;
+	border-width: 0 1px 0 0 !important;
+}
+.hcal-table tr:not(:last-child) .hcal-table-day tr:last-child td {
+	border-style: solid;
+	border-color: #727272 !important;
+	border-bottom-width: 1px !important;
+}
+.hcal-table-day tr:not(:last-child):not(:first-child) td {
+	border-width: 0;
+}*/
+.hcal-table-day td {
+	padding: 2px;
+	height: 2.3em;
+	font-size: 7px;
+	vertical-align: middle;
+	font-weight: bold;
+	border: 1px solid #cecece !important;
+}
+.hcal-table-day td:hover:not(.hcal-cell-highlight):not(.hcal-cell-invalid) {
+	background-color: #FCFEE1 !important;
+}
+
+.hcal-cell-current-day {
+	background-color: #E0F8B0;
+}
+.hcal-cell-end-week {
+	background-color: #E2EAF9;
+}
+
+.hcal-cell-day-selector {
+	text-align: center;
+	vertical-align: center;
+	max-width: 140px;
+}
+.hcal-cell-day-selector a {
+	font-size: 22px;
+	padding: 0 0.5em;
+}
+.hcal-cell-day-selector span {
+	cursor: pointer;
+}
+.hcal-cell-day-selector input {
+	border: 1px solid lightgray;
+	width: 120px;
+	font-size: large;
+	text-align: center;
+}
+
+.hcal-cell-month {
+	overflow: hidden;
+	max-width: 0;
+	text-align: center !important;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+.hcal-cell-month:nth-child(n+3) {
+	border-left-width: 2px !important;
+}
+
+.hcal-cell-start-month {
+	border-left-width: 2px !important;
+}
+
+.hcal-room-type:hover {
+	cursor:pointer;
+}
+
+.hcal-cell-highlight {
+	background-color: #F8FD9C;
+}
+
+.hcal-cell-invalid {
+	background-color: #e58e92;
+}
+
+
+.hcal-cell-room-type-group-item-day {
+	padding: 0 !important;
+	height: 100%;
+}
+
+.hcal-input-changed {
+	background-color: rgb(237,110,110);
+	border: 1px solid gray;
+}
+
+.hcal-cell-room-type-group-item-day-occupied {
+	/*background-color: #227eaf;*/
+}
+.hcal-cell-room-type-group-item-day-occupied[data-hcal-reservation-cell-type=soft-start] {
+	background-color: #729fcf;
+	/*border: 2px solid #3465a4;*/
+}
+
+.hcal-cell-pagination button {
+	padding: 0.1em;
+	border-radius: 0;
+	background-color: initial;
+}
+
+#btn_save_changes.need-save {
+	color: yellow;
+	background: orange;
+}
+
+.hcal-hidden {
+	display: none;
+}
+
+.hcal-reservation-unselect {
+	opacity: 0.3;
+	pointer-events: none;
+}
+
+.hcal-reservation {
+	position: absolute;
+	text-align: center;
+	/*background-color: #729fcf;*/
+	/*transform: skewX(-25deg);*/
+	border-radius: 5px;
+	border: 1px solid #3465a4;
+	color: white;
+	white-space: nowrap;
+	overflow: hidden;
+	z-index:8;
+}
+.hcal-reservation:hover {
+	background-color: #4e97bf;
+}
+.hcal-reservation span {
+	position: relative;
+}
+
+.hcal-reservation-splitted {
+	border-width: 1px 6px;
+}
+
+.hcal-reservation-invalid {
+	background-color: #c8543b !important;
+	border-color: #6c3624 !important;
+}
+.hcal-reservation-invalid:hover {
+	background-color: #f5b595 !important;
+	border-color: #c8543b !important;
+}
+
+.hcal-reservation-foreground {
+	pointer-events: none;
+	opacity: 0.9;
+	color: transparent !important;
+	background: repeating-linear-gradient(
+	  45deg,
+	  #606dbc,
+	  #606dbc 10px,
+	  #465298 10px,
+	  #465298 20px
+	);
+}
+
+.hcal-reservation-invalid-swap {
+	pointer-events: none;
+	opacity: 0.9;
+	color: transparent !important;
+	background: repeating-linear-gradient(
+	  45deg,
+	  #BA6359,
+	  #BA6359 10px,
+	  #dfe066 10px,
+	  #dfe066 20px
+	);
+}
+
+.hcal-reservation-action {
+	border: 2px dashed #3465a4;
+	opacity: 0.9;
+	pointer-events: none;
+	z-index:10;
+}
+
+.hcal-reservation-readonly:not(.hcal-unused-zone) {
+	border: 2px solid #99995b;
+	color: white !important;
+	font-weight: bold;
+	background: #ffee00;
+	background: repeating-radial-gradient(circle farthest-corner at right center, #ffee00 0%, #2c2c2c 5%, #ffff00 10%, #2c2c2c 20%, #2c2c2c 100%);
+	background: -webkit-repeating-radial-gradient(circle farthest-corner at right center, #ffee00 0%, #2c2c2c 5%, #ffff00 10%, #2c2c2c 20%, #2c2c2c 100%);
+	background: -moz-repeating-radial-gradient(circle farthest-corner at right center, #ffee00 0%, #2c2c2c 5%, #ffff00 10%, #2c2c2c 20%, #2c2c2c 100%);
+}
+
+.hcal-reservation-swap-in-selected {
+	background-color: #005B96 !important;
+	border-color: #99bdd5 !important;
+}
+
+.hcal-reservation-swap-out-selected {
+	border-color: #005B96 !important;
+	background-color: #99bdd5 !important;
+}
+
+.hcal-row-room-type-group-item {
+	text-align: center;
+}
+
+tr.hcal-row-room-type-group-overbooking-item td {
+	background-color: #c78585;
+}
+
+.hcal-cell-month-day {
+	text-align: center !important;
+}
+
+.hcal-cell-room-type-group-day {
+	text-align: center !important;
+}
+
+.hcal-table-type-group-day {
+	border-collapse: collapse;
+	width:100%;
+}
+.hcal-table-type-group-day td {
+	border-width: 0;
+}
+.hcal-table-type-group-day tr:not(:last-child) td {
+	border-bottom-width: 1px;
+}
+
+.hcal-cell-room-type {
+	cursor: pointer;
+}
+td.hcal-cell-room-type {
+	border-right-width: 2px;
+}
+
+td.hcal-cell-room-type-group-day, td.hcal-cell-room-type {
+	border-top-width: 2px;
+}
+td.hcal-cell-room-type-group-day {
+	padding: 0;
+}
+
+td.hcal-cell-room-type-group-item {
+	text-align: center !important;
+	vertical-align: middle;
+	font-size: x-small;
+	white-space: nowrap;
+}
+td.hcal-cell-room-type-group-item:last-child {
+	border-right-width: 2px;
+}
+
+.hcal-cell-type-group-day-free {
+	text-align: center;
+	font-weight: bold;
+	padding: 0 !important;
+}
+.hcal-cell-type-group-day-price {
+	text-align: center;
+}
+
+td.hcal-cell-header-day {
+	padding: 0;
+	vertical-align: middle;
+}
+
+td.hcal-cell-month-day-occupied {
+	padding: 0;
+	text-align: center;
+}
+
+.hcal-cell-detail-room-free-type-group-item-day,
+.hcal-cell-detail-room-free-total-group-item-day,
+.hcal-cell-detail-room-perc-occup-group-item-day,
+.hcal-cell-detail-room-price-type-group-item-day,
+.hcal-cell-detail-room-min-stay-group-item-day {
+	border: 1px solid lightgray;
+}
+.hcal-cell-detail-room-min-stay-group-item-day {
+	border-color: #307CB0 lightgray lightgray lightgray;
+	border-width: 2px 1px 1px 1px;
+}
+
+.hcal-cell-detail-room-group-item {
+	white-space: nowrap;
+	text-align: right !important;
+	text-overflow: '...';
+}
+
+/* FIXME: Workaround for work with other currencies */
+.hcal-cell-detail-room-group-item[data-currency-symbol='€'] {
+	text-overflow: '... €';
+}
+
+.hcal-unused-zone {
+	border: 1px solid #444;
+  border-radius: 0px;
+}
+
+.input-price {
+	width: 100%;
+	border-style: none !important;
+	border-radius: 0 !important;
+	text-align: center;
+}
+
+button#btn_action_bookings {
+	margin-bottom: -1px !important;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+input#bookings_search {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	margin-bottom: 0.2em;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}

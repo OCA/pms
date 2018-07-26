@@ -1,0 +1,81 @@
+<odoo>
+    <data noupdate="1">
+
+        <function id="default_color_pre_reservation"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_pre_reservation', '#A4A4A4')"/>
+
+        <function id="default_color_reservation"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_reservation', '#4E9DC4')"/>
+
+        <function id="default_color_stay"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_stay', '#b40606')"/>
+
+        <function id="default_color_stay_pay"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_stay_pay', '#54d12b')"/>
+
+        <function id="default_color_checkout"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_checkout', '#FF0000')"/>
+
+        <function id="default_color_dontsell"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_dontsell', '#000000')"/>
+
+        <function id="default_color_staff"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_staff', '#FF9933')"/>
+
+        <function id="default_color_to_assign"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_to_assign', '#DFFF00')"/>
+
+        <function id="default_color_payment_pending"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_payment_pending', '#f70f0f')"/>
+
+        <function id="default_color_letter_pre_reservation"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_pre_reservation', '#000000')"/>
+
+        <function id="default_color_letter_reservation"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_reservation', '#000000')"/>
+
+        <function id="default_color_letter_reservation_pay"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_reservation_pay', '#000000')"/>
+
+        <function id="default_color_letter_stay"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_stay', '#FFFFFF')"/>
+
+        <function id="default_color_letter_stay_pay"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_stay_pay', '#000000')"/>
+
+        <function id="default_color_letter_checkout"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_checkout', '#FFFFFF')"/>
+
+        <function id="default_color_letter_dontsell"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_dontsell', '#FFFFFF')"/>
+
+        <function id="default_color_letter_staff"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_staff', '#000000')"/>
+
+        <function id="default_color_letter_to_assign"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_to_assign', '#000000')"/>
+
+        <function id="default_color_letter_payment_pending"
+            model="ir.default" name="set"
+            eval="('res.config.settings', 'color_letter_payment_pending', '#000000')"/>
+
+    </data>
+</odoo>
