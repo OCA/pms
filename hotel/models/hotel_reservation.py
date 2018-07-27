@@ -1165,11 +1165,8 @@ class HotelReservation(models.Model):
         return {'total_price': total_price, 'commands': cmds}
 
     @api.constrains('adults')
-    def check_adults(self):
-        if self.adults == 0 and self.room_id:
-            # room = self.env['hotel.room'].search([
-            #     ('product_id', '=', self.product_id.id)
-            # ], limit=1)
+    def _check_adults(self):
+        if self.adults == 0 and self.room_id and self.room_id > 0:
             self.adults = self.room_id.capacity
 
     @api.multi

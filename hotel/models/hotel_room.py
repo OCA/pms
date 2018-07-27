@@ -3,7 +3,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models, fields, api, _
-
+from odoo.exceptions import ValidationError
 
 class HotelRoom(models.Model):
     """ The rooms for lodging can be for sleeping, usually called rooms, and also
@@ -45,3 +45,8 @@ class HotelRoom(models.Model):
         help="A description of the Product that you want to communicate to "
              " your customers. This description will be copied to every Sales "
              " Order, Delivery Order and Customer Invoice/Credit Note")
+
+    @api.constrains('capacity')
+    def _check_capacity(self):
+        if self.capacity < 1:
+            raise ValidationError(_("Room capacity can't be less than one"))
