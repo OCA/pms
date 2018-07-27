@@ -16,8 +16,6 @@ from odoo.tools import (
 from odoo import models, fields, api, _
 from odoo.addons.hotel import date_utils
 
-from odoo.addons import decimal_precision as dp
-
 class HotelRoomType(models.Model):
     """ Before creating a 'room type', you need to consider the following:
     With the term 'room type' is meant a type of residential accommodation: for
@@ -31,8 +29,6 @@ class HotelRoomType(models.Model):
     product_id = fields.Many2one('product.product', 'Product Room Type',
                                  required=True, delegate=True,
                                  ondelete='cascade')
-    # cat_id = fields.Many2one('product.category', 'category', required=True,
-    #                          delegate=True, index=True, ondelete='cascade')
     room_ids = fields.One2many('hotel.room', 'room_type_id', 'Rooms')
 
     # TODO Hierarchical relationship for parent-child tree ?
@@ -60,11 +56,7 @@ class HotelRoomType(models.Model):
     def _compute_total_rooms(self):
         for record in self:
             count = 0
-            count += len(record.room_ids)    # Rooms linked directly
-            # room_categories = r.room_type_ids.mapped('room_ids.id')
-            # count += self.env['hotel.room'].search_count([
-            #     ('categ_id.id', 'in', room_categories)
-            # ])  # Rooms linked through room type
+            count += len(record.room_ids)
             record.total_rooms_count = count
 
     def _check_duplicated_rooms(self):
@@ -135,7 +127,5 @@ class HotelRoomType(models.Model):
     @api.multi
     def unlink(self):
         for record in self:
-            # Set fixed price to rooms with price from this virtual rooms
-            # Remove product.product
             record.product_id.unlink()
         return super().unlink()
