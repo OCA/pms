@@ -1307,23 +1307,16 @@ class HotelReservation(models.Model):
         return super(HotelReservation, self).unlink()
 
     @api.model
-    def occupied(self, str_checkin_utc, str_checkout_utc):
+    # TODO change function name to get_reservations(self, dfrom, dto):
+    def occupied(self, dfrom, dto):
         """
-        Return a RESERVATIONS array between in and out parameters
-        IMPORTANT: This function should receive the dates in UTC datetime zone,
-                    as String format
+        @param self: The object pointer
+        @param dfrom: starting range date from
+        @param dto: starting range date to
+        @return: array with the reservations confirmed between dfrom and dto
         """
-        tz_hotel = self.env['ir.default'].sudo().get(
-                                        'res.config.settings', 'tz_hotel')
-        checkin_utc_dt = date_utils.get_datetime(str_checkin_utc)
-        checkin_dt = date_utils.dt_as_timezone(checkin_utc_dt, tz_hotel)
-        days_diff = date_utils.date_diff(str_checkin_utc, str_checkout_utc,
-                                         hours=False)
-        dates_list = date_utils.generate_dates_list(checkin_dt, days_diff or 1,
-                                                    stz=tz_hotel)
-        reservations = self.env['hotel.reservation'].search([
-            ('reservation_line_ids.date', 'in', dates_list),
-            ('state', '!=', 'cancelled'),
-            ('overbooking', '=', False)
-        ])
-        return reservations
+        domain = [('reservation_line_ids.date', '>=', dfrom),
+                  ('reservation_line_ids.date', '<=', dto),
+                  ('state', '!=', 'cancelled'),
+                  ('overbooking', '=', False)]
+        return self.env['hotel.reservation'].search(domain)
