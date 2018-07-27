@@ -49,8 +49,6 @@ class HotelRoomType(models.Model):
                          'code must be unique!')]
     # total number of rooms in this type
     total_rooms_count = fields.Integer(compute='_compute_total_rooms')
-    # FIXING rename to default rooms ?
-    max_real_rooms = fields.Integer('Default Max Room Allowed')
 
     @api.depends('room_ids')
     def _compute_total_rooms(self):
@@ -62,15 +60,6 @@ class HotelRoomType(models.Model):
     def _check_duplicated_rooms(self):
         # FIXME Using a Many2one relationship duplicated should not been possible
         pass
-
-    @api.constrains('max_real_rooms', 'room_ids')
-    def _check_max_rooms(self):
-        warning_msg = ""
-        # for r in self:
-        if self.max_real_rooms > self.total_rooms_count:
-            warning_msg += _('The Maxime rooms allowed can not be greate \
-                                than total rooms count')
-            raise models.ValidationError(warning_msg)
 
     @api.multi
     def get_capacity(self):
