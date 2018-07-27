@@ -53,9 +53,7 @@ class HotelRoomType(models.Model):
     @api.depends('room_ids')
     def _compute_total_rooms(self):
         for record in self:
-            count = 0
-            count += len(record.room_ids)
-            record.total_rooms_count = count
+            record.total_rooms_count = len(record.room_ids)
 
     def _check_duplicated_rooms(self):
         # FIXME Using a Many2one relationship duplicated should not been possible
