@@ -1166,7 +1166,7 @@ class HotelReservation(models.Model):
 
     @api.constrains('adults')
     def _check_adults(self):
-        if self.adults == 0 and self.room_id and self.room_id > 0:
+        if self.adults == 0 and self.room_id and self.room_id.capacity > 0:
             self.adults = self.room_id.capacity
 
     @api.multi
