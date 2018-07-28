@@ -73,16 +73,24 @@ class HotelRoomType(models.Model):
         # return any(capacities) and min(capacities) or 0
 
     @api.model
-    def check_availability_virtual_room(self, checkin, checkout,
+    # TODO Rename to check_availability_room_type
+    def check_availability_virtual_room(self, dfrom, dto,
                                         room_type_id=False, notthis=[]):
         """
         Check the avalability for an specific type of room
+        @param self: The object pointer
+        @param dfrom: Range date from
+        @param dto: Range date to
+        @param room_type_id: Room Type
+        @param notthis: Array excluding Room Types
         @return: A recordset of free rooms ?
         """
-        occupied = self.env['hotel.reservation'].occupied(checkin, checkout)
-        rooms_occupied = occupied.mapped('product_id.id')
+        # occupied = self.env['hotel.reservation'].get_reservations(dfrom, dto)
+        # rooms_occupied = occupied.mapped('product_id.id')
+        reservations = self.env['hotel.reservation'].get_reservations(dfrom, dto)
+        reservations_rooms = reservations.mapped('room_id.id')
         free_rooms = self.env['hotel.room'].search([
-            ('product_id.id', 'not in', rooms_occupied),
+            ('id', 'not in', reservations_rooms),
             ('id', 'not in', notthis)
         ])
         if room_type_id:

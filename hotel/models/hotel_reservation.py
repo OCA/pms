@@ -1190,7 +1190,7 @@ class HotelReservation(models.Model):
         if self.overbooking:
             return
         checkout_dt = date_utils.get_datetime(self.checkout)
-        occupied = self.env['hotel.reservation'].occupied(
+        occupied = self.env['hotel.reservation'].get_reservations(
             self.checkin,
             checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)).filtered(
                 lambda r: r.id != self._origin.id)
@@ -1281,15 +1281,16 @@ class HotelReservation(models.Model):
         Checkout date should be greater than the checkin date.
         3.-Check the reservation dates are not occuped
         """
-        chkin_utc_dt = date_utils.get_datetime(self.checkin)
-        chkout_utc_dt = date_utils.get_datetime(self.checkout)
-        if chkin_utc_dt >= chkout_utc_dt:
+        # chkin_utc_dt = date_utils.get_datetime(self.checkin)
+        # chkout_utc_dt = date_utils.get_datetime(self.checkout)
+        if self.checkin >= self.checkout:
             raise ValidationError(_('Room line Check In Date Should be \
                 less than the Check Out Date!'))
         if not self.overbooking and not self._context.get("ignore_avail_restrictions", False):
-            occupied = self.env['hotel.reservation'].occupied(
+            occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
-                chkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+                self.checkout)
+                # chkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
             occupied = occupied.filtered(
                 lambda r: r.room_id.id == self.room_id.id
                 and r.id != self.id)
@@ -1307,13 +1308,12 @@ class HotelReservation(models.Model):
         return super(HotelReservation, self).unlink()
 
     @api.model
-    # TODO change function name to get_reservations(self, dfrom, dto):
-    def occupied(self, dfrom, dto):
+    def get_reservations(self, dfrom, dto):
         """
         @param self: The object pointer
-        @param dfrom: starting range date from
-        @param dto: starting range date to
-        @return: array with the reservations confirmed between dfrom and dto
+        @param dfrom: range date from
+        @param dto: range date to
+        @return: array with the reservations _confirmed_ between dfrom and dto
         """
         domain = [('reservation_line_ids.date', '>=', dfrom),
                   ('reservation_line_ids.date', '<=', dto),
