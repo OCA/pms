@@ -494,9 +494,8 @@ class HotelReservation(models.Model):
     def _computed_nights(self):
         for res in self:
             if res.checkin and res.checkout:
-                timedelta = fields.Date.from_string(res.checkout) - \
-                            fields.Date.from_string(res.checkin)
-                res.nights = timedelta.days
+                res.nights = (fields.Date.from_string(res.checkout) - \
+                              fields.Date.from_string(res.checkin)).days
 
     @api.model
     def recompute_reservation_totals(self):
@@ -940,17 +939,6 @@ class HotelReservation(models.Model):
                 })
         return res
 
-    # @api.multi
-    # def uos_change(self, product_uos, product_uos_qty=0, product_id=None):
-    #     '''
-    #     @param self: object pointer
-    #     '''
-    #     # for folio in self:
-    #     #     line = folio.order_line_id
-    #     #     line.uos_change(product_uos, product_uos_qty=0,
-    #     #                     product_id=None)
-    #     return True
-
     # FIXME add room.id to on change after removing inheritance
     @api.onchange('adults', 'children')
     def check_capacity(self):
@@ -963,8 +951,8 @@ class HotelReservation(models.Model):
                     _('%s people do not fit in this room! ;)') % (persons))
 
     @api.onchange('room_type_id')
-    # def on_change_virtual_room_id(self):
     def on_change_room_type_id(self):
+        # import wdb; wdb.set_trace()
         if not self.checkin:
             self.checkin = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         if not self.checkout:
@@ -1013,6 +1001,7 @@ class HotelReservation(models.Model):
         # UTC -> Hotel tz
         tz = self.env['ir.default'].sudo().get('res.config.settings',
                                                'tz_hotel')
+        # import wdb; wdb.set_trace()
         chkin_utc_dt = date_utils.get_datetime(self.checkin)
         chkout_utc_dt = date_utils.get_datetime(self.checkout)
 
@@ -1281,6 +1270,7 @@ class HotelReservation(models.Model):
         Checkout date should be greater than the checkin date.
         3.-Check the reservation dates are not occuped
         """
+        _logger.info('check_dates')
         # chkin_utc_dt = date_utils.get_datetime(self.checkin)
         # chkout_utc_dt = date_utils.get_datetime(self.checkout)
         if self.checkin >= self.checkout:

@@ -85,8 +85,6 @@ class HotelRoomType(models.Model):
         @param notthis: Array excluding Room Types
         @return: A recordset of free rooms ?
         """
-        # occupied = self.env['hotel.reservation'].get_reservations(dfrom, dto)
-        # rooms_occupied = occupied.mapped('product_id.id')
         reservations = self.env['hotel.reservation'].get_reservations(dfrom, dto)
         reservations_rooms = reservations.mapped('room_id.id')
         free_rooms = self.env['hotel.room'].search([
@@ -94,14 +92,10 @@ class HotelRoomType(models.Model):
             ('id', 'not in', notthis)
         ])
         if room_type_id:
-            # hotel_room_obj = self.env['hotel.room']
             room_type_id = self.env['hotel.room.type'].search([
                 ('id', '=', room_type_id)
             ])
-            # room_categories = virtual_room.room_type_ids.mapped('room_ids.id')
-            # rooms_linked = virtual_room.room_ids | hotel_room_obj.search([
-            #     ('categ_id.id', 'in', room_categories)])
-            # rooms_linked = room_type_id.room_ids
+            # QUESTION What linked represent? Rooms in this type ? 
             rooms_linked = self.room_ids
             free_rooms = free_rooms & rooms_linked
         return free_rooms.sorted(key=lambda r: r.sequence)
