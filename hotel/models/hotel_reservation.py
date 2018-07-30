@@ -151,7 +151,7 @@ class HotelReservation(models.Model):
     @api.multi
     def set_call_center_user(self):
         user = self.env['res.users'].browse(self.env.uid)
-        rec.call_center = user.has_group('hotel.group_hotel_call')
+        self.call_center = user.has_group('hotel.group_hotel_call')
 
     def _get_default_checkin(self):
         folio = False
@@ -263,12 +263,7 @@ class HotelReservation(models.Model):
     # The record's name should now be used for description of the reservation ?
     name = fields.Text('Reservation Description', required=True)
 
-    # _defaults = {
-    #     'product_id': False
-    # }
-
     room_id = fields.Many2one('hotel.room', string='Room')
-
 
     reservation_no = fields.Char('Reservation No', size=64, readonly=True)
     adults = fields.Integer('Adults', size=64, readonly=False,
@@ -485,20 +480,19 @@ class HotelReservation(models.Model):
     def _computed_nights(self):
         for res in self:
             if res.checkin and res.checkout:
-                res.nights = (fields.Date.from_string(res.checkout) - \
-                              fields.Date.from_string(res.checkin)).days
+                res.nights = (fields.Date.from_string(res.checkout) - fields.Date.from_string(res.checkin)).days
 
-    @api.model
-    def recompute_reservation_totals(self):
-        reservations = self.env['hotel.reservation'].search([])
-        for res in reservations:
-            if res.folio_id.state not in ('done','cancel'):
-                _logger.info('---------BOOK-----------')
-                _logger.info(res.amount_reservation)
-                _logger.info(res.id)
-                res._computed_amount_reservation()
-                _logger.info(res.amount_reservation)
-                _logger.info('---------------------------')
+    # @api.model
+    # def recompute_reservation_totals(self):
+    #     reservations = self.env['hotel.reservation'].search([])
+    #     for res in reservations:
+    #         if res.folio_id.state not in ('done','cancel'):
+    #             _logger.info('---------BOOK-----------')
+    #             _logger.info(res.amount_reservation)
+    #             _logger.info(res.id)
+    #             res._computed_amount_reservation()
+    #             _logger.info(res.amount_reservation)
+    #             _logger.info('---------------------------')
 
     @api.depends('reservation_line_ids.price')
     def _computed_amount_reservation(self):
@@ -842,17 +836,12 @@ class HotelReservation(models.Model):
             vals.update({'reservation_type': 'normal'})
         if 'folio_id' in vals:
             folio = self.env["hotel.folio"].browse(vals['folio_id'])
-            # vals.update({'order_id': folio.order_id.id,
-            #              'channel_type': folio.channel_type})
             vals.update({'channel_type': folio.channel_type})
         elif 'partner_id' in vals:
             folio_vals = {'partner_id':int(vals.get('partner_id')),
                           'channel_type': vals.get('channel_type')}
+            # Create the folio in case of need
             folio = self.env["hotel.folio"].create(folio_vals)
-            # vals.update({'order_id': folio.order_id.id,
-            #              'folio_id': folio.id,
-            #              'reservation_type': vals.get('reservation_type'),
-            #              'channel_type': vals.get('channel_type')})
             vals.update({'folio_id': folio.id,
                          'reservation_type': vals.get('reservation_type'),
                          'channel_type': vals.get('channel_type')})
@@ -865,12 +854,7 @@ class HotelReservation(models.Model):
         })
         if folio:
             record = super(HotelReservation, self).create(vals)
-            # Check Capacity
-            # NOTE the room is not a product anymore
-            # room = self.env['hotel.room'].search([
-            #     ('product_id', '=', record.product_id.id)
-            # ])
-            #persons = record.adults     # Not count childrens
+            # TODO: Check Capacity should be done before creating the Folio
             if record.adults > record.room_id.capacity:
                 raise ValidationError(
                     _("Reservation persons can't be higher than room capacity"))
@@ -1046,6 +1030,7 @@ class HotelReservation(models.Model):
     @api.model
     def get_availability(self, checkin, checkout, dbchanged=True,
                          dtformat=DEFAULT_SERVER_DATE_FORMAT):
+        _logger.info('get_availability')
         date_start = date_utils.get_datetime(checkin)
         date_end = date_utils.get_datetime(checkout)
         # Not count end day of the reservation
@@ -1086,38 +1071,38 @@ class HotelReservation(models.Model):
         return rooms_avail
 
     @api.multi
-    def prepare_reservation_lines(self, str_start_date_utc, days,
+    def prepare_reservation_lines(self, dfrom, days,
                                   update_old_prices=False):
         self.ensure_one()
         total_price = 0.0
         cmds = [(5, False, False)]
+        # import wdb;
+        # wdb.set_trace()
         # TO-DO: Redesign relation between hotel.reservation
         # and sale.order.line to allow manage days by units in order
         #~ if self.invoice_status == 'invoiced' and not self.splitted:
             #~ raise ValidationError(_("This reservation is already invoiced. \
                         #~ To expand it you must create a new reservation."))
-        hotel_tz = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'hotel_tz')
-        start_date_utc_dt = date_utils.get_datetime(str_start_date_utc)
-        start_date_dt = date_utils.dt_as_timezone(start_date_utc_dt, hotel_tz)
-
-        # import wdb; wdb.set_trace()
+        # hotel_tz = self.env['ir.default'].sudo().get(
+        #     'res.config.settings', 'hotel_tz')
+        # start_date_utc_dt = date_utils.get_datetime(str_start_date_utc)
+        # start_date_dt = date_utils.dt_as_timezone(start_date_utc_dt, hotel_tz)
 
         # room = self.env['hotel.room'].search([
         #     ('product_id', '=', self.product_id.id)
         # ])
         # product_id = self.room_id.sale_price_type == 'vroom' and self.room_id.price_virtual_room.product_id
-        product_id = self.room_type_id
+        product_id = self.room_type_id.product_id
         pricelist_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'parity_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
         old_lines_days = self.mapped('reservation_line_ids.date')
+        # import wdb; wdb.set_trace()
         for i in range(0, days):
-            ndate = start_date_dt + timedelta(days=i)
-            ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
-            _logger.info('ndate_str: %s', ndate_str)
-            if update_old_prices or ndate_str not in old_lines_days:
+            idate = fields.Date.from_string(dfrom) + timedelta(days=i)
+            idate_str = fields.Date.to_string(idate)
+            if update_old_prices or idate_str not in old_lines_days:
                 # prod = product_id.with_context(
                 #     lang=self.partner_id.lang,
                 #     partner=self.partner_id.id,
@@ -1125,18 +1110,19 @@ class HotelReservation(models.Model):
                 #     date=ndate_str,
                 #     pricelist=pricelist_id,
                 #     uom=self.product_uom.id)
-                prod = product_id.with_context(
-                    lang=self.partner_id.lang,
-                    partner=self.partner_id.id,
-                    quantity=1,
-                    date=ndate_str,
-                    pricelist=pricelist_id)
-                line_price = prod.price
+                # prod = product_id.with_context(
+                #     lang=self.partner_id.lang,
+                #     partner=self.partner_id.id,
+                #     quantity=1,
+                #     date=ndate_str, # AttributeError("'product.product' object has no attribute 'date'",)
+                #     pricelist=pricelist_id)
+                # line_price = prod.price
+                line_price = product_id.list_price
             else:
-                line = self.reservation_line_ids.filtered(lambda r: r.date == ndate_str)
+                line = self.reservation_line_ids.filtered(lambda r: r.date == idate_str)
                 line_price = line.price
             cmds.append((0, False, {
-                'date': ndate_str,
+                'date': idate_str,
                 'price': line_price
             }))
             total_price += line_price
