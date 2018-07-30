@@ -225,15 +225,6 @@ class HotelReservation(models.Model):
         else:
             return default_departure_hour
 
-    # @api.constrains('checkin', 'checkout') #Why dont run api.depends?¿?
-    # def _computed_nights(self):
-    #     for res in self:
-    #         if res.checkin and res.checkout:
-    #             nights = days_diff = date_utils.date_diff(
-    #                 self.checkin,
-    #                 self.checkout, hours=False)
-    #         res.nights = nights
-
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         if args is None:
@@ -628,17 +619,12 @@ class HotelReservation(models.Model):
     @api.model
     def checkin_is_today(self):
         self.ensure_one()
-        date_now_str = date_utils.now().strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
-        return date_utils.date_compare(self.checkin, date_now_str, hours=False)
+        return (self.checkin == fields.Date.context_today(self))
 
     @api.model
     def checkout_is_today(self):
         self.ensure_one()
-        date_now_str = date_utils.now().strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
-        return date_utils.date_compare(self.checkout, date_now_str,
-                                       hours=False)
+        return (self.checkout == fields.Date.context_today(self))
 
     @api.multi
     def action_cancel(self):
@@ -1308,8 +1294,12 @@ class HotelReservation(models.Model):
         @param dto: range date to
         @return: array with the reservations _confirmed_ between dfrom and dto
         """
+        # QUESTION dto must be strictly <
         domain = [('reservation_line_ids.date', '>=', dfrom),
-                  ('reservation_line_ids.date', '<=', dto),
+                  ('reservation_line_ids.date', '<', dto),
                   ('state', '!=', 'cancelled'),
                   ('overbooking', '=', False)]
+        reservations = self.env['hotel.reservation'].search(domain)
+        _logger.info('get_reservations: Found')
+        _logger.info(reservations)
         return self.env['hotel.reservation'].search(domain)
