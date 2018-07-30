@@ -930,8 +930,9 @@ class HotelReservation(models.Model):
                 record.folio_id.compute_invoices_amount()
                 checkin = vals.get('checkin', record.checkin)
                 checkout = vals.get('checkout', record.checkout)
-                days_diff = date_utils.date_diff(checkin,
-                                                 checkout, hours=False)
+                # days_diff = date_utils.date_diff(checkin,
+                #                                  checkout, hours=False)
+                days_diff = (fields.Date.from_string(checkout) - fields.Date.from_string(checkin)).days
                 rlines = record.prepare_reservation_lines(checkin, days_diff)
                 record.update({
                     'reservation_line_ids': rlines['commands'],
@@ -957,8 +958,9 @@ class HotelReservation(models.Model):
             self.checkin = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         if not self.checkout:
             self.checkout = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        days_diff = date_utils.date_diff(
-            self.checkin, self.checkout, hours=False)
+        # days_diff = date_utils.date_diff(
+        #     self.checkin, self.checkout, hours=False)
+        days_diff = (fields.Date.from_string(self.checkout) - fields.Date.from_string(self.checkin)).days
         rlines = self.prepare_reservation_lines(
             self.checkin,
             days_diff,
@@ -1039,8 +1041,9 @@ class HotelReservation(models.Model):
                     ('folio_id', '=', folio.id), ('is_checkout', '=', True)
                 ])
 
-        days_diff = date_utils.date_diff(
-            self.checkin, self.checkout, hours=False)
+        # days_diff = date_utils.date_diff(
+        #     self.checkin, self.checkout, hours=False)
+        days_diff = (fields.Date.from_string(self.checkout) - fields.Date.from_string(self.checkin)).days
         rlines = self.prepare_reservation_lines(
             self.checkin,
             days_diff,
