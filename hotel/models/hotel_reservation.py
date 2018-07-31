@@ -586,18 +586,16 @@ class HotelReservation(models.Model):
         self.ensure_one()
         tz_hotel = self.env['ir.default'].sudo().get(
             'res.config.settings', 'tz_hotel')
-        tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
-        today = datetime.date(datetime.now(tz=tzinfo)).strftime(DEFAULT_SERVER_DATE_FORMAT)
-        return fields.Date.from_string(self.checkin) == today
+        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+        return self.checkin == today
 
     @api.model
     def checkout_is_today(self):
         self.ensure_one()
         tz_hotel = self.env['ir.default'].sudo().get(
             'res.config.settings', 'tz_hotel')
-        tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
-        today = datetime.date(datetime.now(tz=tzinfo)).strftime(DEFAULT_SERVER_DATE_FORMAT)
-        return fields.Date.from_string(self.checkout) == today
+        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+        return self.checkout == today
 
     @api.multi
     def action_cancel(self):
@@ -928,7 +926,6 @@ class HotelReservation(models.Model):
     def on_change_checkin_checkout_product_id(self):
         _logger.info('on_change_checkin_checkout_product_id')
         # import wdb; wdb.set_trace()
-        # TODO: Remove this check once added as contrain
         if not self.checkin:
             self.checkin = self._get_default_checkin()
         if not self.checkout:
@@ -951,25 +948,17 @@ class HotelReservation(models.Model):
                 self.room_type_id = self.room_id.room_type_id
                 self.tax_id = [(6, False, self.room_id.room_type_id.taxes_id.ids)]
 
-        # UTC -> Hotel tz
-        tz = self.env['ir.default'].sudo().get('res.config.settings',
-                                               'tz_hotel')
-        # import wdb; wdb.set_trace()
-        # chkin_utc_dt = date_utils.get_datetime(self.checkin)
-        # chkout_utc_dt = date_utils.get_datetime(self.checkout)
         checkin_dt = fields.Date.from_string(self.checkin)
         checkout_dt = fields.Date.from_string(self.checkout)
 
+        if checkin_dt >= checkout_dt:
+            self.checkout = (fields.Date.from_string(self.checkin) + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        # ensure checkin and checkout are correct before changing the name
         if self.room_type_id:
             checkin_str = checkin_dt.strftime('%d/%m/%Y')
             checkout_str = checkout_dt.strftime('%d/%m/%Y')
             self.name = self.room_type_id.name + ': ' + checkin_str + ' - '\
                 + checkout_str
-
-        if checkin_dt >= checkout_dt:
-            _logger.info('checkin_dt >= checkout_dt as expected')
-            self.checkout = fields.Date.from_string(self.checkin)  + timedelta(days=1)
-
 
         if self.state == 'confirm' and self.checkin_is_today():
             self.is_checkin = True
@@ -987,8 +976,6 @@ class HotelReservation(models.Model):
                     ('folio_id', '=', folio.id), ('is_checkout', '=', True)
                 ])
 
-        # days_diff = date_utils.date_diff(
-        #     self.checkin, self.checkout, hours=False)
         days_diff = (fields.Date.from_string(self.checkout) - fields.Date.from_string(self.checkin)).days
         rlines = self.prepare_reservation_lines(
             self.checkin,
@@ -1074,11 +1061,9 @@ class HotelReservation(models.Model):
         if pricelist_id:
             pricelist_id = int(pricelist_id)
         old_lines_days = self.mapped('reservation_line_ids.date')
-        # import wdb; wdb.set_trace()
         for i in range(0, days):
-            idate = fields.Date.from_string(dfrom) + timedelta(days=i)
-            idate_str = fields.Date.to_string(idate)
-            if update_old_prices or idate_str not in old_lines_days:
+            idate = (fields.Date.from_string(dfrom) + timedelta(days=i)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+            if update_old_prices or idate not in old_lines_days:
                 # prod = product_id.with_context(
                 #     lang=self.partner_id.lang,
                 #     partner=self.partner_id.id,
@@ -1095,10 +1080,10 @@ class HotelReservation(models.Model):
                 # line_price = prod.price
                 line_price = product_id.list_price
             else:
-                line = self.reservation_line_ids.filtered(lambda r: r.date == idate_str)
+                line = self.reservation_line_ids.filtered(lambda r: r.date == idate)
                 line_price = line.price
             cmds.append((0, False, {
-                'date': idate_str,
+                'date': idate,
                 'price': line_price
             }))
             total_price += line_price
@@ -1110,6 +1095,7 @@ class HotelReservation(models.Model):
             self.adults = self.room_id.capacity
 
     @api.multi
+    # TODO: This onchange has almost the same values than on_change_checkin_checkout_product_id... join ?
     @api.onchange('checkin', 'checkout', 'room_type_id', 'room_id')
     def on_change_checkout(self):
         '''
@@ -1120,18 +1106,12 @@ class HotelReservation(models.Model):
         '''
         _logger.info('on_change_checkout')
         self.ensure_one()
-        now_utc_dt = date_utils.now()
-        # TODO: Remove this check once added as contrain
-        if not self.checkin:
-            self.checkin = self._get_default_checkin()
-        if not self.checkout:
-            self.checkout = self._get_default_checkout()
         if self.overbooking:
             return
-        checkout_dt = date_utils.get_datetime(self.checkout)
+
         occupied = self.env['hotel.reservation'].get_reservations(
             self.checkin,
-            checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)).filtered(
+            fields.Date.from_string(self.checkout).strftime(DEFAULT_SERVER_DATE_FORMAT)).filtered(
                 lambda r: r.id != self._origin.id)
         rooms_occupied = occupied.mapped('room_id.id')
         if self.room_id and self.room_id.id in rooms_occupied:
@@ -1222,14 +1202,13 @@ class HotelReservation(models.Model):
         3.-Check the reservation dates are not occuped
         """
         _logger.info('check_dates')
-        if self.checkin >= self.checkout:
+        if fields.Date.from_string(self.checkin) >= fields.Date.from_string(self.checkout):
             raise ValidationError(_('Room line Check In Date Should be \
                 less than the Check Out Date!'))
         if not self.overbooking and not self._context.get("ignore_avail_restrictions", False):
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
                 self.checkout)
-                # chkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
             occupied = occupied.filtered(
                 lambda r: r.room_id.id == self.room_id.id
                 and r.id != self.id)
