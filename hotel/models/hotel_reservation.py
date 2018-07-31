@@ -173,8 +173,8 @@ class HotelReservation(models.Model):
             # ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
             # ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
             # return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            # return fields.Date.today() ¿?
-            return fields.Date.context_today(self)
+            return fields.Date.today()
+            # return fields.Date.context_today(self)
 
     def _get_default_checkout(self):
         folio = False
@@ -197,7 +197,7 @@ class HotelReservation(models.Model):
             # ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
             # return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
             # return fields.Date.today() ¿?
-            return fields.Date.context_today(self, datetime.now() + timedelta(days=1))
+            return fields.Date.from_string(fields.Date.today()) + timedelta(days=1)
 
     def _get_default_arrival_hour(self):
         folio = False
@@ -613,7 +613,7 @@ class HotelReservation(models.Model):
     @api.model
     def checkin_is_today(self):
         self.ensure_one()
-        return (self.checkin == fields.Date.context_today(self))
+        return fields.Date.from_string(self.checkin) == fields.Date.today()
 
     @api.model
     def checkout_is_today(self):
@@ -974,26 +974,21 @@ class HotelReservation(models.Model):
         tz = self.env['ir.default'].sudo().get('res.config.settings',
                                                'tz_hotel')
         # import wdb; wdb.set_trace()
-        chkin_utc_dt = date_utils.get_datetime(self.checkin)
-        chkout_utc_dt = date_utils.get_datetime(self.checkout)
+        # chkin_utc_dt = date_utils.get_datetime(self.checkin)
+        # chkout_utc_dt = date_utils.get_datetime(self.checkout)
+        checkin_dt = fields.Date.from_string(self.checkin)
+        checkout_dt = fields.Date.from_string(self.checkout)
 
         if self.room_type_id:
-            checkin_str = chkin_utc_dt.strftime('%d/%m/%Y')
-            checkout_str = chkout_utc_dt.strftime('%d/%m/%Y')
+            checkin_str = checkin_dt.strftime('%d/%m/%Y')
+            checkout_str = checkout_dt.strftime('%d/%m/%Y')
             self.name = self.room_type_id.name + ': ' + checkin_str + ' - '\
                 + checkout_str
-            # self.product_uom = self.product_id.uom_id
 
-        if chkin_utc_dt >= chkout_utc_dt:
-            dpt_hour = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_departure_hour')
-            checkout_str = (chkin_utc_dt + timedelta(days=1)).strftime(
-                DEFAULT_SERVER_DATE_FORMAT)
-            checkout_str = "%s %s:00" % (checkout_str, dpt_hour)
-            checkout_dt = date_utils.get_datetime(checkout_str, stz=tz)
-            checkout_utc_dt = date_utils.dt_as_timezone(checkout_dt, 'UTC')
-            self.checkout = checkout_utc_dt.strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT)
+        if checkin_dt >= checkout_dt:
+            _logger.info('checkin_dt >= checkout_dt as expected')
+            self.checkout = fields.Date.from_string(self.checkin)  + timedelta(days=1)
+
 
         if self.state == 'confirm' and self.checkin_is_today():
             self.is_checkin = True
@@ -1246,8 +1241,6 @@ class HotelReservation(models.Model):
         3.-Check the reservation dates are not occuped
         """
         _logger.info('check_dates')
-        # chkin_utc_dt = date_utils.get_datetime(self.checkin)
-        # chkout_utc_dt = date_utils.get_datetime(self.checkout)
         if self.checkin >= self.checkout:
             raise ValidationError(_('Room line Check In Date Should be \
                 less than the Check Out Date!'))
@@ -1266,12 +1259,6 @@ class HotelReservation(models.Model):
                    reservation period: %s ') % occupied_name
                 raise ValidationError(warning_msg)
 
-    @api.multi
-    def unlink(self):
-        # for record in self:
-        #     record.order_line_id.unlink()
-        return super(HotelReservation, self).unlink()
-
     @api.model
     def get_reservations(self, dfrom, dto):
         """
@@ -1286,6 +1273,30 @@ class HotelReservation(models.Model):
                   ('state', '!=', 'cancelled'),
                   ('overbooking', '=', False)]
         reservations = self.env['hotel.reservation'].search(domain)
-        _logger.info('get_reservations: Found')
-        _logger.info(reservations)
         return self.env['hotel.reservation'].search(domain)
+
+    @api.model
+    def get_reservations_dates(self, dfrom, dto):
+        """
+        @param self: The object pointer
+        @param dfrom: range date from
+        @param dto: range date to
+        @return: dictionary of lists with reservations (a hash of arrays!)
+                 with the reservations dates between dfrom and dto
+        reservations_dates
+            {'2018-07-30': [[hotel.reservation(29,), hotel.room.type(1,)],
+                            [hotel.reservation(30,), hotel.room.type(1,)],
+                            [hotel.reservation(31,), hotel.room.type(3,)]],
+             '2018-07-31': [[hotel.reservation(30,), hotel.room.type(1,)],
+                            [hotel.reservation(31,), hotel.room.type(3,)]]}
+        """
+        domain = [('date', '>=', dfrom),
+                  ('date', '<', dto)]
+        lines = self.env['hotel.reservation.line'].search(domain)
+        reservations_dates = {}
+        for record in lines:
+            # kumari.net/index.php/programming/programmingcat/22-python-making-a-dictionary-of-lists-a-hash-of-arrays
+            # reservations_dates.setdefault(record.date,[]).append(record.reservation_id.room_type_id)
+            reservations_dates.setdefault(record.date, []).append(
+                [record.reservation_id, record.reservation_id.room_type_id])
+        return reservations_dates
