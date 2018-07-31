@@ -10,6 +10,7 @@ from odoo.tools import (
 from odoo import models, fields, api, _
 from decimal import Decimal
 from dateutil.relativedelta import relativedelta
+from dateutil import tz
 from datetime import datetime, timedelta, date
 from odoo.addons.hotel import date_utils
 import pytz
@@ -155,8 +156,6 @@ class HotelReservation(models.Model):
 
     def _get_default_checkin(self):
         folio = False
-        # default_arrival_hour = self.env['ir.default'].sudo().get(
-        #     'res.config.settings', 'default_arrival_hour')
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
@@ -164,22 +163,13 @@ class HotelReservation(models.Model):
         if folio and folio.room_lines:
             return folio.room_lines[0].checkin
         else:
-            # tz_hotel = self.env['ir.default'].sudo().get(
-            #     'res.config.settings', 'tz_hotel')
-            # now_utc_dt = date_utils.now()
-            # ndate = "%s %s:00" % \
-            #     (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            #      default_arrival_hour)
-            # ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
-            # ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
-            # return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            return fields.Date.today()
-            # return fields.Date.context_today(self)
+            tz_hotel = self.env['ir.default'].sudo().get(
+                'res.config.settings', 'tz_hotel')
+            tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
+            return datetime.date(datetime.now(tz=tzinfo)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     def _get_default_checkout(self):
         folio = False
-        # default_departure_hour = self.env['ir.default'].sudo().get(
-        #     'res.config.settings', 'default_departure_hour')
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
@@ -187,17 +177,10 @@ class HotelReservation(models.Model):
         if folio and folio.room_lines:
             return folio.room_lines[0].checkout
         else:
-            # tz_hotel = self.env['ir.default'].sudo().get(
-            #     'res.config.settings', 'tz_hotel')
-            # now_utc_dt = date_utils.now() + timedelta(days=1)
-            # ndate = "%s %s:00" % \
-            #     (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            #      default_departure_hour)
-            # ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
-            # ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
-            # return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            # return fields.Date.today() ¿?
-            return fields.Date.from_string(fields.Date.today()) + timedelta(days=1)
+            tz_hotel = self.env['ir.default'].sudo().get(
+                'res.config.settings', 'tz_hotel')
+            tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
+            return datetime.date(datetime.now(tz=tzinfo) + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     def _get_default_arrival_hour(self):
         folio = False
