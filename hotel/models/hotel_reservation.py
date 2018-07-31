@@ -231,12 +231,12 @@ class HotelReservation(models.Model):
             result.append((res.id, name))
         return result
 
-    # FIXME added for migration
-    def _compute_qty_delivered_updateable(self):
-        pass
-    # FIXME added for migration
-    def _compute_invoice_status(self):
-        pass
+    # # FIXME added for migration
+    # def _compute_qty_delivered_updateable(self):
+    #     pass
+    # # FIXME added for migration
+    # def _compute_invoice_status(self):
+    #     pass
 
     _name = 'hotel.reservation'
     _description = 'Hotel Reservation'
@@ -465,18 +465,6 @@ class HotelReservation(models.Model):
             if res.checkin and res.checkout:
                 res.nights = (fields.Date.from_string(res.checkout) - fields.Date.from_string(res.checkin)).days
 
-    # @api.model
-    # def recompute_reservation_totals(self):
-    #     reservations = self.env['hotel.reservation'].search([])
-    #     for res in reservations:
-    #         if res.folio_id.state not in ('done','cancel'):
-    #             _logger.info('---------BOOK-----------')
-    #             _logger.info(res.amount_reservation)
-    #             _logger.info(res.id)
-    #             res._computed_amount_reservation()
-    #             _logger.info(res.amount_reservation)
-    #             _logger.info('---------------------------')
-
     @api.depends('reservation_line_ids.price')
     def _computed_amount_reservation(self):
         _logger.info('_computed_amount_reservation')
@@ -596,12 +584,20 @@ class HotelReservation(models.Model):
     @api.model
     def checkin_is_today(self):
         self.ensure_one()
-        return fields.Date.from_string(self.checkin) == fields.Date.today()
+        tz_hotel = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'tz_hotel')
+        tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
+        today = datetime.date(datetime.now(tz=tzinfo)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        return fields.Date.from_string(self.checkin) == today
 
     @api.model
     def checkout_is_today(self):
         self.ensure_one()
-        return (self.checkout == fields.Date.context_today(self))
+        tz_hotel = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'tz_hotel')
+        tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
+        today = datetime.date(datetime.now(tz=tzinfo)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        return fields.Date.from_string(self.checkout) == today
 
     @api.multi
     def action_cancel(self):
@@ -814,7 +810,7 @@ class HotelReservation(models.Model):
         @param vals: dictionary of fields value.
         @return: new record set for hotel folio line.
         """
-        # import wdb; wdb.set_trace()
+        import wdb; wdb.set_trace()
         if not 'reservation_type' in vals or not vals.get('reservation_type'):
             vals.update({'reservation_type': 'normal'})
         if 'folio_id' in vals:
@@ -908,9 +904,9 @@ class HotelReservation(models.Model):
     def on_change_room_type_id(self):
         # import wdb; wdb.set_trace()
         if not self.checkin:
-            self.checkin = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            self.checkin = self._get_default_checkin()
         if not self.checkout:
-            self.checkout = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            self.checkout = self._get_default_checkout()
         # days_diff = date_utils.date_diff(
         #     self.checkin, self.checkout, hours=False)
         days_diff = (fields.Date.from_string(self.checkout) - fields.Date.from_string(self.checkin)).days
@@ -932,9 +928,9 @@ class HotelReservation(models.Model):
         _logger.info('on_change_checkin_checkout_product_id')
         # import wdb; wdb.set_trace()
         if not self.checkin:
-            self.checkin = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            self.checkin = self._get_default_checkin()
         if not self.checkout:
-            self.checkout = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            self.checkout = self._get_default_checkout()
         # WARNING Need a review
         # if self.product_id:
         #     self.tax_id = [(6, False, self.virtual_room_id.product_id.taxes_id.ids)]
@@ -1029,7 +1025,7 @@ class HotelReservation(models.Model):
             rdays = []
             for i in range(0, date_diff):
                 ndate_dt = date_start + timedelta(days=i)
-                ndate_str = ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                ndate_str = ndate_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 avail = len(hotel_vroom_obj.check_availability_virtual_room(
                     ndate_str,
                     ndate_str,
@@ -1124,11 +1120,9 @@ class HotelReservation(models.Model):
         self.ensure_one()
         now_utc_dt = date_utils.now()
         if not self.checkin:
-            self.checkin = now_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            self.checkin = self._get_default_checkin()
         if not self.checkout:
-            now_utc_dt = date_utils.get_datetime(self.checkin)\
-                + timedelta(days=1)
-            self.checkout = now_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            self.checkout = self._get_default_checkout()
         if self.overbooking:
             return
         checkout_dt = date_utils.get_datetime(self.checkout)
