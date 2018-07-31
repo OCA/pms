@@ -165,8 +165,8 @@ class HotelReservation(models.Model):
         else:
             tz_hotel = self.env['ir.default'].sudo().get(
                 'res.config.settings', 'tz_hotel')
-            tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
-            return datetime.date(datetime.now(tz=tzinfo)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+            today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+            return fields.Date.from_string(today).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     def _get_default_checkout(self):
         folio = False
@@ -179,8 +179,8 @@ class HotelReservation(models.Model):
         else:
             tz_hotel = self.env['ir.default'].sudo().get(
                 'res.config.settings', 'tz_hotel')
-            tzinfo = tz.gettz(tz_hotel and str(tz_hotel) or 'UTC')
-            return datetime.date(datetime.now(tz=tzinfo) + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+            today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+            return (fields.Date.from_string(today) + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     def _get_default_arrival_hour(self):
         folio = False
@@ -810,7 +810,7 @@ class HotelReservation(models.Model):
         @param vals: dictionary of fields value.
         @return: new record set for hotel folio line.
         """
-        import wdb; wdb.set_trace()
+        # import wdb; wdb.set_trace()
         if not 'reservation_type' in vals or not vals.get('reservation_type'):
             vals.update({'reservation_type': 'normal'})
         if 'folio_id' in vals:
@@ -903,6 +903,7 @@ class HotelReservation(models.Model):
     @api.onchange('room_type_id')
     def on_change_room_type_id(self):
         # import wdb; wdb.set_trace()
+        # TODO: Remove this check once added as contrain
         if not self.checkin:
             self.checkin = self._get_default_checkin()
         if not self.checkout:
@@ -927,6 +928,7 @@ class HotelReservation(models.Model):
     def on_change_checkin_checkout_product_id(self):
         _logger.info('on_change_checkin_checkout_product_id')
         # import wdb; wdb.set_trace()
+        # TODO: Remove this check once added as contrain
         if not self.checkin:
             self.checkin = self._get_default_checkin()
         if not self.checkout:
@@ -1119,6 +1121,7 @@ class HotelReservation(models.Model):
         _logger.info('on_change_checkout')
         self.ensure_one()
         now_utc_dt = date_utils.now()
+        # TODO: Remove this check once added as contrain
         if not self.checkin:
             self.checkin = self._get_default_checkin()
         if not self.checkout:
@@ -1210,6 +1213,7 @@ class HotelReservation(models.Model):
         # sale_line_obj = self.env['sale.order.line'].browse(line_id)
         # return sale_line_obj.copy_data(default=default)
 
+    # TODO: Use default values on checkin /checkout is empty
     @api.constrains('checkin', 'checkout', 'state', 'room_id', 'overbooking')
     def check_dates(self):
         """
