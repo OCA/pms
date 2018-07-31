@@ -61,16 +61,14 @@ class HotelRoomType(models.Model):
 
     @api.multi
     def get_capacity(self):
-        # WARNING use selg.capacity directly ?
-        pass
-        # self.ensure_one()
-        # hotel_room_obj = self.env['hotel.room']
-        # room_categories = self.room_type_ids.mapped('room_ids.id')
-        # room_ids = self.room_ids + hotel_room_obj.search([
-        #     ('categ_id.id', 'in', room_categories)
-        # ])
-        # capacities = room_ids.mapped('capacity')
-        # return any(capacities) and min(capacities) or 0
+        """
+        Get the minimum capacity in the rooms of this type or zero if has no rooms
+        @param self: The object pointer
+        @return: An integer with the capacity of this room type
+        """
+        self.ensure_one()
+        capacities = self.room_ids.mapped('capacity')
+        return any(capacities) and min(capacities) or 0
 
     @api.model
     # TODO Rename to check_availability_room_type
