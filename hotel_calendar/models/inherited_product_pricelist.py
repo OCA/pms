@@ -8,7 +8,7 @@ class ProductPricelist(models.Model):
 
     @api.multi
     def update_price(self, virtual_room_id, date, price):
-        vroom = self.env['hotel.virtual.room'].browse(virtual_room_id)
+        vroom = self.env['hotel.room.type'].browse(virtual_room_id)
         pritem_obj = self.env['product.pricelist.item']
         for record in self:
             plitem = pritem_obj.search([

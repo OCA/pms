@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-	<data>
+<odoo>
 
 	<record model="ir.actions.act_window" id="open_wubook_channel_info_tree_all">
 		<field name="name">WuBook Channel Info</field>
@@ -38,5 +37,4 @@
 	<menuitem id="wubook_config_menu" name="Settings"
 			sequence="3" action="action_wubook_config" parent="wubook_menu"/>
 
-	</data>
-</openerp>
+</odoo>

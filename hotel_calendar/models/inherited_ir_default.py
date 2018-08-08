@@ -18,7 +18,7 @@ class IrDefault(models.Model):
             pricelist_items = self.env['product.pricelist.item'].search([
                 ('pricelist_id', '=', pricelist_id)
             ])
-            vroom_obj = self.env['hotel.virtual.room']
+            vroom_obj = self.env['hotel.room.type']
             vroom_pr_cached_obj = self.env['virtual.room.pricelist.cached']
             for pitem in pricelist_items:
                 date_start = pitem.date_start

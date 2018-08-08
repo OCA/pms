@@ -11,7 +11,7 @@ class VirtualRoomPricelistCached(models.Model):
 
     _name = 'virtual.room.pricelist.cached'
 
-    virtual_room_id = fields.Many2one('hotel.virtual.room', 'Virtual Room',
+    virtual_room_id = fields.Many2one('hotel.room.type', 'Virtual Room',
                                       required=True, track_visibility='always')
     price = fields.Float('Price', default=0.0)
     date = fields.Date('Date', required=True, track_visibility='always')

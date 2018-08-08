@@ -60,7 +60,7 @@ class TestHotelVirtualRoom(TestHotelWubook):
         self.hotel_vroom_budget.sudo(self.user_hotel_manager).import_rooms()
 
     def test_create(self):
-        vroom_obj = self.env['hotel.virtual.room']
+        vroom_obj = self.env['hotel.room.type']
         vroom = vroom_obj.sudo(self.user_hotel_manager).create({
             'name': 'Budget Room',
             'virtual_code': '001',

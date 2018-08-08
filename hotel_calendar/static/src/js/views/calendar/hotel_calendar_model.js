@@ -82,7 +82,7 @@ return AbstractModel.extend({
     },
     get_vrooms: function() {
         return this._rpc({
-            model: 'hotel.virtual.room',
+            model: 'hotel.room.type',
             method: 'search_read',
             args: [false, ['id','name']],
             context: Session.user_context,

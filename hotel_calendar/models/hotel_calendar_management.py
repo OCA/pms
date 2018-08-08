@@ -36,7 +36,7 @@ class HotelCalendarManagement(models.TransientModel):
 
     @api.model
     def _get_availability_values(self, avail, vroom):
-        vroom_obj = self.env['hotel.virtual.room']
+        vroom_obj = self.env['hotel.room.type']
         cavail = len(vroom_obj.check_availability_virtual_room(
             avail['date'], avail['date'], virtual_room_id=vroom.id))
         ravail = min(cavail, vroom.total_rooms_count, int(avail['avail']))
@@ -49,7 +49,7 @@ class HotelCalendarManagement(models.TransientModel):
     @api.multi
     def save_changes(self, pricelist_id, restriction_id, pricelist,
                      restrictions, availability):
-        vroom_obj = self.env['hotel.virtual.room']
+        vroom_obj = self.env['hotel.room.type']
         product_pricelist_item_obj = self.env['product.pricelist.item']
         vroom_rest_item_obj = self.env['hotel.virtual.room.restriction.item']
         vroom_avail_obj = self.env['hotel.virtual.room.availability']
@@ -140,7 +140,7 @@ class HotelCalendarManagement(models.TransientModel):
     @api.model
     def _hcalendar_pricelist_json_data(self, prices):
         json_data = {}
-        vroom_obj = self.env['hotel.virtual.room']
+        vroom_obj = self.env['hotel.room.type']
         for rec in prices:
             virtual_room_id = vroom_obj.search([
                 ('product_id.product_tmpl_id', '=', rec.product_tmpl_id.id)
@@ -178,7 +178,7 @@ class HotelCalendarManagement(models.TransientModel):
     def _hcalendar_availability_json_data(self, dfrom, dto):
         date_start = date_utils.get_datetime(dfrom, hours=False)
         date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
-        vrooms = self.env['hotel.virtual.room'].search([])
+        vrooms = self.env['hotel.room.type'].search([])
         json_data = {}
 
         for vroom in vrooms:
@@ -239,10 +239,10 @@ class HotelCalendarManagement(models.TransientModel):
 
     @api.model
     def _hcalendar_get_count_reservations_json_data(self, dfrom, dto):
-        vrooms = self.env['hotel.virtual.room'].search([])
+        vrooms = self.env['hotel.room.type'].search([])
         date_start = date_utils.get_datetime(dfrom, hours=False)
         date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
-        hotel_vroom_obj = self.env['hotel.virtual.room']
+        hotel_vroom_obj = self.env['hotel.room.type']
         vrooms = hotel_vroom_obj.search([])
         json_data = {}
 
@@ -308,7 +308,7 @@ class HotelCalendarManagement(models.TransientModel):
         })
 
         if withRooms:
-            room_ids = self.env['hotel.virtual.room'].search(
+            room_ids = self.env['hotel.room.type'].search(
                 [],
                 order='hcal_sequence ASC')
             json_rooms = self._hcalendar_room_json_data(room_ids)

@@ -45,12 +45,12 @@ class TestHotelWubook(TestHotel):
             return True
 
         @api.model
-        def wubook_create_wubook_issue(self, section, message, wmessage,
+        def wubook_create_channel_connector_issue(self, section, message, wmessage,
                                        wid=False, dfrom=False, dto=False):
             _logger.info("ISSUE CREATED:\n\t- %s\n\t--- %s", section, message)
 
-        cls.env['wubook']._patch_method('create_wubook_issue',
-                                        wubook_create_wubook_issue)
+        cls.env['wubook']._patch_method('create_channel_connector_issue',
+                                        wubook_create_channel_connector_issue)
         cls.env['wubook']._patch_method('is_valid_account', wubook_ommit)
         cls.env['wubook']._patch_method('initialize', wubook_ommit)
         cls.env['wubook']._patch_method('push_activation', wubook_ommit)
@@ -123,7 +123,7 @@ class TestHotelWubook(TestHotel):
         rooms = []
         rooms_occu = []
         booked_rooms = []
-        vroom_obj = self.env['hotel.virtual.room']
+        vroom_obj = self.env['hotel.room.type']
         max_persons = 0
         for k_room, v_room in rinfo.iteritems():
             vroom = vroom_obj.search([
@@ -273,7 +273,7 @@ class TestHotelWubook(TestHotel):
     @classmethod
     def tearDownClass(cls):
         # Remove mocks
-        cls.env['wubook']._revert_method('create_wubook_issue')
+        cls.env['wubook']._revert_method('create_channel_connector_issue')
         cls.env['wubook']._revert_method('is_valid_account')
         cls.env['wubook']._revert_method('initialize')
         cls.env['wubook']._revert_method('push_activation')

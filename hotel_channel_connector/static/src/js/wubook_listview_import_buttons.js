@@ -1,10 +1,9 @@
-odoo.define('wubook.listview_button_import_rooms', function(require) {
+odoo.define('hotel_channel_connector.listview_button_import_rooms', function(require) {
 'use strict';
 /*
- * Hotel WuBook
+ * Hotel Channel Connector
  * GNU Public License
- * Aloxa Solucions S.L. <info@aloxa.eu>
- *     Alexandre Díaz <alex@aloxa.eu>
+ * Alexandre Díaz <dev@redneboa.es>
  */
 
 var ListView = require('web.ListView');
@@ -148,7 +147,7 @@ function push_availability(){
 	new Model('wubook').call('push_availability', [false]).then(function(results){
 			self.do_notify(_t('Operation Success'), _t('Availability successfully pushed'), false);
 	}).fail(function(){
-		self.do_warn(_t('Operation Errors'), _t('Errors while pushing availability to WuBook. See issues log.'), true);
+		self.do_warn(_t('Operation Errors'), _t('Errors while pushing availability to Channel. See issues log.'), true);
 	});
 
 	return false;
@@ -158,30 +157,30 @@ ListView.include({
 	render_buttons: function () {
 		this._super.apply(this, arguments); // Sets this.$buttons
 
-		if (this.dataset.model === 'hotel.virtual.room') {
-	    	this.$buttons.append("<button class='oe_button oe_wubook_import_rooms oe_highlight' type='button'>"+_t('Fetch from WuBook')+"</button>");
-	    	this.$buttons.find('.oe_wubook_import_rooms').on('click', import_rooms.bind(this));
+		if (this.dataset.model === 'hotel.room.type') {
+	    	this.$buttons.append("<button class='oe_button oe_channel_connector_import_rooms oe_highlight' type='button'>"+_t('Fetch from Channel')+"</button>");
+	    	this.$buttons.find('.oe_channel_connector_import_rooms').on('click', import_rooms.bind(this));
     } else if (this.dataset.model === 'hotel.folio') {
-    	this.$buttons.append("<button class='oe_button oe_wubook_import_reservations oe_highlight' type='button'>"+_t('Fetch from WuBook')+"</button>");
-    	this.$buttons.find('.oe_wubook_import_reservations').on('click', import_reservations.bind(this));
+    	this.$buttons.append("<button class='oe_button oe_channel_connector_import_reservations oe_highlight' type='button'>"+_t('Fetch from Channel')+"</button>");
+    	this.$buttons.find('.oe_channel_connector_import_reservations').on('click', import_reservations.bind(this));
     } else if (this.dataset.model === 'product.pricelist') {
-    	this.$buttons.append("<button class='oe_button oe_wubook_import_price_plans oe_highlight' type='button'>"+_t('Fetch from WuBook')+"</button>");
-    	this.$buttons.find('.oe_wubook_import_price_plans').on('click', import_price_plans.bind(this));
-			this.$buttons.append("<button class='oe_button oe_wubook_push_price_plans' style='background-color:red; color:white;' type='button'>"+_t('Push to WuBook')+"</button>");
-    	this.$buttons.find('.oe_wubook_push_price_plans').on('click', push_price_plans.bind(this));
+    	this.$buttons.append("<button class='oe_button oe_channel_connector_import_price_plans oe_highlight' type='button'>"+_t('Fetch from Channel')+"</button>");
+    	this.$buttons.find('.oe_channel_connector_import_price_plans').on('click', import_price_plans.bind(this));
+			this.$buttons.append("<button class='oe_button oe_channel_connector_push_price_plans' style='background-color:red; color:white;' type='button'>"+_t('Push to Channel')+"</button>");
+    	this.$buttons.find('.oe_channel_connector_push_price_plans').on('click', push_price_plans.bind(this));
     } else if (this.dataset.model === 'wubook.channel.info') {
-    	this.$buttons.append("<button class='oe_button oe_wubook_import_channels_info oe_highlight' type='button'>"+_t('Fetch from WuBook')+"</button>");
-    	this.$buttons.find('.oe_wubook_import_channels_info').on('click', import_channels_info.bind(this));
+    	this.$buttons.append("<button class='oe_button oe_channel_connector_import_channels_info oe_highlight' type='button'>"+_t('Fetch from Channel')+"</button>");
+    	this.$buttons.find('.oe_channel_connector_import_channels_info').on('click', import_channels_info.bind(this));
     } else if (this.dataset.model === 'hotel.virtual.room.restriction') {
-    	this.$buttons.append("<button class='oe_button oe_wubook_import_restriction_plans oe_highlight' type='button'>"+_t('Fetch from WuBook')+"</button>");
-    	this.$buttons.find('.oe_wubook_import_restriction_plans').on('click', import_restriction_plans.bind(this));
-			this.$buttons.append("<button class='oe_button oe_wubook_push_restriction_plans' style='background-color:red; color:white;' type='button'>"+_t('Push to WuBook')+"</button>");
-			this.$buttons.find('.oe_wubook_push_restriction_plans').on('click', push_restriction_plans.bind(this));
+    	this.$buttons.append("<button class='oe_button oe_channel_connector_import_restriction_plans oe_highlight' type='button'>"+_t('Fetch from Channel')+"</button>");
+    	this.$buttons.find('.oe_channel_connector_import_restriction_plans').on('click', import_restriction_plans.bind(this));
+			this.$buttons.append("<button class='oe_button oe_channel_connector_push_restriction_plans' style='background-color:red; color:white;' type='button'>"+_t('Push to Channel')+"</button>");
+			this.$buttons.find('.oe_channel_connector_push_restriction_plans').on('click', push_restriction_plans.bind(this));
 		} else if (this.dataset.model === 'hotel.virtual.room.availability') {
-    	this.$buttons.append("<button class='oe_button oe_wubook_import_availability oe_highlight' type='button'>"+_t('Fetch from WuBook')+"</button>");
-    	this.$buttons.find('.oe_wubook_import_availability').on('click', import_availability.bind(this));
-			this.$buttons.append("<button class='oe_button oe_wubook_push_availability' style='background-color:red; color:white;' type='button'>"+_t('Push to WuBook')+"</button>");
-    	this.$buttons.find('.oe_wubook_push_availability').on('click', push_availability.bind(this));
+    	this.$buttons.append("<button class='oe_button oe_channel_connector_import_availability oe_highlight' type='button'>"+_t('Fetch from Channel')+"</button>");
+    	this.$buttons.find('.oe_channel_connector_import_availability').on('click', import_availability.bind(this));
+			this.$buttons.append("<button class='oe_button oe_channel_connector_push_availability' style='background-color:red; color:white;' type='button'>"+_t('Push to Channel')+"</button>");
+    	this.$buttons.find('.oe_channel_connector_push_availability').on('click', push_availability.bind(this));
 		}
   }
 });

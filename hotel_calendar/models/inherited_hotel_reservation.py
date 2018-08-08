@@ -65,7 +65,7 @@ class HotelReservation(models.Model):
             pricelist_id = int(pricelist_id)
         json_rooms = []
         room_type_obj = self.env['hotel.room.type']
-        vroom_obj = self.env['hotel.virtual.room']
+        vroom_obj = self.env['hotel.room.type']
         for room in rooms:
             room_type = room_type_obj.search([
                 ('cat_id', '=', room.categ_id.id)
@@ -138,7 +138,7 @@ class HotelReservation(models.Model):
         date_diff = date_utils.date_diff(date_start, dto, hours=False) + 1
         # Get Prices
         json_rooms_prices = {pricelist_id: []}
-        vrooms = self.env['hotel.virtual.room'].search(
+        vrooms = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
         vroom_pr_cached_obj = self.env['virtual.room.pricelist.cached']
@@ -178,7 +178,7 @@ class HotelReservation(models.Model):
         date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
         # Get Prices
         json_rooms_rests = {}
-        vrooms = self.env['hotel.virtual.room'].search(
+        vrooms = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
         vroom_rest_obj = self.env['hotel.virtual.room.restriction.item']

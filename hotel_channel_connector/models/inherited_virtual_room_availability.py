@@ -1,24 +1,5 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
-#                       Alexandre Díaz <dev@redneboa.es>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright 2018 Alexandre Díaz <dev@redneboa.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
 from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError
@@ -42,42 +23,45 @@ class VirtualRoomAvailability(models.Model):
 
     @api.constrains('avail')
     def _check_avail(self):
-        vroom_obj = self.env['hotel.virtual.room']
-        cavail = len(vroom_obj.check_availability_virtual_room(
-            self.date,
-            self.date,
-            virtual_room_id=self.virtual_room_id.id))
-        max_avail = min(cavail,
-                        self.virtual_room_id.total_rooms_count)
-        if self.avail > max_avail:
-            self.env['wubook.issue'].sudo().create({
-                'section': 'avail',
-                'message': _("The new availability can't be greater than \
-                    the actual availability \
-                    \n[%s]\nInput: %d\Limit: %d") % (self.virtual_room_id.name,
-                                                    self.avail,
-                                                    max_avail),
-                'wid': self.virtual_room_id.wrid,
-                'date_start': self.date,
-                'date_end': self.date,
-            })
-            # Auto-Fix wubook availability
-            date_dt = date_utils.get_datetime(self.date)
-            self.env['wubook'].update_availability([{
-                'id': self.virtual_room_id.wrid,
-                'days': [{
-                    'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                    'avail': max_avail,
-                }],
-            }])
+        vroom_obj = self.env['hotel.room.type']
+        issue_obj = self.env['wubook.issue']
+        wubook_obj = self.env['wubook']
+        for record in self:
+            cavail = len(vroom_obj.check_availability_virtual_room(
+                record.date,
+                record.date,
+                virtual_room_id=record.virtual_room_id.id))
+            max_avail = min(cavail, record.virtual_room_id.total_rooms_count)
+            if record.avail > max_avail:
+                issue_obj.sudo().create({
+                    'section': 'avail',
+                    'message': _("The new availability can't be greater than \
+                        the actual availability \
+                        \n[%s]\nInput: %d\Limit: %d") % (record.virtual_room_id.name,
+                                                         record.avail,
+                                                         record),
+                    'wid': record.virtual_room_id.wrid,
+                    'date_start': record.date,
+                    'date_end': record.date,
+                })
+                # Auto-Fix wubook availability
+                date_dt = date_utils.get_datetime(record.date)
+                wubook_obj.update_availability([{
+                    'id': record.virtual_room_id.wrid,
+                    'days': [{
+                        'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+                        'avail': max_avail,
+                    }],
+                }])
         return super(VirtualRoomAvailability, self)._check_avail()
 
     @api.constrains('wmax_avail')
     def _check_wmax_avail(self):
-        if self.wmax_avail > self.virtual_room_id.total_rooms_count:
-            raise ValidationError(_("max avail for wubook can't be high \
-                than toal rooms \
-                count: %d") % self.virtual_room_id.total_rooms_count)
+        for record in self:
+            if record.wmax_avail > record.virtual_room_id.total_rooms_count:
+                raise ValidationError(_("max avail for wubook can't be high \
+                    than toal rooms \
+                    count: %d") % record.virtual_room_id.total_rooms_count)
 
     @api.onchange('virtual_room_id')
     def onchange_virtual_room_id(self):
@@ -97,7 +81,7 @@ class VirtualRoomAvailability(models.Model):
         # Not count end day of the reservation
         date_diff = date_utils.date_diff(checkin, checkout, hours=False)
 
-        vroom_obj = self.env['hotel.virtual.room']
+        vroom_obj = self.env['hotel.room.type']
         virtual_room_avail_obj = self.env['hotel.virtual.room.availability']
 
         vrooms = vroom_obj.search([

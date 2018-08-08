@@ -1,24 +1,5 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
-#                       Alexandre Díaz <dev@redneboa.es>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright 2018 Alexandre Díaz <dev@redneboa.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from openerp import models, fields, api
 from openerp.exceptions import ValidationError
 
@@ -31,20 +12,22 @@ class ProductPricelistItem(models.Model):
 
     @api.constrains('fixed_price')
     def _check_fixed_price(self):
-        vroom = self.env['hotel.virtual.room'].search([
-                ('product_id.product_tmpl_id', '=', self.product_tmpl_id.id)
+        vroom_obj = self.env['hotel.room.type']
+        for record in self:
+            vroom = vroom_obj.search([
+                ('product_id.product_tmpl_id', '=', record.product_tmpl_id.id)
             ], limit=1)
-        if vroom and vroom.wrid and self.compute_price == 'fixed' \
-                and self.fixed_price <= 0.0:
-            raise ValidationError(_("Price need be greater than zero"))
+            if vroom and vroom.wrid and record.compute_price == 'fixed' \
+                    and record.fixed_price <= 0.0:
+                raise ValidationError(_("Price need be greater than zero"))
 
     @api.model
     def create(self, vals):
         if self._context.get('wubook_action', True) and \
                 self.env['wubook'].is_valid_account():
             pricelist_id = self.env['product.pricelist'].browse(
-                                                    vals.get('pricelist_id'))
-            vroom = self.env['hotel.virtual.room'].search([
+                vals.get('pricelist_id'))
+            vroom = self.env['hotel.room.type'].search([
                 ('product_id.product_tmpl_id', '=',
                  vals.get('product_tmpl_id')),
                 ('wrid', '!=', False)
@@ -64,7 +47,7 @@ class ProductPricelistItem(models.Model):
                         record.pricelist_id
                 product_tmpl_id = vals.get('product_tmpl_id') or \
                     record.product_tmpl_id.id
-                vroom = self.env['hotel.virtual.room'].search([
+                vroom = self.env['hotel.room.type'].search([
                     ('product_id.product_tmpl_id', '=', product_tmpl_id),
                     ('wrid', '!=', False)
                 ])

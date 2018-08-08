@@ -4,7 +4,7 @@ from odoo import models, fields, api
 
 
 class HotelVirtualRoom(models.Model):
-    _inherit = 'hotel.virtual.room'
+    _inherit = 'hotel.room.type'
 
     hcal_sequence = fields.Integer('Calendar Sequence', default=0)
 

@@ -226,7 +226,7 @@ class FolioWizard(models.TransientModel):
         checkout_dt = date_utils.get_datetime(self.checkout, stz=tz)
         # Reservation end day count as free day. Not check it
         checkout_dt -= timedelta(days=1)
-        virtual_room_ids = self.env['hotel.virtual.room'].search([])
+        virtual_room_ids = self.env['hotel.room.type'].search([])
         virtual_rooms = []
 
         for virtual in virtual_room_ids:
@@ -313,7 +313,7 @@ class VirtualRoomWizars(models.TransientModel):
     def _get_default_checkout(self):
         return self.folio_wizard_id.checkout
 
-    virtual_room_id = fields.Many2one('hotel.virtual.room',
+    virtual_room_id = fields.Many2one('hotel.room.type',
                                       string="Virtual Rooms")
     rooms_num = fields.Integer('Number of Rooms')
     max_rooms = fields.Integer('Max', compute="_compute_max")
@@ -459,7 +459,7 @@ class ReservationWizard(models.TransientModel):
                               help='Number of children there in guest list.')
     checkin = fields.Datetime('Check In', required=True)
     checkout = fields.Datetime('Check Out', required=True)
-    virtual_room_id = fields.Many2one('hotel.virtual.room',
+    virtual_room_id = fields.Many2one('hotel.room.type',
                                       string='Virtual Room Type',
                                       required=True)
     nights = fields.Integer('Nights', readonly=True)
