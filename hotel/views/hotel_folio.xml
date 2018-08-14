@@ -84,10 +84,10 @@
                             id="payment_smart_button"
                             icon="fa-money"
                             name="action_pay"
-                            attrs="{'invisible': ['|',('invoices_amount','&lt;=',0)]}">
+                            attrs="{'invisible': ['|',('pending_amount','&lt;=',0)]}">
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
-                                    <field name="invoices_amount" nolabel="1"
+                                    <field name="pending_amount" nolabel="1"
                                     widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 </span>
                                 <span class="o_stat_text">Pending Payment</span>
@@ -221,8 +221,8 @@
                                     <!-- <field name="customer_lead" invisible="1"/> -->
                                     <!-- <field name="currency_id" invisible="1"/> -->
                                     <!-- <field name="price_unit" invisible="1"/> -->
-                                    <field name="amount_room" string="Reservation Price" readonly="1"/>
-                                    <field name="amount_discount" string="Final Price"/>
+                                    <!-- <field name="amount_room" string="Reservation Price" readonly="1"/>-->
+                                    <!-- <field name="amount_discount" string="Final Price"/> -->
                                     <button type="object" class="oe_stat_button"
                                         id="go_reservation" icon="fa fa-2x fa-bars"
                                         name="open_reservation_form"/>
@@ -277,6 +277,16 @@
                                         </header>
                                         <span class="label label-danger" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}">Cancelled Reservation!</span>
                                         <span class="label label-warning" attrs="{'invisible': [('overbooking', '=', False)]}">OverBooking!</span>
+                                        <h1>
+                                            <field name="room_id" select="1"
+                                              nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
+                                              style="margin-right: 30px;" required='1'/>
+                                            <field name="partner_id" default_focus="1"
+                                                placeholder="Lastname, Firstname"
+                                                attrs="{'readonly':[('folio_id','!=',False)]}"
+                                                required="1"/>
+                                             <span class="fa fa-user" style="margin-left:20px;"/>
+                                        </h1>
                                         <h3>
                                             <!-- <field name="room_id" select="1" domain="[('isroom','=',True)]"
                                                 nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
@@ -304,17 +314,17 @@
                                             <group class="oe_subtotal_footer" style="margin-right: 20px; !important" colspan="2" name="reservation_total" string="Amounts">
                                                 <!-- <field name="amount_room" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
                                                 <!-- <field name="discount" string="Room Discount" attrs="{'invisible': [('discount_type','=','fixed')]}" /> -->
-                                                <field name="discount_fixed" string="Room Discount" attrs="{'invisible': [('discount_type','=','percent')]}" />
+                                                <!-- <field name="discount_fixed" string="Room Discount" attrs="{'invisible': [('discount_type','=','percent')]}" />
                                                 <field name="discount_type" widget="radio" options="{'horizontal': true}" nolabel="1" colspan="2"/>
                                                 <div class="oe_subtotal_footer_separator oe_inline o_td_label">
                                                     <label for="amount_discount" />
                                                     <button name="%(action_hotel_massive_price_change_reservation_days)d" string="Massive Day Prices"
                                                         type="action" class="oe_edit_only oe_link" icon="fa-bolt"/>
-                                                </div>
+                                                </div>-->
                                                 <!-- <field name="amount_discount" nolabel="1" widget='monetary'  class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/> -->
-                                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                                <!--<div class="oe_subtotal_footer_separator oe_inline o_td_label">
                                                     <label for="amount_reservation_services" />
-                                                </div>
+                                                </div>-->
                                                 <!-- <field name="amount_reservation_services" nolabel="1" widget='monetary'  class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/> -->
                                                 <field name="price_total" invisible="1"/>
                                                 <!-- <field name="qty_delivered_updateable" invisible="1"/> -->
@@ -509,7 +519,7 @@
                 <field name="partner_id"/>
                 <field name="room_lines"/>
                 <field name="service_line_ids"/>
-                <field name="invoices_amount"/>
+                <field name="pending_amount"/>
                 <field name="refund_amount"/>
                 <field name="invoices_paid"/>
                 <field name="booking_pending"/>

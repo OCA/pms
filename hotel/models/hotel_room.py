@@ -11,18 +11,12 @@ class HotelRoom(models.Model):
      """
     _name = 'hotel.room'
     _description = 'Hotel Room'
-    # The record's name
-    name = fields.Char('Room Name', required=True)
-    # Used for activate records
-    active = fields.Boolean('Active', default=True)
-    # Used for ordering
-    sequence = fields.Integer('Sequence', default=0)
-
     _order = "sequence, room_type_id, name"
-
-    # each room has only one type (Many2one)
+    
+    name = fields.Char('Room Name', required=True)
+    active = fields.Boolean('Active', default=True)
+    sequence = fields.Integer('Sequence', default=0)
     room_type_id = fields.Many2one('hotel.room.type', 'Hotel Room Type')
-
     floor_id = fields.Many2one('hotel.floor', 'Ubication',
                                help='At which floor the room is located.')
     # TODO Q. Should the amenities be on the Room Type ? -
@@ -30,16 +24,12 @@ class HotelRoom(models.Model):
                                       'room_amenities', 'rcateg_id',
                                       string='Room Amenities',
                                       help='List of room amenities.')
-    # max number of adults and children per room
     max_adult = fields.Integer('Max Adult')
     max_child = fields.Integer('Max Child')
-    # maximum capacity of the room
     capacity = fields.Integer('Capacity')
     # FIXME not used
     to_be_cleaned = fields.Boolean('To be Cleaned', default=False)
-
     shared_room = fields.Boolean('Shared Room', default=False)
-
     description_sale = fields.Text(
         'Sale Description', translate=True,
         help="A description of the Product that you want to communicate to "
