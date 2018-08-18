@@ -7,13 +7,13 @@ class BaseHotelChannelConnectorComponent(AbstractComponent):
     _collection = 'hotel.channel.backend'
 
     @api.model
-    def create_issue(self, section, message, wmessage, wid=False,
+    def create_issue(self, section, message, channel_message, channel_object_id=False,
                      dfrom=False, dto=False):
         self.env['hotel.channel.connector.issue'].sudo().create({
             'section': section,
             'message': message,
-            'wid': wid,
-            'wmessage': wmessage,
-            'date_start': dfrom and dfrom.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            'date_end': dto and dto.strftime(DEFAULT_SERVER_DATE_FORMAT),
+            'channel_object_id': channel_object_id,
+            'channel_message': channel_message,
+            'date_start': dfrom,
+            'date_end': dto,
         })

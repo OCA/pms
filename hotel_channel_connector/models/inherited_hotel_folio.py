@@ -8,35 +8,37 @@ class HotelFolio(models.Model):
 
     @api.depends('room_lines')
     def _has_channel_reservations(self):
-        if any(self.room_lines):
-            for room in self.room_lines:
-                if room.channel_room_id and room.channel_room_id != '':
-                    self.has_channel_reservations = True
-                    return
-        self.has_channel_reservations = False
+        for record in self:
+            channel_reservations = record.room_lines.filtered(lambda x: x.channel_room_id)
+            record.has_channel_reservations = any(channel_reservations)
 
-    seed = fields.Char("WuBook Session Seed", old_name='wseed', readonly=True)
-    customer_notes = fields.Text("WuBook Customer Notes",
-                                 old_name='wcustomer_notes', readonly=True)
-    has_channel_reservations = fields.Boolean(old_name='whas_wubook_reservations',
-                                              compute=_has_channel_reservations,
-                                              store=False)
+    wseed = fields.Char("Wubook Session Seed", readonly=True)
+    customer_notes = fields.Text("Channel Customer Notes",
+                                 readonly=True, old_name='wcustomer_notes')
+    has_channel_reservations = fields.Boolean(compute=_has_channel_reservations,
+                                              store=False,
+                                              old_name='whas_wubook_reservations')
 
+    @job(default_channel='root.channel')
     @api.multi
     def import_reservations(self):
-        return self.env['hotel.channel.connector'].fetch_new_bookings()
+        self.ensure_one()
+        with self.backend_id.work_on(self._name) as work:
+            importer = work.component(usage='channel.importer')
+            importer.fetch_new_bookings()
 
     @api.multi
     def action_confirm(self):
         for rec in self:
-            for room in rec.room_lines:
-                room.to_read = False
-                room.to_assign = False
-        return super(HotelFolio, self).action_confirm()
+            rec.room_lines.write({
+                'to_read': False,
+                'to_assign': False,
+            })
+        return super().action_confirm()
 
     @api.multi
     def get_grouped_reservations_json(self, state, import_all=False):
-        super(HotelFolio, self).get_grouped_reservations_json(state, import_all=import_all)
+        super().get_grouped_reservations_json(state, import_all=import_all)
         self.ensure_one()
         info_grouped = []
         for rline in self.room_lines:
@@ -68,12 +70,14 @@ class HotelFolio(models.Model):
 
     @api.depends('room_lines')
     def _compute_has_cancelled_reservations_to_send(self):
-        super(HotelFolio, self)._compute_has_cancelled_reservations_to_send()
-        has_to_send = False
-        for rline in self.room_lines:
-            if rline.splitted:
+        super()._compute_has_cancelled_reservations_to_send()
+        hotel_reserv_obj = self.env['hotel.reservation']
+        for record in self:
+            splitted_reservation_ids = record.room_lines.filtered(lambda x: x.splitted)
+            has_to_send = False
+            for rline in splitted_reservation_ids:
                 master_reservation = rline.parent_reservation or rline
-                has_to_send = self.env['hotel.reservation'].search_count([
+                has_to_send = hotel_reserv_obj.search_count([
                     ('splitted', '=', True),
                     ('folio_id', '=', self.id),
                     ('to_send', '=', True),
@@ -83,7 +87,6 @@ class HotelFolio(models.Model):
                     ('parent_reservation', '=', master_reservation.id),
                     ('id', '=', master_reservation.id),
                 ]) > 0
-            elif rline.to_send and rline.state == 'cancelled' and not rline.wmodified:
-                has_to_send = True
-                break
-        self.has_cancelled_reservations_to_send = has_to_send
+                if has_to_send:
+                    break
+            record.has_cancelled_reservations_to_send = has_to_send

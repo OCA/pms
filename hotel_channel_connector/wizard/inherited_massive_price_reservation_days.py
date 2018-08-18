@@ -34,7 +34,7 @@ class MassivePriceChangeWizard(models.TransientModel):
         if not reservation_id:
             return False
 
-        if reservation_id.wis_from_channel:
+        if reservation_id.is_from_ota:
             raise ValidationError(
                 _("Can't change prices of reservations from OTA's"))
 

@@ -12,19 +12,21 @@ class VirtualRoomAvailability(models.Model):
     _inherit = 'hotel.virtual.room.availability'
 
     @api.model
-    def _default_wmax_avail(self):
+    def _default_channel_max_avail(self):
         if self.virtual_room_id:
             return self.virtual_room_id.max_real_rooms
         return -1
 
-    wmax_avail = fields.Integer("Max. Wubook Avail",
-                                default=_default_wmax_avail)
-    wpushed = fields.Boolean("WuBook Pushed", readonly=True, default=False)
+    channel_max_avail = fields.Integer("Max. Channel Avail",
+                                       default=_default_channel_max_avail,
+                                       old_name='wmax_avail')
+    channel_pushed = fields.Boolean("Channel Pushed", readonly=True, default=False,
+                                    old_name='wpushed')
 
     @api.constrains('avail')
     def _check_avail(self):
-        vroom_obj = self.env['hotel.room.type']
-        issue_obj = self.env['wubook.issue']
+        vroom_obj = self.env['hotel.virtual.room']
+        issue_obj = self.env['hotel.channel.connector.issue']
         wubook_obj = self.env['wubook']
         for record in self:
             cavail = len(vroom_obj.check_availability_virtual_room(
@@ -35,7 +37,7 @@ class VirtualRoomAvailability(models.Model):
             if record.avail > max_avail:
                 issue_obj.sudo().create({
                     'section': 'avail',
-                    'message': _("The new availability can't be greater than \
+                    'message': _(r"The new availability can't be greater than \
                         the actual availability \
                         \n[%s]\nInput: %d\Limit: %d") % (record.virtual_room_id.name,
                                                          record.avail,

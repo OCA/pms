@@ -31,7 +31,7 @@ from .common import TestHotelWubook
 
 class TestHotelReservation(TestHotelWubook):
 
-    def test_is_from_channel(self):
+    def test_is_from_ota(self):
         now_utc_dt = date_utils.now()
         checkin_utc_dt = now_utc_dt + timedelta(days=3)
         checkin_dt = date_utils.dt_as_timezone(checkin_utc_dt,
@@ -64,9 +64,9 @@ class TestHotelReservation(TestHotelWubook):
             ('wrid', 'in', processed_rids)
         ])
         self.assertTrue(nreserv, "Reservation not found")
-        self.assertTrue(nreserv.wis_from_channel)
+        self.assertTrue(nreserv.is_from_ota)
         nreserv.wrid = ''
-        self.assertFalse(nreserv.wis_from_channel)
+        self.assertFalse(nreserv.is_from_ota)
 
     def test_write(self):
         now_utc_dt = date_utils.now()

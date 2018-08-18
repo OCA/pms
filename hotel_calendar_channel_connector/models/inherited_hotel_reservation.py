@@ -89,7 +89,7 @@ class HotelReservation(models.Model):
                 'partner_phone': record.partner_id.mobile
                 or record.partner_id.phone or _('Undefined'),
                 'state': record.state,
-                'fix_days': record.splitted or record.wis_from_channel,
+                'fix_days': record.splitted or record.is_from_ota,
                 'overbooking': record.overbooking,
                 'price': record.folio_id.amount_total,
                 'wrid': record.wrid,

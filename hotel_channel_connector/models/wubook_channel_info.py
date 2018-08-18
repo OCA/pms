@@ -3,13 +3,17 @@
 from openerp import models, fields, api
 
 
-class WuBookChannelInfo(models.Model):
-    _name = 'wubook.channel.info'
+class HotelChannelConnectorOTAInfo(models.Model):
+    _name = 'hote.channel.connector.ota.info'
 
-    wid = fields.Char("WuBook Channel ID", required=True)
-    name = fields.Char("Channel Name", required=True)
+    ota_id = fields.Char("Channel OTA ID", required=True)
+    name = fields.Char("OTA Name", required=True)
     ical = fields.Boolean("ical", default=False)
 
+    @job(default_channel='root.channel')
     @api.multi
     def import_channels_info(self):
-        return self.env['wubook'].import_channels_info()
+        self.ensure_one()
+        with self.backend_id.work_on(self._name) as work:
+            importer = work.component(usage='channel.importer')
+            return importer.import_channels_info()

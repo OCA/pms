@@ -58,8 +58,8 @@ class TestHotelFolio(TestHotelWubook):
             ('wrid', '=', processed_rids[0])
         ], order='id ASC', limit=1)
         self.assertTrue(nreserv, "Can't found reservation")
-        self.assertTrue(nreserv.folio_id.whas_wubook_reservations,
-                        "Can't found reservations from wubook")
+        self.assertTrue(nreserv.folio_id.has_channel_reservations,
+                        "Can't found reservations from channel")
 
     def test_import_reservations(self):
         now_utc_dt = date_utils.now()

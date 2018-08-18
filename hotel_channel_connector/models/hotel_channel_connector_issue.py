@@ -20,8 +20,7 @@ class HotelChannelConnectorIssue(models.Model):
     date_start = fields.Date("From", readonly=True)
     date_end = fields.Date("To", readonly=True)
     channel_object_id = fields.Char("Channel Object ID", old_name='wid', readonly=True)
-    channel_connector_message = fields.Char("Channel Connector Message",
-                                            old_name='wmessage', readonly=True)
+    channel_message = fields.Char("Channel Message", old_name='wmessage', readonly=True)
 
     @api.multi
     def mark_readed(self):

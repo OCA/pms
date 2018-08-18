@@ -30,18 +30,15 @@ class ResPartner(models.Model):
                         if folio_ids:
                             folio_ids.write({
                                 'partner_id': org_partner_id.id,
+                            })
+                        folio_ids = self.env['hotel.folio'].search([
+                            ('partner_invoice_id', '=', record.id)
+                        ])
+                        if folio_ids:
+                            folio_ids.write({
                                 'partner_invoice_id': org_partner_id.id,
                             })
-                        # DANGER: self-delete... perhaps best invisible?
-                        # record.unlink()  This cause mistakes
                         record.write({'active': False})
-                # return {
-                #     'type': 'ir.actions.act_window',
-                #     'res_model': 'res.partner',
-                #     'views': [[False, "form"]],
-                #     'target': 'current',
-                #     'res_id': org_partner_id.id,
-                # }
             else:
                 # If not found, this is the 'confirmed'
                 vals.update({'unconfirmed': False})

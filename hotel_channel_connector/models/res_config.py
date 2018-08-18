@@ -26,33 +26,33 @@ class WubookConfiguration(models.TransientModel):
     @api.multi
     def set_wubook_user(self):
         return self.env['ir.default'].sudo().set(
-                    'wubook.config.settings', 'wubook_user', self.wubook_user)
+            'wubook.config.settings', 'wubook_user', self.wubook_user)
 
     @api.multi
     def set_wubook_passwd(self):
         return self.env['ir.default'].sudo().set(
-                'wubook.config.settings', 'wubook_passwd', self.wubook_passwd)
+            'wubook.config.settings', 'wubook_passwd', self.wubook_passwd)
 
     @api.multi
     def set_wubook_lcode(self):
         return self.env['ir.default'].sudo().set(
-                'wubook.config.settings', 'wubook_lcode', self.wubook_lcode)
+            'wubook.config.settings', 'wubook_lcode', self.wubook_lcode)
 
     @api.multi
     def set_wubook_server(self):
         return self.env['ir.default'].sudo().set(
-                'wubook.config.settings', 'wubook_server', self.wubook_server)
+            'wubook.config.settings', 'wubook_server', self.wubook_server)
 
     @api.multi
     def set_wubook_pkey(self):
         return self.env['ir.default'].sudo().set(
-                'wubook.config.settings', 'wubook_pkey', self.wubook_pkey)
+            'wubook.config.settings', 'wubook_pkey', self.wubook_pkey)
 
     @api.multi
     def set_wubook_push_security_token(self):
         return self.env['ir.default'].sudo().set(
-                'wubook.config.settings',
-                'wubook_push_security_token', self.wubook_push_security_token)
+            'wubook.config.settings',
+            'wubook_push_security_token', self.wubook_push_security_token)
 
     # Dangerus method: Usefull for cloned instances with new wubook account
     @api.multi
@@ -77,21 +77,21 @@ class WubookConfiguration(models.TransientModel):
             vrooms = self.env['hotel.room.type'].search([])
             for vroom in vrooms:
                 shortcode = ir_seq_obj.next_by_code('hotel.room.type')[:4]
-                wrid = wubook_obj.create_room(
+                channel_room_id = wubook_obj.create_room(
                     shortcode,
                     vroom.name,
                     vroom.wcapacity,
                     vroom.list_price,
                     vroom.max_real_rooms
                 )
-                if wrid:
+                if channel_room_id:
                     vroom.with_context(wubook_action=False).write({
-                        'wrid': wrid,
+                        'channel_room_id': channel_room_id,
                         'wscode': shortcode,
                     })
                 else:
                     vroom.with_context(wubook_action=False).write({
-                        'wrid': '',
+                        'channel_room_id': '',
                         'wscode': '',
                     })
             # Create Restrictions
@@ -99,16 +99,16 @@ class WubookConfiguration(models.TransientModel):
             restriction_ids = vroom_rest_obj.search([])
             for restriction in restriction_ids:
                 if restriction.wpid != '0':
-                    wpid = wubook_obj.create_rplan(restriction.name)
+                    channel_plan_id = wubook_obj.create_rplan(restriction.name)
                     restriction.write({
-                        'wpid': wpid or ''
+                        'channel_plan_id': channel_plan_id or ''
                     })
             # Create Pricelist
             pricelist_ids = self.env['product.pricelist'].search([])
             for pricelist in pricelist_ids:
-                wpid = wubook_obj.create_plan(pricelist.name, pricelist.wdaily)
+                channel_plan_id = wubook_obj.create_plan(pricelist.name, pricelist.wdaily)
                 pricelist.write({
-                    'wpid': wpid or ''
+                    'channel_plan_id': channel_plan_id or ''
                 })
             wubook_obj.close_connection()
 
@@ -120,14 +120,14 @@ class WubookConfiguration(models.TransientModel):
 
         # Reset Reservations
         reservation_ids = self.env['hotel.reservation'].search([
-            ('wrid', '!=', ''),
-            ('wrid', '!=', False)
+            ('channel_reservation_id', '!=', ''),
+            ('channel_reservation_id', '!=', False)
         ])
         reservation_ids.with_context(wubook_action=False).write({
-            'wrid': '',
-            'wchannel_id': False,
-            'wchannel_reservation_code': '',
-            'wis_from_channel': False,
+            'channel_reservation_id': '',
+            'ota_id': False,
+            'ota_reservation_id': '',
+            'is_from_ota': False,
             'wstatus': 0
         })
 
