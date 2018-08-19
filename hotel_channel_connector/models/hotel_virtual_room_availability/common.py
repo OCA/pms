@@ -1,6 +1,9 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import api, models, fields
+from odoo.addons.queue_job.job import job, related_action
+
 class ChannelHotelVirtualRoomAvailability(models.Model):
     _name = 'channel.hotel.virtual.room.availability'
     _inherit = 'channel.binding'
@@ -23,94 +26,120 @@ class ChannelHotelVirtualRoomAvailability(models.Model):
     channel_pushed = fields.Boolean("Channel Pushed", readonly=True, default=False,
                                     old_name='wpushed')
 
-    @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
-    @api.multi
-    def create_plan(self):
-        self.ensure_one()
-        if self._context.get('channel_action', True):
-            with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    channel_plan_id = adapter.create_plan(self.name,
-                                                          self.is_daily_plan and 1 or 0)
-                    if channel_plan_id:
-                        self.channel_plan_id = channel_plan_id
-                except ValidationError as e:
-                    self.create_issue('room', "Can't create plan on channel", "sss")
+    @api.constrains('channel_max_avail')
+    def _check_wmax_avail(self):
+        for record in self:
+            if record.channel_max_avail > record.virtual_room_id.total_rooms_count:
+                raise ValidationError(_("max avail for channel can't be high \
+                    than toal rooms \
+                    count: %d") % record.virtual_room_id.total_rooms_count)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
-    def update_plan_name(self):
+    def update_availability(self):
         self.ensure_one()
         if self._context.get('channel_action', True):
             with self.backend_id.work_on(self._name) as work:
                 adapter = work.component(usage='backend.adapter')
-                try:
-                    adapter.update_plan_name(
-                        self.channel_plan_id,
-                        self.name)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't update plan name on channel", "sss")
+                date_dt = date_utils.get_datetime(self.date)
+                adapter.update_availability([{
+                    'id': self.virtual_room_id.channel_room_id,
+                    'days': [{
+                        'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+                        'avail': self.avail,
+                    }],
+                }])
 
-    @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
-    @api.multi
-    def delete_plan(self):
-        self.ensure_one()
-        if self._context.get('channel_action', True) and self.channel_room_id:
-            with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    adapter.delete_plan(self.channel_plan_id)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't delete plan on channel", "sss")
-
-    @job(default_channel='root.channel')
-    @api.multi
-    def import_price_plans(self):
-        if self._context.get('channel_action', True):
-            with self.backend_id.work_on(self._name) as work:
-                importer = work.component(usage='channel.importer')
-                return importer.import_pricing_plans()
-
-class ProductPricelist(models.Model):
-    _inherit = 'product.pricelist'
+class HotelVirtualRoomAvailability(models.Model):
+    _inherit = 'hotel.virtual.room.availability'
 
     channel_bind_ids = fields.One2many(
-        comodel_name='channel.product.pricelist',
+        comodel_name='channel.hotel.virtual.room.availability',
         inverse_name='odoo_id',
-        string='Hotel Channel Connector Bindings')
+        string='Hotel Virtual Room Availability Connector Bindings')
+
+    @api.constrains('avail')
+    def _check_avail(self):
+        vroom_obj = self.env['hotel.virtual.room']
+        issue_obj = self.env['hotel.channel.connector.issue']
+        for record in self:
+            cavail = len(vroom_obj.check_availability_virtual_room(
+                record.date,
+                record.date,
+                virtual_room_id=record.virtual_room_id.id))
+            max_avail = min(cavail, record.virtual_room_id.total_rooms_count)
+            if record.avail > max_avail:
+                issue_obj.sudo().create({
+                    'section': 'avail',
+                    'message': _(r"The new availability can't be greater than \
+                        the actual availability \
+                        \n[%s]\nInput: %d\Limit: %d") % (record.virtual_room_id.name,
+                                                         record.avail,
+                                                         record),
+                    'wid': record.virtual_room_id.wrid,
+                    'date_start': record.date,
+                    'date_end': record.date,
+                })
+                # Auto-Fix wubook availability
+                self._event('on_fix_channel_availability').notify(record)
+        return super(HotelVirtualRoomAvailability, self)._check_avail()
+
+    @api.onchange('virtual_room_id')
+    def onchange_virtual_room_id(self):
+        if self.virtual_room_id:
+            self.channel_max_avail = self.virtual_room_id.max_real_rooms
 
     @api.multi
-    @api.depends('name')
-    def name_get(self):
-        pricelist_obj = self.env['product.pricelist']
-        org_names = super(ProductPricelist, self).name_get()
-        names = []
-        for name in org_names:
-            priclist_id = pricelist_obj.browse(name[0])
-            if priclist_id.wpid:
-                names.append((name[0], '%s (WuBook)' % name[1]))
-            else:
-                names.append((name[0], name[1]))
-        return names
+    def write(self, vals):
+        if self._context.get('channel_action', True):
+            vals.update({'channel_pushed': False})
+        return super(HotelVirtualRoomAvailability, self).write(vals)
 
-class ChannelBindingProductPricelistListener(Component):
-    _name = 'channel.binding.product.pricelist.listener'
+    @api.model
+    def refresh_availability(self, checkin, checkout, product_id):
+        date_start = date_utils.get_datetime(checkin)
+        # Not count end day of the reservation
+        date_diff = date_utils.date_diff(checkin, checkout, hours=False)
+
+        vroom_obj = self.env['hotel.virtual.room']
+        virtual_room_avail_obj = self.env['hotel.virtual.room.availability']
+
+        vrooms = vroom_obj.search([
+            ('room_ids.product_id', '=', product_id)
+        ])
+        for vroom in vrooms:
+            if vroom.channel_room_id:
+                for i in range(0, date_diff):
+                    ndate_dt = date_start + timedelta(days=i)
+                    ndate_str = ndate_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+                    avail = len(vroom_obj.check_availability_virtual_room(
+                        ndate_str,
+                        ndate_str,
+                        virtual_room_id=vroom.id))
+                    max_avail = vroom.max_real_rooms
+                    vroom_avail_id = virtual_room_avail_obj.search([
+                        ('virtual_room_id', '=', vroom.id),
+                        ('date', '=', ndate_str)], limit=1)
+                    if vroom_avail_id and vroom_avail_id.channel_max_avail >= 0:
+                        max_avail = vroom_avail_id.channel_max_avail
+                    avail = max(
+                            min(avail, vroom.total_rooms_count, max_avail), 0)
+
+                    if vroom_avail_id:
+                        vroom_avail_id.write({'avail': avail})
+                    else:
+                        virtual_room_avail_obj.create({
+                            'virtual_room_id': vroom.id,
+                            'date': ndate_str,
+                            'avail': avail,
+                        })
+
+class ChannelBindingHotelVirtualRoomAvailabilityListener(Component):
+    _name = 'channel.binding.hotel.virtual.room.availability.listener'
     _inherit = 'base.connector.listener'
-    _apply_on = ['channel.product.pricelist']
+    _apply_on = ['channel.hotel.virtual.room.availability']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_write(self, record, fields=None):
-        record.with_delay(priority=20).create_plan()
-
-    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_unlink(self, record, fields=None):
-        record.with_delay(priority=20).delete_plan()
-
-    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_write(self, record, fields=None):
-        if 'name' in fields:
-            record.with_delay(priority=20).update_plan_name()
+    def on_fix_channel_availability(self, record, fields=None):
+        record.with_delay(priority=20).update_availability()

@@ -11,6 +11,7 @@
     'description': "Hotel Channel Connector Base",
     'depends': [
         'hotel',
+        'connector',
     ],
     'external_dependencies': {
         'python': ['xmlrpc']

@@ -1,6 +1,9 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import api, models, fields
+from odoo.addons.queue_job.job import job, related_action
+
 class ChannelProductPricelist(models.Model):
     _name = 'channel.product.pricelist'
     _inherit = 'channel.binding'
