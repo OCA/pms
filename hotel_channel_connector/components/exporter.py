@@ -7,6 +7,7 @@ from odoo.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT)
 from .backend_adapter import DEFAULT_WUBOOK_DATE_FORMAT
 from odoo.addons.hotel import date_utils
+from odoo import api
 _logger = logging.getLogger(__name__)
 
 class HotelChannelConnectorExporter(AbstractComponent):

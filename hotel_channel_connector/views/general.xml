@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	
+
 	<!-- Backend stuff -->
 	<template id="assets_backend" inherit_id="web.assets_backend">
 		<xpath expr="." position="inside">
-			<script type="text/javascript" src="/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js"></script>
+			<script type="text/javascript" src="/hotel_channel_connector/static/src/js/wubook_listview_import_buttons.js"></script>
 		</xpath>
 	</template>
-	
+
 </odoo>

@@ -18,7 +18,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkout']" position="after">
                 <field name="origin_sale"/>
-                <field name="wis_from_channel" invisible="1"/>
+                <field name="is_from_ota" invisible="1"/>
             </xpath>
             <xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkout']" position="attributes">
                 <attribute name="attrs">{'readonly': [('wis_from_channel', '!=', False)]}</attribute>
@@ -28,7 +28,7 @@
             </xpath>
             <xpath expr="//notebook/page/field[@name='room_lines']/form/sheet/header/field[@name='folio_id']" position="after">
                 <field name="origin_sale" invisible="1"/>
-                <field name="wis_from_channel" invisible="1"/>
+                <field name="is_from_ota" invisible="1"/>
             </xpath>
             <xpath expr="//notebook/page/field[@name='room_lines']/form/sheet/h3/field[@name='checkout']" position="attributes">
                 <attribute name="attrs">{'readonly': [('wis_from_channel', '!=', False)]}</attribute>

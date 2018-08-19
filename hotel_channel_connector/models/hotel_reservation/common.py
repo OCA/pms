@@ -26,7 +26,7 @@ class ChannelHotelReservation(models.Model):
                              old_name='wchannel_id')
     ota_reservation_id = fields.Char("Channel OTA Reservation Code",
                                      readonly=True,
-                                     old_name='channel_reservation_code')
+                                     old_name='wchannel_reservation_code')
     is_from_ota = fields.Boolean('Is From OTA',
                                  compute=_is_from_ota, store=False,
                                  readonly=True,

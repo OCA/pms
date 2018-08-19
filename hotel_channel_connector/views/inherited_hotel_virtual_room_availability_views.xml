@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="hotel.virtual_room_availability_view_form" />
         <field name="arch" type="xml">
         	<xpath expr="//field[@name='avail']" position="after">
-        		<field name="wmax_avail" />
+        		<field name="channel_max_avail" />
         	</xpath>
         </field>
     </record>
@@ -19,7 +19,7 @@
       <field name="type">tree</field>
       <field name="arch" type="xml">
         <xpath expr="//field[@name='avail']" position="after">
-            <field name="wmax_avail" />
+            <field name="channel_max_avail" />
         </xpath>
       </field>
     </record>

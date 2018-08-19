@@ -6,11 +6,11 @@
         <field name="inherit_id" ref="hotel.virtual_room_view_form" />
         <field name="arch" type="xml">
         	<xpath expr="//field[@name='name']" position="after">
-        		<field name="wscode" maxlength="4" readonly="True" />
-        		<field name="wrid" readonly="True"  />
-        		<field name="wcapacity" />
+        		<field name="channel_short_code" maxlength="4" readonly="True" />
+        		<field name="channel_reservation_id" readonly="True"  />
+        		<field name="ota_capacity" />
         	</xpath>
         </field>
     </record>
-    
+
 </odoo>

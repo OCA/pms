@@ -1,12 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Hotel Channel Connector Settings -->
+    <record id="view_hotel_config_settings" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.hotel.channel.connector</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="80"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Hotel" string="Hotel" data-key="hotel" groups="hotel.group_hotel_manager">
+                    <h2>Hotel Parity</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <label for="parity_pricelist_id"/>
+                            <div class="text-muted">
+                                Set pricelist parity
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="parity_pricelist_id" required="True" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <label for="parity_restrictions_id"/>
+                            <div class="text-muted">
+                                Set restrictions parity
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="parity_restrictions_id" required="True" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Hotel Default Hours</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-xs-12 col-md-12 o_setting_box">
+                            <label for="tz_hotel"/>
+                            <div class="text-muted">
+                                Set time-zone
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="tz_hotel"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <label for="default_arrival_hour"/>
+                            <div class="text-muted">
+                                Set default arrival hour
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="default_arrival_hour" required="True" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <label for="default_departure_hour"/>
+                            <div class="text-muted">
+                                Set default departure hour
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <field name="default_departure_hour" required="True" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
     <!-- WuBook config wizard -->
     <record id="view_wubook_config_settings" model="ir.ui.view">
-        <field name="name">WuBook Settings</field>
-        <field name="model">wubook.config.settings</field>
+        <field name="name">Channel Settings</field>
+        <field name="model">res.config.settings</field>
         <field name="arch" type="xml">
-            <form string="Configure WuBook" class="oe_form_configuration">
+            <form string="Configure Channel" class="oe_form_configuration">
                 <header>
                     <button string="Apply" type="object" name="execute" class="oe_highlight"/>
                     <button string="Cancel" type="object" name="cancel" class="oe_link"/>

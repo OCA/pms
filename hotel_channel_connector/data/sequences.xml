@@ -3,9 +3,9 @@
 
 	<record model="ir.sequence" id="seq_vroom_id">
 	    <field name="name">Virtual Room Short Code</field>
-	    <field name="code">hotel.room.type</field>
+	    <field name="code">hotel.virtual.room</field>
 	    <field name="prefix"></field>
 	    <field name="padding">4</field>
 	</record>
-	
+
 </odoo>

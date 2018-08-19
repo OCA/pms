@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <odoo>
-    
+
     <record id="product_pricelist_item_form_view" model="ir.ui.view">
 		<field name="model">product.pricelist.item</field>
 		<field name="inherit_id" ref="product.product_pricelist_item_form_view" />
-		<field name="arch" type="xml">        	
+		<field name="arch" type="xml">
 			<xpath expr="//field[@name='name']" position="after">
-				<field name="wpushed" readonly="True" />
-				<field name="wdaily" invisible="1" />
+				<field name="channel_pushed" readonly="True" />
+				<field name="is_daily_plan" invisible="1" />
 			</xpath>
 			<xpath expr="//field[@name='date_end']" position="attributes">
-				<attribute name="attrs">{'readonly': [('wdaily', '=', True)]}</attribute>
+				<attribute name="attrs">{'readonly': [('is_daily_plan', '=', True)]}</attribute>
 			</xpath>
 		</field>
 	</record>

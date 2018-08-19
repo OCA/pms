@@ -1,5 +1,5 @@
 <odoo noupdate="1">
-  <record model="ir.cron" id="wubook_push_avail">
+  <!--record model="ir.cron" id="wubook_push_avail">
       <field name="name">WuBook Push Availability</field>
       <field name="interval_number">5</field>
       <field name="interval_type">minutes</field>
@@ -7,7 +7,7 @@
       <field name="doall" eval="False" />
       <field name="model_id" ref="model_wubook" />
       <field name="code">model.push_changes()</field>
-  </record>
+  </record-->
 
   <!--          <record id="wubook_corporate_fetch" model="ir.cron">
     <field name="name">WuBook Corporate Fetchable Properties</field>
