@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="virtual_room_view_form" model="ir.ui.view">
+        <field name="model">hotel.room.type</field>
+        <field name="inherit_id" ref="hotel.view_hotel_room_type_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="hcal_sequence" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

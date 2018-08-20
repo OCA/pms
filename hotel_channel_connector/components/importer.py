@@ -16,7 +16,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
     _usage = 'channel.importer'
 
     @api.model
-    def _get_room_values_availability(self, vroom_id, date_str, day_vals, set_wmax_avail):
+    def _get_room_values_availability(self, vroom_id, date_str, day_vals, set_max_avail):
         virtual_room_avail_obj = self.env['hotel.virtual.room.availability']
         vroom_avail = virtual_room_avail_obj.search([
             ('virtual_room_id', '=', vroom_id),
@@ -89,7 +89,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
             }).create(vals)
 
     @api.model
-    def _generate_room_values(self, dfrom, dto, values, set_wmax_avail=False):
+    def _generate_room_values(self, dfrom, dto, values, set_max_avail=False):
         virtual_room_restr_obj = self.env['hotel.virtual.room.restriction']
         hotel_virtual_room_obj = self.env['hotel.room.type']
         def_restr_plan = virtual_room_restr_obj.search([('wpid', '=', '0')])
@@ -109,7 +109,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                         vroom.id,
                         date_str,
                         day_vals,
-                        set_wmax_avail)
+                        set_max_avail)
                     if def_restr_plan:
                         self._get_room_values_restrictions(
                             def_restr_plan.id,
@@ -696,7 +696,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def fetch_rooms_values(self, dfrom, dto, rooms=False,
-                           set_wmax_avail=False):
+                           set_max_avail=False):
         # Sanitize Dates
         now_dt = date_utils.now()
         dfrom_dt = date_utils.get_datetime(dfrom)
@@ -715,8 +715,8 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 dfrom_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
                 dto_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
                 rooms)
-            self.generate_room_values(dfrom, dto, results,
-                                      set_wmax_avail=set_wmax_avail)
+            self._generate_room_values(dfrom, dto, results,
+                                      set_max_avail=set_max_avail)
         except ValidationError:
             self.create_issue('room', _("Can't fetch rooms values from WuBook"),
                               results, dfrom=dfrom, dto=dto)

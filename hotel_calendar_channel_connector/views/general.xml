@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-	<!-- Backend stuff -->
-	<template id="assets_backend" inherit_id="web.assets_backend">
-		<xpath expr="." position="inside">
-			<link rel="stylesheet" href="/hotel_calendar_wubook/static/src/css/view.css" />
-			<script type="text/javascript" src="/hotel_calendar_wubook/static/src/js/hotel_calendar_view.js"></script>
-		</xpath>
-	</template>
+    <!-- Backend stuff -->
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/hotel_calendar_channel_connector/static/src/css/view.css" />
+            <script type="text/javascript" src="/hotel_calendar_channel_connector/static/src/js/views/hotel_calendar_controller.js"></script>
+            <script type="text/javascript" src="/hotel_calendar_channel_connector/static/src/js/views/hotel_calendar_renderer.js"></script>
+        </xpath>
+    </template>
 
 </odoo>

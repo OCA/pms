@@ -4,14 +4,14 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 
-class VirtualRoomPricelistCached(models.Model):
+class RoomPricelistCached(models.Model):
     '''
     Cached Pricelist. Used only for Calendar Values
     '''
 
-    _name = 'virtual.room.pricelist.cached'
+    _name = 'room.pricelist.cached'
 
-    virtual_room_id = fields.Many2one('hotel.room.type', 'Virtual Room',
-                                      required=True, track_visibility='always')
+    room_id = fields.Many2one('hotel.room.type', 'Virtual Room',
+                              required=True, track_visibility='always')
     price = fields.Float('Price', default=0.0)
     date = fields.Date('Date', required=True, track_visibility='always')

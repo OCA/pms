@@ -3,19 +3,19 @@
 from odoo import models, fields, api
 
 
-class HotelVirtualRoom(models.Model):
+class HotelRoomType(models.Model):
     _inherit = 'hotel.room.type'
 
     hcal_sequence = fields.Integer('Calendar Sequence', default=0)
 
     @api.multi
     def unlink(self):
-        vroom_pr_cached_obj = self.env['virtual.room.pricelist.cached']
+        room_type_pr_cached_obj = self.env['hotel.room.pricelist.cached']
         for record in self:
-            pr_chached = vroom_pr_cached_obj.search([
-                ('virtual_room_id', '=', record.id)
+            pr_chached = room_type_pr_cached_obj.search([
+                ('room_id', '=', record.id)
             ])
             #  Because 'pricelist.cached' is an isolated model,
             # doesn't trigger 'ondelete'. Need call 'unlink' instead.
             pr_chached.unlink()
-        return super(HotelVirtualRoom, self).unlink()
+        return super(HotelRoomType, self).unlink()

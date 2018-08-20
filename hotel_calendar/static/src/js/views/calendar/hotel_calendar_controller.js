@@ -199,7 +199,7 @@ var PMSCalendarController = AbstractController.extend({
             this.model.get_room_types(),
             this.model.get_floors(),
             this.model.get_amenities(),
-            this.model.get_vrooms()
+            this.model.get_rooms()
         ).then(function(a1, a2, a3, a4){
             self.renderer.loadViewFilters(a1, a2, a3, a4);
         });

@@ -77,7 +77,7 @@ class BusHotelCalendar(models.TransientModel):
                     'days': {
                         date_dt.strftime("%d/%m/%Y"): vals['price'],
                     },
-                    'room': vals['virtual_room_id'],
+                    'room': vals['room_id'],
                     'id': vals['id'],
                 }],
             },
@@ -89,7 +89,7 @@ class BusHotelCalendar(models.TransientModel):
         return {
             'type': 'restriction',
             'restriction': {
-                vals['virtual_room_id']: {
+                vals['room_id']: {
                     date_dt.strftime("%d/%m/%Y"): [
                         vals['min_stay'],
                         vals['min_stay_arrival'],
@@ -110,7 +110,7 @@ class BusHotelCalendar(models.TransientModel):
         return {
             'type': 'availability',
             'availability': {
-                vals['virtual_room_id']: {
+                vals['room_id']: {
                     date_dt.strftime("%d/%m/%Y"): [
                         vals['avail'],
                         vals['no_ota'],

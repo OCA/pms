@@ -7,13 +7,13 @@ class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
     @api.multi
-    def update_price(self, virtual_room_id, date, price):
-        vroom = self.env['hotel.room.type'].browse(virtual_room_id)
+    def update_price(self, room_type_id, date, price):
+        room_type = self.env['hotel.room.type'].browse(room_type_id)
         pritem_obj = self.env['product.pricelist.item']
         for record in self:
             plitem = pritem_obj.search([
                 ('pricelist_id', '=', record.id),
-                ('product_tmpl_id', '=', vroom.product_id.product_tmpl_id.id),
+                ('product_tmpl_id', '=', room_type.product_id.product_tmpl_id.id),
                 ('date_start', '=', date),
                 ('date_end', '=', date),
                 ('applied_on', '=', '1_product'),
@@ -24,7 +24,7 @@ class ProductPricelist(models.Model):
             else:
                 pritem_obj.create({
                     'pricelist_id': record.id,
-                    'product_tmpl_id': vroom.product_id.product_tmpl_id.id,
+                    'product_tmpl_id': room_type.product_id.product_tmpl_id.id,
                     'date_start': date,
                     'date_end': date,
                     'applied_on': '1_product',
