@@ -3,17 +3,21 @@
 
 from odoo import api, models, fields
 from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.component.core import Component
+from odoo.addons.component_event import skip_if
+from odoo.addons.hotel_channel_connector.components.backend_adapter import (
+    WUBOOK_STATUS_CONFIRMED,
+    WUBOOK_STATUS_WAITING,
+    WUBOOK_STATUS_REFUSED,
+    WUBOOK_STATUS_ACCEPTED,
+    WUBOOK_STATUS_CANCELLED,
+    WUBOOK_STATUS_CANCELLED_PENALTY)
 
 class ChannelHotelReservation(models.Model):
     _name = 'channel.hotel.reservation'
     _inherit = 'channel.binding'
     _inherits = {'hotel.reservation': 'odoo_id'}
     _description = 'Channel Hotel Reservation'
-
-    @api.depends('channel_reservation_id', 'ota_id')
-    def _is_from_ota(self):
-        for record in self:
-            record.is_from_ota = (record.channel_reservation_id and record.ota_id)
 
     odoo_id = fields.Many2one(comodel_names='hotel.reservation',
                               string='Reservation',
@@ -27,25 +31,18 @@ class ChannelHotelReservation(models.Model):
     ota_reservation_id = fields.Char("Channel OTA Reservation Code",
                                      readonly=True,
                                      old_name='wchannel_reservation_code')
-    is_from_ota = fields.Boolean('Is From OTA',
-                                 compute=_is_from_ota, store=False,
-                                 readonly=True,
-                                 old_name='wis_from_channel')
-    to_read = fields.Boolean('To Read', default=False)
-    able_to_modify_channel = fields.Boolean(compute=set_access_for_wubook_fields,
-                                            string='Is user able to modify wubook fields?',
-                                            old_name='able_to_modify_wubook')
     channel_raw_data = fields.Text(readonly=True, old_name='wbook_json')
 
     wstatus = fields.Selection([
-        ('0', 'No WuBook'),
+        ('0', 'No Channel'),
         (str(WUBOOK_STATUS_CONFIRMED), 'Confirmed'),
         (str(WUBOOK_STATUS_WAITING), 'Waiting'),
         (str(WUBOOK_STATUS_REFUSED), 'Refused'),
         (str(WUBOOK_STATUS_ACCEPTED), 'Accepted'),
         (str(WUBOOK_STATUS_CANCELLED), 'Cancelled'),
         (str(WUBOOK_STATUS_CANCELLED_PENALTY), 'Cancelled with penalty')],
-                               string='WuBook Status', default='0',
+                               string='WuBook Status',
+                               default='0',
                                readonly=True)
     wstatus_reason = fields.Char("WuBook Status Reason", readonly=True)
     customer_notes = fields.Text(related='folio_id.customer_notes',
@@ -68,22 +65,38 @@ class ChannelHotelReservation(models.Model):
     def cancel_reservation(self):
         self.ensure_one()
         if self._context.get('channel_action', True):
+            user = self.env['res.user'].browse(self.env.uid)
             with self.backend_id.work_on(self._name) as work:
                 adapter = work.component(usage='backend.adapter')
                 wres = adapter.cancel_reservation(
                     self.channel_reservation_id,
-                    _('Cancelled by %s') % partner_id.name)
+                    _('Cancelled by %s') % user.partner_id.name)
                 if not wres:
                     raise ValidationError(_("Can't cancel reservation on WuBook"))
 
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
+    @api.depends('channel_bind_ids.channel_reservation_id', 'channel_bind_ids.ota_id')
+    def _is_from_ota(self):
+        for record in self:
+            record.is_from_ota = (record.channel_bind_ids.channel_reservation_id and \
+                                  record.channel_bind_ids.ota_id)
+
     @api.multi
-    def set_access_for_wubook_fields(self):
+    def _set_access_for_wubook_fields(self):
         for rec in self:
             user = self.env['res.users'].browse(self.env.uid)
             rec.able_to_modify_channel = user.has_group('base.group_system')
+
+    is_from_ota = fields.Boolean('Is From OTA',
+                                 compute=_is_from_ota, store=False,
+                                 readonly=True,
+                                 old_name='wis_from_channel')
+    able_to_modify_channel = fields.Boolean(compute=_set_access_for_wubook_fields,
+                                            string='Is user able to modify wubook fields?',
+                                            old_name='able_to_modify_wubook')
+    to_read = fields.Boolean('To Read', default=False)
 
     @api.depends('channel_type', 'ota_id')
     def _get_origin_sale(self):
@@ -211,30 +224,27 @@ class HotelReservation(models.Model):
             raise ValidationError(_("Can't confirm OTA's cancelled reservations"))
         return super(HotelReservation, self).confirm()
 
-    @api.multi
-    def generate_copy_values(self, checkin=False, checkout=False):
-        self.ensure_one()
-        res = super().generate_copy_values(checkin=checkin, checkout=checkout)
-        res.update({
-            'channel_reservation_id': self.channel_reservation_id,
-            'ota_id': self.ota_id and self.ota_id.id or False,
-            'ota_reservation_code': self.ota_reservation_code,
-            'is_from_ota': self.is_from_ota,
-            'to_read': self.to_read,
-            'wstatus': self.wstatus,
-            'wstatus_reason': self.wstatus_reason,
-            'customer_notes': self.customer_notes,
-        })
-        return res
+    # @api.multi
+    # def generate_copy_values(self, checkin=False, checkout=False):
+    #     self.ensure_one()
+    #     res = super().generate_copy_values(checkin=checkin, checkout=checkout)
+    #     res.update({
+    #         'channel_reservation_id': self.channel_reservation_id,
+    #         'ota_id': self.ota_id and self.ota_id.id or False,
+    #         'ota_reservation_code': self.ota_reservation_code,
+    #         'is_from_ota': self.is_from_ota,
+    #         'to_read': self.to_read,
+    #         'wstatus': self.wstatus,
+    #         'wstatus_reason': self.wstatus_reason,
+    #         'customer_notes': self.customer_notes,
+    #     })
+    #     return res
 
     @api.multi
     def action_reservation_checkout(self):
         for record in self:
-            if record.state == 'cancelled':
-                return
-            else:
-                return super(HotelReservation, record).\
-                                                action_reservation_checkout()
+            if record.state != 'cancelled':
+                return super(HotelReservation, record).action_reservation_checkout()
 
     @api.model
     def _hcalendar_reservation_data(self, reservations):

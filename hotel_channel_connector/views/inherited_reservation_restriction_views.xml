@@ -1,19 +1,15 @@
 <?xml version="1.0"?>
 <odoo>
 
-	<record id="reservation_restriction_view" model="ir.ui.view">
+    <record id="reservation_restriction_view" model="ir.ui.view">
         <field name="model">hotel.virtual.room.restriction</field>
         <field name="inherit_id" ref="hotel.reservation_restriction_view_form" />
         <field name="arch" type="xml">
-					<xpath expr="//form[1]//sheet" position="before">
-	        	<header>
-	        		<button name="%(action_channel_import_plan_restrictions)d" string="Import Restrictions From Channel" type="action" class="oe_highlight" />
-	        	</header>
-					</xpath>
-        	<xpath expr="//field[@name='active']" position="after">
-        		<field name="channel_plan_id" />
-						<field name="is_daily_plan" />
-        	</xpath>
+            <xpath expr="//form[1]//sheet" position="before">
+                <header>
+                    <button name="%(action_channel_import_plan_restrictions)d" string="Import Restrictions From Channel" type="action" class="oe_highlight" />
+                </header>
+            </xpath>
         </field>
     </record>
 

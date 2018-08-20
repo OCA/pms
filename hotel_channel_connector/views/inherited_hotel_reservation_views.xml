@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="hotel.view_hotel_reservation_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='channel_type']" position="after">
-                <field name="wchannel_id" attrs='{"readonly": [("able_to_modify_wubook","=",False)], "invisible":[("channel_type","!=", "web")]}' string="OTA"/>
+                <field name="channel_reservation_id" attrs='{"readonly": [("able_to_modify_channel","=",False)], "invisible":[("channel_type","!=", "web")]}' string="OTA"/>
             </xpath>
             <xpath expr="//field[@name='cardex_pending']" position="before">
                 <group colspan="6" col="6">
@@ -15,44 +15,43 @@
             </xpath>
 
             <xpath expr="//field[@name='partner_internal_comment']" position="after">
-                <field name="able_to_modify_wubook" invisible="True"/>
-                <field name="customer_notes" readonly="1"
-                    attrs="{'invisible': [('wrid','=',False)]}"
+                <field name="able_to_modify_channel" invisible="True"/>
+                <!-- <field name="customer_notes" readonly="1"
+                    attrs="{'invisible': [('channel_reservation_id','=',False)]}"
                     nolabel="1" colspan="2"
-                />
+                /> -->
             </xpath>
 
             <xpath expr="//page[@name='days']" position="after">
-                <page name="wubook" string="Wubook">
-                    <group colspan="4" col="4">
-                        <field name="channel_reservation_id" attrs='{"readonly": [("able_to_modify_wubook","=",False)]}'/>
-                        <field name="ota_reservation_code" attrs='{"readonly": [("able_to_modify_wubook","=",False)]}'/>
-                        <field name="wstatus" attrs='{"readonly": [("able_to_modify_wubook","=",False)]}'/>
-                        <field name="wstatus_reason" attrs='{"readonly": [("able_to_modify_wubook","=",False)]}'/>
-                        <field name="to_read" invisible="0"/>
-                        <field name="to_assign" invisible="0" />
+                <page name="connector">
+                    <group string="Hotel Channel Bindings">
+                        <field name="channel_bind_ids" nolabel="1">
+                            <tree>
+                                <field name="backend_id"/>
+                            </tree>
+                        </field>
                     </group>
                 </page>
             </xpath>
 
             <!-- ALLOW ONLY-READ -->
             <xpath expr="//field[@name='adults']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_wubook','=',False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
-            <xpath expr="//field[@name='virtual_room_id']" position="attributes">
-                <attribute name="attrs">{'readonly': [('channel_reservation_id','!=',False),('able_to_modify_wubook','=',False)]}</attribute>
+            <xpath expr="//field[@name='room_type_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('channel_reservation_id','!=',False),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='children']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_wubook','=',False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='checkin']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_wubook','=',False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='checkout']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_wubook','=',False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='reservation_line_ids']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_wubook','=',False)]}</attribute>
+                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
         </field>
     </record>

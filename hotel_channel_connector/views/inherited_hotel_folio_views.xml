@@ -6,8 +6,8 @@
         <field name="inherit_id" ref="hotel.view_hotel_folio1_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_internal_comment']" position="before">
-                <field name="whas_wubook_reservations" invisible="True" />
-                <field name="wcustomer_notes" readonly="True" attrs="{'invisible':[('whas_wubook_reservations', '=', False)]}"/>
+                <field name="has_channel_reservations" invisible="True" />
+                <field name="customer_notes" readonly="True" attrs="{'invisible':[('has_channel_reservations', '=', False)]}"/>
             </xpath>
         </field>
     </record>

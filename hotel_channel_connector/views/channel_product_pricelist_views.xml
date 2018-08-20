@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_channel_product_pricelist_form" model="ir.ui.view">
+        <field name="name">channel.product.pricelist.form</field>
+        <field name="model">channel.product.pricelist</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Channel Product Pricelist">
+                <group>
+                    <field name="channel_plan_id" />
+                    <field name="is_daily_plan" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_channel_hotel_virtual_room_restriction_tree" model="ir.ui.view">
+        <field name="name">channel.hotel.product.pricelist.tree</field>
+        <field name="model">channel.hotel.product.pricelist.room</field>
+        <field name="arch" type="xml">
+            <tree string="Hotel Channel Product Pricelist">
+                <field name="backend_id"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

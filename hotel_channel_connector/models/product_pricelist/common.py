@@ -3,6 +3,8 @@
 
 from odoo import api, models, fields
 from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.component.core import Component
+from odoo.addons.component_event import skip_if
 
 class ChannelProductPricelist(models.Model):
     _name = 'channel.product.pricelist'

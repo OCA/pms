@@ -6,9 +6,19 @@
         <field name="model">hotel.virtual.room.availability</field>
         <field name="inherit_id" ref="hotel.virtual_room_availability_view_form" />
         <field name="arch" type="xml">
-        	<xpath expr="//field[@name='avail']" position="after">
-        		<field name="channel_max_avail" />
-        	</xpath>
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page name="connector">
+                        <group string="Hotel Channel Bindings">
+                            <field name="channel_bind_ids" nolabel="1">
+                                <tree>
+                                    <field name="backend_id"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
         </field>
     </record>
 
@@ -18,9 +28,9 @@
       <field name="inherit_id" ref="hotel.virtual_room_availability_view_tree" />
       <field name="type">tree</field>
       <field name="arch" type="xml">
-        <xpath expr="//field[@name='avail']" position="after">
+        <!-- <xpath expr="//field[@name='avail']" position="after">
             <field name="channel_max_avail" />
-        </xpath>
+        </xpath> -->
       </field>
     </record>
 </odoo>

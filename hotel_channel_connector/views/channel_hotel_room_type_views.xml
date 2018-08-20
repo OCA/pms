@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_channel_hotel_virtual_room_form" model="ir.ui.view">
+        <field name="name">channel.hotel.virtual.room.form</field>
+        <field name="model">channel.hotel.virtual.room</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Channel Virtual Room">
+                <group>
+                    <field name="channel_room_id" />
+                    <field name="channel_short_code" />
+                    <field name="ota_capacity" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_channel_hotel_virtual_room_tree" model="ir.ui.view">
+        <field name="name">channel.hotel.virtual.room.tree</field>
+        <field name="model">channel.hotel.virtual.room</field>
+        <field name="arch" type="xml">
+            <tree string="Hotel Channel Virtual Room">
+                <field name="backend_id"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

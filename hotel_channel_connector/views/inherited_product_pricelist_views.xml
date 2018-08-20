@@ -1,30 +1,18 @@
 <?xml version="1.0"?>
 <odoo>
 
-	<record id="product_pricelist_view" model="ir.ui.view">
+    <record id="product_pricelist_view" model="ir.ui.view">
         <field name="model">product.pricelist</field>
         <field name="inherit_id" ref="product.product_pricelist_view" />
         <field name="arch" type="xml">
-			<xpath expr="//form[1]//sheet" position="before">
-            	<header>
-            		<button name="%(action_channel_import_plan_prices)d" string="Import Prices From Channel" type="action" class="oe_highlight" />
-            	</header>
-			</xpath>
-        	<xpath expr="//field[@name='company_id']" position="after">
-        		<field name="id" invisible="1"/>
-        		<field name="channel_plan_id" />
-        		<field name="is_daily_plan" widget="checkbox" attrs="{'readonly':[('id', '>', 0)]}" />
-        	</xpath>
-        </field>
-    </record>
-
-	<record id="product_pricelist_view_tree" model="ir.ui.view">
-        <field name="model">product.pricelist</field>
-        <field name="inherit_id" ref="product.product_pricelist_view_tree" />
-        <field name="arch" type="xml">
-        	<xpath expr="//field[@name='name']" position="after">
-        		<field name="is_daily_plan" widget="checkbox" readonly="True" />
-        	</xpath>
+            <xpath expr="//form[1]//sheet" position="before">
+                <header>
+                    <button name="%(action_channel_import_plan_prices)d" string="Import Prices From Channel" type="action" class="oe_highlight" />
+                </header>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="id" invisible="1"/>
+            </xpath>
         </field>
     </record>
 

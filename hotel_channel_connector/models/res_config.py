@@ -1,5 +1,6 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 import os
 import binascii
 import logging
@@ -10,49 +11,30 @@ from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
 
-class WubookConfiguration(models.TransientModel):
-    _name = 'wubook.config.settings'
+class HotelChannelConnectorConfiguration(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    wubook_user = fields.Char('WuBook User')
-    wubook_passwd = fields.Char('WuBook Password')
-    wubook_lcode = fields.Char('WuBook lcode')
-    wubook_server = fields.Char('WuBook Server',
-                                default='https://wired.wubook.net/xrws/')
-    wubook_pkey = fields.Char('WuBook PKey')
-    wubook_push_security_token = fields.Char('WuBook Push Notification \
-                                                            Security Token')
+    channel_push_security_token = fields.Char('WuBook Push Notification Security Token')
 
     @api.multi
-    def set_wubook_user(self):
-        return self.env['ir.default'].sudo().set(
-            'wubook.config.settings', 'wubook_user', self.wubook_user)
+    def set_values(self):
+        super(HotelChannelConnectorConfiguration, self).set_values()
 
-    @api.multi
-    def set_wubook_passwd(self):
-        return self.env['ir.default'].sudo().set(
-            'wubook.config.settings', 'wubook_passwd', self.wubook_passwd)
+        self.env['ir.default'].sudo().set(
+            'res.config.settings', 'channel_push_security_token',
+            self.channel_push_security_token)
 
-    @api.multi
-    def set_wubook_lcode(self):
-        return self.env['ir.default'].sudo().set(
-            'wubook.config.settings', 'wubook_lcode', self.wubook_lcode)
+    @api.model
+    def get_values(self):
+        res = super(HotelChannelConnectorConfiguration, self).get_values()
 
-    @api.multi
-    def set_wubook_server(self):
-        return self.env['ir.default'].sudo().set(
-            'wubook.config.settings', 'wubook_server', self.wubook_server)
-
-    @api.multi
-    def set_wubook_pkey(self):
-        return self.env['ir.default'].sudo().set(
-            'wubook.config.settings', 'wubook_pkey', self.wubook_pkey)
-
-    @api.multi
-    def set_wubook_push_security_token(self):
-        return self.env['ir.default'].sudo().set(
-            'wubook.config.settings',
-            'wubook_push_security_token', self.wubook_push_security_token)
+        # ONLY FOR v11. DO NOT FORWARD-PORT
+        channel_push_security_token = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'channel_push_security_token')
+        res.update(
+            channel_push_security_token=channel_push_security_token,
+        )
+        return res
 
     # Dangerus method: Usefull for cloned instances with new wubook account
     @api.multi

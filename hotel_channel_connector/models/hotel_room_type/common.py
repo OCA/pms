@@ -3,12 +3,14 @@
 
 from odoo import api, models, fields
 from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.component.core import Component
+from odoo.addons.component_event import skip_if
 
-class ChannelHotelVirtualRoom(models.Model):
-    _name = 'channel.hotel.virtual.room'
+class ChannelHotelRoomType(models.Model):
+    _name = 'channel.hotel.room.type'
     _inherit = 'channel.binding'
-    _inherits = {'hotel.virtual.room': 'odoo_id'}
-    _description = 'Channel Hotel Virtual Room'
+    _inherits = {'hotel.room.type': 'odoo_id'}
+    _description = 'Channel Hotel Room'
 
     @api.depends('ota_capacity')
     @api.onchange('room_ids', 'room_type_ids')
@@ -16,8 +18,8 @@ class ChannelHotelVirtualRoom(models.Model):
         for rec in self:
             rec.ota_capacity = rec.get_capacity()
 
-    odoo_id = fields.Many2one(comodel_names='hotel.virtual.room',
-                              string='Reservation',
+    odoo_id = fields.Many2one(comodel_names='hotel.room.type',
+                              string='Room Type',
                               required=True,
                               ondelete='cascade')
     channel_room_id = fields.Char("Channel Room ID", readonly=True, old_name='wrid')
@@ -102,11 +104,11 @@ class ChannelHotelVirtualRoom(models.Model):
                 importer = work.component(usage='channel.importer')
                 return importer.import_rooms()
 
-class HotelVirtualRoom(models.Model):
-    _inherit = 'hotel.virtual.room'
+class HotelRoomType(models.Model):
+    _inherit = 'hotel.room.type'
 
     channel_bind_ids = fields.One2many(
-        comodel_name='channel.hotel.virtual.room',
+        comodel_name='channel.hotel.room.type',
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
@@ -124,10 +126,10 @@ class HotelVirtualRoom(models.Model):
         ], limit=1)
         return restriction
 
-class ChannelBindingVirtualRoomListener(Component):
-    _name = 'channel.binding.virtual.room.listener'
+class ChannelBindingRoomTypeListener(Component):
+    _name = 'channel.binding.room.type.listener'
     _inherit = 'base.connector.listener'
-    _apply_on = ['channel.virtual.room']
+    _apply_on = ['channel.room.type']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):

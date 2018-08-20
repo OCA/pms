@@ -1,71 +1,72 @@
 <?xml version="1.0"?>
 <odoo>
 
-  <!-- FORM issue -->
-  <record id="hotel_channel_connector_issue_view_form" model="ir.ui.view">
-    <field name="name">hotel.channel.coonector.issue.form</field>
-    <field name="model">hotel.channel.coonector.issue</field>
-    <field name="arch" type="xml">
-      <form string="Channel Connector Issue">
-        <sheet>
-          <div class="oe_button_box" name="button_box">
-              <button name="toggle_to_read" type="object" class="oe_stat_button" icon="fa-eye">
-                  <field name="to_read" widget="boolean_button" options='{"terminology": "see"}'/>
-              </button>
-              <button name="mark_as_read" type="object"
-                string="Mark as Readed"
-                groups="hotel.group_hotel_manager"
-                class="oe_stat_button" icon="fa-warning"
-                attrs="{'invisible':['|', ['section', '!=', 'reservation'], ['wid', '=', False]]}"/>
-          </div>
-          <group>
-            <field name="section"/>
-            <field name="internal_message"/>
-          </group>
-          <group>
-            <field name="date_start"/>
-            <field name="date_end"/>
-          </group>
-          <group>
-            <field name="channel_object_id"/>
-            <field name="channel_message"/>
-          </group>
-        </sheet>
-      </form>
-    </field>
-  </record>
+    <!-- FORM issue -->
+    <record id="hotel_channel_connector_issue_view_form" model="ir.ui.view">
+        <field name="name">hotel.channel.coonector.issue.form</field>
+        <field name="model">hotel.channel.coonector.issue</field>
+        <field name="arch" type="xml">
+            <form string="Channel Connector Issue">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_to_read" type="object" class="oe_stat_button" icon="fa-eye">
+                            <field name="to_read" widget="boolean_button" options='{"terminology": "see"}'/>
+                        </button>
+                        <button name="mark_as_read" type="object"
+                            string="Mark as Readed"
+                            groups="hotel.group_hotel_manager"
+                            class="oe_stat_button" icon="fa-warning"
+                            attrs="{'invisible':['|', ['section', '!=', 'reservation'], ['wid', '=', False]]}"/>
+                        </div>
+                        <group>
+                            <field name="section"/>
+                            <field name="internal_message"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="channel_object_id"/>
+                            <field name="channel_message"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
-  <!-- TREE issue -->
-  <record id="hotel_channel_connector_issue_view_tree" model="ir.ui.view">
-    <field name="name">hotel.channel.coonector.issue.tree</field>
-    <field name="model">hotel.channel.coonector.issue</field>
-    <field name="type">tree</field>
-    <field name="arch" type="xml">
-      <tree string="Channel Connector Issues">
-        <field name="create_date"/>
-        <field name="section"/>
-        <field name="internal_message"/>
-        <field name="date_start"/>
-        <field name="date_end"/>
-        <field name="channel_object_id"/>
-      </tree>
-    </field>
-  </record>
+        <!-- TREE issue -->
+        <record id="hotel_channel_connector_issue_view_tree" model="ir.ui.view">
+            <field name="name">hotel.channel.coonector.issue.tree</field>
+            <field name="model">hotel.channel.coonector.issue</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Channel Connector Issues">
+                    <field name="create_date"/>
+                    <field name="section"/>
+                    <field name="internal_message"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="channel_object_id"/>
+                </tree>
+            </field>
+        </record>
 
-  <!-- SEARCH issue -->
-  <record id="view_hotel_channel_connector_issue_form_search" model="ir.ui.view">
-      <field name="name">hotel.channel.coonector.issue.search</field>
-      <field name="model">hotel.channel.coonector.issue</field>
-      <field name="arch" type="xml">
-          <search string="Issues">
-            <field name="create_date"/>
-            <field name="section"/>
-            <field name="internal_message"/>
-            <field name="date_start"/>
-            <field name="date_end"/>
-            <field name="channel_object_id"/>
-            <field name="to_read"/>
-          </search>
-      </field>
-  </record>
- </odoo>
+        <!-- SEARCH issue -->
+        <record id="view_hotel_channel_connector_issue_form_search" model="ir.ui.view">
+            <field name="name">hotel.channel.coonector.issue.search</field>
+            <field name="model">hotel.channel.coonector.issue</field>
+            <field name="arch" type="xml">
+                <search string="Issues">
+                    <field name="create_date"/>
+                    <field name="section"/>
+                    <field name="internal_message"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="channel_object_id"/>
+                <field name="to_read"/>
+            </search>
+        </field>
+    </record>
+
+</odoo>
