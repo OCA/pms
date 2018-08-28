@@ -20,6 +20,7 @@
 ##############################################################################
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
+from odoo.exceptions import except_orm, UserError, ValidationError
 
 class HotelReservationLine(models.Model):
     _name = "hotel.reservation.line"
@@ -33,3 +34,13 @@ class HotelReservationLine(models.Model):
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)
+
+    @api.model
+    def create(self, vals):
+        record = super(HotelReservation, self).create(vals)
+        return record
+
+    @api.multi
+    def write(self, vals):
+        res = super(HotelReservation, self).write(vals)
+        return res

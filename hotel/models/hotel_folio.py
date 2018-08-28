@@ -342,56 +342,32 @@ class HotelFolio(models.Model):
     @api.multi
     @api.onchange('partner_id')
     def onchange_partner_id(self):
-        '''
-        When you change partner_id it will update the partner_invoice_id,
-        partner_shipping_id and pricelist_id of the hotel folio as well
-        ---------------------------------------------------------------
-        @param self: object pointer
-        '''
-        _logger.info('onchange_partner_id')
-        pass
-        # self.update({
-        #     'currency_id': self.env.ref('base.main_company').currency_id,
-        #     'partner_invoice_id': self.partner_id and self.partner_id.id or False,
-        #     'partner_shipping_id': self.partner_id and self.partner_id.id or False,
-        #     'pricelist_id': self.partner_id and self.partner_id.property_product_pricelist.id or False,
-        # })
-        # """
-        # Warning messajes saved in partner form to folios
-        # """
-        # if not self.partner_id:
-        #     return
-        # warning = {}
-        # title = False
-        # message = False
-        # partner = self.partner_id
-        #
-        # # If partner has no warning, check its company
-        # if partner.sale_warn == 'no-message' and partner.parent_id:
-        #     partner = partner.parent_id
-        #
-        # if partner.sale_warn != 'no-message':
-        #     # Block if partner only has warning but parent company is blocked
-        #     if partner.sale_warn != 'block' and partner.parent_id \
-        #             and partner.parent_id.sale_warn == 'block':
-        #         partner = partner.parent_id
-        #     title = _("Warning for %s") % partner.name
-        #     message = partner.sale_warn_msg
-        #     warning = {
-        #             'title': title,
-        #             'message': message,
-        #     }
-        #     if self.partner_id.sale_warn == 'block':
-        #         self.update({
-        #             'partner_id': False,
-        #             'partner_invoice_id': False,
-        #             'partner_shipping_id': False,
-        #             'pricelist_id': False
-        #         })
-        #         return {'warning': warning}
-        #
-        # if warning:
-        #     return {'warning': warning}
+        """
+        Update the following fields when the partner is changed:
+        - Pricelist
+        - Invoice address
+        - user_id
+        """
+        if not self.partner_id:
+            self.update({
+                'partner_invoice_id': False,
+                'payment_term_id': False,
+                'fiscal_position_id': False,
+            })
+            return
+
+        addr = self.partner_id.address_get(['invoice'])
+        values = {
+            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
+            'partner_invoice_id': addr['invoice'],
+            'user_id': self.partner_id.user_id.id or self.env.uid
+        }
+        if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and self.env.user.company_id.sale_note:
+            values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+
+        if self.partner_id.team_id:
+            values['team_id'] = self.partner_id.team_id.id
+        self.update(values)
 
     @api.multi
     def action_invoice_create(self, grouped=False, states=None):

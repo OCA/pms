@@ -257,9 +257,9 @@ class HotelReservation(models.Model):
     #     digits=dp.get_precision('Product Unit of Measure'))
     # qty_delivered = fields.Float(string='Delivered', copy=False, digits=dp.get_precision('Product Unit of Measure'), default=0.0)
     # qty_delivered_updateable = fields.Boolean(compute='_compute_qty_delivered_updateable', string='Can Edit Delivered', readonly=True, default=True)
-    price_subtotal = fields.Monetary(compute='_compute_amount_reservation', string='Subtotal', readonly=True, store=True)
-    price_total = fields.Monetary(compute='_compute_amount_reservation', string='Total', readonly=True, store=True)
-    price_tax = fields.Float(compute='_compute_amount_reservation', string='Taxes', readonly=True, store=True)
+    price_subtotal = fields.Monetary(string='Subtotal', readonly=True, store=True)
+    price_total = fields.Monetary(string='Total', readonly=True, store=True)
+    price_tax = fields.Float(string='Taxes', readonly=True, store=True)
     currency_id = fields.Many2one(related='folio_id.currency_id', store=True, string='Currency', readonly=True)
     # FIXME discount per night
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
@@ -268,49 +268,73 @@ class HotelReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        if not 'reservation_type' in vals or not vals.get('reservation_type'):
-            vals.update({'reservation_type': 'normal'})
+        vals.update(self._prepare_add_missing_fields(vals))
         if 'folio_id' in vals:
             folio = self.env["hotel.folio"].browse(vals['folio_id'])
             vals.update({'channel_type': folio.channel_type})
         elif 'partner_id' in vals:
             folio_vals = {'partner_id':int(vals.get('partner_id')),
                           'channel_type': vals.get('channel_type')}
-            # Create the folio in case of need (To Allow create direct reservations)
+            # Create the folio in case of need (To allow to create reservations direct)
             folio = self.env["hotel.folio"].create(folio_vals)
             vals.update({'folio_id': folio.id,
                          'reservation_type': vals.get('reservation_type'),
                          'channel_type': vals.get('channel_type')})
+        #~ colors = self._generate_color()
         vals.update({
-            'last_updated_res': date_utils.now(hours=True).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            'last_updated_res': date_utils.now(hours=True).strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            #~ 'reserve_color': colors[0],
+            #~ 'reserve_color_text': colors[1],
         })
-        if folio:
-            record = super(HotelReservation, self).create(vals)
-            if (record.state == 'draft' and record.folio_id.state == 'sale') or \
-                    record.preconfirm:
-                record.confirm()
-            record._compute_color()
+        if self.compute_price_out_vals(vals):
+            vals.update(self.env['hotel.reservation'].compute_amount_reservation(vals))
+        record = super(HotelReservation, self).create(vals)
+        #~ if (record.state == 'draft' and record.folio_id.state == 'sale') or \
+                #~ record.preconfirm:
+            #~ record.confirm()
         return record
 
     @api.multi
     def write(self, vals):
-        for record in self:
-            if ('checkin' in vals and record.checkin != vals['checkin']) or \
-                    ('checkout' in vals and record.checkout != vals['checkout']) or \
-                    ('state' in vals and record.state != vals['state']) :
-                vals.update({'to_send': True})
-
-        pricesChanged = ('checkin' in vals or \
-                         'checkout' in vals or \
-                         'discount' in vals)
-        import wdb; wdb.set_trace()
-        if pricesChanged or 'state' in vals or 'room_type_id' in vals or 'to_assign' in vals:
-            vals.update({
-                'last_updated_res': date_utils.now(hours=True).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            })
+        #~ if self.notify_update(vals):
+            #~ vals.update({
+                #~ 'last_updated_res': date_utils.now(hours=True).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            #~ })
+        #~ for record in self:
+            #~ if record.compute_price_out_vals(vals):
+                #~ record.update(self.compute_amount_reservation(vals))
+            #~ if ('checkin' in vals and record.checkin != vals['checkin']) or \
+                    #~ ('checkout' in vals and record.checkout != vals['checkout']) or \
+                    #~ ('state' in vals and record.state != vals['state']) :
+                #~ vals.update({'to_send': True})
         res = super(HotelReservation, self).write(vals)
         return res
 
+    @api.model
+    def _prepare_add_missing_fields(self, values):
+        """ Deduce missing required fields from the onchange """
+        res = {}
+        onchange_fields = ['room_type_id', 'pricelist_id',
+            'reservation_type', 'currency_id']
+        if values.get('partner_id') and values.get('room_type_id') and any(f not in values for f in onchange_fields):
+            line = self.new(values)
+            line.room_type_id_change()
+            for field in onchange_fields:
+                if field not in values:
+                    res[field] = line._fields[field].convert_to_write(line[field], line)
+        return res
+
+    @api.multi
+    def notify_update(self, vals):
+        if 'checkin' in vals or \
+                'checkout' in vals or \
+                'discount' in vals or \
+                'state' in vals or \
+                'room_type_id' in vals or \
+                'to_assign' in vals:
+            return  True
+        return False
+        
     @api.multi
     def overbooking_button(self):
         self.ensure_one()
@@ -353,14 +377,6 @@ class HotelReservation(models.Model):
             'room_type_id': self.room_type_id.id,
         }
 
-    @api.onchange('adults', 'room_id')
-    def check_capacity(self):
-        if self.room_id:
-            if self.room_id.capacity < self.adults:
-                self.adults = self.room_id.capacity
-                raise UserError(
-                    _('%s people do not fit in this room! ;)') % (persons))
-
     @api.constrains('adults')
     def _check_adults(self):
         for record in self:
@@ -368,146 +384,84 @@ class HotelReservation(models.Model):
                     raise ValidationError(
                         _("Reservation persons can't be higher than room capacity"))
             if record.adults == 0:
-
                 raise ValidationError(_("Reservation has no adults"))
 
-    @api.onchange('room_type_id')
-    def on_change_room_type_id(self):
-        if self.room_type_id:
-            # TODO: Remove this check once added as contrain
-            if not self.checkin:
-                self.checkin = self._get_default_checkin()
-            if not self.checkout:
-                self.checkout = self._get_default_checkout()
-            # days_diff = date_utils.date_diff(
-            #     self.checkin, self.checkout, hours=False)
-            days_diff = (fields.Date.from_string(self.checkout) - fields.Date.from_string(self.checkin)).days
-            rlines = self.prepare_reservation_lines(
-                self.checkin,
-                days_diff,
-                update_old_prices=True)
-            self.reservation_line_ids = rlines['commands']
+    """
+    ONCHANGES ----------------------------------------------------------
+    """
 
-            if self.reservation_type in ['staff', 'out']:
-                self.price_unit = 0.0
-                self.cardex_pending = 0
-            else:
-                self.price_unit = rlines['total_price']
-
-    @api.onchange('checkin', 'checkout', 'room_id',
-                  'reservation_type', 'room_type_id')
-    def on_change_checkin_checkout_product_id(self):
-        _logger.info('on_change_checkin_checkout_product_id')
-        # import wdb; wdb.set_trace()
-        if not self.checkin:
-            self.checkin = self._get_default_checkin()
-        if not self.checkout:
-            self.checkout = self._get_default_checkout()
-        # WARNING Need a review
-        # if self.product_id:
-        #     self.tax_id = [(6, False, self.virtual_room_id.product_id.taxes_id.ids)]
-        #     room = self.env['hotel.room'].search([
-        #         ('product_id', '=', self.product_id.id)
-        #     ])
-        #     if self.adults == 0:
-        #         self.adults = room.capacity
-        #     if not self.virtual_room_id and room.price_virtual_room:
-        #         self.virtual_room_id = room.price_virtual_room.id
+    @api.onchange('adults', 'room_id')
+    def onchange_check_capacity(self):
         if self.room_id:
-            # self.tax_id = [(6, False, self.room_type_id.product_id.taxes_id.ids)]
-            if self.adults == 0:
+            if self.room_id.capacity < self.adults:
                 self.adults = self.room_id.capacity
-            if not self.room_type_id:
-                self.room_type_id = self.room_id.room_type_id
-                self.tax_id = [(6, False, self.room_id.room_type_id.taxes_id.ids)]
+                raise UserError(
+                    _('%s people do not fit in this room! ;)') % (persons))
+
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        #TODO: Change parity pricelist by default pricelist
+        values = {
+            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or \
+                self.env['ir.default'].sudo().get('hotel.config.settings', 'parity_pricelist_id'),
+        }
+        self.update(values)            
+
+    # When we need to overwrite the prices even if they were already established
+    @api.onchange('room_type_id', 'pricelist_id', 'reservation_type')
+    def onchange_overwrite_price_by_day(self):
+        self.update(self.compute_amount_reservation(update_old_prices=True))
+
+    # When we need to update prices respecting those that were already established
+    @api.onchange('checkin', 'checkout')
+    def onchange_check_dates(self):
+        if not self.checkin:
+            self.checkin = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        if not self.checkout:
+            self.checkout = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
         checkin_dt = fields.Date.from_string(self.checkin)
         checkout_dt = fields.Date.from_string(self.checkout)
-
         if checkin_dt >= checkout_dt:
             self.checkout = (fields.Date.from_string(self.checkin) + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        self.update(self.compute_amount_reservation(update_old_prices=True))
+        
+        
 
-        if self.state == 'confirm' and self.checkin_is_today():
-            self.is_checkin = True
-            folio = self.env['hotel.folio'].browse(self.folio_id.id)
-            if folio:
-                folio.checkins_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id), ('is_checkin', '=', True)
-                ])
-
-        if self.state == 'booking' and self.checkout_is_today():
-            self.is_checkout = False
-            folio = self.env['hotel.folio'].browse(self.folio_id.id)
-            if folio:
-                folio.checkouts_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id), ('is_checkout', '=', True)
-                ])
-
-         # ensure checkin and checkout are correct before changing the name
-        if self.room_type_id:
+    @api.onchange('checkin', 'checkout', 'room_type_id')
+    def onchange_compute_reservation_description(self):
+        if self.room_type_id and self.checkin and self.checkout:
+            checkin_dt = fields.Date.from_string(self.checkin)
+            checkout_dt = fields.Date.from_string(self.checkout)
             checkin_str = checkin_dt.strftime('%d/%m/%Y')
             checkout_str = checkout_dt.strftime('%d/%m/%Y')
             self.name = self.room_type_id.name + ': ' + checkin_str + ' - '\
                 + checkout_str
-            days_diff = (fields.Date.from_string(self.checkout) - fields.Date.from_string(self.checkin)).days
-            rlines = self.prepare_reservation_lines(
-                self.checkin,
-                days_diff,
-                update_old_prices=False)
-            self.reservation_line_ids = rlines['commands']
-
-            if self.reservation_type in ['staff', 'out']:
-                self.price_unit = 0.0
-                self.cardex_pending = 0
-            else:
-                self.price_unit = rlines['total_price']
 
     @api.multi
-    # TODO: This onchange has almost the same values than on_change_checkin_checkout_product_id... join ?
-    @api.onchange('checkin', 'checkout', 'room_type_id', 'room_id')
-    def on_change_checkout(self):
-        '''
-        When you change checkin or checkout it will checked it
-        and update the qty of hotel folio line
-        -----------------------------------------------------------------
-        @param self: object pointer
-        '''
-        _logger.info('on_change_checkout')
+    @api.onchange('checkin', 'checkout', 'room_id')
+    def onchange_room_availabiltiy_domain(self):
         self.ensure_one()
-        if self.overbooking:
-            return
-
-        occupied = self.env['hotel.reservation'].get_reservations(
-            self.checkin,
-            fields.Date.from_string(self.checkout).strftime(DEFAULT_SERVER_DATE_FORMAT)).filtered(
-                lambda r: r.id != self._origin.id)
-        rooms_occupied = occupied.mapped('room_id.id')
-        if self.room_id and self.room_id.id in rooms_occupied:
-            warning_msg = _('You tried to change \
-                   reservation with room those already reserved in this \
-                   reservation period')
-            raise ValidationError(warning_msg)
-        domain_rooms = [
-            # ('isroom', '=', True),
-            ('id', 'not in', rooms_occupied)
-        ]
-        # if self.check_rooms:
-        #     if self.room_type_id:
-        #         domain_rooms.append(
-        #             ('categ_id.id', '=', self.room_type_id.cat_id.id)
-        #         )
-        #     if self.virtual_room_id:
-        #         room_categories = self.virtual_room_id.room_type_ids.mapped(
-        #             'cat_id.id')
-        #         link_virtual_rooms = self.virtual_room_id.room_ids\
-        #             | self.env['hotel.room'].search([
-        #                 ('categ_id.id', 'in', room_categories)])
-        #         room_ids = link_virtual_rooms.mapped('room_id.id')
-        #         domain_rooms.append(('id', 'in', room_ids))
-        return {'domain': {'room_id': domain_rooms}}
+        if self.checkin and self.checkout:
+            if self.overbooking:
+                return
+            occupied = self.env['hotel.reservation'].get_reservations(
+                self.checkin,
+                fields.Date.from_string(self.checkout).strftime(DEFAULT_SERVER_DATE_FORMAT)).filtered(
+                    lambda r: r.id != self._origin.id)
+            rooms_occupied = occupied.mapped('room_id.id')
+            if self.room_id and self.room_id.id in rooms_occupied:
+                warning_msg = _('You tried to change \
+                       reservation with room those already reserved in this \
+                       reservation period')
+                raise ValidationError(warning_msg)
+            domain_rooms = [
+                ('id', 'not in', rooms_occupied)
+            ]
+            return {'domain': {'room_id': domain_rooms}}
 
     """
-    COMPUTE RESERVE COLOR
+    COMPUTE RESERVE COLOR ----------------------------------------------
     """
 
     @api.multi
@@ -609,7 +563,7 @@ class HotelReservation(models.Model):
             #     splitted_reservs.write({'reserve_color': rec.reserve_color})
 
     """
-    STATE WORKFLOW
+    STATE WORKFLOW -----------------------------------------------------
     """
 
     @api.multi
@@ -701,58 +655,100 @@ class HotelReservation(models.Model):
                 splitted_reservs.draft()
 
     """
-    PRICE PROCESS
+    PRICE PROCESS ------------------------------------------------------
     """
-
-    @api.depends('reservation_line_ids.price', 'reservation_line_ids.discount', 'tax_id')
-    def _compute_amount_reservation(self):
+    @api.multi
+    def compute_price_out_vals(self, vals):
+        """
+        Compute if It is necesary calc price in write/create
+        """
+        if not vals:
+            vals = {}
+        if ('price_total' not in vals and \
+                ('checkout' in vals or 'checkin' in vals or \
+                'room_type_id' in vals or 'pricelist_id' in vals)):
+            return True
+        return False
+    
+    @api.multi
+    def compute_amount_reservation(self, vals=False, update_old_prices=False):
         """
         Compute the amounts of the reservation.
+        if vals: Then it is a new record and We must use pass in vals
+        if not vals: Then we calc the price based in self data
         """
-        for line in self:
-            amount_room = 0
-            for day in line.reservation_line_ids:
-                 amount_room += day.price
-            if amount_room > 0:
-                product = line.room_type_id.product_id
-                price = amount_room * (1 - (line.discount or 0.0) / 100.0)
-                taxes = line.tax_id.compute_all(price, line.currency_id, 1, product=product)
-                line.update({
-                    'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
-                    'price_total': taxes['total_included'],
-                    'price_subtotal': taxes['total_excluded'],
-                })
+        if not vals:
+            vals = {}
+        checkin = vals.get('checkin') or self.checkin
+        checkout = vals.get('checkout') or self.checkout
+        reservation_type = vals.get('reservation_type') or self.reservation_type
+        room_type = self.env['hotel.room.type'].browse(vals.get('room_type_id') or self.room_type_id.id)
+        discount = vals.get('discount') or self.discount
+        tax = self.env['account.tax'].browse(vals.get('tax_id') or self.tax_id.id)
+        currency = self.env['res.currency'].browse(vals.get('currency_id') or self.currency_id.id)
+            
+        days_diff = (fields.Date.from_string(checkout) - fields.Date.from_string(checkin)).days
+        rlines = self.prepare_reservation_lines(
+            checkin,
+            days_diff,
+            vals = vals,
+            update_old_prices = update_old_prices)
+        if reservation_type in ['staff', 'out']:
+            amount_room = 0.0
+        else:
+            amount_room = rlines['total_price']
+        product = room_type.product_id
+        price = amount_room * (1 - (discount or 0.0) / 100.0)
+        taxes = tax.compute_all(price, currency, 1, product=product)
+        return({
+            'reservation_line_ids': rlines['commands'],
+            'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+            'price_total': taxes['total_included'],
+            'price_subtotal': taxes['total_excluded'],
+        })
 
     @api.multi
-    def prepare_reservation_lines(self, dfrom, days,
+    def prepare_reservation_lines(self, dfrom, days, vals=False,
                                   update_old_prices=False):
-        self.ensure_one()
         total_price = 0.0
-        cmds = [(5, False, False)]
+        cmds = []
         #~ pricelist_id = self.env['ir.default'].sudo().get(
             #~ 'res.config.settings', 'parity_pricelist_id')
-        pricelist_id = int(self.pricelist_id)
-        product_id = self.room_type_id.product_id
+        pricelist_id = vals.get('pricelist_id') or self.pricelist_id.id
+        product = self.env['hotel.room.type'].browse(vals.get('room_type_id') or self.room_type_id.id).product_id
         old_lines_days = self.mapped('reservation_line_ids.date')
+        partner = self.env['res.partner'].browse(vals.get('partner_id') or self.partner_id.id)
+        total_price = 0
         for i in range(0, days):
             idate = (fields.Date.from_string(dfrom) + timedelta(days=i)).strftime(DEFAULT_SERVER_DATE_FORMAT)
-            if update_old_prices or (idate not in old_lines_days):
-                product = product_id.with_context(
-                     lang=self.partner_id.lang,
-                     partner=self.partner_id.id,
+            old_line = self.reservation_line_ids.filtered(lambda r: r.date == idate)
+            if update_old_prices or (idate not in old_lines_days):                
+                product = product.with_context(
+                     lang=partner.lang,
+                     partner=partner.id,
                      quantity=1,
                      date=idate,
                      pricelist=pricelist_id,
-                     uom=self.room_type_id.product_id.uom_id.id)
+                     uom=product.uom_id.id)
                 line_price = self.env['account.tax']._fix_tax_included_price_company(product.price, product.taxes_id, self.tax_id, self.company_id)
+                if old_line:
+                    cmds.append((1, old_line.id, {
+                        'price': line_price
+                    }))
+                else:
+                    cmds.append((0, False, {
+                        'date': idate,
+                        'price': line_price
+                    }))
             else:
-                line = self.reservation_line_ids.filtered(lambda r: r.date == idate)
-                line_price = line.price
-            cmds.append((0, False, {
-                'date': idate,
-                'price': line_price
-            }))
+                line_price = old_line.price
             total_price += line_price
+        #unlink old lines deleted
+        dto = (fields.Date.from_string(dfrom) + timedelta(days=days)).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        old_deleted_days = self.reservation_line_ids.filtered(
+                lambda d: d.date < dfrom
+                or d.date >= dto)
+        old_deleted_days.unlink()
         return {'total_price': total_price, 'commands': cmds}
 
     @api.multi
@@ -787,7 +783,7 @@ class HotelReservation(models.Model):
         }
 
     """
-    AVAILABILTY PROCESS
+    AVAILABILTY PROCESS ------------------------------------------------
     """
 
     @api.model
@@ -858,7 +854,7 @@ class HotelReservation(models.Model):
                 raise ValidationError(warning_msg)
 
     """
-    CHECKIN/OUT PROCESS
+    CHECKIN/OUT PROCESS ------------------------------------------------
     """
 
     @api.multi
@@ -963,7 +959,7 @@ class HotelReservation(models.Model):
         }
 
     """
-    RESERVATION SPLITTED
+    RESERVATION SPLITTED -----------------------------------------------
     """
 
     @api.multi
