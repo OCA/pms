@@ -260,7 +260,6 @@ class HotelReservation(models.Model):
     price_subtotal = fields.Monetary(string='Subtotal', readonly=True, store=True, compute='_compute_amount_reservation')
     price_total = fields.Monetary(string='Total', readonly=True, store=True, compute='_compute_amount_reservation')
     price_tax = fields.Float(string='Taxes', readonly=True, store=True, compute='_compute_amount_reservation')
-    currency_id = fields.Many2one(related='folio_id.currency_id', store=True, string='Currency', readonly=True)
     # FIXME discount per night
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
 
@@ -306,7 +305,7 @@ class HotelReservation(models.Model):
                 record.update(record.prepare_reservation_lines(
                     record.checkin,
                     days_diff,
-                    vals = vals))
+                    vals = vals)) #REVISAR el unlink
             if ('checkin' in vals and record.checkin != vals['checkin']) or \
                     ('checkout' in vals and record.checkout != vals['checkout']) or \
                     ('state' in vals and record.state != vals['state']) :
@@ -396,6 +395,7 @@ class HotelReservation(models.Model):
 
     @api.onchange('adults', 'room_id')
     def onchange_room_id(self):
+        # TODO: Usar vals y write
         if self.room_id:
             if self.room_id.capacity < self.adults:
                 self.adults = self.room_id.capacity
@@ -403,7 +403,7 @@ class HotelReservation(models.Model):
                     _('%s people do not fit in this room! ;)') % (persons))
             if self.adults == 0:
                 self.adults = self.room_id.capacity
-            if not self.room_type_id:
+            if not self.room_type_id: #Si el registro no existe, modificar room_type aunque ya esté establecido
                 self.room_type_id = self.room_id.room_type_id
 
     @api.onchange('partner_id')
@@ -413,7 +413,7 @@ class HotelReservation(models.Model):
             'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or \
                 self.env['ir.default'].sudo().get('hotel.config.settings', 'parity_pricelist_id'),
         }
-        self.update(values)            
+        self.update(values)
 
     # When we need to overwrite the prices even if they were already established
     @api.onchange('room_type_id', 'pricelist_id', 'reservation_type')
@@ -745,7 +745,7 @@ class HotelReservation(models.Model):
                 line_price = old_line.price
                 cmds.append((4, old_line.id))
             total_price += line_price
-        return {'price_total': total_price, 'reservation_line_ids': cmds}
+        return {'reservation_line_ids': cmds}
 
     @api.multi
     def action_pay_folio(self):
