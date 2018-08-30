@@ -90,5 +90,5 @@ class AccountPayment(models.Model):
                 raise except_orm(_('Warning'), _('This pay is related with \
                                                 more than one Reservation.'))
             else:
-                fol.compute_invoices_amount()
+                fol.compute_amount()
             return res

@@ -4842,7 +4842,7 @@ msgid "Invoices"
 msgstr "Facturas"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_invoices_amount
+#: model:ir.model.fields,field_description:hotel.field_hotel_folio_pending_amount
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_folio_pending_amount
 msgid "Invoices amount"
 msgstr "Cantidad Facturada"

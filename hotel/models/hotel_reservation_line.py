@@ -20,6 +20,7 @@
 ##############################################################################
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
+from odoo.exceptions import except_orm, UserError, ValidationError
 
 class HotelReservationLine(models.Model):
     _name = "hotel.reservation.line"

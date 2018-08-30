@@ -41,7 +41,6 @@
               		<!--field name="price_virtual_room_domain" invisible="1" /-->
           			  <!-- <field name="price_virtual_room" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'vroom')], 'required': [('sale_price_type', '=', 'vroom')]}" /> -->
                   <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'vroom')], 'required': [('sale_price_type', '=', 'vroom')]}" /> -->
-                  <field name="list_price" />
                 </group>
                 <newline />
                 <!-- <separator colspan='4' string="Customer Taxes" /> -->
@@ -75,7 +74,6 @@
             <search string="Hotel Room">
                 <field name="name" />
                 <field name="room_type_id" />
-                <field name="list_price" string="Room rate" />
                 <field name="capacity" />
                 <newline />
                 <!--<filter name="available" string="Available"
@@ -95,7 +93,6 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name" />
                 <field name="room_type_id" />
-                <field name="list_price" string="Room rate" />
                 <field name="capacity" />
             </tree>
         </field>
