@@ -34,13 +34,3 @@ class HotelReservationLine(models.Model):
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)
-
-    @api.model
-    def create(self, vals):
-        record = super(HotelReservation, self).create(vals)
-        return record
-
-    @api.multi
-    def write(self, vals):
-        res = super(HotelReservation, self).write(vals)
-        return res
