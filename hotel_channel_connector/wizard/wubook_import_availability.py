@@ -21,7 +21,7 @@
 ##############################################################################
 from openerp.exceptions import ValidationError
 from openerp import models, fields, api, _
-from ..wubook import DEFAULT_WUBOOK_DATE_FORMAT
+from ..components.backend_adapter import DEFAULT_WUBOOK_DATE_FORMAT
 
 
 class ImportAvailabilityWizard(models.TransientModel):

@@ -205,6 +205,7 @@ var PMSCalendarView = AbstractView.extend({
 
 SystrayMenu.Items.push(CalendarMenu);
 ViewRegistry.add('pms', PMSCalendarView);
+//Core.view_registry.add('pms', HotelCalendarView);
 
 return PMSCalendarView;
 

@@ -23,7 +23,7 @@ import os
 import binascii
 from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError
-from ..wubook import DEFAULT_WUBOOK_DATE_FORMAT
+from ..components.backend_adapter import DEFAULT_WUBOOK_DATE_FORMAT
 from odoo.addons.hotel import date_utils
 
 

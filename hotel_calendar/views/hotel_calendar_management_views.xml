@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record model="ir.ui.view" id="view_hotel_calendar_management_mpms">
+        <field name="name">hotel.calendar.management.mpms</field>
+        <field name="model">hotel.calendar.management</field>
+        <field name="arch" type="xml">
+            <mpms></mpms>
+        </field>
+    </record>
+
+</odoo>

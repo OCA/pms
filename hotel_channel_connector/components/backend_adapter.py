@@ -8,6 +8,7 @@ from odoo.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo.addons.payment.models.payment_acquirer import _partner_split_name
 from odoo.addons.hotel import date_utils
+from odoo import fields
 
 # GLOBAL VARS
 DEFAULT_WUBOOK_DATE_FORMAT = "%d/%m/%Y"
@@ -81,9 +82,19 @@ class WuBookServer(object):
         self._server = None
 
 class HotelChannelInterfaceAdapter(AbstractComponent):
-    _name = 'hotel.channel.interface.adapter'
+    _name = 'hotel.channel.adapter'
     _inherit = ['base.backend.adapter', 'base.hotel.channel.connector']
     _usage = 'backend.adapter'
+
+    def _select_versions(self):
+        return [
+            ('1.2', '1.2'),
+        ]
+    version = fields.Selection(
+        selection='_select_versions',
+        string='Version',
+        required=True,
+    )
 
     def create_room(self, shortcode, name, capacity, price, availability):
         raise NotImplementedError
@@ -191,7 +202,7 @@ class HotelChannelInterfaceAdapter(AbstractComponent):
 
 class WuBookAdapter(AbstractComponent):
     _name = 'wubook.adapter'
-    _inherit = 'hotel.channel.interface.adapter'
+    _inherit = 'hotel.channel.adapter'
 
     # === ROOMS
     def create_room(self, shortcode, name, capacity, price, availability):
