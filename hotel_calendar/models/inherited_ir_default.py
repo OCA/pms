@@ -13,13 +13,13 @@ class IrDefault(models.Model):
         super(IrDefault, self).set(model_name, field_name, value, user_id, company_id, condition)
         if model_name == 'res.config.settings' and field_name == 'parity_pricelist_id':
             pricelist_id = int(value)
-            self.env['virtual.room.pricelist.cached'].search([]).unlink()
+            self.env['room.pricelist.cached'].search([]).unlink()
 
             pricelist_items = self.env['product.pricelist.item'].search([
                 ('pricelist_id', '=', pricelist_id)
             ])
             vroom_obj = self.env['hotel.room.type']
-            vroom_pr_cached_obj = self.env['virtual.room.pricelist.cached']
+            vroom_pr_cached_obj = self.env['room.pricelist.cached']
             for pitem in pricelist_items:
                 date_start = pitem.date_start
                 product_tmpl_id = pitem.product_tmpl_id.id

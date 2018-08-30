@@ -108,10 +108,9 @@ class HotelReservation(models.Model):
         date_start = date_utils.get_datetime(dfrom, hours=False) \
             - timedelta(days=1)
         date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        room_product_ids = rooms.mapped('product_id.id')
         reservations_raw = self.env['hotel.reservation'].search(
             [
-                ('product_id', 'in', room_product_ids),
+                ('room_id', 'in', rooms.ids),
                 ('state', 'in',
                  ['draft', 'confirm', 'booking', 'done', False]),
             ],
@@ -141,7 +140,7 @@ class HotelReservation(models.Model):
         vrooms = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
-        vroom_pr_cached_obj = self.env['virtual.room.pricelist.cached']
+        vroom_pr_cached_obj = self.env['room.pricelist.cached']
 
         for vroom in vrooms:
             days = {}
