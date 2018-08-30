@@ -181,6 +181,8 @@
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
                         </group>
                         <group colspan="4" string="Reservation Details" name="reservation_details">
+                            <field name="arrival_hour"/>
+                            <field name="departure_hour"/>
                             <field name="name"/>
                             <field name="adults"/>
                             <field name="children"/>
@@ -191,30 +193,30 @@
                             <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
                         </group>
                         <group class="oe_subtotal_footer" style="margin-right: 20px; !important" colspan="2" name="reservation_total" string="Amounts"  attrs="{'invisible':[('folio_id','=', False)]}">
-                            <!-- <field name="amount_room" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
-                            <!-- <field name="discount" string="Room Discount" attrs="{'invisible': [('discount_type','=','fixed')]}" /> -->
-                            <field name="discount_fixed" string="Room Discount" attrs="{'invisible': [('discount_type','=','percent')]}" />
-                            <field name="discount_type" widget="radio" options="{'horizontal': true}" nolabel="1" colspan="2"/>
+<!--
+                             <field name="discount" string="Room Discount" attrs="{'invisible': [('discount_type','=','fixed')]}" /> 
+-->
                             <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+<!--
                                 <label for="amount_discount" />
+-->
                                 <button name="%(action_hotel_massive_price_change_reservation_days)d" string="Massive Day Prices"
                                     type="action" class="oe_edit_only oe_link" icon="fa-bolt"/>
-                            </div>
+                            </div> 
                             <!-- <field name="amount_discount" nolabel="1" widget='monetary'  class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/> -->
+<!--
                             <div class="oe_subtotal_footer_separator oe_inline o_td_label">
                                 <label for="amount_reservation_services" />
                             </div>
+-->
                             <!-- <field name="amount_reservation_services" nolabel="1" widget='monetary'  class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/> -->
-                            <field name="price_total" invisible="1"/>
+                            <field name="price_total" />
                             <!-- <field name="qty_delivered_updateable" invisible="1"/> -->
                             <field name="state" invisible="1"/>
                             <!-- <field name="invoice_status" invisible="1"/> -->
                             <!-- <field name="customer_lead" invisible="1"/> -->
-                            <!-- <field name="currency_id" invisible="1"/> -->
-                            <field name="price_subtotal" widget="monetary" invisible="1"/>
-                            <!-- <field name="price_unit" invisible="1"/> -->
-                            <!-- <field name="fix_total" invisible="1" /> -->
-                            <!-- <field name="fix_folio_pending" invisible="1" /> -->
+                             <field name="currency_id" invisible="1"/> 
+                            <field name="price_subtotal" widget="monetary"/>
                         </group>
                     </group>
                     <field name="folio_internal_comment" nolabel="1" placeholder="Reservation Notes"/>
@@ -263,7 +265,7 @@
                                 <group colspan="4" string="Days" name="days">
                                     <field name="reservation_line_ids" nolabel="1">
                                         <tree create="false" delete="false" editable="bottom">
-                                            <field name="date" readonly="True" />
+                                            <field name="date" />
                                             <field name="price" />
                                             <field name="discount" />
                                         </tree>
@@ -413,10 +415,10 @@
                              />
                 <separator/>
                 <filter string="Still to be paid"
-                            domain="[('folio_id.invoices_amount','&gt;',0)]"
+                            domain="[('folio_id.pending_amount','&gt;',0)]"
                              />
                 <filter string="Late Payment"
-                            domain="[('folio_id.invoices_amount','&gt;',0),('state','in',['done'])]"
+                            domain="[('folio_id.pending_amount','&gt;',0),('state','in',['done'])]"
                             />
                 <filter string="Lates and NoShows"
                             domain="[('cancelled_reason','in',['late','noshow'])]"

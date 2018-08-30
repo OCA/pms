@@ -16,8 +16,6 @@ from odoo.tools import (
 from odoo import models, fields, api, _
 from odoo.addons.hotel import date_utils
 
-from odoo.addons import decimal_precision as dp
-
 class HotelRoomType(models.Model):
     """ Before creating a 'room type', you need to consider the following:
     With the term 'room type' is meant a type of residential accommodation: for
@@ -31,8 +29,6 @@ class HotelRoomType(models.Model):
     product_id = fields.Many2one('product.product', 'Product Room Type',
                                  required=True, delegate=True,
                                  ondelete='cascade')
-    # cat_id = fields.Many2one('product.category', 'category', required=True,
-    #                          delegate=True, index=True, ondelete='cascade')
     room_ids = fields.One2many('hotel.room', 'room_type_id', 'Rooms')
 
     # TODO Hierarchical relationship for parent-child tree ?
@@ -53,68 +49,51 @@ class HotelRoomType(models.Model):
                          'code must be unique!')]
     # total number of rooms in this type
     total_rooms_count = fields.Integer(compute='_compute_total_rooms')
-    # FIXING rename to default rooms ?
-    max_real_rooms = fields.Integer('Default Max Room Allowed')
 
     @api.depends('room_ids')
     def _compute_total_rooms(self):
         for record in self:
-            count = 0
-            count += len(record.room_ids)    # Rooms linked directly
-            # room_categories = r.room_type_ids.mapped('room_ids.id')
-            # count += self.env['hotel.room'].search_count([
-            #     ('categ_id.id', 'in', room_categories)
-            # ])  # Rooms linked through room type
-            record.total_rooms_count = count
+            record.total_rooms_count = len(record.room_ids)
 
     def _check_duplicated_rooms(self):
         # FIXME Using a Many2one relationship duplicated should not been possible
         pass
 
-    @api.constrains('max_real_rooms', 'room_ids')
-    def _check_max_rooms(self):
-        warning_msg = ""
-        # for r in self:
-        if self.max_real_rooms > self.total_rooms_count:
-            warning_msg += _('The Maxime rooms allowed can not be greate \
-                                than total rooms count')
-            raise models.ValidationError(warning_msg)
-
     @api.multi
     def get_capacity(self):
-        # WARNING use selg.capacity directly ?
-        pass
-        # self.ensure_one()
-        # hotel_room_obj = self.env['hotel.room']
-        # room_categories = self.room_type_ids.mapped('room_ids.id')
-        # room_ids = self.room_ids + hotel_room_obj.search([
-        #     ('categ_id.id', 'in', room_categories)
-        # ])
-        # capacities = room_ids.mapped('capacity')
-        # return any(capacities) and min(capacities) or 0
+        """
+        Get the minimum capacity in the rooms of this type or zero if has no rooms
+        @param self: The object pointer
+        @return: An integer with the capacity of this room type
+        """
+        self.ensure_one()
+        capacities = self.room_ids.mapped('capacity')
+        return any(capacities) and min(capacities) or 0
 
     @api.model
-    def check_availability_virtual_room(self, checkin, checkout,
+    # TODO Rename to check_availability_room_type
+    def check_availability_virtual_room(self, dfrom, dto,
                                         room_type_id=False, notthis=[]):
         """
         Check the avalability for an specific type of room
+        @param self: The object pointer
+        @param dfrom: Range date from
+        @param dto: Range date to
+        @param room_type_id: Room Type
+        @param notthis: Array excluding Room Types
         @return: A recordset of free rooms ?
         """
-        occupied = self.env['hotel.reservation'].occupied(checkin, checkout)
-        rooms_occupied = occupied.mapped('product_id.id')
+        reservations = self.env['hotel.reservation'].get_reservations(dfrom, dto)
+        reservations_rooms = reservations.mapped('room_id.id')
         free_rooms = self.env['hotel.room'].search([
-            ('product_id.id', 'not in', rooms_occupied),
+            ('id', 'not in', reservations_rooms),
             ('id', 'not in', notthis)
         ])
         if room_type_id:
-            # hotel_room_obj = self.env['hotel.room']
             room_type_id = self.env['hotel.room.type'].search([
                 ('id', '=', room_type_id)
             ])
-            # room_categories = virtual_room.room_type_ids.mapped('room_ids.id')
-            # rooms_linked = virtual_room.room_ids | hotel_room_obj.search([
-            #     ('categ_id.id', 'in', room_categories)])
-            # rooms_linked = room_type_id.room_ids
+            # QUESTION What linked represent? Rooms in this type ? 
             rooms_linked = self.room_ids
             free_rooms = free_rooms & rooms_linked
         return free_rooms.sorted(key=lambda r: r.sequence)
@@ -135,7 +114,5 @@ class HotelRoomType(models.Model):
     @api.multi
     def unlink(self):
         for record in self:
-            # Set fixed price to rooms with price from this virtual rooms
-            # Remove product.product
             record.product_id.unlink()
         return super().unlink()

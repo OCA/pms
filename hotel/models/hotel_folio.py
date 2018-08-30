@@ -23,50 +23,6 @@ from odoo.addons import decimal_precision as dp
 
 class HotelFolio(models.Model):
 
-    @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
-        if args is None:
-            args = []
-        args += ([('name', operator, name)])
-        mids = self.search(args, limit=100)
-        return mids.name_get()
-
-    @api.model
-    def _needaction_count(self, domain=None):
-        """
-         Show a count of draft state folio on the menu badge.
-         @param self: object pointer
-        """
-        return self.search_count([('state', '=', 'draft')])
-
-    @api.multi
-    def copy(self, default=None):
-        '''
-        @param self: object pointer
-        @param default: dict of default values to be set
-        '''
-        return super(HotelFolio, self).copy(default=default)
-
-    @api.multi
-    def _invoiced(self, name, arg):
-        '''
-        @param self: object pointer
-        @param name: Names of fields.
-        @param arg: User defined arguments
-        '''
-        pass
-        # return self.env['sale.order']._invoiced(name, arg)
-
-    @api.multi
-    def _invoiced_search(self, obj, name, args):
-        '''
-        @param self: object pointer
-        @param name: Names of fields.
-        @param arg: User defined arguments
-        '''
-        pass
-        # return self.env['sale.order']._invoiced_search(obj, name, args)
-
     # @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
     def _get_invoice_qty(self):
         pass
@@ -93,7 +49,7 @@ class HotelFolio(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
 
     name = fields.Char('Folio Number', readonly=True, index=True,
-                       default='New')
+                       default=lambda self: _('New'))
     partner_id = fields.Many2one('res.partner',
                                  track_visibility='onchange')
     # partner_invoice_id = fields.Many2one('res.partner',
@@ -108,6 +64,7 @@ class HotelFolio(models.Model):
     mobile = fields.Char('Mobile', related='partner_id.mobile')
     phone = fields.Char('Phone', related='partner_id.phone')
 
+    #Review: How to use state in folio?
     state = fields.Selection([('draft', 'Pre-reservation'), ('confirm', 'Pending Entry'),
                               ('booking', 'On Board'), ('done', 'Out'),
                               ('cancelled', 'Cancelled')],
@@ -126,37 +83,27 @@ class HotelFolio(models.Model):
                                   help="Hotel services detail provide to "
                                        "customer and it will include in "
                                        "main Invoice.")
-    # service_line_ids = fields.One2many('hotel.service.line', 'folio_id',
-    #                                    readonly=False,
-    #                                    states={'done': [('readonly', True)]},
-    #                                    help="Hotel services detail provide to"
-    #                                         "customer and it will include in "
-    #                                         "main Invoice.")
-    # has no sense used as this way
     hotel_invoice_id = fields.Many2one('account.invoice', 'Invoice')
 
     company_id = fields.Many2one('res.company', 'Company')
 
-    # currency_id = fields.Many2one('res.currency', related='pricelist_id.currency_id',
-    #                               string='Currency', readonly=True, required=True)
+    currency_id = fields.Many2one('res.currency', related='pricelist_id.currency_id',
+                                  string='Currency', readonly=True, required=True)
 
-    # pricelist_id = fields.Many2one('product.pricelist',
-    #                                string='Pricelist',
-    #                                required=True,
-    #                                readonly=True,
-    #                                states={'draft': [('readonly', False)],
-    #                                        'sent': [('readonly', False)]},
-    #                                help="Pricelist for current sales order.")
-    # Monetary to Float
-    invoices_amount = fields.Float(compute='compute_invoices_amount',
+    pricelist_id = fields.Many2one('product.pricelist',
+                                   string='Pricelist',
+                                   required=True,
+                                   readonly=True,
+                                   states={'draft': [('readonly', False)],
+                                           'sent': [('readonly', False)]},
+                                   help="Pricelist for current folio.")
+    pending_amount = fields.Monetary(compute='compute_amount',
                                    store=True,
                                    string="Pending in Folio")
-    # Monetary to Float
-    refund_amount = fields.Float(compute='compute_invoices_amount',
+    refund_amount = fields.Monetary(compute='compute_amount',
                                     store=True,
                                     string="Payment Returns")
-    # Monetary to Float
-    invoices_paid = fields.Float(compute='compute_invoices_amount',
+    invoices_paid = fields.Monetary(compute='compute_amount',
                                  store=True, track_visibility='onchange',
                                  string="Payments")
 
@@ -228,33 +175,10 @@ class HotelFolio(models.Model):
     amount_total = fields.Float(string='Total', store=True, readonly=True,
                                    track_visibility='always')
 
-
-    def _compute_fix_price(self):
-        for record in self:
-            for res in record.room_lines:
-                if res.fix_total == True:
-                    record.fix_price = True
-                    break
-                else:
-                    record.fix_price = False
-
-    def action_recalcule_payment(self):
-        for record in self:
-            for res in record.room_lines:
-                res.on_change_checkin_checkout_product_id()
-
     def _computed_rooms_char(self):
         for record in self:
             rooms = ', '.join(record.mapped('room_lines.room_id.name'))
             record.rooms_char = rooms
-
-    @api.model
-    def recompute_amount(self):
-        folios = self.env['hotel.folio']
-        if folios:
-            folios = folios.filtered(lambda x: (
-                x.name == folio_name))
-        folios.compute_invoices_amount()
 
     @api.multi
     def _compute_num_invoices(self):
@@ -262,41 +186,16 @@ class HotelFolio(models.Model):
         # for fol in self:
         #     fol.num_invoices =  len(self.mapped('invoice_ids.id'))
 
-    @api.model
-    def daily_plan(self):
-        _logger.info('daily_plan')
-        self._cr.execute("update hotel_folio set checkins_reservations = 0, \
-            checkouts_reservations = 0 where checkins_reservations > 0  \
-            or checkouts_reservations > 0")
-        folios_in = self.env['hotel.folio'].search([
-            ('room_lines.is_checkin', '=', True)
-        ])
-        folios_out = self.env['hotel.folio'].search([
-            ('room_lines.is_checkout', '=', True)
-        ])
-        for fol in folios_in:
-            count_checkin = fol.room_lines.search_count([
-                ('is_checkin', '=', True), ('folio_id.id', '=', fol.id)
-            ])
-            fol.write({'checkins_reservations': count_checkin})
-        for fol in folios_out:
-            count_checkout = fol.room_lines.search_count([
-                ('is_checkout', '=', True),
-                ('folio_id.id', '=', fol.id)
-            ])
-            fol.write({'checkouts_reservations': count_checkout})
-        return True
-
     # @api.depends('order_line.price_total', 'payment_ids', 'return_ids')
     @api.multi
-    def compute_invoices_amount(self):
-        _logger.info('compute_invoices_amount')
+    def compute_amount(self):
+        _logger.info('compute_amount')
 
     @api.multi
     def action_pay(self):
         self.ensure_one()
         partner = self.partner_id.id
-        amount = self.invoices_amount
+        amount = self.pending_amount
         view_id = self.env.ref('hotel.view_account_payment_folio_form').id
         return{
             'name': _('Register Payment'),
@@ -374,6 +273,178 @@ class HotelFolio(models.Model):
         }
 
     @api.multi
+    def action_folios_amount(self):
+        now_utc_dt = date_utils.now()
+        now_utc_str = now_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        reservations = self.env['hotel.reservation'].search([
+            ('checkout', '<=', now_utc_str)
+        ])
+        folio_ids = reservations.mapped('folio_id.id')
+        folios = self.env['hotel.folio'].search([('id', 'in', folio_ids)])
+        folios = folios.filtered(lambda r: r.pending_amount > 0)
+        return {
+            'name': _('Pending'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'hotel.folio',
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', folios.ids)]
+        }
+
+    @api.multi
+    def go_to_currency_exchange(self):
+        '''
+         when Money Exchange button is clicked then this method is called.
+        -------------------------------------------------------------------
+        @param self: object pointer
+        '''
+        _logger.info('go_to_currency_exchange')
+        pass
+        # cr, uid, context = self.env.args
+        # context = dict(context)
+        # for rec in self:
+        #     if rec.partner_id.id and len(rec.room_lines) != 0:
+        #         context.update({'folioid': rec.id, 'guest': rec.partner_id.id,
+        #                         'room_no': rec.room_lines[0].product_id.name})
+        #         self.env.args = cr, uid, misc.frozendict(context)
+        #     else:
+        #         raise except_orm(_('Warning'), _('Please Reserve Any Room.'))
+        # return {'name': _('Currency Exchange'),
+        #         'res_model': 'currency.exchange',
+        #         'type': 'ir.actions.act_window',
+        #         'view_id': False,
+        #         'view_mode': 'form,tree',
+        #         'view_type': 'form',
+        #         'context': {'default_folio_no': context.get('folioid'),
+        #                     'default_hotel_id': context.get('hotel'),
+        #                     'default_guest_name': context.get('guest'),
+        #                     'default_room_number': context.get('room_no')
+        #                     },
+        #         }
+
+    @api.model
+    def create(self, vals, check=True):
+        if vals.get('name', _('New')) == _('New'):
+            if 'company_id' in vals:
+                vals['name'] = self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('sale.order') or _('New')
+            else:
+                vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
+
+        # Makes sure partner_invoice_id' and 'pricelist_id' are defined
+        if any(f not in vals for f in ['partner_invoice_id', 'partner_shipping_id', 'pricelist_id']):
+            partner = self.env['res.partner'].browse(vals.get('partner_id'))
+            addr = partner.address_get(['delivery', 'invoice'])
+            vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
+            vals['pricelist_id'] = vals.setdefault('pricelist_id', partner.property_product_pricelist and partner.property_product_pricelist.id)
+        result = super(HotelFolio, self).create(vals)
+        return result
+
+    @api.multi
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        """
+        Update the following fields when the partner is changed:
+        - Pricelist
+        - Invoice address
+        - user_id
+        """
+        if not self.partner_id:
+            self.update({
+                'partner_invoice_id': False,
+                'payment_term_id': False,
+                'fiscal_position_id': False,
+            })
+            return
+
+        addr = self.partner_id.address_get(['invoice'])
+        values = {
+            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
+            'partner_invoice_id': addr['invoice'],
+            'user_id': self.partner_id.user_id.id or self.env.uid
+        }
+        if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and self.env.user.company_id.sale_note:
+            values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+
+        if self.partner_id.team_id:
+            values['team_id'] = self.partner_id.team_id.id
+        self.update(values)
+
+    @api.multi
+    def action_invoice_create(self, grouped=False, states=None):
+        '''
+        @param self: object pointer
+        '''
+        pass
+        # if states is None:
+        #     states = ['confirmed', 'done']
+        # order_ids = [folio.order_id.id for folio in self]
+        # sale_obj = self.env['sale.order'].browse(order_ids)
+        # invoice_id = (sale_obj.action_invoice_create(grouped=False,
+        #                                              states=['confirmed',
+        #                                                      'done']))
+        # for line in self:
+        #     values = {'invoiced': True,
+        #               'state': 'progress' if grouped else 'progress',
+        #               'hotel_invoice_id': invoice_id
+        #               }
+        #     line.write(values)
+        # return invoice_id
+
+    @api.multi
+    def advance_invoice(self):
+        pass
+
+    '''
+    WORKFLOW STATE
+    '''
+
+    @api.multi
+    def button_dummy(self):
+        '''
+        @param self: object pointer
+        '''
+        # for folio in self:
+        #     folio.order_id.button_dummy()
+        return True
+
+    @api.multi
+    def action_done(self):
+        for line in self.room_lines:
+            if line.state == "booking":
+                line.action_reservation_checkout()
+                
+    @api.multi
+    def action_cancel(self):
+        '''
+        @param self: object pointer
+        '''
+        pass
+        # for sale in self:
+        #     if not sale.order_id:
+        #         raise ValidationError(_('Order id is not available'))
+        #     for invoice in sale.invoice_ids:
+        #         invoice.state = 'cancel'
+        #     sale.room_lines.action_cancel()
+        #     sale.order_id.action_cancel()
+
+    @api.multi
+    def print_quotation(self):
+        pass
+        # TODO- New report to reservation order
+        # self.order_id.filtered(lambda s: s.state == 'draft').write({
+        #     'state': 'sent',
+        # })
+        # return self.env.ref('sale.report_saleorder').report_action(self, data=data)
+
+    @api.multi
+    def action_confirm(self):
+        _logger.info('action_confirm')
+
+
+    """
+    CHECKIN/OUT PROCESS
+    """
+    @api.multi
     def action_checks(self):
         self.ensure_one()
         rooms = self.mapped('room_lines.id')
@@ -386,25 +457,59 @@ class HotelFolio(models.Model):
             'domain': [('reservation_id', 'in', rooms)],
             'target': 'new',
         }
+    
+    @api.model
+    def daily_plan(self):
+        _logger.info('daily_plan')
+        self._cr.execute("update hotel_folio set checkins_reservations = 0, \
+            checkouts_reservations = 0 where checkins_reservations > 0  \
+            or checkouts_reservations > 0")
+        folios_in = self.env['hotel.folio'].search([
+            ('room_lines.is_checkin', '=', True)
+        ])
+        folios_out = self.env['hotel.folio'].search([
+            ('room_lines.is_checkout', '=', True)
+        ])
+        for fol in folios_in:
+            count_checkin = fol.room_lines.search_count([
+                ('is_checkin', '=', True), ('folio_id.id', '=', fol.id)
+            ])
+            fol.write({'checkins_reservations': count_checkin})
+        for fol in folios_out:
+            count_checkout = fol.room_lines.search_count([
+                ('is_checkout', '=', True),
+                ('folio_id.id', '=', fol.id)
+            ])
+            fol.write({'checkouts_reservations': count_checkout})
+        return True
 
     @api.multi
-    def action_folios_amount(self):
-        now_utc_dt = date_utils.now()
-        now_utc_str = now_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        reservations = self.env['hotel.reservation'].search([
-            ('checkout', '<=', now_utc_str)
-        ])
-        folio_ids = reservations.mapped('folio_id.id')
-        folios = self.env['hotel.folio'].search([('id', 'in', folio_ids)])
-        folios = folios.filtered(lambda r: r.invoices_amount > 0)
-        return {
-            'name': _('Pending'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'hotel.folio',
-            'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', folios.ids)]
-        }
+    def _compute_cardex_count(self):
+        _logger.info('_compute_cardex_amount')
+        for fol in self:
+            num_cardex = 0
+            pending = False
+            if fol.reservation_type == 'normal':
+                for reser in fol.room_lines:
+                    if reser.state != 'cancelled' and \
+                            not reser.parent_reservation:
+                        num_cardex += len(reser.cardex_ids)
+                fol.cardex_count = num_cardex
+                pending = 0
+                for reser in fol.room_lines:
+                    if reser.state != 'cancelled' and \
+                            not reser.parent_reservation:
+                        pending += (reser.adults + reser.children) \
+                                          - len(reser.cardex_ids)
+                if pending <= 0:
+                    fol.cardex_pending = False
+                else:
+                    fol.cardex_pending = True
+        fol.cardex_pending_num = pending
+
+    """
+    MAILING PROCESS
+    """
 
     @api.depends('room_lines')
     def _compute_has_confirmed_reservations_to_send(self):
@@ -467,221 +572,6 @@ class HotelFolio(models.Model):
                 has_to_send = False
                 break
         self.has_checkout_to_send = has_to_send
-
-    @api.multi
-    def _compute_cardex_count(self):
-        _logger.info('_compute_cardex_amount')
-        for fol in self:
-            num_cardex = 0
-            pending = False
-            if fol.reservation_type == 'normal':
-                for reser in fol.room_lines:
-                    if reser.state != 'cancelled' and \
-                            not reser.parent_reservation:
-                        num_cardex += len(reser.cardex_ids)
-                fol.cardex_count = num_cardex
-                pending = 0
-                for reser in fol.room_lines:
-                    if reser.state != 'cancelled' and \
-                            not reser.parent_reservation:
-                        pending += (reser.adults + reser.children) \
-                                          - len(reser.cardex_ids)
-                if pending <= 0:
-                    fol.cardex_pending = False
-                else:
-                    fol.cardex_pending = True
-        fol.cardex_pending_num = pending
-
-    @api.multi
-    def go_to_currency_exchange(self):
-        '''
-         when Money Exchange button is clicked then this method is called.
-        -------------------------------------------------------------------
-        @param self: object pointer
-        '''
-        _logger.info('go_to_currency_exchange')
-        pass
-        # cr, uid, context = self.env.args
-        # context = dict(context)
-        # for rec in self:
-        #     if rec.partner_id.id and len(rec.room_lines) != 0:
-        #         context.update({'folioid': rec.id, 'guest': rec.partner_id.id,
-        #                         'room_no': rec.room_lines[0].product_id.name})
-        #         self.env.args = cr, uid, misc.frozendict(context)
-        #     else:
-        #         raise except_orm(_('Warning'), _('Please Reserve Any Room.'))
-        # return {'name': _('Currency Exchange'),
-        #         'res_model': 'currency.exchange',
-        #         'type': 'ir.actions.act_window',
-        #         'view_id': False,
-        #         'view_mode': 'form,tree',
-        #         'view_type': 'form',
-        #         'context': {'default_folio_no': context.get('folioid'),
-        #                     'default_hotel_id': context.get('hotel'),
-        #                     'default_guest_name': context.get('guest'),
-        #                     'default_room_number': context.get('room_no')
-        #                     },
-        #         }
-
-    @api.model
-    def create(self, vals, check=True):
-        """
-        Overrides orm create method.
-        @param self: The object pointer
-        @param vals: dictionary of fields value.
-        @return: new record set for hotel folio.
-        """
-        _logger.info('create')
-        if not 'service_line_ids' and 'folio_id' in vals:
-            tmp_room_lines = vals.get('room_lines', [])
-            vals['order_policy'] = vals.get('hotel_policy', 'manual')
-            vals.update({'room_lines': []})
-            for line in (tmp_room_lines):
-                line[2].update({'folio_id': folio_id})
-            vals.update({'room_lines': tmp_room_lines})
-            folio_id = super(HotelFolio, self).create(vals)
-        else:
-            if not vals:
-                vals = {}
-            vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio')
-            folio_id = super(HotelFolio, self).create(vals)
-
-        return folio_id
-
-    @api.multi
-    def write(self, vals):
-        if 'room_lines' in vals and vals['room_lines'][0][2] and 'reservation_line_ids' in vals['room_lines'][0][2] and vals['room_lines'][0][2]['reservation_line_ids'][0][0] == 5:
-            del vals['room_lines']
-        return super(HotelFolio, self).write(vals)
-
-    @api.multi
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        '''
-        When you change partner_id it will update the partner_invoice_id,
-        partner_shipping_id and pricelist_id of the hotel folio as well
-        ---------------------------------------------------------------
-        @param self: object pointer
-        '''
-        _logger.info('onchange_partner_id')
-        pass
-        # self.update({
-        #     'currency_id': self.env.ref('base.main_company').currency_id,
-        #     'partner_invoice_id': self.partner_id and self.partner_id.id or False,
-        #     'partner_shipping_id': self.partner_id and self.partner_id.id or False,
-        #     'pricelist_id': self.partner_id and self.partner_id.property_product_pricelist.id or False,
-        # })
-        # """
-        # Warning messajes saved in partner form to folios
-        # """
-        # if not self.partner_id:
-        #     return
-        # warning = {}
-        # title = False
-        # message = False
-        # partner = self.partner_id
-        #
-        # # If partner has no warning, check its company
-        # if partner.sale_warn == 'no-message' and partner.parent_id:
-        #     partner = partner.parent_id
-        #
-        # if partner.sale_warn != 'no-message':
-        #     # Block if partner only has warning but parent company is blocked
-        #     if partner.sale_warn != 'block' and partner.parent_id \
-        #             and partner.parent_id.sale_warn == 'block':
-        #         partner = partner.parent_id
-        #     title = _("Warning for %s") % partner.name
-        #     message = partner.sale_warn_msg
-        #     warning = {
-        #             'title': title,
-        #             'message': message,
-        #     }
-        #     if self.partner_id.sale_warn == 'block':
-        #         self.update({
-        #             'partner_id': False,
-        #             'partner_invoice_id': False,
-        #             'partner_shipping_id': False,
-        #             'pricelist_id': False
-        #         })
-        #         return {'warning': warning}
-        #
-        # if warning:
-        #     return {'warning': warning}
-
-    @api.multi
-    def button_dummy(self):
-        '''
-        @param self: object pointer
-        '''
-        # for folio in self:
-        #     folio.order_id.button_dummy()
-        return True
-
-    @api.multi
-    def action_done(self):
-        for line in self.room_lines:
-            if line.state == "booking":
-                line.action_reservation_checkout()
-
-    @api.multi
-    def action_invoice_create(self, grouped=False, states=None):
-        '''
-        @param self: object pointer
-        '''
-        pass
-        # if states is None:
-        #     states = ['confirmed', 'done']
-        # order_ids = [folio.order_id.id for folio in self]
-        # sale_obj = self.env['sale.order'].browse(order_ids)
-        # invoice_id = (sale_obj.action_invoice_create(grouped=False,
-        #                                              states=['confirmed',
-        #                                                      'done']))
-        # for line in self:
-        #     values = {'invoiced': True,
-        #               'state': 'progress' if grouped else 'progress',
-        #               'hotel_invoice_id': invoice_id
-        #               }
-        #     line.write(values)
-        # return invoice_id
-
-    @api.multi
-    def advance_invoice(self):
-        pass
-        # order_ids = [folio.order_id.id for folio in self]
-        # sale_obj = self.env['sale.order'].browse(order_ids)
-        # invoices = action_invoice_create(self, grouped=True)
-        # return invoices
-
-    @api.multi
-    def action_cancel(self):
-        '''
-        @param self: object pointer
-        '''
-        pass
-        # for sale in self:
-        #     if not sale.order_id:
-        #         raise ValidationError(_('Order id is not available'))
-        #     for invoice in sale.invoice_ids:
-        #         invoice.state = 'cancel'
-        #     sale.room_lines.action_cancel()
-        #     sale.order_id.action_cancel()
-
-
-    @api.multi
-    def action_confirm(self):
-        _logger.info('action_confirm')
-
-    @api.multi
-    def print_quotation(self):
-        pass
-        # self.order_id.filtered(lambda s: s.state == 'draft').write({
-        #     'state': 'sent',
-        # })
-        # return self.env.ref('sale.report_saleorder').report_action(self, data=data)
-
-    @api.multi
-    def action_cancel_draft(self):
-        _logger.info('action_confirm')
 
     @api.multi
     def send_reservation_mail(self):
@@ -848,12 +738,6 @@ class HotelFolio(models.Model):
         return True
 
     @api.multi
-    def unlink(self):
-        # for record in self:
-        #     record.order_id.unlink()
-        return super(HotelFolio, self).unlink()
-
-    @api.multi
     def get_grouped_reservations_json(self, state, import_all=False):
         self.ensure_one()
         info_grouped = []
@@ -882,3 +766,4 @@ class HotelFolio(models.Model):
                 if not founded:
                     info_grouped.append(vals)
         return sorted(sorted(info_grouped, key=lambda k: k['num'], reverse=True), key=lambda k: k['room_type']['id'])
+

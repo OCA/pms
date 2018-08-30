@@ -36,4 +36,4 @@ class PaymentReturn(models.Model):
                payments = self.env['account.payment'].search([('move_line_ids','in',line.move_line_ids.ids)])
                folio_ids += payments.mapped('folio_id.id')
             folios = self.env['hotel.folio'].browse(folio_ids)
-            folios.compute_invoices_amount()
+            folios.compute_amount()
