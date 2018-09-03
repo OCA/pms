@@ -83,15 +83,7 @@
 
 <t t-name="HotelCalendar.TooltipRoom">
 	<div class="oe_tooltip_string"><t t-esc="name"/></div>
-	<p><b>Price From:</b> <t t-esc="price_from"/></p>
-	<t t-if="num_inside_rooms > 0">
-		<b>Belongs to the Virtual Rooms:</b>
-		<ul>
-			<li t-foreach="inside_rooms" t-as="room_name">
-				<t t-esc="room_name"/>
-			</li>
-		</ul>
-	</t>
+	<p><b>Room Type:</b> <t t-esc="room_type_name"/></p>
 </t>
 
 <t t-name="HotelCalendar.TooltipEvent">

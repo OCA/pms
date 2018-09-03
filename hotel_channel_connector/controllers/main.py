@@ -82,7 +82,7 @@ class website_wubook(http.Controller):
             wubook_obj.fetch_rooms_values(dfrom, dto)
 
             parity_restr_id = request.env['ir.default'].sudo().get(
-                            'hotel.config.settings', 'parity_restrictions_id')
+                            'res.config.settings', 'parity_restrictions_id')
             if parity_restr_id:
                 vroom_restr_obj = request.env['hotel.virtual.room.restriction']
                 restr_id = vroom_restr_obj.sudo().browse(int(parity_restr_id))
@@ -91,7 +91,7 @@ class website_wubook(http.Controller):
                                                         rpid=restr_id.wpid)
 
             parity_pricelist_id = request.env['ir.default'].sudo().get(
-                                'hotel.config.settings', 'parity_pricelist_id')
+                                'res.config.settings', 'parity_pricelist_id')
             if parity_pricelist_id:
                 pricelist_id = request.env['product.pricelist'].sudo().browse(
                                                     int(parity_pricelist_id))

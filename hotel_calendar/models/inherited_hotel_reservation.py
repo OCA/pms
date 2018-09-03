@@ -20,7 +20,7 @@ class HotelReservation(models.Model):
         json_reservation_tooltips = {}
         for reserv in reservations:
             json_reservations.append([
-                reserv.product_id.id,
+                reserv.room_id.id,
                 reserv.id,
                 reserv.folio_id.partner_id.name,
                 reserv.adults,
@@ -60,33 +60,24 @@ class HotelReservation(models.Model):
     @api.model
     def _hcalendar_room_data(self, rooms):
         pricelist_id = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'parity_pricelist_id')
+            'res.config.settings', 'parity_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
         json_rooms = []
         room_type_obj = self.env['hotel.room.type']
-        vroom_obj = self.env['hotel.room.type']
         for room in rooms:
-            room_type = room_type_obj.search([
-                ('cat_id', '=', room.categ_id.id)
-            ], limit=1)
-            vrooms = vroom_obj.search([
-                '|', ('room_ids', 'in', room.id),
-                ('room_type_ids.id', '=', room.categ_id.id)],
-                                      order='hcal_sequence ASC')
             json_rooms.append((
-                room.product_id.id,
+                room.id,
                 room.name,
                 room.capacity,
-                room.categ_id.id,
-                room_type.code_type,
+                '', # Reserved for type code
                 room.shared_room,
-                room.sale_price_type == 'vroom'
-                and ['pricelist', room.price_virtual_room.id, pricelist_id,
-                     room.price_virtual_room.name]
-                or ['fixed', room.list_price],
-                vrooms.mapped('name'),
-                vrooms.ids,
+                room.room_type_id
+                and ['pricelist', room.room_type_id.id, pricelist_id,
+                     room.room_type_id.name]
+                or 0,
+                room.room_type_id.name,
+                room.room_type_id.id,
                 room.floor_id.id,
                 room.room_amenities.ids))
         return json_rooms
@@ -129,7 +120,7 @@ class HotelReservation(models.Model):
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom, dto):
         pricelist_id = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'parity_pricelist_id')
+            'res.config.settings', 'parity_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
         date_start = date_utils.get_datetime(dfrom, hours=False) \
@@ -137,39 +128,39 @@ class HotelReservation(models.Model):
         date_diff = date_utils.date_diff(date_start, dto, hours=False) + 1
         # Get Prices
         json_rooms_prices = {pricelist_id: []}
-        vrooms = self.env['hotel.room.type'].search(
+        room_typed_ids = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
-        vroom_pr_cached_obj = self.env['room.pricelist.cached']
+        room_pr_cached_obj = self.env['room.pricelist.cached']
 
-        for vroom in vrooms:
+        for room_type_id in room_typed_ids:
             days = {}
             for i in range(0, date_diff):
                 ndate = date_start + timedelta(days=i)
                 ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                prod_price_id = vroom_pr_cached_obj.search([
-                    ('virtual_room_id', '=', vroom.id),
+                prod_price_id = room_pr_cached_obj.search([
+                    ('room_id', '=', room_type_id.id),
                     ('date', '=', ndate_str)
                 ], limit=1)
                 days.update({
                     ndate.strftime("%d/%m/%Y"): prod_price_id and
                                                 prod_price_id.price or
-                                                vroom.product_id.with_context(
+                                                room_type_id.product_id.with_context(
                                                     quantity=1,
                                                     date=ndate_str,
                                                     pricelist=pricelist_id).price
                 })
             json_rooms_prices[pricelist_id].append({
-                'room': vroom.id,
+                'room': room_type_id.id,
                 'days': days,
-                'title': vroom.name,
+                'title': room_type_id.name,
             })
         return json_rooms_prices
 
     @api.model
     def get_hcalendar_restrictions_data(self, dfrom, dto):
         restriction_id = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'parity_restrictions_id')
+            'res.config.settings', 'parity_restrictions_id')
         if restriction_id:
             restriction_id = int(restriction_id)
         date_start = date_utils.get_datetime(dfrom, hours=False) \
@@ -177,17 +168,17 @@ class HotelReservation(models.Model):
         date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
         # Get Prices
         json_rooms_rests = {}
-        vrooms = self.env['hotel.room.type'].search(
+        room_type_ids = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
         vroom_rest_obj = self.env['hotel.virtual.room.restriction.item']
-        for vroom in vrooms:
+        for room_type_id in room_type_ids:
             days = {}
             for i in range(0, date_diff):
                 ndate = date_start + timedelta(days=i)
                 ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 rest_id = vroom_rest_obj.search([
-                    ('virtual_room_id', '=', vroom.id),
+                    ('room_type_id', '=', room_type_id.id),
                     ('date_start', '>=', ndate_str),
                     ('date_end', '<=', ndate_str),
                     ('applied_on', '=', '0_virtual_room'),
@@ -207,7 +198,7 @@ class HotelReservation(models.Model):
                             rest_id.closed_arrival,
                             rest_id.closed_departure)
                     })
-            json_rooms_rests.update({vroom.id: days})
+            json_rooms_rests.update({room_type_id.id: days})
         return json_rooms_rests
 
     @api.model
@@ -246,9 +237,9 @@ class HotelReservation(models.Model):
             'allow_invalid_actions': type_move == 'allow_invalid',
             'assisted_movement': type_move == 'assisted',
             'default_arrival_hour': self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'default_arrival_hour'),
+                'res.config.settings', 'default_arrival_hour'),
             'default_departure_hour': self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'default_departure_hour'),
+                'res.config.settings', 'default_departure_hour'),
             'show_notifications': user_id.pms_show_notifications,
             'show_pricelist': user_id.pms_show_pricelist,
             'show_availability': user_id.pms_show_availability,
@@ -283,7 +274,7 @@ class HotelReservation(models.Model):
                 'action': naction,
                 'type': ntype,
                 'title': ntitle,
-                'product_id': record.product_id.id,
+                'id': record.room_id.id,
                 'reserv_id': record.id,
                 'partner_name': record.partner_id.name,
                 'adults': record.adults,
@@ -296,7 +287,7 @@ class HotelReservation(models.Model):
                 'splitted': record.splitted,
                 'parent_reservation': record.parent_reservation and
                                       record.parent_reservation.id or 0,
-                'room_name': record.product_id.name,
+                'room_name': record.name,
                 'partner_phone': record.partner_id.mobile
                                  or record.partner_id.phone or _('Undefined'),
                 'state': record.state,
@@ -310,7 +301,7 @@ class HotelReservation(models.Model):
         from_reservs = self.env['hotel.reservation'].browse(fromReservsIds)
         to_reservs = self.env['hotel.reservation'].browse(toReservsIds)
 
-        if not any(from_reservs) or not any(toReservs):
+        if not any(from_reservs) or not any(to_reservs):
             raise ValidationError(_("Invalid swap parameters"))
 
         max_from_persons = max(
@@ -318,16 +309,10 @@ class HotelReservation(models.Model):
         max_to_persons = max(
             to_reservs.mapped(lambda x: x.adults + x.children))
 
-        from_room_product = from_reservs[0].product_id
-        to_room_product = to_reservs[0].product_id
+        from_room = from_reservs[0].room_id
+        to_room = to_reservs[0].room_id
         from_overbooking = from_reservs[0].overbooking
         to_overbooking = to_reservs[0].overbooking
-
-        hotel_room_obj = self.env['hotel.room']
-        from_room = hotel_room_obj.search([
-            ('product_id', '=', from_room_product.id)])
-        to_room = hotel_room_obj.search([
-            ('product_id', '=', from_room_product.id)])
 
         if max_from_persons > to_room.capacity or \
                 max_to_persons > from_room.capacity:
@@ -335,12 +320,12 @@ class HotelReservation(models.Model):
 
         for record in from_reservs:
             record.with_context({'ignore_avail_restrictions': True}).write({
-                'product_id': to_room_product.id,
+                'room_id': to_room.id,
                 'overbooking': to_overbooking,
             })
         for record in to_reservs:
             record.with_context({'ignore_avail_restrictions': True}).write({
-                'product_id': from_room_product.id,
+                'room_id': from_room.id,
                 'overbooking': from_overbooking,
             })
 

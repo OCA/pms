@@ -102,7 +102,7 @@ return AbstractModel.extend({
         return this._rpc({
             model: this.modelName,
             method: 'write',
-            args: [ids, write_values],
+            args: [ids, vals],
             context: Session.user_context,
         });
     },

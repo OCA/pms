@@ -35,7 +35,6 @@ var HotelCalendarView = AbstractRenderer.extend({
     /** VIEW METHODS **/
     init: function(parent, state, params) {
       this._super.apply(this, arguments);
-      this.model = params.model;
     },
 
     start: function () {
@@ -204,20 +203,12 @@ var HotelCalendarView = AbstractRenderer.extend({
                         for (var nreserv of ev.detail.outReservs) {
                           $(nreserv._html).animate({'top': refFromReservDiv.style.top});
                         }
-                        self.model.swapReservations(fromIds, toIds).then(function(results){
-                          var allReservs = ev.detail.inReservs.concat(ev.detail.outReservs);
-                          for (nreserv of allReservs) {
-                            $(nreserv._html).stop(true);
-                          }
-                        }).fail(function(err, errev){
-                          for (var nreserv of ev.detail.inReservs) {
-                            $(nreserv._html).animate({'top': refFromReservDiv.style.top}, 'fast');
-                          }
-                          for (var nreserv of ev.detail.outReservs) {
-                            $(nreserv._html).animate({'top': refToReservDiv.style.top}, 'fast');
-                          }
-
-                          self._hcalendar.swapReservations(ev.detail.outReservs, ev.detail.inReservs);
+                        self.trigger_up('onSwapReservations', {
+                            'fromIds': fromIds,
+                            'toIds': toIds,
+                            'detail': ev.detail,
+                            'refFromReservDiv': refFromReservDiv,
+                            'refToReservDiv': refToReservDiv
                         });
                       } else {
                         var qdict = {};
@@ -290,16 +281,14 @@ var HotelCalendarView = AbstractRenderer.extend({
                             var write_values = {
                                 'checkin': newReservation.startDate.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
                                 'checkout': newReservation.endDate.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                                'product_id': roomId,
+                                'room_id': roomId,
                                 'overbooking': newReservation.room.overbooking
                             };
-                            self.model.update_records([newReservation.id], write_values).then(function(result){
-                              // Remove OB Room Row?
-                              if (oldReservation.room.overbooking) {
-                                self._hcalendar.removeOBRoomRow(oldReservation);
-                              }
-                            }).fail(function(err, errev){
-                                self._hcalendar.replaceReservation(newReservation, oldReservation);
+                            self.trigger_up('onUpdateReservations', {
+                                'ids': [newReservation.id],
+                                'values': write_values,
+                                'oldReservation': oldReservation,
+                                'newReservation': newReservation
                             });
                             // Workarround for dispatch room lines regeneration
                             // new Model('hotel.reservation').call('on_change_checkin_checkout_product_id', [[newReservation.id], false]);
@@ -313,7 +302,7 @@ var HotelCalendarView = AbstractRenderer.extend({
                 ],
                 $content: QWeb.render('HotelCalendar.ConfirmReservationChanges', qdict)
             }).open();
-            dialog.$modal.on('hide.bs.modal', function(e){
+            dialog.opened(function(e){
               if (!hasChanged) {
                 self._hcalendar.replaceReservation(newReservation, oldReservation);
               }
@@ -327,14 +316,14 @@ var HotelCalendarView = AbstractRenderer.extend({
 	        	var last_cell = ev.detail.cells[ev.detail.cells.length-1];
 	        	var date_cell_start = HotelCalendar.toMoment(self._hcalendar.etable.querySelector(`#${ev.detail.cells[0].dataset.hcalParentCell}`).dataset.hcalDate);
 	        	var date_cell_end = HotelCalendar.toMoment(self._hcalendar.etable.querySelector(`#${last_cell.dataset.hcalParentCell}`).dataset.hcalDate);
-            var parentRow = document.querySelector(`#${ev.detail.cells[0].dataset.hcalParentRow}`);
-            var room = self._hcalendar.getRoom(parentRow.dataset.hcalRoomObjId);
-            if (room.overbooking) {
-              return;
-            }
-            var nights = date_cell_end.diff(date_cell_start, 'days');
+                var parentRow = document.querySelector(`#${ev.detail.cells[0].dataset.hcalParentRow}`);
+                var room = self._hcalendar.getRoom(parentRow.dataset.hcalRoomObjId);
+                if (room.overbooking) {
+                  return;
+                }
+                var nights = date_cell_end.diff(date_cell_start, 'days');
 	        	var qdict = {
-	        		'total_price': Number(ev.detail.totalPrice).toLocaleString(),
+	        		//'total_price': Number(ev.detail.totalPrice).toLocaleString(),
 	        		'nights': nights
 	        	};
 	        	$(last_cell).tooltip({
@@ -379,7 +368,8 @@ var HotelCalendarView = AbstractRenderer.extend({
                   'default_checkout': endDate.utc().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
                   'default_adults': numBeds,
                   'default_children': 0,
-                  'default_product_id': room.id,
+                  'default_room_id': room.id,
+                  'default_room_type_id': room.getUserData('room_type_id'),
                 },
                 title: _t("Create: ") + _t("Reservation"),
                 initial_view: "form",
@@ -403,10 +393,10 @@ var HotelCalendarView = AbstractRenderer.extend({
     _assign_extra_info: function() {
     	var self = this;
       $(this._hcalendar.etable).find('.hcal-cell-room-type-group-item.btn-hcal-3d').on("mouseenter", function(){
-      	var $this = $(this);
-      	var room = self._hcalendar.getRoom($this.parent().data("hcalRoomObjId"));
-        if (room.overbooking) {
-          $this.tooltip({
+          var $this = $(this);
+          var room = self._hcalendar.getRoom($this.parent().data("hcalRoomObjId"));
+          if (room.overbooking) {
+            $this.tooltip({
                 animation: true,
                 html: true,
                 placement: 'right',
@@ -414,13 +404,11 @@ var HotelCalendarView = AbstractRenderer.extend({
             }).tooltip('show');
           return;
         } else {
-        	var qdict = {
-    			  'price_from': room.getUserData('price_from'),
-            'inside_rooms': room.getUserData('inside_rooms'),
-            'num_inside_rooms': room.getUserData('inside_rooms').length,
-            'name': room.number
-        	};
-        	$this.tooltip({
+            var qdict = {
+                'room_type_name': room.getUserData('room_type_name'),
+                'name': room.number
+            };
+            $this.tooltip({
                 animation: true,
                 html: true,
                 placement: 'right',
@@ -636,7 +624,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         var $list = this.$el.find('#pms-search #type_list');
         $list.html('');
         resultsHotelRoomType.forEach(function(item, index){
-            $list.append(`<option value="${item.cat_id[0]}">${item.name}</option>`);
+            $list.append(`<option value="${item.id}">${item.name}</option>`);
         });
         $list.select2({
           theme: "classic"
@@ -800,7 +788,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         domain.push(['amenities', 'in', amenities]);
       }
       if (virtual && virtual.length > 0) {
-        domain.push(['inside_rooms_ids', 'some', virtual]);
+        domain.push(['room_type_id', 'some', virtual]);
       }
 
       this._hcalendar.setDomain(HotelCalendar.DOMAIN.ROOMS, domain);

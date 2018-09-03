@@ -18,6 +18,8 @@ var PMSCalendarController = AbstractController.extend({
         onLoadViewFilters: '_onLoadViewFilters',
         onUpdateButtonsCounter: '_onUpdateButtonsCounter',
         onReloadCalendar: '_onReloadCalendar',
+        onUpdateReservations: '_onUpdateReservations',
+        onSwapReservations: '_onSwapReservations'
     }),
 
     init: function (parent, model, renderer, params) {
@@ -45,6 +47,37 @@ var PMSCalendarController = AbstractController.extend({
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
+    _onUpdateReservations: function (ev) {
+        var self = this;
+        return this.model.update_records(ev.data.ids, ev.data.values).then(function(result){
+          // Remove OB Room Row?
+          if (ev.data.oldReservation.room.overbooking) {
+            self.renderer._hcalendar.removeOBRoomRow(ev.data.oldReservation);
+          }
+        }).fail(function(err, errev){
+            self.renderer._hcalendar.replaceReservation(ev.data.newReservation, ev.data.oldReservation);
+        });
+    },
+
+    _onSwapReservations: function (ev) {
+        var self = this;
+        return this.model.swap_reservations(ev.data.fromIds, ev.data.toIds).then(function(results){
+          var allReservs = ev.data.detail.inReservs.concat(ev.data.detail.outReservs);
+          for (var nreserv of allReservs) {
+            self.renderer.$el.find(nreserv._html).stop(true);
+          }
+        }).fail(function(err, errev){
+          for (var nreserv of ev.data.detail.inReservs) {
+            self.renderer.$el.find(nreserv._html).animate({'top': refFromReservDiv.style.top}, 'fast');
+          }
+          for (var nreserv of ev.detail.outReservs) {
+            self.renderer.$el.find(nreserv._html).animate({'top': refToReservDiv.style.top}, 'fast');
+          }
+
+          self.renderer.$el._hcalendar.swapReservations(ev.data.detail.outReservs, ev.data.detail.inReservs);
+        });
+    },
+
     _onLoadCalendarSettings: function  (ev) {
         var self = this;
         return this.model.get_hcalendar_settings().then(function(options){
@@ -71,17 +104,15 @@ var PMSCalendarController = AbstractController.extend({
                     r[0], // Id
                     r[1], // Name
                     r[2], // Capacity
-                    r[4], // Category
-                    r[5], // Shared Room
-                    r[6]  // Price
+                    r[3], // Category
+                    r[4], // Shared Room
+                    r[5]  // Price
                 );
                 nroom.addUserData({
-                    'categ_id': r[3],
-                    'price_from': r[6][0] === 'fixed'?`${r[6][1]}${HotelConstants.CURRENCY_SYMBOL} (${_t('Fixed Price')})`:r[6][3],
-                    'inside_rooms': r[7],
-                    'inside_rooms_ids': r[8],
-                    'floor_id': r[9],
-                    'amenities': r[10]
+                    'room_type_name': r[6],
+                    'room_type_id': r[7],
+                    'floor_id': r[8],
+                    'amenities': r[9]
                 });
                 rooms.push(nroom);
             }
@@ -91,10 +122,10 @@ var PMSCalendarController = AbstractController.extend({
             // TODO: Not read this... do the change!!
             var reservs = [];
             for (var r of results['reservations']) {
-                var room = self._hcalendar.getRoom(r[0], r[15], r[1]);
+                var room = self.renderer._hcalendar.getRoom(r[0], r[15], r[1]);
                 // need create a overbooking row?
                 if (!room && r[15]) {
-                  room = self.renderer._hcalendar.createOBRoom(self._hcalendar.getRoom(r[0]), r[1]);
+                  room = self.renderer._hcalendar.createOBRoom(self.renderer._hcalendar.getRoom(r[0]), r[1]);
                   self.renderer._hcalendar.createOBRoomRow(room);
                 }
                 if (!room) {
@@ -241,10 +272,10 @@ var PMSCalendarController = AbstractController.extend({
                   nreservs = _.reject(nreservs, function(item){ return item.id == reserv['reserv_id']; });
                 } else {
                   nreservs = _.reject(nreservs, {'id': reserv['reserv_id']}); // Only like last changes
-                  var room = this.renderer._hcalendar.getRoom(reserv['product_id'], reserv['overbooking'], reserv['reserv_id']);
+                  var room = this.renderer._hcalendar.getRoom(reserv['id'], reserv['overbooking'], reserv['reserv_id']);
                   // need create a overbooking row?
                   if (!room && reserv['overbooking']) {
-                    room = this.renderer._hcalendar.createOBRoom(this.renderer._hcalendar.getRoom(reserv['product_id']), reserv['reserv_id']);
+                    room = this.renderer._hcalendar.createOBRoom(this.renderer._hcalendar.getRoom(reserv['id']), reserv['reserv_id']);
                     this.renderer._hcalendar.createOBRoomRow(room);
                   }
                   if (!room) {

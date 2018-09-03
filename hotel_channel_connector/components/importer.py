@@ -193,13 +193,13 @@ class HotelChannelConnectorImporter(AbstractComponent):
         _logger.info("=== BOOKINGS FROM WUBOOK")
         _logger.info(bookings)
         default_arrival_hour = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'default_arrival_hour')
+            'res.config.settings', 'default_arrival_hour')
         default_departure_hour = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'default_departure_hour')
+            'res.config.settings', 'default_departure_hour')
 
         # Get user timezone
         tz_hotel = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'tz_hotel')
+            'res.config.settings', 'tz_hotel')
         res_partner_obj = self.env['res.partner']
         hotel_reserv_obj = self.env['hotel.reservation']
         hotel_folio_obj = self.env['hotel.folio']

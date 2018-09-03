@@ -115,9 +115,9 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
 
         # Get Parity Models
         pricelist_id = int(self.env['ir.default'].sudo().get(
-                            'hotel.config.settings', 'parity_pricelist_id'))
+                            'res.config.settings', 'parity_pricelist_id'))
         restriction_id = int(self.env['ir.default'].sudo().get(
-                            'hotel.config.settings', 'parity_restrictions_id'))
+                            'res.config.settings', 'parity_restrictions_id'))
 
         vroom_restr_it_obj = self.env['hotel.virtual.room.restriction.item']
         # Secure Wubook Input

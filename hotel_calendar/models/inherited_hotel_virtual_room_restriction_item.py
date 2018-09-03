@@ -12,7 +12,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
     def create(self, vals):
         res = super(HotelVirtualRoomResrtrictionItem, self).create(vals)
         restrictions_parity_id = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'parity_restrictions_id')
+            'res.config.settings', 'parity_restrictions_id')
         if restrictions_parity_id:
             restrictions_parity_id = int(restrictions_parity_id)
         restriction_id = res.restriction_id.id
@@ -36,7 +36,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
     @api.multi
     def write(self, vals):
         restrictions_parity_id = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'parity_restrictions_id')
+            'res.config.settings', 'parity_restrictions_id')
         if restrictions_parity_id:
             restrictions_parity_id = int(restrictions_parity_id)
         ret_vals = super(HotelVirtualRoomResrtrictionItem, self).write(vals)
@@ -64,7 +64,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
     @api.multi
     def unlink(self):
         restrictions_parity_id = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'parity_restrictions_id')
+            'res.config.settings', 'parity_restrictions_id')
         if restrictions_parity_id:
             restrictions_parity_id = int(restrictions_parity_id)
         # Construct dictionary with relevant info of removed records

@@ -48,7 +48,7 @@ class FolioWizard(models.TransientModel):
     def _get_default_checkin(self):
         folio = False
         default_arrival_hour = self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'default_arrival_hour')
+                'res.config.settings', 'default_arrival_hour')
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
@@ -57,7 +57,7 @@ class FolioWizard(models.TransientModel):
             return folio.room_lines[0].checkin
         else:
             tz_hotel = self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'tz_hotel')
+                'res.config.settings', 'tz_hotel')
             now_utc_dt = date_utils.now()
             ndate = "%s %s:00" % \
                 (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
@@ -70,7 +70,7 @@ class FolioWizard(models.TransientModel):
     def _get_default_checkout(self):
         folio = False
         default_departure_hour = self.env['ir.default'].sudo().get(
-            'hotel.config.settings', 'default_departure_hour')
+            'res.config.settings', 'default_departure_hour')
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
@@ -79,7 +79,7 @@ class FolioWizard(models.TransientModel):
                         return folio.room_lines[0].checkout
         else:
             tz_hotel = self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'tz_hotel')
+                'res.config.settings', 'tz_hotel')
             now_utc_dt = date_utils.now() + timedelta(days=1)
             ndate = "%s %s:00" % \
                 (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
@@ -148,14 +148,14 @@ class FolioWizard(models.TransientModel):
                                                           line.checkout,
                                                           hours=False)
                 hotel_tz = self.env['ir.default'].sudo().get(
-                    'hotel.config.settings',
+                    'res.config.settings',
                     'hotel_tz')
                 start_date_utc_dt = date_utils.get_datetime(self.checkin)
                 start_date_dt = date_utils.dt_as_timezone(start_date_utc_dt,
                                                           hotel_tz)
                 for room in product_list:
                     pricelist_id = self.env['ir.default'].sudo().get(
-                        'hotel.config.settings', 'parity_pricelist_id')
+                        'res.config.settings', 'parity_pricelist_id')
                     if pricelist_id:
                         pricelist_id = int(pricelist_id)
                     res_price = 0
@@ -208,14 +208,14 @@ class FolioWizard(models.TransientModel):
             self.checkout = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
         # UTC -> Hotel tz
-        tz = self.env['ir.default'].sudo().get('hotel.config.settings',
+        tz = self.env['ir.default'].sudo().get('res.config.settings',
                                                'tz_hotel')
         chkin_utc_dt = date_utils.get_datetime(self.checkin)
         chkout_utc_dt = date_utils.get_datetime(self.checkout)
 
         if chkin_utc_dt >= chkout_utc_dt:
             dpt_hour = self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'default_departure_hour')
+                'res.config.settings', 'default_departure_hour')
             checkout_str = (chkin_utc_dt + timedelta(days=1)).strftime(
                                                     DEFAULT_SERVER_DATE_FORMAT)
             checkout_str = "%s %s:00" % (checkout_str, dpt_hour)
@@ -397,14 +397,14 @@ class VirtualRoomWizars(models.TransientModel):
             if self.rooms_num > self.max_rooms:
                 raise ValidationError(_("There are not enough rooms!"))
             # UTC -> Hotel tz
-            tz = self.env['ir.default'].sudo().get('hotel.config.settings',
+            tz = self.env['ir.default'].sudo().get('res.config.settings',
                                                    'tz_hotel')
             chkin_utc_dt = date_utils.get_datetime(self.checkin)
             chkout_utc_dt = date_utils.get_datetime(self.checkout)
 
             if chkin_utc_dt >= chkout_utc_dt:
                 dpt_hour = self.env['ir.default'].sudo().get(
-                    'hotel.config.settings', 'default_departure_hour')
+                    'res.config.settings', 'default_departure_hour')
                 checkout_str = (chkin_utc_dt + timedelta(days=1)).strftime(
                                                         DEFAULT_SERVER_DATE_FORMAT)
                 checkout_str = "%s %s:00" % (checkout_str, dpt_hour)
@@ -424,7 +424,7 @@ class VirtualRoomWizars(models.TransientModel):
             checkout_dt -= timedelta(days=1)
 
             pricelist_id = self.env['ir.default'].sudo().get(
-                        'hotel.config.settings', 'parity_pricelist_id')
+                        'res.config.settings', 'parity_pricelist_id')
             if pricelist_id:
                 pricelist_id = int(pricelist_id)
 
@@ -507,14 +507,14 @@ class ReservationWizard(models.TransientModel):
                 self.checkout = self.folio_wizard_id.checkout
 
             hotel_tz = self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'hotel_tz')
+                'res.config.settings', 'hotel_tz')
             start_date_utc_dt = date_utils.get_datetime(line.checkin)
             start_date_dt = date_utils.dt_as_timezone(start_date_utc_dt,
                                                       hotel_tz)
 
             if line.virtual_room_id:
                 pricelist_id = self.env['ir.default'].sudo().get(
-                    'hotel.config.settings', 'parity_pricelist_id')
+                    'res.config.settings', 'parity_pricelist_id')
                 if pricelist_id:
                     pricelist_id = int(pricelist_id)
                 nights = days_diff = date_utils.date_diff(line.checkin,
@@ -567,7 +567,7 @@ class ServiceWizard(models.TransientModel):
         if self.product_id:
             #TODO change pricelist for partner
             pricelist_id = self.env['ir.default'].sudo().get(
-                        'hotel.config.settings', 'parity_pricelist_id')
+                        'res.config.settings', 'parity_pricelist_id')
             prod = self.product_id.with_context(
                             lang=self.folio_wizard_id.partner_id.lang,
                             partner=self.folio_wizard_id.partner_id.id,

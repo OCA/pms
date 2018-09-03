@@ -14,13 +14,13 @@ class HotelReservation(models.Model):
 
     @api.model
     def _generate_reservation_notif(self, action, ntype, title,
-                                    product_id, reserv_id, partner_name,
+                                    id, reserv_id, partner_name,
                                     adults, children, checkin, checkout,
                                     folio_id, color, color_text, splitted,
                                     parent_reservation, room_name,
                                     partner_phone, state, fix_days):
         vals = super(HotelReservation, self)._generate_reservation_notif(
-            action, ntype, title, product_id,
+            action, ntype, title, id,
             reserv_id, partner_name, adults,
             children, checkin, checkout,
             folio_id, color, color_text, splitted, parent_reservation,

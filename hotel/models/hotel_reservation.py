@@ -203,7 +203,7 @@ class HotelReservation(models.Model):
     parent_reservation = fields.Many2one('hotel.reservation',
                                          'Parent Reservation')
     overbooking = fields.Boolean('Is Overbooking', default=False)
-    
+
     nights = fields.Integer('Nights', compute='_computed_nights', store=True)
     channel_type = fields.Selection([
         ('door', 'Door'),
@@ -286,7 +286,11 @@ class HotelReservation(models.Model):
             #~ 'reserve_color_text': colors[1],
         })
         if self.compute_price_out_vals(vals):
-            vals.update(self.env['hotel.reservation'].prepare_reservation_lines(vals))
+            days_diff = (fields.Date.from_string(vals['checkout']) - fields.Date.from_string(vals['checkin'])).days
+            vals.update(record.prepare_reservation_lines(
+                vals['checkin'],
+                days_diff,
+                vals = vals)) #REVISAR el unlink
         record = super(HotelReservation, self).create(vals)
         #~ if (record.state == 'draft' and record.folio_id.state == 'sale') or \
                 #~ record.preconfirm:
@@ -303,7 +307,7 @@ class HotelReservation(models.Model):
             if record.compute_price_out_vals(vals):
                 days_diff = (fields.Date.from_string(record.checkout) - fields.Date.from_string(record.checkin)).days
                 record.update(record.prepare_reservation_lines(
-                    record.checkin,
+                    vals['checkin'],
                     days_diff,
                     vals = vals)) #REVISAR el unlink
             if ('checkin' in vals and record.checkin != vals['checkin']) or \
@@ -337,7 +341,7 @@ class HotelReservation(models.Model):
                 'to_assign' in vals:
             return  True
         return False
-        
+
     @api.multi
     def overbooking_button(self):
         self.ensure_one()
@@ -411,7 +415,7 @@ class HotelReservation(models.Model):
         #TODO: Change parity pricelist by default pricelist
         values = {
             'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or \
-                self.env['ir.default'].sudo().get('hotel.config.settings', 'parity_pricelist_id'),
+                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id'),
         }
         self.update(values)
 
@@ -442,8 +446,8 @@ class HotelReservation(models.Model):
                 self.checkin,
                 days_diff,
                 update_old_prices = False))
-        
-        
+
+
 
     @api.onchange('checkin', 'checkout', 'room_type_id')
     def onchange_compute_reservation_description(self):
@@ -686,7 +690,7 @@ class HotelReservation(models.Model):
                 'room_type_id' in vals or 'pricelist_id' in vals)):
             return True
         return False
-    
+
     @api.depends('reservation_line_ids', 'reservation_line_ids.discount', 'tax_id')
     def _compute_amount_reservation(self):
         """
@@ -707,10 +711,9 @@ class HotelReservation(models.Model):
                 })
 
     @api.multi
-    def prepare_reservation_lines(self, dfrom, days, vals=False,
-                                  update_old_prices=False):
+    def prepare_reservation_lines(self, dfrom, days, vals=False, update_old_prices=False):
         total_price = 0.0
-        cmds = []
+        cmds = [(5, 0, 0)]
         if not vals:
             vals = {}
         pricelist_id = self.env['ir.default'].sudo().get(
@@ -723,7 +726,8 @@ class HotelReservation(models.Model):
         for i in range(0, days):
             idate = (fields.Date.from_string(dfrom) + timedelta(days=i)).strftime(DEFAULT_SERVER_DATE_FORMAT)
             old_line = self.reservation_line_ids.filtered(lambda r: r.date == idate)
-            if update_old_prices or (idate not in old_lines_days):                
+            if update_old_prices or (idate not in old_lines_days):
+                _logger.info("PASA 3")
                 product = product.with_context(
                      lang=partner.lang,
                      partner=partner.id,
@@ -807,7 +811,7 @@ class HotelReservation(models.Model):
                  with the reservations dates between dfrom and dto
         reservations_dates
             {'2018-07-30': [hotel.reservation(29,), hotel.reservation(30,),
-                           hotel.reservation(31,)],                           
+                           hotel.reservation(31,)],
              '2018-07-31': [hotel.reservation(22,), hotel.reservation(35,),
                            hotel.reservation(36,)],
             }
@@ -871,7 +875,7 @@ class HotelReservation(models.Model):
         recs = self.search([]).filtered(lambda x: x.cardex_pending is True)
         if recs:
             return [('id', 'in', [x.id for x in recs])]
-    
+
     @api.multi
     def action_reservation_checkout(self):
         for record in self:
@@ -1078,4 +1082,3 @@ class HotelReservation(models.Model):
     @api.multi
     def send_cancel_mail(self):
         return self.folio_id.send_cancel_mail()
-

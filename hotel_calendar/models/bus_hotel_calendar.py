@@ -39,7 +39,7 @@ class BusHotelCalendar(models.TransientModel):
             'username': user_id.partner_id.name,
             'userid': user_id.id,
             'reservation': {
-                'product_id': vals['product_id'],
+                'id': vals['id'],
                 'reserv_id': vals['reserv_id'],
                 'partner_name': vals['partner_name'],
                 'adults': vals['adults'],

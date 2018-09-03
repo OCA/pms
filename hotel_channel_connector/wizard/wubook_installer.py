@@ -124,10 +124,10 @@ class WuBookInstallerParity(models.TransientModel):
         wubookObj = self.env['wubook']
         irValuesObj = self.env['ir.values']
         for rec in self:
-            irValuesObj.sudo().set_default('hotel.config.settings',
+            irValuesObj.sudo().set_default('res.config.settings',
                                            'parity_pricelist_id',
                                            rec.parity_pricelist_id.id)
-            irValuesObj.sudo().set_default('hotel.config.settings',
+            irValuesObj.sudo().set_default('res.config.settings',
                                            'parity_restrictions_id',
                                            rec.parity_restrictions_id.id)
             import_data = rec.import_data

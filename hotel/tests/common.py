@@ -98,12 +98,12 @@ class TestHotel(TestMail):
         cls.tz_hotel = 'Europe/Madrid'
         cls.parity_pricelist_id = cls.pricelist_1.id
         cls.parity_restrictions_id = cls.restriction_1.id
-        cls.env['ir.values'].sudo().set_default('hotel.config.settings',
+        cls.env['ir.values'].sudo().set_default('res.config.settings',
                                                 'tz_hotel', cls.tz_hotel)
-        cls.env['ir.values'].sudo().set_default('hotel.config.settings',
+        cls.env['ir.values'].sudo().set_default('res.config.settings',
                                                 'parity_pricelist_id',
                                                 cls.parity_pricelist_id)
-        cls.env['ir.values'].sudo().set_default('hotel.config.settings',
+        cls.env['ir.values'].sudo().set_default('res.config.settings',
                                                 'parity_restrictions_id',
                                                 cls.parity_restrictions_id)
 

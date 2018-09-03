@@ -222,12 +222,12 @@ class TestReservationsCalendar(TestHotelCalendar):
             self.user_hotel_manager.pms_type_move == 'assisted',
             "Hotel Calendar Invalid Options!")
         default_arrival_hour = self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'default_arrival_hour')
+                'res.config.settings', 'default_arrival_hour')
         self.assertEqual(hcal_options['default_arrival_hour'],
                          default_arrival_hour,
                          "Hotel Calendar Invalid Options!")
         default_departure_hour = self.env['ir.default'].sudo().get(
-                'hotel.config.settings', 'default_departure_hour')
+                'res.config.settings', 'default_departure_hour')
         self.assertEqual(hcal_options['default_departure_hour'],
                          default_departure_hour,
                          "Hotel Calendar Invalid Options!")

@@ -193,8 +193,6 @@ var PMSCalendarView = AbstractView.extend({
         this.controllerParams.context = params.context || {};
         this.controllerParams.displayName = params.action && params.action.name;
 
-        this.rendererParams.model = viewInfo.model;
-
         this.loadParams.fields = fields;
         this.loadParams.fieldsInfo = viewInfo.fieldsInfo;
         this.loadParams.creatable = false;
