@@ -34,7 +34,7 @@ class TestReservationRestrictionItem(TestHotelWubook):
         now_utc_dt = date_utils.now()
         day_utc_dt = now_utc_dt + timedelta(days=20)
         day_utc_str = day_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-        rest_item_obj = self.env['hotel.virtual.room.restriction.item']
+        rest_item_obj = self.env['hotel.room.type.restriction.item']
         restriction = rest_item_obj.search([], limit=1)
         self.assertTrue(restriction, "Can't found restriction for test")
         restriction.write({

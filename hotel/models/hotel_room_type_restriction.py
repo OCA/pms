@@ -1,0 +1,31 @@
+# Copyright 2017  Alexandre Díaz
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from odoo import models, fields, api
+
+
+class HotelRoomTypeRestriction(models.Model):
+    _name = 'hotel.room.type.restriction'
+
+    name = fields.Char('Restriction Plan Name', required=True)
+    item_ids = fields.One2many('hotel.room.type.restriction.item',
+                               'restriction_id', string='Restriction Items',
+                               copy=True)
+    active = fields.Boolean('Active',
+                            help='If unchecked, it will allow you to hide the \
+                                    restriction plan without removing it.',
+                            default=True)
+
+    @api.multi
+    @api.depends('name')
+    def name_get(self):
+        restriction_id = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'parity_restrictions_id')
+        if restriction_id:
+            restriction_id = int(restriction_id)
+        names = []
+        for record in self:
+            if record.id == restriction_id:
+                names.append((record.id, '%s (Parity)' % record.name))
+            else:
+                names.append((record.id, record.name))
+        return names

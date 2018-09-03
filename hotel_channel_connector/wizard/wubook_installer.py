@@ -72,7 +72,7 @@ class WuBookInstaller(models.TransientModel):
         self.env.cr.commit()    # FIXME: Need do this
 
         # Create Wubook Base Restrictions
-        restr_obj = self.env['hotel.virtual.room.restriction'].with_context({
+        restr_obj = self.env['hotel.room.type.restriction'].with_context({
             'wubook_action': False
         })
         base_rest = restr_obj.search([('wpid', '=', '0')], limit=1)
@@ -108,7 +108,7 @@ class WuBookInstallerParity(models.TransientModel):
 
     parity_pricelist_id = fields.Many2one('product.pricelist',
                                           'Product Pricelist')
-    parity_restrictions_id = fields.Many2one('hotel.virtual.room.restriction',
+    parity_restrictions_id = fields.Many2one('hotel.room.type.restriction',
                                              'Restrictions')
     import_data = fields.Boolean('Import Data From WuBook', default=False)
     date_start = fields.Date('Date Start')

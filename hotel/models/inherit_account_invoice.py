@@ -1,16 +1,13 @@
-# -*- coding: utf-8 -*-
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
+import logging
 from openerp import models, fields, api, _
 from openerp.exceptions import UserError, ValidationError
-
-import logging
 _logger = logging.getLogger(__name__)
 
 
 class AccountInvoice(models.Model):
-
     _inherit = 'account.invoice'
 
     @api.model
@@ -64,7 +61,8 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_open(self):
-        to_open_invoices_without_vat = self.filtered(lambda inv: inv.state != 'open' and inv.partner_id.vat == False)
+        to_open_invoices_without_vat = self.filtered(
+            lambda inv: inv.state != 'open' and inv.partner_id.vat == False)
         if to_open_invoices_without_vat:
             vat_error = _("We need the VAT of the following companies")
             for invoice in to_open_invoices_without_vat:

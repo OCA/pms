@@ -6,7 +6,7 @@ _logger = logging.getLogger(__name__)
 
 
 class HotelVirtualRoomResrtrictionItem(models.Model):
-    _inherit = 'hotel.virtual.room.restriction.item'
+    _inherit = 'hotel.room.type.restriction.item'
 
     @api.model
     def create(self, vals):

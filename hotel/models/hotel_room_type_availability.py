@@ -1,33 +1,14 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
-#                       Alexandre Díaz <alex@aloxa.eu>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright 2017  Alexandre Díaz
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class HotelVirtualRoomAvailability(models.Model):
+class HotelRoomTypeAvailability(models.Model):
     _inherit = 'mail.thread'
-    _name = 'hotel.virtual.room.availability'
+    _name = 'hotel.room.type.availability'
 
     # virtual_room_id = fields.Many2one('hotel.virtual.room', 'Virtual Room',
     #                                   required=True, track_visibility='always',
@@ -41,16 +22,19 @@ class HotelVirtualRoomAvailability(models.Model):
                             track_visibility='always')
     date = fields.Date('Date', required=True, track_visibility='always')
 
-    _sql_constraints = [('vroom_registry_unique', 'unique(room_type_id, date)',
-                         'Only can exists one availability in the same day for the same room type!')]
+    _sql_constraints = [
+        ('room_type_registry_unique',
+         'unique(room_type_id, date)',
+         'Only can exists one availability in the same day for the same room type!')
+    ]
 
     @api.constrains('avail')
     def _check_avail(self):
         if self.avail < 0:
             self.avail = 0
 
-        vroom_obj = self.env['hotel.room.type']
-        cavail = len(vroom_obj.check_availability_virtual_room(
+        room_type_obj = self.env['hotel.room.type']
+        cavail = len(room_type_obj.check_availability_virtual_room(
             self.date,
             self.date,
             room_type_id=self.room_type_id.id))

@@ -7,12 +7,12 @@ from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
 
 class ChannelHotelVirtualRoomRestriction(models.Model):
-    _name = 'channel.hotel.virtual.room.restriction'
+    _name = 'channel.hotel.room.type.restriction'
     _inherit = 'channel.binding'
-    _inherits = {'hotel.virtual.room.restriction': 'odoo_id'}
+    _inherits = {'hotel.room.type.restriction': 'odoo_id'}
     _description = 'Channel Hotel Virtual Room Restriction'
 
-    odoo_id = fields.Many2one(comodel_names='hotel.virtual.room.restriction',
+    odoo_id = fields.Many2one(comodel_names='hotel.room.type.restriction',
                               string='Hotel Virtual Room Restriction',
                               required=True,
                               ondelete='cascade')
@@ -71,17 +71,17 @@ class ChannelHotelVirtualRoomRestriction(models.Model):
                 return importer.import_restriction_plans()
 
 class HotelVirtualRoomRestriction(models.Model):
-    _inherit = 'hotel.virtual.room.restriction'
+    _inherit = 'hotel.room.type.restriction'
 
     channel_bind_ids = fields.One2many(
-        comodel_name='channel.hotel.virtual.room.restriction',
+        comodel_name='channel.hotel.room.type.restriction',
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
     @api.multi
     @api.depends('name')
     def name_get(self):
-        vroom_restriction_obj = self.env['hotel.virtual.room.restriction']
+        vroom_restriction_obj = self.env['hotel.room.type.restriction']
         org_names = super(HotelVirtualRoomRestriction, self).name_get()
         names = []
         for name in org_names:
@@ -93,9 +93,9 @@ class HotelVirtualRoomRestriction(models.Model):
         return names
 
 class ChannelBindingHotelVirtualRoomRestrictionListener(Component):
-    _name = 'channel.binding.hotel.virtual.room.restriction.listener'
+    _name = 'channel.binding.hotel.room.type.restriction.listener'
     _inherit = 'base.connector.listener'
-    _apply_on = ['channel.hotel.virtual.room.restriction']
+    _apply_on = ['channel.hotel.room.type.restriction']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):

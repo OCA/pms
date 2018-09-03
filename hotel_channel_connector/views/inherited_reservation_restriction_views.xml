@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="reservation_restriction_view" model="ir.ui.view">
-        <field name="model">hotel.virtual.room.restriction</field>
+        <field name="model">hotel.room.type.restriction</field>
         <field name="inherit_id" ref="hotel.reservation_restriction_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//form[1]//sheet" position="before">

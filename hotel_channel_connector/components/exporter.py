@@ -23,7 +23,7 @@ class HotelChannelConnectorExporter(AbstractComponent):
 
     @api.model
     def push_availability(self):
-        vroom_avail_ids = self.env['hotel.virtual.room.availability'].search([
+        vroom_avail_ids = self.env['hotel.room.type.availability'].search([
             ('wpushed', '=', False),
             ('date', '>=', date_utils.now(hours=False).strftime(
                 DEFAULT_SERVER_DATE_FORMAT))
@@ -110,8 +110,8 @@ class HotelChannelConnectorExporter(AbstractComponent):
 
     @api.model
     def push_restrictions(self):
-        vroom_rest_obj = self.env['hotel.virtual.room.restriction']
-        rest_item_obj = self.env['hotel.virtual.room.restriction.item']
+        vroom_rest_obj = self.env['hotel.room.type.restriction']
+        rest_item_obj = self.env['hotel.room.type.restriction.item']
         unpushed = rest_item_obj.search([
             ('wpushed', '=', False),
             ('date_start', '>=', date_utils.now(hours=False).strftime(

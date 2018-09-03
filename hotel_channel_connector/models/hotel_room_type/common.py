@@ -118,7 +118,7 @@ class HotelRoomType(models.Model):
         restriction_plan_id = int(self.env['ir.default'].sudo().get(
             'res.config.settings', 'parity_restrictions_id'))
         self.ensure_one()
-        restriction = self.env['hotel.virtual.room.restriction.item'].search([
+        restriction = self.env['hotel.room.type.restriction.item'].search([
             ('date_start', '=', date),
             ('date_end', '=', date),
             ('virtual_room_id', '=', self.id),

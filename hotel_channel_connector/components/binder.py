@@ -9,7 +9,7 @@ class HotelConnectorModelBinder(Component):
     _apply_on = [
         'channel.hotel.reservation',
         'channel.hotel.virtual.room',
-        'channel.hotel.virtual.room.availability',
-        'channel.hotel.virtual.room.restriction',
+        'channel.hotel.room.type.availability',
+        'channel.hotel.room.type.restriction',
         'channel.product.pricelist',
     ]

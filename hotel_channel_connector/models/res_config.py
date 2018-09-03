@@ -77,7 +77,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
                         'wscode': '',
                     })
             # Create Restrictions
-            vroom_rest_obj = self.env['hotel.virtual.room.restriction']
+            vroom_rest_obj = self.env['hotel.room.type.restriction']
             restriction_ids = vroom_rest_obj.search([])
             for restriction in restriction_ids:
                 if restriction.wpid != '0':
@@ -119,7 +119,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
         restriction_id = int(self.env['ir.default'].sudo().get(
                             'res.config.settings', 'parity_restrictions_id'))
 
-        vroom_restr_it_obj = self.env['hotel.virtual.room.restriction.item']
+        vroom_restr_it_obj = self.env['hotel.room.type.restriction.item']
         # Secure Wubook Input
         restriction_item_ids = vroom_restr_it_obj.search([
             ('applied_on', '=', '0_virtual_room'),
@@ -165,7 +165,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
             })
 
         # Secure Wubook Input
-        availabity_ids = self.env['hotel.virtual.room.availability'].search([
+        availabity_ids = self.env['hotel.room.type.availability'].search([
             ('date', '<', now_utc_str),
         ])
         if any(availabity_ids):
@@ -173,7 +173,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
                 'wpushed': True
             })
         # Put to push availability
-        availabity_ids = self.env['hotel.virtual.room.availability'].search([
+        availabity_ids = self.env['hotel.room.type.availability'].search([
             ('wpushed', '=', True),
             ('date', '>=', now_utc_str),
         ])

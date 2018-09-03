@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
@@ -6,7 +5,6 @@ from odoo import models, fields, api, _
 
 
 class HotelRoomAmenitiesType(models.Model):
-
     _name = 'hotel.room.amenities.type'
     _description = 'Amenities Type'
     # The record's name

@@ -124,7 +124,7 @@ class HotelReservation(models.Model):
         if user.has_group('hotel.group_hotel_call'):
             vals.update({'to_read': True})
         res = super(HotelReservation, self).create(vals)
-        self.env['hotel.virtual.room.availability'].refresh_availability(
+        self.env['hotel.room.type.availability'].refresh_availability(
             vals['checkin'],
             vals['checkout'],
             vals['product_id'])
@@ -155,7 +155,7 @@ class HotelReservation(models.Model):
 
             res = super(HotelReservation, self).write(vals)
 
-            vroom_avail_obj = self.env['hotel.virtual.room.availability']
+            vroom_avail_obj = self.env['hotel.room.type.availability']
             for i in range(0, len(older_vals)):
                 vroom_avail_obj.refresh_availability(
                     older_vals[i]['checkin'],
@@ -183,7 +183,7 @@ class HotelReservation(models.Model):
         res = super(HotelReservation, self).unlink()
         if self._context.get('wubook_action', True) and \
                 self.env['wubook'].is_valid_account():
-            vroom_avail_obj = self.env['hotel.virtual.room.availability']
+            vroom_avail_obj = self.env['hotel.room.type.availability']
             for record in vals:
                 vroom_avail_obj.refresh_availability(
                     record['checkin'],

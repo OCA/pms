@@ -1213,13 +1213,13 @@ msgstr "hotel.virtual.room"
 
 #. module: hotel_calendar
 #: model:ir.model,name:hotel_calendar.model_hotel_virtual_room_availability
-msgid "hotel.virtual.room.availability"
-msgstr "hotel.virtual.room.availability"
+msgid "hotel.room.type.availability"
+msgstr "hotel.room.type.availability"
 
 #. module: hotel_calendar
 #: model:ir.model,name:hotel_calendar.model_hotel_virtual_room_restriction_item
-msgid "hotel.virtual.room.restriction.item"
-msgstr "hotel.virtual.room.restriction.item"
+msgid "hotel.room.type.restriction.item"
+msgstr "hotel.room.type.restriction.item"
 
 #. module: hotel_calendar
 #: model:ir.model,name:hotel_calendar.model_virtual_room_pricelist_cached

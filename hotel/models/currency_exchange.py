@@ -1,10 +1,12 @@
-# -*- coding: utf-8 -*-
+# Copyright 2018  Dario Lodeiros
 # Copyright 2018  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from decimal import Decimal
+import time
 # For Python 3.0 and later
 from urllib.request import urlopen
 from openerp import models, fields, api, _
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 class CurrencyExchangeRate(models.Model):

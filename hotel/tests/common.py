@@ -84,7 +84,7 @@ class TestHotel(TestMail):
         cls._init_mock_hotel()
 
         # Restriction Plan
-        cls.restriction_1 = cls.env['hotel.virtual.room.restriction'].create({
+        cls.restriction_1 = cls.env['hotel.room.type.restriction'].create({
             'name': 'Restriction Test #1',
             'active': True
         })
@@ -221,8 +221,8 @@ class TestHotel(TestMail):
             cls.hotel_vroom_budget.id: budget_product_id.product_tmpl_id.id,
             cls.hotel_vroom_special.id: special_product_id.product_tmpl_id.id,
         }
-        vroom_avail_obj = cls.env['hotel.virtual.room.availability']
-        vroom_rest_item_obj = cls.env['hotel.virtual.room.restriction.item']
+        vroom_avail_obj = cls.env['hotel.room.type.availability']
+        vroom_rest_item_obj = cls.env['hotel.room.type.restriction.item']
         pricelist_item_obj = cls.env['product.pricelist.item']
         for k_vr, v_vr in cls.avails_tmp.iteritems():
             for i in range(0, len(v_vr)):

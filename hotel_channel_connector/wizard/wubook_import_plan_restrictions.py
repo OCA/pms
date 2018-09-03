@@ -33,7 +33,7 @@ class ImportPlanRestrictionsWizard(models.TransientModel):
 
     @api.multi
     def import_plan_restrictions(self):
-        restriction_id = self.env['hotel.virtual.room.restriction'].browse(
+        restriction_id = self.env['hotel.room.type.restriction'].browse(
                                             self.env.context.get('active_id'))
         if restriction_id:
             for record in self:

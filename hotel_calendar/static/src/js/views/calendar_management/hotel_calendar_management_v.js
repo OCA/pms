@@ -231,7 +231,7 @@ var HotelCalendarManagementView = View.extend({
 
             // Get Restrictions
             self._restriction_id = results['restriction_id'];
-            new Model('hotel.virtual.room.restriction').query(['id','name']).all().then(function(resultsRestrictions){
+            new Model('hotel.room.type.restriction').query(['id','name']).all().then(function(resultsRestrictions){
                 var $list = self.$el.find('#mpms-search #restriction_list');
                 $list.html('');
                 resultsRestrictions.forEach(function(item, index){

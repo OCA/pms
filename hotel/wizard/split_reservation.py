@@ -1,26 +1,7 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
-#                       Alexandre Díaz <dev@redneboa.es>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright 2017  Alexandre Díaz
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 from openerp.exceptions import ValidationError
 from openerp import models, fields, api, _
 from openerp.tools import (
@@ -38,7 +19,7 @@ class SplitReservationWizard(models.TransientModel):
     @api.multi
     def split_reservation(self):
         reservation_id = self.env['hotel.reservation'].browse(
-                                            self.env.context.get('active_id'))
+            self.env.context.get('active_id'))
         if reservation_id:
             date_start_dt = date_utils.get_datetime(reservation_id.checkin)
             date_end_dt = date_utils.get_datetime(reservation_id.checkout)
@@ -72,8 +53,7 @@ class SplitReservationWizard(models.TransientModel):
                         tprice[0] += rline.price
 
                 reservation_id.write({
-                    'checkout': new_start_date_dt.strftime(
-                                            DEFAULT_SERVER_DATETIME_FORMAT),
+                    'checkout': new_start_date_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                     'price_unit': tprice[0],
                     'splitted': True,
                 })

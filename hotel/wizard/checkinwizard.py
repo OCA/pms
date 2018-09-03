@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import logging
 from openerp import models, fields, api
-from openerp.exceptions import UserError
-from openerp.tools.translate import _
-
 _logger = logging.getLogger(__name__)
+
 
 class Wizard(models.TransientModel):
     _name = 'checkin.wizard'
@@ -40,7 +36,8 @@ class Wizard(models.TransientModel):
             for res in reservations:
                 # return the first room line with free space for a cardex
                 # TODO: add 'done' to res.state condition... Maybe too restrictive right now
-                if res.cardex_count < (res.adults + res.children) and res.state not in ["cancelled"]:
+                if res.cardex_count < (res.adults + res.children) and \
+                        res.state not in ["cancelled"]:
                     return res
         elif 'reservation_id' in self.env.context:
             return self.env['hotel.reservation'].browse(
@@ -131,9 +128,8 @@ class Wizard(models.TransientModel):
 
     op_select_partner = fields.Selection([
         ('S', 'Select a partner for checkin'),
-        ('C', 'Create a new partner for checkin')],
-        default='S',
-        string='Partner for checkin')
+        ('C', 'Create a new partner for checkin')
+    ], default='S', string='Partner for checkin')
     # checkin mode:
     #   0 - no selection made by the user, so hide the client fields
     #   1 - select a client for update his values and do the checkin
@@ -151,7 +147,7 @@ class Wizard(models.TransientModel):
                 'email': self.email_cardex,
                 'mobile': self.mobile_cardex,
             }
-            self.partner_id.sudo().write(partner_vals);
+            self.partner_id.sudo().write(partner_vals)
         elif self.op_select_partner == 'C':
             partner_vals = {
                 'firstname': self.firstname_cardex,
@@ -164,9 +160,9 @@ class Wizard(models.TransientModel):
 
         # prepare checkin values
         cardex_val = {
-          'partner_id': self.partner_id.id,
-          'enter_date': self.enter_date,
-          'exit_date': self.exit_date
+            'partner_id': self.partner_id.id,
+            'enter_date': self.enter_date,
+            'exit_date': self.exit_date
         }
         record_id = self.env['hotel.reservation'].browse(
             self.reservation_id.id)
@@ -207,19 +203,22 @@ class Wizard(models.TransientModel):
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         # update partner fields
-        self.firstname_cardex = self.partner_id.firstname;
-        self.lastname_cardex = self.partner_id.lastname;
-        self.email_cardex  = self.partner_id.email;
-        self.mobile_cardex = self.partner_id.mobile;
+        write_vals = {
+            'firstname_cardex':  self.partner_id.firstname,
+            'lastname_cardex': self.partner_id.lastname,
+            'email_cardex': self.partner_id.email,
+            'mobile_cardex': self.partner_id.mobile,
+        }
         # show the checkin fields if a partner is selected
         if self.op_select_partner == 'S' and self.partner_id.id != False:
-            self.checkin_mode = 1;
+            write_vals.update({'checkin_mode': 1})
+        self.write(write_vals)
 
     @api.onchange('op_select_partner')
     def onchange_op_select_partner(self):
         # field one2many return false is record does not exist
-        if self.op_select_partner == 'S' and self.partner_id.id != False:
-            self.checkin_mode = 1;
+        if self.op_select_partner == 'S' and self.partner_id.id:
+            self.checkin_mode = 1
         # field one2many return 0 on empty record (nothing typed)
         elif self.op_select_partner == 'C' and self.partner_id.id == 0:
-            self.checkin_mode = 2;
+            self.checkin_mode = 2

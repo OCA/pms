@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import time
@@ -20,15 +19,16 @@ class FolioAdvancePaymentInv(models.TransientModel):
         if self._count() == 1:
             sale_obj = self.env['sale.order']
             folio_obj = self.env['hotel.folio']
-            folio = folio_obj.browse(self._context.get('active_ids'))[0]
             order = sale_obj.browse(folio_obj.mapped('order_id.id'))
-            if all([line.product_id.invoice_policy == 'order' for line in order.order_line]) or order.invoice_count:
+            if all([line.product_id.invoice_policy == 'order' for line in order.order_line]) \
+                    or order.invoice_count:
                 return 'all'
         return 'delivered'
 
     @api.model
     def _default_product_id(self):
-        product_id = self.env['ir.default'].sudo().get('sale.config.settings', 'deposit_product_id_setting')
+        product_id = self.env['ir.default'].sudo().get('sale.config.settings',
+                                                       'deposit_product_id_setting')
         return self.env['product.product'].browse(product_id)
 
     @api.model
@@ -44,14 +44,21 @@ class FolioAdvancePaymentInv(models.TransientModel):
         ('all', 'Invoiceable lines (deduct down payments)'),
         ('percentage', 'Down payment (percentage)'),
         ('fixed', 'Down payment (fixed amount)')
-        ], string='What do you want to invoice?', default=_get_advance_payment_method, required=True)
-    product_id = fields.Many2one('product.product', string='Down Payment Product', domain=[('type', '=', 'service')],
-        default=_default_product_id)
+    ], string='What do you want to invoice?', default=_get_advance_payment_method,
+                                              required=True)
+    product_id = fields.Many2one('product.product', string='Down Payment Product',
+                                 domain=[('type', '=', 'service')], default=_default_product_id)
     count = fields.Integer(default=_count, string='# of Orders')
-    amount = fields.Float('Down Payment Amount', digits=dp.get_precision('Account'), help="The amount to be invoiced in advance, taxes excluded.")
-    deposit_account_id = fields.Many2one("account.account", string="Income Account", domain=[('deprecated', '=', False)],
-        help="Account used for deposits", default=_default_deposit_account_id)
-    deposit_taxes_id = fields.Many2many("account.tax", string="Customer Taxes", help="Taxes used for deposits", default=_default_deposit_taxes_id)
+    amount = fields.Float('Down Payment Amount',
+                          digits=dp.get_precision('Account'),
+                          help="The amount to be invoiced in advance, taxes excluded.")
+    deposit_account_id = fields.Many2one("account.account", string="Income Account",
+                                         domain=[('deprecated', '=', False)],
+                                         help="Account used for deposits",
+                                         default=_default_deposit_account_id)
+    deposit_taxes_id = fields.Many2many("account.tax", string="Customer Taxes",
+                                        help="Taxes used for deposits",
+                                        default=_default_deposit_taxes_id)
 
     @api.onchange('advance_payment_method')
     def onchange_advance_payment_method(self):
@@ -66,7 +73,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
         account_id = False
         if self.product_id.id:
-            account_id = self.product_id.property_account_income_id.id or self.product_id.categ_id.property_account_income_categ_id.id
+            account_id = self.product_id.property_account_income_id.id \
+                or self.product_id.categ_id.property_account_income_categ_id.id
         if not account_id:
             inc_acc = ir_property_obj.get('property_account_income_categ_id', 'product.category')
             account_id = order.fiscal_position_id.map_account(inc_acc).id if inc_acc else False
@@ -85,7 +93,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
             amount = self.amount
             name = _('Down Payment')
         del context
-        taxes = self.product_id.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
+        taxes = self.product_id.taxes_id.filtered(
+            lambda r: not order.company_id or r.company_id == order.company_id)
         if order.fiscal_position_id and taxes:
             tax_ids = order.fiscal_position_id.map_tax(taxes).ids
         else:
@@ -114,15 +123,17 @@ class FolioAdvancePaymentInv(models.TransientModel):
             })],
             'currency_id': order.pricelist_id.currency_id.id,
             'payment_term_id': order.payment_term_id.id,
-            'fiscal_position_id': order.fiscal_position_id.id or order.partner_id.property_account_position_id.id,
+            'fiscal_position_id': order.fiscal_position_id.id \
+                or order.partner_id.property_account_position_id.id,
             'team_id': order.team_id.id,
             'user_id': order.user_id.id,
             'comment': order.note,
         })
         invoice.compute_taxes()
-        invoice.message_post_with_view('mail.message_origin_link',
-                    values={'self': invoice, 'origin': order},
-                    subtype_id=self.env.ref('mail.mt_note').id)
+        invoice.message_post_with_view(
+            'mail.message_origin_link',
+            values={'self': invoice, 'origin': order},
+            subtype_id=self.env.ref('mail.mt_note').id)
         return invoice
 
     @api.multi
@@ -139,7 +150,10 @@ class FolioAdvancePaymentInv(models.TransientModel):
             if not self.product_id:
                 vals = self._prepare_deposit_product()
                 self.product_id = self.env['product.product'].create(vals)
-                self.env['ir.default'].sudo().set('sale.config.settings', 'deposit_product_id_setting', self.product_id.id)
+                self.env['ir.default'].sudo().set(
+                    'sale.config.settings',
+                    'deposit_product_id_setting',
+                    self.product_id.id)
 
             sale_line_obj = self.env['sale.order.line']
             for order in sale_orders:
@@ -151,7 +165,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     raise UserError(_('The product used to invoice a down payment should have an invoice policy set to "Ordered quantities". Please update your deposit product to be able to create a deposit invoice.'))
                 if self.product_id.type != 'service':
                     raise UserError(_("The product used to invoice a down payment should be of type 'Service'. Please use another product or update this product."))
-                taxes = self.product_id.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
+                taxes = self.product_id.taxes_id.filtered(
+                    lambda r: not order.company_id or r.company_id == order.company_id)
                 if order.fiscal_position_id and taxes:
                     tax_ids = order.fiscal_position_id.map_tax(taxes).ids
                 else:

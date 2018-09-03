@@ -345,10 +345,10 @@ class VirtualRoomWizars(models.TransientModel):
             date_start = date_utils.get_datetime(res.checkin)
             date_end = date_utils.get_datetime(res.checkout)
             date_diff = date_utils.date_diff(date_start, date_end, hours=False)
-            minstay_restrictions = self.env['hotel.virtual.room.restriction.item'].search([
+            minstay_restrictions = self.env['hotel.room.type.restriction.item'].search([
                 ('virtual_room_id','=',res.virtual_room_id.id),
             ])
-            avail_restrictions = self.env['hotel.virtual.room.availability'].search([
+            avail_restrictions = self.env['hotel.room.type.availability'].search([
                 ('virtual_room_id','=',res.virtual_room_id.id)
             ])
             real_max = len(res.virtual_room_id.check_availability_virtual_room(

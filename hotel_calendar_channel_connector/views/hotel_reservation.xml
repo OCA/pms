@@ -53,8 +53,6 @@
                     <field name="origin_sale"/>
                     <field name="overbooking" invisible="1" />
                     <field name="to_assign" invisible="1"/>
-                    <!-- cardex_smart_button attrs depends on cardex_pending to be showed -->
-                    <field name="cardex_pending" invisible="1"/>
                     <field name="price_unit" string="Reservation Price"/>
                     <field name="discount" groups="sale.group_discount_per_so_line"/>
                     <field name="price_total" string="Final Price"/>

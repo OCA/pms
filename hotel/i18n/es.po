@@ -4356,7 +4356,7 @@ msgid "Gives the sequence order when displaying a product list"
 msgstr "Proporciona el orden de secuencia al mostrar una lista de productos"
 
 #. module: hotel
-#: selection:hotel.virtual.room.restriction.item,applied_on:0
+#: selection:hotel.room.type.restriction.item,applied_on:0
 #: selection:hotel.wizard.massive.changes,applied_on:0
 msgid "Global"
 msgstr "Global"
@@ -7285,7 +7285,7 @@ msgstr "Proveedores"
 
 #. module: hotel
 #: selection:hotel.room,sale_price_type:0
-#: selection:hotel.virtual.room.restriction.item,applied_on:0
+#: selection:hotel.room.type.restriction.item,applied_on:0
 #: selection:hotel.wizard.massive.changes,applied_on:0
 #: model:ir.model.fields,field_description:hotel.field_hotel_virtual_room_availability_virtual_room_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_virtual_room_restriction_item_virtual_room_id
@@ -7585,8 +7585,8 @@ msgstr "hotel.virtual.room"
 
 #. module: hotel
 #: model:ir.model,name:hotel.model_hotel_virtual_room_availability
-msgid "hotel.virtual.room.availability"
-msgstr "hotel.virtual.room.availability"
+msgid "hotel.room.type.availability"
+msgstr "hotel.room.type.availability"
 
 #. module: hotel
 #: model:ir.model,name:hotel.model_hotel_virtual_room_availabity
@@ -7595,13 +7595,13 @@ msgstr "hotel.virtual.room.availabity"
 
 #. module: hotel
 #: model:ir.model,name:hotel.model_hotel_virtual_room_restriction
-msgid "hotel.virtual.room.restriction"
-msgstr "hotel.virtual.room.restriction"
+msgid "hotel.room.type.restriction"
+msgstr "hotel.room.type.restriction"
 
 #. module: hotel
 #: model:ir.model,name:hotel.model_hotel_virtual_room_restriction_item
-msgid "hotel.virtual.room.restriction.item"
-msgstr "hotel.virtual.room.restriction.item"
+msgid "hotel.room.type.restriction.item"
+msgstr "hotel.room.type.restriction.item"
 
 #. module: hotel
 #: model:ir.model,name:hotel.model_hotel_wizard_duplicate_reservation

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
@@ -6,7 +5,6 @@ from openerp import models, fields, api, _
 
 
 class ResCompany(models.Model):
-
     _inherit = 'res.company'
 
     additional_hours = fields.Integer('Additional Hours',

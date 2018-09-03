@@ -1,20 +1,7 @@
-# -*- coding: utf-8 -*-
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from decimal import Decimal
-from datetime import datetime, timedelta
-import dateutil.parser
-# For Python 3.0 and later
-from urllib.request import urlopen
-import time
-from odoo.exceptions import except_orm, UserError, ValidationError
-from odoo.tools import (
-    misc,
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT)
-from odoo import models, fields, api, _
-from odoo.addons.hotel import date_utils
+from odoo import models, fields, api
 
 class HotelRoomType(models.Model):
     """ Before creating a 'room type', you need to consider the following:
@@ -68,7 +55,7 @@ class HotelRoomType(models.Model):
         """
         self.ensure_one()
         capacities = self.room_ids.mapped('capacity')
-        return any(capacities) and min(capacities) or 0
+        return min(capacities) if any(capacities) else 0
 
     @api.model
     # TODO Rename to check_availability_room_type
@@ -93,7 +80,7 @@ class HotelRoomType(models.Model):
             room_type_id = self.env['hotel.room.type'].search([
                 ('id', '=', room_type_id)
             ])
-            # QUESTION What linked represent? Rooms in this type ? 
+            # QUESTION What linked represent? Rooms in this type ?
             rooms_linked = self.room_ids
             free_rooms = free_rooms & rooms_linked
         return free_rooms.sorted(key=lambda r: r.sequence)
@@ -106,9 +93,11 @@ class HotelRoomType(models.Model):
         @param vals: dictionary of fields value.
         @return: new record set for hotel room type.
         """
-        vals.update({'is_room_type': True})
-        vals.update({'purchase_ok': False})
-        vals.update({'type': 'service'})
+        vals.update({
+            'is_room_type': True,
+            'purchase_ok': False,
+            'type': 'service',
+        })
         return super().create(vals)
 
     @api.multi

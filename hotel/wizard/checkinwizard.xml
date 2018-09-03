@@ -10,7 +10,7 @@
                 <group col="4">
                 <field options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open': True}"
                        name="reservation_id" nolabel="1"
-                       domain="[('folio_id','=',context.get('folio')), ('state', '!=', 'cancelled'), ('cardex_pending', '=', True)]"
+                       domain="[('folio_id','=',context.get('folio')), ('state', '!=', 'cancelled'), ('cardex_pending_count', '>', 0)]"
                        style="max-width: 95%; width: 32.2em"/>
                 </group>
                 <group col="4">

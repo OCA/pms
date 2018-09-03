@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import time
-import datetime
 import logging
 from odoo import models, fields, api, _
-from odoo.tools import misc, DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.exceptions import UserError
 from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
@@ -14,6 +13,8 @@ from odoo.addons import decimal_precision as dp
 
 
 class HotelServiceLine(models.Model):
+    _name = 'hotel.service.line'
+    _description = 'hotel Service line'
 
     @api.one
     def copy(self, default=None):
@@ -32,10 +33,11 @@ class HotelServiceLine(models.Model):
         @param field_name: Names of fields.
         @param arg: User defined arguments
         '''
-        for folio in self:
-            line = folio.service_line_id
-            x = line._amount_line(field_name, arg)
-        return x
+        total_amount = 0
+        for record in self:
+            line = record.service_line_id
+            total_amount += line._amount_line(field_name, arg)
+        return total_amount
 
     @api.multi
     def _number_packages(self, field_name, arg):
@@ -44,10 +46,11 @@ class HotelServiceLine(models.Model):
         @param field_name: Names of fields.
         @param arg: User defined arguments
         '''
-        for folio in self:
-            line = folio.service_line_id
-            x = line._number_packages(field_name, arg)
-        return x
+        total_packages = 0
+        for record in self:
+            line = record.service_line_id
+            total_packages = line._number_packages(field_name, arg)
+        return total_packages
 
     @api.model
     def _service_checkin(self):
@@ -69,8 +72,6 @@ class HotelServiceLine(models.Model):
                                                         limit=1)
         return False
 
-    _name = 'hotel.service.line'
-    _description = 'hotel Service line'
     # The record's name
     name = fields.Char('Service line', required=True)
     # services in the hotel are products
@@ -93,13 +94,14 @@ class HotelServiceLine(models.Model):
         ('web','Web')], 'Sales Channel')
 
     ser_checkin = fields.Datetime('From Date', required=True,
-                                       default=_service_checkin)
+                                  default=_service_checkin)
     ser_checkout = fields.Datetime('To Date', required=True,
-                                        default=_service_checkout)
-    ser_room_line = fields.Many2one('hotel.reservation','Room', default=_default_ser_room_line)
+                                   default=_service_checkout)
+    ser_room_line = fields.Many2one('hotel.reservation', 'Room',
+                                    default=_default_ser_room_line)
 
     @api.model
-    def create(self, vals, check=True):
+    def create(self, vals):
         """
         Overrides orm create method.
         @param self: The object pointer
@@ -134,14 +136,17 @@ class HotelServiceLine(models.Model):
             @param self: object pointer
         '''
         if self.product_id:
+            write_vals = {}
             if not (self.folio_id and self.folio_id.partner_id) and \
                     self.ser_room_line:
-                self.folio_id = self.ser_room_line.folio_id
-
-            self.name = self.product_id.name
-            self.price_unit = self.product_id.lst_price
-            self.product_uom = self.product_id.uom_id
-            self.price_unit = self.product_id.price
+                write_vals.update({'folio_id': self.ser_room_line.folio_id.id})
+            write_vals.update({
+                'name': self.product_id.name,
+                'price_unit': self.product_id.lst_price,
+                'product_uom': self.product_id.uom_id,
+                'price_unit': self.product_id.price,
+            })
+            self.write(write_vals)
 
                 #~ self.price_unit = tax_obj._fix_tax_included_price(prod.price,
                                                                   #~ prod.taxes_id,
@@ -208,26 +213,23 @@ class HotelServiceLine(models.Model):
         if self.ser_checkin and self.ser_checkout:
             diffDate = date_utils.date_diff(self.ser_checkin,
                                             self.ser_checkout, hours=False) + 1
+            # FIXME: Finalize method!
 
     @api.multi
     def button_confirm(self):
         '''
         @param self: object pointer
         '''
-        for folio in self:
-            line = folio.service_line_id
-            x = line.button_confirm()
-        return x
+        self.ensure_one()
+        self.service_line_id.button_confirm()
 
     @api.multi
     def button_done(self):
         '''
         @param self: object pointer
         '''
-        for folio in self:
-            line = folio.service_line_id
-            x = line.button_done()
-        return x
+        self.ensure_one()
+        self.service_line_id.button_done()
 
     @api.one
     def copy_data(self, default=None):
@@ -235,8 +237,7 @@ class HotelServiceLine(models.Model):
         @param self: object pointer
         @param default: dict of default values to be set
         '''
-        sale_line_obj = self.env['sale.order.line'
-                                 ].browse(self.service_line_id.id)
+        sale_line_obj = self.env['sale.order.line'].browse(self.service_line_id.id)
         return sale_line_obj.copy_data(default=default)
 
     @api.multi

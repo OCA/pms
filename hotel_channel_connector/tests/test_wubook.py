@@ -552,7 +552,7 @@ class TestWubook(TestHotelWubook):
         checkout_utc_dt = checkin_utc_dt + timedelta(days=1)
         checkout_dt = date_utils.dt_as_timezone(checkout_utc_dt,
                                                 self.tz_hotel)
-        vroom_restr_item_obj = self.env['hotel.virtual.room.restriction.item']
+        vroom_restr_item_obj = self.env['hotel.room.type.restriction.item']
 
         vrooms = [self.hotel_vroom_budget, self.hotel_vroom_special]
         values = self.create_wubook_rooms_values(

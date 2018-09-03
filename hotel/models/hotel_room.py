@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
@@ -12,7 +11,7 @@ class HotelRoom(models.Model):
     _name = 'hotel.room'
     _description = 'Hotel Room'
     _order = "sequence, room_type_id, name"
-    
+
     name = fields.Char('Room Name', required=True)
     active = fields.Boolean('Active', default=True)
     sequence = fields.Integer('Sequence', default=0)

@@ -33,7 +33,7 @@ class TestReservationRestriction(TestHotelWubook):
         self.assertTrue(any(wrests), "Any restriction found")
 
     def test_create(self):
-        vroo_restriction_obj = self.env['hotel.virtual.room.restriction']
+        vroo_restriction_obj = self.env['hotel.room.type.restriction']
         # Restriction Plan
         restriction = vroo_restriction_obj.sudo(self.user_hotel_manager).\
             create({
@@ -43,7 +43,7 @@ class TestReservationRestriction(TestHotelWubook):
         self.assertTrue(restriction, "Can't create new restriction")
 
     def test_write(self):
-        vroo_restriction_obj = self.env['hotel.virtual.room.restriction']
+        vroo_restriction_obj = self.env['hotel.room.type.restriction']
         # Restriction Plan
         restriction = vroo_restriction_obj.sudo(self.user_hotel_manager).\
             create({
@@ -60,7 +60,7 @@ class TestReservationRestriction(TestHotelWubook):
             "Can't modif restriction")
 
     def test_unlink(self):
-        vroo_restriction_obj = self.env['hotel.virtual.room.restriction']
+        vroo_restriction_obj = self.env['hotel.room.type.restriction']
         # Restriction Plan
         restriction = vroo_restriction_obj.sudo(self.user_hotel_manager).\
             create({
@@ -72,7 +72,7 @@ class TestReservationRestriction(TestHotelWubook):
         restriction.sudo(self.user_hotel_manager).unlink()
 
     def test_import_restriction_plans(self):
-        vroo_restriction_obj = self.env['hotel.virtual.room.restriction']
+        vroo_restriction_obj = self.env['hotel.room.type.restriction']
         # Restriction Plan
         restriction = vroo_restriction_obj.sudo(self.user_hotel_manager).\
             create({
@@ -84,7 +84,7 @@ class TestReservationRestriction(TestHotelWubook):
         restriction.sudo(self.user_hotel_manager).import_restriction_plans()
 
     def test_name_get(self):
-        vroo_restriction_obj = self.env['hotel.virtual.room.restriction']
+        vroo_restriction_obj = self.env['hotel.room.type.restriction']
         # Restriction Plan
         restriction = vroo_restriction_obj.sudo(self.user_hotel_manager).\
             create({

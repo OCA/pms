@@ -171,7 +171,7 @@ class HotelReservation(models.Model):
         room_type_ids = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
-        vroom_rest_obj = self.env['hotel.virtual.room.restriction.item']
+        vroom_rest_obj = self.env['hotel.room.type.restriction.item']
         for room_type_id in room_type_ids:
             days = {}
             for i in range(0, date_diff):

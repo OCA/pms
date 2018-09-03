@@ -4,7 +4,7 @@ from odoo import models, fields, api
 
 
 class HotelVirtualRoomAvailability(models.Model):
-    _inherit = 'hotel.virtual.room.availability'
+    _inherit = 'hotel.room.type.availability'
 
     @api.model
     def create(self, vals):

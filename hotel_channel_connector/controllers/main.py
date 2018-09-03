@@ -84,7 +84,7 @@ class website_wubook(http.Controller):
             parity_restr_id = request.env['ir.default'].sudo().get(
                             'res.config.settings', 'parity_restrictions_id')
             if parity_restr_id:
-                vroom_restr_obj = request.env['hotel.virtual.room.restriction']
+                vroom_restr_obj = request.env['hotel.room.type.restriction']
                 restr_id = vroom_restr_obj.sudo().browse(int(parity_restr_id))
                 if restr_id and restr_id.wpid and restr_id.wpid != '0':
                     wubook_obj.fetch_rplan_restrictions(dfrom, dto,

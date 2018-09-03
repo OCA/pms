@@ -3,8 +3,8 @@
 
   <!-- FORM availability -->
   <record id="virtual_room_availability_view_form" model="ir.ui.view">
-    <field name="name">hotel.virtual.room.availability.form</field>
-    <field name="model">hotel.virtual.room.availability</field>
+    <field name="name">hotel.room.type.availability.form</field>
+    <field name="model">hotel.room.type.availability</field>
     <field name="arch" type="xml">
       <form string="Availability">
         <sheet>
@@ -29,8 +29,8 @@
 
   <!-- TREE restriction -->
   <record id="virtual_room_availability_view_tree" model="ir.ui.view">
-    <field name="name">hotel.virtual.room.availability.tree</field>
-    <field name="model">hotel.virtual.room.availability</field>
+    <field name="name">hotel.room.type.availability.tree</field>
+    <field name="model">hotel.room.type.availability</field>
     <field name="arch" type="xml">
       <tree string="Restrictions">
         <!-- <field name="virtual_room_id" required="1"/> -->
@@ -46,7 +46,7 @@
   <!-- Action of reservation restriction -->
   <record model="ir.actions.act_window" id="virtual_room_availability_action">
     <field name="name">Virtual Room Availability</field>
-    <field name="res_model">hotel.virtual.room.availability</field>
+    <field name="res_model">hotel.room.type.availability</field>
     <field name="view_type">form</field>
     <field name="view_mode">tree,form</field>
   </record>

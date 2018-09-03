@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-# Copyright 2017  Alexandre Díaz
+# Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import datetime
+from datetime import datetime
 import time
 import pytz
 import logging
@@ -78,9 +77,9 @@ class HotelFolio(models.Model):
                                  help="Hotel room reservation detail.",)
 
     service_line_ids = fields.One2many('hotel.service', 'folio_id',
-                                  readonly=False,
-                                  states={'done': [('readonly', True)]},
-                                  help="Hotel services detail provide to "
+                                       readonly=False,
+                                       states={'done': [('readonly', True)]},
+                                       help="Hotel services detail provide to "
                                        "customer and it will include in "
                                        "main Invoice.")
     hotel_invoice_id = fields.Many2one('account.invoice', 'Invoice')
@@ -98,23 +97,21 @@ class HotelFolio(models.Model):
                                            'sent': [('readonly', False)]},
                                    help="Pricelist for current folio.")
     pending_amount = fields.Monetary(compute='compute_amount',
-                                   store=True,
-                                   string="Pending in Folio")
+                                     store=True,
+                                     string="Pending in Folio")
     refund_amount = fields.Monetary(compute='compute_amount',
                                     store=True,
                                     string="Payment Returns")
     invoices_paid = fields.Monetary(compute='compute_amount',
-                                 store=True, track_visibility='onchange',
-                                 string="Payments")
+                                    store=True, track_visibility='onchange',
+                                    string="Payments")
 
     booking_pending = fields.Integer('Booking pending',
                                      compute='_compute_cardex_count')
     cardex_count = fields.Integer('Cardex counter',
                                   compute='_compute_cardex_count')
-    cardex_pending = fields.Boolean('Cardex Pending',
-                                    compute='_compute_cardex_count')
-    cardex_pending_num = fields.Integer('Cardex Pending',
-                                        compute='_compute_cardex_count')
+    cardex_pending_count = fields.Integer('Cardex Pending',
+                                          compute='_compute_cardex_count')
     checkins_reservations = fields.Integer('checkins reservations')
     checkouts_reservations = fields.Integer('checkouts reservations')
     partner_internal_comment = fields.Text(string='Internal Partner Notes',
@@ -173,12 +170,11 @@ class HotelFolio(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     # sale.order
     amount_total = fields.Float(string='Total', store=True, readonly=True,
-                                   track_visibility='always')
+                                track_visibility='always')
 
     def _computed_rooms_char(self):
         for record in self:
-            rooms = ', '.join(record.mapped('room_lines.room_id.name'))
-            record.rooms_char = rooms
+            record.rooms_char = ', '.join(record.mapped('room_lines.room_id.name'))
 
     @api.multi
     def _compute_num_invoices(self):
@@ -219,9 +215,8 @@ class HotelFolio(models.Model):
     def action_payments(self):
         self.ensure_one()
         payments_obj = self.env['account.payment']
-        payments = payments_obj.search([('folio_id','=',self.id)])
-        payment_ids = payments.mapped('id')
-        invoices = self.mapped('invoice_ids.id')
+        payments = payments_obj.search([('folio_id', '=', self.id)])
+        #invoices = self.mapped('invoice_ids.id')
         return{
             'name': _('Payments'),
             'view_type': 'form',
@@ -229,7 +224,7 @@ class HotelFolio(models.Model):
             'res_model': 'account.payment',
             'target': 'new',
             'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', payment_ids)],
+            'domain': [('id', 'in', payments.ids)],
         }
 
     @api.multi
@@ -251,16 +246,16 @@ class HotelFolio(models.Model):
         return_move_ids = []
         acc_pay_obj = self.env['account.payment']
         payments = acc_pay_obj.search([
-                '|',
-                ('invoice_ids', 'in', self.invoice_ids.ids),
-                ('folio_id', '=', self.id)
-            ])
+            '|',
+            ('invoice_ids', 'in', self.invoice_ids.ids),
+            ('folio_id', '=', self.id)
+        ])
         return_move_ids += self.invoice_ids.filtered(
             lambda invoice: invoice.type == 'out_refund').mapped(
-            'payment_move_line_ids.move_id.id')
-        return_lines = self.env['payment.return.line'].search([(
-            'move_line_ids','in',payments.mapped(
-            'move_line_ids.id'))])
+                'payment_move_line_ids.move_id.id')
+        return_lines = self.env['payment.return.line'].search([
+            ('move_line_ids', 'in', payments.mapped('move_line_ids.id')),
+        ])
         return_move_ids += return_lines.mapped('return_id.move_id.id')
 
         return{
@@ -323,19 +318,24 @@ class HotelFolio(models.Model):
         #         }
 
     @api.model
-    def create(self, vals, check=True):
+    def create(self, vals):
         if vals.get('name', _('New')) == _('New'):
             if 'company_id' in vals:
-                vals['name'] = self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('sale.order') or _('New')
+                vals['name'] = self.env['ir.sequence'].with_context(
+                    force_company=vals['company_id']
+                ).next_by_code('sale.order') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
 
         # Makes sure partner_invoice_id' and 'pricelist_id' are defined
-        if any(f not in vals for f in ['partner_invoice_id', 'partner_shipping_id', 'pricelist_id']):
+        lfields = ('partner_invoice_id', 'partner_shipping_id', 'pricelist_id')
+        if any(f not in vals for f in lfields):
             partner = self.env['res.partner'].browse(vals.get('partner_id'))
             addr = partner.address_get(['delivery', 'invoice'])
             vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
-            vals['pricelist_id'] = vals.setdefault('pricelist_id', partner.property_product_pricelist and partner.property_product_pricelist.id)
+            vals['pricelist_id'] = vals.setdefault(
+                'pricelist_id',
+                partner.property_product_pricelist and partner.property_product_pricelist.id)
         result = super(HotelFolio, self).create(vals)
         return result
 
@@ -358,12 +358,15 @@ class HotelFolio(models.Model):
 
         addr = self.partner_id.address_get(['invoice'])
         values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
+            'pricelist_id': self.partner_id.property_product_pricelist and \
+                self.partner_id.property_product_pricelist.id or False,
             'partner_invoice_id': addr['invoice'],
             'user_id': self.partner_id.user_id.id or self.env.uid
         }
-        if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and self.env.user.company_id.sale_note:
-            values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+        if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
+            self.env.user.company_id.sale_note:
+            values['note'] = self.with_context(
+                lang=self.partner_id.lang).env.user.company_id.sale_note
 
         if self.partner_id.team_id:
             values['team_id'] = self.partner_id.team_id.id
@@ -409,10 +412,11 @@ class HotelFolio(models.Model):
 
     @api.multi
     def action_done(self):
-        for line in self.room_lines:
+        room_lines = self.mapped('room_lines')
+        for line in room_lines:
             if line.state == "booking":
                 line.action_reservation_checkout()
-                
+
     @api.multi
     def action_cancel(self):
         '''
@@ -457,7 +461,7 @@ class HotelFolio(models.Model):
             'domain': [('reservation_id', 'in', rooms)],
             'target': 'new',
         }
-    
+
     @api.model
     def daily_plan(self):
         _logger.info('daily_plan')
@@ -486,26 +490,19 @@ class HotelFolio(models.Model):
     @api.multi
     def _compute_cardex_count(self):
         _logger.info('_compute_cardex_amount')
-        for fol in self:
-            num_cardex = 0
-            pending = False
-            if fol.reservation_type == 'normal':
-                for reser in fol.room_lines:
-                    if reser.state != 'cancelled' and \
-                            not reser.parent_reservation:
-                        num_cardex += len(reser.cardex_ids)
-                fol.cardex_count = num_cardex
-                pending = 0
-                for reser in fol.room_lines:
-                    if reser.state != 'cancelled' and \
-                            not reser.parent_reservation:
-                        pending += (reser.adults + reser.children) \
-                                          - len(reser.cardex_ids)
-                if pending <= 0:
-                    fol.cardex_pending = False
-                else:
-                    fol.cardex_pending = True
-        fol.cardex_pending_num = pending
+        for record in self:
+            if record.reservation_type == 'normal':
+                write_vals = {}
+                filtered_reservs = record.filtered(
+                    lambda x: x.room_lines.state != 'cancelled' and \
+                        not x.room_lines.parent_reservation)
+
+                mapped_cardex = filtered_reservs.mapped('cardex_ids.id')
+                write_vals.update({'cardex_count': len(mapped_cardex)})
+                mapped_cardex_count = filtered_reservs.mapped(
+                    lambda x: (x.adults + x.children) - len(x.cardex_ids))
+                write_vals.update({'cardex_pending_count': sum(mapped_cardex_count)})
+                record.write(write_vals)
 
     """
     MAILING PROCESS
@@ -586,15 +583,15 @@ class HotelFolio(models.Model):
         self.ensure_one()
         ir_model_data = self.env['ir.model.data']
         try:
-            template_id = (ir_model_data.get_object_reference
-                           ('hotel',
-                            'mail_template_hotel_reservation')[1])
+            template_id = ir_model_data.get_object_reference(
+                'hotel',
+                'mail_template_hotel_reservation')[1]
         except ValueError:
             template_id = False
         try:
-            compose_form_id = (ir_model_data.get_object_reference
-                               ('mail',
-                                'email_compose_message_wizard_form')[1])
+            compose_form_id = ir_model_data.get_object_reference(
+                'mail',
+                'email_compose_message_wizard_form')[1]
         except ValueError:
             compose_form_id = False
         ctx = dict()
@@ -632,15 +629,15 @@ class HotelFolio(models.Model):
         self.ensure_one()
         ir_model_data = self.env['ir.model.data']
         try:
-            template_id = (ir_model_data.get_object_reference
-                           ('hotel',
-                            'mail_template_hotel_exit')[1])
+            template_id = ir_model_data.get_object_reference(
+                'hotel',
+                'mail_template_hotel_exit')[1]
         except ValueError:
             template_id = False
         try:
-            compose_form_id = (ir_model_data.get_object_reference
-                               ('mail',
-                                'email_compose_message_wizard_form')[1])
+            compose_form_id = ir_model_data.get_object_reference(
+                'mail',
+                'email_compose_message_wizard_form')[1]
         except ValueError:
             compose_form_id = False
         ctx = dict()
@@ -679,15 +676,15 @@ class HotelFolio(models.Model):
         self.ensure_one()
         ir_model_data = self.env['ir.model.data']
         try:
-            template_id = (ir_model_data.get_object_reference
-                           ('hotel',
-                            'mail_template_hotel_cancel')[1])
+            template_id = ir_model_data.get_object_reference(
+                'hotel',
+                'mail_template_hotel_cancel')[1]
         except ValueError:
             template_id = False
         try:
-            compose_form_id = (ir_model_data.get_object_reference
-                               ('mail',
-                                'email_compose_message_wizard_form')[1])
+            compose_form_id = ir_model_data.get_object_reference(
+                'mail',
+                'email_compose_message_wizard_form')[1]
         except ValueError:
             compose_form_id = False
         ctx = dict()
@@ -722,15 +719,14 @@ class HotelFolio(models.Model):
         @param self: The object pointer
         @return: send a mail
         """
-        now_str = time.strftime(dt)
-        now_date = datetime.strptime(now_str, dt)
+        now_date = fields.Datetime.now()
         ir_model_data = self.env['ir.model.data']
-        template_id = (ir_model_data.get_object_reference
-                       ('hotel_reservation',
-                        'mail_template_reservation_reminder_24hrs')[1])
+        template_id = ir_model_data.get_object_reference(
+            'hotel_reservation',
+            'mail_template_reservation_reminder_24hrs')[1]
         template_rec = self.env['mail.template'].browse(template_id)
         for reserv_rec in self.search([]):
-            checkin_date = (datetime.strptime(reserv_rec.checkin, dt))
+            checkin_date = datetime.strptime(reserv_rec.checkin, dt)
             difference = relativedelta(now_date, checkin_date)
             if(difference.days == -1 and reserv_rec.partner_id.email and
                reserv_rec.state == 'confirm'):
@@ -742,11 +738,17 @@ class HotelFolio(models.Model):
         self.ensure_one()
         info_grouped = []
         for rline in self.room_lines:
-            if (import_all or rline.to_send) and not rline.parent_reservation and rline.state == state:
+            if (import_all or rline.to_send) and \
+                not rline.parent_reservation and rline.state == state:
                 dates = rline.get_real_checkin_checkout()
                 vals = {
                     'num': len(
-                        self.room_lines.filtered(lambda r: r.get_real_checkin_checkout()[0] == dates[0] and r.get_real_checkin_checkout()[1] == dates[1] and r.room_type_id.id == rline.room_type_id.id and (r.to_send or import_all) and not r.parent_reservation and r.state == rline.state)
+                        self.room_lines.filtered(
+                            lambda r: r.get_real_checkin_checkout()[0] == dates[0] and \
+                            r.get_real_checkin_checkout()[1] == dates[1] and \
+                            r.room_type_id.id == rline.room_type_id.id and \
+                            (r.to_send or import_all) and not r.parent_reservation and \
+                            r.state == rline.state)
                     ),
                     'room_type': {
                         'id': rline.room_type_id.id,
@@ -760,10 +762,13 @@ class HotelFolio(models.Model):
                 }
                 founded = False
                 for srline in info_grouped:
-                    if srline['num'] == vals['num'] and srline['room_type']['id'] == vals['room_type']['id'] and srline['checkin'] == vals['checkin'] and srline['checkout'] == vals['checkout']:
+                    if srline['num'] == vals['num'] and \
+                        srline['room_type']['id'] == vals['room_type']['id'] and \
+                        srline['checkin'] == vals['checkin'] and \
+                        srline['checkout'] == vals['checkout']:
                         founded = True
                         break
                 if not founded:
                     info_grouped.append(vals)
-        return sorted(sorted(info_grouped, key=lambda k: k['num'], reverse=True), key=lambda k: k['room_type']['id'])
-
+        return sorted(sorted(info_grouped,key=lambda k: k['num'], reverse=True),
+                      key=lambda k: k['room_type']['id'])

@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-# Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from decimal import Decimal
-import datetime
-# For Python 3.0 and later
-from urllib.request import urlopen
-import time
 import logging
-from openerp.exceptions import except_orm, UserError, ValidationError
-from openerp.tools import misc, DEFAULT_SERVER_DATETIME_FORMAT
+from openerp.exceptions import except_orm
 from openerp import models, fields, api, _
 _logger = logging.getLogger(__name__)
 
@@ -40,7 +32,7 @@ class AccountPayment(models.Model):
             }
         return_vals = {
             'journal_id': journal.id,
-            'line_ids': [(0,0,return_line_vals)],
+            'line_ids': [(0, 0, return_line_vals)],
             }
         return_pay = self.env['payment.return'].create(return_vals)
         return {
@@ -73,6 +65,7 @@ class AccountPayment(models.Model):
     @api.multi
     @api.depends('state')
     def _compute_folio_amount(self):
+        # FIXME: Finalize method
         res = []
         fol = ()
         for payment in self:
@@ -84,7 +77,7 @@ class AccountPayment(models.Model):
                 ])
             else:
                 return
-            if len(fol) == 0:
+            if not any(fol):
                 return
             elif len(fol) > 1:
                 raise except_orm(_('Warning'), _('This pay is related with \

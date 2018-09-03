@@ -17,7 +17,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _get_room_values_availability(self, vroom_id, date_str, day_vals, set_max_avail):
-        virtual_room_avail_obj = self.env['hotel.virtual.room.availability']
+        virtual_room_avail_obj = self.env['hotel.room.type.availability']
         vroom_avail = virtual_room_avail_obj.search([
             ('virtual_room_id', '=', vroom_id),
             ('date', '=', date_str)
@@ -46,7 +46,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _get_room_values_restrictions(self, restriction_plan_id, vroom_id, date_str, day_vals):
-        vroom_restr_item_obj = self.env['hotel.virtual.room.restriction.item']
+        vroom_restr_item_obj = self.env['hotel.room.type.restriction.item']
         vroom_restr = vroom_restr_item_obj.search([
             ('virtual_room_id', '=', vroom_id),
             ('applied_on', '=', '0_virtual_room'),
@@ -90,7 +90,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _generate_room_values(self, dfrom, dto, values, set_max_avail=False):
-        virtual_room_restr_obj = self.env['hotel.virtual.room.restriction']
+        virtual_room_restr_obj = self.env['hotel.room.type.restriction']
         hotel_virtual_room_obj = self.env['hotel.room.type']
         def_restr_plan = virtual_room_restr_obj.search([('wpid', '=', '0')])
         _logger.info("==== ROOM VALUES (%s -- %s)", dfrom, dto)
@@ -565,7 +565,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _generate_restrictions(self, restriction_plans):
-        restriction_obj = self.env['hotel.virtual.room.restriction']
+        restriction_obj = self.env['hotel.room.type.restriction']
         count = 0
         for plan in restriction_plans:
             vals = {
@@ -590,8 +590,8 @@ class HotelChannelConnectorImporter(AbstractComponent):
     @api.model
     def _generate_restriction_items(self, plan_restrictions):
         hotel_virtual_room_obj = self.env['hotel.room.type']
-        reserv_restriction_obj = self.env['hotel.virtual.room.restriction']
-        restriction_item_obj = self.env['hotel.virtual.room.restriction.item']
+        reserv_restriction_obj = self.env['hotel.room.type.restriction']
+        restriction_item_obj = self.env['hotel.room.type.restriction.item']
         _logger.info("===== RESTRICTIONS")
         _logger.info(plan_restrictions)
         for k_rpid, v_rpid in plan_restrictions.iteritems():

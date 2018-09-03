@@ -7,9 +7,9 @@ from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
 
 class ChannelHotelVirtualRoomAvailability(models.Model):
-    _name = 'channel.hotel.virtual.room.availability'
+    _name = 'channel.hotel.room.type.availability'
     _inherit = 'channel.binding'
-    _inherits = {'hotel.virtual.room.availability': 'odoo_id'}
+    _inherits = {'hotel.room.type.availability': 'odoo_id'}
     _description = 'Channel Product Pricelist'
 
     @api.model
@@ -54,10 +54,10 @@ class ChannelHotelVirtualRoomAvailability(models.Model):
                 }])
 
 class HotelVirtualRoomAvailability(models.Model):
-    _inherit = 'hotel.virtual.room.availability'
+    _inherit = 'hotel.room.type.availability'
 
     channel_bind_ids = fields.One2many(
-        comodel_name='channel.hotel.virtual.room.availability',
+        comodel_name='channel.hotel.room.type.availability',
         inverse_name='odoo_id',
         string='Hotel Virtual Room Availability Connector Bindings')
 
@@ -105,7 +105,7 @@ class HotelVirtualRoomAvailability(models.Model):
         date_diff = date_utils.date_diff(checkin, checkout, hours=False)
 
         vroom_obj = self.env['hotel.virtual.room']
-        virtual_room_avail_obj = self.env['hotel.virtual.room.availability']
+        virtual_room_avail_obj = self.env['hotel.room.type.availability']
 
         vrooms = vroom_obj.search([
             ('room_ids.product_id', '=', product_id)
@@ -138,9 +138,9 @@ class HotelVirtualRoomAvailability(models.Model):
                         })
 
 class ChannelBindingHotelVirtualRoomAvailabilityListener(Component):
-    _name = 'channel.binding.hotel.virtual.room.availability.listener'
+    _name = 'channel.binding.hotel.room.type.availability.listener'
     _inherit = 'base.connector.listener'
-    _apply_on = ['channel.hotel.virtual.room.availability']
+    _apply_on = ['channel.hotel.room.type.availability']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_fix_channel_availability(self, record, fields=None):

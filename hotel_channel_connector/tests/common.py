@@ -252,7 +252,7 @@ class TestHotelWubook(TestHotel):
         })
 
         # Update Restriction
-        vroom_restr_obj = cls.env['hotel.virtual.room.restriction']
+        vroom_restr_obj = cls.env['hotel.room.type.restriction']
         default_restriction = vroom_restr_obj.search([
             ('wpid', '=', '0')
         ], limit=1)

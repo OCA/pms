@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright 2018  Alexandre Díaz
+# Copyright 2018  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import json
 from datetime import datetime, timedelta
@@ -11,17 +10,19 @@ from odoo.tools.misc import formatLang
 class HotelDashboard(models.Model):
     _name = "hotel.dashboard"
 
+    # FIXME
     def _get_count(self):
-        resevations_count = self.env['hotel.reservation'].search(
+        resevations_count = self.env['hotel.reservation'].search_count(
             [('sate', '=', 'confirm')])
-        folios_count = self.env['hotel.folio'].search(
+        folios_count = self.env['hotel.folio'].search_count(
             [('sate', '=', 'sales_order')])
-        next_arrivals_count = self.env['hotel.reservation'].search(
+        next_arrivals_count = self.env['hotel.reservation'].search_count(
             [('is_checkin', '=', True)])
 
         self.orders_count = len(orders_count)
         self.quotations_count = len(quotations_count)
         self.orders_done_count = len(orders_done_count)
+
     @api.one
     def _kanban_dashboard(self):
         if self.graph_type == 'bar':
@@ -40,25 +41,33 @@ class HotelDashboard(models.Model):
     color = fields.Integer(string='Color Index')
     name = fields.Char(string="Name")
     type = fields.Char(default="sale")
-    graph_type = fields.Selection([('line','Line'),('bar','Bar'),('none','None')])
-    reservations_count = fields.Integer(compute = '_get_count')
-    folios_count = fields.Integer(compute= '_get_count')
-    next_arrivals_count = fields.Integer(compute= '_get_count')
+    graph_type = fields.Selection([
+        ('line', 'Line'),
+        ('bar', 'Bar'),
+        ('none', 'None')])
+    reservations_count = fields.Integer(compute='_get_count')
+    folios_count = fields.Integer(compute='_get_count')
+    next_arrivals_count = fields.Integer(compute='_get_count')
     kanban_dashboard = fields.Text(compute='_kanban_dashboard')
     kanban_dashboard_graph = fields.Text(compute='_kanban_dashboard_graph')
-    show_on_dashboard = fields.Boolean(string='Show journal on dashboard', help="Whether this journal should be displayed on the dashboard or not", default=True)
+    show_on_dashboard = fields.Boolean(
+        string='Show journal on dashboard',
+        help="Whether this journal should be displayed on the dashboard or not",
+        default=True)
 
     @api.multi
     def get_bar_graph_datas(self):
         data = []
         today = datetime.strptime(fields.Date.context_today(self), DF)
         day_of_week = int(format_datetime(today, 'e', locale=self._context.get('lang') or 'en_US'))
-        for i in range(0,15):
-            if i==0:
+        for i in range(0, 15):
+            if i == 0:
                 label = _('Today')
             else:
-                label = format_date(today + timedelta(days=i) , 'd', locale=self._context.get('lang') or 'en_US')
-            data.append({'label':label,'value':0.0, 'type': 'past' if i<0 else 'future'})
+                label = format_date(today + timedelta(days=i),
+                                    'd',
+                                    locale=self._context.get('lang') or 'en_US')
+            data.append({'label':label, 'value':0.0, 'type': 'past' if i < 0 else 'future'})
         # Build SQL query to find amount aggregated by week
         select_sql_clause = """SELECT count(id) as total from hotel_reservation where state != 'cancelled'"""
         query = "("+select_sql_clause+" and date(checkin) = '"+today.strftime(DF)+"')"
@@ -68,8 +77,8 @@ class HotelDashboard(models.Model):
 
         self.env.cr.execute(query)
         query_results = self.env.cr.dictfetchall()
-        for index in range(0, len(query_results)):
-            data[index]['value'] = query_results[index].get('total')
+        for index_k, index_v in enumerate(query_results):
+            data[index_k]['value'] = index_v.get('total')
         return [{'values': data}]
 
     @api.multi

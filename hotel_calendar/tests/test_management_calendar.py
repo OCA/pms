@@ -109,7 +109,7 @@ class TestManagementCalendar(TestHotelCalendar):
                                 doesn't match!")
 
         # REMOVE RESTRICTIONS
-        rest_it_obj = self.env['hotel.virtual.room.restriction.item'].sudo(
+        rest_it_obj = self.env['hotel.room.type.restriction.item'].sudo(
                                                     self.user_hotel_manager)
         rest_ids = rest_it_obj.search([
             ('applied_on', '=', '0_virtual_room'),
@@ -137,7 +137,7 @@ class TestManagementCalendar(TestHotelCalendar):
 
         hotel_cal_mngt_obj = self.env['hotel.calendar.management'].sudo(
                                                     self.user_hotel_manager)
-        vroom_avail_obj = self.env['hotel.virtual.room.availability'].sudo(
+        vroom_avail_obj = self.env['hotel.room.type.availability'].sudo(
                                                     self.user_hotel_manager)
 
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(

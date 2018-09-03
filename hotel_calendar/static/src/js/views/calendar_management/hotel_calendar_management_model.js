@@ -49,7 +49,7 @@ return AbstractModel.extend({
 
     get_restrictions: function () {
         return this._rpc({
-            model: 'hotel.virtual.room.restriction',
+            model: 'hotel.room.type.restriction',
             method: 'search_read',
             args: [false, ['id','name']],
             context: Session.user_context,
