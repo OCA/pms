@@ -146,7 +146,7 @@ class HotelServiceLine(models.Model):
                 'product_uom': self.product_id.uom_id,
                 'price_unit': self.product_id.price,
             })
-            self.write(write_vals)
+            self.update(write_vals)
 
                 #~ self.price_unit = tax_obj._fix_tax_included_price(prod.price,
                                                                   #~ prod.taxes_id,

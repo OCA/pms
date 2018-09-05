@@ -2,14 +2,14 @@
 <odoo>
 
   <!-- FORM availability -->
-  <record id="virtual_room_availability_view_form" model="ir.ui.view">
+  <record id="room_type_availability_view_form" model="ir.ui.view">
     <field name="name">hotel.room.type.availability.form</field>
     <field name="model">hotel.room.type.availability</field>
     <field name="arch" type="xml">
       <form string="Availability">
         <sheet>
           <group>
-            <!-- <h1><field name="virtual_room_id" required="1"/></h1> -->
+            <!-- <h1><field name="room_type_id" required="1"/></h1> -->
             <h1><field name="room_type_id" required="1"/></h1>
           </group>
           <group>
@@ -28,12 +28,12 @@
   </record>
 
   <!-- TREE restriction -->
-  <record id="virtual_room_availability_view_tree" model="ir.ui.view">
+  <record id="room_type_availability_view_tree" model="ir.ui.view">
     <field name="name">hotel.room.type.availability.tree</field>
     <field name="model">hotel.room.type.availability</field>
     <field name="arch" type="xml">
       <tree string="Restrictions">
-        <!-- <field name="virtual_room_id" required="1"/> -->
+        <!-- <field name="room_type_id" required="1"/> -->
         <field name="room_type_id" required="1"/>
         <field name="date" required="1"/>
         <field name="avail"/>
@@ -44,7 +44,7 @@
   </record>
 
   <!-- Action of reservation restriction -->
-  <record model="ir.actions.act_window" id="virtual_room_availability_action">
+  <record model="ir.actions.act_window" id="room_type_availability_action">
     <field name="name">Virtual Room Availability</field>
     <field name="res_model">hotel.room.type.availability</field>
     <field name="view_type">form</field>
@@ -52,8 +52,8 @@
   </record>
 
   <!-- MENUS -->
-  <menuitem name="Availability" id="virtual_room_availability_menu"
-    action="virtual_room_availability_action" sequence="22"
+  <menuitem name="Availability" id="room_type_availability_menu"
+    action="room_type_availability_action" sequence="22"
     parent="hotel.configuration_others"/>
 
  </odoo>

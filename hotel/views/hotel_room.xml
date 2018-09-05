@@ -38,9 +38,9 @@
                 </group>
                 <group>
               		<!-- <field name="sale_price_type" /> -->
-              		<!--field name="price_virtual_room_domain" invisible="1" /-->
-          			  <!-- <field name="price_virtual_room" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'vroom')], 'required': [('sale_price_type', '=', 'vroom')]}" /> -->
-                  <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'vroom')], 'required': [('sale_price_type', '=', 'vroom')]}" /> -->
+              		<!--field name="price_room_type_domain" invisible="1" /-->
+          			  <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
+                  <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
                 </group>
                 <newline />
                 <!-- <separator colspan='4' string="Customer Taxes" /> -->

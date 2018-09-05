@@ -7,6 +7,7 @@ from odoo import models, fields, api, _
 class HotelRoomAmenities(models.Model):
     _name = 'hotel.room.amenities'
     _description = 'Room amenities'
+    
     # The record's name
     name = fields.Char('Amenity Name', required=True)
     # Used for activate records

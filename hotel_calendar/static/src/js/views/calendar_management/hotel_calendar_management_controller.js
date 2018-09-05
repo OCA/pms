@@ -71,7 +71,7 @@ var MPMSCalendarController = AbstractController.extend({
             self.renderer._days_tooltips = results['events'];
             var rooms = [];
             for (var r of results['rooms']) {
-                var nroom = new HVRoom(
+                var nroom = new HRoomType(
                     r[0], // Id
                     r[1], // Name
                     r[2], // Capacity
@@ -112,15 +112,15 @@ var MPMSCalendarController = AbstractController.extend({
                 switch (notif[1]['type']) {
                     case 'availability':
                         var avail = notif[1]['availability'];
-                        var vroom = Object.keys(avail)[0];
-                        var day = Object.keys(avail[vroom])[0];
+                        var room_type = Object.keys(avail)[0];
+                        var day = Object.keys(avail[room_type])[0];
                         var dt = HotelCalendarManagement.toMoment(day);
                         var availability = {};
-                        availability[vroom] = [{
+                        availability[room_type] = [{
                             'date': dt.format(ODOO_DATE_MOMENT_FORMAT),
-                            'avail': avail[vroom][day][0],
-                            'no_ota': avail[vroom][day][1],
-                            'id': avail[vroom][day][2]
+                            'avail': avail[room_type][day][0],
+                            'no_ota': avail[room_type][day][1],
+                            'id': avail[room_type][day][2]
                         }];
                         this.renderer._hcalendar.addAvailability(availability);
                         break;
@@ -143,22 +143,22 @@ var MPMSCalendarController = AbstractController.extend({
                         this.renderer._hcalendar.addPricelist(pr);
                         break;
                     case 'restriction':
-                        // FIXME: Expected one day and one vroom
+                        // FIXME: Expected one day and one room_type
                         var restriction = notif[1]['restriction'];
-                        var vroom = Object.keys(restriction)[0];
-                        var day = Object.keys(restriction[vroom])[0];
+                        var room_type = Object.keys(restriction)[0];
+                        var day = Object.keys(restriction[room_type])[0];
                         var dt = HotelCalendarManagement.toMoment(day);
                         var rest = {};
-                        rest[vroom] = [{
+                        rest[room_type] = [{
                             'date': dt.format(ODOO_DATE_MOMENT_FORMAT),
-                            'min_stay': restriction[vroom][day][0],
-                            'min_stay_arrival': restriction[vroom][day][1],
-                            'max_stay': restriction[vroom][day][2],
-                            'max_stay_arrival': restriction[vroom][day][3],
-                            'closed': restriction[vroom][day][4],
-                            'closed_arrival': restriction[vroom][day][5],
-                            'closed_departure': restriction[vroom][day][6],
-                            'id': restriction[vroom][day][7]
+                            'min_stay': restriction[room_type][day][0],
+                            'min_stay_arrival': restriction[room_type][day][1],
+                            'max_stay': restriction[room_type][day][2],
+                            'max_stay_arrival': restriction[room_type][day][3],
+                            'closed': restriction[room_type][day][4],
+                            'closed_arrival': restriction[room_type][day][5],
+                            'closed_departure': restriction[room_type][day][6],
+                            'id': restriction[room_type][day][7]
                         }];
                         this.renderer._hcalendar.addRestrictions(rest);
                         break;

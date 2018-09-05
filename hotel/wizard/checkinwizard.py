@@ -212,7 +212,7 @@ class Wizard(models.TransientModel):
         # show the checkin fields if a partner is selected
         if self.op_select_partner == 'S' and self.partner_id.id != False:
             write_vals.update({'checkin_mode': 1})
-        self.write(write_vals)
+        self.update(write_vals)
 
     @api.onchange('op_select_partner')
     def onchange_op_select_partner(self):

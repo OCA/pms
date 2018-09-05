@@ -6,7 +6,7 @@ from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
 
-class ChannelHotelVirtualRoomAvailability(models.Model):
+class ChannelHotelRoomTypeAvailability(models.Model):
     _name = 'channel.hotel.room.type.availability'
     _inherit = 'channel.binding'
     _inherits = {'hotel.room.type.availability': 'odoo_id'}
@@ -14,8 +14,8 @@ class ChannelHotelVirtualRoomAvailability(models.Model):
 
     @api.model
     def _default_channel_max_avail(self):
-        if self.virtual_room_id:
-            return self.virtual_room_id.max_real_rooms
+        if self.room_type_id:
+            return self.room_type_id.max_real_rooms
         return -1
 
     odoo_id = fields.Many2one(comodel_names='product.pricelist',
@@ -31,10 +31,10 @@ class ChannelHotelVirtualRoomAvailability(models.Model):
     @api.constrains('channel_max_avail')
     def _check_wmax_avail(self):
         for record in self:
-            if record.channel_max_avail > record.virtual_room_id.total_rooms_count:
+            if record.channel_max_avail > record.room_type_id.total_rooms_count:
                 raise ValidationError(_("max avail for channel can't be high \
                     than toal rooms \
-                    count: %d") % record.virtual_room_id.total_rooms_count)
+                    count: %d") % record.room_type_id.total_rooms_count)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
@@ -46,40 +46,40 @@ class ChannelHotelVirtualRoomAvailability(models.Model):
                 adapter = work.component(usage='backend.adapter')
                 date_dt = date_utils.get_datetime(self.date)
                 adapter.update_availability([{
-                    'id': self.virtual_room_id.channel_room_id,
+                    'id': self.room_type_id.channel_room_id,
                     'days': [{
                         'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
                         'avail': self.avail,
                     }],
                 }])
 
-class HotelVirtualRoomAvailability(models.Model):
+class HotelRoomTypeAvailability(models.Model):
     _inherit = 'hotel.room.type.availability'
 
     channel_bind_ids = fields.One2many(
         comodel_name='channel.hotel.room.type.availability',
         inverse_name='odoo_id',
-        string='Hotel Virtual Room Availability Connector Bindings')
+        string='Hotel Room Type Availability Connector Bindings')
 
     @api.constrains('avail')
     def _check_avail(self):
         vroom_obj = self.env['hotel.virtual.room']
         issue_obj = self.env['hotel.channel.connector.issue']
         for record in self:
-            cavail = len(vroom_obj.check_availability_virtual_room(
+            cavail = len(vroom_obj.check_availability_room(
                 record.date,
                 record.date,
-                virtual_room_id=record.virtual_room_id.id))
-            max_avail = min(cavail, record.virtual_room_id.total_rooms_count)
+                room_type_id=record.room_type_id.id))
+            max_avail = min(cavail, record.room_type_id.total_rooms_count)
             if record.avail > max_avail:
                 issue_obj.sudo().create({
                     'section': 'avail',
                     'message': _(r"The new availability can't be greater than \
                         the actual availability \
-                        \n[%s]\nInput: %d\Limit: %d") % (record.virtual_room_id.name,
+                        \n[%s]\nInput: %d\Limit: %d") % (record.room_type_id.name,
                                                          record.avail,
                                                          record),
-                    'wid': record.virtual_room_id.wrid,
+                    'wid': record.room_type_id.wrid,
                     'date_start': record.date,
                     'date_end': record.date,
                 })
@@ -87,10 +87,10 @@ class HotelVirtualRoomAvailability(models.Model):
                 self._event('on_fix_channel_availability').notify(record)
         return super(HotelVirtualRoomAvailability, self)._check_avail()
 
-    @api.onchange('virtual_room_id')
-    def onchange_virtual_room_id(self):
-        if self.virtual_room_id:
-            self.channel_max_avail = self.virtual_room_id.max_real_rooms
+    @api.onchange('room_type_id')
+    def onchange_room_type_id(self):
+        if self.room_type_id:
+            self.channel_max_avail = self.room_type_id.max_real_rooms
 
     @api.multi
     def write(self, vals):
@@ -105,7 +105,7 @@ class HotelVirtualRoomAvailability(models.Model):
         date_diff = date_utils.date_diff(checkin, checkout, hours=False)
 
         vroom_obj = self.env['hotel.virtual.room']
-        virtual_room_avail_obj = self.env['hotel.room.type.availability']
+        room_type_avail_obj = self.env['hotel.room.type.availability']
 
         vrooms = vroom_obj.search([
             ('room_ids.product_id', '=', product_id)
@@ -115,29 +115,29 @@ class HotelVirtualRoomAvailability(models.Model):
                 for i in range(0, date_diff):
                     ndate_dt = date_start + timedelta(days=i)
                     ndate_str = ndate_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                    avail = len(vroom_obj.check_availability_virtual_room(
+                    avail = len(vroom_obj.check_availability_room(
                         ndate_str,
                         ndate_str,
-                        virtual_room_id=vroom.id))
+                        room_type_id=vroom.id))
                     max_avail = vroom.max_real_rooms
-                    vroom_avail_id = virtual_room_avail_obj.search([
-                        ('virtual_room_id', '=', vroom.id),
+                    vroom_avail_id = room_type_avail_obj.search([
+                        ('room_type_id', '=', vroom.id),
                         ('date', '=', ndate_str)], limit=1)
                     if vroom_avail_id and vroom_avail_id.channel_max_avail >= 0:
                         max_avail = vroom_avail_id.channel_max_avail
                     avail = max(
-                            min(avail, vroom.total_rooms_count, max_avail), 0)
+                        min(avail, vroom.total_rooms_count, max_avail), 0)
 
                     if vroom_avail_id:
                         vroom_avail_id.write({'avail': avail})
                     else:
-                        virtual_room_avail_obj.create({
-                            'virtual_room_id': vroom.id,
+                        room_type_avail_obj.create({
+                            'room_type_id': vroom.id,
                             'date': ndate_str,
                             'avail': avail,
                         })
 
-class ChannelBindingHotelVirtualRoomAvailabilityListener(Component):
+class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
     _name = 'channel.binding.hotel.room.type.availability.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['channel.hotel.room.type.availability']

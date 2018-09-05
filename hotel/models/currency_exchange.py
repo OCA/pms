@@ -10,7 +10,6 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 class CurrencyExchangeRate(models.Model):
-
     _name = "currency.exchange"
     _description = "currency"
 

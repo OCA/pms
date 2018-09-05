@@ -20,12 +20,12 @@ access_hotel_order_call,hotel.order.call,sale.model_sale_order,hotel.group_hotel
 access_hotel_order_line_call,hotel.order.line.call,sale.model_sale_order_line,hotel.group_hotel_call,1,1,1,1
 access_hotel_order_line_user,hotel.order.line.user,sale.model_sale_order_line,hotel.group_hotel_user,1,1,1,1
 access_hotel_order_user,hotel.order.user,sale.model_sale_order,hotel.group_hotel_user,1,1,1,1
-access_hotel_restrictions_call,hotel.restriction. All,hotel.model_hotel_virtual_room_restriction,hotel.group_hotel_call,1,0,0,0
-access_hotel_restrictions_item_call,hotel.restriction.item.call,hotel.model_hotel_virtual_room_restriction_item,hotel.group_hotel_call,1,0,0,0
-access_hotel_restrictions_item_manager,hotel.restriction.item.manager,hotel.model_hotel_virtual_room_restriction_item,hotel.group_hotel_manager,1,1,1,1
-access_hotel_restrictions_item_user,hotel.restriction.item.user,hotel.model_hotel_virtual_room_restriction_item,hotel.group_hotel_user,1,0,0,0
-access_hotel_restrictions_manager,hotel.restriction.manager,hotel.model_hotel_virtual_room_restriction,hotel.group_hotel_manager,1,1,1,1
-access_hotel_restrictions_user,hotel.restriction.user,hotel.model_hotel_virtual_room_restriction,hotel.group_hotel_user,1,0,0,0
+access_hotel_restrictions_call,hotel.restriction. All,hotel.model_hotel_room_type_restriction,hotel.group_hotel_call,1,0,0,0
+access_hotel_restrictions_item_call,hotel.restriction.item.call,hotel.model_hotel_room_type_restriction_item,hotel.group_hotel_call,1,0,0,0
+access_hotel_restrictions_item_manager,hotel.restriction.item.manager,hotel.model_hotel_room_type_restriction_item,hotel.group_hotel_manager,1,1,1,1
+access_hotel_restrictions_item_user,hotel.restriction.item.user,hotel.model_hotel_room_type_restriction_item,hotel.group_hotel_user,1,0,0,0
+access_hotel_restrictions_manager,hotel.restriction.manager,hotel.model_hotel_room_type_restriction,hotel.group_hotel_manager,1,1,1,1
+access_hotel_restrictions_user,hotel.restriction.user,hotel.model_hotel_room_type_restriction,hotel.group_hotel_user,1,0,0,0
 access_hotel_room,hotel.room.user,model_hotel_room,hotel.group_hotel_user,1,0,0,0
 access_hotel_room_amenities,hotel.room_aminities.user,model_hotel_room_amenities,hotel.group_hotel_user,1,0,0,0
 access_hotel_room_amenities_call,hotel.room_aminities.call,model_hotel_room_amenities,hotel.group_hotel_call,1,0,0,0
@@ -43,9 +43,9 @@ access_hotel_service_call,hotel_service.call,model_hotel_service,hotel.group_hot
 access_hotel_user reconcilie,hotel.user reconcilie,account.model_account_partial_reconcile,hotel.group_hotel_user,1,1,1,1
 access_hotel_user_account_full_reconcilie,hotel.user_account_full_reconcilie,account.model_account_full_reconcile,hotel.group_hotel_user,1,1,1,1
 access_hotel_user_user,hotel.user_res_user,auth_crypt.model_res_users,hotel.group_hotel_user,1,1,0,0
-access_hotel_virtual_room_availability_call,hotel.availability.call,hotel.model_hotel_virtual_room_availability,hotel.group_hotel_call,1,1,1,1
-access_hotel_virtual_room_availability_manager,hotel.availability.manager,hotel.model_hotel_virtual_room_availability,hotel.group_hotel_manager,1,1,1,1
-access_hotel_virtual_room_availability_user,hotel.availability.user,hotel.model_hotel_virtual_room_availability,hotel.group_hotel_user,1,1,1,1
+access_hotel_room_type_availability_call,hotel.availability.call,hotel.model_hotel_room_type_availability,hotel.group_hotel_call,1,1,1,1
+access_hotel_room_type_availability_manager,hotel.availability.manager,hotel.model_hotel_room_type_availability,hotel.group_hotel_manager,1,1,1,1
+access_hotel_room_type_availability_user,hotel.availability.user,hotel.model_hotel_room_type_availability,hotel.group_hotel_user,1,1,1,1
 access_product_category,product.category.user,product.model_product_category,hotel.group_hotel_user,1,0,0,0
 access_product_category_call,product.category.call,product.model_product_category,hotel.group_hotel_call,1,0,0,0
 access_product_category_manager,product.category.manager,product.model_product_category,hotel.group_hotel_manager,1,1,1,1

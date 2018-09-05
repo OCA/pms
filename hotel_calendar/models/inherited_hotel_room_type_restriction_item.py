@@ -5,7 +5,7 @@ from odoo import models, fields, api
 _logger = logging.getLogger(__name__)
 
 
-class HotelVirtualRoomResrtrictionItem(models.Model):
+class HotelRoomTypeResrtrictionItem(models.Model):
     _inherit = 'hotel.room.type.restriction.item'
 
     @api.model
@@ -17,7 +17,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
             restrictions_parity_id = int(restrictions_parity_id)
         restriction_id = res.restriction_id.id
         if restriction_id == restrictions_parity_id and \
-                self.applied_on == '0_virtual_room':
+                self.applied_on == '0_room_type':
             self.env['bus.hotel.calendar'].send_restriction_notification({
                 'restriction_id': self.restriction_id.id,
                 'date': self.date_start,
@@ -28,7 +28,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
                 'closed': self.closed,
                 'closed_departure': self.closed_departure,
                 'closed_arrival': self.closed_arrival,
-                'virtual_room_id': self.virtual_room_id.id,
+                'room_type_id': self.room_type_id.id,
                 'id': self.id,
             })
         return res
@@ -44,7 +44,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for record in self:
             if record.restriction_id.id != restrictions_parity_id or \
-                    record.applied_on != '0_virtual_room':
+                    record.applied_on != '0_room_type':
                 continue
             bus_hotel_calendar_obj.send_restriction_notification({
                 'restriction_id': record.restriction_id.id,
@@ -56,7 +56,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
                 'closed': record.closed,
                 'closed_departure': record.closed_departure,
                 'closed_arrival': record.closed_arrival,
-                'virtual_room_id': record.virtual_room_id.id,
+                'room_type_id': record.room_type_id.id,
                 'id': record.id,
             })
         return ret_vals
@@ -71,7 +71,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
         unlink_vals = []
         for record in self:
             if record.restriction_id.id != restrictions_parity_id or \
-                    record.applied_on != '0_virtual_room':
+                    record.applied_on != '0_room_type':
                 continue
             unlink_vals.append({
                 'restriction_id': record.restriction_id.id,
@@ -83,7 +83,7 @@ class HotelVirtualRoomResrtrictionItem(models.Model):
                 'closed': False,
                 'closed_departure': False,
                 'closed_arrival': False,
-                'virtual_room_id': record.virtual_room_id.id,
+                'room_type_id': record.room_type_id.id,
                 'id': record.id,
             })
         res = super(HotelVirtualRoomResrtrictionItem, self).unlink()

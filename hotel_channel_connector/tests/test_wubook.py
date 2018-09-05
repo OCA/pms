@@ -589,7 +589,7 @@ class TestWubook(TestHotelWubook):
 
         for vroom in vrooms:
             items = vroom_restr_item_obj.search([
-                ('virtual_room_id', '=', vroom.id),
+                ('room_type_id', '=', vroom.id),
                 ('date_start',
                  '>=', checkin_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
                 ('date_end',

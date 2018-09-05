@@ -13,7 +13,7 @@ class HotelRoomTypeRestrictionItem(models.Model):
     restriction_id = fields.Many2one('hotel.room.type.restriction',
                                      'Restriction Plan', ondelete='cascade',
                                      index=True)
-    # virtual_room_id = fields.Many2one('hotel.virtual.room', 'Virtual Room',
+    # room_type_id = fields.Many2one('hotel.virtual.room', 'Virtual Room',
     #                                   required=True, ondelete='cascade')
     room_type_id = fields.Many2one('hotel.room.type', 'Room Type',
                                    required=True, ondelete='cascade')
@@ -21,8 +21,8 @@ class HotelRoomTypeRestrictionItem(models.Model):
     date_end = fields.Date("To")
     applied_on = fields.Selection([
         ('1_global', 'Global'),
-        # ('0_virtual_room', 'Virtual Room')], string="Apply On", required=True,
-        # default='0_virtual_room',
+        # ('0_room_type', 'Virtual Room')], string="Apply On", required=True,
+        # default='0_room_type',
         ('0_room_type', 'Room Type')], string="Apply On", required=True,
                                   default='0_room_type',
                                   help='Pricelist Item applicable on selected option')

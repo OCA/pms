@@ -2,9 +2,9 @@
 <odoo>
 
     <!-- FORM availability -->
-	<record id="virtual_room_availability_view_form" model="ir.ui.view">
+	<record id="room_type_availability_view_form" model="ir.ui.view">
         <field name="model">hotel.room.type.availability</field>
-        <field name="inherit_id" ref="hotel.virtual_room_availability_view_form" />
+        <field name="inherit_id" ref="hotel.room_type_availability_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
                 <notebook>
@@ -23,9 +23,9 @@
     </record>
 
     <!-- TREE restriction -->
-    <record id="virtual_room_availability_view_tree" model="ir.ui.view">
+    <record id="room_type_availability_view_tree" model="ir.ui.view">
       <field name="model">hotel.room.type.availability</field>
-      <field name="inherit_id" ref="hotel.virtual_room_availability_view_tree" />
+      <field name="inherit_id" ref="hotel.room_type_availability_view_tree" />
       <field name="type">tree</field>
       <field name="arch" type="xml">
         <!-- <xpath expr="//field[@name='avail']" position="after">

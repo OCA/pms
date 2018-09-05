@@ -21,6 +21,10 @@ from odoo.addons import decimal_precision as dp
 
 
 class HotelFolio(models.Model):
+    _name = 'hotel.folio'
+    _description = 'Hotel Folio'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
+    _order = 'id'
 
     # @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
     def _get_invoice_qty(self):
@@ -40,12 +44,6 @@ class HotelFolio(models.Model):
     # @api.depends('order_line.price_total')
     def _amount_all(self):
         pass
-
-    _name = 'hotel.folio'
-    _description = 'Hotel Folio'
-
-    _order = 'id'
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
 
     name = fields.Char('Folio Number', readonly=True, index=True,
                        default=lambda self: _('New'))

@@ -9,8 +9,8 @@ from . import hotel_calendar_management
 from . import res_config
 from . import inherited_hotel_room
 from . import inherited_hotel_room_type
-from . import inherited_hotel_virtual_room_restriction_item
-from . import inherited_hotel_virtual_room_availability
+from . import inherited_hotel_room_type_restriction_item
+from . import inherited_hotel_room_type_availability
 from . import inherited_product_pricelist
 from . import inherited_hotel_folio
 from . import inherited_ir_default

@@ -14,7 +14,7 @@
         </field>
     </record>
 
-    <record id="view_channel_hotel_virtual_room_restriction_tree" model="ir.ui.view">
+    <record id="view_channel_hotel_room_type_restriction_tree" model="ir.ui.view">
         <field name="name">channel.hotel.product.pricelist.tree</field>
         <field name="model">channel.hotel.product.pricelist.room</field>
         <field name="arch" type="xml">

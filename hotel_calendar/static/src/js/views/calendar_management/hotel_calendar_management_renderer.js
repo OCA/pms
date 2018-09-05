@@ -132,7 +132,7 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
         this._hcalendar = new HotelCalendarManagement('#hcal_management_widget', options, this.$el[0]);
         this._assignHCalendarEvents();
 
-        this.$CalendarHeaderDays = this.$el.find("div.table-vroom-data-header");
+        this.$CalendarHeaderDays = this.$el.find("div.table-room_type-data-header");
 
         // Sticky Header Days
         this.$ehcal.scroll(this._on_scroll.bind(this));
@@ -409,7 +409,7 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
             self._assign_extra_info();
         });
         this._last_dates = params['dates'];
-        this.$CalendarHeaderDays = this.$el.find("div.table-vroom-data-header");
+        this.$CalendarHeaderDays = this.$el.find("div.table-room_type-data-header");
         this._on_scroll(); // FIXME: Workaround for update sticky header
     },
 

@@ -10,8 +10,8 @@ class HotelRoomType(models.Model):
     """
     _name = "hotel.room.type"
     _description = "Room Type"
-
     _inherits = {'product.product': 'product_id'}
+    
     # Relationship between models
     product_id = fields.Many2one('product.product', 'Product Room Type',
                                  required=True, delegate=True,
@@ -59,7 +59,7 @@ class HotelRoomType(models.Model):
 
     @api.model
     # TODO Rename to check_availability_room_type
-    def check_availability_virtual_room(self, dfrom, dto,
+    def check_availability_room(self, dfrom, dto,
                                         room_type_id=False, notthis=[]):
         """
         Check the avalability for an specific type of room

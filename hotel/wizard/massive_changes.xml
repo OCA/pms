@@ -10,7 +10,7 @@
 				<group>
 					<field name="section" required="1" />
 					<field name="applied_on" required="1" />
-					<!-- <field name="virtual_room_ids" widget="many2many_tags" attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}" /> -->
+					<!-- <field name="room_type_ids" widget="many2many_tags" attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}" /> -->
 					<field name="room_type_ids" widget="many2many_tags" attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}" />
 				</group>
 				<group colspan="8" col="8">

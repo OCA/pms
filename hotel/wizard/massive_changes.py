@@ -30,7 +30,7 @@ class MassiveChangesWizard(models.TransientModel):
         ('0', 'Global'),
         ('1', 'Virtual Room'),
     ], string='Applied On', default='0')
-    # virtual_room_ids = fields.Many2many('hotel.virtual.room',
+    # room_type_ids = fields.Many2many('hotel.virtual.room',
     #                                     string="Virtual Rooms")
     room_type_ids = fields.Many2many('hotel.room.type',
                                      string="Room Types")
@@ -171,7 +171,7 @@ class MassiveChangesWizard(models.TransientModel):
             ('date_start', '>=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('date_end', '<=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('restriction_id', '=', record.restriction_id.id),
-            ('applied_on', '=', '0_virtual_room'),
+            ('applied_on', '=', '0_room_type'),
         ]
 
         for room_type in room_types:
@@ -189,7 +189,7 @@ class MassiveChangesWizard(models.TransientModel):
                     'date_end': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'restriction_id': record.restriction_id.id,
                     'room_type_id': room_type.id,
-                    'applied_on': '0_virtual_room',
+                    'applied_on': '0_room_type',
                 })
                 hotel_room_type_re_it_obj.create(vals)
 
@@ -200,7 +200,7 @@ class MassiveChangesWizard(models.TransientModel):
         if record.change_no_ota:
             vals.update({'no_ota': record.no_ota})
         if record.change_avail:
-            cavail = len(hotel_room_type_obj.check_availability_virtual_room(
+            cavail = len(hotel_room_type_obj.check_availability_room(
                 ndate.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 ndate.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 room_type_id=room_type.id))

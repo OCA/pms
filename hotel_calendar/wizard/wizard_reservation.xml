@@ -19,7 +19,7 @@
                         </group>                     
 					</group>
                     <group>
-                        <field name="virtual_room_wizard_ids" nolabel="1"
+                        <field name="room_type_wizard_ids" nolabel="1"
                                 attrs="{'invisible': [('autoassign','=',False)]}">
                             <tree editable="bottom" create="false" delete="false"
                             decoration-danger="max_rooms &lt; rooms_num"
@@ -27,7 +27,7 @@
                             decoration-success="max_rooms &gt;= rooms_num and rooms_num &gt; 0">
                                 <field name="min_stay" />
                                 <field name="max_rooms" />
-                                <field name="virtual_room_id" string="Room Type" readonly="1"/>
+                                <field name="room_type_id" string="Room Type" readonly="1"/>
                                 <field name="rooms_num" attrs="{'readonly': [('can_confirm','=',False)]}" />                                
                                 <field name="checkin" widget="date" />
                                 <field name="checkout" widget="date" />
@@ -50,7 +50,7 @@
 							nolabel="1" attrs="{'invisible': [('autoassign','=',True)]}">
 							<tree string="Room Line" delete="false" editable="buttom">
 								<field name="product_id" string="Room No" options="{'no_create': True}"/>                                
-								<field name="virtual_room_id" options="{'no_create': True}" />
+								<field name="room_type_id" options="{'no_create': True}" />
 								<field name="checkin" />
 								<field name="checkout" />
 								<field name="nights" /> 

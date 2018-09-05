@@ -186,7 +186,7 @@
                             <field name="name"/>
                             <field name="adults"/>
                             <field name="children"/>
-                            <!-- <field name="virtual_room_id" on_change="1" options="{'no_create': True,'no_open': True}"
+                            <!-- <field name="room_type_id" on_change="1" options="{'no_create': True,'no_open': True}"
                                    attrs="{'readonly':[('state','not in',('draft'))]}"/> -->
                             <field name="room_type_id" on_change="1" options="{'no_create': True,'no_open': True}"
                                 attrs="{'readonly':[('state','not in',('draft'))]}"/>
@@ -335,7 +335,7 @@
                 />
                 <field name="partner_id"/>
                 <field name="parent_reservation" invisible="1" />
-                <!-- <field name="virtual_room_id" string="Reserved Room Type"/> -->
+                <!-- <field name="room_type_id" string="Reserved Room Type"/> -->
                 <field name="room_type_id" string="Reserved Unit Type" />
                 <field name="nights" />
                 <field name="adults" string="Persons"/>
@@ -432,7 +432,7 @@
                             />
                 <group expand="0" string="Group By">
                     <!-- <filter string="Room Type" domain="[]"
-                        context="{'group_by':'virtual_room_id'}"/> -->
+                        context="{'group_by':'room_type_id'}"/> -->
                     <filter string="Room Type" domain="[]"
                         context="{'group_by':'room_type_id'}"/>
                     <filter string="Creation Date" domain="[]"

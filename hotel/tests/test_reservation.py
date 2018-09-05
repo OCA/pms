@@ -232,7 +232,7 @@ class TestHotelReservations(TestHotel):
 
         # 5.0, 15.0, 15.0, 35.0, 35.0, 10.0, 10.0
 
-        vroom_prices = self.prices_tmp[self.hotel_room_double_200.price_virtual_room.id]
+        vroom_prices = self.prices_tmp[self.hotel_room_double_200.price_room_type.id]
         org_reserv_start_utc_dt = now_utc_dt + timedelta(days=1)
         org_reserv_end_utc_dt = org_reserv_start_utc_dt + timedelta(days=2)
         folio = self.create_folio(self.user_hotel_manager, self.partner_2)

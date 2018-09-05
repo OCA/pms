@@ -74,7 +74,7 @@ function HotelCalendarManagement(/*String*/querySelector, /*Dictionary*/options,
   };
 
   // Check correct values
-  if (this.options.rooms.length > 0 && !(this.options.rooms[0] instanceof HVRoom)) {
+  if (this.options.rooms.length > 0 && !(this.options.rooms[0] instanceof HRoomType)) {
     this.options.rooms = [];
     console.warn("[Hotel Calendar Management][init] Invalid Room definiton!");
   }
@@ -397,9 +397,9 @@ HotelCalendarManagement.prototype = {
   		this.e.removeChild(this.e.lastChild);
   	}
 
-    // VRoom Names
+    // RoomType Names
     this.edivrhl = document.createElement("div");
-    this.edivrhl.classList.add('table-vrooms');
+    this.edivrhl.classList.add('table-room_types');
     this.e.appendChild(this.edivrhl);
     this.etableRooms = document.createElement("table");
     this.etableRooms.classList.add('hcal-management-table');
@@ -412,7 +412,7 @@ HotelCalendarManagement.prototype = {
     this.e.appendChild(this.edivm);
     // Days
     this.edivrh = document.createElement("div");
-    this.edivrh.classList.add('table-vroom-data-header');
+    this.edivrh.classList.add('table-room_type-data-header');
     this.edivm.appendChild(this.edivrh);
     this.etableHeader = document.createElement("table");
     this.etableHeader.classList.add('hcal-management-table');
@@ -420,7 +420,7 @@ HotelCalendarManagement.prototype = {
     this.edivrh.appendChild(this.etableHeader);
     // Data
     this.edivr = document.createElement("div");
-    this.edivr.classList.add('table-vroom-data');
+    this.edivr.classList.add('table-room_type-data');
     this.edivm.appendChild(this.edivr);
     this.etable = document.createElement("table");
     this.etable.classList.add('hcal-management-table');
@@ -503,8 +503,8 @@ HotelCalendarManagement.prototype = {
 
   //==== PRICELIST
   addPricelist: function(/*Object*/pricelist) {
-    var vroom_ids = Object.keys(pricelist);
-    for (var vid of vroom_ids) {
+    var room_type_ids = Object.keys(pricelist);
+    for (var vid of room_type_ids) {
       if (vid in this._pricelist) {
         for (var price of pricelist[vid]) {
           var index = _.findIndex(this._pricelist[vid], {date: price['date']});
@@ -524,10 +524,10 @@ HotelCalendarManagement.prototype = {
 
   _updatePriceList: function() {
     var keys = Object.keys(this._pricelist);
-    for (var vroomId of keys) {
-      for (var price of this._pricelist[vroomId]) {
+    for (var room_typeId of keys) {
+      for (var price of this._pricelist[room_typeId]) {
         var dd = HotelCalendarManagement.toMoment(price.date, this.options.dateFormatShort);
-        var inputId = this._sanitizeId(`PRICE_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`);
+        var inputId = this._sanitizeId(`PRICE_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`);
         var input = this.etable.querySelector(`#${inputId}`);
         if (input && !input.classList.contains('hcal-management-input-changed')) {
           input.dataset.orgValue = price.price;
@@ -559,8 +559,8 @@ HotelCalendarManagement.prototype = {
 
   //==== RESTRICTIONS
   addRestrictions: function(/*Object*/restrictions) {
-    var vroom_ids = Object.keys(restrictions);
-    for (var vid of vroom_ids) {
+    var room_type_ids = Object.keys(restrictions);
+    for (var vid of room_type_ids) {
       if (vid in this._restrictions) {
         for (var rest of restrictions[vid]) {
           var index = _.findIndex(this._restrictions[vid], {date: rest['date']});
@@ -580,15 +580,15 @@ HotelCalendarManagement.prototype = {
 
   _updateRestrictions: function() {
     var keys = Object.keys(this._restrictions);
-    for (var vroomId of keys) {
-      var room = this.getRoom(vroomId);
-      for (var restriction of this._restrictions[vroomId]) {
+    for (var room_typeId of keys) {
+      var room = this.getRoom(room_typeId);
+      for (var restriction of this._restrictions[room_typeId]) {
         var dd = HotelCalendarManagement.toMoment(restriction.date, this.options.dateFormatShort);
         var inputIds = [
-          this._sanitizeId(`MIN_STAY_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.min_stay,
-          this._sanitizeId(`MIN_STAY_ARRIVAL_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.min_stay_arrival,
-          this._sanitizeId(`MAX_STAY_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.max_stay,
-          this._sanitizeId(`MAX_STAY_ARRIVAL_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.max_stay_arrival,
+          this._sanitizeId(`MIN_STAY_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.min_stay,
+          this._sanitizeId(`MIN_STAY_ARRIVAL_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.min_stay_arrival,
+          this._sanitizeId(`MAX_STAY_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.max_stay,
+          this._sanitizeId(`MAX_STAY_ARRIVAL_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`), restriction.max_stay_arrival,
         ];
         for (var i=0; i<inputIds.length; i+=2) {
           var inputItem = this.etable.querySelector(`#${inputIds[i]}`);
@@ -598,7 +598,7 @@ HotelCalendarManagement.prototype = {
           }
         }
 
-        var inputClousureId = this._sanitizeId(`CLOUSURE_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`);
+        var inputClousureId = this._sanitizeId(`CLOUSURE_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`);
         var inputClousure = this.etable.querySelector(`#${inputClousureId}`);
         if (inputClousure && !inputClousure.classList.contains('hcal-management-input-changed')) {
           inputClousure.dataset.orgValue = inputClousure.value = (restriction.closed && 'closed') ||
@@ -651,11 +651,11 @@ HotelCalendarManagement.prototype = {
   //==== FREE Rooms
   _updateNumFreeRooms: function() {
     var keys = Object.keys(this._free_rooms);
-    for (var vroomId of keys) {
-      for (var fnroom of this._free_rooms[vroomId]) {
+    for (var room_typeId of keys) {
+      for (var fnroom of this._free_rooms[room_typeId]) {
         var dd = HotelCalendarManagement.toMoment(fnroom.date, this.options.dateFormatShort);
         var inputIds = [
-          `FREE_ROOMS_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, fnroom.num,
+          `FREE_ROOMS_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, fnroom.num,
         ];
 
         for (var i=0; i<inputIds.length; i+=2) {
@@ -671,8 +671,8 @@ HotelCalendarManagement.prototype = {
 
   //==== AVAILABILITY
   addAvailability: function(/*Object*/availability) {
-    var vroom_ids = Object.keys(availability);
-    for (var vid of vroom_ids) {
+    var room_type_ids = Object.keys(availability);
+    for (var vid of room_type_ids) {
       if (vid in this._availability) {
         for (var avail of availability[vid]) {
           var index = _.findIndex(this._availability[vid], {date: avail['date']});
@@ -692,12 +692,12 @@ HotelCalendarManagement.prototype = {
 
   _updateAvailability: function() {
     var keys = Object.keys(this._availability);
-    for (var vroomId of keys) {
-      for (var avail of this._availability[vroomId]) {
+    for (var room_typeId of keys) {
+      for (var avail of this._availability[room_typeId]) {
         var dd = HotelCalendarManagement.toMoment(avail.date, this.options.dateFormatShort);
         var inputIds = [
-          `AVAIL_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.avail,
-          `NO_OTA_${vroomId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.no_ota
+          `AVAIL_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.avail,
+          `NO_OTA_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.no_ota
         ];
 
         for (var i=0; i<inputIds.length; i+=2) {
@@ -1062,7 +1062,7 @@ HotelCalendarManagement.toMoment = function(/*String,MomentObject*/ndate, /*Stri
 
 
 /** ROOM OBJECT **/
-function HVRoom(/*Int*/id, /*String*/name, /*Int*/capacity, /*Float*/price) {
+function HRoomType(/*Int*/id, /*String*/name, /*Int*/capacity, /*Float*/price) {
   this.id = id || -1;
   this.name = name;
   this.capacity = capacity;
@@ -1070,7 +1070,7 @@ function HVRoom(/*Int*/id, /*String*/name, /*Int*/capacity, /*Float*/price) {
 
   this.userData_ = {};
 }
-HVRoom.prototype = {
+HRoomType.prototype = {
   clearUserData: function() { this.userData_ = {}; },
   getUserData: function(/*String?*/key) {
     if (typeof key === 'undefined') {
@@ -1080,7 +1080,7 @@ HVRoom.prototype = {
   },
   addUserData: function(/*Dictionary*/data) {
     if (!_.isObject(data)) {
-      console.warn("[Hotel Calendar Management][HVRoom][setUserData] Invalid Data! Need be a object!");
+      console.warn("[Hotel Calendar Management][HRoomType][setUserData] Invalid Data! Need be a object!");
     } else {
       this.userData_ = _.extend(this.userData_, data);
     }

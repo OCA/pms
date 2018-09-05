@@ -121,7 +121,7 @@ class HotelRoomType(models.Model):
         restriction = self.env['hotel.room.type.restriction.item'].search([
             ('date_start', '=', date),
             ('date_end', '=', date),
-            ('virtual_room_id', '=', self.id),
+            ('room_type_id', '=', self.id),
             ('restriction_id', '=', restriction_plan_id)
         ], limit=1)
         return restriction

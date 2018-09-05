@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 
 
-class HotelVirtualRoomAvailability(models.Model):
+class HotelRoomTypeAvailability(models.Model):
     _inherit = 'hotel.room.type.availability'
 
     @api.model
@@ -13,7 +13,7 @@ class HotelVirtualRoomAvailability(models.Model):
             'date': res.date,
             'avail': res.avail,
             'no_ota': res.no_ota,
-            'virtual_room_id': res.virtual_room_id.id,
+            'room_type_id': res.room_type_id.id,
             'id': res.id,
         })
         return res
@@ -27,7 +27,7 @@ class HotelVirtualRoomAvailability(models.Model):
                 'date': record.date,
                 'avail': record.avail,
                 'no_ota': record.no_ota,
-                'virtual_room_id': record.virtual_room_id.id,
+                'room_type_id': record.room_type_id.id,
                 'id': record.id,
             })
         return ret_vals
@@ -39,8 +39,8 @@ class HotelVirtualRoomAvailability(models.Model):
         for record in self:
             unlink_vals.append({
                 'date': record.date,
-                'avail': record.virtual_room_id.max_real_rooms,
-                'virtual_room_id': record.virtual_room_id.id,
+                'avail': record.room_type_id.max_real_rooms,
+                'room_type_id': record.room_type_id.id,
                 'no_ota': False,
                 'id': record.id,
             })

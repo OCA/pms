@@ -8,7 +8,9 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 _logger = logging.getLogger(__name__)
 
 class HotelService(models.Model):
-
+    _name = 'hotel.service'
+    _description = 'Hotel Services and its charges'
+    
     @api.model
     def _service_checkin(self):
         if 'checkin' in self._context:
@@ -29,9 +31,6 @@ class HotelService(models.Model):
                 ('id', 'in', ids),
             ], limit=1)
         return False
-
-    _name = 'hotel.service'
-    _description = 'Hotel Services and its charges'
 
     name = fields.Char('Service description')
     # services in the hotel are products

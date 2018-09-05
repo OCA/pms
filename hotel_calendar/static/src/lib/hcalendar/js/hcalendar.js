@@ -690,8 +690,8 @@ HotelCalendar.prototype = {
   },
 
   addRestrictions: function(/*Object*/restrictions) {
-    var vroom_ids = Object.keys(restrictions);
-    for (var vid of vroom_ids) {
+    var room_type_ids = Object.keys(restrictions);
+    for (var vid of room_type_ids) {
       if (vid in this._restrictions) {
         this._restrictions[vid] = _.extend(this._restrictions[vid], restrictions[vid]);
       }
@@ -1276,7 +1276,7 @@ HotelCalendar.prototype = {
         row = tbody.insertRow();
         row.setAttribute('id', this._sanitizeId(`ROW_DETAIL_PRICE_ROOM_${key}_${listitem.room}`));
         row.dataset.hcalPricelist = key;
-        row.dataset.hcalVRoomId = listitem.room
+        row.dataset.hcalRoomTypeId = listitem.room
         row.classList.add('hcal-row-detail-room-price-group-item');
         cell = row.insertCell();
         var span = document.createElement('span');
@@ -1306,7 +1306,7 @@ HotelCalendar.prototype = {
           input.setAttribute('id', this._sanitizeId(`INPUT_PRICE_${key}_${listitem.room}_${dd_local.format(HotelCalendar.DATE_FORMAT_SHORT_)}`));
           input.setAttribute('type', 'edit');
           input.setAttribute('title', 'Price');
-          input.setAttribute('name', 'vroom_price_day');
+          input.setAttribute('name', 'room_type_price_day');
           input.dataset.hcalParentCell = cell.getAttribute('id');
           var dd_fmrt = dd_local.format(HotelCalendar.DATE_FORMAT_SHORT_);
           input.dataset.orgValue = input.value = _.has(listitem['days'], dd_fmrt)?Number(listitem['days'][dd_fmrt]).toLocaleString():'...';
@@ -1335,8 +1335,8 @@ HotelCalendar.prototype = {
           var orgValue = input.dataset.orgValue;
           var parentCell = this.edtable.querySelector(`#${input.dataset.hcalParentCell}`);
           var parentRow = this.edtable.querySelector(`#${parentCell.dataset.hcalParentRow}`);
-          if (!(parentRow.dataset.hcalVRoomId in data)) { data[parentRow.dataset.hcalVRoomId] = []; }
-          data[parentRow.dataset.hcalVRoomId].push({
+          if (!(parentRow.dataset.hcalRoomTypeId in data)) { data[parentRow.dataset.hcalRoomTypeId] = []; }
+          data[parentRow.dataset.hcalRoomTypeId].push({
             'date': HotelCalendar.toMoment(parentCell.dataset.hcalDate).format('YYYY-MM-DD'),
             'price': value
           });
@@ -2107,13 +2107,13 @@ HotelCalendar.prototype = {
     this._updatePriceList();
   },
 
-  updateVRoomPrice: function(pricelist_id, vroom_id, date, price) {
+  updateRoomTypePrice: function(pricelist_id, room_type_id, date, price) {
     var strDate = date.format(HotelCalendar.DATE_FORMAT_SHORT_);
-    var cellId = this._sanitizeId(`CELL_PRICE_${pricelist_id}_${vroom_id}_${strDate}`);
+    var cellId = this._sanitizeId(`CELL_PRICE_${pricelist_id}_${room_type_id}_${strDate}`);
     var input = this.edtable.querySelector(`#${cellId} input`);
     if (input) {
       input.dataset.orgValue = input.value = price;
-      var pr_fk = _.findKey(this._pricelist[pricelist_id], {'room': vroom_id});
+      var pr_fk = _.findKey(this._pricelist[pricelist_id], {'room': room_type_id});
       this._pricelist[pricelist_id][pr_fk].days[strDate] = price;
     }
   },
@@ -2289,7 +2289,7 @@ HotelCalendar.prototype = {
     var orgValue = elm.dataset.orgValue;
     var name = elm.getAttribute('name');
 
-    if (name === 'vroom_price_day') {
+    if (name === 'room_type_price_day') {
       if (!this._isNumeric(value)) {
         elm.style.backgroundColor = 'red';
       } else if (orgValue !== value) {
@@ -2306,13 +2306,13 @@ HotelCalendar.prototype = {
     var parentCell = this.edtable.querySelector(`#${elm.dataset.hcalParentCell}`);
     var parentRow = this.edtable.querySelector(`#${parentCell.dataset.hcalParentRow}`);
     var vals = {
-      'vroom_id': +parentRow.dataset.hcalVRoomId,
+      'room_type_id': +parentRow.dataset.hcalRoomTypeId,
       'date': HotelCalendar.toMoment(parentCell.dataset.hcalDate),
       'price': value,
       'old_price': orgValue,
       'pricelist_id': +parentRow.dataset.hcalPricelist
     };
-    //this.updateVRoomPrice(vals['pricelist_id'], vals['vroom_id'], vals['date'], vals['price']);
+    //this.updateRoomTypePrice(vals['pricelist_id'], vals['room_type_id'], vals['date'], vals['price']);
     this._dispatchEvent('hcalOnPricelistChanged', vals);
 
     if (this.edivc.querySelector('.hcal-input-changed') !== null)

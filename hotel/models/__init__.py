@@ -19,7 +19,7 @@ from . import inherit_account_invoice
 # from . import inherit_product_category
 from . import inherit_product_product
 from . import inherit_res_company
-# from . import virtual_room
+# from . import room_type
 from . import inherit_account_payment
 from . import hotel_room_type_restriction
 from . import hotel_room_type_restriction_item

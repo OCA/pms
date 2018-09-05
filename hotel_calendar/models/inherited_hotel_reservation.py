@@ -64,7 +64,6 @@ class HotelReservation(models.Model):
         if pricelist_id:
             pricelist_id = int(pricelist_id)
         json_rooms = []
-        room_type_obj = self.env['hotel.room.type']
         for room in rooms:
             json_rooms.append((
                 room.id,
@@ -168,20 +167,20 @@ class HotelReservation(models.Model):
         date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
         # Get Prices
         json_rooms_rests = {}
-        room_type_ids = self.env['hotel.room.type'].search(
+        room_types = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
-        vroom_rest_obj = self.env['hotel.room.type.restriction.item']
-        for room_type_id in room_type_ids:
+        room_type_rest_obj = self.env['hotel.room.type.restriction.item']
+        for room_type in room_types:
             days = {}
             for i in range(0, date_diff):
                 ndate = date_start + timedelta(days=i)
                 ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                rest_id = vroom_rest_obj.search([
-                    ('room_type_id', '=', room_type_id.id),
+                rest_id = room_type_rest_obj.search([
+                    ('room_type_id', '=', room_type.id),
                     ('date_start', '>=', ndate_str),
                     ('date_end', '<=', ndate_str),
-                    ('applied_on', '=', '0_virtual_room'),
+                    ('applied_on', '=', '0_room_type'),
                     ('restriction_id', '=', restriction_id)
                 ], limit=1)
                 if rest_id and (rest_id.min_stay or rest_id.min_stay_arrival or
@@ -198,7 +197,7 @@ class HotelReservation(models.Model):
                             rest_id.closed_arrival,
                             rest_id.closed_departure)
                     })
-            json_rooms_rests.update({room_type_id.id: days})
+            json_rooms_rests.update({room_type.id: days})
         return json_rooms_rests
 
     @api.model

@@ -16,6 +16,10 @@ _logger = logging.getLogger(__name__)
 
 
 class HotelReservation(models.Model):
+    _name = 'hotel.reservation'
+    _description = 'Hotel Reservation'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
+    _order = "last_updated_res desc, name"
 
     def _get_default_checkin(self):
         folio = False
@@ -109,11 +113,6 @@ class HotelReservation(models.Model):
                 res.nights = (
                     fields.Date.from_string(res.checkout) - fields.Date.from_string(res.checkin)
                 ).days
-
-    _name = 'hotel.reservation'
-    _description = 'Hotel Reservation'
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
-    _order = "last_updated_res desc, name"
 
     name = fields.Text('Reservation Description', required=True)
 
@@ -312,9 +311,12 @@ class HotelReservation(models.Model):
             })
         for record in self:
             if record.compute_price_out_vals(vals):
+                checkin = vals['checkin'] if 'checkin' in vals else record.checkin
+                checkout = vals['checkout'] if 'checkout' in vals else record.checkout
+
                 days_diff = (
-                    fields.Date.from_string(record.checkout) - \
-                    fields.Date.from_string(record.checkin)
+                    fields.Date.from_string(checkout) - \
+                    fields.Date.from_string(checkin)
                 ).days
                 record.update(record.prepare_reservation_lines(
                     vals['checkin'],
@@ -390,7 +392,7 @@ class HotelReservation(models.Model):
             'overbooking': self.overbooking,
             'price_unit': self.price_unit,
             'splitted': self.splitted,
-            # 'virtual_room_id': self.virtual_room_id.id,
+            # 'room_type_id': self.room_type_id.id,
             'room_type_id': self.room_type_id.id,
         }
 
@@ -419,7 +421,7 @@ class HotelReservation(models.Model):
             #Si el registro no existe, modificar room_type aunque ya esté establecido
             if not self.room_type_id:
                 write_vals.update({'room_type_id': self.room_id.room_type_id.id})
-            self.write(write_vals)
+            self.update(write_vals)
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):

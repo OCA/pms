@@ -164,7 +164,7 @@
                                               % endif
                                               <br />
                                               % for rline in object.get_grouped_reservations_json('cancelled'):
-                                                <strong>${rline['num']} x ${rline['virtual_room']['name']}
+                                                <strong>${rline['num']} x ${rline['room_type']['name']}
                                                 % if rline['childrens'] > 0:
                                                   (${rline['adults']} Adults + ${rline['childrens']} Childrens)
                                                 % else:

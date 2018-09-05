@@ -64,7 +64,7 @@ class SplitReservationWizard(models.TransientModel):
                     'splitted': True,
                     'price_unit': tprice[1],
                     'parent_reservation': parent_res.id,
-                    'virtual_room_id': parent_res.virtual_room_id.id,
+                    'room_type_id': parent_res.room_type_id.id,
                     'discount': parent_res.discount,
                 })
                 reservation_copy = self.env['hotel.reservation'].create(vals)

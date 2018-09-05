@@ -48,11 +48,11 @@ class HotelFolio(models.Model):
                 dates = rline.get_real_checkin_checkout()
                 vals = {
                     'num': len(
-                        self.room_lines.filtered(lambda r: r.get_real_checkin_checkout()[0] == dates[0] and r.get_real_checkin_checkout()[1] == dates[1] and r.virtual_room_id.id == rline.virtual_room_id.id and (r.to_send or import_all) and not r.parent_reservation and r.state == rline.state and ((r.state == 'cancelled' and not r.channel_modified) or r.state != 'cancelled'))
+                        self.room_lines.filtered(lambda r: r.get_real_checkin_checkout()[0] == dates[0] and r.get_real_checkin_checkout()[1] == dates[1] and r.room_type_id.id == rline.room_type_id.id and (r.to_send or import_all) and not r.parent_reservation and r.state == rline.state and ((r.state == 'cancelled' and not r.channel_modified) or r.state != 'cancelled'))
                     ),
-                    'virtual_room': {
-                        'id': rline.virtual_room_id.id,
-                        'name': rline.virtual_room_id.name,
+                    'room_type': {
+                        'id': rline.room_type_id.id,
+                        'name': rline.room_type_id.name,
                     },
                     'checkin': dates[0],
                     'checkout': dates[1],
@@ -62,13 +62,13 @@ class HotelFolio(models.Model):
                 }
                 founded = False
                 for srline in info_grouped:
-                    if srline['num'] == vals['num'] and srline['virtual_room']['id'] == vals['virtual_room']['id'] and srline['checkin'] == vals['checkin'] and srline['checkout'] == vals['checkout']:
+                    if srline['num'] == vals['num'] and srline['room_type']['id'] == vals['room_type']['id'] and srline['checkin'] == vals['checkin'] and srline['checkout'] == vals['checkout']:
                         founded = True
                         break
                 if not founded:
                     info_grouped.append(vals)
         return sorted(sorted(info_grouped, key=lambda k: k['num'],
-                             reverse=True), key=lambda k: k['virtual_room']['id'])
+                             reverse=True), key=lambda k: k['room_type']['id'])
 
     @api.depends('room_lines')
     def _compute_has_cancelled_reservations_to_send(self):

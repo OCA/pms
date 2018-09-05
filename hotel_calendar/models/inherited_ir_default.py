@@ -18,19 +18,19 @@ class IrDefault(models.Model):
             pricelist_items = self.env['product.pricelist.item'].search([
                 ('pricelist_id', '=', pricelist_id)
             ])
-            vroom_obj = self.env['hotel.room.type']
-            vroom_pr_cached_obj = self.env['room.pricelist.cached']
+            room_type_obj = self.env['hotel.room.type']
+            room_pr_cached_obj = self.env['room.pricelist.cached']
             for pitem in pricelist_items:
                 date_start = pitem.date_start
                 product_tmpl_id = pitem.product_tmpl_id.id
                 fixed_price = pitem.fixed_price
-                vroom = vroom_obj.search([
+                room_type = room_type_obj.search([
                     ('product_id.product_tmpl_id', '=', product_tmpl_id),
                     ('date_start', '>=', date_utils.now().strftime(
                         DEFAULT_SERVER_DATETIME_FORMAT))
                 ], limit=1)
-                vroom_pr_cached_obj.create({
-                    'virtual_room_id': vroom.id,
+                room_pr_cached_obj.create({
+                    'room_type_id': room_type.id,
                     'date': date_start,
                     'price': fixed_price,
                 })

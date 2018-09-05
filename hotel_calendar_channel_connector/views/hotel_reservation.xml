@@ -41,7 +41,7 @@
                     <field name="partner_id"/>
                     <field name="splitted" invisible="1" />
                     <field name="parent_reservation" invisible="1" />
-                    <field name="virtual_room_id" string="Reserved Room Type"/>
+                    <field name="room_type_id" string="Reserved Room Type"/>
                     <field name="nights" />
                     <field name="to_read" invisible="1"/>
                     <field name="adults" string="Persons"/>

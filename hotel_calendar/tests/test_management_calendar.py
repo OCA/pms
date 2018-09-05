@@ -112,9 +112,9 @@ class TestManagementCalendar(TestHotelCalendar):
         rest_it_obj = self.env['hotel.room.type.restriction.item'].sudo(
                                                     self.user_hotel_manager)
         rest_ids = rest_it_obj.search([
-            ('applied_on', '=', '0_virtual_room'),
+            ('applied_on', '=', '0_room_type'),
             ('restriction_id', '=', self.parity_restrictions_id),
-            ('virtual_room_id', 'in', (self.hotel_vroom_budget.id,
+            ('room_type_id', 'in', (self.hotel_vroom_budget.id,
                                        self.hotel_vroom_special.id)),
         ])
         rest_ids.sudo(self.user_hotel_manager).unlink()
@@ -160,7 +160,7 @@ class TestManagementCalendar(TestHotelCalendar):
 
         # CHANGE AVAIL
         avail_ids = vroom_avail_obj.search([
-            ('virtual_room_id', 'in', (self.hotel_vroom_budget.id,
+            ('room_type_id', 'in', (self.hotel_vroom_budget.id,
                                        self.hotel_vroom_special.id)),
         ])
         for avail_id in avail_ids:
@@ -183,7 +183,7 @@ class TestManagementCalendar(TestHotelCalendar):
 
         # REMOVE AVAIL
         avail_ids = vroom_avail_obj.search([
-            ('virtual_room_id', 'in', (self.hotel_vroom_budget.id,
+            ('room_type_id', 'in', (self.hotel_vroom_budget.id,
                                        self.hotel_vroom_special.id)),
         ])
         avail_ids.sudo(self.user_hotel_manager).unlink()

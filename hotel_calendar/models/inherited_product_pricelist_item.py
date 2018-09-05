@@ -19,7 +19,7 @@ class ProductPricelistItem(models.Model):
         room_type = self.env['hotel.room.type'].search([
             ('product_id.product_tmpl_id', '=', product_tmpl_id)
         ], limit=1)
-        if pricelist_id == pricelist_parity_id and vroom:
+        if pricelist_id == pricelist_parity_id and room_type:
             prod = room_type.product_id.with_context(
                 quantity=1,
                 date=date_start,
@@ -88,12 +88,12 @@ class ProductPricelistItem(models.Model):
                         'id': record.id,
                     })
 
-                    vroom_pr_cached_id = room_pr_cached_obj.search([
+                    room_pr_cached_id = room_pr_cached_obj.search([
                         ('room_id', '=', room_type.id),
                         ('date', '=', date_start),
                     ], limit=1)
-                    if vroom_pr_cached_id:
-                        vroom_pr_cached_id.write({'price': prod_price})
+                    if room_pr_cached_id:
+                        room_pr_cached_id.write({'price': prod_price})
                     else:
                         room_pr_cached_obj.create({
                             'room_id': room_type.id,

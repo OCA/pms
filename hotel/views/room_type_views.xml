@@ -2,9 +2,9 @@
 <odoo>
 
     <!-- FORM Virtual Room -->
-    <record id="virtual_room_view_form" model="ir.ui.view">
-        <field name="name">virtual.room.view.form</field>
-        <field name="model">hotel.virtual.room</field>
+    <record id="room_type_view_form" model="ir.ui.view">
+        <field name="name">room.type.view.form</field>
+        <field name="model">hotel.room.type</field>
         <field name="arch" type="xml">
             <form string="Virtual Room">
                 <sheet>
@@ -41,9 +41,9 @@
     </record>
 
     <!-- TREE Virtual Room -->
-   <record id="virtual_room_view_tree" model="ir.ui.view">
-        <field name="name">virtual.room.view.tree</field>
-        <field name="model">hotel.virtual.room</field>
+   <record id="room_type_view_tree" model="ir.ui.view">
+        <field name="name">room.type.view.tree</field>
+        <field name="model">hotel.room.type</field>
         <field name="arch" type="xml">
             <tree string="Virtual Rooms">
                 <field name="name"/>
@@ -57,16 +57,16 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="virtual_room_action_form">
+    <record model="ir.actions.act_window" id="room_type_action_form">
         <field name="name">Virtual Rooms</field>
-        <field name="res_model">hotel.virtual.room</field>
+        <field name="res_model">hotel.room.type</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
    </record>
 
     <!-- MENUS -->
-   <menuitem name="Virtual rooms" id="virtual_room_menu"
-        action="virtual_room_action_form" sequence="40"
+   <menuitem name="Virtual rooms" id="room_type_menu"
+        action="room_type_action_form" sequence="40"
         parent="hotel.menu_hotel_room"/>
 
  </odoo>

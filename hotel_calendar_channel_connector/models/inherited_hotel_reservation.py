@@ -84,10 +84,10 @@ class HotelReservation(models.Model):
                 'reserve_color_text': record.reserve_color_text,
                 'splitted': record.splitted,
                 'parent_reservation': record.parent_reservation and
-                record.parent_reservation.id or 0,
+                                      record.parent_reservation.id or 0,
                 'room_name': record.product_id.name,
-                'partner_phone': record.partner_id.mobile
-                or record.partner_id.phone or _('Undefined'),
+                'partner_phone': record.partner_id.mobile or
+                                 record.partner_id.phone or _('Undefined'),
                 'state': record.state,
                 'fix_days': record.splitted or record.is_from_ota,
                 'overbooking': record.overbooking,
@@ -98,6 +98,6 @@ class HotelReservation(models.Model):
     @api.multi
     def confirm(self):
         for record in self:
-            if record.to_assign == True:
+            if record.to_assign:
                 record.write({'to_read': False, 'to_assign': False})
         return super(HotelReservation, self).confirm()

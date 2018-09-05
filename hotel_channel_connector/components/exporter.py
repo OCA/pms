@@ -29,11 +29,11 @@ class HotelChannelConnectorExporter(AbstractComponent):
                 DEFAULT_SERVER_DATE_FORMAT))
         ])
 
-        vrooms = vroom_avail_ids.mapped('virtual_room_id')
+        vrooms = vroom_avail_ids.mapped('room_type_id')
         avails = []
         for vroom in vrooms:
             vroom_avails = vroom_avail_ids.filtered(
-                lambda x: x.virtual_room_id.id == vroom.id)
+                lambda x: x.room_type_id.id == vroom.id)
             days = []
             for vroom_avail in vroom_avails:
                 vroom_avail.with_context({
@@ -139,8 +139,8 @@ class HotelChannelConnectorExporter(AbstractComponent):
                     ('wpushed', '=', False),
                     ('restriction_id', '=', rp.id)
                 ])
-                virtual_room_ids = unpushed_rp.mapped('virtual_room_id')
-                for vroom in virtual_room_ids:
+                room_type_ids = unpushed_rp.mapped('room_type_id')
+                for vroom in room_type_ids:
                     restrictions[rp.wpid].update({vroom.wrid: []})
                     for i in range(0, days_diff):
                         ndate_dt = date_start + timedelta(days=i)

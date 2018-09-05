@@ -7,9 +7,9 @@ from . import res_config
 from . import hotel_room_type
 from . import product_pricelist
 from . import inherited_product_pricelist_item
-from . import hotel_virtual_room_restriction
+from . import hotel_room_type_restriction
 from . import inherited_reservation_restriction_item
-from . import hotel_virtual_room_availability
+from . import hotel_room_type_availability
 from . import hotel_reservation
 from . import inherited_hotel_folio
 from . import inherited_res_partner

@@ -59,7 +59,7 @@ class TestHotel(TestMail):
             'checkin': checkin.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             'checkout': checkout.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             'folio_id': folio.id,
-            'virtual_room_id': room.price_virtual_room.id,
+            'room_type_id': room.price_room_type.id,
             'product_id': room.product_id.id,
         })
         self.assertTrue(
@@ -171,14 +171,14 @@ class TestHotel(TestMail):
         cls.hotel_room_simple_100 = Rooms.create({
             'name': '100',
             'sale_price_type': 'vroom',
-            'price_virtual_room': cls.hotel_vroom_budget.id,
+            'price_room_type': cls.hotel_vroom_budget.id,
             'categ_id': cls.hotel_room_type_simple.cat_id.id,
             'capacity': 1,
         })
         cls.hotel_room_simple_101 = Rooms.create({
             'name': '101',
             'sale_price_type': 'vroom',
-            'price_virtual_room': cls.hotel_vroom_budget.id,
+            'price_room_type': cls.hotel_vroom_budget.id,
             'categ_id': cls.hotel_room_type_simple.cat_id.id,
             'capacity': 1,
             'sequence': 1,
@@ -186,7 +186,7 @@ class TestHotel(TestMail):
         cls.hotel_room_double_200 = Rooms.create({
             'name': '200',
             'sale_price_type': 'vroom',
-            'price_virtual_room': cls.hotel_vroom_special.id,
+            'price_room_type': cls.hotel_vroom_special.id,
             'categ_id': cls.hotel_room_type_double.cat_id.id,
             'capacity': 2,
         })
@@ -228,16 +228,16 @@ class TestHotel(TestMail):
             for i in range(0, len(v_vr)):
                 ndate = now_utc_dt + timedelta(days=i)
                 vroom_avail_obj.create({
-                    'virtual_room_id': k_vr,
+                    'room_type_id': k_vr,
                     'avail': v_vr[i],
                     'date': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 })
                 vroom_rest_item_obj.create({
-                    'virtual_room_id': k_vr,
+                    'room_type_id': k_vr,
                     'restriction_id': cls.parity_restrictions_id,
                     'date_start': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'date_end': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    'applied_on': '0_virtual_room',
+                    'applied_on': '0_room_type',
                     'min_stay': cls.restrictions_min_stay_tmp[k_vr][i],
                 })
                 pricelist_item_obj.create({

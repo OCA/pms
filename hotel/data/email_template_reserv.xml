@@ -257,7 +257,7 @@
                                             <br />
 
                                           % for rline in object.get_grouped_reservations_json('confirm'):
-                                            <strong>${rline['num']} x ${rline['virtual_room']['name']}
+                                            <strong>${rline['num']} x ${rline['room_type']['name']}
                                             % if rline['childrens'] > 0:
                                               (${rline['adults']} Adultos + ${rline['childrens']} Niños)
                                             % else:
@@ -406,13 +406,13 @@
                                           <tr>
                                             <td class="h2" style="font-family: sans-serif; font-size: 18px; font-weight: bold; color: #C50967; padding: 0 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">Información de la habitación</td>
                                           </tr>
-                                          % set vroom_ids = object.room_lines.filtered('to_send').mapped('virtual_room_id.id')
-                                          % set vrooms = user.env['hotel.virtual.room'].browse(vroom_ids)
-                                          % for vroom in vrooms:
+                                          % set room_type_ids = object.room_lines.filtered('to_send').mapped('room_type_id.id')
+                                          % set room_types = user.env['hotel.room.type'].browse(room_type_ids)
+                                          % for room_type in room_types:
                                             <tr>
-                                            % if vroom.name:
+                                            % if room_type.name:
                                               <td align="justify" class="subheading" style="color: #555555">
-                                                <strong>${vroom.name}</strong>
+                                                <strong>${room_type.name}</strong>
                                               </td>
                                             % else:
                                               <td align="justify" class="subheading" style="color: #555555">

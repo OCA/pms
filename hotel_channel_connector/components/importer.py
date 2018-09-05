@@ -17,9 +17,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _get_room_values_availability(self, vroom_id, date_str, day_vals, set_max_avail):
-        virtual_room_avail_obj = self.env['hotel.room.type.availability']
-        vroom_avail = virtual_room_avail_obj.search([
-            ('virtual_room_id', '=', vroom_id),
+        room_type_avail_obj = self.env['hotel.room.type.availability']
+        vroom_avail = room_type_avail_obj.search([
+            ('room_type_id', '=', vroom_id),
             ('date', '=', date_str)
         ], limit=1)
         vals = {
@@ -36,10 +36,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
             }).write(vals)
         else:
             vals.update({
-                'virtual_room_id': vroom_id,
+                'room_type_id': vroom_id,
                 'date': date_str,
             })
-            virtual_room_avail_obj.with_context({
+            room_type_avail_obj.with_context({
                 'wubook_action': False,
                 'mail_create_nosubscribe': True,
             }).create(vals)
@@ -48,8 +48,8 @@ class HotelChannelConnectorImporter(AbstractComponent):
     def _get_room_values_restrictions(self, restriction_plan_id, vroom_id, date_str, day_vals):
         vroom_restr_item_obj = self.env['hotel.room.type.restriction.item']
         vroom_restr = vroom_restr_item_obj.search([
-            ('virtual_room_id', '=', vroom_id),
-            ('applied_on', '=', '0_virtual_room'),
+            ('room_type_id', '=', vroom_id),
+            ('applied_on', '=', '0_room_type'),
             ('date_start', '=', date_str),
             ('date_end', '=', date_str),
             ('restriction_id', '=', restriction_plan_id),
@@ -79,10 +79,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
         else:
             vals.update({
                 'restriction_id': restriction_plan_id,
-                'virtual_room_id': vroom_id,
+                'room_type_id': vroom_id,
                 'date_start': date_str,
                 'date_end': date_str,
-                'applied_on': '0_virtual_room',
+                'applied_on': '0_room_type',
             })
             vroom_restr_item_obj.with_context({
                 'wubook_action': False,
@@ -90,13 +90,13 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _generate_room_values(self, dfrom, dto, values, set_max_avail=False):
-        virtual_room_restr_obj = self.env['hotel.room.type.restriction']
-        hotel_virtual_room_obj = self.env['hotel.room.type']
-        def_restr_plan = virtual_room_restr_obj.search([('wpid', '=', '0')])
+        room_type_restr_obj = self.env['hotel.room.type.restriction']
+        hotel_room_type_obj = self.env['hotel.room.type']
+        def_restr_plan = room_type_restr_obj.search([('wpid', '=', '0')])
         _logger.info("==== ROOM VALUES (%s -- %s)", dfrom, dto)
         _logger.info(values)
         for k_rid, v_rid in values.iteritems():
-            vroom = hotel_virtual_room_obj.search([
+            vroom = hotel_room_type_obj.search([
                 ('wrid', '=', k_rid)
             ], limit=1)
             if vroom:
@@ -159,7 +159,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
             'wstatus': wstatus,
             'to_read': True,
             'state': is_cancellation and 'cancelled' or 'draft',
-            'virtual_room_id': vroom.id,
+            'room_type_id': vroom.id,
             'splitted': split_booking,
             'wbook_json': json.dumps(book),
             'wmodified': book['was_modified']
@@ -362,10 +362,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             "Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
                             '', wid=book['reservation_code'])
 
-                    free_rooms = hotel_vroom_obj.check_availability_virtual_room(
+                    free_rooms = hotel_vroom_obj.check_availability_room(
                         checkin_str,
                         checkout_str,
-                        virtual_room_id=vroom.id,
+                        room_type_id=vroom.id,
                         notthis=used_rooms)
                     if any(free_rooms):
                         vals.update({
@@ -515,7 +515,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _generate_pricelist_items(self, channel_plan_id, date_from, date_to, plan_prices):
-        hotel_virtual_room_obj = self.env['hotel.room.type']
+        hotel_room_type_obj = self.env['hotel.room.type']
         pricelist = self.env['product.pricelist'].search([
             ('wpid', '=', channel_plan_id)
         ], limit=1)
@@ -527,7 +527,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
             for i in range(0, days_diff):
                 ndate_dt = dfrom_dt + timedelta(days=i)
                 for k_rid, v_rid in plan_prices.iteritems():
-                    vroom = hotel_virtual_room_obj.search([
+                    vroom = hotel_room_type_obj.search([
                         ('wrid', '=', k_rid)
                     ], limit=1)
                     if vroom:
@@ -589,7 +589,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _generate_restriction_items(self, plan_restrictions):
-        hotel_virtual_room_obj = self.env['hotel.room.type']
+        hotel_room_type_obj = self.env['hotel.room.type']
         reserv_restriction_obj = self.env['hotel.room.type.restriction']
         restriction_item_obj = self.env['hotel.room.type.restriction.item']
         _logger.info("===== RESTRICTIONS")
@@ -600,7 +600,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
             ], limit=1)
             if restriction_id:
                 for k_rid, v_rid in v_rpid.iteritems():
-                    vroom = hotel_virtual_room_obj.search([
+                    vroom = hotel_room_type_obj.search([
                         ('wrid', '=', k_rid)
                     ], limit=1)
                     if vroom:
@@ -614,8 +614,8 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                     DEFAULT_SERVER_DATE_FORMAT)),
                                 ('date_end', '=', date_dt.strftime(
                                     DEFAULT_SERVER_DATE_FORMAT)),
-                                ('applied_on', '=', '0_virtual_room'),
-                                ('virtual_room_id', '=', vroom.id)
+                                ('applied_on', '=', '0_room_type'),
+                                ('room_type_id', '=', vroom.id)
                             ], limit=1)
                             vals = {
                                 'closed_arrival': item['closed_arrival'],
@@ -637,8 +637,8 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                         DEFAULT_SERVER_DATE_FORMAT),
                                     'date_end': date_dt.strftime(
                                         DEFAULT_SERVER_DATE_FORMAT),
-                                    'applied_on': '0_virtual_room',
-                                    'virtual_room_id': vroom.id
+                                    'applied_on': '0_room_type',
+                                    'room_type_id': vroom.id
                                 })
                                 restriction_item_obj.with_context({
                                     'wubook_action': False}).create(vals)

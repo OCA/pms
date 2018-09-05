@@ -60,7 +60,7 @@ return AbstractModel.extend({
         return this._rpc({
             model: 'hotel.room.type',
             method: 'search_read',
-            args: [false, ['cat_id','name']],
+            args: [false, ['id','name']],
             context: Session.user_context,
         });
     },

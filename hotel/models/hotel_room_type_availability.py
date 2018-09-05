@@ -10,7 +10,7 @@ class HotelRoomTypeAvailability(models.Model):
     _inherit = 'mail.thread'
     _name = 'hotel.room.type.availability'
 
-    # virtual_room_id = fields.Many2one('hotel.virtual.room', 'Virtual Room',
+    # room_type_id = fields.Many2one('hotel.virtual.room', 'Virtual Room',
     #                                   required=True, track_visibility='always',
     #                                   ondelete='cascade')
     room_type_id = fields.Many2one('hotel.room.type', 'Room Type',
@@ -34,7 +34,7 @@ class HotelRoomTypeAvailability(models.Model):
             self.avail = 0
 
         room_type_obj = self.env['hotel.room.type']
-        cavail = len(room_type_obj.check_availability_virtual_room(
+        cavail = len(room_type_obj.check_availability_room(
             self.date,
             self.date,
             room_type_id=self.room_type_id.id))
@@ -44,7 +44,7 @@ class HotelRoomTypeAvailability(models.Model):
             self.avail = max_avail
 
     @api.constrains('date', 'room_type_id')
-    def _check_date_virtual_room_id(self):
+    def _check_date_room_type_id(self):
         count = self.search_count([
             ('date', '=', self.date),
             ('room_type_id', '=', self.room_type_id.id)

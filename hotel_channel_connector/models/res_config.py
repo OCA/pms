@@ -122,7 +122,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
         vroom_restr_it_obj = self.env['hotel.room.type.restriction.item']
         # Secure Wubook Input
         restriction_item_ids = vroom_restr_it_obj.search([
-            ('applied_on', '=', '0_virtual_room'),
+            ('applied_on', '=', '0_room_type'),
             ('date_start', '<', now_utc_str),
         ])
         if any(restriction_item_ids):
@@ -132,7 +132,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
         # Put to push restrictions
         restriction_item_ids = vroom_restr_it_obj.search([
             ('restriction_id', '=', restriction_id),
-            ('applied_on', '=', '0_virtual_room'),
+            ('applied_on', '=', '0_room_type'),
             ('wpushed', '=', True),
             ('date_start', '>=', now_utc_str),
         ])

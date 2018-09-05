@@ -6,11 +6,11 @@ from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
 
-class ChannelHotelVirtualRoomRestriction(models.Model):
+class ChannelHotelRoomTypeRestriction(models.Model):
     _name = 'channel.hotel.room.type.restriction'
     _inherit = 'channel.binding'
     _inherits = {'hotel.room.type.restriction': 'odoo_id'}
-    _description = 'Channel Hotel Virtual Room Restriction'
+    _description = 'Channel Hotel Room Type Restriction'
 
     odoo_id = fields.Many2one(comodel_names='hotel.room.type.restriction',
                               string='Hotel Virtual Room Restriction',
@@ -70,7 +70,7 @@ class ChannelHotelVirtualRoomRestriction(models.Model):
                 importer = work.component(usage='channel.importer')
                 return importer.import_restriction_plans()
 
-class HotelVirtualRoomRestriction(models.Model):
+class HotelRoomTypeRestriction(models.Model):
     _inherit = 'hotel.room.type.restriction'
 
     channel_bind_ids = fields.One2many(
@@ -92,7 +92,7 @@ class HotelVirtualRoomRestriction(models.Model):
                 names.append((name[0], name[1]))
         return names
 
-class ChannelBindingHotelVirtualRoomRestrictionListener(Component):
+class ChannelBindingHotelRoomTypeRestrictionListener(Component):
     _name = 'channel.binding.hotel.room.type.restriction.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['channel.hotel.room.type.restriction']
