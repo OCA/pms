@@ -21,7 +21,6 @@ return AbstractModel.extend({
     },
 
     save_changes: function (params) {
-        console.log(params);
         return this._rpc({
             model: this.modelName,
             method: 'save_changes',

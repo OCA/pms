@@ -315,7 +315,7 @@ var HotelCalendarView = AbstractRenderer.extend({
                 }
                 var nights = date_cell_end.diff(date_cell_start, 'days');
 	        	var qdict = {
-	        		//'total_price': Number(ev.detail.totalPrice).toLocaleString(),
+	        		'total_price': Number(ev.detail.totalPrice).toLocaleString(),
 	        		'nights': nights
 	        	};
 	        	$(last_cell).tooltip({
