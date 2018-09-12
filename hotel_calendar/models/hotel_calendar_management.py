@@ -46,7 +46,7 @@ class HotelCalendarManagement(models.TransientModel):
         }
         return vals
 
-    @api.multi
+    @api.model
     def save_changes(self, pricelist_id, restriction_id, pricelist,
                      restrictions, availability):
         room_type_obj = self.env['hotel.room.type']
@@ -133,7 +133,7 @@ class HotelCalendarManagement(models.TransientModel):
                 room.name,
                 room.get_capacity(),
                 room.list_price,
-                room.max_real_rooms,
+                room.total_rooms_count,
             ))
         return json_data
 
@@ -201,7 +201,7 @@ class HotelCalendarManagement(models.TransientModel):
                     json_data[room_type.id].append({
                         'id': False,
                         'date': cur_date_str,
-                        'avail': room_type.max_real_rooms,
+                        'avail': room_type.total_rooms_count,
                         'no_ota': False,
                     })
         return json_data

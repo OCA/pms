@@ -19,7 +19,8 @@ var PMSCalendarController = AbstractController.extend({
         onUpdateButtonsCounter: '_onUpdateButtonsCounter',
         onReloadCalendar: '_onReloadCalendar',
         onUpdateReservations: '_onUpdateReservations',
-        onSwapReservations: '_onSwapReservations'
+        onSwapReservations: '_onSwapReservations',
+        onSaveChanges: '_onSaveChanges'
     }),
 
     init: function (parent, model, renderer, params) {
@@ -47,6 +48,14 @@ var PMSCalendarController = AbstractController.extend({
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
+    _onSaveChanges: function (ev) {
+        var self = this;
+        this.model.save_changes(_.toArray(ev.data)).then(function(results){
+            $(self.renderer._hcalendar.btnSaveChanges).removeClass('need-save');
+            self.renderer.$el.find('.hcal-input-changed').removeClass('hcal-input-changed');
+        });
+    },
+
     _onUpdateReservations: function (ev) {
         var self = this;
         return this.model.update_records(ev.data.ids, ev.data.values).then(function(result){

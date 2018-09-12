@@ -90,19 +90,19 @@
 	visibility: hidden;
 }
 
-.table-vrooms {
-	float: left;
+.table-room_types {
+	flex: 1 1 auto;
 	margin-top: 1.6em;
 }
 
 #hcal_management_widget {
 	overflow: auto;
-	height: 84vh;
+	display:flex;
 }
 
 #hcal-management-container-dd {
 	overflow: auto;
-	position: relative;
+	flex: 1 1 auto;
 }
 
 #btn_save_changes, #btn_massive_changes {

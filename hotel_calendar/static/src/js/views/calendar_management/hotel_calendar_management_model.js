@@ -21,6 +21,7 @@ return AbstractModel.extend({
     },
 
     save_changes: function (params) {
+        console.log(params);
         return this._rpc({
             model: this.modelName,
             method: 'save_changes',
@@ -59,9 +60,8 @@ return AbstractModel.extend({
     get_hcalendar_settings: function () {
         return this._rpc({
             model: this.modelName,
-            method: 'search_read',
+            method: 'get_hcalendar_settings',
             args: [false],
-            context: Session.user_context,
         });
     },
 });

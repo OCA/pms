@@ -115,5 +115,14 @@ return AbstractModel.extend({
             context: Session.user_context,
         });
     },
+
+    save_changes: function(params) {
+      return this._rpc({
+          model: 'hotel.calendar.management',
+          method: 'save_changes',
+          args: params,
+          context: Session.user_context,
+      })
+    }
 });
 });

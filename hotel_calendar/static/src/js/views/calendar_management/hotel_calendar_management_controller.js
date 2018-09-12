@@ -56,8 +56,9 @@ var MPMSCalendarController = AbstractController.extend({
     // Handlers
     //--------------------------------------------------------------------------
     _onSaveChanges: function (ev) {
-        this.model.save_changes(ev.data).then(function(results){
-            this.renderer.resetSaveState();
+        var self = this;
+        this.model.save_changes(_.toArray(ev.data)).then(function(results){
+            self.renderer.resetSaveState();
         });
     },
 
@@ -91,7 +92,6 @@ var MPMSCalendarController = AbstractController.extend({
             })
 
             self.renderer.create_calendar(rooms);
-            console.log(results);
             self.renderer.setCalendarData(results['prices'], results['restrictions'], results['availability'], results['count_reservations']);
         });
     },
@@ -99,11 +99,12 @@ var MPMSCalendarController = AbstractController.extend({
     _onLoadCalendarSettings: function (ev) {
         var self = this;
         this.model.get_hcalendar_settings().then(function(results){
+          console.log(results);
             self.renderer.setHCalendarSettings(results);
         });
     },
 
-    _onBusNotification: function () {
+    _onBusNotification: function (notifications) {
         if (!this.renderer._hcalendar) {
             return;
         }
@@ -117,7 +118,7 @@ var MPMSCalendarController = AbstractController.extend({
                         var dt = HotelCalendarManagement.toMoment(day);
                         var availability = {};
                         availability[room_type] = [{
-                            'date': dt.format(ODOO_DATE_MOMENT_FORMAT),
+                            'date': dt.format(HotelConstants.ODOO_DATE_MOMENT_FORMAT),
                             'avail': avail[room_type][day][0],
                             'no_ota': avail[room_type][day][1],
                             'id': avail[room_type][day][2]
@@ -134,7 +135,7 @@ var MPMSCalendarController = AbstractController.extend({
                             for (var day of days) {
                                 var dt = HotelCalendarManagement.toMoment(day);
                                 pr[price['room']].push({
-                                    'date': dt.format(ODOO_DATE_MOMENT_FORMAT),
+                                    'date': dt.format(HotelConstants.ODOO_DATE_MOMENT_FORMAT),
                                     'price':  price['days'][day],
                                     'id': price['id']
                                 });
@@ -150,7 +151,7 @@ var MPMSCalendarController = AbstractController.extend({
                         var dt = HotelCalendarManagement.toMoment(day);
                         var rest = {};
                         rest[room_type] = [{
-                            'date': dt.format(ODOO_DATE_MOMENT_FORMAT),
+                            'date': dt.format(HotelConstants.ODOO_DATE_MOMENT_FORMAT),
                             'min_stay': restriction[room_type][day][0],
                             'min_stay_arrival': restriction[room_type][day][1],
                             'max_stay': restriction[room_type][day][2],

@@ -304,9 +304,9 @@ class HotelReservation(models.Model):
             raise ValidationError(_("Invalid swap parameters"))
 
         max_from_persons = max(
-            from_reservs.mapped(lambda x: x.adults + x.children))
+            from_reservs.mapped(lambda x: x.adults))
         max_to_persons = max(
-            to_reservs.mapped(lambda x: x.adults + x.children))
+            to_reservs.mapped(lambda x: x.adults))
 
         from_room = from_reservs[0].room_id
         to_room = to_reservs[0].room_id

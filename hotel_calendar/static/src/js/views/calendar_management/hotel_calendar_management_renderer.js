@@ -81,7 +81,11 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
         var availability = this._hcalendar.getAvailability(true);
 
         var params = this.generate_params();
-        var oparams = [false, params['prices'], params['restrictions'], pricelist, restrictions, availability];
+        console.log("---- PARAMS");
+        console.log(params);
+        var oparams = [params['prices'], params['restrictions'], pricelist, restrictions, availability];
+        console.log("---- OPARAMS");
+        console.log(oparams);
         this.trigger_up('onSaveChanges', oparams);
     },
 

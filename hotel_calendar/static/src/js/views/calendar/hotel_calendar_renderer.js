@@ -135,16 +135,8 @@ var HotelCalendarView = AbstractRenderer.extend({
         var self = this;
         this._hcalendar.addEventListener('hcalOnSavePricelist', function(ev){
           var pricelist = self._hcalendar.getPricelist();
-          var oparams = [false, self._hcalendar._pricelist_id, false, pricelist, {}, {}];
-          self._rpc({
-              model: 'hotel.calendar.management',
-              method: 'save_changes',
-              args: oparams,
-              context: Session.user_context,
-          }).then(function(results){
-              $(self._hcalendar.btnSaveChanges).removeClass('need-save');
-              $('.hcal-input-changed').removeClass('hcal-input-changed');
-          });
+          var oparams = [self._hcalendar._pricelist_id, false, pricelist, {}, {}];
+          self.trigger_up('onSaveChanges', oparams);
         });
         this._hcalendar.addEventListener('hcalOnMouseEnterReservation', function(ev){
           if (ev.detail.reservationObj) {
