@@ -156,12 +156,12 @@ class TestHotel(TestMail):
         })
 
         VRooms = cls.env['hotel.virtual.room']
-        cls.hotel_vroom_budget = VRooms.create({
+        cls.hotel_room_type_budget = VRooms.create({
             'name': 'Budget Room',
             'virtual_code': '001',
             'list_price': 50,
         })
-        cls.hotel_vroom_special = VRooms.create({
+        cls.hotel_room_type_special = VRooms.create({
             'name': 'Special Room',
             'virtual_code': '002',
             'list_price': 150,
@@ -170,69 +170,69 @@ class TestHotel(TestMail):
         Rooms = cls.env['hotel.room']
         cls.hotel_room_simple_100 = Rooms.create({
             'name': '100',
-            'sale_price_type': 'vroom',
-            'price_room_type': cls.hotel_vroom_budget.id,
+            'sale_price_type': 'room_type',
+            'price_room_type': cls.hotel_room_type_budget.id,
             'categ_id': cls.hotel_room_type_simple.cat_id.id,
             'capacity': 1,
         })
         cls.hotel_room_simple_101 = Rooms.create({
             'name': '101',
-            'sale_price_type': 'vroom',
-            'price_room_type': cls.hotel_vroom_budget.id,
+            'sale_price_type': 'room_type',
+            'price_room_type': cls.hotel_room_type_budget.id,
             'categ_id': cls.hotel_room_type_simple.cat_id.id,
             'capacity': 1,
             'sequence': 1,
         })
         cls.hotel_room_double_200 = Rooms.create({
             'name': '200',
-            'sale_price_type': 'vroom',
-            'price_room_type': cls.hotel_vroom_special.id,
+            'sale_price_type': 'room_type',
+            'price_room_type': cls.hotel_room_type_special.id,
             'categ_id': cls.hotel_room_type_double.cat_id.id,
             'capacity': 2,
         })
 
-        cls.hotel_vroom_budget.write({
+        cls.hotel_room_type_budget.write({
             'room_ids': [(6, False, [cls.hotel_room_simple_100.id,
                                      cls.hotel_room_simple_101.id])],
         })
-        cls.hotel_vroom_special.write({
+        cls.hotel_room_type_special.write({
             'room_ids': [(6, False, [cls.hotel_room_double_200.id])],
         })
 
         # Create a week of fresh data
         now_utc_dt = date_utils.now()
         cls.avails_tmp = {
-            cls.hotel_vroom_budget.id: (1, 2, 2, 1, 1, 2, 2),
-            cls.hotel_vroom_special.id: (1, 1, 1, 1, 1, 1, 1),
+            cls.hotel_room_type_budget.id: (1, 2, 2, 1, 1, 2, 2),
+            cls.hotel_room_type_special.id: (1, 1, 1, 1, 1, 1, 1),
         }
         cls.prices_tmp = {
-            cls.hotel_vroom_budget.id: (10.0, 80.0, 80.0, 95.0, 90.0, 80.0,
+            cls.hotel_room_type_budget.id: (10.0, 80.0, 80.0, 95.0, 90.0, 80.0,
                                         20.0),
-            cls.hotel_vroom_special.id: (5.0, 15.0, 15.0, 35.0, 35.0, 10.0,
+            cls.hotel_room_type_special.id: (5.0, 15.0, 15.0, 35.0, 35.0, 10.0,
                                          10.0),
         }
         cls.restrictions_min_stay_tmp = {
-            cls.hotel_vroom_budget.id: (0, 1, 2, 1, 1, 0, 0),
-            cls.hotel_vroom_special.id: (3, 1, 0, 2, 0, 1, 4),
+            cls.hotel_room_type_budget.id: (0, 1, 2, 1, 1, 0, 0),
+            cls.hotel_room_type_special.id: (3, 1, 0, 2, 0, 1, 4),
         }
-        budget_product_id = cls.hotel_vroom_budget.product_id
-        special_product_id = cls.hotel_vroom_special.product_id
+        budget_product_id = cls.hotel_room_type_budget.product_id
+        special_product_id = cls.hotel_room_type_special.product_id
         product_tmpl_ids = {
-            cls.hotel_vroom_budget.id: budget_product_id.product_tmpl_id.id,
-            cls.hotel_vroom_special.id: special_product_id.product_tmpl_id.id,
+            cls.hotel_room_type_budget.id: budget_product_id.product_tmpl_id.id,
+            cls.hotel_room_type_special.id: special_product_id.product_tmpl_id.id,
         }
-        vroom_avail_obj = cls.env['hotel.room.type.availability']
-        vroom_rest_item_obj = cls.env['hotel.room.type.restriction.item']
+        room_type_avail_obj = cls.env['hotel.room.type.availability']
+        room_type_rest_item_obj = cls.env['hotel.room.type.restriction.item']
         pricelist_item_obj = cls.env['product.pricelist.item']
         for k_vr, v_vr in cls.avails_tmp.iteritems():
             for i in range(0, len(v_vr)):
                 ndate = now_utc_dt + timedelta(days=i)
-                vroom_avail_obj.create({
+                room_type_avail_obj.create({
                     'room_type_id': k_vr,
                     'avail': v_vr[i],
                     'date': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 })
-                vroom_rest_item_obj.create({
+                room_type_rest_item_obj.create({
                     'room_type_id': k_vr,
                     'restriction_id': cls.parity_restrictions_id,
                     'date_start': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),

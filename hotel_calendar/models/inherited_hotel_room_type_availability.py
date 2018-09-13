@@ -39,7 +39,7 @@ class HotelRoomTypeAvailability(models.Model):
         for record in self:
             unlink_vals.append({
                 'date': record.date,
-                'avail': record.room_type_id.max_real_rooms,
+                'avail': record.room_type_id.total_rooms_count,
                 'room_type_id': record.room_type_id.id,
                 'no_ota': False,
                 'id': record.id,

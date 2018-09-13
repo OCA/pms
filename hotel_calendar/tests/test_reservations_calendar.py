@@ -46,11 +46,11 @@ class TestReservationsCalendar(TestHotelCalendar):
 
         # Check Pricelist Integrity
         for k_pr, v_pr in hcal_data['pricelist'].iteritems():
-            for vroom_pr in v_pr:
+            for room_type_pr in v_pr:
                 # Only Check Test Cases
-                if vroom_pr['room'] in self.prices_tmp.keys():
+                if room_type_pr['room'] in self.prices_tmp.keys():
                     sorted_dates = sorted(
-                        vroom_pr['days'].keys(),
+                        room_type_pr['days'].keys(),
                         key=lambda x: datetime.datetime.strptime(x, '%d/%m/%Y')
                     )
                     init_date_dt = datetime.datetime.strptime(
@@ -67,11 +67,11 @@ class TestReservationsCalendar(TestHotelCalendar):
                                      "Hotel Calendar don't end in \
                                                             the correct date!")
 
-                    vroom_prices = self.prices_tmp[vroom_pr['room']]
-                    for k_price, v_price in enumerate(vroom_prices):
+                    room_type_prices = self.prices_tmp[room_type_pr['room']]
+                    for k_price, v_price in enumerate(room_type_prices):
                         self.assertEqual(
                             v_price,
-                            vroom_pr['days'][sorted_dates[k_price+1]],
+                            room_type_pr['days'][sorted_dates[k_price+1]],
                             "Hotel Calendar Pricelist doesn't match!")
 
         # Check Pricelist Integrity after unlink
@@ -80,8 +80,8 @@ class TestReservationsCalendar(TestHotelCalendar):
         pr_ids = pricelist_item_obj.search([
             ('pricelist_id', '=', self.parity_pricelist_id),
             ('product_tmpl_id', 'in', (
-                self.hotel_vroom_budget.product_id.product_tmpl_id.id,
-                self.hotel_vroom_special.product_id.product_tmpl_id.id)),
+                self.hotel_room_type_budget.product_id.product_tmpl_id.id,
+                self.hotel_room_type_special.product_id.product_tmpl_id.id)),
         ])
         pr_ids.sudo(self.user_hotel_manager).unlink()
         reserv_obj = self.env['hotel.reservation'].sudo(
@@ -89,14 +89,14 @@ class TestReservationsCalendar(TestHotelCalendar):
         hcal_data = reserv_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
-        vrooms = (self.hotel_vroom_budget, self.hotel_vroom_special)
-        for vroom in vrooms:
+        room_types = (self.hotel_room_type_budget, self.hotel_room_type_special)
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['pricelist'].iteritems():
-                for vroom_pr in v_pr:
-                    if vroom_pr['room'] == vroom.id:    # Only Check Test Cases
+                for room_type_pr in v_pr:
+                    if room_type_pr['room'] == room_type.id:    # Only Check Test Cases
                         self.assertEqual(
-                            vroom.list_price,
-                            vroom_pr['days'][sorted_dates[k_price+1]],
+                            room_type.list_price,
+                            room_type_pr['days'][sorted_dates[k_price+1]],
                             "Hotel Calendar Pricelist doesn't \
                                                         match after remove!")
 

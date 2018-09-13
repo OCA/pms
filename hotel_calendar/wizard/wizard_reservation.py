@@ -306,14 +306,11 @@ class HotelRoomTypeWizards(models.TransientModel):
     can_confirm = fields.Boolean(compute="_can_confirm")
 
     def _can_confirm(self):
-        for vroom in self:
-            date_start = date_utils.get_datetime(vroom.checkin)
-            date_end = date_utils.get_datetime(vroom.checkout)
+        for room_type in self:
+            date_start = date_utils.get_datetime(room_type.checkin)
+            date_end = date_utils.get_datetime(room_type.checkout)
             date_diff = date_utils.date_diff(date_start, date_end, hours=False)
-            if vroom.max_rooms > 0 and vroom.min_stay <= date_diff:
-                vroom.can_confirm = True
-            else:
-                vroom.can_confirm = False
+            room_type.can_confirm = room_type.max_rooms > 0 and room_type.min_stay <= date_diff
 
     def _compute_max(self):
         for res in self:

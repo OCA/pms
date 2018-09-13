@@ -30,12 +30,12 @@ class TestProductPricelist(TestHotelCalendar):
         now_utc_dt = date_utils.now()
         now_utc_str = now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-        vroom_tmpl_id = self.hotel_vroom_special.product_id.product_tmpl_id
+        room_type_tmpl_id = self.hotel_room_type_special.product_id.product_tmpl_id
 
         pritem_obj = self.env['product.pricelist.item']
         plitem = pritem_obj.search([
             ('pricelist_id', '=', self.parity_pricelist_id),
-            ('product_tmpl_id', '=', vroom_tmpl_id.id),
+            ('product_tmpl_id', '=', room_type_tmpl_id.id),
             ('date_start', '=', now_utc_str),
             ('date_end', '=', now_utc_str),
             ('applied_on', '=', '1_product'),
@@ -44,13 +44,13 @@ class TestProductPricelist(TestHotelCalendar):
         old_price = plitem.fixed_price
 
         self.pricelist_1.update_price(
-            self.hotel_vroom_special.id,
+            self.hotel_room_type_special.id,
             now_utc_str,
             999.9)
 
         plitem = pritem_obj.search([
             ('pricelist_id', '=', self.parity_pricelist_id),
-            ('product_tmpl_id', '=', vroom_tmpl_id.id),
+            ('product_tmpl_id', '=', room_type_tmpl_id.id),
             ('date_start', '=', now_utc_str),
             ('date_end', '=', now_utc_str),
             ('applied_on', '=', '1_product'),

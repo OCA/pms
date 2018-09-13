@@ -240,7 +240,7 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
 
         /** VIEW CONTROLS INITIALIZATION **/
         // DATE TIME PICKERS
-        var l10nn = _t.database.parameters
+        console.log("asdads");
         var DTPickerOptions = {
             viewMode: 'months',
             icons : {
@@ -249,8 +249,9 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
                 up: 'fa fa-chevron-up',
                 down: 'fa fa-chevron-down'
                },
+            locale : moment.locale(),
             format : HotelConstants.L10N_DATE_MOMENT_FORMAT,
-            disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21, 22, 23]
+            //disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21, 22, 23]
         };
         var $dateTimePickerBegin = this.$el.find('#mpms-search #date_begin');
         var $dateTimePickerEnd = this.$el.find('#mpms-search #date_end');
@@ -263,8 +264,8 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
             self.on_change_filter_date(e, true);
         });
         $dateTimePickerEnd.on("dp.change", function (e) {
-            self.on_change_filter_date(e, false);
             $dateTimePickerEnd.data("DateTimePicker").hide(); // TODO: Odoo uses old datetimepicker version
+            self.on_change_filter_date(e, false);
         });
 
         // var date_begin = moment().startOf('day');
@@ -404,17 +405,7 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
     },
 
     reload_hcalendar_management: function() {
-        var self = this;
-        var params = this.generate_params();
-        var oparams = [params['dates'][0], params['dates'][1], params['prices'], params['restrictions'], false];
-        this._model.call('get_hcalendar_all_data', oparams).then(function(results){
-            self._days_tooltips = results['events'];
-            self._hcalendar.setData(results['prices'], results['restrictions'], results['availability'], results['count_reservations']);
-            self._assign_extra_info();
-        });
-        this._last_dates = params['dates'];
-        this.$CalendarHeaderDays = this.$el.find("div.table-room_type-data-header");
-        this._on_scroll(); // FIXME: Workaround for update sticky header
+        this.trigger_up('onLoadNewContentCalendar');
     },
 
     generate_params: function() {

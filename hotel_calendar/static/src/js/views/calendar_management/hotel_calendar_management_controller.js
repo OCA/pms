@@ -17,6 +17,7 @@ var MPMSCalendarController = AbstractController.extend({
         onSaveChanges: '_onSaveChanges',
         onLoadCalendar: '_onLoadCalendar',
         onLoadCalendarSettings: '_onLoadCalendarSettings',
+        onLoadNewContentCalendar: '_onLoadNewContentCalendar',
     }),
     /**
      * @override
@@ -60,6 +61,21 @@ var MPMSCalendarController = AbstractController.extend({
         this.model.save_changes(_.toArray(ev.data)).then(function(results){
             self.renderer.resetSaveState();
         });
+    },
+
+    _onLoadNewContentCalendar: function (ev) {
+        var self = this;
+        var params = this.renderer.generate_params();
+        var oparams = [params['dates'][0], params['dates'][1], params['prices'], params['restrictions'], false];
+
+        this.model.get_hcalendar_data(oparams).then(function(results){
+            self.renderer._days_tooltips = results['events'];
+            self.renderer._hcalendar.setData(results['prices'], results['restrictions'], results['availability'], results['count_reservations']);
+            self.renderer._assign_extra_info();
+        });
+        this.renderer._last_dates = params['dates'];
+        this.renderer.$CalendarHeaderDays = this.renderer.$el.find("div.table-room_type-data-header");
+        this.renderer._on_scroll(); // FIXME: Workaround for update sticky header
     },
 
     _onLoadCalendar: function (ev) {

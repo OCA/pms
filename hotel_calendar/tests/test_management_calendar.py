@@ -37,7 +37,7 @@ class TestManagementCalendar(TestHotelCalendar):
         now_utc_dt = date_utils.now()
         adv_utc_dt = now_utc_dt + timedelta(days=15)
 
-        vrooms = (self.hotel_vroom_budget, self.hotel_vroom_special)
+        room_types = (self.hotel_room_type_budget, self.hotel_room_type_special)
 
         hotel_cal_mngt_obj = self.env['hotel.calendar.management'].sudo(
                                                     self.user_hotel_manager)
@@ -48,14 +48,14 @@ class TestManagementCalendar(TestHotelCalendar):
             self.parity_pricelist_id,
             self.parity_restrictions_id,
             True)
-        for vroom in vrooms:
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['prices'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
-                        if k_info >= len(self.prices_tmp[vroom.id]):
+                        if k_info >= len(self.prices_tmp[room_type.id]):
                             break
                         self.assertEqual(v_info['price'],
-                                         self.prices_tmp[vroom.id][k_info],
+                                         self.prices_tmp[room_type.id][k_info],
                                          "Hotel Calendar Management Prices \
                                             doesn't match!")
 
@@ -63,8 +63,8 @@ class TestManagementCalendar(TestHotelCalendar):
         prices_obj = self.env['product.pricelist.item'].sudo(
                                                     self.user_hotel_manager)
         prod_tmpl_ids = (
-            self.hotel_vroom_budget.product_id.product_tmpl_id.id,
-            self.hotel_vroom_special.product_id.product_tmpl_id.id
+            self.hotel_room_type_budget.product_id.product_tmpl_id.id,
+            self.hotel_room_type_special.product_id.product_tmpl_id.id
         )
         pr_ids = prices_obj.search([
             ('pricelist_id', '=', self.parity_pricelist_id),
@@ -84,7 +84,7 @@ class TestManagementCalendar(TestHotelCalendar):
     def test_calendar_restrictions(self):
         now_utc_dt = date_utils.now()
         adv_utc_dt = now_utc_dt + timedelta(days=15)
-        vrooms = (self.hotel_vroom_budget, self.hotel_vroom_special)
+        room_types = (self.hotel_room_type_budget, self.hotel_room_type_special)
 
         hotel_cal_mngt_obj = self.env['hotel.calendar.management'].sudo(
                                                     self.user_hotel_manager)
@@ -95,16 +95,16 @@ class TestManagementCalendar(TestHotelCalendar):
             self.parity_pricelist_id,
             self.parity_restrictions_id,
             True)
-        for vroom in vrooms:
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['restrictions'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
-                        rest_items = self.restrictions_min_stay_tmp[vroom.id]
+                        rest_items = self.restrictions_min_stay_tmp[room_type.id]
                         if k_info >= len(rest_items):
                             break
                         self.assertEqual(
                             v_info['min_stay'],
-                            self.restrictions_min_stay_tmp[vroom.id][k_info],
+                            self.restrictions_min_stay_tmp[room_type.id][k_info],
                             "Hotel Calendar Management Restrictions \
                                 doesn't match!")
 
@@ -114,8 +114,8 @@ class TestManagementCalendar(TestHotelCalendar):
         rest_ids = rest_it_obj.search([
             ('applied_on', '=', '0_room_type'),
             ('restriction_id', '=', self.parity_restrictions_id),
-            ('room_type_id', 'in', (self.hotel_vroom_budget.id,
-                                       self.hotel_vroom_special.id)),
+            ('room_type_id', 'in', (self.hotel_room_type_budget.id,
+                                       self.hotel_room_type_special.id)),
         ])
         rest_ids.sudo(self.user_hotel_manager).unlink()
 
@@ -133,11 +133,11 @@ class TestManagementCalendar(TestHotelCalendar):
     def test_calendar_availability(self):
         now_utc_dt = date_utils.now()
         adv_utc_dt = now_utc_dt + timedelta(days=6)
-        vrooms = (self.hotel_vroom_budget, self.hotel_vroom_special)
+        room_types = (self.hotel_room_type_budget, self.hotel_room_type_special)
 
         hotel_cal_mngt_obj = self.env['hotel.calendar.management'].sudo(
                                                     self.user_hotel_manager)
-        vroom_avail_obj = self.env['hotel.room.type.availability'].sudo(
+        room_type_avail_obj = self.env['hotel.room.type.availability'].sudo(
                                                     self.user_hotel_manager)
 
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
@@ -146,22 +146,22 @@ class TestManagementCalendar(TestHotelCalendar):
             self.parity_pricelist_id,
             self.parity_restrictions_id,
             True)
-        for vroom in vrooms:
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['availability'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
-                        if k_info >= len(self.avails_tmp[vroom.id]):
+                        if k_info >= len(self.avails_tmp[room_type.id]):
                             break
                         self.assertEqual(
                             v_info['avail'],
-                            self.avails_tmp[vroom.id][k_info],
+                            self.avails_tmp[room_type.id][k_info],
                             "Hotel Calendar Management Availability \
                                                             doesn't match!")
 
         # CHANGE AVAIL
-        avail_ids = vroom_avail_obj.search([
-            ('room_type_id', 'in', (self.hotel_vroom_budget.id,
-                                       self.hotel_vroom_special.id)),
+        avail_ids = room_type_avail_obj.search([
+            ('room_type_id', 'in', (self.hotel_room_type_budget.id,
+                                       self.hotel_room_type_special.id)),
         ])
         for avail_id in avail_ids:
             avail_id.sudo(self.user_hotel_manager).write({'avail': 1})
@@ -171,9 +171,9 @@ class TestManagementCalendar(TestHotelCalendar):
             self.parity_pricelist_id,
             self.parity_restrictions_id,
             True)
-        for vroom in vrooms:
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['availability'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
                         self.assertEqual(
                             v_info['avail'],
@@ -182,9 +182,9 @@ class TestManagementCalendar(TestHotelCalendar):
                                                             doesn't match!")
 
         # REMOVE AVAIL
-        avail_ids = vroom_avail_obj.search([
-            ('room_type_id', 'in', (self.hotel_vroom_budget.id,
-                                       self.hotel_vroom_special.id)),
+        avail_ids = room_type_avail_obj.search([
+            ('room_type_id', 'in', (self.hotel_room_type_budget.id,
+                                       self.hotel_room_type_special.id)),
         ])
         avail_ids.sudo(self.user_hotel_manager).unlink()
 
@@ -194,20 +194,20 @@ class TestManagementCalendar(TestHotelCalendar):
             self.parity_pricelist_id,
             self.parity_restrictions_id,
             True)
-        for vroom in vrooms:
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['availability'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
                         self.assertEqual(
                             v_info['avail'],
-                            vroom.max_real_rooms,
+                            room_type.max_real_rooms,
                             "Hotel Calendar Management Availability \
                                                             doesn't match!")
 
     def test_save_changes(self):
         now_utc_dt = date_utils.now()
         adv_utc_dt = now_utc_dt + timedelta(days=3)
-        vrooms = (self.hotel_vroom_budget,)
+        room_types = (self.hotel_room_type_budget,)
 
         hotel_cal_mngt_obj = self.env['hotel.calendar.management'].sudo(
                                                     self.user_hotel_manager)
@@ -217,7 +217,7 @@ class TestManagementCalendar(TestHotelCalendar):
         cprices = {}
         for k_item, v_item in enumerate(prices):
             ndate_utc_dt = now_utc_dt + timedelta(days=k_item)
-            cprices.setdefault(self.hotel_vroom_budget.id, []).append({
+            cprices.setdefault(self.hotel_room_type_budget.id, []).append({
                 'date': ndate_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 'price': v_item
             })
@@ -235,7 +235,7 @@ class TestManagementCalendar(TestHotelCalendar):
         crestrictions = {}
         for i in range(0, 4):
             ndate_utc_dt = now_utc_dt + timedelta(days=i)
-            crestrictions.setdefault(self.hotel_vroom_budget.id, []).append({
+            crestrictions.setdefault(self.hotel_room_type_budget.id, []).append({
                 'date': ndate_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 'closed_arrival': restrictions['closed_arrival'][i],
                 'max_stay': restrictions['max_stay'][i],
@@ -252,7 +252,7 @@ class TestManagementCalendar(TestHotelCalendar):
         for k_item, v_item in enumerate(avails):
             ndate_utc_dt = now_utc_dt + timedelta(days=k_item)
             ndate_dt = date_utils.dt_as_timezone(ndate_utc_dt, self.tz_hotel)
-            cavails.setdefault(self.hotel_vroom_budget.id, []).append({
+            cavails.setdefault(self.hotel_room_type_budget.id, []).append({
                 'date': ndate_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
                 'avail': v_item,
                 'no_ota': False,
@@ -274,16 +274,16 @@ class TestManagementCalendar(TestHotelCalendar):
             self.parity_restrictions_id,
             True)
 
-        for vroom in vrooms:
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['availability'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
                         self.assertEqual(v_info['avail'],
                                          avails[k_info],
                                          "Hotel Calendar Management \
                                                 Availability doesn't match!")
             for k_pr, v_pr in hcal_data['restrictions'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
                         self.assertEqual(v_info['min_stay'],
                                          restrictions['min_stay'][k_info],
@@ -319,7 +319,7 @@ class TestManagementCalendar(TestHotelCalendar):
                             "Hotel Calendar Management Restrictions \
                                                             doesn't match!")
             for k_pr, v_pr in hcal_data['prices'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
                         self.assertEqual(v_info['price'],
                                          prices[k_info], "Hotel Calendar \
@@ -328,7 +328,7 @@ class TestManagementCalendar(TestHotelCalendar):
     def test_calendar_reservations(self):
         now_utc_dt = date_utils.now()
         adv_utc_dt = now_utc_dt + timedelta(days=15)
-        vrooms = (self.hotel_vroom_budget,)
+        room_types = (self.hotel_room_type_budget,)
 
         hotel_cal_mngt_obj = self.env['hotel.calendar.management'].sudo(
                                                     self.user_hotel_manager)
@@ -352,9 +352,9 @@ class TestManagementCalendar(TestHotelCalendar):
             True)
 
         avail_end_utc_dt = reserv_end_utc_dt - timedelta(days=1)
-        for vroom in vrooms:
+        for room_type in room_types:
             for k_pr, v_pr in hcal_data['count_reservations'].iteritems():
-                if k_pr == vroom.id:    # Only Check Test Cases
+                if k_pr == room_type.id:    # Only Check Test Cases
                     for k_info, v_info in enumerate(v_pr):
                         ndate = date_utils.get_datetime(v_info['date'])
                         if date_utils.date_in(ndate,

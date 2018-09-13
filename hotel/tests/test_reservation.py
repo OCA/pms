@@ -232,7 +232,7 @@ class TestHotelReservations(TestHotel):
 
         # 5.0, 15.0, 15.0, 35.0, 35.0, 10.0, 10.0
 
-        vroom_prices = self.prices_tmp[self.hotel_room_double_200.price_room_type.id]
+        room_type_prices = self.prices_tmp[self.hotel_room_double_200.price_room_type.id]
         org_reserv_start_utc_dt = now_utc_dt + timedelta(days=1)
         org_reserv_end_utc_dt = org_reserv_start_utc_dt + timedelta(days=2)
         folio = self.create_folio(self.user_hotel_manager, self.partner_2)
@@ -246,7 +246,7 @@ class TestHotelReservations(TestHotel):
         ndate = org_reserv_start_utc_dt
         for r_k, r_v in enumerate(reservation.reservation_lines):
             self.assertEqual(r_v.date, ndate.strftime(DEFAULT_SERVER_DATE_FORMAT))
-            self.assertEqual(r_v.price, vroom_prices[r_k+1])
+            self.assertEqual(r_v.price, room_type_prices[r_k+1])
             ndate = ndate + timedelta(days=1)
         self.assertEqual(reservation.amount_room, 30.0)
         ndate = org_reserv_start_utc_dt + timedelta(days=1)
