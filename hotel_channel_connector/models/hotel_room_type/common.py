@@ -13,7 +13,7 @@ class ChannelHotelRoomType(models.Model):
     _inherits = {'hotel.room.type': 'odoo_id'}
     _description = 'Channel Hotel Room'
 
-    odoo_id = fields.Many2one(comodel_names='hotel.room.type',
+    odoo_id = fields.Many2one(comodel_name='hotel.room.type',
                               string='Room Type',
                               required=True,
                               ondelete='cascade')

@@ -12,7 +12,8 @@ from odoo.addons.hotel_channel_connector.components.backend_adapter import (
     WUBOOK_STATUS_REFUSED,
     WUBOOK_STATUS_ACCEPTED,
     WUBOOK_STATUS_CANCELLED,
-    WUBOOK_STATUS_CANCELLED_PENALTY)
+    WUBOOK_STATUS_CANCELLED_PENALTY,
+    WUBOOK_STATUS_BAD)
 
 class ChannelHotelReservation(models.Model):
     _name = 'channel.hotel.reservation'
@@ -20,7 +21,7 @@ class ChannelHotelReservation(models.Model):
     _inherits = {'hotel.reservation': 'odoo_id'}
     _description = 'Channel Hotel Reservation'
 
-    odoo_id = fields.Many2one(comodel_names='hotel.reservation',
+    odoo_id = fields.Many2one(comodel_name='hotel.reservation',
                               string='Reservation',
                               required=True,
                               ondelete='cascade')
@@ -88,6 +89,23 @@ class HotelReservation(models.Model):
             user = self.env['res.users'].browse(self.env.uid)
             record.able_to_modify_channel = user.has_group('base.group_system')
 
+    @api.depends('channel_type', 'channel_bind_ids.ota_id')
+    def _get_origin_sale(self):
+        for record in self:
+            if not record.channel_type:
+                record.channel_type = 'door'
+            record.origin_sale = dict(
+                self.fields_get(
+                    allfields=['channel_type'])['channel_type']['selection'])[record.channel_type] \
+                        if record.channel_type != 'web' or not record.channel_bind_ids[0].ota_id \
+                        else record.channel_bind_ids[0].ota_id.name
+
+    channel_bind_ids = fields.One2many(
+        comodel_name='channel.hotel.reservation',
+        inverse_name='odoo_id',
+        string='Hotel Channel Connector Bindings')
+    origin_sale = fields.Char('Origin', compute=_get_origin_sale,
+                              store=True)
     is_from_ota = fields.Boolean('Is From OTA',
                                  readonly=True,
                                  old_name='wis_from_channel')
@@ -97,24 +115,6 @@ class HotelReservation(models.Model):
     to_read = fields.Boolean('To Read', default=False)
     customer_notes = fields.Text(related='folio_id.customer_notes',
                                  old_name='wcustomer_notes')
-
-    @api.depends('channel_type', 'ota_id')
-    def _get_origin_sale(self):
-        for record in self:
-            if not record.channel_type:
-                record.channel_type = 'door'
-            record.origin_sale = dict(
-                self.fields_get(
-                    allfields=['channel_type'])['channel_type']['selection'])[record.channel_type] \
-                        if record.channel_type != 'web' or not record.ota_id \
-                        else record.ota_id.name
-
-    channel_bind_ids = fields.One2many(
-        comodel_name='channel.hotel.reservation',
-        inverse_name='odoo_id',
-        string='Hotel Channel Connector Bindings')
-    origin_sale = fields.Char('Origin', compute=_get_origin_sale,
-                              store=True)
 
     @api.model
     def create(self, vals):
@@ -203,11 +203,11 @@ class HotelReservation(models.Model):
 
         res = super(HotelReservation, self).action_cancel()
         if waction:
-            partner_id = self.env['res.users'].browse(self.env.uid).partner_id
             for record in self:
                 # Only can cancel reservations created directly in wubook
-                if record.channel_reservation_id and not record.ota_id and \
-                        record.wstatus in ['1', '2', '4']:
+                if record.channel_bind_ids[0].channel_reservation_id and \
+                        not record.channel_bind_ids[0].ota_id and \
+                        record.channel_bind_ids[0].wstatus in ['1', '2', '4']:
                     self._event('on_record_cancel').notify(record)
         return res
 

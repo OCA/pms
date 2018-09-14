@@ -32,8 +32,8 @@
         'views/inherited_reservation_restriction_views.xml',
         'views/inherited_reservation_restriction_item_views.xml',
         'views/inherited_res_partner_views.xml',
-        'views/wubook_channel_info_views.xml',
-        'views/wubook_issue_views.xml',
+        'views/hotel_channel_connector_ota_info_views.xml',
+        'views/hotel_channel_connector_issue_views.xml',
         'views/channel_hotel_reservation_views.xml',
         'views/channel_hotel_room_type_views.xml',
         'views/channel_hotel_room_type_availability_views.xml',
@@ -41,8 +41,8 @@
         'views/channel_product_pricelist_views.xml',
         'data/menus.xml',
         'data/sequences.xml',
-        'security/ir.model.access.csv',
-        'security/wubook_security.xml',
+        #'security/ir.model.access.csv',
+        #'security/wubook_security.xml',
         # 'views/res_config.xml'
     ],
     'test': [

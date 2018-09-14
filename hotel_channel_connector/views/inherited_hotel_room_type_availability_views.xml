@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- FORM availability -->
-	<record id="room_type_availability_view_form" model="ir.ui.view">
+    <record id="room_type_availability_view_form" model="ir.ui.view">
         <field name="model">hotel.room.type.availability</field>
         <field name="inherit_id" ref="hotel.room_type_availability_view_form" />
         <field name="arch" type="xml">
@@ -23,14 +23,15 @@
     </record>
 
     <!-- TREE restriction -->
-    <record id="room_type_availability_view_tree" model="ir.ui.view">
-      <field name="model">hotel.room.type.availability</field>
-      <field name="inherit_id" ref="hotel.room_type_availability_view_tree" />
-      <field name="type">tree</field>
-      <field name="arch" type="xml">
-        <!-- <xpath expr="//field[@name='avail']" position="after">
-            <field name="channel_max_avail" />
-        </xpath> -->
-      </field>
-    </record>
+    <!--record id="room_type_availability_view_tree" model="ir.ui.view">
+        <field name="model">hotel.room.type.availability</field>
+        <field name="inherit_id" ref="hotel.room_type_availability_view_tree" />
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='avail']" position="after">
+                <field name="channel_max_avail" />
+            </xpath>
+        </field>
+    </record-->
+
 </odoo>

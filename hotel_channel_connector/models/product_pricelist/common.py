@@ -13,7 +13,7 @@ class ChannelProductPricelist(models.Model):
     _inherits = {'product.pricelist': 'odoo_id'}
     _description = 'Channel Product Pricelist'
 
-    odoo_id = fields.Many2one(comodel_names='product.pricelist',
+    odoo_id = fields.Many2one(comodel_name='product.pricelist',
                               string='Pricelist',
                               required=True,
                               ondelete='cascade')

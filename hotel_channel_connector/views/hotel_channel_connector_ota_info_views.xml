@@ -21,7 +21,7 @@
         <!-- Tree view -->
         <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_tree">
             <field name="name">hotel.channel.connector.ota.info.tree</field>
-            <field name="model">hotel.channel.connector.ota.info.info</field>
+            <field name="model">hotel.channel.connector.ota.info</field>
             <field name="arch" type="xml">
                 <tree string="Channel OTA's Info">
                     <field name="ota_id" />

@@ -23,7 +23,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
             return self.odoo_id.room_type_id.total_rooms_count
         return -1
 
-    odoo_id = fields.Many2one(comodel_names='product.pricelist',
+    odoo_id = fields.Many2one(comodel_name='hotel.room.type.availability',
                               string='Pricelist',
                               required=True,
                               ondelete='cascade')

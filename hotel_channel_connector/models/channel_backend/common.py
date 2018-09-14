@@ -10,6 +10,17 @@ class ChannelBackend(models.Model):
     _description = 'Hotel Channel Backend'
     _inherit = 'connector.backend'
 
+    @api.model
+    def select_versions(self):
+        """ Available versions in the backend.
+        Can be inherited to add custom versions.  Using this method
+        to add a version from an ``_inherit`` does not constrain
+        to redefine the ``version`` field in the ``_inherit`` model.
+        """
+        return [('1.2', '1.2+')]
+
+    version = fields.Selection(selection='select_versions', required=True)
+
     username = fields.Char('Channel Service Username')
     passwd = fields.Char('Channel Service Password')
     lcode = fields.Char('Channel Service lcode')

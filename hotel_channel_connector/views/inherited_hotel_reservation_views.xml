@@ -6,9 +6,9 @@
         <field name="inherit_id" ref="hotel.view_hotel_reservation_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='channel_type']" position="after">
-                <field name="channel_reservation_id" attrs='{"readonly": [("able_to_modify_channel","=",False)], "invisible":[("channel_type","!=", "web")]}' string="OTA"/>
+                <!-- field name="channel_reservation_id" attrs='{"readonly": [("able_to_modify_channel","=",False)], "invisible":[("channel_type","!=", "web")]}' string="OTA"/-->
             </xpath>
-            <xpath expr="//field[@name='cardex_pending']" position="before">
+            <xpath expr="//field[@name='cardex_pending_count']" position="before">
                 <group colspan="6" col="6">
                     <field name="is_from_ota" readonly="True" invisible="True"/>
                 </group>
@@ -39,7 +39,8 @@
                 <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='room_type_id']" position="attributes">
-                <attribute name="attrs">{'readonly': [('channel_reservation_id','!=',False),('able_to_modify_channel','=',False)]}</attribute>
+                <!-- attribute name="attrs">{'readonly': [('channel_reservation_id','!=',False),('able_to_modify_channel','=',False)]}</attribute-->
+                <attribute name="attrs">{'readonly': [('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='children']" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
@@ -74,7 +75,7 @@
         <field name="inherit_id" ref="hotel.view_hotel_reservation_search" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='folio_id']" position="after">
-                <field name="wchannel_reservation_code"/>
+                <!-- field name="wchannel_reservation_code"/-->
             </xpath>
             <xpath expr="//group" position="inside">
                 <filter name="origin" string="Origin" domain="[]"

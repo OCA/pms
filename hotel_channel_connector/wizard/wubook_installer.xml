@@ -81,10 +81,10 @@
 		<field name="target">new</field>
 	</record>
 
-	<record id="wubook_configuration_installer_todo" model="ir.actions.todo">
+	<!--record id="wubook_configuration_installer_todo" model="ir.actions.todo">
 		<field name="action_id" ref="action_wubook_configuration_installer"/>
 		<field name="sequence">3</field>
 		<field name="type">automatic</field>
-	</record>
+	</record-->
 
 </odoo>

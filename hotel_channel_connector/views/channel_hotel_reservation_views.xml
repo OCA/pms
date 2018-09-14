@@ -8,7 +8,7 @@
             <form string="Hotel Channel Reservation">
                 <group>
                     <field name="channel_reservation_id" />
-                    <field name="ota_reservation_code" />
+                    <field name="ota_reservation_id" />
                     <field name="wstatus" />
                     <field name="wstatus_reason" />
                     <field name="to_read" />

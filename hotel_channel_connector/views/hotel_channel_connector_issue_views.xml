@@ -3,8 +3,8 @@
 
     <!-- FORM issue -->
     <record id="hotel_channel_connector_issue_view_form" model="ir.ui.view">
-        <field name="name">hotel.channel.coonector.issue.form</field>
-        <field name="model">hotel.channel.coonector.issue</field>
+        <field name="name">hotel.channel.connector.issue.form</field>
+        <field name="model">hotel.channel.connector.issue</field>
         <field name="arch" type="xml">
             <form string="Channel Connector Issue">
                 <sheet>
@@ -16,7 +16,7 @@
                             string="Mark as Readed"
                             groups="hotel.group_hotel_manager"
                             class="oe_stat_button" icon="fa-warning"
-                            attrs="{'invisible':['|', ['section', '!=', 'reservation'], ['wid', '=', False]]}"/>
+                            attrs="{'invisible':['|', ['section', '!=', 'reservation'], ['channel_object_id', '=', False]]}"/>
                         </div>
                         <group>
                             <field name="section"/>
@@ -37,8 +37,8 @@
 
         <!-- TREE issue -->
         <record id="hotel_channel_connector_issue_view_tree" model="ir.ui.view">
-            <field name="name">hotel.channel.coonector.issue.tree</field>
-            <field name="model">hotel.channel.coonector.issue</field>
+            <field name="name">hotel.channel.connector.issue.tree</field>
+            <field name="model">hotel.channel.connector.issue</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Channel Connector Issues">
@@ -54,8 +54,8 @@
 
         <!-- SEARCH issue -->
         <record id="view_hotel_channel_connector_issue_form_search" model="ir.ui.view">
-            <field name="name">hotel.channel.coonector.issue.search</field>
-            <field name="model">hotel.channel.coonector.issue</field>
+            <field name="name">hotel.channel.connector.issue.search</field>
+            <field name="model">hotel.channel.connector.issue</field>
             <field name="arch" type="xml">
                 <search string="Issues">
                     <field name="create_date"/>

@@ -16,7 +16,7 @@
 
     <record id="view_channel_hotel_room_type_restriction_tree" model="ir.ui.view">
         <field name="name">channel.hotel.room.type.restriction.tree</field>
-        <field name="model">channel.hotel.virtual.restriction.room</field>
+        <field name="model">channel.hotel.room.type.restriction</field>
         <field name="arch" type="xml">
             <tree string="Hotel Channel Room Restriction">
                 <field name="backend_id"/>

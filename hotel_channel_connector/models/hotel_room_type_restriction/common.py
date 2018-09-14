@@ -13,7 +13,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
     _inherits = {'hotel.room.type.restriction': 'odoo_id'}
     _description = 'Channel Hotel Room Type Restriction'
 
-    odoo_id = fields.Many2one(comodel_names='hotel.room.type.restriction',
+    odoo_id = fields.Many2one(comodel_name='hotel.room.type.restriction',
                               string='Hotel Virtual Room Restriction',
                               required=True,
                               ondelete='cascade')

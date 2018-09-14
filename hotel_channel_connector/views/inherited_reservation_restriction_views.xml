@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//form[1]//sheet" position="before">
                 <header>
-                    <button name="%(action_channel_import_plan_restrictions)d" string="Import Restrictions From Channel" type="action" class="oe_highlight" />
+                    <button name="%(action_wubook_import_plan_restrictions)d" string="Import Restrictions From Channel" type="action" class="oe_highlight" />
                 </header>
             </xpath>
         </field>

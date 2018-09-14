@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="product.product_pricelist_item_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="channel_pushed" readonly="True" />
+                <!--field name="channel_pushed" readonly="True" /-->
                 <field name="is_daily_plan" invisible="1" />
             </xpath>
             <xpath expr="//field[@name='date_end']" position="attributes">

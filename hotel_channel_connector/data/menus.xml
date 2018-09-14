@@ -3,7 +3,7 @@
 
 	<record model="ir.actions.act_window" id="open_hotel_channel_connector_ota_info_tree_all">
 		<field name="name">Hotel Channel Connector OTA's Info</field>
-		<field name="res_model">hotel_channel_connector_ota_info</field>
+		<field name="res_model">hotel.channel.connector.ota.info</field>
 		<field name="view_type">form</field>
 		<field name="view_mode">tree,form</field>
 	</record>

@@ -5,7 +5,7 @@ from openerp import models, fields, api
 from odoo.addons.queue_job.job import job
 
 class HotelChannelConnectorOTAInfo(models.Model):
-    _name = 'hote.channel.connector.ota.info'
+    _name = 'hotel.channel.connector.ota.info'
 
     ota_id = fields.Char("Channel OTA ID", required=True)
     name = fields.Char("OTA Name", required=True)
