@@ -8,7 +8,7 @@ class HotelConnectorModelBinder(Component):
     _inherit = ['base.binder', 'base.hotel.channel.connector']
     _apply_on = [
         'channel.hotel.reservation',
-        'channel.hotel.virtual.room',
+        'channel.hotel.room.type',
         'channel.hotel.room.type.availability',
         'channel.hotel.room.type.restriction',
         'channel.product.pricelist',

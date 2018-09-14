@@ -33,7 +33,7 @@ class TestProductPricelistItem(TestHotelWubook):
     def test_create(self):
         now_utc_dt = date_utils.now()
         day_utc_dt = now_utc_dt + timedelta(days=20)
-        budget_product_id = self.hotel_vroom_budget.product_id
+        budget_product_id = self.hotel_room_type_budget.product_id
         pr_item_obj = self.env['product.pricelist.item']
 
         parity_pricelist = self.env['product.pricelist'].browse([
@@ -54,7 +54,7 @@ class TestProductPricelistItem(TestHotelWubook):
     def test_write(self):
         now_utc_dt = date_utils.now()
         day_utc_dt = now_utc_dt + timedelta(days=20)
-        budget_product_id = self.hotel_vroom_budget.product_id
+        budget_product_id = self.hotel_room_type_budget.product_id
         pr_item_obj = self.env['product.pricelist.item']
 
         parity_pricelist = self.env['product.pricelist'].browse([

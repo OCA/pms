@@ -5,9 +5,8 @@ import os
 import binascii
 import logging
 from datetime import datetime, timedelta
-from openerp import models, fields, api, _
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
-from odoo.addons.hotel import date_utils
+from odoo import models, fields, api, _
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 _logger = logging.getLogger(__name__)
 
 
@@ -41,7 +40,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
     def resync(self):
         self.ensure_one()
 
-        now_utc_dt = date_utils.now()
+        now_utc_dt = fields.Date.now()
         now_utc_str = now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
         # Reset Issues
@@ -56,29 +55,29 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
         })
         if wubook_obj.init_connection():
             ir_seq_obj = self.env['ir.sequence']
-            vrooms = self.env['hotel.room.type'].search([])
-            for vroom in vrooms:
+            room_types = self.env['hotel.room.type'].search([])
+            for room_type in room_types:
                 shortcode = ir_seq_obj.next_by_code('hotel.room.type')[:4]
                 channel_room_id = wubook_obj.create_room(
                     shortcode,
-                    vroom.name,
-                    vroom.wcapacity,
-                    vroom.list_price,
-                    vroom.max_real_rooms
+                    room_type.name,
+                    room_type.wcapacity,
+                    room_type.list_price,
+                    room_type.total_rooms_count
                 )
                 if channel_room_id:
-                    vroom.with_context(wubook_action=False).write({
+                    room_type.with_context(wubook_action=False).write({
                         'channel_room_id': channel_room_id,
                         'wscode': shortcode,
                     })
                 else:
-                    vroom.with_context(wubook_action=False).write({
+                    room_type.with_context(wubook_action=False).write({
                         'channel_room_id': '',
                         'wscode': '',
                     })
             # Create Restrictions
-            vroom_rest_obj = self.env['hotel.room.type.restriction']
-            restriction_ids = vroom_rest_obj.search([])
+            room_type_rest_obj = self.env['hotel.room.type.restriction']
+            restriction_ids = room_type_rest_obj.search([])
             for restriction in restriction_ids:
                 if restriction.wpid != '0':
                     channel_plan_id = wubook_obj.create_rplan(restriction.name)
@@ -88,7 +87,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
             # Create Pricelist
             pricelist_ids = self.env['product.pricelist'].search([])
             for pricelist in pricelist_ids:
-                channel_plan_id = wubook_obj.create_plan(pricelist.name, pricelist.wdaily)
+                channel_plan_id = wubook_obj.create_plan(pricelist.name, pricelist.is_daily_plan)
                 pricelist.write({
                     'channel_plan_id': channel_plan_id or ''
                 })
@@ -115,13 +114,13 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
 
         # Get Parity Models
         pricelist_id = int(self.env['ir.default'].sudo().get(
-                            'res.config.settings', 'parity_pricelist_id'))
+            'res.config.settings', 'parity_pricelist_id'))
         restriction_id = int(self.env['ir.default'].sudo().get(
-                            'res.config.settings', 'parity_restrictions_id'))
+            'res.config.settings', 'parity_restrictions_id'))
 
-        vroom_restr_it_obj = self.env['hotel.room.type.restriction.item']
+        room_type_restr_it_obj = self.env['hotel.room.type.restriction.item']
         # Secure Wubook Input
-        restriction_item_ids = vroom_restr_it_obj.search([
+        restriction_item_ids = room_type_restr_it_obj.search([
             ('applied_on', '=', '0_room_type'),
             ('date_start', '<', now_utc_str),
         ])
@@ -130,7 +129,7 @@ class HotelChannelConnectorConfiguration(models.TransientModel):
                 'wpushed': True
             })
         # Put to push restrictions
-        restriction_item_ids = vroom_restr_it_obj.search([
+        restriction_item_ids = room_type_restr_it_obj.search([
             ('restriction_id', '=', restriction_id),
             ('applied_on', '=', '0_room_type'),
             ('wpushed', '=', True),

@@ -45,7 +45,7 @@ class TestResPartner(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_budget.wrid: {
+                    self.hotel_room_type_budget.wrid: {
                         'occupancy': [1],
                         'dayprices': [15.0, 15.0]
                     }
@@ -56,7 +56,7 @@ class TestResPartner(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_1,
                 {
-                    self.hotel_vroom_budget.wrid: {
+                    self.hotel_room_type_budget.wrid: {
                         'occupancy': [1],
                         'dayprices': [15.0, 15.0]
                     }

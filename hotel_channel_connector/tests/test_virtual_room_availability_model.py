@@ -32,9 +32,9 @@ class TestVirtualRoomAvailability(TestHotelWubook):
     def test_write(self):
         now_utc_dt = date_utils.now()
         day_utc_dt = now_utc_dt + timedelta(days=1)
-        vroom_avail_obj = self.env['hotel.room.type.availability']
-        avail = vroom_avail_obj.search([
-            ('room_type_id', '=', self.hotel_vroom_budget.id),
+        room_type_avail_obj = self.env['hotel.room.type.availability']
+        avail = room_type_avail_obj.search([
+            ('room_type_id', '=', self.hotel_room_type_budget.id),
             ('date', '=', now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         ], limit=1)
         avail.write({

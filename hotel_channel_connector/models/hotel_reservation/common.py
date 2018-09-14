@@ -1,7 +1,8 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, models, fields
+from odoo import api, models, fields, _
+from odoo.exceptions import ValidationError, UserError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
@@ -45,9 +46,13 @@ class ChannelHotelReservation(models.Model):
                                default='0',
                                readonly=True)
     wstatus_reason = fields.Char("WuBook Status Reason", readonly=True)
-    customer_notes = fields.Text(related='folio_id.customer_notes',
-                                 old_name='wcustomer_notes')
     wmodified = fields.Boolean("WuBook Modified", readonly=True, default=False)
+
+    @api.depends('channel_reservation_id', 'ota_id')
+    def _is_from_ota(self):
+        for record in self:
+            record.odoo_id.is_from_ota = (record.channel_reservation_id and \
+                                          record.ota_id)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
@@ -77,26 +82,21 @@ class ChannelHotelReservation(models.Model):
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
-    @api.depends('channel_bind_ids.channel_reservation_id', 'channel_bind_ids.ota_id')
-    def _is_from_ota(self):
-        for record in self:
-            record.is_from_ota = (record.channel_bind_ids.channel_reservation_id and \
-                                  record.channel_bind_ids.ota_id)
-
     @api.multi
     def _set_access_for_wubook_fields(self):
-        for rec in self:
+        for record in self:
             user = self.env['res.users'].browse(self.env.uid)
-            rec.able_to_modify_channel = user.has_group('base.group_system')
+            record.able_to_modify_channel = user.has_group('base.group_system')
 
     is_from_ota = fields.Boolean('Is From OTA',
-                                 compute=_is_from_ota, store=False,
                                  readonly=True,
                                  old_name='wis_from_channel')
     able_to_modify_channel = fields.Boolean(compute=_set_access_for_wubook_fields,
                                             string='Is user able to modify wubook fields?',
                                             old_name='able_to_modify_wubook')
     to_read = fields.Boolean('To Read', default=False)
+    customer_notes = fields.Text(related='folio_id.customer_notes',
+                                 old_name='wcustomer_notes')
 
     @api.depends('channel_type', 'ota_id')
     def _get_origin_sale(self):
@@ -133,7 +133,6 @@ class HotelReservation(models.Model):
     @api.multi
     def write(self, vals):
         if self._context.get('wubook_action', True) and \
-                self.env['wubook'].is_valid_account() and \
                 (vals.get('checkin') or vals.get('checkout') or
                  vals.get('product_id') or vals.get('state')):
             older_vals = []
@@ -155,13 +154,13 @@ class HotelReservation(models.Model):
 
             res = super(HotelReservation, self).write(vals)
 
-            vroom_avail_obj = self.env['hotel.room.type.availability']
+            room_type_avail_obj = self.env['hotel.room.type.availability']
             for i in range(0, len(older_vals)):
-                vroom_avail_obj.refresh_availability(
+                room_type_avail_obj.refresh_availability(
                     older_vals[i]['checkin'],
                     older_vals[i]['checkout'],
                     older_vals[i]['product_id'])
-                vroom_avail_obj.refresh_availability(
+                room_type_avail_obj.refresh_availability(
                     new_vals[i]['checkin'],
                     new_vals[i]['checkout'],
                     new_vals[i]['product_id'])
@@ -181,11 +180,10 @@ class HotelReservation(models.Model):
                 'product_id': record.product_id.id,
             })
         res = super(HotelReservation, self).unlink()
-        if self._context.get('wubook_action', True) and \
-                self.env['wubook'].is_valid_account():
-            vroom_avail_obj = self.env['hotel.room.type.availability']
+        if self._context.get('wubook_action', True):
+            room_type_avail_obj = self.env['hotel.room.type.availability']
             for record in vals:
-                vroom_avail_obj.refresh_availability(
+                room_type_avail_obj.refresh_availability(
                     record['checkin'],
                     record['checkout'],
                     record['product_id'])
@@ -204,7 +202,7 @@ class HotelReservation(models.Model):
             self.write({'to_read': True, 'to_assign': True})
 
         res = super(HotelReservation, self).action_cancel()
-        if waction and self.env['wubook'].is_valid_account():
+        if waction:
             partner_id = self.env['res.users'].browse(self.env.uid).partner_id
             for record in self:
                 # Only can cancel reservations created directly in wubook

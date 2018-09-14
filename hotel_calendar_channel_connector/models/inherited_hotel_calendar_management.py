@@ -7,9 +7,9 @@ class HotelCalendarManagement(models.TransientModel):
     _inherit = 'hotel.calendar.management'
 
     @api.model
-    def _get_availability_values(self, avail, vroom):
+    def _get_availability_values(self, avail, room_type):
         vals = super(HotelCalendarManagement, self)._get_availability_values(
-                                                                avail, vroom)
+            avail, room_type)
         vals.update({'wmax_avail': vals['avail']})
         return vals
 

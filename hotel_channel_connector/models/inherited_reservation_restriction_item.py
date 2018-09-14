@@ -7,7 +7,7 @@ from openerp import models, fields, api
 class ReservationRestrictionItem(models.Model):
     _inherit = 'hotel.room.type.restriction.item'
 
-    channel_pushed = fields.Boolean("WuBook Pushed", default=False, readonly=True,
+    channel_pushed = fields.Boolean("Channel Pushed", default=False, readonly=True,
                                     old_name='wpushed')
 
     @api.onchange('date_start')

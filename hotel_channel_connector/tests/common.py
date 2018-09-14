@@ -123,10 +123,10 @@ class TestHotelWubook(TestHotel):
         rooms = []
         rooms_occu = []
         booked_rooms = []
-        vroom_obj = self.env['hotel.room.type']
+        room_type_obj = self.env['hotel.room.type']
         max_persons = 0
         for k_room, v_room in rinfo.iteritems():
-            vroom = vroom_obj.search([
+            room_type = room_type_obj.search([
                 ('wrid', '=', k_room)
             ], limit=1)
             # Generate Rooms
@@ -152,7 +152,7 @@ class TestHotelWubook(TestHotel):
                 booked_rooms.append({
                     'ancillary': {
                         'channel_room_id': 1,
-                        'channel_room_name': vroom.name,
+                        'channel_room_name': room_type.name,
                         'addons': [],
                         'guests': val
                     },
@@ -240,20 +240,20 @@ class TestHotelWubook(TestHotel):
         super(TestHotelWubook, cls).setUpClass()
 
         # Update Test Virtual Rooms
-        cls.hotel_vroom_budget.write({
+        cls.hotel_room_type_budget.write({
             'wcapacity': 1,
             'wrid': 3000,
             'wscode': 'T001',
         })
-        cls.hotel_vroom_special.write({
+        cls.hotel_room_type_special.write({
             'wcapacity': 2,
             'wrid': 3001,
             'wscode': 'T002',
         })
 
         # Update Restriction
-        vroom_restr_obj = cls.env['hotel.room.type.restriction']
-        default_restriction = vroom_restr_obj.search([
+        room_type_restr_obj = cls.env['hotel.room.type.restriction']
+        default_restriction = room_type_restr_obj.search([
             ('wpid', '=', '0')
         ], limit=1)
         if default_restriction:

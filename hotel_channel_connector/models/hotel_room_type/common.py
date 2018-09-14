@@ -1,7 +1,8 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, models, fields
+from odoo import api, models, fields, _
+from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
@@ -11,12 +12,6 @@ class ChannelHotelRoomType(models.Model):
     _inherit = 'channel.binding'
     _inherits = {'hotel.room.type': 'odoo_id'}
     _description = 'Channel Hotel Room'
-
-    @api.depends('ota_capacity')
-    @api.onchange('room_ids', 'room_type_ids')
-    def _get_capacity(self):
-        for rec in self:
-            rec.ota_capacity = rec.get_capacity()
 
     odoo_id = fields.Many2one(comodel_names='hotel.room.type',
                               string='Room Type',
@@ -55,7 +50,7 @@ class ChannelHotelRoomType(models.Model):
                         self.name,
                         self.ota_capacity,
                         self.list_price,
-                        self.max_real_rooms)
+                        self.total_rooms_count)
                     if channel_room_id:
                         self.write({
                             'channel_room_id': channel_room_id,
@@ -78,7 +73,7 @@ class ChannelHotelRoomType(models.Model):
                         self.name,
                         self.ota_capacity,
                         self.list_price,
-                        self.max_real_rooms,
+                        self.total_rooms_count,
                         self.channel_short_code)
                 except ValidationError as e:
                     self.create_issue('room', "Can't modify room on channel", "sss")
@@ -112,6 +107,10 @@ class HotelRoomType(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
+    @api.onchange('room_ids')
+    def _get_capacity(self):
+        for rec in self:
+            rec.channel_bind_ids.ota_capacity = rec.get_capacity()
 
     @api.multi
     def get_restrictions(self, date):

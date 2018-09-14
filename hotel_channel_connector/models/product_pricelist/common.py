@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, fields
+from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
@@ -82,13 +83,15 @@ class ProductPricelist(models.Model):
     @api.multi
     @api.depends('name')
     def name_get(self):
+        self.ensure_one()
         pricelist_obj = self.env['product.pricelist']
         org_names = super(ProductPricelist, self).name_get()
         names = []
         for name in org_names:
             priclist_id = pricelist_obj.browse(name[0])
-            if priclist_id.wpid:
-                names.append((name[0], '%s (WuBook)' % name[1]))
+            if any(priclist_id.channel_bind_ids) and \
+                    priclist_id.channel_bind_ids[0].channel_plan_id:
+                names.append((name[0], '%s (Channel)' % name[1]))
             else:
                 names.append((name[0], name[1]))
         return names
@@ -99,7 +102,7 @@ class ChannelBindingProductPricelistListener(Component):
     _apply_on = ['channel.product.pricelist']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_write(self, record, fields=None):
+    def on_record_create(self, record, fields=None):
         record.with_delay(priority=20).create_plan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))

@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, fields
+from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
@@ -43,9 +44,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
             with self.backend_id.work_on(self._name) as work:
                 adapter = work.component(usage='backend.adapter')
                 try:
-                    adapter.rename_rplan(
-                        self.channel_plan_id,
-                        self.name)
+                    adapter.rename_rplan(self.channel_plan_id, self.name)
                 except ValidationError as e:
                     self.create_issue('room', "Can't update restriction plan name on channel", "sss")
 
@@ -81,12 +80,12 @@ class HotelRoomTypeRestriction(models.Model):
     @api.multi
     @api.depends('name')
     def name_get(self):
-        vroom_restriction_obj = self.env['hotel.room.type.restriction']
-        org_names = super(HotelVirtualRoomRestriction, self).name_get()
+        room_type_restriction_obj = self.env['hotel.room.type.restriction']
+        org_names = super(HotelRoomTypeRestriction, self).name_get()
         names = []
         for name in org_names:
-            restriction_id = vroom_restriction_obj.browse(name[0])
-            if restriction_id.wpid:
+            restriction_id = room_type_restriction_obj.browse(name[0])
+            if restriction_id.channel_bind_ids.channel_plan_id:
                 names.append((name[0], '%s (WuBook)' % name[1]))
             else:
                 names.append((name[0], name[1]))
@@ -98,7 +97,7 @@ class ChannelBindingHotelRoomTypeRestrictionListener(Component):
     _apply_on = ['channel.hotel.room.type.restriction']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_write(self, record, fields=None):
+    def on_record_create(self, record, fields=None):
         record.with_delay(priority=20).create_plan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))

@@ -45,7 +45,7 @@ class TestHotelReservation(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1],   # 1 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -82,7 +82,7 @@ class TestHotelReservation(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1],   # 1 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -122,7 +122,7 @@ class TestHotelReservation(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1],   # 1 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -158,7 +158,7 @@ class TestHotelReservation(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1],   # 1 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }

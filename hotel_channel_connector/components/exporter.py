@@ -23,34 +23,34 @@ class HotelChannelConnectorExporter(AbstractComponent):
 
     @api.model
     def push_availability(self):
-        vroom_avail_ids = self.env['hotel.room.type.availability'].search([
+        room_type_avail_ids = self.env['hotel.room.type.availability'].search([
             ('wpushed', '=', False),
             ('date', '>=', date_utils.now(hours=False).strftime(
                 DEFAULT_SERVER_DATE_FORMAT))
         ])
 
-        vrooms = vroom_avail_ids.mapped('room_type_id')
+        room_types = room_type_avail_ids.mapped('room_type_id')
         avails = []
-        for vroom in vrooms:
-            vroom_avails = vroom_avail_ids.filtered(
-                lambda x: x.room_type_id.id == vroom.id)
+        for room_type in room_types:
+            room_type_avails = room_type_avail_ids.filtered(
+                lambda x: x.room_type_id.id == room_type.id)
             days = []
-            for vroom_avail in vroom_avails:
-                vroom_avail.with_context({
+            for room_type_avail in room_type_avails:
+                room_type_avail.with_context({
                     'wubook_action': False}).write({'wpushed': True})
-                wavail = vroom_avail.avail
-                if wavail > vroom_avail.wmax_avail:
-                    wavail = vroom_avail.wmax_avail
+                wavail = room_type_avail.avail
+                if wavail > room_type_avail.wmax_avail:
+                    wavail = room_type_avail.wmax_avail
                 date_dt = date_utils.get_datetime(
-                    vroom_avail.date,
+                    room_type_avail.date,
                     dtformat=DEFAULT_SERVER_DATE_FORMAT)
                 days.append({
                     'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
                     'avail': wavail,
-                    'no_ota': vroom_avail.no_ota and 1 or 0,
-                    # 'booked': vroom_avail.booked and 1 or 0,
+                    'no_ota': room_type_avail.no_ota and 1 or 0,
+                    # 'booked': room_type_avail.booked and 1 or 0,
                 })
-            avails.append({'id': vroom.wrid, 'days': days})
+            avails.append({'id': room_type.wrid, 'days': days})
         _logger.info("UPDATING AVAILABILITY IN WUBOOK...")
         _logger.info(avails)
         if any(avails):
@@ -84,19 +84,19 @@ class HotelChannelConnectorExporter(AbstractComponent):
                     [('wpushed', '=', False), ('pricelist_id', '=', pr.id)])
                 product_tmpl_ids = unpushed_pl.mapped('product_tmpl_id')
                 for pt_id in product_tmpl_ids:
-                    vroom = self.env['hotel.room.type'].search([
+                    room_type = self.env['hotel.room.type'].search([
                         ('product_id.product_tmpl_id', '=', pt_id.id)
                     ], limit=1)
-                    if vroom:
-                        prices[pr.wpid].update({vroom.wrid: []})
+                    if room_type:
+                        prices[pr.wpid].update({room_type.wrid: []})
                         for i in range(0, days_diff):
-                            prod = vroom.product_id.with_context({
+                            prod = room_type.product_id.with_context({
                                 'quantity': 1,
                                 'pricelist': pr.id,
                                 'date': (date_start + timedelta(days=i)).
                                         strftime(DEFAULT_SERVER_DATE_FORMAT),
                                 })
-                            prices[pr.wpid][vroom.wrid].append(prod.price)
+                            prices[pr.wpid][room_type.wrid].append(prod.price)
             _logger.info("UPDATING PRICES IN WUBOOK...")
             _logger.info(prices)
             for k_pk, v_pk in prices.iteritems():
@@ -110,7 +110,7 @@ class HotelChannelConnectorExporter(AbstractComponent):
 
     @api.model
     def push_restrictions(self):
-        vroom_rest_obj = self.env['hotel.room.type.restriction']
+        room_type_rest_obj = self.env['hotel.room.type.restriction']
         rest_item_obj = self.env['hotel.room.type.restriction.item']
         unpushed = rest_item_obj.search([
             ('wpushed', '=', False),
@@ -129,7 +129,7 @@ class HotelChannelConnectorExporter(AbstractComponent):
                 date_end,
                 hours=False) + 1
             restrictions = {}
-            restriction_plan_ids = vroom_rest_obj.search([
+            restriction_plan_ids = room_type_rest_obj.search([
                 ('wpid', '!=', False),
                 ('active', '=', True)
             ])
@@ -140,14 +140,14 @@ class HotelChannelConnectorExporter(AbstractComponent):
                     ('restriction_id', '=', rp.id)
                 ])
                 room_type_ids = unpushed_rp.mapped('room_type_id')
-                for vroom in room_type_ids:
-                    restrictions[rp.wpid].update({vroom.wrid: []})
+                for room_type in room_type_ids:
+                    restrictions[rp.wpid].update({room_type.wrid: []})
                     for i in range(0, days_diff):
                         ndate_dt = date_start + timedelta(days=i)
-                        restr = vroom.get_restrictions(
+                        restr = room_type.get_restrictions(
                             ndate_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
                         if restr:
-                            restrictions[rp.wpid][vroom.wrid].append({
+                            restrictions[rp.wpid][room_type.wrid].append({
                                 'min_stay': restr.min_stay or 0,
                                 'min_stay_arrival': restr.min_stay_arrival or 0,
                                 'max_stay': restr.max_stay or 0,
@@ -157,7 +157,7 @@ class HotelChannelConnectorExporter(AbstractComponent):
                                 'closed_departure': restr.closed_departure and 1 or 0,
                             })
                         else:
-                            restrictions[rp.wpid][vroom.wrid].append({})
+                            restrictions[rp.wpid][room_type.wrid].append({})
             _logger.info("UPDATING RESTRICTIONS IN WUBOOK...")
             _logger.info(restrictions)
             for k_res, v_res in restrictions.iteritems():

@@ -28,9 +28,9 @@ class MassiveChangesWizard(models.TransientModel):
     _inherit = 'hotel.wizard.massive.changes'
 
     @api.model
-    def _get_availability_values(self, ndate, vroom, record):
+    def _get_availability_values(self, ndate, room_type, record):
         vals = super(MassiveChangesWizard, self)._get_availability_values(
-            ndate, vroom, record)
+            ndate, room_type, record)
         vals.update({
             'wmax_avail': vals['avail']
         })

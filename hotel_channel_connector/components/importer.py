@@ -16,10 +16,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
     _usage = 'channel.importer'
 
     @api.model
-    def _get_room_values_availability(self, vroom_id, date_str, day_vals, set_max_avail):
+    def _get_room_values_availability(self, room_type_id, date_str, day_vals, set_max_avail):
         room_type_avail_obj = self.env['hotel.room.type.availability']
-        vroom_avail = room_type_avail_obj.search([
-            ('room_type_id', '=', vroom_id),
+        room_type_avail = room_type_avail_obj.search([
+            ('room_type_id', '=', room_type_id),
             ('date', '=', date_str)
         ], limit=1)
         vals = {
@@ -30,13 +30,13 @@ class HotelChannelConnectorImporter(AbstractComponent):
         }
         if set_wmax_avail:
             vals.update({'wmax_avail': day_vals.get('avail', 0)})
-        if vroom_avail:
-            vroom_avail.with_context({
+        if room_type_avail:
+            room_type_avail.with_context({
                 'wubook_action': False,
             }).write(vals)
         else:
             vals.update({
-                'room_type_id': vroom_id,
+                'room_type_id': room_type_id,
                 'date': date_str,
             })
             room_type_avail_obj.with_context({
@@ -45,10 +45,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
             }).create(vals)
 
     @api.model
-    def _get_room_values_restrictions(self, restriction_plan_id, vroom_id, date_str, day_vals):
-        vroom_restr_item_obj = self.env['hotel.room.type.restriction.item']
-        vroom_restr = vroom_restr_item_obj.search([
-            ('room_type_id', '=', vroom_id),
+    def _get_room_values_restrictions(self, restriction_plan_id, room_type_id, date_str, day_vals):
+        room_type_restr_item_obj = self.env['hotel.room.type.restriction.item']
+        room_type_restr = room_type_restr_item_obj.search([
+            ('room_type_id', '=', room_type_id),
             ('applied_on', '=', '0_room_type'),
             ('date_start', '=', date_str),
             ('date_end', '=', date_str),
@@ -72,19 +72,19 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 False)),
             'wpushed': True,
         }
-        if vroom_restr:
-            vroom_restr.with_context({
+        if room_type_restr:
+            room_type_restr.with_context({
                 'wubook_action': False,
             }).write(vals)
         else:
             vals.update({
                 'restriction_id': restriction_plan_id,
-                'room_type_id': vroom_id,
+                'room_type_id': room_type_id,
                 'date_start': date_str,
                 'date_end': date_str,
                 'applied_on': '0_room_type',
             })
-            vroom_restr_item_obj.with_context({
+            room_type_restr_item_obj.with_context({
                 'wubook_action': False,
             }).create(vals)
 
@@ -96,24 +96,24 @@ class HotelChannelConnectorImporter(AbstractComponent):
         _logger.info("==== ROOM VALUES (%s -- %s)", dfrom, dto)
         _logger.info(values)
         for k_rid, v_rid in values.iteritems():
-            vroom = hotel_room_type_obj.search([
+            room_type = hotel_room_type_obj.search([
                 ('wrid', '=', k_rid)
             ], limit=1)
-            if vroom:
+            if room_type:
                 date_dt = date_utils.get_datetime(
                     dfrom,
                     dtformat=DEFAULT_WUBOOK_DATE_FORMAT)
                 for day_vals in v_rid:
                     date_str = date_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
                     self._get_room_values_availability(
-                        vroom.id,
+                        room_type.id,
                         date_str,
                         day_vals,
                         set_max_avail)
                     if def_restr_plan:
                         self._get_room_values_restrictions(
                             def_restr_plan.id,
-                            vroom.id,
+                            room_type.id,
                             date_str,
                             day_vals)
                     date_dt = date_dt + timedelta(days=1)
@@ -122,7 +122,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
     @api.model
     def _generate_booking_vals(self, broom, checkin_str, checkout_str,
                                is_cancellation, wchannel_info, wstatus, crcode,
-                               rcode, vroom, split_booking, dates_checkin,
+                               rcode, room_type, split_booking, dates_checkin,
                                dates_checkout, book):
         # Generate Reservation Day Lines
         reservation_line_ids = []
@@ -142,7 +142,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                     'price': brday['price']
                 }))
                 tprice += brday['price']
-        persons = vroom.wcapacity
+        persons = room_type.wcapacity
         if 'ancillary' in broom and 'guests' in broom['ancillary']:
             persons = broom['ancillary']['guests']
         vals = {
@@ -159,7 +159,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
             'wstatus': wstatus,
             'to_read': True,
             'state': is_cancellation and 'cancelled' or 'draft',
-            'room_type_id': vroom.id,
+            'room_type_id': room_type.id,
             'splitted': split_booking,
             'wbook_json': json.dumps(book),
             'wmodified': book['was_modified']
@@ -203,7 +203,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
         res_partner_obj = self.env['res.partner']
         hotel_reserv_obj = self.env['hotel.reservation']
         hotel_folio_obj = self.env['hotel.folio']
-        hotel_vroom_obj = self.env['hotel.room.type']
+        hotel_room_type_obj = self.env['hotel.room.type']
         # Space for store some data for construct folios
         processed_rids = []
         failed_reservations = []
@@ -319,13 +319,13 @@ class HotelChannelConnectorImporter(AbstractComponent):
             used_rooms = []
             # Iterate booked rooms
             for broom in book['booked_rooms']:
-                vroom = hotel_vroom_obj.search([
+                room_type = hotel_room_type_obj.search([
                     ('wrid', '=', broom['room_id'])
                 ], limit=1)
-                if not vroom:
+                if not room_type:
                     self.create_channel_connector_issue(
                         'reservation',
-                        "Can't found any virtual room associated to '%s' \
+                        "Can't found any room type associated to '%s' \
                                                 in this hotel" % book['rooms'],
                         '', wid=book['reservation_code'])
                     failed_reservations.append(crcode)
@@ -350,7 +350,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                         bstatus,
                         crcode,
                         rcode,
-                        vroom,
+                        room_type,
                         split_booking,
                         dates_checkin,
                         dates_checkout,
@@ -362,10 +362,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             "Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
                             '', wid=book['reservation_code'])
 
-                    free_rooms = hotel_vroom_obj.check_availability_room(
+                    free_rooms = hotel_room_type_obj.check_availability_room(
                         checkin_str,
                         checkout_str,
-                        room_type_id=vroom.id,
+                        room_type_id=room_type.id,
                         notthis=used_rooms)
                     if any(free_rooms):
                         vals.update({
@@ -407,7 +407,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                 bstatus,
                                 crcode,
                                 rcode,
-                                vroom,
+                                room_type,
                                 False,
                                 (checkin_utc_dt, False),
                                 (checkout_utc_dt, False),
@@ -415,8 +415,8 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             )
                             vals.update({
                                 'product_id':
-                                    vroom.room_ids[0].product_id.id,
-                                'name': vroom.name,
+                                    room_type.room_ids[0].product_id.id,
+                                'name': room_type.name,
                                 'overbooking': True,
                             })
                             reservations.append((0, False, vals))
@@ -497,7 +497,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
             vals = {
                 'name': plan['name'],
-                'wdaily': plan['daily'] == 1,
+                'is_daily_plan': plan['daily'] == 1,
             }
             plan_id = product_listprice_obj.search([
                 ('wpid', '=', str(plan['id']))
@@ -527,10 +527,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
             for i in range(0, days_diff):
                 ndate_dt = dfrom_dt + timedelta(days=i)
                 for k_rid, v_rid in plan_prices.iteritems():
-                    vroom = hotel_room_type_obj.search([
+                    room_type = hotel_room_type_obj.search([
                         ('wrid', '=', k_rid)
                     ], limit=1)
-                    if vroom:
+                    if room_type:
                         pricelist_item = pricelist_item_obj.search([
                             ('pricelist_id', '=', pricelist.id),
                             ('date_start', '=', ndate_dt.strftime(
@@ -539,7 +539,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                 DEFAULT_SERVER_DATE_FORMAT)),
                             ('compute_price', '=', 'fixed'),
                             ('applied_on', '=', '1_product'),
-                            ('product_tmpl_id', '=', vroom.product_id.product_tmpl_id.id)
+                            ('product_tmpl_id', '=', room_type.product_id.product_tmpl_id.id)
                         ], limit=1)
                         vals = {
                             'fixed_price': plan_prices[k_rid][i],
@@ -557,7 +557,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                     DEFAULT_SERVER_DATE_FORMAT),
                                 'compute_price': 'fixed',
                                 'applied_on': '1_product',
-                                'product_tmpl_id': vroom.product_id.product_tmpl_id.id
+                                'product_tmpl_id': room_type.product_id.product_tmpl_id.id
                             })
                             pricelist_item_obj.with_context({
                                 'wubook_action': False}).create(vals)
@@ -600,10 +600,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
             ], limit=1)
             if restriction_id:
                 for k_rid, v_rid in v_rpid.iteritems():
-                    vroom = hotel_room_type_obj.search([
+                    room_type = hotel_room_type_obj.search([
                         ('wrid', '=', k_rid)
                     ], limit=1)
-                    if vroom:
+                    if room_type:
                         for item in v_rid:
                             date_dt = date_utils.get_datetime(
                                 item['date'],
@@ -615,7 +615,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                 ('date_end', '=', date_dt.strftime(
                                     DEFAULT_SERVER_DATE_FORMAT)),
                                 ('applied_on', '=', '0_room_type'),
-                                ('room_type_id', '=', vroom.id)
+                                ('room_type_id', '=', room_type.id)
                             ], limit=1)
                             vals = {
                                 'closed_arrival': item['closed_arrival'],
@@ -638,7 +638,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                     'date_end': date_dt.strftime(
                                         DEFAULT_SERVER_DATE_FORMAT),
                                     'applied_on': '0_room_type',
-                                    'room_type_id': vroom.id
+                                    'room_type_id': room_type.id
                                 })
                                 restriction_item_obj.with_context({
                                     'wubook_action': False}).create(vals)
@@ -673,7 +673,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
         try:
             results = self.backend_adapter.fetch_rooms()
 
-            vroom_obj = self.env['hotel.room.type']
+            room_type_obj = self.env['hotel.room.type']
             count = len(results)
             for room in results:
                 vals = {
@@ -684,11 +684,11 @@ class HotelChannelConnectorImporter(AbstractComponent):
                     'wcapacity': room['occupancy'],
                     # 'max_real_rooms': room['availability'],
                 }
-                vroom = vroom_obj.search([('wrid', '=', room['id'])], limit=1)
-                if vroom:
-                    vroom.with_context({'wubook_action': False}).write(vals)
+                room_type = room_type_obj.search([('wrid', '=', room['id'])], limit=1)
+                if room_type:
+                    room_type.with_context({'wubook_action': False}).write(vals)
                 else:
-                    vroom_obj.with_context({'wubook_action': False}).create(vals)
+                    room_type_obj.with_context({'wubook_action': False}).create(vals)
         except ValidationError:
             self.create_issue('room', _("Can't import rooms from WuBook"), results)
 

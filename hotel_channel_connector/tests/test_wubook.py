@@ -49,7 +49,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1],   # 1 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -105,7 +105,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1, 1],   # 2 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -162,7 +162,7 @@ class TestWubook(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_special.wrid: {
+                    self.hotel_room_type_special.wrid: {
                         'occupancy': [2],   # 2 Reservation Line
                         'dayprices': [15.0, 15.0]   # 2 Days
                     }
@@ -174,7 +174,7 @@ class TestWubook(TestHotelWubook):
                                             DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_special.wrid: {
+                    self.hotel_room_type_special.wrid: {
                         'occupancy': [2],   # 2 Reservation Line
                         'dayprices': [15.0, 15.0]   # 2 Days
                     }
@@ -186,7 +186,7 @@ class TestWubook(TestHotelWubook):
                                             DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_special.wrid: {
+                    self.hotel_room_type_special.wrid: {
                         'occupancy': [2],   # 2 Reservation Line
                         'dayprices': [15.0, 15.0]   # 2 Days
                     }
@@ -222,7 +222,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_special.wrid: {
+                self.hotel_room_type_special.wrid: {
                     'occupancy': [2],   # 2 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -253,7 +253,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_special.wrid: {
+                self.hotel_room_type_special.wrid: {
                     'occupancy': [2],   # 2 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -280,7 +280,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1],
                     'dayprices': [15.0, 15.0]
                 }
@@ -292,7 +292,7 @@ class TestWubook(TestHotelWubook):
                                         DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [1],
                     'dayprices': [15.0, 15.0]
                 }
@@ -320,7 +320,7 @@ class TestWubook(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_budget.wrid: {
+                    self.hotel_room_type_budget.wrid: {
                         'occupancy': [1],
                         'dayprices': [15.0, 15.0, 20.0, 17.0]
                     }
@@ -377,7 +377,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_budget.wrid: {
+                self.hotel_room_type_budget.wrid: {
                     'occupancy': [3],
                     'dayprices': [15.0, 15.0]
                 }
@@ -394,7 +394,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_special.wrid: {
+                self.hotel_room_type_special.wrid: {
                     'occupancy': [2, 1],
                     'dayprices': [15.0, 15.0]
                 }
@@ -422,7 +422,7 @@ class TestWubook(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_special.wrid: {
+                    self.hotel_room_type_special.wrid: {
                         'occupancy': [2],   # 2 Reservation Line
                         'dayprices': [15.0, 15.0]   # 2 Days
                     }
@@ -434,7 +434,7 @@ class TestWubook(TestHotelWubook):
                                             DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_special.wrid: {
+                    self.hotel_room_type_special.wrid: {
                         'occupancy': [2],   # 2 Reservation Line
                         'dayprices': [15.0, 15.0]   # 2 Days
                     }
@@ -446,7 +446,7 @@ class TestWubook(TestHotelWubook):
                                             DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_special.wrid: {
+                    self.hotel_room_type_special.wrid: {
                         'occupancy': [2],   # 2 Reservation Line
                         'dayprices': [15.0, 15.0]   # 2 Days
                     }
@@ -477,7 +477,7 @@ class TestWubook(TestHotelWubook):
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             self.partner_2,
             {
-                self.hotel_vroom_special.wrid: {
+                self.hotel_room_type_special.wrid: {
                     'occupancy': [2],   # 2 Reservation Line
                     'dayprices': [15.0, 15.0]   # 2 Days
                 }
@@ -502,7 +502,7 @@ class TestWubook(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_budget.wrid: {
+                    self.hotel_room_type_budget.wrid: {
                         'occupancy': [1],
                         'dayprices': [15.0, 15.0]
                     }
@@ -513,7 +513,7 @@ class TestWubook(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_budget.wrid: {
+                    self.hotel_room_type_budget.wrid: {
                         'occupancy': [1],
                         'dayprices': [15.0, 15.0]
                     }
@@ -524,7 +524,7 @@ class TestWubook(TestHotelWubook):
                 checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 self.partner_2,
                 {
-                    self.hotel_vroom_budget.wrid: {
+                    self.hotel_room_type_budget.wrid: {
                         'occupancy': [1],
                         'dayprices': [15.0, 15.0]
                     }
@@ -552,11 +552,11 @@ class TestWubook(TestHotelWubook):
         checkout_utc_dt = checkin_utc_dt + timedelta(days=1)
         checkout_dt = date_utils.dt_as_timezone(checkout_utc_dt,
                                                 self.tz_hotel)
-        vroom_restr_item_obj = self.env['hotel.room.type.restriction.item']
+        room_type_restr_item_obj = self.env['hotel.room.type.restriction.item']
 
-        vrooms = [self.hotel_vroom_budget, self.hotel_vroom_special]
+        room_types = [self.hotel_room_type_budget, self.hotel_room_type_special]
         values = self.create_wubook_rooms_values(
-            vrooms,
+            room_types,
             [{
                 'closed_arrival': 0,
                 'booked': 0,
@@ -587,9 +587,9 @@ class TestWubook(TestHotelWubook):
             checkout_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             values)
 
-        for vroom in vrooms:
-            items = vroom_restr_item_obj.search([
-                ('room_type_id', '=', vroom.id),
+        for room_type in room_types:
+            items = room_type_restr_item_obj.search([
+                ('room_type_id', '=', room_type.id),
                 ('date_start',
                  '>=', checkin_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
                 ('date_end',
