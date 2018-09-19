@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_channel_backend_form" model="ir.ui.view">
+        <field name="name">channel.backend.form</field>
+        <field name="model">channel.backend</field>
+        <field name="arch" type="xml">
+            <form string="Channel Backend">
+                <header>
+                  <button name="synchronize_metadata"
+                    type="object"
+                    class="oe_highlight"
+                    string="Synchronize Metadata"/>
+                </header>
+                <sheet>
+                    <label for="name" class="oe_edit_only"/>
+                    <h1>
+                        <field name="name" class="oe_inline" />
+                    </h1>
+                    <group name="channel" string="Channel Configuration">
+                        <notebook>
+                            <page string="API" name="api">
+                                <group colspan="4" col="4">
+                                    <field name="version" colspan="4"/>
+                                    <field name="server" colspan="2"/>
+                                    <field name="lcode" colspan="2"/>
+                                    <field name="username" colspan="2"/>
+                                    <field name="passwd" password="1" colspan="2"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </group>
+                    <notebook>
+                        <page name="import" string="Imports">
+                            <p class="oe_grey oe_inline">
+                                By clicking on the buttons,
+                                you will initiate the synchronizations
+                                with Channel.
+                                Note that the import or exports
+                                won't be done directly,
+                                they will create 'Jobs'
+                                executed as soon as possible.
+                            </p>
+                            <p class="oe_grey oe_inline">
+                                Once imported,
+                                some types of records,
+                                like the reservations,
+                                need a manual review.
+                                You will find the list
+                                of the new records to review
+                                in the menu 'Connectors > Checkpoint'.
+                            </p>
+                            <group>
+                                <label string="Import Reservations" class="oe_inline"/>
+                                <div>
+                                    <button name="import_reservations"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_channel_backend_tree" model="ir.ui.view">
+        <field name="name">channel.backend.tree</field>
+        <field name="model">channel.backend</field>
+        <field name="arch" type="xml">
+            <tree string="Channel Backend">
+                <field name="name"/>
+                <field name="username"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_channel_backend" model="ir.actions.act_window">
+        <field name="name">Channel Backends</field>
+        <field name="res_model">channel.backend</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_channel_backend_tree"/>
+    </record>
+
+</odoo>

@@ -2,11 +2,20 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
-from odoo.addons.component.core import AbstractComponent
+import pytz
+import json
+from datetime import timedelta
+from odoo.exceptions import ValidationError
+from odoo.addons.component.core import AbstractComponent, Component
+from odoo.addons.hotel import date_utils
+from odoo import _
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
-from .backend_adapter import DEFAULT_WUBOOK_DATE_FORMAT
+from .backend_adapter import (
+    DEFAULT_WUBOOK_DATE_FORMAT,
+    DEFAULT_WUBOOK_DATETIME_FORMAT,
+    WUBOOK_STATUS_BAD)
 from odoo import api
 _logger = logging.getLogger(__name__)
 
@@ -28,8 +37,8 @@ class HotelChannelConnectorImporter(AbstractComponent):
             'avail': day_vals.get('avail', 0),
             'wpushed': True,
         }
-        if set_wmax_avail:
-            vals.update({'wmax_avail': day_vals.get('avail', 0)})
+        if set_max_avail:
+            vals.update({'max_avail': day_vals.get('avail', 0)})
         if room_type_avail:
             room_type_avail.with_context({
                 'wubook_action': False,
@@ -724,35 +733,6 @@ class HotelChannelConnectorImporter(AbstractComponent):
         return True
 
     @api.model
-    def fetch_new_bookings(self):
-        try:
-            results = self.backend_adapter.fetch_new_bookings()
-            processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
-                self._generate_reservations(results)
-            if any(processed_rids):
-                uniq_rids = list(set(processed_rids))
-                rcodeb, resultsb = self.backend_adapter.mark_bookings(uniq_rids)
-                if rcodeb != 0:
-                    self.create_issue(
-                        'wubook',
-                        _("Problem trying mark bookings (%s)") %
-                        str(processed_rids),
-                        '')
-            # Update Odoo availability (don't wait for wubook)
-            # This cause abuse service in first import!!
-            if checkin_utc_dt and checkout_utc_dt:
-                self.backend_adapter.fetch_rooms_values(
-                    checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        except ValidationError:
-            self.create_issue(
-                'reservation',
-                _("Can't process reservations from wubook"),
-                results)
-            return False
-        return True
-
-    @api.model
     def fetch_booking(self, channel_reservation_id):
         try:
             results = self.backend_adapter.fetch_booking(channel_reservation_id)
@@ -770,7 +750,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
             self.create_channel_connector_issue(
                 'reservation',
                 _("Can't process reservations from wubook"),
-                results, wid=wrid)
+                results, channel_object_id=channel_reservation_id)
             return False
         return True
 

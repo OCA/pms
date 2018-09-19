@@ -14,7 +14,6 @@ from odoo.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT,
     DEFAULT_SERVER_DATE_FORMAT)
 from odoo import models, fields, api, _
-from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
 from odoo.addons import decimal_precision as dp
@@ -267,10 +266,8 @@ class HotelFolio(models.Model):
 
     @api.multi
     def action_folios_amount(self):
-        now_utc_dt = date_utils.now()
-        now_utc_str = now_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         reservations = self.env['hotel.reservation'].search([
-            ('checkout', '<=', now_utc_str)
+            ('checkout', '<=', fields.Date.today())
         ])
         folio_ids = reservations.mapped('folio_id.id')
         folios = self.env['hotel.folio'].search([('id', 'in', folio_ids)])

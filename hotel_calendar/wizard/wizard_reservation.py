@@ -3,13 +3,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import time
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 from openerp.exceptions import ValidationError
 from openerp.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from openerp import models, fields, api, _
-from odoo.addons.hotel import date_utils
 import odoo.addons.decimal_precision as dp
 _logger = logging.getLogger(__name__)
 
@@ -25,46 +24,24 @@ class FolioWizard(models.TransientModel):
     @api.model
     def _get_default_checkin(self):
         folio = False
-        default_arrival_hour = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_arrival_hour')
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
         if folio and folio.room_lines:
             return folio.room_lines[0].checkin
-        else:
-            tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
-            now_utc_dt = date_utils.now()
-            ndate = "%s %s:00" % \
-                (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                 default_arrival_hour)
-            ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
-            ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
-            return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        return fields.Date.today()
 
     @api.model
     def _get_default_checkout(self):
         folio = False
-        default_departure_hour = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_departure_hour')
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
         if folio and folio.room_lines:
             return folio.room_lines[0].checkout
-        else:
-            tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
-            now_utc_dt = date_utils.now() + timedelta(days=1)
-            ndate = "%s %s:00" % \
-                (now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                 default_departure_hour)
-            ndate_dt = date_utils.get_datetime(ndate, stz=tz_hotel)
-            ndate_dt = date_utils.dt_as_timezone(ndate_dt, 'UTC')
-            return ndate_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        return fields.Date.today()
 
     @api.model
     def _get_default_channel_type(self):
@@ -109,10 +86,9 @@ class FolioWizard(models.TransientModel):
             if line.rooms_num > line.max_rooms:
                 raise ValidationError(_("Too many rooms!"))
             elif line.room_type_id:
-                checkout_dt = date_utils.get_datetime(line.checkout)
                 occupied = self.env['hotel.reservation'].occupied(
                     line.checkin,
-                    checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+                    line.checkout)
                 rooms_occupied = occupied.mapped('product_id.id')
                 free_rooms = self.env['hotel.room'].search([
                     ('product_id.id', 'not in', rooms_occupied),
@@ -122,15 +98,9 @@ class FolioWizard(models.TransientModel):
                 product_list = self.env['product.product'].search([
                     ('id', 'in', room_ids)
                 ])
-                nights = date_utils.date_diff(line.checkin,
-                                              line.checkout,
-                                              hours=False)
-                hotel_tz = self.env['ir.default'].sudo().get(
-                    'res.config.settings',
-                    'hotel_tz')
-                start_date_utc_dt = date_utils.get_datetime(self.checkin)
-                start_date_dt = date_utils.dt_as_timezone(start_date_utc_dt,
-                                                          hotel_tz)
+                checkin_dt = fields.Date.from_string(line.checkin)
+                checkout_dt = fields.Date.from_string(line.checkout)
+                nights = abs((checkout_dt - checkin_dt).days)
                 for room in product_list:
                     pricelist_id = self.env['ir.default'].sudo().get(
                         'res.config.settings', 'parity_pricelist_id')
@@ -138,7 +108,7 @@ class FolioWizard(models.TransientModel):
                         pricelist_id = int(pricelist_id)
                     res_price = 0
                     for i in range(0, nights):
-                        ndate = start_date_dt + timedelta(days=i)
+                        ndate = checkin_dt + timedelta(days=i)
                         ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                         prod = line.room_type_id.product_id.with_context(
                             lang=self.partner_id.lang,
@@ -178,44 +148,30 @@ class FolioWizard(models.TransientModel):
         @param self: object pointer
         '''
         self.ensure_one()
-        if not self.checkin:
-            self.checkin = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        if not self.checkout:
-            self.checkout = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        checkin_dt = datetime.now() if not self.checkin else fields.Date.from_string(self.checkin)
+        checkout_dt = datetime.now() if not self.checkout else fields.Date.from_string(self.checkout)
+        if checkin_dt >= checkout_dt:
+            checkout_dt = checkin_dt + timedelta(days=1)
 
-        # UTC -> Hotel tz
-        tz = self.env['ir.default'].sudo().get('res.config.settings',
-                                               'tz_hotel')
-        chkin_utc_dt = date_utils.get_datetime(self.checkin)
-        chkout_utc_dt = date_utils.get_datetime(self.checkout)
+        chekin_str = checkin_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        chekout_str = checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-        if chkin_utc_dt >= chkout_utc_dt:
-            dpt_hour = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_departure_hour')
-            checkout_str = (chkin_utc_dt + timedelta(days=1)).strftime(
-                DEFAULT_SERVER_DATE_FORMAT)
-            checkout_str = "%s %s:00" % (checkout_str, dpt_hour)
-            checkout_dt = date_utils.get_datetime(checkout_str, stz=tz)
-            checkout_utc_dt = date_utils.dt_as_timezone(checkout_dt, 'UTC')
-            self.checkout = checkout_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        checkout_dt = date_utils.get_datetime(self.checkout, stz=tz)
-        # Reservation end day count as free day. Not check it
-        checkout_dt -= timedelta(days=1)
         room_type_ids = self.env['hotel.room.type'].search([])
-        room_types = []
-
-        for room_type in room_type_ids:
-            room_types.append((0, False, {
-                'room_type_id': room_type.id,
-                'checkin': self.checkin,
-                'checkout': self.checkout,
-                'folio_wizard_id': self.id,
-            }))
-        self.room_type_wizard_ids = room_types
+        cmds = room_type_ids.mapped(lambda x: (0, False, {
+            'room_type_id': x.id,
+            'checkin': chekin_str,
+            'checkout': chekout_str,
+            'folio_wizard_id': self.id,
+        }))
+        self.write({
+            'checkin': chekin_str,
+            'checkout': chekout_str,
+            'room_type_wizard_ids': cmds,
+        })
         for room_type in self.room_type_wizard_ids:
             room_type.update_price()
 
-    @api.depends('room_type_wizard_ids','reservation_wizard_ids','service_wizard_ids')
+    @api.depends('room_type_wizard_ids', 'reservation_wizard_ids', 'service_wizard_ids')
     def _computed_total(self):
         total = 0
         for line in self.service_wizard_ids:
@@ -305,24 +261,25 @@ class HotelRoomTypeWizards(models.TransientModel):
                                default=_get_default_checkout)
     can_confirm = fields.Boolean(compute="_can_confirm")
 
+    @api.multi
     def _can_confirm(self):
-        for room_type in self:
-            date_start = date_utils.get_datetime(room_type.checkin)
-            date_end = date_utils.get_datetime(room_type.checkout)
-            date_diff = date_utils.date_diff(date_start, date_end, hours=False)
-            room_type.can_confirm = room_type.max_rooms > 0 and room_type.min_stay <= date_diff
+        for record in self:
+            date_start = fields.Date.from_string(record.checkin)
+            date_end = fields.Date.from_string(record.checkout)
+            date_diff = abs((date_end - date_start).days)
+            record.can_confirm = record.max_rooms > 0 and record.min_stay <= date_diff
 
     def _compute_max(self):
         for res in self:
             user = self.env['res.users'].browse(self.env.uid)
-            date_start = date_utils.get_datetime(res.checkin)
-            date_end = date_utils.get_datetime(res.checkout)
-            date_diff = date_utils.date_diff(date_start, date_end, hours=False)
+            date_start = fields.Date.from_string(res.checkin)
+            date_end = fields.Date.from_string(res.checkout)
+            date_diff = abs((date_end - date_start).days)
             minstay_restrictions = self.env['hotel.room.type.restriction.item'].search([
-                ('room_type_id','=',res.room_type_id.id),
+                ('room_type_id', '=', res.room_type_id.id),
             ])
             avail_restrictions = self.env['hotel.room.type.availability'].search([
-                ('room_type_id','=',res.room_type_id.id)
+                ('room_type_id', '=', res.room_type_id.id)
             ])
             real_max = len(res.room_type_id.check_availability_room(
                 res.checkin,
@@ -361,32 +318,17 @@ class HotelRoomTypeWizards(models.TransientModel):
     @api.onchange('rooms_num', 'discount', 'price', 'room_type_id', 'checkin', 'checkout')
     def update_price(self):
         for record in self:
-            checkin = record.checkin or record.folio_wizard_id.checkin
-            checkout = record.checkout or record.folio_wizard_id.checkout
             if record.rooms_num > record.max_rooms:
                 raise ValidationError(_("There are not enough rooms!"))
-            # UTC -> Hotel tz
-            tz = self.env['ir.default'].sudo().get('res.config.settings',
-                                                   'tz_hotel')
-            chkin_utc_dt = date_utils.get_datetime(checkin)
-            chkout_utc_dt = date_utils.get_datetime(checkout)
 
+            checkin = record.checkin or record.folio_wizard_id.checkin
+            checkout = record.checkout or record.folio_wizard_id.checkout
+            chkin_utc_dt = fields.Date.from_string(checkin)
+            chkout_utc_dt = fields.Date.from_string(checkout)
             if chkin_utc_dt >= chkout_utc_dt:
-                dpt_hour = self.env['ir.default'].sudo().get(
-                    'res.config.settings', 'default_departure_hour')
-                checkout_str = (chkin_utc_dt + timedelta(days=1)).strftime(
-                    DEFAULT_SERVER_DATE_FORMAT)
-                checkout_str = "%s %s:00" % (checkout_str, dpt_hour)
-                checkout_dt = date_utils.get_datetime(checkout_str, stz=tz)
-                checkout_utc_dt = date_utils.dt_as_timezone(checkout_dt, 'UTC')
-                checkout = checkout_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            checkout_dt = date_utils.get_datetime(checkout, stz=tz)
-            # Reservation end day count as free day. Not check it
-            checkout_dt -= timedelta(days=1)
-            nights = date_utils.date_diff(checkin, checkout, hours=False)
-            start_date_dt = date_utils.dt_as_timezone(chkin_utc_dt, tz)
-            # Reservation end day count as free day. Not check it
-            checkout_dt -= timedelta(days=1)
+                chkout_utc_dt = chkin_utc_dt + timedelta(days=1)
+            chkout_utc_dt -= timedelta(days=1)
+            nights = abs((chkout_utc_dt - chkin_utc_dt).days)
 
             pricelist_id = self.env['ir.default'].sudo().get(
                 'res.config.settings', 'parity_pricelist_id')
@@ -395,7 +337,7 @@ class HotelRoomTypeWizards(models.TransientModel):
 
             res_price = 0
             for i in range(0, nights):
-                ndate = start_date_dt + timedelta(days=i)
+                ndate = chkin_utc_dt + timedelta(days=i)
                 ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 prod = record.room_type_id.product_id.with_context(
                     lang=record.folio_wizard_id.partner_id.lang,
@@ -460,7 +402,7 @@ class ReservationWizard(models.TransientModel):
                 if line.adults == 0:
                     line.adults = room.capacity
                 line.room_type_id = room.price_room_type.id
-                checkout_dt = date_utils.get_datetime(line.checkout)
+                checkout_dt = fields.Date.from_string(line.checkout)
                 checkout_dt -= timedelta(days=1)
                 occupied = self.env['hotel.reservation'].occupied(
                     line.checkin,
@@ -479,23 +421,18 @@ class ReservationWizard(models.TransientModel):
             if not self.checkout:
                 self.checkout = self.folio_wizard_id.checkout
 
-            hotel_tz = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'hotel_tz')
-            start_date_utc_dt = date_utils.get_datetime(line.checkin)
-            start_date_dt = date_utils.dt_as_timezone(start_date_utc_dt,
-                                                      hotel_tz)
+            start_date_utc_dt = fields.Date.from_string(line.checkin)
+            end_date_utc_dt = fields.Date.from_string(line.checkout)
 
             if line.room_type_id:
                 pricelist_id = self.env['ir.default'].sudo().get(
                     'res.config.settings', 'parity_pricelist_id')
                 if pricelist_id:
                     pricelist_id = int(pricelist_id)
-                nights = date_utils.date_diff(line.checkin,
-                                              line.checkout,
-                                              hours=False)
+                nights = abs((end_date_utc_dt - start_date_utc_dt).days)
                 res_price = 0
                 for i in range(0, nights):
-                    ndate = start_date_dt + timedelta(days=i)
+                    ndate = start_date_utc_dt + timedelta(days=i)
                     ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                     prod = line.room_type_id.product_id.with_context(
                         lang=self.partner_id.lang,
@@ -508,11 +445,10 @@ class ReservationWizard(models.TransientModel):
                 res_price = res_price - (res_price * self.discount) * 0.01
                 line.amount_reservation = res_price
                 line.price = res_price
-            checkout_dt = date_utils.get_datetime(self.checkout)
-            checkout_dt -= timedelta(days=1)
+            end_date_utc_dt -= timedelta(days=1)
             occupied = self.env['hotel.reservation'].occupied(
-                self.checkin,
-                checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+                line.checkin,
+                end_date_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
             rooms_occupied = occupied.mapped('product_id.id')
             domain_rooms = [
                 ('isroom', '=', True),

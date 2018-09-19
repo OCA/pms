@@ -1,6 +1,8 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import _
+from odoo.exceptions import ValidationError
 from odoo.addons.component.core import AbstractComponent
 from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.tools import (
@@ -50,6 +52,14 @@ class WuBookServer(object):
         self._token = None
         self._login_data = login_data
 
+    def __enter__(self):
+        # we do nothing, api is lazy
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if self._server is not None:
+            self.close()
+
     @property
     def server(self):
         if self._server is None and self._login_data.is_valid():
@@ -85,16 +95,6 @@ class HotelChannelInterfaceAdapter(AbstractComponent):
     _name = 'hotel.channel.adapter'
     _inherit = ['base.backend.adapter', 'base.hotel.channel.connector']
     _usage = 'backend.adapter'
-
-    def _select_versions(self):
-        return [
-            ('1.2', '1.2'),
-        ]
-    version = fields.Selection(
-        selection='_select_versions',
-        string='Version',
-        required=True,
-    )
 
     def create_room(self, shortcode, name, capacity, price, availability):
         raise NotImplementedError

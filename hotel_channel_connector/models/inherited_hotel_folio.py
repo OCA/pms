@@ -11,7 +11,7 @@ class HotelFolio(models.Model):
     @api.depends('room_lines')
     def _has_channel_reservations(self):
         for record in self:
-            channel_reservations = record.room_lines.filtered(lambda x: x.channel_room_id)
+            channel_reservations = record.room_lines.filtered(lambda x: x.room_id)
             record.has_channel_reservations = any(channel_reservations)
 
     wseed = fields.Char("Wubook Session Seed", readonly=True)
@@ -22,9 +22,8 @@ class HotelFolio(models.Model):
                                               old_name='whas_wubook_reservations')
 
     @job(default_channel='root.channel')
-    @api.multi
+    @api.model
     def import_reservations(self):
-        self.ensure_one()
         with self.backend_id.work_on(self._name) as work:
             importer = work.component(usage='channel.importer')
             importer.fetch_new_bookings()

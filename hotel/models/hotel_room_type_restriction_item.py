@@ -4,7 +4,6 @@ from datetime import datetime
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-from odoo.addons.hotel import date_utils
 
 
 class HotelRoomTypeRestrictionItem(models.Model):
@@ -59,8 +58,8 @@ class HotelRoomTypeRestrictionItem(models.Model):
             self.date_start = False
             self.date_end = False
         elif self.date_start and self.date_end:
-            date_start_dt = date_utils.get_datetime(self.date_start)
-            date_end_dt = date_utils.get_datetime(self.date_end)
+            date_start_dt = fields.Date.from_string(self.date_start)
+            date_end_dt = fields.Date.from_string(self.date_end)
             if date_end_dt < date_start_dt:
                 raise ValidationError(_("Invalid Dates"))
 

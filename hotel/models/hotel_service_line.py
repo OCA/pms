@@ -6,7 +6,6 @@ import logging
 from odoo import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.exceptions import UserError
-from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
 from odoo.addons import decimal_precision as dp
@@ -91,12 +90,12 @@ class HotelServiceLine(models.Model):
         ('mail', 'Mail'),
         ('phone', 'Phone'),
         ('call', 'Call Center'),
-        ('web','Web')], 'Sales Channel')
+        ('web', 'Web')], 'Sales Channel')
 
-    ser_checkin = fields.Datetime('From Date', required=True,
-                                  default=_service_checkin)
-    ser_checkout = fields.Datetime('To Date', required=True,
-                                   default=_service_checkout)
+    ser_checkin = fields.Date('From Date', required=True,
+                              default=_service_checkin)
+    ser_checkout = fields.Date('To Date', required=True,
+                               default=_service_checkout)
     ser_room_line = fields.Many2one('hotel.reservation', 'Room',
                                     default=_default_ser_room_line)
 
@@ -199,20 +198,17 @@ class HotelServiceLine(models.Model):
         -----------------------------------------------------------------
         @param self: object pointer
         '''
-        now_utc_dt = date_utils.now()
+        now_utc = fields.Date.today()
         if not self.ser_checkin:
-            self.ser_checkin = now_utc_dt.strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT)
+            self.ser_checkin = now_utc
         if not self.ser_checkout:
-            self.ser_checkout = now_utc_dt.strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT)
-        chkin_utc_dt = date_utils.get_datetime(self.ser_checkin)
-        chkout_utc_dt = date_utils.get_datetime(self.ser_checkout)
+            self.ser_checkout = now_utc
+        chkin_utc_dt = fields.Date.from_string(self.ser_checkin)
+        chkout_utc_dt = fields.Date.from_string(self.ser_checkout)
         if chkout_utc_dt < chkin_utc_dt:
             raise UserError(_('Checkout must be greater or equal checkin date'))
         if self.ser_checkin and self.ser_checkout:
-            diffDate = date_utils.date_diff(self.ser_checkin,
-                                            self.ser_checkout, hours=False) + 1
+            diffDate = abs((self.ser_checkout - self.ser_checkin).days) + 1
             # FIXME: Finalize method!
 
     @api.multi

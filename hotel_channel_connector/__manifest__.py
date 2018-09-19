@@ -39,6 +39,8 @@
         'views/channel_hotel_room_type_availability_views.xml',
         'views/channel_hotel_room_type_restriction_views.xml',
         'views/channel_product_pricelist_views.xml',
+        'views/channel_connector_backend_views.xml',
+        'views/channel_connector_menu.xml',
         'data/menus.xml',
         'data/sequences.xml',
         #'security/ir.model.access.csv',

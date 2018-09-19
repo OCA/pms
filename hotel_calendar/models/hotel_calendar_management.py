@@ -5,9 +5,8 @@ from datetime import datetime, timedelta
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
-from odoo import models, api, _
+from odoo import models, api, _, fields
 from odoo.exceptions import ValidationError
-from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
 
@@ -176,8 +175,9 @@ class HotelCalendarManagement(models.TransientModel):
 
     @api.model
     def _hcalendar_availability_json_data(self, dfrom, dto):
-        date_start = date_utils.get_datetime(dfrom, hours=False)
-        date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
+        date_start = fields.Date.from_string(dfrom)
+        date_end = fields.Date.from_string(dto)
+        date_diff = abs((date_end - date_start).days) + 1
         room_types = self.env['hotel.room.type'].search([])
         json_data = {}
 
@@ -208,7 +208,7 @@ class HotelCalendarManagement(models.TransientModel):
 
     @api.model
     def _hcalendar_events_json_data(self, dfrom, dto):
-        date_start = date_utils.get_datetime(dfrom, hours=False) - timedelta(days=1)
+        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
         date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         user_id = self.env['res.users'].browse(self.env.uid)
         domain = []
@@ -239,8 +239,9 @@ class HotelCalendarManagement(models.TransientModel):
 
     @api.model
     def _hcalendar_get_count_reservations_json_data(self, dfrom, dto):
-        date_start = date_utils.get_datetime(dfrom, hours=False)
-        date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
+        date_start = fields.Date.from_string(dfrom)
+        date_end = fields.Date.from_string(dto)
+        date_diff = abs((date_end - date_start).days) + 1
         room_type_obj = self.env['hotel.room.type']
         room_types = room_type_obj.search([])
         json_data = {}

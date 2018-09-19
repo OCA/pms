@@ -284,7 +284,7 @@ class HotelReservation(models.Model):
                          'channel_type': vals.get('channel_type')})
         #~ colors = self._generate_color()
         vals.update({
-            'last_updated_res': date_utils.now(hours=True).strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'last_updated_res': fields.Datetime.now(),
             #~ 'reserve_color': colors[0],
             #~ 'reserve_color_text': colors[1],
         })
@@ -306,8 +306,7 @@ class HotelReservation(models.Model):
     def write(self, vals):
         if self.notify_update(vals):
             vals.update({
-                'last_updated_res': date_utils.now(hours=True).strftime(
-                    DEFAULT_SERVER_DATETIME_FORMAT)
+                'last_updated_res': fields.Datetime.now()
             })
         for record in self:
             if record.compute_price_out_vals(vals):
@@ -902,15 +901,9 @@ class HotelReservation(models.Model):
     @api.model
     def daily_plan(self):
         _logger.info('daily_plan')
-        today_utc_dt = date_utils.now()
-        yesterday_utc_dt = today_utc_dt - timedelta(days=1)
-        hotel_tz = self.env['ir.default'].sudo().get('res.config.settings',
-                                                     'tz_hotel')
-        today_dt = date_utils.dt_as_timezone(today_utc_dt, hotel_tz)
-        yesterday_dt = date_utils.dt_as_timezone(yesterday_utc_dt, hotel_tz)
-
-        today_str = today_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-        yesterday_str = yesterday_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        today_str = fields.Date.today()
+        yesterday_utc_dt = datetime.now() - timedelta(days=1)
+        yesterday_str = yesterday_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
         reservations_to_checkout = self.env['hotel.reservation'].search([
             ('state', 'not in', ['done']),
             ('checkout', '<', today_str)

@@ -4,7 +4,6 @@
 import datetime
 from openerp import models, fields, api, _
 from openerp.exceptions import except_orm, ValidationError
-from odoo.addons.hotel import date_utils
 
 
 class Cardex(models.Model):
@@ -53,7 +52,7 @@ class Cardex(models.Model):
     @api.onchange('enter_date', 'exit_date')
     def check_change_dates(self):
         if self.exit_date <= self.enter_date:
-            date_1 = date_utils.get_datetime(self.enter_date)
+            date_1 = fields.Date.from_string(self.enter_date)
             date_2 = date_1 + datetime.timedelta(days=1)
             self.update({'exit_date': date_2, })
             raise ValidationError(

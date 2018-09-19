@@ -49,6 +49,13 @@ class ChannelHotelReservation(models.Model):
     wstatus_reason = fields.Char("WuBook Status Reason", readonly=True)
     wmodified = fields.Boolean("WuBook Modified", readonly=True, default=False)
 
+    @job(default_channel='root.channel')
+    @api.model
+    def import_reservations(self, backend):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='channel.hotel.reservation.importer')
+            return importer.fetch_new_bookings()
+
     @api.depends('channel_reservation_id', 'ota_id')
     def _is_from_ota(self):
         for record in self:

@@ -13,7 +13,6 @@ var AbstractModel = require('web.AbstractModel'),
 return AbstractModel.extend({
     init: function () {
         this._super.apply(this, arguments);
-        this.end_date = null;
     },
 
     load: function (params) {

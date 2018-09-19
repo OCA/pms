@@ -7,7 +7,6 @@ from odoo.exceptions import ValidationError
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
-from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
 
@@ -95,8 +94,7 @@ class HotelReservation(models.Model):
 
     @api.model
     def get_hcalendar_reservations_data(self, dfrom, dto, rooms):
-        date_start = date_utils.get_datetime(dfrom, hours=False) \
-            - timedelta(days=1)
+        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
         date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         reservations_raw = self.env['hotel.reservation'].search(
             [
@@ -122,9 +120,9 @@ class HotelReservation(models.Model):
             'res.config.settings', 'parity_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
-        date_start = date_utils.get_datetime(dfrom, hours=False) \
-            - timedelta(days=1)
-        date_diff = date_utils.date_diff(date_start, dto, hours=False) + 1
+        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
+        date_end = fields.Date.from_string(dto)
+        date_diff = abs((date_end - date_start).days) + 1
         # Get Prices
         json_rooms_prices = {pricelist_id: []}
         room_typed_ids = self.env['hotel.room.type'].search(
@@ -162,9 +160,9 @@ class HotelReservation(models.Model):
             'res.config.settings', 'parity_restrictions_id')
         if restriction_id:
             restriction_id = int(restriction_id)
-        date_start = date_utils.get_datetime(dfrom, hours=False) \
-            - timedelta(days=1)
-        date_diff = date_utils.date_diff(dfrom, dto, hours=False) + 1
+        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
+        date_end = fields.Date.from_string(dto)
+        date_diff = abs((date_end - date_sart).days) + 1
         # Get Prices
         json_rooms_rests = {}
         room_types = self.env['hotel.room.type'].search(
@@ -202,8 +200,7 @@ class HotelReservation(models.Model):
 
     @api.model
     def get_hcalendar_events_data(self, dfrom, dto):
-        date_start = date_utils.get_datetime(dfrom, hours=False) \
-            - timedelta(days=1)
+        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
         date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         user_id = self.env['res.users'].browse(self.env.uid)
         domain = []

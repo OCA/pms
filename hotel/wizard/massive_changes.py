@@ -5,7 +5,6 @@ from openerp import models, fields, api
 from openerp.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
-from odoo.addons.hotel import date_utils
 
 
 class MassiveChangesWizard(models.TransientModel):
@@ -17,8 +16,8 @@ class MassiveChangesWizard(models.TransientModel):
         ('1', 'Restrictions'),
         ('2', 'Pricelist'),
     ], string='Section', default='0')
-    date_start = fields.Datetime('Start Date', required=True)
-    date_end = fields.Datetime('End Date', required=True)
+    date_start = fields.Date('Start Date', required=True)
+    date_end = fields.Date('End Date', required=True)
     dmo = fields.Boolean('Monday', default=True)
     dtu = fields.Boolean('Tuesday', default=True)
     dwe = fields.Boolean('Wednesday', default=True)
@@ -28,12 +27,11 @@ class MassiveChangesWizard(models.TransientModel):
     dsu = fields.Boolean('Sunday', default=True)
     applied_on = fields.Selection([
         ('0', 'Global'),
-        ('1', 'Virtual Room'),
+        ('1', 'Room Type'),
     ], string='Applied On', default='0')
     # room_type_ids = fields.Many2many('hotel.virtual.room',
     #                                     string="Virtual Rooms")
-    room_type_ids = fields.Many2many('hotel.room.type',
-                                     string="Room Types")
+    room_type_ids = fields.Many2many('hotel.room.type', string="Room Types")
 
     # Availability fields
     change_avail = fields.Boolean(default=False)
@@ -251,12 +249,10 @@ class MassiveChangesWizard(models.TransientModel):
     def _do_massive_change(self):
         hotel_room_type_obj = self.env['hotel.room.type']
         for record in self:
-            date_start_dt = date_utils.get_datetime(record.date_start,
-                                                    hours=False)
+            date_start_dt = fields.Date.from_string(record.date_start)
+            date_end_dt = fields.Date.from_string(record.date_end)
             # Use min '1' for same date
-            diff_days = date_utils.date_diff(record.date_start,
-                                             record.date_end,
-                                             hours=False) + 1
+            diff_days = abs((date_end_dt - date_start_dt).days) + 1
             wedays = (record.dmo, record.dtu, record.dwe, record.dth,
                       record.dfr, record.dsa, record.dsu)
             room_types = record.room_type_id if record.applied_on == '1' \

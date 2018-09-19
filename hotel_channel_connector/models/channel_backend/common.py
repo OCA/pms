@@ -3,7 +3,7 @@
 
 from contextlib import contextmanager
 from odoo import models, api, fields
-from ...components.backend_adapter import WuBookLogin, WuBookAdapter
+from ...components.backend_adapter import WuBookLogin, WuBookServer
 
 class ChannelBackend(models.Model):
     _name = 'channel.backend'
@@ -19,8 +19,8 @@ class ChannelBackend(models.Model):
         """
         return [('1.2', '1.2+')]
 
+    name = fields.Char('Name')
     version = fields.Selection(selection='select_versions', required=True)
-
     username = fields.Char('Channel Service Username')
     passwd = fields.Char('Channel Service Password')
     lcode = fields.Char('Channel Service lcode')
@@ -28,21 +28,25 @@ class ChannelBackend(models.Model):
                          default='https://wired.wubook.net/xrws/')
     pkey = fields.Char('Channel Service PKey')
 
+    @api.multi
+    def import_reservations(self):
+        channel_hotel_reservation = self.env['channel.hotel.reservation']
+        for backend in self:
+            channel_hotel_reservation.import_reservations(backend)
+        return True
+
     @contextmanager
     @api.multi
     def work_on(self, model_name, **kwargs):
         self.ensure_one()
-        lang = self.default_lang_id
-        if lang.code != self.env.context.get('lang'):
-            self = self.with_context(lang=lang.code)
         wubook_login = WuBookLogin(
             self.server,
             self.username,
             self.passwd,
             self.lcode,
             self.pkey)
-        with WuBookAdapter(wubook_login) as channel_api:
+        with WuBookServer(wubook_login) as channel_api:
             _super = super(ChannelBackend, self)
-            # from the components we'll be able to do: self.work.magento_api
-            with _super.work_on(model_name, **kwargs) as work:
+            # from the components we'll be able to do: self.work.channel_api
+            with _super.work_on(model_name, channel_api=channel_api, **kwargs) as work:
                 yield work

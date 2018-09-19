@@ -21,10 +21,9 @@ class SplitReservationWizard(models.TransientModel):
         reservation_id = self.env['hotel.reservation'].browse(
             self.env.context.get('active_id'))
         if reservation_id:
-            date_start_dt = date_utils.get_datetime(reservation_id.checkin)
-            date_end_dt = date_utils.get_datetime(reservation_id.checkout)
-            date_diff = date_utils.date_diff(date_start_dt, date_end_dt,
-                                             hours=False)
+            date_start_dt = fields.Date.from_string(reservation_id.checkin)
+            date_end_dt = fields.Date.from_string(reservation_id.checkout)
+            date_diff = abs((date_end_dt - date_start_dt).days)
             for record in self:
                 new_start_date_dt = date_start_dt + \
                                     timedelta(days=date_diff-record.nights)
@@ -41,7 +40,7 @@ class SplitReservationWizard(models.TransientModel):
                 tprice = [0.0, 0.0]
                 div_dt = date_utils.dt_no_hours(new_start_date_dt)
                 for rline in reservation_id.reservation_lines:
-                    rline_dt = date_utils.get_datetime(rline.date, hours=False)
+                    rline_dt = fields.Date.from_string(rline.date)
                     if rline_dt >= div_dt:
                         reservation_lines[1].append((0, False, {
                             'date': rline.date,
