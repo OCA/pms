@@ -26,7 +26,7 @@ class ChannelHotelReservation(models.Model):
                               required=True,
                               ondelete='cascade')
     channel_reservation_id = fields.Char("Channel Reservation ID", readonly=True, old_name='wrid')
-    ota_id = fields.Many2one('channel.ota.info',
+    ota_id = fields.Many2one('hotel.channel.connector.ota.info',
                              string='Channel OTA ID',
                              readonly=True,
                              old_name='wchannel_id')
@@ -53,7 +53,7 @@ class ChannelHotelReservation(models.Model):
     @api.model
     def import_reservations(self, backend):
         with backend.work_on(self._name) as work:
-            importer = work.component(usage='channel.hotel.reservation.importer')
+            importer = work.component(usage='hotel.reservation.importer')
             return importer.fetch_new_bookings()
 
     @api.depends('channel_reservation_id', 'ota_id')
@@ -271,7 +271,15 @@ class HotelReservation(models.Model):
         if not self.is_from_ota:
             return super().on_change_checkin_checkout_product_id()
 
-class ChannelBindingProductListener(Component):
+class HotelReservationAdapter(Component):
+    _name = 'channel.hotel.reservation.adapter'
+    _inherit = 'wubook.adapter'
+    _apply_on = 'channel.hotel.reservation'
+
+    def fetch_new_bookings(self):
+        return super(HotelReservationAdapter, self).fetch_new_bookings()
+
+class ChannelBindingHotelReservationListener(Component):
     _name = 'channel.binding.hotel.reservation.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['channel.hotel.reservation']

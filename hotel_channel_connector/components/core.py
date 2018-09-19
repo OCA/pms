@@ -7,7 +7,7 @@ from odoo import api
 class BaseHotelChannelConnectorComponent(AbstractComponent):
     _name = 'base.hotel.channel.connector'
     _inherit = 'base.connector'
-    _collection = 'hotel.channel.backend'
+    _collection = 'channel.backend'
 
     @api.model
     def create_issue(self, section, message, channel_message, channel_object_id=False,

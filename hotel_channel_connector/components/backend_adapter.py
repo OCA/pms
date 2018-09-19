@@ -1,6 +1,7 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import xmlrpclib
 from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import AbstractComponent
@@ -179,7 +180,7 @@ class HotelChannelInterfaceAdapter(AbstractComponent):
     @property
     def _server(self):
         try:
-            channel_server = getattr(self.work, 'hotel_channel_server')
+            channel_server = getattr(self.work, 'channel_api')
         except AttributeError:
             raise AttributeError(
                 'You must provide a hotel_channel_server attribute with a '
