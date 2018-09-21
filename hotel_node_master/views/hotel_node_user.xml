@@ -14,23 +14,25 @@
                     </button>
                     </div>
                     <div class="oe_title">
-                        <label for="partner_id" string="Central user" class="oe_edit_only"/>
                         <h1>
-                            <field name="partner_id" required="1"/>
+                            <field name="node_id" placeholder="Hotel" required="1"
+                                   attrs="{'readonly': [('node_id', '!=', False)]}"/>
                         </h1>
                     </div>
+                    <group attrs="{'invisible': [('node_id', '=', False)]}">
+                        <group name="nodes">
+                            <field name="partner_id" placeholder="Name" required="1"/>
+                            <field name="remote_user_id" readonly="1" attrs="{'invisible': [('id', '=', False)]}" />
+                        </group>
+                    </group>
                     <group attrs="{'invisible': [('partner_id', '=', False)]}">
                         <group name="login">
                             <field name="login"/>
                             <field name="password" password="True"/>
                         </group>
-                        <group name="nodes">
-                            <field name="node_id"/>
-                            <field name="remote_user_id" readonly="1" attrs="{'invisible': [('id', '=', False)]}" />
-                        </group>
                     </group>
-                    <group name="groups" attrs="{'invisible': [('node_id', '=', False)]}">
-                            <field name="group_ids"/>
+                    <group name="groups" attrs="{'invisible': [('node_id', '=', False)]}" collapse="2">
+                        <field name="group_ids"/>
                     </group>
                 </sheet>
             </form>
@@ -46,7 +48,6 @@
                 <field name="partner_id"/>
                 <field name="login"/>
                 <field name="node_id"/>
-                <field name="remote_user_id"/>
             </tree>
         </field>
     </record>

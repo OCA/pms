@@ -48,12 +48,18 @@
                         <page name="groups" string="Groups" attrs="{'invisible':[('id','=',False)]}">
                             <group>
                                 <field name="odoo_version" readonly="1"/>
+                                <!-- TODO Make group_ids readonly in hotel node form -->
                                 <field name="group_ids" domain="[('odoo_version','=',odoo_version)]"/>
                             </group>
                         </page>
                         <page name="users" string="Users" attrs="{'invisible':[('id','=',False)]}">
                             <group>
-                                <field name="user_ids" context="{'default_node_id': id}" />
+                                <field name="user_ids" context="{'default_node_id': active_id}" />
+                            </group>
+                        </page>
+                        <page name="room_type" string="Room Type" attrs="{'invisible':[('id','=',False)]}">
+                            <group>
+                                <field name="room_type_ids" context="{'default_node_id': active_id}" />
                             </group>
                         </page>
                         <page name="settings" string="Settings">
@@ -104,6 +110,12 @@
                 res_model="project.project"
                 view_mode="tree,form"
     />
+    <!-- Action to open Hotel Room Types List -->
+    <act_window id="hotel_node_room_type_action"
+                name="List of Room Types in Hotels"
+                res_model="hotel.node.room.type"
+                view_mode="tree,form"
+    />
     <!-- Action to open Hotel Users List -->
     <act_window id="hotel_node_user_action"
                 name="List of Users in Hotels"
@@ -132,6 +144,13 @@
               name="Hotels"
               action="hotel_node_action"
               parent="dashboard_menu"
+              sequence="1"
+    />
+    <!-- Menu item to open Hotel Nodes List -->
+    <menuitem id="hotel_node_room_type_menu"
+              name="Room Types"
+              action="hotel_node_room_type_action"
+              parent="hotel_node_menu"
               sequence="1"
     />
     <!-- Menu item to open Hotel Users List -->

@@ -75,8 +75,7 @@ class HotelNodeUser(models.Model):
         if self.node_id:
             # TODO clean group_ids
             # self.group_ids = []
-            node = self.env["project.project"].search([('id', '=', self.node_id.id)])
-            return {'domain': {'group_ids': [('odoo_version', '=', node.odoo_version)]}}
+            return {'domain': {'group_ids': [('odoo_version', '=', self.node_id.odoo_version)]}}
 
         return {'domain': {'group_ids': []}}
 
@@ -87,7 +86,6 @@ class HotelNodeUser(models.Model):
         :return: new hotel user record created.
         :raise: ValidationError
         """
-        wdb.set_trace()
         node = self.env["project.project"].browse(vals['node_id'])
 
         if 'group_ids' in vals:
@@ -109,10 +107,11 @@ class HotelNodeUser(models.Model):
                 'login': vals['login'],
             }
 
-            groups = self.env["hotel.node.group"].browse(vals['group_ids'][0][2])
-            # TODO Improve one rpc call per remote group for better performance
-            remote_groups = [noderpc.env.ref(r.xml_id).id for r in groups]
-            remote_vals.update({'groups_id': [[6, False, remote_groups]]})
+            if 'group_ids' in vals:
+                groups = self.env["hotel.node.group"].browse(vals['group_ids'][0][2])
+                # TODO Improve one rpc call per remote group for better performance
+                remote_groups = [noderpc.env.ref(r.xml_id).id for r in groups]
+                remote_vals.update({'groups_id': [[6, False, remote_groups]]})
 
             # create user and delegate in remote node the default values for the user
             remote_user_id = noderpc.env['res.users'].create(remote_vals)

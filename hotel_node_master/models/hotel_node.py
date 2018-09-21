@@ -45,6 +45,9 @@ class HotelNode(models.Model):
     group_ids = fields.Many2many('hotel.node.group', 'hotel_node_group_rel', 'node_id', 'group_id',
                                  string='Access Groups')
 
+    room_type_ids = fields.One2many('hotel.node.room.type', 'node_id',
+                                    'Rooms Type in this hotel')
+
     @api.constrains('group_ids')
     def _check_group_version(self):
         """
@@ -77,15 +80,23 @@ class HotelNode(models.Model):
 
             vals.update({'odoo_version': noderpc.version})
 
+            # Read remote Groups
             remote_domain = [('model', '=', 'res.groups')]
             remote_fields = ['complete_name', 'display_name']
             remote_groups = noderpc.env['ir.model.data'].search_read(remote_domain, remote_fields)
+
+            # Read remote Room Type
+            remote_fields = ['name', 'active', 'sequence']
+            remote_room_types = noderpc.env['hotel.room.type'].search_read([], remote_fields)
+
+            wdb.set_trace()
 
             noderpc.logout()
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
         else:
+            # Process Groups
             master_groups = self.env["hotel.node.group"].search_read(
                 [('odoo_version', '=', vals['odoo_version'])], ['xml_id'])
 
@@ -104,6 +115,17 @@ class HotelNode(models.Model):
                         'odoo_version': vals['odoo_version'],
                     }))
             vals.update({'group_ids': group_ids})
+
+            # Process Room Type
+            room_type_ids = []
+            for room_type in remote_room_types:
+                room_type_ids.append((0, 0, {
+                    'name': room_type['name'],
+                    'active': room_type['active'],
+                    'sequence': room_type['sequence'],
+                    'remote_room_type_id': room_type['id'],
+                }))
+            vals.update({'room_type_ids': room_type_ids})
 
             node_id = super().create(vals)
 

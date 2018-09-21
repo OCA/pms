@@ -17,6 +17,7 @@
         'views/hotel_node.xml',
         'views/hotel_node_user.xml',
         'views/hotel_node_group.xml',
+        'views/hotel_node_room_type.xml',
         'security/hotel_node_security.xml',
         'security/ir.model.access.csv'
     ],
