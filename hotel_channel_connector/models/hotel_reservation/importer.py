@@ -3,6 +3,7 @@
 
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo import fields, api, _
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
@@ -34,10 +35,10 @@ class HotelReservationImporter(Component):
                 self.backend_adapter.fetch_rooms_values(
                     checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        except ValidationError:
+        except ChannelConnectorError as err:
             self.create_issue(
                 'reservation',
                 _("Can't process reservations from wubook"),
-                results)
+                err.data['message'])
             return False
         return True

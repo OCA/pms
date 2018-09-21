@@ -20,3 +20,8 @@ class BaseHotelChannelConnectorComponent(AbstractComponent):
             'date_start': dfrom,
             'date_end': dto,
         })
+
+class ChannelConnectorError(Exception):
+    def __init__(self, message, data):
+        super().__init__(message)
+        self.data = data
