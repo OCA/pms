@@ -5,7 +5,7 @@
         <field name="name">channel.backend.form</field>
         <field name="model">channel.backend</field>
         <field name="arch" type="xml">
-            <form string="Channel Backend">
+            <form string="Hotel Channel Backend">
                 <header>
                   <button name="synchronize_metadata"
                     type="object"
@@ -60,6 +60,15 @@
                                         string="Import in background"/>
                                 </div>
                             </group>
+                            <group>
+                                <label string="Import Rooms" class="oe_inline"/>
+                                <div>
+                                    <button name="import_rooms"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -79,7 +88,7 @@
     </record>
 
     <record id="action_channel_backend" model="ir.actions.act_window">
-        <field name="name">Channel Backends</field>
+        <field name="name">Hotel Channel Backends</field>
         <field name="res_model">channel.backend</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>

@@ -686,62 +686,6 @@ class HotelChannelConnectorImporter(AbstractComponent):
         return count
 
     @api.model
-    def get_rooms(self):
-        count = 0
-        try:
-            results = self.backend_adapter.fetch_rooms()
-
-            room_type_obj = self.env['hotel.room.type']
-            count = len(results)
-            for room in results:
-                vals = {
-                    'name': room['name'],
-                    'wrid': room['id'],
-                    'wscode': room['shortname'],
-                    'list_price': room['price'],
-                    'wcapacity': room['occupancy'],
-                    # 'max_real_rooms': room['availability'],
-                }
-                room_type = room_type_obj.search([('wrid', '=', room['id'])], limit=1)
-                if room_type:
-                    room_type.with_context({'wubook_action': False}).write(vals)
-                else:
-                    room_type_obj.with_context({'wubook_action': False}).create(vals)
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't import rooms from WuBook"), err.data['message'])
-
-        return count
-
-    @api.model
-    def fetch_rooms_values(self, dfrom, dto, rooms=False,
-                           set_max_avail=False):
-        # Sanitize Dates
-        now_dt = date_utils.now()
-        dfrom_dt = date_utils.get_datetime(dfrom)
-        dto_dt = date_utils.get_datetime(dto)
-        if dto_dt < now_dt:
-            return True
-        if dfrom_dt < now_dt:
-            dfrom_dt = now_dt
-        if dfrom_dt > dto_dt:
-            dtemp_dt = dfrom_dt
-            dfrom_dt = dto_dt
-            dto_dt = dtemp_dt
-
-        try:
-            results = self.backend_adapter.fetch_rooms_values(
-                dfrom_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                dto_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                rooms)
-            self._generate_room_values(dfrom, dto, results,
-                                       set_max_avail=set_max_avail)
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't fetch rooms values from WuBook"),
-                              err.data['message'], dfrom=dfrom, dto=dto)
-            return False
-        return True
-
-    @api.model
     def fetch_booking(self, channel_reservation_id):
         try:
             results = self.backend_adapter.fetch_booking(channel_reservation_id)
@@ -861,3 +805,30 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 err.data['message'])
             return 0
         return count
+
+class BatchImporter(AbstractComponent):
+    """ The role of a BatchImporter is to search for a list of
+    items to import, then it can either import them directly or delay
+    the import of each item separately.
+    """
+
+    _name = 'channel.batch.importer'
+    _inherit = ['base.importer', 'base.hotel.channel.connector']
+    _usage = 'batch.importer'
+
+    def _import_record(self, external_id):
+        """ Import a record directly or delay the import of the record.
+
+        Method to implement in sub-classes.
+        """
+        raise NotImplementedError
+
+class DirectBatchImporter(AbstractComponent):
+    """ Import the records directly, without delaying the jobs. """
+
+    _name = 'channel.direct.batch.importer'
+    _inherit = 'channel.batch.importer'
+
+    def _import_record(self, external_id):
+        """ Import the record directly """
+        self.model.import_record(self.backend_record, external_id)

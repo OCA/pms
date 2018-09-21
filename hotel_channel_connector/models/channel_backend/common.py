@@ -35,6 +35,13 @@ class ChannelBackend(models.Model):
             channel_hotel_reservation.import_reservations(backend)
         return True
 
+    @api.multi
+    def import_rooms(self):
+        channel_hotel_room_type = self.env['channel.hotel.room.type']
+        for backend in self:
+            channel_hotel_room_type.import_rooms(backend)
+        return True
+
     @contextmanager
     @api.multi
     def work_on(self, model_name, **kwargs):
@@ -47,6 +54,5 @@ class ChannelBackend(models.Model):
             self.pkey)
         with WuBookServer(wubook_login) as channel_api:
             _super = super(ChannelBackend, self)
-            # from the components we'll be able to do: self.work.channel_api
             with _super.work_on(model_name, channel_api=channel_api, **kwargs) as work:
                 yield work

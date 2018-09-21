@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-       <!-- Form view -->
-       <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_form">
-            <field name="name">hotel.channel.connector.ota.info.form</field>
-            <field name="model">hotel.channel.connector.ota.info</field>
-            <field name="arch" type="xml">
-                <form string="Channel OTA's Info" >
-                    <sheet>
-                        <group>
-                            <field name="ota_id" />
-                            <field name="name" />
-                            <field name="ical" readonly="True" widget="checkbox" />
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+    <!-- Form view -->
+    <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_form">
+        <field name="name">hotel.channel.connector.ota.info.form</field>
+        <field name="model">hotel.channel.connector.ota.info</field>
+        <field name="arch" type="xml">
+            <form string="Channel OTA's Info" >
+                <sheet>
+                    <group>
+                        <field name="ota_id" />
+                        <field name="name" />
+                        <field name="ical" readonly="True" widget="checkbox" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-        <!-- Tree view -->
-        <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_tree">
-            <field name="name">hotel.channel.connector.ota.info.tree</field>
-            <field name="model">hotel.channel.connector.ota.info</field>
-            <field name="arch" type="xml">
-                <tree string="Channel OTA's Info">
-                    <field name="ota_id" />
-                    <field name="name" />
-                </tree>
-            </field>
-        </record>
+    <!-- Tree view -->
+    <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_tree">
+        <field name="name">hotel.channel.connector.ota.info.tree</field>
+        <field name="model">hotel.channel.connector.ota.info</field>
+        <field name="arch" type="xml">
+            <tree string="Channel OTA's Info">
+                <field name="ota_id" />
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="open_hotel_channel_connector_ota_info_tree_all">
+    	<field name="name">Hotel Channel Connector OTA's Info</field>
+    	<field name="res_model">hotel.channel.connector.ota.info</field>
+    	<field name="view_type">form</field>
+    	<field name="view_mode">tree,form</field>
+    </record>
 
 </odoo>
