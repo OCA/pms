@@ -27,6 +27,11 @@ class HotelNodeRoomType(models.Model):
 
     node_id = fields.Many2one('project.project', 'Hotel', required=True)
 
+    _sql_constraints = [
+        ('db_remote_room_type_id_uniq', 'unique (remote_room_type_id, node_id)',
+         'The Room Type must be unique within the Node!'),
+    ]
+
     @api.onchange('node_id')
     def _onchange_node_id(self):
         if self.node_id:
@@ -41,8 +46,8 @@ class HotelNodeRoomType(models.Model):
         :return: new hotel room type record created.
         :raise: ValidationError
         """
-        _logger.warning("This fuction is not yet implemented.")
-        wdb.set_trace()
+        _logger.warning("This fuction is not yet implemented for remote create.")
+        return super().create(vals)
 
     @api.multi
     def write(self, vals):
@@ -56,11 +61,13 @@ class HotelNodeRoomType(models.Model):
                 _logger.error(msg)
                 raise ValidationError(msg)
 
-        _logger.warning("This fuction is not yet implemented.")
+        _logger.warning("This fuction is not yet implemented for remote update.")
+        return super().write(vals)
 
     @api.multi
     def unlink(self):
         """
         :raise: ValidationError
         """
-        _logger.warning("This fuction is not yet implemented.")
+        _logger.warning("This fuction is not yet implemented for remote delete.")
+        return super().unlink()
