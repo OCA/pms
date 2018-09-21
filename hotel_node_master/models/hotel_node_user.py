@@ -36,7 +36,7 @@ class HotelNodeUser(models.Model):
     password = fields.Char(default='', invisible=True, copy=False,
                            help="Keep empty if you don't want the user to be able to connect on the hotel.")
     # Remote user id for client-server understanding
-    remote_user_id = fields.Integer(require=True, invisible=True, copy=False,
+    remote_user_id = fields.Integer(require=True, invisible=True, copy=False, readonly=True,
                                     help="ID of the target record in the remote database")
 
     # The same user can not be assigned to the same hotel
@@ -135,7 +135,7 @@ class HotelNodeUser(models.Model):
         """
         for rec in self:
             if 'node_id' in vals and vals['node_id'] != rec.node_id.id:
-                msg = _("Changing a node user is not allowed. Please create a new user instead.")
+                msg = _("Changing a user between nodes is not allowed. Please create a new user instead.")
                 _logger.error(msg)
                 raise ValidationError(msg)
 

@@ -33,7 +33,7 @@
                     <notebook>
                         <page name="Rooms" string="Rooms" attrs="{'invisible':[('id','=',False)]}">
                             <group>
-                                <field name="room_ids" widget="many2many" domain="[('room_type_id','=',active_id)]"
+                                <field name="room_ids" domain="[('room_type_id','=',active_id)]"
                                 context="{'default_node_id': node_id, 'default_room_type_id': active_id}"/>
                             </group>
                         </page>

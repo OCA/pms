@@ -85,7 +85,7 @@ class HotelNode(models.Model):
             remote_fields = ['complete_name', 'display_name']
             remote_groups = noderpc.env['ir.model.data'].search_read(remote_domain, remote_fields)
 
-            # Read remote Room Type
+            # Read remote Room Types
             remote_fields = ['name', 'active', 'sequence']
             remote_room_types = noderpc.env['hotel.room.type'].search_read([], remote_fields)
 
