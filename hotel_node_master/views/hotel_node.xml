@@ -12,6 +12,11 @@
                             name="" icon="fa-tasks">
                             <field string="Tasks" name="task_count" widget="statinfo" options="{'label_field': 'label_tasks'}"/>
                         </button>
+                        <button name="action_sync_from_node" type="object" string="Synchronize"
+                                attrs="{'invisible':[('id','=',False)]}"
+                                confirm="Synchronizing a hotel node automatically updates Groups, Users, Room Types and Rooms in the Central Node. Do you want to proceed?"
+                                class="oe_stat_button" icon="fa-cloud-download">
+                        </button>
                         <button name="toggle_active" type="object"
                                 confirm="(Un)archiving a hotel node automatically (un)archives its issues. Do you want to proceed?"
                                 class="oe_stat_button" icon="fa-archive">

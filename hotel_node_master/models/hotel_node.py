@@ -80,25 +80,31 @@ class HotelNode(models.Model):
 
             vals.update({'odoo_version': noderpc.version})
 
-            # Read remote Groups
-            remote_domain = [('model', '=', 'res.groups')]
-            remote_fields = ['complete_name', 'display_name']
-            remote_groups = noderpc.env['ir.model.data'].search_read(remote_domain, remote_fields)
-
-            # Read remote Room Types
-            remote_fields = ['name', 'active', 'sequence']
-            remote_room_types = noderpc.env['hotel.room.type'].search_read([], remote_fields)
-
-            wdb.set_trace()
-
-            noderpc.logout()
-
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
         else:
-            # Process Groups
+            node_id = super().create(vals)
+            noderpc.logout()
+            return node_id
+
+    @api.multi
+    def action_sync_from_node(self):
+        self.ensure_one()
+        try:
+            noderpc = odoorpc.ODOO(self.odoo_host, self.odoo_protocol, self.odoo_port)
+            noderpc.login(self.odoo_db, self.odoo_user, self.odoo_password)
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
+        # TODO synchronize only if write_date in remote node is newer ¿?
+        try:
+            vals = {}
+            # import remote groups
+            domain = [('model', '=', 'res.groups')]
+            fields = ['complete_name', 'display_name']
+            remote_groups = noderpc.env['ir.model.data'].search_read(domain, fields)
+
             master_groups = self.env["hotel.node.group"].search_read(
-                [('odoo_version', '=', vals['odoo_version'])], ['xml_id'])
+                [('odoo_version', '=', self.odoo_version)], ['xml_id'])
 
             gui_ids = [r['id'] for r in master_groups]
             xml_ids = [r['xml_id'] for r in master_groups]
@@ -112,21 +118,49 @@ class HotelNode(models.Model):
                     group_ids.append((0, 0, {
                         'name': group['display_name'],
                         'xml_id': group['complete_name'],
-                        'odoo_version': vals['odoo_version'],
+                        'odoo_version': self.odoo_version,
                     }))
             vals.update({'group_ids': group_ids})
 
-            # Process Room Type
+            self.write(vals)
+
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
+
+        try:
+            vals = {}
+            # import remote room types
+            fields = ['name', 'active', 'sequence', 'room_ids']
+            remote_room_types = noderpc.env['hotel.room.type'].search_read([], fields)
+
+            master_room_types = self.env["hotel.node.room.type"].search_read(
+                [('node_id', '=', self.id)], ['remote_room_type_id'])
+
+            master_ids = [r['id'] for r in master_room_types]
+            remote_ids = [r['remote_room_type_id'] for r in master_room_types]
+
             room_type_ids = []
             for room_type in remote_room_types:
-                room_type_ids.append((0, 0, {
-                    'name': room_type['name'],
-                    'active': room_type['active'],
-                    'sequence': room_type['sequence'],
-                    'remote_room_type_id': room_type['id'],
-                }))
+                if room_type['id'] in remote_ids:
+                    idx = remote_ids.index(room_type['id'])
+                    room_type_ids.append((1, master_ids[idx], {
+                        'name': room_type['name'],
+                        'active': room_type['active'],
+                        'sequence': room_type['sequence'],
+                        'remote_room_type_id': room_type['id'],
+                    }))
+                else:
+                    room_type_ids.append((0, 0, {
+                        'name': room_type['name'],
+                        'active': room_type['active'],
+                        'sequence': room_type['sequence'],
+                        'remote_room_type_id': room_type['id'],
+                    }))
             vals.update({'room_type_ids': room_type_ids})
 
-            node_id = super().create(vals)
+            self.write(vals)
 
-            return node_id
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
+
+        noderpc.logout()
