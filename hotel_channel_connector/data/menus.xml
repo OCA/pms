@@ -9,16 +9,19 @@
 
     <menuitem id="menu_cannel_backend"
         name="Backends"
+        sequence="1"
         parent="menu_channel_connector_root"
         action="action_channel_backend"/>
 
-    <menuitem id="hotel_channel_connector_ota_info_menu"
+    <menuitem id="channel_ota_info_menu"
         name="OTA's"
-        action="open_hotel_channel_connector_ota_info_tree_all"
+        sequence="2"
+        action="open_channel_ota_info_tree_all"
         parent="menu_channel_connector_root"/>
 
     <menuitem id="hotel_channel_connector_issue_menu"
         name="Issues"
+        sequence="3"
         action="open_hotel_channel_connector_issue_tree_all"
         parent="menu_channel_connector_root"/>
 

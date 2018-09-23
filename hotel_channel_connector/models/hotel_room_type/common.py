@@ -23,6 +23,15 @@ class ChannelHotelRoomType(models.Model):
     channel_short_code = fields.Char("Channel Short Code", readonly=True, old_name='wscode')
     ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity')
 
+    @api.onchange('room_ids')
+    def _get_capacity(self):
+        for rec in self:
+            rec.ota_capacity = rec.odoo_id.get_capacity()
+
+    def _check_self_unlink(self):
+        if not self.odoo_id:
+            self.sudo().unlink()
+
     @job(default_channel='root.channel')
     @api.model
     def import_rooms(self, backend):
@@ -48,53 +57,30 @@ class ChannelHotelRoomType(models.Model):
     @api.multi
     def create_room(self):
         self.ensure_one()
-        if self._context.get('channel_action', True):
-            seq_obj = self.env['ir.sequence']
-            shortcode = seq_obj.next_by_code('hotel.room.type')[:4]
+        if not self.channel_room_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    channel_room_id = adapter.create_room(
-                        shortcode,
-                        self.name,
-                        self.ota_capacity,
-                        self.list_price,
-                        self.total_rooms_count)
-                    if channel_room_id:
-                        self.write({
-                            'channel_room_id': channel_room_id,
-                            'channel_short_code': shortcode,
-                        })
-                except ValidationError as e:
-                    self.create_issue('room', "Can't create room on channel", "sss")
+                exporter = work.component(usage='hotel.room.type.exporter')
+                exporter.create_room(self)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def modify_room(self):
-        _logger.info("PASA A =======")
         self.ensure_one()
-        _logger.info("PASA b =======")
-        if self._context.get('wubook_action', True) and self.channel_room_id:
-            _logger.info("PASA C =======")
+        if self.channel_room_id:
             with self.backend_id.work_on(self._name) as work:
-                _logger.info("PASA D =======")
                 exporter = work.component(usage='hotel.room.type.exporter')
                 exporter.modify_room(self)
-                _logger.info("PASA E =======")
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def delete_room(self):
         self.ensure_one()
-        if self._context.get('channel_action', True) and self.channel_room_id:
+        if self.channel_room_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    adapter.delete_room(self.channel_room_id)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't delete room on channel", "sss")
+                exporter = work.component(usage='hotel.room.type.exporter')
+                exporter.delete_room(self)
 
 class HotelRoomType(models.Model):
     _inherit = 'hotel.room.type'
@@ -104,10 +90,16 @@ class HotelRoomType(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
+    capacity = fields.Integer("Capacity", compute="_compute_capacity")
+
+    @api.multi
+    def _compute_capacity(self):
+        for record in self:
+            record.capacity = record.get_capacity()
+
     @api.onchange('room_ids')
-    def _get_capacity(self):
-        for rec in self:
-            rec.channel_bind_ids.ota_capacity = rec.get_capacity()
+    def _onchange_room_ids(self):
+        self._compute_capacity()
 
     @api.multi
     def get_restrictions(self, date):
@@ -115,12 +107,25 @@ class HotelRoomType(models.Model):
             'res.config.settings', 'parity_restrictions_id'))
         self.ensure_one()
         restriction = self.env['hotel.room.type.restriction.item'].search([
-            ('date_start', '=', date),
-            ('date_end', '=', date),
+            ('date', '=', date),
             ('room_type_id', '=', self.id),
             ('restriction_id', '=', restriction_plan_id)
         ], limit=1)
         return restriction
+
+    @api.multi
+    def create_bindings(self):
+        backends = self.env['channel.backend'].search([])
+        binding_obj = self.env['channel.hotel.room.type']
+        for backend in backends:
+            binding = binding_obj.search([
+                ('odoo_id', '=', self.id),
+                ('backend_id', '=', backend.id)], limit=1)
+            if not binding:
+                binding_obj.sudo().create({
+                    'odoo_id': self.id,
+                    'backend_id': backend.id,
+                })
 
 class HotelRoomTypeAdapter(Component):
     _name = 'channel.hotel.room.type.adapter'
@@ -140,6 +145,10 @@ class BindingHotelRoomTypeListener(Component):
         if 'name' in fields or 'list_price' in fields:
             record.channel_bind_ids[0].modify_room()
 
+    # @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    # def on_record_create(self, record, fields=None):
+    #     record.create_bindings()
+
 class ChannelBindingRoomTypeListener(Component):
     _name = 'channel.binding.room.type.listener'
     _inherit = 'base.connector.listener'
@@ -147,11 +156,11 @@ class ChannelBindingRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
-        record.with_delay(priority=20).create_room()
+        record.create_room()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):
-        record.with_delay(priority=20).delete_room()
+        record.delete_room()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):

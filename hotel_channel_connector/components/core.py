@@ -14,7 +14,7 @@ class BaseHotelChannelConnectorComponent(AbstractComponent):
                      dfrom=False, dto=False):
         self.env['hotel.channel.connector.issue'].sudo().create({
             'section': section,
-            'message': message,
+            'internal_message': message,
             'channel_object_id': channel_object_id,
             'channel_message': channel_message,
             'date_start': dfrom,

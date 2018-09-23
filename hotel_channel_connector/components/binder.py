@@ -12,4 +12,5 @@ class HotelConnectorModelBinder(Component):
         'channel.hotel.room.type.availability',
         'channel.hotel.room.type.restriction',
         'channel.product.pricelist',
+        'channel.ota.info',
     ]

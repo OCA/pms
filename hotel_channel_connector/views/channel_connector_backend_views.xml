@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <form string="Hotel Channel Backend">
                 <header>
-                  <button name="synchronize_metadata"
+                  <button name="synchronize_push_urls"
                     type="object"
                     class="oe_highlight"
-                    string="Synchronize Metadata"/>
+                    string="Synchronize Push URL's"/>
                 </header>
                 <sheet>
                     <label for="name" class="oe_edit_only"/>
@@ -27,6 +27,7 @@
                                     <field name="pkey" colspan="2"/>
                                     <field name="username" colspan="2"/>
                                     <field name="passwd" password="1" colspan="2"/>
+                                    <field name="security_token" colspan="4"/>
                                 </group>
                             </page>
                         </notebook>
@@ -64,6 +65,15 @@
                                 <label string="Import Rooms" class="oe_inline"/>
                                 <div>
                                     <button name="import_rooms"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label string="Import OTA's Info" class="oe_inline"/>
+                                <div>
+                                    <button name="import_otas_info"
                                         type="object"
                                         class="oe_highlight"
                                         string="Import in background"/>

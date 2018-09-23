@@ -162,7 +162,7 @@ class HotelReservation(models.Model):
             restriction_id = int(restriction_id)
         date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
         date_end = fields.Date.from_string(dto)
-        date_diff = abs((date_end - date_sart).days) + 1
+        date_diff = abs((date_end - date_start).days) + 1
         # Get Prices
         json_rooms_rests = {}
         room_types = self.env['hotel.room.type'].search(
@@ -176,8 +176,7 @@ class HotelReservation(models.Model):
                 ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 rest_id = room_type_rest_obj.search([
                     ('room_type_id', '=', room_type.id),
-                    ('date_start', '>=', ndate_str),
-                    ('date_end', '<=', ndate_str),
+                    ('date', '>=', ndate_str),
                     ('applied_on', '=', '0_room_type'),
                     ('restriction_id', '=', restriction_id)
                 ], limit=1)

@@ -3,8 +3,8 @@
 
     <!-- Form view -->
     <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_form">
-        <field name="name">hotel.channel.connector.ota.info.form</field>
-        <field name="model">hotel.channel.connector.ota.info</field>
+        <field name="name">channel.ota.info.form</field>
+        <field name="model">channel.ota.info</field>
         <field name="arch" type="xml">
             <form string="Channel OTA's Info" >
                 <sheet>
@@ -20,8 +20,8 @@
 
     <!-- Tree view -->
     <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_tree">
-        <field name="name">hotel.channel.connector.ota.info.tree</field>
-        <field name="model">hotel.channel.connector.ota.info</field>
+        <field name="name">channel.ota.info.tree</field>
+        <field name="model">channel.ota.info</field>
         <field name="arch" type="xml">
             <tree string="Channel OTA's Info">
                 <field name="ota_id" />
@@ -30,9 +30,9 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="open_hotel_channel_connector_ota_info_tree_all">
+    <record model="ir.actions.act_window" id="open_channel_ota_info_tree_all">
     	<field name="name">Hotel Channel Connector OTA's Info</field>
-    	<field name="res_model">hotel.channel.connector.ota.info</field>
+    	<field name="res_model">channel.ota.info</field>
     	<field name="view_type">form</field>
     	<field name="view_mode">tree,form</field>
     </record>

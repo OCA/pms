@@ -10,7 +10,7 @@ class HotelRoomType(models.Model):
 
     @api.multi
     def unlink(self):
-        room_type_pr_cached_obj = self.env['hotel.room.pricelist.cached']
+        room_type_pr_cached_obj = self.env['room.pricelist.cached']
         for record in self:
             pr_chached = room_type_pr_cached_obj.search([
                 ('room_id', '=', record.id)

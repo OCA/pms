@@ -664,28 +664,6 @@ class HotelChannelConnectorImporter(AbstractComponent):
         return True
 
     @api.model
-    def _generate_wubook_channel_info(self, channels):
-        channel_info_obj = self.env['wubook.channel.info']
-        count = 0
-        for k_cid, v_cid in channels.iteritems():
-            vals = {
-                'name': v_cid['name'],
-                'ical': v_cid['ical'] == 1,
-            }
-            channel_info = channel_info_obj.search([
-                ('wid', '=', k_cid)
-            ], limit=1)
-            if channel_info:
-                channel_info.write(vals)
-            else:
-                vals.update({
-                    'wid': k_cid
-                })
-                channel_info_obj.create(vals)
-            count = count + 1
-        return count
-
-    @api.model
     def fetch_booking(self, channel_reservation_id):
         try:
             results = self.backend_adapter.fetch_booking(channel_reservation_id)
@@ -792,19 +770,6 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 dfrom=date_from, dto=date_to)
             return False
         return True
-
-    @api.model
-    def import_channels_info(self):
-        try:
-            results = self.backend_adapter.get_channels_info()
-            count = self._generate_wubook_channel_info(results)
-        except ChannelConnectorError as err:
-            self.create_issue(
-                'channel',
-                _("Can't import channels info from wubook"),
-                err.data['message'])
-            return 0
-        return count
 
 class BatchImporter(AbstractComponent):
     """ The role of a BatchImporter is to search for a list of
