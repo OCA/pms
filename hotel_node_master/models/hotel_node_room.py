@@ -13,13 +13,6 @@ class HotelNodeRoom(models.Model):
     _name = "hotel.node.room"
     _description = "Rooms"
 
-    active = fields.Boolean(default=True)
-    sequence = fields.Integer(default=0)
-
-    @api.model
-    def _get_default_node_id(self):
-        return self.room_type_id.node_id
-
     name = fields.Char(required=True, translate=True)
 
     remote_room_id = fields.Integer(require=True, invisible=True, copy=False, readonly=True,
@@ -27,5 +20,16 @@ class HotelNodeRoom(models.Model):
 
     room_type_id = fields.Many2one('hotel.node.room.type', 'Hotel Room Type', required=True)
 
-    node_id = fields.Many2one('project.project', 'Hotel', required=True, readonly=True,
-                              default=_get_default_node_id)
+    node_id = fields.Many2one('project.project', 'Hotel', required=True, readonly=True)
+
+    capacity = fields.Integer('Capacity')
+
+    active = fields.Boolean(default=True)
+    sequence = fields.Integer(default=0)
+
+    _sql_constraints = [
+        ('db_remote_room_id_uniq', 'unique (remote_room_id, node_id)',
+         'The Room must be unique within the Node!'),
+    ]
+
+    # TODO Changing a room between nodes. Do not allow change the node at create / write

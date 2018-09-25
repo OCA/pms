@@ -47,6 +47,8 @@ class HotelNode(models.Model):
 
     room_type_ids = fields.One2many('hotel.node.room.type', 'node_id',
                                     'Rooms Type in this hotel')
+    room_ids = fields.One2many('hotel.node.room', 'node_id',
+                               'Rooms in this hotel')
 
     @api.constrains('group_ids')
     def _check_group_version(self):
@@ -126,6 +128,7 @@ class HotelNode(models.Model):
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
+        # TODO logout from node in any case. Take into account each try / except block
 
         try:
             vals = {}
@@ -163,4 +166,55 @@ class HotelNode(models.Model):
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
 
+        try:
+            vals = {}
+            # import remote rooms
+            fields = ['name', 'active', 'sequence', 'capacity', 'room_type_id']
+            remote_rooms = noderpc.env['hotel.room'].search_read([], fields)
+
+            master_rooms = self.env["hotel.node.room"].search_read(
+                [('node_id', '=', self.id)], ['remote_room_id'])
+
+            master_ids = [r['id'] for r in master_rooms]
+            remote_ids = [r['remote_room_id'] for r in master_rooms]
+
+            room_ids = []
+            for room in remote_rooms:
+                room_type_id = self.env["hotel.node.room.type"].search(
+                    [('node_id', '=', self.id),
+                     ('remote_room_type_id', '=', room['room_type_id'][0])]) or None
+
+                if room_type_id is None:
+                    msg = _("Something was completely wrong for Remote Room ID: [%s]") % room['id']
+                    _logger.critical(msg)
+                    raise ValidationError(msg)
+
+                if room['id'] in remote_ids:
+                    idx = remote_ids.index(room['id'])
+                    room_ids.append((1, master_ids[idx], {
+                        'name': room['name'],
+                        'active': room['active'],
+                        'sequence': room['sequence'],
+                        'capacity': room['capacity'],
+                        'room_type_id': room_type_id.id,
+                        'remote_room_id': room['id'],
+                    }))
+                else:
+                    room_ids.append((0, 0, {
+                        'name': room['name'],
+                        'active': room['active'],
+                        'sequence': room['sequence'],
+                        'capacity': room['capacity'],
+                        'room_type_id': room_type_id.id,
+                        'remote_room_id': room['id'],
+                    }))
+            vals.update({'room_ids': room_ids})
+
+            self.write(vals)
+
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
+
+
         noderpc.logout()
+        return True
