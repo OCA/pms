@@ -27,7 +27,12 @@
                                     <field name="pkey" colspan="2"/>
                                     <field name="username" colspan="2"/>
                                     <field name="passwd" password="1" colspan="2"/>
+                                </group>
+                                <group colspan="4" col="4">
                                     <field name="security_token" colspan="4"/>
+                                    <button colspan="1" name="generate_key"
+                                            string="Generate New Token" type="object"
+                                            class="oe_edit_only" />
                                 </group>
                             </page>
                         </notebook>

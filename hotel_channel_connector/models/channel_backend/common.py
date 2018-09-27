@@ -1,6 +1,8 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import os
+import binascii
 from contextlib import contextmanager
 from odoo import models, api, fields
 from ...components.backend_adapter import WuBookLogin, WuBookServer
@@ -28,6 +30,11 @@ class ChannelBackend(models.Model):
                          default='https://wired.wubook.net/xrws/')
     pkey = fields.Char('Channel Service PKey')
     security_token = fields.Char('Channel Service Security Token')
+
+    @api.multi
+    def generate_key(self):
+        for record in self:
+            record.security_token = binascii.hexlify(os.urandom(32)).decode()
 
     @api.multi
     def import_reservations(self):

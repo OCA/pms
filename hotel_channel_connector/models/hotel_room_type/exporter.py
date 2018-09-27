@@ -1,9 +1,11 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo import api, _
+_logger = logging.getLogger(__name__)
 
 class HotelRoomTypeExporter(Component):
     _name = 'channel.hotel.room.type.exporter'
