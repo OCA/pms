@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hotel_node_reservation_wizard_view_form" model="ir.ui.view">
+		<field name="name">hotel.node.reservation.wizard</field>
+		<field name="model">hotel.node.reservation.wizard</field>
+		<field name="arch" type="xml">
+            <form string="Users">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="node_id" placeholder="Hotel" required="1"
+                                   attrs="{'readonly': [('node_id', '!=', False)]}"/>
+                        </h1>
+                    </div>
+                    <group attrs="{'invisible': [('node_id', '=', False)]}">
+                        <group name="room_type">
+                            <field name="room_type_id">
+                                <tree>
+                                    <field name="name" string="Room Type" readonly="1"/>
+                                    <field name="remote_room_type_id" readonly="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <footer attrs="{'invisible': [('node_id', '=', False)]}">
+                        <button name="create_folio" string="Create Reservations" type="object"
+							class="oe_highlight" />
+                    </footer>
+                </sheet>
+            </form>
+		</field>
+	</record>
+
+</odoo>

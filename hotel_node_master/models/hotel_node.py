@@ -57,6 +57,7 @@ class HotelNode(models.Model):
         """
         for node in self:
             domain = [('id', 'in', node.group_ids.ids), ('odoo_version', '!=', node.odoo_version)]
+            # TODO Use search_count
             invalid_groups = self.env["hotel.node.group"].search(domain)
             if len(invalid_groups) > 0:
                 msg = _("At least one group is not within the node version.") + " " + \

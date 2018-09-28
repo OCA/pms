@@ -29,40 +29,23 @@ class HotelNodeUser(models.Model):
     node_id = fields.Many2one('project.project', 'Hotel', required=True)
     # remote users are managed as partners into the central node
     partner_id = fields.Many2one('res.partner', required=True)
-    # Remote login for the hotels
     login = fields.Char(require=True,
                         help="Used to log into the hotel")
-    # Password for login into the remote hotels
     password = fields.Char(default='', invisible=True, copy=False,
                            help="Keep empty if you don't want the user to be able to connect on the hotel.")
-    # Remote user id for client-server understanding
     remote_user_id = fields.Integer(require=True, invisible=True, copy=False, readonly=True,
                                     help="ID of the target record in the remote database")
 
-    # The same user can not be assigned to the same hotel
-    # _sql_constraints = [
-    #     ('user_id_node_id_key', 'UNIQUE (user_id, node_id)',
-    #      'You can not have two users with the same login in the same hotel!')
-    # ]
-
-    # Users access control ...
     group_ids = fields.Many2many('hotel.node.group', 'hotel_node_user_group_rel', 'user_id', 'group_id',
                                  string='Groups', default=_default_groups, require=True,
                                  help="Access rights for this user in this hotel.")
-
-    # @api.constrains('user_id', 'node_id')
-    # def _check_user_node_unicity(self):
-    #     if self.search_count([
-    #         ('user_id', '=', self.user_id.id),
-    #         ('node_id', '=', self.node_id.id),
-    #     ]) > 1:
-    #         raise ValidationError(_("You can not have two users with the same login in the same hotel!"))
 
     # Constraints and onchanges
     @api.constrains('group_ids')
     def _check_group_ids(self):
         # TODO ensure all group_ids are within the node version
         domain = [('id', 'in', self.group_ids.ids), ('odoo_version', '!=', self.node_id.odoo_version)]
+        # TODO Use search_count
         invalid_groups = self.env["hotel.node.group"].search(domain)
         if len(invalid_groups) > 0:
             msg = _("At least one group is not within the node version.") + " " + \
@@ -91,6 +74,7 @@ class HotelNodeUser(models.Model):
         if 'group_ids' in vals:
             domain = [('id', 'in', vals['group_ids'][0][2]), ('odoo_version', '!=', node.odoo_version)]
             invalid_groups = self.env["hotel.node.group"].search(domain)
+            # TODO Use search_count
             if len(invalid_groups) > 0:
                 msg = _("At least one group is not within the node version.") + " " + \
                       _("Odoo version in node: %s") % node.odoo_version
@@ -144,6 +128,7 @@ class HotelNodeUser(models.Model):
             if 'group_ids' in vals:
                 domain = [('id', 'in', vals['group_ids'][0][2]), ('odoo_version', '!=', node.odoo_version)]
                 invalid_groups = self.env["hotel.node.group"].search(domain)
+                # TODO Use search_count
                 if len(invalid_groups) > 0:
                     msg = _("At least one group is not within the node version.") + " " + \
                           _("Odoo version in node: %s") % node.odoo_version

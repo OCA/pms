@@ -133,6 +133,12 @@
                 res_model="hotel.node.group"
                 view_mode="tree,form"
     />
+    <!-- Action to open Hotel Node Reservation List -->
+    <act_window id="hotel_node_reservation_action"
+                name="List of Reservations in Hotels"
+                res_model="hotel.node.reservation.wizard"
+                view_mode="tree,form"
+    />
 
     <!-- Menu default to open Hotel Nodes Dashboard -->
     <menuitem id="hotel_node_dashboard_menu"
@@ -171,5 +177,13 @@
               action="hotel_node_group_action"
               parent="dashboard_menu"
               sequence="3"
+    />
+
+    <!-- Menu item to open Hotel Node Reservation List -->
+    <menuitem id="hotel_node_reservation_menu"
+              name="Reservations"
+              action="hotel_node_reservation_action"
+              parent="dashboard_menu"
+              sequence="4"
     />
 </odoo>
