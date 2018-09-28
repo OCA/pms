@@ -2,7 +2,7 @@
 <odoo>
 
   <!-- FORM restriction -->
-  <record id="reservation_restriction_item_view_form" model="ir.ui.view">
+  <record id="room_type_restriction_item_view_form" model="ir.ui.view">
     <field name="name">hotel.room.type.restriction.item.form</field>
     <field name="model">hotel.room.type.restriction.item</field>
     <field name="arch" type="xml">
@@ -13,12 +13,7 @@
           <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '1_global']]}" required="True"/>
         </group>
         <group>
-          <group>
-            <field name="date_start"/>
-          </group>
-          <group>
-            <field name="date_end"/>
-          </group>
+          <field name="date"/>
         </group>
         <group>
           <group>
@@ -37,7 +32,7 @@
   </record>
 
   <!-- TREE restriction -->
-  <record id="reservation_restriction_item_view_tree" model="ir.ui.view">
+  <record id="room_type_restriction_item_view_tree" model="ir.ui.view">
     <field name="name">hotel.room.type.restriction.item.tree</field>
     <field name="model">hotel.room.type.restriction.item</field>
     <field name="arch" type="xml">
@@ -45,8 +40,7 @@
         <field name="applied_on"/>
         <!-- <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '1_room_type']]}"/> -->
         <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '0_room_type']]}"/>
-        <field name="date_start"/>
-        <field name="date_end"/>
+        <field name="date"/>
         <field name="min_stay"/>
         <field name="closed"/>
       </tree>

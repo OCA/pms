@@ -84,8 +84,7 @@ class HotelCalendarManagement(models.TransientModel):
         for k_res in restrictions.keys():
             for restriction in restrictions[k_res]:
                 res_id = room_type_rest_item_obj.search([
-                    ('date_start', '>=', restriction['date']),
-                    ('date_end', '<=', restriction['date']),
+                    ('date', '=', restriction['date']),
                     ('restriction_id', '=', int(restriction_id)),
                     ('applied_on', '=', '0_room_type'),
                     ('room_type_id', '=', int(k_res)),
@@ -93,8 +92,7 @@ class HotelCalendarManagement(models.TransientModel):
                 vals = self._get_restrictions_values(restriction)
                 if not res_id:
                     vals.update({
-                        'date_start': restriction['date'],
-                        'date_end': restriction['date'],
+                        'date': restriction['date'],
                         'restriction_id': int(restriction_id),
                         'applied_on': '0_room_type',
                         'room_type_id': int(k_res),
@@ -159,10 +157,9 @@ class HotelCalendarManagement(models.TransientModel):
     def _hcalendar_restriction_json_data(self, restrictions):
         json_data = {}
         for rec in restrictions:
-            # TODO: date_end - date_start loop
             json_data.setdefault(rec.room_type_id.id, []).append({
                 'id': rec.id,
-                'date': rec.date_start,
+                'date': rec.date,
                 'min_stay': rec.min_stay,
                 'min_stay_arrival': rec.min_stay_arrival,
                 'max_stay': rec.max_stay,
@@ -282,7 +279,7 @@ class HotelCalendarManagement(models.TransientModel):
 
         room_type_rest_it_obj = self.env['hotel.room.type.restriction.item']
         restriction_item_ids = room_type_rest_it_obj.search([
-            ('date_start', '>=', dfrom), ('date_end', '<=', dto),
+            ('date', '>=', dfrom), ('date', '<=', dto),
             ('restriction_id', '=', restriction_id),
             ('applied_on', '=', '0_room_type'),
         ])

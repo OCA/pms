@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <odoo>
 
-    <record id="reservation_restriction_view" model="ir.ui.view">
+    <record id="room_type_restriction_view" model="ir.ui.view">
         <field name="model">hotel.room.type.restriction</field>
-        <field name="inherit_id" ref="hotel.reservation_restriction_view_form" />
+        <field name="inherit_id" ref="hotel.room_type_restriction_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//form[1]//sheet" position="before">
                 <header>

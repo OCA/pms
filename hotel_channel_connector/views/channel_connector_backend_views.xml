@@ -5,12 +5,12 @@
         <field name="name">channel.backend.form</field>
         <field name="model">channel.backend</field>
         <field name="arch" type="xml">
-            <form string="Channel Backend">
+            <form string="Hotel Channel Backend">
                 <header>
-                  <button name="synchronize_metadata"
+                  <button name="synchronize_push_urls"
                     type="object"
                     class="oe_highlight"
-                    string="Synchronize Metadata"/>
+                    string="Synchronize Push URL's"/>
                 </header>
                 <sheet>
                     <label for="name" class="oe_edit_only"/>
@@ -21,11 +21,18 @@
                         <notebook>
                             <page string="API" name="api">
                                 <group colspan="4" col="4">
-                                    <field name="version" colspan="4"/>
+                                    <field name="version" colspan="2"/>
                                     <field name="server" colspan="2"/>
                                     <field name="lcode" colspan="2"/>
+                                    <field name="pkey" colspan="2"/>
                                     <field name="username" colspan="2"/>
                                     <field name="passwd" password="1" colspan="2"/>
+                                </group>
+                                <group colspan="4" col="4">
+                                    <field name="security_token" colspan="4"/>
+                                    <button colspan="1" name="generate_key"
+                                            string="Generate New Token" type="object"
+                                            class="oe_edit_only" />
                                 </group>
                             </page>
                         </notebook>
@@ -59,6 +66,24 @@
                                         string="Import in background"/>
                                 </div>
                             </group>
+                            <group>
+                                <label string="Import Rooms" class="oe_inline"/>
+                                <div>
+                                    <button name="import_rooms"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label string="Import OTA's Info" class="oe_inline"/>
+                                <div>
+                                    <button name="import_otas_info"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -78,7 +103,7 @@
     </record>
 
     <record id="action_channel_backend" model="ir.actions.act_window">
-        <field name="name">Channel Backends</field>
+        <field name="name">Hotel Channel Backends</field>
         <field name="res_model">channel.backend</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>

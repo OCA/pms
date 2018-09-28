@@ -15,3 +15,8 @@ class ChannelBinding(models.AbstractModel):
         string='Hotel Channel Connector Backend',
         required=True,
         ondelete='restrict')
+
+    _sql_constraints = [
+        ('channel_uniq', 'unique(backend_id, external_id)',
+         'A binding already exists with the same Channel ID.'),
+    ]

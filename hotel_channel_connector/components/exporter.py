@@ -2,6 +2,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
+import psycopg2
+from contextlib import contextmanager
+from odoo.addons.connector.exception import (IDMissingInBackend,
+                                             RetryableJobError)
 from odoo.addons.component.core import AbstractComponent
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,

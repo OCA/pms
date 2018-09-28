@@ -10,7 +10,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(HotelVirtualRoomResrtrictionItem, self).create(vals)
+        res = super(HotelRoomTypeResrtrictionItem, self).create(vals)
         restrictions_parity_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'parity_restrictions_id')
         if restrictions_parity_id:
@@ -20,7 +20,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
                 self.applied_on == '0_room_type':
             self.env['bus.hotel.calendar'].send_restriction_notification({
                 'restriction_id': self.restriction_id.id,
-                'date': self.date_start,
+                'date': self.date,
                 'min_stay': self.min_stay,
                 'min_stay_arrival': self.min_stay_arrival,
                 'max_stay': self.max_stay,
@@ -39,7 +39,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
             'res.config.settings', 'parity_restrictions_id')
         if restrictions_parity_id:
             restrictions_parity_id = int(restrictions_parity_id)
-        ret_vals = super(HotelVirtualRoomResrtrictionItem, self).write(vals)
+        ret_vals = super(HotelRoomTypeResrtrictionItem, self).write(vals)
 
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for record in self:
@@ -48,7 +48,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
                 continue
             bus_hotel_calendar_obj.send_restriction_notification({
                 'restriction_id': record.restriction_id.id,
-                'date': record.date_start,
+                'date': record.date,
                 'min_stay': record.min_stay,
                 'min_stay_arrival': record.min_stay_arrival,
                 'max_stay': record.max_stay,
@@ -86,7 +86,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
                 'room_type_id': record.room_type_id.id,
                 'id': record.id,
             })
-        res = super(HotelVirtualRoomResrtrictionItem, self).unlink()
+        res = super(HotelRoomTypeResrtrictionItem, self).unlink()
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for uval in unlink_vals:
             bus_hotel_calendar_obj.send_restriction_notification(uval)

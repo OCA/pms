@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-	<record model="ir.actions.act_window" id="open_hotel_channel_connector_ota_info_tree_all">
-		<field name="name">Hotel Channel Connector OTA's Info</field>
-		<field name="res_model">hotel.channel.connector.ota.info</field>
-		<field name="view_type">form</field>
-		<field name="view_mode">tree,form</field>
-	</record>
+    <menuitem id="menu_channel_connector_root"
+        parent="connector.menu_connector_root"
+        name="Channel"
+        sequence="10"
+        groups="connector.group_connector_manager"/>
 
-	<record model="ir.actions.act_window" id="open_hotel_channel_connector_issue_tree_all">
-		<field name="name">Hotel Channel Connector Issues</field>
-		<field name="res_model">hotel.channel.connector.issue</field>
-		<field name="view_type">form</field>
-		<field name="view_mode">tree,form</field>
-		<field name="search_view_id" ref="view_hotel_channel_connector_issue_form_search"/>
-		<field name="context">{"search_default_to_read":True}</field>
-	</record>
+    <menuitem id="menu_cannel_backend"
+        name="Backends"
+        sequence="1"
+        parent="menu_channel_connector_root"
+        action="action_channel_backend"/>
 
-	<menuitem id="hotel_channel_connector_menu" name="Hotel Channel Connector"
-	    sequence="25" parent="base.menu_administration" />
+    <menuitem id="channel_ota_info_menu"
+        name="OTA's"
+        sequence="2"
+        action="open_channel_ota_info_tree_all"
+        parent="menu_channel_connector_root"/>
 
-	<menuitem id="hotel_channel_connector_ota_info_menu" name="Channels Info"
-		sequence="1" action="open_hotel_channel_connector_ota_info_tree_all" parent="hotel_channel_connector_menu"/>
-	<menuitem id="hotel_channel_connector_issue_menu" name="Issues"
-		sequence="2" action="open_hotel_channel_connector_issue_tree_all" parent="hotel_channel_connector_menu"/>
+    <menuitem id="hotel_channel_connector_issue_menu"
+        name="Issues"
+        sequence="3"
+        action="open_hotel_channel_connector_issue_tree_all"
+        parent="menu_channel_connector_root"/>
 
 </odoo>

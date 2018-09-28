@@ -1,11 +1,13 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
 from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+_logger = logging.getLogger(__name__)
 
 class ChannelHotelRoomType(models.Model):
     _name = 'channel.hotel.room.type'
@@ -20,6 +22,22 @@ class ChannelHotelRoomType(models.Model):
     channel_room_id = fields.Char("Channel Room ID", readonly=True, old_name='wrid')
     channel_short_code = fields.Char("Channel Short Code", readonly=True, old_name='wscode')
     ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity')
+
+    @api.onchange('room_ids')
+    def _get_capacity(self):
+        for rec in self:
+            rec.ota_capacity = rec.odoo_id.get_capacity()
+
+    def _check_self_unlink(self):
+        if not self.odoo_id:
+            self.sudo().unlink()
+
+    @job(default_channel='root.channel')
+    @api.model
+    def import_rooms(self, backend):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='hotel.room.type.importer')
+            return importer.get_rooms()
 
     @api.constrains('ota_capacity')
     def _check_ota_capacity(self):
@@ -39,65 +57,30 @@ class ChannelHotelRoomType(models.Model):
     @api.multi
     def create_room(self):
         self.ensure_one()
-        if self._context.get('channel_action', True):
-            seq_obj = self.env['ir.sequence']
-            shortcode = seq_obj.next_by_code('hotel.room.type')[:4]
+        if not self.channel_room_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    channel_room_id = adapter.create_room(
-                        shortcode,
-                        self.name,
-                        self.ota_capacity,
-                        self.list_price,
-                        self.total_rooms_count)
-                    if channel_room_id:
-                        self.write({
-                            'channel_room_id': channel_room_id,
-                            'channel_short_code': shortcode,
-                        })
-                except ValidationError as e:
-                    self.create_issue('room', "Can't create room on channel", "sss")
+                exporter = work.component(usage='hotel.room.type.exporter')
+                exporter.create_room(self)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def modify_room(self):
         self.ensure_one()
-        if self._context.get('channel_action', True) and self.channel_room_id:
+        if self.channel_room_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    adapter.modify_room(
-                        self.channel_room_id,
-                        self.name,
-                        self.ota_capacity,
-                        self.list_price,
-                        self.total_rooms_count,
-                        self.channel_short_code)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't modify room on channel", "sss")
+                exporter = work.component(usage='hotel.room.type.exporter')
+                exporter.modify_room(self)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def delete_room(self):
         self.ensure_one()
-        if self._context.get('channel_action', True) and self.channel_room_id:
+        if self.channel_room_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    adapter.delete_room(self.channel_room_id)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't delete room on channel", "sss")
-
-    @job(default_channel='root.channel')
-    @api.multi
-    def import_rooms(self):
-        if self._context.get('channel_action', True):
-            with self.backend_id.work_on(self._name) as work:
-                importer = work.component(usage='channel.importer')
-                return importer.import_rooms()
+                exporter = work.component(usage='hotel.room.type.exporter')
+                exporter.delete_room(self)
 
 class HotelRoomType(models.Model):
     _inherit = 'hotel.room.type'
@@ -107,10 +90,16 @@ class HotelRoomType(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
+    capacity = fields.Integer("Capacity", compute="_compute_capacity")
+
+    @api.multi
+    def _compute_capacity(self):
+        for record in self:
+            record.capacity = record.get_capacity()
+
     @api.onchange('room_ids')
-    def _get_capacity(self):
-        for rec in self:
-            rec.channel_bind_ids.ota_capacity = rec.get_capacity()
+    def _onchange_room_ids(self):
+        self._compute_capacity()
 
     @api.multi
     def get_restrictions(self, date):
@@ -118,26 +107,61 @@ class HotelRoomType(models.Model):
             'res.config.settings', 'parity_restrictions_id'))
         self.ensure_one()
         restriction = self.env['hotel.room.type.restriction.item'].search([
-            ('date_start', '=', date),
-            ('date_end', '=', date),
+            ('date', '=', date),
             ('room_type_id', '=', self.id),
             ('restriction_id', '=', restriction_plan_id)
         ], limit=1)
         return restriction
 
+    @api.multi
+    def create_bindings(self):
+        backends = self.env['channel.backend'].search([])
+        binding_obj = self.env['channel.hotel.room.type']
+        for backend in backends:
+            binding = binding_obj.search([
+                ('odoo_id', '=', self.id),
+                ('backend_id', '=', backend.id)], limit=1)
+            if not binding:
+                binding_obj.sudo().create({
+                    'odoo_id': self.id,
+                    'backend_id': backend.id,
+                })
+
+class HotelRoomTypeAdapter(Component):
+    _name = 'channel.hotel.room.type.adapter'
+    _inherit = 'wubook.adapter'
+    _apply_on = 'channel.hotel.room.type'
+
+    def fetch_rooms(self):
+        return super(HotelRoomTypeAdapter, self).fetch_rooms()
+
+class BindingHotelRoomTypeListener(Component):
+    _name = 'binding.hotel.room.type.listener'
+    _inherit = 'base.connector.listener'
+    _apply_on = ['hotel.room.type']
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+        if 'name' in fields or 'list_price' in fields:
+            record.channel_bind_ids[0].modify_room()
+
+    # @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    # def on_record_create(self, record, fields=None):
+    #     record.create_bindings()
+
 class ChannelBindingRoomTypeListener(Component):
     _name = 'channel.binding.room.type.listener'
     _inherit = 'base.connector.listener'
-    _apply_on = ['channel.room.type']
+    _apply_on = ['channel.hotel.room.type']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_write(self, record, fields=None):
-        record.with_delay(priority=20).create_room()
+    def on_record_create(self, record, fields=None):
+        record.create_room()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):
-        record.with_delay(priority=20).delete_room()
+        record.delete_room()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        record.with_delay(priority=20).modidy_room()
+        record.modify_room()
