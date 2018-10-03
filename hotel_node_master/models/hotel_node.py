@@ -133,7 +133,60 @@ class HotelNode(models.Model):
 
         try:
             vals = {}
+            # import remote users
+            # TODO Restrict users to hootel users
+            domain = [('login', '!=', 'admin')]
+            fields = ['name', 'login', 'email', 'is_company', 'partner_id', 'groups_id', 'active']
+            remote_users = noderpc.env['res.users'].search_read(domain, fields)
+
+            master_users = self.env["hotel.node.user"].search_read(
+                [('node_id', '=', self.id)], ['remote_user_id'])
+
+            master_ids = [r['id'] for r in master_users]
+            remote_ids = [r['remote_user_id'] for r in master_users]
+
+            user_ids = []
+            for user in remote_users:
+                if user['id'] in remote_ids:
+                    idx = remote_ids.index(user['id'])
+                    user_ids.append((1, master_ids[idx], {
+                        'name': user['name'],
+                        'login': user['login'],
+                        'email': user['email'],
+                        'active': user['active'],
+                        'remote_user_id': user['id'],
+                        'is_synchronizing': True,
+                    }))
+                else:
+                    user_ids.append((0, 0, {
+                        'name': user['name'],
+                        'login': user['login'],
+                        'email': user['email'],
+                        'active': user['active'],
+                        'remote_user_id': user['id'],
+                        'is_synchronizing': True,
+                    }))
+            vals.update({'user_ids': user_ids})
+
+            wdb.set_trace()
+
+            self.write(vals)
+
+
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
+
+        try:
+            vals = {}
+            # import remote partners (exclude unconfirmed using DNI)
+
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
+
+        try:
+            vals = {}
             # import remote room types
+            # TODO Actually only work for hootel v2
             fields = ['name', 'active', 'sequence', 'room_ids']
             remote_room_types = noderpc.env['hotel.room.type'].search_read([], fields)
 
@@ -170,6 +223,7 @@ class HotelNode(models.Model):
         try:
             vals = {}
             # import remote rooms
+            # TODO Actually only work for hootel v2
             fields = ['name', 'active', 'sequence', 'capacity', 'room_type_id']
             remote_rooms = noderpc.env['hotel.room'].search_read([], fields)
 

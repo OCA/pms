@@ -29,6 +29,9 @@ class HotelNodeUser(models.Model):
     node_id = fields.Many2one('project.project', 'Hotel', required=True)
     # remote users are managed as partners into the central node
     partner_id = fields.Many2one('res.partner', required=True)
+    name = fields.Char(related='partner_id.name', readonly=True)
+    email = fields.Char(related='partner_id.email', readonly=True)
+
     login = fields.Char(require=True,
                         help="Used to log into the hotel")
     password = fields.Char(default='', invisible=True, copy=False,
@@ -82,28 +85,39 @@ class HotelNodeUser(models.Model):
                 raise ValidationError(msg)
 
         try:
-            noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
-            noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
+            if 'is_synchronizing' in vals:
+                partner = self.env["res.partner"].search([('email', '=', vals['login'])])
+                if partner.id:
+                    vals['partner_id'] = partner.id
+                else:
+                    partner = partner.create({
+                        'name': vals['name'],
+                        'email': vals['login'],
+                    })
+                    vals['partner_id'] = partner.id
+            else:
+                noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
+                noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
 
-            partner = self.env["res.partner"].browse(vals['partner_id'])
-            remote_vals = {
-                'name': partner.name,
-                'login': vals['login'],
-            }
+                partner = self.env["res.partner"].browse(vals['partner_id'])
+                remote_vals = {
+                    'name': partner.name,
+                    'login': vals['login'],
+                }
 
-            if 'group_ids' in vals:
-                groups = self.env["hotel.node.group"].browse(vals['group_ids'][0][2])
-                # TODO Improve one rpc call per remote group for better performance
-                remote_groups = [noderpc.env.ref(r.xml_id).id for r in groups]
-                remote_vals.update({'groups_id': [[6, False, remote_groups]]})
+                if 'group_ids' in vals:
+                    groups = self.env["hotel.node.group"].browse(vals['group_ids'][0][2])
+                    # TODO Improve one rpc call per remote group for better performance
+                    remote_groups = [noderpc.env.ref(r.xml_id).id for r in groups]
+                    remote_vals.update({'groups_id': [[6, False, remote_groups]]})
 
-            # create user and delegate in remote node the default values for the user
-            remote_user_id = noderpc.env['res.users'].create(remote_vals)
-            _logger.info('User #%s created remote res.users with ID: [%s]',
-                         self._context.get('uid'), remote_user_id)
-            vals.update({'remote_user_id': remote_user_id})
+                # create user and delegate in remote node the default values for the user
+                remote_user_id = noderpc.env['res.users'].create(remote_vals)
+                _logger.info('User #%s created remote res.users with ID: [%s]',
+                             self._context.get('uid'), remote_user_id)
+                vals.update({'remote_user_id': remote_user_id})
 
-            noderpc.logout()
+                noderpc.logout()
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             _logger.error(err)
@@ -136,32 +150,33 @@ class HotelNodeUser(models.Model):
                     raise ValidationError(msg)
 
             try:
-                noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
-                noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
+                if 'is_synchronizing' not in vals:
+                    noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
+                    noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
 
-                remote_vals = {}
+                    remote_vals = {}
 
-                if 'active' in vals:
-                    remote_vals.update({'active': vals['active']})
+                    if 'active' in vals:
+                        remote_vals.update({'active': vals['active']})
 
-                if 'password' in vals:
-                    remote_vals.update({'password': vals['password']})
+                    if 'password' in vals:
+                        remote_vals.update({'password': vals['password']})
 
-                if 'partner_id' in vals:
-                    partner = self.env["res.partner"].browse(vals['partner_id'])
-                    remote_vals.update({'name': partner.name})
+                    if 'partner_id' in vals:
+                        partner = self.env["res.partner"].browse(vals['partner_id'])
+                        remote_vals.update({'name': partner.name})
 
-                if 'group_ids' in vals:
-                    groups = self.env["hotel.node.group"].browse(vals['group_ids'][0][2])
-                    # TODO Improve one rpc call per remote group for better performance
-                    remote_groups = [noderpc.env.ref(r.xml_id).id for r in groups]
-                    remote_vals.update({'groups_id': [[6, False, remote_groups]]})
+                    if 'group_ids' in vals:
+                        groups = self.env["hotel.node.group"].browse(vals['group_ids'][0][2])
+                        # TODO Improve one rpc call per remote group for better performance
+                        remote_groups = [noderpc.env.ref(r.xml_id).id for r in groups]
+                        remote_vals.update({'groups_id': [[6, False, remote_groups]]})
 
-                noderpc.env['res.users'].write([rec.remote_user_id], remote_vals)
-                _logger.info('User #%s updated remote res.users with ID: [%s]',
-                             self._context.get('uid'), rec.remote_user_id)
+                    noderpc.env['res.users'].write([rec.remote_user_id], remote_vals)
+                    _logger.info('User #%s updated remote res.users with ID: [%s]',
+                                 self._context.get('uid'), rec.remote_user_id)
 
-                noderpc.logout()
+                    noderpc.logout()
 
             except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
                 _logger.error(err)
@@ -175,15 +190,15 @@ class HotelNodeUser(models.Model):
         """
         :raise: ValidationError
         """
-        # TODO In production users are archived instead of removed
         for rec in self:
             try:
                 node = rec.node_id
 
                 noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
                 noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
-
-                noderpc.env['res.users'].unlink([rec.remote_user_id])
+                # TODO In production users are archived instead of removed
+                # noderpc.env['res.users'].unlink([rec.remote_user_id])
+                noderpc.env['res.users'].write([rec.remote_user_id], {'active': False})
                 _logger.info('User #%s deleted remote res.users with ID: [%s]',
                              self._context.get('uid'), rec.remote_user_id)
                 noderpc.logout()
