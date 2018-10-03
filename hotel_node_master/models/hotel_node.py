@@ -155,7 +155,6 @@ class HotelNode(models.Model):
                         'email': user['email'],
                         'active': user['active'],
                         'remote_user_id': user['id'],
-                        'is_synchronizing': True,
                     }))
                 else:
                     user_ids.append((0, 0, {
@@ -164,13 +163,12 @@ class HotelNode(models.Model):
                         'email': user['email'],
                         'active': user['active'],
                         'remote_user_id': user['id'],
-                        'is_synchronizing': True,
                     }))
             vals.update({'user_ids': user_ids})
 
-            wdb.set_trace()
-
-            self.write(vals)
+            self.with_context({
+                    'is_synchronizing': True,
+                }).write(vals)
 
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:

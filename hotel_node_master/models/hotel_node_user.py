@@ -85,7 +85,7 @@ class HotelNodeUser(models.Model):
                 raise ValidationError(msg)
 
         try:
-            if 'is_synchronizing' in vals:
+            if 'is_synchronizing' not in self._context:
                 partner = self.env["res.partner"].search([('email', '=', vals['login'])])
                 if partner.id:
                     vals['partner_id'] = partner.id
@@ -148,9 +148,9 @@ class HotelNodeUser(models.Model):
                           _("Odoo version in node: %s") % node.odoo_version
                     _logger.error(msg)
                     raise ValidationError(msg)
-
+                
             try:
-                if 'is_synchronizing' not in vals:
+                if 'is_synchronizing' not in self._context:
                     noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
                     noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
 
