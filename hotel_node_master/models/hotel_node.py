@@ -57,9 +57,8 @@ class HotelNode(models.Model):
         """
         for node in self:
             domain = [('id', 'in', node.group_ids.ids), ('odoo_version', '!=', node.odoo_version)]
-            # TODO Use search_count
-            invalid_groups = self.env["hotel.node.group"].search(domain)
-            if len(invalid_groups) > 0:
+            invalid_groups = self.env["hotel.node.group"].search_count(domain)
+            if invalid_groups > 0:
                 msg = _("At least one group is not within the node version.") + " " + \
                       _("Odoo version of the node: %s") % node.odoo_version
                 _logger.warning(msg)
@@ -98,13 +97,14 @@ class HotelNode(models.Model):
             noderpc.login(self.odoo_db, self.odoo_user, self.odoo_password)
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
+
         # TODO synchronize only if write_date in remote node is newer ¿?
         try:
             vals = {}
             # import remote groups
-            domain = [('model', '=', 'res.groups')]
-            fields = ['complete_name', 'display_name']
-            remote_groups = noderpc.env['ir.model.data'].search_read(domain, fields)
+            remote_groups = noderpc.env['ir.model.data'].search_read(
+                [('model', '=', 'res.groups')],
+                ['complete_name', 'display_name'])
 
             master_groups = self.env["hotel.node.group"].search_read(
                 [('odoo_version', '=', self.odoo_version)], ['xml_id'])
@@ -129,15 +129,14 @@ class HotelNode(models.Model):
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
-        # TODO logout from node in any case. Take into account each try / except block
 
         try:
             vals = {}
             # import remote users
             # TODO Restrict users to hootel users
-            domain = [('login', '!=', 'admin')]
-            fields = ['name', 'login', 'email', 'is_company', 'partner_id', 'groups_id', 'active']
-            remote_users = noderpc.env['res.users'].search_read(domain, fields)
+            remote_users = noderpc.env['res.users'].search_read(
+                [('login', '!=', 'admin')],
+                ['name', 'login', 'email', 'is_company', 'partner_id', 'groups_id', 'active'])
 
             master_users = self.env["hotel.node.user"].search_read(
                 [('node_id', '=', self.id)], ['remote_user_id'])
@@ -157,19 +156,27 @@ class HotelNode(models.Model):
                         'remote_user_id': user['id'],
                     }))
                 else:
+                    partner = self.env['res.partner'].search([('email', '=', user['email'])])
+                    if not partner:
+                        partner = self.env['res.partner'].create({
+                            'name': user['name'],
+                            'is_company': False,
+                            'email': user['email'],
+                        })
+
                     user_ids.append((0, 0, {
                         'name': user['name'],
                         'login': user['login'],
                         'email': user['email'],
                         'active': user['active'],
                         'remote_user_id': user['id'],
+                        'partner_id': partner.id,
                     }))
             vals.update({'user_ids': user_ids})
 
             self.with_context({
                     'is_synchronizing': True,
                 }).write(vals)
-
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
@@ -185,8 +192,8 @@ class HotelNode(models.Model):
             vals = {}
             # import remote room types
             # TODO Actually only work for hootel v2
-            fields = ['name', 'active', 'sequence', 'room_ids']
-            remote_room_types = noderpc.env['hotel.room.type'].search_read([], fields)
+            remote_room_types = noderpc.env['hotel.room.type'].search_read(
+                [], ['name', 'active', 'sequence', 'room_ids'])
 
             master_room_types = self.env["hotel.node.room.type"].search_read(
                 [('node_id', '=', self.id)], ['remote_room_type_id'])
@@ -222,8 +229,9 @@ class HotelNode(models.Model):
             vals = {}
             # import remote rooms
             # TODO Actually only work for hootel v2
-            fields = ['name', 'active', 'sequence', 'capacity', 'room_type_id']
-            remote_rooms = noderpc.env['hotel.room'].search_read([], fields)
+            remote_rooms = noderpc.env['hotel.room'].search_read(
+                [],
+                ['name', 'active', 'sequence', 'capacity', 'room_type_id'])
 
             master_rooms = self.env["hotel.node.room"].search_read(
                 [('node_id', '=', self.id)], ['remote_room_id'])
@@ -267,7 +275,6 @@ class HotelNode(models.Model):
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
-
 
         noderpc.logout()
         return True

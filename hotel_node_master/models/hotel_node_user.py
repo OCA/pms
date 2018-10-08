@@ -29,10 +29,10 @@ class HotelNodeUser(models.Model):
     node_id = fields.Many2one('project.project', 'Hotel', required=True)
     # remote users are managed as partners into the central node
     partner_id = fields.Many2one('res.partner', required=True)
-    name = fields.Char(related='partner_id.name', readonly=True)
+    name = fields.Char(related='partner_id.name')
     email = fields.Char(related='partner_id.email', readonly=True)
 
-    login = fields.Char(require=True,
+    login = fields.Char(related='partner_id.email', require=True,
                         help="Used to log into the hotel")
     password = fields.Char(default='', invisible=True, copy=False,
                            help="Keep empty if you don't want the user to be able to connect on the hotel.")
@@ -48,9 +48,8 @@ class HotelNodeUser(models.Model):
     def _check_group_ids(self):
         # TODO ensure all group_ids are within the node version
         domain = [('id', 'in', self.group_ids.ids), ('odoo_version', '!=', self.node_id.odoo_version)]
-        # TODO Use search_count
-        invalid_groups = self.env["hotel.node.group"].search(domain)
-        if len(invalid_groups) > 0:
+        invalid_groups = self.env["hotel.node.group"].search_count(domain)
+        if invalid_groups > 0:
             msg = _("At least one group is not within the node version.") + " " + \
                   _("Odoo version of the node: %s") % self.node_id.odoo_version
             _logger.warning(msg)
@@ -76,9 +75,8 @@ class HotelNodeUser(models.Model):
 
         if 'group_ids' in vals:
             domain = [('id', 'in', vals['group_ids'][0][2]), ('odoo_version', '!=', node.odoo_version)]
-            invalid_groups = self.env["hotel.node.group"].search(domain)
-            # TODO Use search_count
-            if len(invalid_groups) > 0:
+            invalid_groups = self.env["hotel.node.group"].search_count(domain)
+            if invalid_groups > 0:
                 msg = _("At least one group is not within the node version.") + " " + \
                       _("Odoo version in node: %s") % node.odoo_version
                 _logger.error(msg)
@@ -86,16 +84,6 @@ class HotelNodeUser(models.Model):
 
         try:
             if 'is_synchronizing' not in self._context:
-                partner = self.env["res.partner"].search([('email', '=', vals['login'])])
-                if partner.id:
-                    vals['partner_id'] = partner.id
-                else:
-                    partner = partner.create({
-                        'name': vals['name'],
-                        'email': vals['login'],
-                    })
-                    vals['partner_id'] = partner.id
-            else:
                 noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
                 noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
 
@@ -141,14 +129,13 @@ class HotelNodeUser(models.Model):
 
             if 'group_ids' in vals:
                 domain = [('id', 'in', vals['group_ids'][0][2]), ('odoo_version', '!=', node.odoo_version)]
-                invalid_groups = self.env["hotel.node.group"].search(domain)
-                # TODO Use search_count
-                if len(invalid_groups) > 0:
+                invalid_groups = self.env["hotel.node.group"].search_count(domain)
+                if invalid_groups > 0:
                     msg = _("At least one group is not within the node version.") + " " + \
                           _("Odoo version in node: %s") % node.odoo_version
                     _logger.error(msg)
                     raise ValidationError(msg)
-                
+
             try:
                 if 'is_synchronizing' not in self._context:
                     noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
@@ -202,6 +189,8 @@ class HotelNodeUser(models.Model):
                 _logger.info('User #%s deleted remote res.users with ID: [%s]',
                              self._context.get('uid'), rec.remote_user_id)
                 noderpc.logout()
+
+                # TODO How to manage the relationship with the partner? Also deleted?
 
             except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
                 _logger.error(err)
