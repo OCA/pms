@@ -8,7 +8,7 @@ class HotelRoomTypeAvailability(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(HotelVirtualRoomAvailability, self).create(vals)
+        res = super(HotelRoomTypeAvailability, self).create(vals)
         self.env['bus.hotel.calendar'].send_availability_notification({
             'date': res.date,
             'avail': res.avail,
@@ -20,7 +20,7 @@ class HotelRoomTypeAvailability(models.Model):
 
     @api.multi
     def write(self, vals):
-        ret_vals = super(HotelVirtualRoomAvailability, self).write(vals)
+        ret_vals = super(HotelRoomTypeAvailability, self).write(vals)
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for record in self:
             bus_hotel_calendar_obj.send_availability_notification({
@@ -44,7 +44,7 @@ class HotelRoomTypeAvailability(models.Model):
                 'no_ota': False,
                 'id': record.id,
             })
-        res = super(HotelVirtualRoomAvailability, self).unlink()
+        res = super(HotelRoomTypeAvailability, self).unlink()
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for uval in unlink_vals:
             bus_hotel_calendar_obj.send_availability_notification(uval)
