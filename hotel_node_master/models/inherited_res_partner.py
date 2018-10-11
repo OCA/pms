@@ -12,3 +12,5 @@ class ResPartner(models.Model):
     # As res.partner has already a `user_ids` field, you can not use that name in this inheritance
     node_user_ids = fields.One2many('hotel.node.user', 'partner_id',
                                     'Users associated to this partner')
+
+    # TODO Override write for updating in remote nodes

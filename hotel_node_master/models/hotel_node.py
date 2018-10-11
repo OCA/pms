@@ -146,6 +146,12 @@ class HotelNode(models.Model):
 
             user_ids = []
             for user in remote_users:
+                group_ids = []
+                # retrieve the remote external ID(s) of group records
+                remote_xml_ids = noderpc.env['res.groups'].browse(user['groups_id']).get_external_id()
+                for key, value in remote_xml_ids.items():
+                    group_ids.append(gui_ids[xml_ids.index(value)])
+
                 if user['id'] in remote_ids:
                     idx = remote_ids.index(user['id'])
                     user_ids.append((1, master_ids[idx], {
@@ -154,6 +160,11 @@ class HotelNode(models.Model):
                         'email': user['email'],
                         'active': user['active'],
                         'remote_user_id': user['id'],
+                        'group_ids': [[
+                            6,
+                            False,
+                            group_ids
+                        ]]
                     }))
                 else:
                     partner = self.env['res.partner'].search([('email', '=', user['email'])])
@@ -163,7 +174,6 @@ class HotelNode(models.Model):
                             'is_company': False,
                             'email': user['email'],
                         })
-
                     user_ids.append((0, 0, {
                         'name': user['name'],
                         'login': user['login'],
@@ -171,6 +181,11 @@ class HotelNode(models.Model):
                         'active': user['active'],
                         'remote_user_id': user['id'],
                         'partner_id': partner.id,
+                        'group_ids': [[
+                            6,
+                            False,
+                            group_ids
+                        ]]
                     }))
             vals.update({'user_ids': user_ids})
 

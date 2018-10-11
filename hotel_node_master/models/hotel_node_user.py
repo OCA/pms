@@ -119,6 +119,7 @@ class HotelNodeUser(models.Model):
         :param dict vals: a dictionary of fields to update and the value to set on them.
         :raise: ValidationError
         """
+
         for rec in self:
             if 'node_id' in vals and vals['node_id'] != rec.node_id.id:
                 msg = _("Changing a user between nodes is not allowed. Please create a new user instead.")
@@ -142,6 +143,9 @@ class HotelNodeUser(models.Model):
                     noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
 
                     remote_vals = {}
+
+                    if 'login' in vals:
+                        remote_vals.update({'login': vals['login']})
 
                     if 'active' in vals:
                         remote_vals.update({'active': vals['active']})
