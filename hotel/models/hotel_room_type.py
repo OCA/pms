@@ -81,7 +81,7 @@ class HotelRoomType(models.Model):
                 ('id', '=', room_type_id)
             ])
             # QUESTION What linked represent? Rooms in this type ?
-            rooms_linked = self.room_ids
+            rooms_linked = room_type_id.room_ids
             free_rooms = free_rooms & rooms_linked
         return free_rooms.sorted(key=lambda r: r.sequence)
 
