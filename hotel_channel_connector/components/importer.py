@@ -7,6 +7,7 @@ import json
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import AbstractComponent, Component
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.hotel import date_utils
 from odoo import _
 from odoo.tools import (
@@ -130,7 +131,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
     @api.model
     def _generate_booking_vals(self, broom, checkin_str, checkout_str,
-                               is_cancellation, wchannel_info, wstatus, crcode,
+                               is_cancellation, channel_info, wstatus, crcode,
                                rcode, room_type, split_booking, dates_checkin,
                                dates_checkout, book):
         # Generate Reservation Day Lines
@@ -154,24 +155,27 @@ class HotelChannelConnectorImporter(AbstractComponent):
         persons = room_type.wcapacity
         if 'ancillary' in broom and 'guests' in broom['ancillary']:
             persons = broom['ancillary']['guests']
+
         vals = {
-            'checkin': checkin_str,
-            'checkout': checkout_str,
-            'adults': persons,
-            'children': book['children'],
-            'reservation_line_ids': reservation_line_ids,
-            'price_unit': tprice,
-            'to_assign': True,
-            'wrid': rcode,
-            'wchannel_id': wchannel_info and wchannel_info.id,
-            'wchannel_reservation_code': crcode,
+            'channel_reservation_id': rcode,
+            'ota_id': channel_info and channel_info.id,
+            'ota_reservation_id': crcode,
+            'channel_raw_data': json.dumps(book),
             'wstatus': wstatus,
-            'to_read': True,
-            'state': is_cancellation and 'cancelled' or 'draft',
-            'room_type_id': room_type.id,
-            'splitted': split_booking,
-            'wbook_json': json.dumps(book),
-            'wmodified': book['was_modified']
+            'wmodified': book['was_modified'],
+            'odoo_id': [0, False, {
+                'checkin': checkin_str,
+                'checkout': checkout_str,
+                'adults': persons,
+                'children': book['children'],
+                'reservation_line_ids': reservation_line_ids,
+                'price_unit': tprice,
+                'to_assign': True,
+                'to_read': True,
+                'state': is_cancellation and 'cancelled' or 'draft',
+                'room_type_id': room_type.id,
+                'splitted': split_booking,
+            }],
         }
         _logger.info("===== CONTRUCT RESERV")
         _logger.info(vals)
@@ -210,8 +214,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
         tz_hotel = self.env['ir.default'].sudo().get(
             'res.config.settings', 'tz_hotel')
         res_partner_obj = self.env['res.partner']
+        channel_reserv_obj = self.env['channel.hotel.reservation']
         hotel_reserv_obj = self.env['hotel.reservation']
         hotel_folio_obj = self.env['hotel.folio']
+        channel_room_type_obj = self.env['channel.hotel.room.type']
         hotel_room_type_obj = self.env['hotel.room.type']
         # Space for store some data for construct folios
         processed_rids = []
@@ -231,10 +237,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
             #  (for example set a invalid new reservation and receive in
             # the same transaction an cancellation)
             if crcode in failed_reservations:
-                self.create_channel_connector_issue(
+                self.create_issue(
                     'reservation',
                     "Can't process a reservation that previusly failed!",
-                    '', wid=book['reservation_code'])
+                    '', channel_object_id=book['reservation_code'])
                 continue
 
             # Get dates for the reservation (GMT->UTC)
@@ -260,34 +266,37 @@ class HotelChannelConnectorImporter(AbstractComponent):
             # Search Folio. If exists.
             folio_id = False
             if crcode != 'undefined':
-                reserv_folio = hotel_reserv_obj.search([
-                    ('wchannel_reservation_code', '=', crcode)
+                reserv_folio = channel_reserv_obj.search([
+                    ('ota_reservation_id', '=', crcode)
                 ], limit=1)
                 if reserv_folio:
-                    folio_id = reserv_folio.folio_id
+                    folio_id = reserv_folio.odoo_id.folio_id
             else:
-                reserv_folio = hotel_reserv_obj.search([
-                    ('wrid', '=', rcode)
+                reserv_folio = channel_reserv_obj.search([
+                    ('channel_reservation_id', '=', rcode)
                 ], limit=1)
                 if reserv_folio:
-                    folio_id = reserv_folio.folio_id
+                    folio_id = reserv_folio.odoo_id.folio_id
 
             # Need update reservations?
-            sreservs = hotel_reserv_obj.search([('wrid', '=', rcode)])
-            reservs = folio_id.room_lines if folio_id else sreservs
+            sreservs = channel_reserv_obj.search([('channel_reservation_id', '=', rcode)])
+            reservs = folio_id.room_lines if folio_id else sreservs.mapped(lambda x: x.odoo_id)
             reservs_processed = False
             if any(reservs):
                 folio_id = reservs[0].folio_id
                 for reserv in reservs:
-                    if reserv.wrid == rcode:
-                        reserv.with_context({'wubook_action': False}).write({
+                    if reserv.channel_reservation_id == rcode:
+                        binding_id = reserv.channel_bind_ids[0]
+                        binding_id.write({
+                            'channel_raw_data': json.dumps(book),
                             'wstatus': str(book['status']),
                             'wstatus_reason': book.get('status_reason', ''),
+                        })
+                        reserv.with_context({'wubook_action': False}).write({
                             'to_read': True,
                             'to_assign': True,
                             'price_unit': book['amount'],
-                            'wcustomer_notes': book['customer_notes'],
-                            'wbook_json': json.dumps(book),
+                            'customer_notes': book['customer_notes'],
                         })
                         if reserv.partner_id.unconfirmed:
                             reserv.partner_id.write(
@@ -321,22 +330,22 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 partner_id = res_partner_obj.create(self._generate_partner_vals(book))
 
             # Search Wubook Channel Info
-            wchannel_info = self.env['wubook.channel.info'].search(
-                [('wid', '=', str(book['id_channel']))], limit=1)
+            channel_info = self.env['hotel.channel.connector.ota.info'].search(
+                [('ota_id', '=', str(book['id_channel']))], limit=1)
 
             reservations = []
             used_rooms = []
             # Iterate booked rooms
             for broom in book['booked_rooms']:
-                room_type = hotel_room_type_obj.search([
-                    ('wrid', '=', broom['room_id'])
+                room_type = channel_room_type_obj.search([
+                    ('channel_room_id', '=', broom['room_id'])
                 ], limit=1)
                 if not room_type:
-                    self.create_channel_connector_issue(
+                    self.create_issue(
                         'reservation',
                         "Can't found any room type associated to '%s' \
                                                 in this hotel" % book['rooms'],
-                        '', wid=book['reservation_code'])
+                        '', channel_object_id=book['reservation_code'])
                     failed_reservations.append(crcode)
                     continue
 
@@ -355,26 +364,26 @@ class HotelChannelConnectorImporter(AbstractComponent):
                         checkin_str,
                         checkout_str,
                         is_cancellation,
-                        wchannel_info,
+                        channel_info,
                         bstatus,
                         crcode,
                         rcode,
-                        room_type,
+                        room_type.odoo_id,
                         split_booking,
                         dates_checkin,
                         dates_checkout,
                         book,
                     )
                     if vals['price_unit'] != book['amount']:
-                        self.create_channel_connector_issue(
+                        self.create_issue(
                             'reservation',
                             "Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
-                            '', wid=book['reservation_code'])
+                            '', channel_object_id=book['reservation_code'])
 
-                    free_rooms = hotel_room_type_obj.check_availability_room(
+                    free_rooms = room_type.odoo_id.check_availability_room(
                         checkin_str,
                         checkout_str,
-                        room_type_id=room_type.id,
+                        room_type_id=room_type.odoo_id.id,
                         notthis=used_rooms)
                     if any(free_rooms):
                         vals.update({
@@ -412,11 +421,11 @@ class HotelChannelConnectorImporter(AbstractComponent):
                                 checkin_utc_dt,
                                 checkout_utc_dt,
                                 is_cancellation,
-                                wchannel_info,
+                                channel_info,
                                 bstatus,
                                 crcode,
                                 rcode,
-                                room_type,
+                                room_type.odoo_id,
                                 False,
                                 (checkin_utc_dt, False),
                                 (checkout_utc_dt, False),
@@ -424,15 +433,15 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             )
                             vals.update({
                                 'product_id':
-                                    room_type.room_ids[0].product_id.id,
-                                'name': room_type.name,
+                                    room_type.odoo_id.room_ids[0].product_id.id,
+                                'name': room_type.odoo_id.name,
                                 'overbooking': True,
                             })
                             reservations.append((0, False, vals))
-                            self.create_channel_connector_issue(
+                            self.create_issue(
                                 'reservation',
                                 "Reservation imported with overbooking state",
-                                '', wid=rcode)
+                                '', channel_object_id=rcode)
                             dates_checkin = [False, False]
                             dates_checkout = [False, False]
                             split_booking = False
@@ -448,10 +457,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             ]
 
             if split_booking:
-                self.create_channel_connector_issue(
+                self.create_issue(
                     'reservation',
                     "Reservation Splitted",
-                    '', wid=rcode)
+                    '', channel_object_id=rcode)
 
             # Create Folio
             if not any(failed_reservations) and any(reservations):
@@ -487,11 +496,11 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             creserv.parent_reservation = preserv.id
 
                     processed_rids.append(rcode)
-                except Exception as e_msg:
-                    self.create_channel_connector_issue(
+                except ChannelConnectorError as err:
+                    self.create_issue(
                         'reservation',
-                        e_msg[0],
-                        '', wid=rcode)
+                        err.data['message'],
+                        '', channel_object_id=rcode)
                     failed_reservations.append(crcode)
         return (processed_rids, any(failed_reservations),
                 checkin_utc_dt, checkout_utc_dt)
@@ -655,84 +664,6 @@ class HotelChannelConnectorImporter(AbstractComponent):
         return True
 
     @api.model
-    def _generate_wubook_channel_info(self, channels):
-        channel_info_obj = self.env['wubook.channel.info']
-        count = 0
-        for k_cid, v_cid in channels.iteritems():
-            vals = {
-                'name': v_cid['name'],
-                'ical': v_cid['ical'] == 1,
-            }
-            channel_info = channel_info_obj.search([
-                ('wid', '=', k_cid)
-            ], limit=1)
-            if channel_info:
-                channel_info.write(vals)
-            else:
-                vals.update({
-                    'wid': k_cid
-                })
-                channel_info_obj.create(vals)
-            count = count + 1
-        return count
-
-    @api.model
-    def get_rooms(self):
-        count = 0
-        try:
-            results = self.backend_adapter.fetch_rooms()
-
-            room_type_obj = self.env['hotel.room.type']
-            count = len(results)
-            for room in results:
-                vals = {
-                    'name': room['name'],
-                    'wrid': room['id'],
-                    'wscode': room['shortname'],
-                    'list_price': room['price'],
-                    'wcapacity': room['occupancy'],
-                    # 'max_real_rooms': room['availability'],
-                }
-                room_type = room_type_obj.search([('wrid', '=', room['id'])], limit=1)
-                if room_type:
-                    room_type.with_context({'wubook_action': False}).write(vals)
-                else:
-                    room_type_obj.with_context({'wubook_action': False}).create(vals)
-        except ValidationError:
-            self.create_issue('room', _("Can't import rooms from WuBook"), results)
-
-        return count
-
-    @api.model
-    def fetch_rooms_values(self, dfrom, dto, rooms=False,
-                           set_max_avail=False):
-        # Sanitize Dates
-        now_dt = date_utils.now()
-        dfrom_dt = date_utils.get_datetime(dfrom)
-        dto_dt = date_utils.get_datetime(dto)
-        if dto_dt < now_dt:
-            return True
-        if dfrom_dt < now_dt:
-            dfrom_dt = now_dt
-        if dfrom_dt > dto_dt:
-            dtemp_dt = dfrom_dt
-            dfrom_dt = dto_dt
-            dto_dt = dtemp_dt
-
-        try:
-            results = self.backend_adapter.fetch_rooms_values(
-                dfrom_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                dto_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                rooms)
-            self._generate_room_values(dfrom, dto, results,
-                                      set_max_avail=set_max_avail)
-        except ValidationError:
-            self.create_issue('room', _("Can't fetch rooms values from WuBook"),
-                              results, dfrom=dfrom, dto=dto)
-            return False
-        return True
-
-    @api.model
     def fetch_booking(self, channel_reservation_id):
         try:
             results = self.backend_adapter.fetch_booking(channel_reservation_id)
@@ -746,11 +677,11 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 self.backend_adapter.fetch_rooms_values(
                     checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        except ValidationError:
-            self.create_channel_connector_issue(
+        except ChannelConnectorError as err:
+            self.create_issue(
                 'reservation',
                 _("Can't process reservations from wubook"),
-                results, channel_object_id=channel_reservation_id)
+                err.data['message'], channel_object_id=channel_reservation_id)
             return False
         return True
 
@@ -759,11 +690,11 @@ class HotelChannelConnectorImporter(AbstractComponent):
         try:
             results = self.backend_adapter.get_pricing_plans()
             count = self._generate_pricelists(results)
-        except ValidationError:
+        except ChannelConnectorError as err:
             self.create_issue(
                 'plan',
                 _("Can't get pricing plans from wubook"),
-                results)
+                err.data['message'])
             return 0
         return count
 
@@ -776,11 +707,11 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 date_to,
                 rooms)
             self._generate_pricelist_items(channel_plan_id, date_from, date_to, results)
-        except ValidationError:
+        except ChannelConnectorError as err:
             self.create_issue(
                 'plan',
                 _("Can't fetch plan prices from wubook"),
-                results)
+                err.data['message'])
             return False
         return True
 
@@ -799,11 +730,12 @@ class HotelChannelConnectorImporter(AbstractComponent):
                         date_to,
                         rooms)
                     self._generate_pricelist_items(channel_plan_id, date_from, date_to, results)
-            except ValidationError:
+            except ChannelConnectorError as err:
                 self.create_issue(
                     'plan',
                     "Can't fetch all plan prices from wubook!",
-                    results, wid=channel_plan_id, dfrom=date_from, dto=date_to)
+                    err.data['message'],
+                    channel_object_id=channel_plan_id, dfrom=date_from, dto=date_to)
                 return False
         return no_errors
 
@@ -812,11 +744,11 @@ class HotelChannelConnectorImporter(AbstractComponent):
         try:
             results = self.backend_adapter.rplan_rplans()
             count = self._generate_restrictions(results)
-        except ValidationError:
+        except ChannelConnectorError as err:
             self.create_issue(
                 'rplan',
                 _("Can't fetch restriction plans from wubook"),
-                results)
+                err.data['message'])
             return 0
         return count
 
@@ -829,25 +761,39 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 int(channel_restriction_plan_id))
             if any(results):
                 self._generate_restriction_items(results)
-        except ValidationError:
+        except ChannelConnectorError as err:
             self.create_issue(
                 'rplan',
                 _("Can't fetch plan restrictions from wubook"),
-                results,
-                wid=channel_restriction_plan_id,
+                err.data['message'],
+                channel_object_id=channel_restriction_plan_id,
                 dfrom=date_from, dto=date_to)
             return False
         return True
 
-    @api.model
-    def import_channels_info(self):
-        try:
-            results = self.backend_adapter.get_channels_info()
-            count = self._generate_wubook_channel_info(results)
-        except ValidationError:
-            self.create_issue(
-                'channel',
-                _("Can't import channels info from wubook"),
-                results)
-            return 0
-        return count
+class BatchImporter(AbstractComponent):
+    """ The role of a BatchImporter is to search for a list of
+    items to import, then it can either import them directly or delay
+    the import of each item separately.
+    """
+
+    _name = 'channel.batch.importer'
+    _inherit = ['base.importer', 'base.hotel.channel.connector']
+    _usage = 'batch.importer'
+
+    def _import_record(self, external_id):
+        """ Import a record directly or delay the import of the record.
+
+        Method to implement in sub-classes.
+        """
+        raise NotImplementedError
+
+class DirectBatchImporter(AbstractComponent):
+    """ Import the records directly, without delaying the jobs. """
+
+    _name = 'channel.direct.batch.importer'
+    _inherit = 'channel.batch.importer'
+
+    def _import_record(self, external_id):
+        """ Import the record directly """
+        self.model.import_record(self.backend_record, external_id)

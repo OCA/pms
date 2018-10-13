@@ -38,7 +38,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
         for record in self:
             if record.channel_max_avail > record.odoo_id.room_type_id.total_rooms_count:
                 raise ValidationError(_("max avail for channel can't be high \
-                    than toal rooms \
+                    than total rooms \
                     count: %d") % record.odoo_id.room_type_id.total_rooms_count)
 
     @job(default_channel='root.channel')

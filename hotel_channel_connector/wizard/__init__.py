@@ -19,7 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import wubook_installer
 from . import wubook_import_plan_prices
 from . import wubook_import_plan_restrictions
 from . import wubook_import_availability

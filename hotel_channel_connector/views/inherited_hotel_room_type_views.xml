@@ -9,9 +9,10 @@
                 <notebook>
                     <page name="connector">
                         <group string="Hotel Channel Bindings">
-                            <field name="channel_bind_ids" nolabel="1">
+                            <field name="capacity" invisible="1" />
+                            <field name="channel_bind_ids" context="{'default_ota_capacity': capacity}" nolabel="1">
                                 <tree>
-                                    <field name="backend_id"/>
+                                    <field name="backend_id" />
                                 </tree>
                             </field>
                         </group>
