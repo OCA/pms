@@ -135,9 +135,9 @@
     />
     <!-- Action to open Hotel Node Reservation List -->
     <act_window id="hotel_node_reservation_action"
-                name="List of Reservations in Hotels"
+                name="Hotel Reservation Wizard"
                 res_model="hotel.node.reservation.wizard"
-                view_mode="tree,form"
+                view_mode="form"
     />
 
     <!-- Menu default to open Hotel Nodes Dashboard -->
@@ -157,13 +157,6 @@
               parent="dashboard_menu"
               sequence="1"
     />
-    <!-- Menu item to open Hotel Nodes List -->
-    <menuitem id="hotel_node_room_type_menu"
-              name="Room Types"
-              action="hotel_node_room_type_action"
-              parent="hotel_node_menu"
-              sequence="1"
-    />
     <!-- Menu item to open Hotel Users List -->
     <menuitem id="hotel_node_user_menu"
               name="Users"
@@ -178,7 +171,13 @@
               parent="dashboard_menu"
               sequence="3"
     />
-
+    <!-- Menu item to open Hotel Nodes List -->
+    <menuitem id="hotel_node_room_type_menu"
+              name="Room Types"
+              action="hotel_node_room_type_action"
+              parent="dashboard_menu"
+              sequence="1"
+    />
     <!-- Menu item to open Hotel Node Reservation List -->
     <menuitem id="hotel_node_reservation_menu"
               name="Reservations"
