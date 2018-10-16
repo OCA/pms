@@ -30,7 +30,7 @@ class HotelNodeReservationWizard(models.TransientModel):
 
     node_id = fields.Many2one('project.project', 'Hotel', required=True)
 
-    partner_id = fields.Many2one('res.partner', string="Customer")
+    partner_id = fields.Many2one('res.partner', string="Customer", required=True)
 
     checkin = fields.Date('Check In', required=True,
                           default=_get_default_checkin)
@@ -43,8 +43,8 @@ class HotelNodeReservationWizard(models.TransientModel):
     @api.onchange('node_id')
     def onchange_node_id(self):
         self.ensure_one()
-        _logger.info('onchange_node_id(self): %s', self)
         if self.node_id:
+            _logger.info('onchange_node_id(self): %s', self)
             try:
                 noderpc = odoorpc.ODOO(self.node_id.odoo_host, self.node_id.odoo_protocol, self.node_id.odoo_port)
                 noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
@@ -55,7 +55,7 @@ class HotelNodeReservationWizard(models.TransientModel):
 
             # TODO check hotel timezone
             checkin = fields.Date.from_string(today).strftime(
-                DEFAULT_SERVER_DATE_FORMAT) if not self.checkout else fields.Date.from_string(self.checkin)
+                DEFAULT_SERVER_DATE_FORMAT) if not self.checkin else fields.Date.from_string(self.checkin)
 
             checkout = (fields.Date.from_string(today) + timedelta(days=1)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT) if not self.checkout else fields.Date.from_string(self.checkout)
@@ -63,23 +63,39 @@ class HotelNodeReservationWizard(models.TransientModel):
             if checkin >= checkout:
                 checkout = checkin + timedelta(days=1)
 
-            wdb.set_trace()
+            # rooms_availability = noderpc.env['hotel.room.type'].check_availability_room(checkin, checkout) # return str
 
-            rooms_availability = noderpc.env['hotel.room.type'].check_availability_room(checkin, checkout)
-            node.env['hotel.room.type'].search([('id', '=', room_type.id)])
+            reservation_ids = noderpc.env['hotel.reservation'].search([
+                ('reservation_line_ids.date', '>=', checkin),
+                ('reservation_line_ids.date', '<', checkout),
+                ('state', '!=', 'cancelled'),
+                ('overbooking', '=', False)
+            ])
+            reservation_room_ids = noderpc.env['hotel.reservation'].browse(reservation_ids).mapped('room_id.id')
 
-            room_type_ids = self.env['hotel.node.room.type'].search([('node_id', '=', self.node_id.id)])
+            room_type_availability = {}
+            for room_type in self.node_id.room_type_ids:
+                room_type_availability[room_type.id] = noderpc.env['hotel.room'].search_count([
+                    ('id', 'not in', reservation_room_ids),
+                    ('room_type_id', '=', room_type.remote_room_type_id)
+                ])
 
-            cmds = room_type_ids.mapped(lambda x: (0, False, {
+            cmds = self.node_id.room_type_ids.mapped(lambda x: (0, False, {
                 'room_type_id': x.id,
                 'checkin': checkin,
                 'checkout': checkout,
+                'room_type_availability': room_type_availability[x.id],
             }))
             self.update({
                 'checkin': checkin,
                 'checkout': checkout,
                 'room_type_wizard_ids': cmds,
             })
+
+    @api.model
+    def create_node_reservation(self):
+        _logger.info('*** create_node_reservation(self) ***: %s', self)
+
 #
 #     def create_folio_node(self):
 #         # Mediante un botón en el nodo creamos el folio indicando {partner_id, room_lines} pasandole con el
@@ -100,16 +116,13 @@ class NodeRoomTypeWizard(models.TransientModel):
     def _get_default_checkout(self):
         pass
 
+    # node_id = fields.Many2one(related='node_reservation_wizard_id.node_id')
+
     node_reservation_wizard_id = fields.Many2one('hotel.node.reservation.wizard')
 
-    node_id = fields.Many2one(related='node_reservation_wizard_id.node_id')
-
     room_type_id = fields.Many2one('hotel.node.room.type', 'Rooms Type')
-
     room_type_name = fields.Char('Name', related='room_type_id.name')
-
     room_type_availability = fields.Integer('Availability', compute="_compute_room_type_availability")
-
     rooms_qty = fields.Integer('Number of Rooms', default=0)
 
     checkin = fields.Date('Check In', required=True,
@@ -123,9 +136,9 @@ class NodeRoomTypeWizard(models.TransientModel):
 #                #es necesario que Darío modifique el método en el modulo Hotel haciendolo independiente del self.
 
     # compute and search fields, in the same order that fields declaration
-    @api.depends('node_id')
-    def _compute_room_type_availability(self):
-        pass
+    # @api.depends('node_id')
+    # def _compute_room_type_availability(self):
+    #     pass
         # for record in self:
         #     record.room_type_availability = 42
 #

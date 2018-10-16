@@ -42,13 +42,12 @@
                     <!--<group colspan="2" class="oe_subtotal_footer">-->
                         <!--<field name="total"/>-->
                     <!--</group>-->
-                    <!--<footer>-->
-                        <!--<button name="create_folio" string="Create Reservations" type="object"-->
-							<!--class="oe_highlight" />-->
-                    <!--</footer>-->
+                    <footer attrs="{'invisible':[('node_id','=',False)]}">
+                        <button name="create_node_reservation" string="Create Reservations" type="object"
+							class="oe_highlight" />
+                    </footer>
 				</sheet>
 			</form>
 		</field>
 	</record>
-
 </odoo>
