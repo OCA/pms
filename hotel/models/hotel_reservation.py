@@ -271,6 +271,8 @@ class HotelReservation(models.Model):
     @api.model
     def create(self, vals):
         vals.update(self._prepare_add_missing_fields(vals))
+        if 'room_id' not in vals:
+            vals.update(self._autoassign(vals))
         if 'folio_id' in vals:
             folio = self.env["hotel.folio"].browse(vals['folio_id'])
             vals.update({'channel_type': folio.channel_type})
@@ -340,6 +342,19 @@ class HotelReservation(models.Model):
             for field in onchange_fields:
                 if field not in values:
                     res[field] = line._fields[field].convert_to_write(line[field], line)
+        return res
+
+    @api.model
+    def _autoassign(self, values):
+        res = {}
+        checkin = values.get('checkin')
+        checkout = values.get('checkout')
+        room_type = values.get('room_type_id')
+        if checkin and checkout and room_type:
+            room_chosen = self.env['hotel.room.type'].check_availability_room(checkin, checkout, room_type)[0]
+            res.update({
+                'room_id': room_chosen
+            })
         return res
 
     @api.multi
