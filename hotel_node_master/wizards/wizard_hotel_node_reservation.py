@@ -37,8 +37,8 @@ class HotelNodeReservationWizard(models.TransientModel):
     checkout = fields.Date('Check Out', required=True,
                            default=_get_default_checkout)
 
-    room_type_wizard_ids = fields.Many2many('node.room.type.wizard',
-                                            string="Room Types")
+    room_type_wizard_ids = fields.One2many('node.room.type.wizard', 'node_reservation_wizard_id',
+                                           string="Room Types")
 
     @api.onchange('node_id')
     def onchange_node_id(self):
@@ -64,6 +64,7 @@ class HotelNodeReservationWizard(models.TransientModel):
                 checkout = checkin + timedelta(days=1)
 
             # rooms_availability = noderpc.env['hotel.room.type'].check_availability_room(checkin, checkout) # return str
+            # TODO add check_availability_room in a hotel slave node module
 
             reservation_ids = noderpc.env['hotel.reservation'].search([
                 ('reservation_line_ids.date', '>=', checkin),
@@ -71,7 +72,11 @@ class HotelNodeReservationWizard(models.TransientModel):
                 ('state', '!=', 'cancelled'),
                 ('overbooking', '=', False)
             ])
-            reservation_room_ids = noderpc.env['hotel.reservation'].browse(reservation_ids).mapped('room_id.id')
+
+            reservation_room_ids = []
+            # do not trust even your father
+            if reservation_ids:
+                reservation_room_ids = noderpc.env['hotel.reservation'].browse(reservation_ids).mapped('room_id.id')
 
             room_type_availability = {}
             for room_type in self.node_id.room_type_ids:
@@ -85,52 +90,86 @@ class HotelNodeReservationWizard(models.TransientModel):
                 'checkin': checkin,
                 'checkout': checkout,
                 'room_type_availability': room_type_availability[x.id],
+                'node_reservation_wizard_id': self.id,
+
             }))
             self.update({
                 'checkin': checkin,
                 'checkout': checkout,
                 'room_type_wizard_ids': cmds,
             })
+            noderpc.logout()
 
-    @api.model
+    @api.multi
     def create_node_reservation(self):
-        _logger.info('*** create_node_reservation(self) ***: %s', self)
+        try:
+            noderpc = odoorpc.ODOO(self.node_id.odoo_host, self.node_id.odoo_protocol, self.node_id.odoo_port)
+            noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
 
-#
-#     def create_folio_node(self):
-#         # Mediante un botón en el nodo creamos el folio indicando {partner_id, room_lines} pasandole con el
-#         # formato o2m todas las reservas -room_lines- indicando {room_type_id, checkin, checkout, reservation_lines}
-#         # reservation_lines en formato o2m usando el campo json_days de node.room.type.wizard.
-#
+        # prepare required fields for hotel folio
+        vals = {
+            'partner_id': self.partner_id.id,
+            'checkin': self.checkin,
+            'checkout': self.checkout,
+        }
+        # prepare hotel folio room_lines
+        room_lines = []
+        for line in self.room_type_wizard_ids:
+            if line.rooms_qty > 0:
+                vals_reservation_lines = {
+                    'partner_id': self.partner_id.id,
+                    'room_type_id': line.room_type_id.remote_room_type_id,
+                }
+                reservation_line_ids = noderpc.env['hotel.reservation'].prepare_reservation_lines(
+                    line.checkin,
+                    (fields.Date.from_string(line.checkout) - fields.Date.from_string(line.checkin)).days,
+                    vals_reservation_lines
+                )
 
+                room_lines.append((0, False, {
+                    'room_type_id': line.room_type_id.remote_room_type_id,
+                    'checkin': line.checkin,
+                    'checkout': line.checkout,
+                    'reservation_line_ids': reservation_line_ids['reservation_line_ids'],
+                }))
+        vals.update({'room_lines': room_lines})
+
+        x = noderpc.env['hotel.reservation'].create(vals)
+
+        noderpc.logout()
 
 class NodeRoomTypeWizard(models.TransientModel):
     _name = "node.room.type.wizard"
     _description = "Node Room Type Wizard"
 
-    @api.model
-    def _get_default_checkin(self):
-        pass
+    def _default_checkin(self):
+        today = fields.Date.context_today(self.with_context())
+        return self.node_reservation_wizard_id.checkin or \
+               fields.Date.from_string(today).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-    @api.model
-    def _get_default_checkout(self):
-        pass
-
-    # node_id = fields.Many2one(related='node_reservation_wizard_id.node_id')
+    def _default_checkout(self):
+        today = fields.Date.context_today(self.with_context())
+        return self.node_reservation_wizard_id.checkin or \
+               (fields.Date.from_string(today) + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     node_reservation_wizard_id = fields.Many2one('hotel.node.reservation.wizard')
+    node_id = fields.Many2one(related='node_reservation_wizard_id.node_id')
 
     room_type_id = fields.Many2one('hotel.node.room.type', 'Rooms Type')
     room_type_name = fields.Char('Name', related='room_type_id.name')
-    room_type_availability = fields.Integer('Availability', compute="_compute_room_type_availability")
+    room_type_availability = fields.Integer('Availability') #, compute="_compute_room_type_availability")
     rooms_qty = fields.Integer('Number of Rooms', default=0)
 
     checkin = fields.Date('Check In', required=True,
-                          default=_get_default_checkin)
+                          default=_default_checkin)
     checkout = fields.Date('Check Out', required=True,
-                           default=_get_default_checkout)
+                           default=_default_checkout)
 
-#     price_unit #compute
+    # price_unit = fields.Float('Unit Price', required=True,
+    #                           digits=dp.get_precision('Product Price'),
+    #                           default=0.0)
 #     price_total #compute
 #     json_days #enchufar como texto literal la cadena devuelta por el método prepare_reservation_lines del hotel.reservation del nodo.(para que funcione
 #                #es necesario que Darío modifique el método en el modulo Hotel haciendolo independiente del self.
@@ -142,11 +181,13 @@ class NodeRoomTypeWizard(models.TransientModel):
         # for record in self:
         #     record.room_type_availability = 42
 #
-#     @api.onchange('checkin','checkout')
-#     def onchange_dates(self):
-#         # Conectar con nodo para traer dispo(availability) y precio por habitación(price_unit)
-#         # availability: search de hotel.room.type.availability filtrando por room_type y date y escogiendo el min avail en el rango
-#         # preci_unit y json_days: usando prepare_reservation_lines
+    @api.onchange('checkin','checkout')
+    def onchange_dates(self):
+        if self.checkin and self.checkout:
+            _logger.info('%s', self.room_type_id)
+         # Conectar con nodo para traer dispo(availability) y precio por habitación(price_unit)
+         # availability: search de hotel.room.type.availability filtrando por room_type y date y escogiendo el min avail en el rango
+         # preci_unit y json_days: usando prepare_reservation_lines
 #
 #     @api.onchange('rooms_qty')
 #     def _compute_price_total(self):
