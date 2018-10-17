@@ -138,6 +138,7 @@
                 name="Hotel Reservation Wizard"
                 res_model="hotel.node.reservation.wizard"
                 view_mode="form"
+                target="new"
     />
 
     <!-- Menu default to open Hotel Nodes Dashboard -->
@@ -180,7 +181,7 @@
     />
     <!-- Menu item to open Hotel Node Reservation List -->
     <menuitem id="hotel_node_reservation_menu"
-              name="Reservations"
+              name="Reservations Wizard"
               action="hotel_node_reservation_action"
               parent="dashboard_menu"
               sequence="4"
