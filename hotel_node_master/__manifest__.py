@@ -1,5 +1,5 @@
 {
-    'name': 'Hotel Master Node',
+    'name': 'Hotel Node Master',
     'summary': """Provides centralized hotel management features""",
     'version': '0.1.0',
     'author': 'Pablo Q. Barriuso, \
