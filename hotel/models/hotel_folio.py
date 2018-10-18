@@ -324,13 +324,13 @@ class HotelFolio(models.Model):
 
         # Makes sure partner_invoice_id' and 'pricelist_id' are defined
         lfields = ('partner_invoice_id', 'partner_shipping_id', 'pricelist_id')
-        if any(f not in vals for f in lfields):
-            partner = self.env['res.partner'].browse(vals.get('partner_id'))
-            addr = partner.address_get(['delivery', 'invoice'])
-            vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
-            vals['pricelist_id'] = vals.setdefault(
-                'pricelist_id',
-                partner.property_product_pricelist and partner.property_product_pricelist.id)
+        #~ if any(f not in vals for f in lfields):
+            #~ partner = self.env['res.partner'].browse(vals.get('partner_id'))
+            #~ addr = partner.address_get(['delivery', 'invoice'])
+            #~ vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
+            #~ vals['pricelist_id'] = vals.setdefault(
+                #~ 'pricelist_id',
+                #~ partner.property_product_pricelist and partner.property_product_pricelist.id)
         result = super(HotelFolio, self).create(vals)
         return result
 
@@ -344,20 +344,22 @@ class HotelFolio(models.Model):
         - user_id
         """
         if not self.partner_id:
-            self.update({
-                'partner_invoice_id': False,
-                'payment_term_id': False,
-                'fiscal_position_id': False,
-            })
+            #~ self.update({
+                #~ 'partner_invoice_id': False,
+                #~ 'payment_term_id': False,
+                #~ 'fiscal_position_id': False,
+            #~ })
             return
 
         addr = self.partner_id.address_get(['invoice'])
-        values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and \
-                self.partner_id.property_product_pricelist.id or False,
-            'partner_invoice_id': addr['invoice'],
-            'user_id': self.partner_id.user_id.id or self.env.uid
-        }
+        #TEMP:
+        values = { 'user_id': self.partner_id.user_id.id or self.env.uid }
+        #~ values = {
+            #~ 'pricelist_id': self.partner_id.property_product_pricelist and \
+                #~ self.partner_id.property_product_pricelist.id or False,
+            #~ 'partner_invoice_id': addr['invoice'],
+            #~ 'user_id': self.partner_id.user_id.id or self.env.uid
+        #~ }
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
             self.env.user.company_id.sale_note:
             values['note'] = self.with_context(
