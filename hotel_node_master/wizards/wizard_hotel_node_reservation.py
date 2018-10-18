@@ -64,25 +64,12 @@ class HotelNodeReservationWizard(models.TransientModel):
             if checkin >= checkout:
                 checkout = checkin + timedelta(days=1)
 
-            # rooms_availability = noderpc.env['hotel.room.type'].check_availability_room(checkin, checkout) # return str
-            # TODO add check_availability_room in a hotel slave node module
-
-            reservation_ids = noderpc.env['hotel.reservation'].search([
-                ('reservation_line_ids.date', '>=', checkin),
-                ('reservation_line_ids.date', '<', checkout),
-                ('state', '!=', 'cancelled'),
-                ('overbooking', '=', False)
-            ])
-
-            reservation_room_ids = []
-            # do not trust even your father
-            if reservation_ids:
-                reservation_room_ids = noderpc.env['hotel.reservation'].browse(reservation_ids).mapped('room_id.id')
+            free_room_ids = noderpc.env['hotel.room.type'].check_availability_room_ids(checkin, checkout)
 
             room_type_availability = {}
             for room_type in self.node_id.room_type_ids:
                 room_type_availability[room_type.id] = noderpc.env['hotel.room'].search_count([
-                    ('id', 'not in', reservation_room_ids),
+                    ('id', 'in', free_room_ids),
                     ('room_type_id', '=', room_type.remote_room_type_id)
                 ])
 
@@ -136,6 +123,8 @@ class HotelNodeReservationWizard(models.TransientModel):
                     'reservation_line_ids': reservation_line_ids['reservation_line_ids'],
                 }))
         vals.update({'room_lines': room_lines})
+
+        wdb.set_trace()
 
         x = noderpc.env['hotel.reservation'].create(vals)
 
