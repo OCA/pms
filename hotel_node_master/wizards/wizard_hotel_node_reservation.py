@@ -9,6 +9,7 @@ import urllib.error
 import odoorpc.odoo
 from datetime import timedelta
 from odoo import models, fields, api, _
+from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT)
@@ -41,7 +42,7 @@ class HotelNodeReservationWizard(models.TransientModel):
                                            string="Room Types")
 
     @api.onchange('node_id')
-    def onchange_node_id(self):
+    def _onchange_node_id(self):
         self.ensure_one()
         if self.node_id:
             _logger.info('onchange_node_id(self): %s', self)
@@ -85,11 +86,11 @@ class HotelNodeReservationWizard(models.TransientModel):
                     ('room_type_id', '=', room_type.remote_room_type_id)
                 ])
 
-            cmds = self.node_id.room_type_ids.mapped(lambda x: (0, False, {
-                'room_type_id': x.id,
+            cmds = self.node_id.room_type_ids.mapped(lambda room_type_id: (0, False, {
+                'room_type_id': room_type_id.id,
                 'checkin': checkin,
                 'checkout': checkout,
-                'room_type_availability': room_type_availability[x.id],
+                'room_type_availability': room_type_availability[room_type_id.id],
                 'node_reservation_wizard_id': self.id,
 
             }))
@@ -160,16 +161,18 @@ class NodeRoomTypeWizard(models.TransientModel):
     room_type_id = fields.Many2one('hotel.node.room.type', 'Rooms Type')
     room_type_name = fields.Char('Name', related='room_type_id.name')
     room_type_availability = fields.Integer('Availability') #, compute="_compute_room_type_availability")
-    rooms_qty = fields.Integer('Number of Rooms', default=0)
+    rooms_qty = fields.Integer('Quantity', default=0)
 
     checkin = fields.Date('Check In', required=True,
                           default=_default_checkin)
     checkout = fields.Date('Check Out', required=True,
                            default=_default_checkout)
 
-    # price_unit = fields.Float('Unit Price', required=True,
-    #                           digits=dp.get_precision('Product Price'),
-    #                           default=0.0)
+    price_unit = fields.Float('Unit Price', required=True,
+                              digits=dp.get_precision('Unit Price'),
+                              default=0.0)
+    discount = fields.Float(string='Discount (%)',
+                            digits=dp.get_precision('Discount'), default=0.0)
 #     price_total #compute
 #     json_days #enchufar como texto literal la cadena devuelta por el método prepare_reservation_lines del hotel.reservation del nodo.(para que funcione
 #                #es necesario que Darío modifique el método en el modulo Hotel haciendolo independiente del self.
@@ -181,10 +184,10 @@ class NodeRoomTypeWizard(models.TransientModel):
         # for record in self:
         #     record.room_type_availability = 42
 #
-    @api.onchange('checkin','checkout')
-    def onchange_dates(self):
+    @api.onchange('node_id','checkin','checkout')
+    def _onchange_dates(self):
         if self.checkin and self.checkout:
-            _logger.info('%s', self.room_type_id)
+            _logger.info('_onchange_dates for room type %s', self.room_type_id)
          # Conectar con nodo para traer dispo(availability) y precio por habitación(price_unit)
          # availability: search de hotel.room.type.availability filtrando por room_type y date y escogiendo el min avail en el rango
          # preci_unit y json_days: usando prepare_reservation_lines

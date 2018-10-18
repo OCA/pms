@@ -28,6 +28,9 @@
                                 <field name="room_type_id" string="Room Type" readonly="1" force_save="1"/>
                                 <field name="room_type_availability" readonly="1" force_save="1"/>
                                 <field name="rooms_qty"/>
+                                <field name="price_unit" widget="monetary" readonly="1" force_save="1"/>
+                                <!--<field name="currency_id" invisible="1"/>-->
+                                <field name="discount" widget="monetary"/>
                                 <field name="checkin" widget="date" />
                                 <field name="checkout" widget="date" />
                                 <!--<field name="discount" attrs="{'readonly': [('can_confirm','=',False)]}"/>-->
