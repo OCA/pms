@@ -82,6 +82,8 @@ class HotelNode(models.Model):
 
             vals.update({'odoo_version': noderpc.version})
 
+            # TODO Check if hotel_node_helper module is installed / available in the node.
+
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
         else:
@@ -133,7 +135,6 @@ class HotelNode(models.Model):
         try:
             vals = {}
             # import remote users
-            # TODO Restrict users to hootel users
             remote_users = noderpc.env['res.users'].search_read(
                 [('login', '!=', 'admin')],
                 ['name', 'login', 'email', 'is_company', 'partner_id', 'groups_id', 'active'])
@@ -197,8 +198,39 @@ class HotelNode(models.Model):
             raise ValidationError(err)
 
         try:
-            vals = {}
-            # import remote partners (exclude unconfirmed using DNI)
+            # import remote partners
+            node_partners = noderpc.env['res.partner'].search_read(
+                [('email', '!=', '')],  # TODO import remote partners (exclude unconfirmed using DNI)
+                ['name', 'email', 'is_company', 'website', 'type', 'active'])
+            master_partners = self.env['res.partner'].search([('email', 'in', [r['email'] for r in node_partners])])
+
+            master_partner_emails = [r['email'] for r in master_partners]
+            master_partner_ids = master_partners.ids
+            for partner in node_partners:
+                if partner['email'] not in master_partner_emails:
+                    new_partner = self.env['res.partner'].create({
+                        'name': partner['name'],
+                        'email': partner['email'],
+                        'is_company': partner['is_company'],
+                        'website': partner['website'],
+                        'type': partner['type'],
+                        'active': partner['active'],
+                    })
+                    _logger.info('User #%s created res.partner with ID: [%s]',
+                                 self._context.get('uid'), new_partner.id)
+                else:
+                    partner_id = master_partner_ids[master_partner_emails.index(partner['email'])]
+                    self.env['res.partner'].browse(partner_id).write({
+                        'name': partner['name'],
+                        'is_company': partner['is_company'],
+                        'website': partner['website'],
+                        'type': partner['type'],
+                        'active': partner['active'],
+                        # Partners in different Nodes may have different parent_id
+                        #  TODO How to manage parent_id for related company ¿?
+                    })
+                    _logger.info('User #%s update res.partner with ID: [%s]',
+                                 self._context.get('uid'), partner_id)
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
@@ -206,7 +238,6 @@ class HotelNode(models.Model):
         try:
             vals = {}
             # import remote room types
-            # TODO Actually only work for hootel v2
             remote_room_types = noderpc.env['hotel.room.type'].search_read(
                 [], ['name', 'active', 'sequence', 'room_ids'])
 
@@ -243,7 +274,6 @@ class HotelNode(models.Model):
         try:
             vals = {}
             # import remote rooms
-            # TODO Actually only work for hootel v2
             remote_rooms = noderpc.env['hotel.room'].search_read(
                 [],
                 ['name', 'active', 'sequence', 'capacity', 'room_type_id'])
