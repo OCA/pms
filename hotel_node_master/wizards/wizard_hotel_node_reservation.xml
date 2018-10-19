@@ -13,7 +13,7 @@
                                    attrs="{'readonly': [('node_id', '!=', False)]}"/>
                         </h1>
                     </div>
-					<group attrs="{'invisible':[('node_id','=',False)]}">
+                    <group attrs="{'invisible':[('node_id','=',False)]}">
                         <group>
                             <field name="checkin" required="1" widget="date" />
                             <field name="checkout" required="1" widget="date" />
@@ -21,25 +21,27 @@
                         <group>
                             <field name="partner_id"/>
                         </group>
-					</group>
-                    <group attrs="{'invisible':[('node_id','=',False)]}">
-                        <field name="room_type_wizard_ids" nolabel="1">
-                            <tree editable="bottom" create="false" delete="false">
-                                <field name="room_type_id" string="Room Type" readonly="1" force_save="1"/>
-                                <field name="room_type_availability" readonly="1" force_save="1"/>
-                                <field name="rooms_qty"/>
-                                <field name="price_unit" widget="monetary" readonly="1" force_save="1"/>
-                                <!--<field name="currency_id" invisible="1"/>-->
-                                <field name="discount" widget="monetary"/>
-                                <field name="checkin" widget="date" />
-                                <field name="checkout" widget="date" />
-                                <!--<field name="discount" attrs="{'readonly': [('can_confirm','=',False)]}"/>-->
-                                <!--<field name="price" attrs="{'readonly': [('can_confirm','=',False)]}"/>-->
-                                <!--<field name="amount_reservation" readonly="1" />-->
-                                <!--<field name="total_price" invisible="1" />-->
-                                <!--<field name="can_confirm" invisible="1" />-->
-                            </tree>
-                        </field>
+                        <group colspan="2">
+                            <field name="room_type_wizard_ids" nolabel="1">
+                                <tree editable="bottom" create="false" delete="false">
+                                    <field name="room_type_id" string="Room Type" readonly="1" force_save="1"/>
+                                    <field name="room_type_availability" readonly="1" force_save="1"/>
+                                    <field name="room_qty"/>
+                                    <field name="price_unit" widget="monetary" readonly="1" force_save="1"/>
+                                    <!--<field name="currency_id" invisible="1"/>-->
+                                    <field name="discount" widget="monetary"/>
+                                    <field name="checkin" widget="date" />
+                                    <field name="checkout" widget="date" />
+                                    <!--<field name="price" attrs="{'readonly': [('can_confirm','=',False)]}"/>-->
+                                    <!--<field name="amount_reservation" readonly="1" />-->
+                                    <!--<field name="total_price" invisible="1" />-->
+                                    <!--<field name="can_confirm" invisible="1" />-->
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="price_total" widget="monetary" readonly="1" force_save="1"/>
+                        </group>
                     </group>
                     <!--<field name="confirm" invisible="1"/>-->
                     <!--<group colspan="2" class="oe_subtotal_footer">-->

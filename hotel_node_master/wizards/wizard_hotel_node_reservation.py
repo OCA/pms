@@ -40,6 +40,7 @@ class HotelNodeReservationWizard(models.TransientModel):
 
     room_type_wizard_ids = fields.One2many('node.room.type.wizard', 'node_reservation_wizard_id',
                                            string="Room Types")
+    price_total = fields.Float(string='Total Price', default=250.0)
 
     @api.onchange('node_id')
     def _onchange_node_id(self):
@@ -124,8 +125,6 @@ class HotelNodeReservationWizard(models.TransientModel):
                 }))
         vals.update({'room_lines': room_lines})
 
-        wdb.set_trace()
-
         x = noderpc.env['hotel.reservation'].create(vals)
 
         noderpc.logout()
@@ -150,18 +149,17 @@ class NodeRoomTypeWizard(models.TransientModel):
     room_type_id = fields.Many2one('hotel.node.room.type', 'Rooms Type')
     room_type_name = fields.Char('Name', related='room_type_id.name')
     room_type_availability = fields.Integer('Availability') #, compute="_compute_room_type_availability")
-    rooms_qty = fields.Integer('Quantity', default=0)
+    room_qty = fields.Integer('Quantity', default=0)
 
     checkin = fields.Date('Check In', required=True,
                           default=_default_checkin)
     checkout = fields.Date('Check Out', required=True,
                            default=_default_checkout)
 
-    price_unit = fields.Float('Unit Price', required=True,
-                              digits=dp.get_precision('Unit Price'),
-                              default=0.0)
-    discount = fields.Float(string='Discount (%)',
-                            digits=dp.get_precision('Discount'), default=0.0)
+    price_unit = fields.Float(string='Room Price', required=True, default=0.0)
+    discount = fields.Float(string='Discount (%)', default=0.0)
+    price_total = fields.Float(string='Total Price', compute="_compute_price_total")
+
 #     price_total #compute
 #     json_days #enchufar como texto literal la cadena devuelta por el método prepare_reservation_lines del hotel.reservation del nodo.(para que funcione
 #                #es necesario que Darío modifique el método en el modulo Hotel haciendolo independiente del self.
@@ -180,8 +178,11 @@ class NodeRoomTypeWizard(models.TransientModel):
          # Conectar con nodo para traer dispo(availability) y precio por habitación(price_unit)
          # availability: search de hotel.room.type.availability filtrando por room_type y date y escogiendo el min avail en el rango
          # preci_unit y json_days: usando prepare_reservation_lines
-#
-#     @api.onchange('rooms_qty')
-#     def _compute_price_total(self):
-#         # Unidades x precio unidad (el precio de unidad ya incluye el conjunto de días)
-#
+
+    @api.onchange('rooms_qty')
+    def _compute_price_total(self):
+        self.price_total
+        for record in self:
+            record.price_total = record.room_qty * (record.price_unit * record.discount * 0.01)
+         # Unidades x precio unidad (el precio de unidad ya incluye el conjunto de días)
+
