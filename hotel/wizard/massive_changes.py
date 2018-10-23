@@ -255,7 +255,7 @@ class MassiveChangesWizard(models.TransientModel):
             diff_days = abs((date_end_dt - date_start_dt).days) + 1
             wedays = (record.dmo, record.dtu, record.dwe, record.dth,
                       record.dfr, record.dsa, record.dsu)
-            room_types = record.room_type_id if record.applied_on == '1' \
+            room_types = record.room_type_ids if record.applied_on == '1' \
                 else hotel_room_type_obj.search([])
 
             for i in range(0, diff_days):
