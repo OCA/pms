@@ -321,16 +321,17 @@ class HotelFolio(models.Model):
                 ).next_by_code('sale.order') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
+        
 
         # Makes sure partner_invoice_id' and 'pricelist_id' are defined
         lfields = ('partner_invoice_id', 'partner_shipping_id', 'pricelist_id')
-        #~ if any(f not in vals for f in lfields):
-            #~ partner = self.env['res.partner'].browse(vals.get('partner_id'))
-            #~ addr = partner.address_get(['delivery', 'invoice'])
+        if any(f not in vals for f in lfields):
+            partner = self.env['res.partner'].browse(vals.get('partner_id'))
+            addr = partner.address_get(['delivery', 'invoice'])
             #~ vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
-            #~ vals['pricelist_id'] = vals.setdefault(
-                #~ 'pricelist_id',
-                #~ partner.property_product_pricelist and partner.property_product_pricelist.id)
+            vals['pricelist_id'] = vals.setdefault(
+                'pricelist_id',
+                partner.property_product_pricelist and partner.property_product_pricelist.id)
         result = super(HotelFolio, self).create(vals)
         return result
 
@@ -353,7 +354,10 @@ class HotelFolio(models.Model):
 
         addr = self.partner_id.address_get(['invoice'])
         #TEMP:
-        values = { 'user_id': self.partner_id.user_id.id or self.env.uid }
+        values = { 'user_id': self.partner_id.user_id.id or self.env.uid,
+                   'pricelist_id':self.partner_id.property_product_pricelist and \
+                self.partner_id.property_product_pricelist.id or \
+                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')}
         #~ values = {
             #~ 'pricelist_id': self.partner_id.property_product_pricelist and \
                 #~ self.partner_id.property_product_pricelist.id or False,
