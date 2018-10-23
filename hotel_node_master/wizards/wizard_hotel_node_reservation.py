@@ -2,6 +2,7 @@
 # Copyright 2018  Alexandre Díaz
 # Copyright 2018  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from builtins import list
 
 import wdb
 import logging
@@ -22,6 +23,10 @@ class HotelNodeReservationWizard(models.TransientModel):
     _description = "Hotel Node Reservation Wizard"
 
     @api.model
+    def _get_default_node_id(self):
+        return self._context.get('node_id') or None
+
+    @api.model
     def _get_default_checkin(self):
         pass
 
@@ -29,7 +34,8 @@ class HotelNodeReservationWizard(models.TransientModel):
     def _get_default_checkout(self):
         pass
 
-    node_id = fields.Many2one('project.project', 'Hotel', required=True)
+    node_id = fields.Many2one('project.project', 'Hotel', required=True,
+                              default=_get_default_node_id)
 
     partner_id = fields.Many2one('res.partner', string="Customer", required=True)
 
@@ -50,84 +56,101 @@ class HotelNodeReservationWizard(models.TransientModel):
             try:
                 noderpc = odoorpc.ODOO(self.node_id.odoo_host, self.node_id.odoo_protocol, self.node_id.odoo_port)
                 noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
+
+                today = fields.Date.context_today(self.with_context())
+
+                # TODO check hotel timezone
+                checkin = fields.Date.from_string(today).strftime(
+                    DEFAULT_SERVER_DATE_FORMAT) if not self.checkin else fields.Date.from_string(self.checkin)
+
+                checkout = (fields.Date.from_string(today) + timedelta(days=1)).strftime(
+                    DEFAULT_SERVER_DATE_FORMAT) if not self.checkout else fields.Date.from_string(self.checkout)
+
+                if checkin >= checkout:
+                    checkout = checkin + timedelta(days=1)
+
+                free_room_ids = noderpc.env['hotel.room.type'].check_availability_room_ids(checkin, checkout)
+
+                room_type_availability = {}
+                for room_type in self.node_id.room_type_ids:
+                    availability_real = noderpc.env['hotel.room'].search_count([
+                        ('id', 'in', free_room_ids),
+                        ('room_type_id', '=', room_type.remote_room_type_id),
+                    ])
+                    availability_plan = noderpc.env['hotel.room.type.availability'].search_read([
+                        ('date', '>=', checkin),
+                        ('date', '<', checkout),
+                        ('room_type_id', '=', room_type.remote_room_type_id),
+
+                    ], ['avail']) or float('inf')
+
+                    if isinstance(availability_plan, list):
+                        availability_plan = min([r['avail'] for r in availability_plan])
+
+                    room_type_availability[room_type.id] = min(
+                        availability_real, availability_plan)
+
+                cmds = self.node_id.room_type_ids.mapped(lambda room_type_id: (0, False, {
+                    'room_type_id': room_type_id.id,
+                    'checkin': checkin,
+                    'checkout': checkout,
+                    'room_type_availability': room_type_availability[room_type_id.id],
+                    'node_reservation_wizard_id': self.id,
+
+                }))
+                self.update({
+                    'checkin': checkin,
+                    'checkout': checkout,
+                    'room_type_wizard_ids': cmds,
+                })
+                noderpc.logout()
             except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
                 raise ValidationError(err)
-
-            today = fields.Date.context_today(self.with_context())
-
-            # TODO check hotel timezone
-            checkin = fields.Date.from_string(today).strftime(
-                DEFAULT_SERVER_DATE_FORMAT) if not self.checkin else fields.Date.from_string(self.checkin)
-
-            checkout = (fields.Date.from_string(today) + timedelta(days=1)).strftime(
-                DEFAULT_SERVER_DATE_FORMAT) if not self.checkout else fields.Date.from_string(self.checkout)
-
-            if checkin >= checkout:
-                checkout = checkin + timedelta(days=1)
-
-            free_room_ids = noderpc.env['hotel.room.type'].check_availability_room_ids(checkin, checkout)
-
-            room_type_availability = {}
-            for room_type in self.node_id.room_type_ids:
-                room_type_availability[room_type.id] = noderpc.env['hotel.room'].search_count([
-                    ('id', 'in', free_room_ids),
-                    ('room_type_id', '=', room_type.remote_room_type_id)
-                ])
-
-            cmds = self.node_id.room_type_ids.mapped(lambda room_type_id: (0, False, {
-                'room_type_id': room_type_id.id,
-                'checkin': checkin,
-                'checkout': checkout,
-                'room_type_availability': room_type_availability[room_type_id.id],
-                'node_reservation_wizard_id': self.id,
-
-            }))
-            self.update({
-                'checkin': checkin,
-                'checkout': checkout,
-                'room_type_wizard_ids': cmds,
-            })
-            noderpc.logout()
 
     @api.multi
     def create_node_reservation(self):
         try:
             noderpc = odoorpc.ODOO(self.node_id.odoo_host, self.node_id.odoo_protocol, self.node_id.odoo_port)
             noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
+
+            # prepare required fields for hotel folio
+            remote_partner_id = noderpc.env['res.partner'].search([('email','=',self.partner_id.email)])
+            vals = {
+                'partner_id': remote_partner_id,
+                'checkin': self.checkin,
+                'checkout': self.checkout,
+            }
+            # prepare hotel folio room_lines
+            room_lines = []
+            for line in self.room_type_wizard_ids:
+                if line.room_qty > 0:
+                    vals_reservation_lines = {
+                        'partner_id': remote_partner_id,
+                        'room_type_id': line.room_type_id.remote_room_type_id,
+                    }
+                    reservation_line_ids = noderpc.env['hotel.reservation'].prepare_reservation_lines(
+                        line.checkin,
+                        (fields.Date.from_string(line.checkout) - fields.Date.from_string(line.checkin)).days,
+                        vals_reservation_lines
+                    ) # [[5, 0, 0], ¿?
+
+                    room_lines.append((0, False, {
+                        'room_type_id': line.room_type_id.remote_room_type_id,
+                        'checkin': line.checkin,
+                        'checkout': line.checkout,
+                        'reservation_line_ids': reservation_line_ids['reservation_line_ids'],
+                    }))
+            vals.update({'room_lines': room_lines})
+
+            from pprint import pprint
+            pprint(vals)
+
+            # x = noderpc.env['hotel.reservation'].create(vals)
+
+            noderpc.logout()
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
 
-        # prepare required fields for hotel folio
-        vals = {
-            'partner_id': self.partner_id.id,
-            'checkin': self.checkin,
-            'checkout': self.checkout,
-        }
-        # prepare hotel folio room_lines
-        room_lines = []
-        for line in self.room_type_wizard_ids:
-            if line.rooms_qty > 0:
-                vals_reservation_lines = {
-                    'partner_id': self.partner_id.id,
-                    'room_type_id': line.room_type_id.remote_room_type_id,
-                }
-                reservation_line_ids = noderpc.env['hotel.reservation'].prepare_reservation_lines(
-                    line.checkin,
-                    (fields.Date.from_string(line.checkout) - fields.Date.from_string(line.checkin)).days,
-                    vals_reservation_lines
-                )
-
-                room_lines.append((0, False, {
-                    'room_type_id': line.room_type_id.remote_room_type_id,
-                    'checkin': line.checkin,
-                    'checkout': line.checkout,
-                    'reservation_line_ids': reservation_line_ids['reservation_line_ids'],
-                }))
-        vals.update({'room_lines': room_lines})
-
-        x = noderpc.env['hotel.reservation'].create(vals)
-
-        noderpc.logout()
 
 class NodeRoomTypeWizard(models.TransientModel):
     _name = "node.room.type.wizard"
@@ -171,7 +194,7 @@ class NodeRoomTypeWizard(models.TransientModel):
         # for record in self:
         #     record.room_type_availability = 42
 #
-    @api.onchange('node_id','checkin','checkout')
+    @api.depends('node_id','checkin','checkout')
     def _onchange_dates(self):
         if self.checkin and self.checkout:
             _logger.info('_onchange_dates for room type %s', self.room_type_id)
@@ -179,9 +202,9 @@ class NodeRoomTypeWizard(models.TransientModel):
          # availability: search de hotel.room.type.availability filtrando por room_type y date y escogiendo el min avail en el rango
          # preci_unit y json_days: usando prepare_reservation_lines
 
-    @api.onchange('rooms_qty')
+    @api.onchange('room_qty')
     def _compute_price_total(self):
-        self.price_total
+        _logger.info('_compute_price_total')
         for record in self:
             record.price_total = record.room_qty * (record.price_unit * record.discount * 0.01)
          # Unidades x precio unidad (el precio de unidad ya incluye el conjunto de días)

@@ -23,19 +23,17 @@
                         </group>
                         <group colspan="2">
                             <field name="room_type_wizard_ids" nolabel="1">
-                                <tree editable="bottom" create="false" delete="false">
+                                <tree editable="bottom" create="false" delete="false"
+                                      decoration-muted="room_type_availability == 0">
                                     <field name="room_type_id" string="Room Type" readonly="1" force_save="1"/>
                                     <field name="room_type_availability" readonly="1" force_save="1"/>
                                     <field name="room_qty"/>
-                                    <field name="price_unit" widget="monetary" readonly="1" force_save="1"/>
-                                    <!--<field name="currency_id" invisible="1"/>-->
-                                    <field name="discount" widget="monetary"/>
                                     <field name="checkin" widget="date" />
                                     <field name="checkout" widget="date" />
-                                    <!--<field name="price" attrs="{'readonly': [('can_confirm','=',False)]}"/>-->
-                                    <!--<field name="amount_reservation" readonly="1" />-->
-                                    <!--<field name="total_price" invisible="1" />-->
-                                    <!--<field name="can_confirm" invisible="1" />-->
+                                    <field name="price_unit" widget="monetary" readonly="1" force_save="1"/>
+                                    <!--<field name="currency_id" invisible="1"/>-->
+                                    <field name="discount"/>
+                                    <field name="price_total" widget="monetary" readonly="1" force_save="1"/>
                                 </tree>
                             </field>
                         </group>
@@ -50,6 +48,8 @@
                     <footer attrs="{'invisible':[('node_id','=',False)]}">
                         <button name="create_node_reservation" string="Create Reservations" type="object"
 							class="oe_highlight" />
+                        <button name="cancel" string="Cancel" special="cancel"
+							class="oe_link" />
                     </footer>
 				</sheet>
 			</form>
