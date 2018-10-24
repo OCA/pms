@@ -334,11 +334,15 @@ class HotelReservation(models.Model):
     def _prepare_add_missing_fields(self, values):
         """ Deduce missing required fields from the onchange """
         res = {}
-        onchange_fields = ['room_id', 'pricelist_id', 'reservation_type', 'currency_id']
-        if values.get('partner_id') and values.get('room_type_id') and \
-                any(f not in values for f in onchange_fields):
+        onchange_fields = ['room_id', 'reservation_type', 'currency_id']
+        if values.get('partner_id') and values.get('room_type_id'):
             line = self.new(values)
-            line.onchange_room_id()
+            if any(f not in values for f in onchange_fields):
+                line.onchange_room_id()
+            if 'name' not in values:
+                line.onchange_compute_reservation_description()
+            if 'pricelist_id' not in values:
+                line.onchange_partner_id()
             for field in onchange_fields:
                 if field not in values:
                     res[field] = line._fields[field].convert_to_write(line[field], line)
@@ -353,7 +357,7 @@ class HotelReservation(models.Model):
         if checkin and checkout and room_type:
             room_chosen = self.env['hotel.room.type'].check_availability_room(checkin, checkout, room_type)[0]
             res.update({
-                'room_id': room_chosen
+                'room_id': room_chosen.id
             })
         return res
 
