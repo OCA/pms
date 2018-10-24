@@ -30,7 +30,7 @@
                                     <field name="room_qty"/>
                                     <field name="checkin" widget="date" />
                                     <field name="checkout" widget="date" />
-                                    <field name="price_unit" widget="monetary" readonly="1" force_save="1"/>
+                                    <field name="price_unit" widget="monetary"/>
                                     <!--<field name="currency_id" invisible="1"/>-->
                                     <field name="discount"/>
                                     <field name="price_total" widget="monetary" readonly="1" force_save="1"/>

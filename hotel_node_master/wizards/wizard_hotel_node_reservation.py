@@ -10,7 +10,6 @@ import urllib.error
 import odoorpc.odoo
 from datetime import timedelta
 from odoo import models, fields, api, _
-from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT)
@@ -50,7 +49,7 @@ class HotelNodeReservationWizard(models.TransientModel):
 
     @api.onchange('node_id')
     def _onchange_node_id(self):
-        self.ensure_one()
+        # self.ensure_one()
         if self.node_id:
             _logger.info('onchange_node_id(self): %s', self)
             try:
@@ -65,9 +64,6 @@ class HotelNodeReservationWizard(models.TransientModel):
 
                 checkout = (fields.Date.from_string(today) + timedelta(days=1)).strftime(
                     DEFAULT_SERVER_DATE_FORMAT) if not self.checkout else fields.Date.from_string(self.checkout)
-
-                if checkin >= checkout:
-                    checkout = checkin + timedelta(days=1)
 
                 free_room_ids = noderpc.env['hotel.room.type'].check_availability_room_ids(checkin, checkout)
 
@@ -107,6 +103,27 @@ class HotelNodeReservationWizard(models.TransientModel):
             except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
                 raise ValidationError(err)
 
+    @api.onchange('checkin', 'checkout')
+    def _onchange_dates(self):
+        _logger.info('_onchange_dates(self): %s', self)
+
+        today = fields.Date.context_today(self.with_context())
+
+        # TODO check hotel timezone
+        self.checkin = fields.Date.from_string(today).strftime(
+            DEFAULT_SERVER_DATE_FORMAT) if not self.checkin else fields.Date.from_string(self.checkin)
+
+        self.checkout = (fields.Date.from_string(today) + timedelta(days=1)).strftime(
+            DEFAULT_SERVER_DATE_FORMAT) if not self.checkout else fields.Date.from_string(self.checkout)
+
+        if fields.Date.from_string(self.checkin) >= fields.Date.from_string(self.checkout):
+            self.checkout = (fields.Date.from_string(self.checkin) + timedelta(days=1)).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
+
+        for room_type in self.room_type_wizard_ids:
+            room_type.checkin = self.checkin
+            room_type.checkout = self.checkout
+
     @api.multi
     def create_node_reservation(self):
         try:
@@ -114,11 +131,10 @@ class HotelNodeReservationWizard(models.TransientModel):
             noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
 
             # prepare required fields for hotel folio
-            remote_partner_id = noderpc.env['res.partner'].search([('email','=',self.partner_id.email)])
+            remote_partner_id = noderpc.env['res.partner'].search([('email','=',self.partner_id.email)]).pop()
             vals = {
                 'partner_id': remote_partner_id,
-                'checkin': self.checkin,
-                'checkout': self.checkout,
+                'name': 'New',
             }
             # prepare hotel folio room_lines
             room_lines = []
@@ -135,6 +151,7 @@ class HotelNodeReservationWizard(models.TransientModel):
                     ) # [[5, 0, 0], ¿?
 
                     room_lines.append((0, False, {
+                        'name': 'Descripcion del pedido de venta',
                         'room_type_id': line.room_type_id.remote_room_type_id,
                         'checkin': line.checkin,
                         'checkout': line.checkout,
@@ -145,7 +162,9 @@ class HotelNodeReservationWizard(models.TransientModel):
             from pprint import pprint
             pprint(vals)
 
-            # x = noderpc.env['hotel.reservation'].create(vals)
+            folio_id = noderpc.env['hotel.folio'].create(vals)
+            _logger.info('User #%s created a hotel.folio with ID: [%s]',
+                         self._context.get('uid'), folio_id)
 
             noderpc.logout()
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
@@ -174,38 +193,28 @@ class NodeRoomTypeWizard(models.TransientModel):
     room_type_availability = fields.Integer('Availability') #, compute="_compute_room_type_availability")
     room_qty = fields.Integer('Quantity', default=0)
 
-    checkin = fields.Date('Check In', required=True,
-                          default=_default_checkin)
-    checkout = fields.Date('Check Out', required=True,
-                           default=_default_checkout)
+    checkin = fields.Date('Check In', required=True, default=_default_checkin)
+    checkout = fields.Date('Check Out', required=True, default=_default_checkout)
 
     price_unit = fields.Float(string='Room Price', required=True, default=0.0)
     discount = fields.Float(string='Discount (%)', default=0.0)
     price_total = fields.Float(string='Total Price', compute="_compute_price_total")
 
-#     price_total #compute
-#     json_days #enchufar como texto literal la cadena devuelta por el método prepare_reservation_lines del hotel.reservation del nodo.(para que funcione
-#                #es necesario que Darío modifique el método en el modulo Hotel haciendolo independiente del self.
-
     # compute and search fields, in the same order that fields declaration
-    # @api.depends('node_id')
-    # def _compute_room_type_availability(self):
-    #     pass
-        # for record in self:
-        #     record.room_type_availability = 42
-#
-    @api.depends('node_id','checkin','checkout')
+    @api.onchange('checkin','checkout')
     def _onchange_dates(self):
-        if self.checkin and self.checkout:
-            _logger.info('_onchange_dates for room type %s', self.room_type_id)
+        _logger.info('_onchange_dates for room type %s', self.room_type_id)
+        wdb.set_trace()
+        # if self.checkin and self.checkout:
+
          # Conectar con nodo para traer dispo(availability) y precio por habitación(price_unit)
          # availability: search de hotel.room.type.availability filtrando por room_type y date y escogiendo el min avail en el rango
          # preci_unit y json_days: usando prepare_reservation_lines
 
-    @api.onchange('room_qty')
+    @api.depends('room_qty', 'price_unit', 'discount', 'checkin', 'checkout')
     def _compute_price_total(self):
         _logger.info('_compute_price_total')
         for record in self:
-            record.price_total = record.room_qty * (record.price_unit * record.discount * 0.01)
+            record.price_total = (record.room_qty * record.price_unit) * (1.0 - record.discount * 0.01)
          # Unidades x precio unidad (el precio de unidad ya incluye el conjunto de días)
 
