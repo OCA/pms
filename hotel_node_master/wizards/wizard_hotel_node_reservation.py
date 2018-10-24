@@ -134,7 +134,6 @@ class HotelNodeReservationWizard(models.TransientModel):
             remote_partner_id = noderpc.env['res.partner'].search([('email','=',self.partner_id.email)]).pop()
             vals = {
                 'partner_id': remote_partner_id,
-                'name': 'New',
             }
             # prepare hotel folio room_lines
             room_lines = []
@@ -151,7 +150,6 @@ class HotelNodeReservationWizard(models.TransientModel):
                     ) # [[5, 0, 0], ¿?
 
                     room_lines.append((0, False, {
-                        'name': 'Descripcion del pedido de venta',
                         'room_type_id': line.room_type_id.remote_room_type_id,
                         'checkin': line.checkin,
                         'checkout': line.checkout,
