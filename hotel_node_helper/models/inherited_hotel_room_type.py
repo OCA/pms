@@ -20,3 +20,22 @@ class HotelRoomType(models.Model):
         """
         free_rooms = super().check_availability_room(dfrom, dto, room_type_id, notthis)
         return free_rooms.ids
+
+    @api.model
+    def get_room_type_availability(self, dfrom, dto, room_type_id):
+        free_rooms = self.check_availability_room(dfrom, dto)
+        availability_real = self.env['hotel.room'].search_count([
+            ('id', 'in', free_rooms.ids),
+            ('room_type_id', '=', room_type_id),
+        ])
+        availability_plan = self.env['hotel.room.type.availability'].search_read([
+            ('date', '>=', dfrom),
+            ('date', '<', dto),
+            ('room_type_id', '=', room_type_id),
+
+        ], ['avail']) or float('inf')
+
+        if isinstance(availability_plan, list):
+            availability_plan = min([r['avail'] for r in availability_plan])
+
+        return min(availability_real, availability_plan)
