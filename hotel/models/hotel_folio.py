@@ -314,7 +314,7 @@ class HotelFolio(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
+        if vals.get('name', _('New')) == _('New') or 'name' not in vals:
             if 'company_id' in vals:
                 vals['name'] = self.env['ir.sequence'].with_context(
                     force_company=vals['company_id']
@@ -492,18 +492,16 @@ class HotelFolio(models.Model):
     def _compute_cardex_count(self):
         _logger.info('_compute_cardex_amount')
         for record in self:
-            if record.reservation_type == 'normal':
+            if record.reservation_type == 'normal' and record.room_lines:
                 write_vals = {}
-                filtered_reservs = record.filtered(
-                    lambda x: x.room_lines.state != 'cancelled' and \
-                        not x.room_lines.parent_reservation)
-
+                filtered_reservs = record.room_lines.filtered(
+                    lambda x: x.state != 'cancelled' and \
+                        not x.parent_reservation)
                 mapped_cardex = filtered_reservs.mapped('cardex_ids.id')
-                write_vals.update({'cardex_count': len(mapped_cardex)})
+                record.cardex_count = len(mapped_cardex)
                 mapped_cardex_count = filtered_reservs.mapped(
                     lambda x: (x.adults + x.children) - len(x.cardex_ids))
-                write_vals.update({'cardex_pending_count': sum(mapped_cardex_count)})
-                record.write(write_vals)
+                record.cardex_pending_count = sum(mapped_cardex_count)
 
     """
     MAILING PROCESS
