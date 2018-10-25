@@ -39,3 +39,20 @@ class HotelRoomType(models.Model):
             availability_plan = min([r['avail'] for r in availability_plan])
 
         return min(availability_real, availability_plan)
+
+    @api.model
+    def get_room_type_price_unit(self, dfrom, dto, room_type_id):
+        # TODO review how to get the prices
+        # price_unit = self.browse(room_type_id).list_price
+        reservation_line_ids = self.env['hotel.reservation'].prepare_reservation_lines(
+            dfrom,
+            (fields.Date.from_string(dto) - fields.Date.from_string(dfrom)).days,
+            {'room_type_id': room_type_id}
+        )
+        reservation_line_ids = reservation_line_ids['reservation_line_ids']
+
+        price_unit = 0.0
+        for x in range(1, len(reservation_line_ids)):
+            price_unit = price_unit + reservation_line_ids[x][2]['price']
+
+        return price_unit
