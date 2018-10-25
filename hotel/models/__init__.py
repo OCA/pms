@@ -30,4 +30,5 @@ from . import inherit_product_pricelist
 from . import res_config
 from . import inherit_res_partner
 from . import inherited_mail_compose_message
+from . import hotel_room_type_class
 #~ from . import hotel_dashboard

@@ -43,6 +43,7 @@
         # 'views/hotel_service_line.xml',
         'views/hotel_room_type.xml',
         'views/hotel_room.xml',
+        'views/hotel_room_type_class.xml',
         # 'views/hotel_service.xml',
         'views/inherit_product_product.xml',
         'views/hotel_room_amenities_type.xml',
