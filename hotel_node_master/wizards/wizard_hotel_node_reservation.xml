@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hotel_node_reservation_wizard_view_form" model="ir.ui.view">
+		<field name="name">hotel.node.reservation.wizard</field>
+		<field name="model">hotel.node.reservation.wizard</field>
+		<field name="arch" type="xml">
+            <form string="Reservation Wizard" >
+				<sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="node_id" placeholder="Hotel" required="1" force_save="1"
+                                   attrs="{'readonly': [('node_id', '!=', False)]}"/>
+                        </h1>
+                    </div>
+                    <group attrs="{'invisible':[('node_id','=',False)]}">
+                        <group>
+                            <field name="checkin" required="1" widget="date" />
+                            <field name="checkout" required="1" widget="date" />
+                        </group>
+                        <group>
+                            <field name="partner_id"/>
+                        </group>
+                        <group colspan="2">
+                            <field name="room_type_wizard_ids" nolabel="1">
+                                <tree editable="bottom" create="false" delete="false"
+                                      decoration-muted="room_type_availability == 0">
+                                    <field name="room_type_id" string="Room Type" readonly="1" force_save="1"/>
+                                    <field name="room_type_availability" readonly="1" force_save="1"/>
+                                    <field name="room_qty"/>
+                                    <field name="checkin" widget="date" />
+                                    <field name="checkout" widget="date" />
+                                    <field name="nights"/>
+                                    <field name="min_stay" />
+                                    <field name="price_unit" widget="monetary" />
+                                    <!--<field name="currency_id" invisible="1"/>-->
+                                    <field name="discount"/>
+                                    <field name="price_total" widget="monetary" readonly="1" force_save="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="price_total" widget="monetary" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+                    <!--<field name="confirm" invisible="1"/>-->
+                    <!--<group colspan="2" class="oe_subtotal_footer">-->
+                        <!--<field name="total"/>-->
+                    <!--</group>-->
+                    <footer attrs="{'invisible':[('node_id','=',False)]}">
+                        <button name="create_node_reservation" string="Create Reservations" type="object"
+							class="oe_highlight" />
+                        <button name="cancel" string="Cancel" special="cancel"
+							class="oe_link" />
+                    </footer>
+				</sheet>
+			</form>
+		</field>
+	</record>
+</odoo>
