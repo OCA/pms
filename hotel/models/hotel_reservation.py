@@ -270,9 +270,9 @@ class HotelReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        vals.update(self._prepare_add_missing_fields(vals))
         if 'room_id' not in vals:
             vals.update(self._autoassign(vals))
+        vals.update(self._prepare_add_missing_fields(vals))
         if 'folio_id' in vals:
             folio = self.env["hotel.folio"].browse(vals['folio_id'])
             vals.update({'channel_type': folio.channel_type})
@@ -335,7 +335,7 @@ class HotelReservation(models.Model):
         """ Deduce missing required fields from the onchange """
         res = {}
         onchange_fields = ['room_id', 'reservation_type', 'currency_id', 'name']
-        if values.get('partner_id') and values.get('room_type_id'):
+        if values.get('room_type_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
                 line.onchange_room_id()
