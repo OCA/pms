@@ -185,10 +185,10 @@
               sequence="1"
     />
     <!-- Menu item to open Hotel Node Reservation List -->
-    <menuitem id="hotel_node_reservation_menu"
-              name="Reservations Wizard"
-              action="hotel_node_reservation_action"
-              parent="dashboard_menu"
-              sequence="4"
-    />
+    <!--<menuitem id="hotel_node_reservation_menu"-->
+              <!--name="Reservations Wizard"-->
+              <!--action="hotel_node_reservation_action"-->
+              <!--parent="dashboard_menu"-->
+              <!--sequence="4"-->
+    <!--/>-->
 </odoo>
