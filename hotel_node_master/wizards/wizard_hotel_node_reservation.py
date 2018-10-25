@@ -134,23 +134,23 @@ class HotelNodeReservationWizard(models.TransientModel):
             }
             # prepare hotel folio room_lines
             room_lines = []
-            for line in self.room_type_wizard_ids:
-                if line.room_qty > 0:
+            for room_type in self.room_type_wizard_ids:
+                for x in range(room_type.room_qty):
                     vals_reservation_lines = {
                         'partner_id': remote_partner_id,
-                        'room_type_id': line.room_type_id.remote_room_type_id,
+                        'room_type_id': room_type.room_type_id.remote_room_type_id,
                     }
-                    # añadir descuento
+                    # add discount
                     reservation_line_ids = noderpc.env['hotel.reservation'].prepare_reservation_lines(
-                        line.checkin,
-                        (fields.Date.from_string(line.checkout) - fields.Date.from_string(line.checkin)).days,
+                        room_type.checkin,
+                        (fields.Date.from_string(room_type.checkout) - fields.Date.from_string(room_type.checkin)).days,
                         vals_reservation_lines
                     ) # [[5, 0, 0], ¿?
 
                     room_lines.append((0, False, {
-                        'room_type_id': line.room_type_id.remote_room_type_id,
-                        'checkin': line.checkin,
-                        'checkout': line.checkout,
+                        'room_type_id': room_type.room_type_id.remote_room_type_id,
+                        'checkin': room_type.checkin,
+                        'checkout': room_type.checkout,
                         'reservation_line_ids': reservation_line_ids['reservation_line_ids'],
                     }))
             vals.update({'room_lines': room_lines})
@@ -176,7 +176,7 @@ class NodeRoomTypeWizard(models.TransientModel):
 
     room_type_id = fields.Many2one('hotel.node.room.type', 'Rooms Type')
     room_type_name = fields.Char('Name', related='room_type_id.name')
-    room_type_availability = fields.Integer('Availability') #, compute="_compute_room_type_availability")
+    room_type_availability = fields.Integer('Availability', readonly=True) #, compute="_compute_room_type_availability")
     room_qty = fields.Integer('Quantity', default=0)
 
     checkin = fields.Date('Check In', required=True)
@@ -184,7 +184,7 @@ class NodeRoomTypeWizard(models.TransientModel):
     nights = fields.Integer('Nights', readonly=True)
     min_stay = fields.Integer('Min. Days', compute="_compute_restrictions", readonly=True)
 
-    price_unit = fields.Float(string='Room Price', required=True, default=0.0)
+    price_unit = fields.Float(string='Room Price', required=True, default=0.0, readonly=True)
     discount = fields.Float(string='Discount (%)', default=0.0)
     price_total = fields.Float(string='Total Price', compute='_compute_price_total')
 

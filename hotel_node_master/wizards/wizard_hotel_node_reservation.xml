@@ -31,8 +31,8 @@
                                     <field name="checkin" widget="date" />
                                     <field name="checkout" widget="date" />
                                     <field name="nights"/>
-                                    <field name="min_stay"/>
-                                    <field name="price_unit" widget="monetary"/>
+                                    <field name="min_stay" />
+                                    <field name="price_unit" widget="monetary" />
                                     <!--<field name="currency_id" invisible="1"/>-->
                                     <field name="discount"/>
                                     <field name="price_total" widget="monetary" readonly="1" force_save="1"/>
