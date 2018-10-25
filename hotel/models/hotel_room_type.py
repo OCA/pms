@@ -5,7 +5,7 @@ from odoo import models, fields, api
 
 class HotelRoomType(models.Model):
     """ Before creating a 'room type', you need to consider the following:
-    With the term 'room type' is meant a type of residential accommodation: for
+    With the term 'room type' is meant a sales type of residential accommodation: for
     example, a Double Room, a Economic Room, an Apartment, a Tent, a Caravan...
     """
     _name = "hotel.room.type"
@@ -17,6 +17,7 @@ class HotelRoomType(models.Model):
                                  required=True, delegate=True,
                                  ondelete='cascade')
     room_ids = fields.One2many('hotel.room', 'room_type_id', 'Rooms')
+    class_id = fields.Many2one('hotel.room.type.class', 'Hotel Type Class')
 
     # TODO Hierarchical relationship for parent-child tree ?
     # parent_id = fields.Many2one ...
