@@ -48,6 +48,7 @@ class HotelFolio(models.Model):
                        default=lambda self: _('New'))
     partner_id = fields.Many2one('res.partner',
                                  track_visibility='onchange')
+    closure_reason_id = fields.Many2one('room.closure.reason')
     # partner_invoice_id = fields.Many2one('res.partner',
     #                                      string='Invoice Address',
     #                                      readonly=True, required=True,

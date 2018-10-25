@@ -161,9 +161,19 @@
                           style="margin-right: 30px;" required='1'/>
                         <field name="partner_id" default_focus="1"
                             placeholder="Lastname, Firstname"
-                            attrs="{'readonly':[('folio_id','!=',False)]}"
+                            attrs="{'readonly':[('folio_id','!=',False)],
+                            'invisible':[('reservation_type','in',('out'))]}"
                             required="1"/>
-                         <span class="fa fa-user" style="margin-left:20px;"/>
+                        <field name="closure_reason_id" default_focus="1"
+                            options="{'no_create': True,'no_open': True}"
+                            placeholder="Closure Reason"
+                            attrs="{'readonly':[('folio_id','!=',False)],
+                            'invisible':[('reservation_type','not in',('out'))]}"
+                            required="1"/>
+                         <span class="fa fa-user" style="margin-left:20px;"
+                            attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                         <span class="fa fa-ban" style="margin-left:20px;"
+                            attrs="{'invisible': [('reservation_type','not in',('out'))]}"/>
                     </h1>
                     <h3>
                         From <span class="fa fa-sign-in" style="margin: 5px;"/>

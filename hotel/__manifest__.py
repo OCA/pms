@@ -51,6 +51,7 @@
         'views/hotel_room_type_restriction_views.xml',
         'views/hotel_room_type_restriction_item_views.xml',
         'views/hotel_reservation.xml',
+        'views/room_closure_reason.xml',
         # 'views/room_type_views.xml',
         'views/cardex.xml',
         'views/hotel_room_type_availability.xml',

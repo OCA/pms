@@ -124,7 +124,8 @@
                     <!-- <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;, &quot;size&quot;: [90, 90]}"/> -->
                     <h2><field name="name"/></h2>
                     <h1>
-                        <field name="partner_id" default_focus="1" placeholder="Guest"/>
+                        <field name="partner_id" default_focus="1" placeholder="Guest" attrs="{'invisible':[('reservation_type','in',('out'))]}"/>
+                        <field name="closure_reason_id" placeholder="Closure reason" default_focus="1" attrs="{'invisible':[('reservation_type','not in',('out'))]}"/>
                     </h1>
                     <group>
                         <group>

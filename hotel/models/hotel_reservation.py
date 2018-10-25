@@ -159,6 +159,7 @@ class HotelReservation(models.Model):
                                    required=True, track_visibility='onchange')
 
     partner_id = fields.Many2one(related='folio_id.partner_id')
+    closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
     company_id = fields.Many2one('res.company', 'Company')
     reservation_line_ids = fields.One2many('hotel.reservation.line',
                                            'reservation_id',
