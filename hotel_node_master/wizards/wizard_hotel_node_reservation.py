@@ -41,13 +41,26 @@ class HotelNodeReservationWizard(models.TransientModel):
                                            string="Room Types")
     price_total = fields.Float(string='Total Price', compute='_compute_price_total')
 
+    @api.constrains('room_type_wizard_ids')
+    def _check_room_type_wizard_ids(self):
+        """
+        :raise: ValidationError
+        """
+        total_qty = 0
+        for rec in self.room_type_wizard_ids:
+            total_qty += rec.room_qty
+
+        if total_qty == 0:
+            msg = _("It is not possible to create the reservation.") + " " + \
+                  _("Maybe you forgot adding the quantity to at least one type of room?.")
+            raise ValidationError(msg)
+
     @api.depends('room_type_wizard_ids.price_total')
     def _compute_price_total(self):
         _logger.info('_compute_price_total for wizard %s', self.id)
-        price_total = 0.0
+        self.price_total = 0.0
         for rec in self.room_type_wizard_ids:
-            price_total += rec.price_total
-        self.price_total = price_total
+            self.price_total += rec.price_total
 
     @api.onchange('node_id')
     def _onchange_node_id(self):
@@ -85,6 +98,7 @@ class HotelNodeReservationWizard(models.TransientModel):
 
     @api.multi
     def create_node_reservation(self):
+        self.ensure_one()
         try:
             noderpc = odoorpc.ODOO(self.node_id.odoo_host, self.node_id.odoo_protocol, self.node_id.odoo_port)
             noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
@@ -143,18 +157,38 @@ class NodeRoomTypeWizard(models.TransientModel):
 
     checkin = fields.Date('Check In', required=True)
     checkout = fields.Date('Check Out', required=True)
-    nights = fields.Integer('Nights', readonly=True)
+    nights = fields.Integer('Nights', compute="_compute_nights", readonly=True)
     min_stay = fields.Integer('Min. Days', compute="_compute_restrictions", readonly=True)
     # price_unit indicates Room Price x Nights
-    price_unit = fields.Float(string='Room Price', compute="_compute_restrictions", readonly=True)
+    price_unit = fields.Float(string='Room Price', compute="_compute_restrictions", readonly=True, store=True)
     discount = fields.Float(string='Discount (%)', default=0.0)
-    price_total = fields.Float(string='Total Price', compute='_compute_price_total')
+    price_total = fields.Float(string='Total Price', compute='_compute_price_total', readonly=True, store=True)
 
-    @api.depends('room_qty', 'price_unit', 'discount', 'nights')
+    @api.constrains('room_qty')
+    def _check_room_qty(self):
+        """
+        :raise: ValidationError
+        """
+        total_qty = 0
+        for rec in self:
+            if (rec.room_type_availability < rec.room_qty) or (rec.room_qty > 0 and rec.nights < rec.min_stay):
+                msg = _("At least one room type has not availability or does not meet restrictions.") + " " + \
+                      _("Please, review room type %s between %s and %s.") % (rec.room_type_name, rec.checkin, rec.checkout)
+                _logger.warning(msg)
+                raise ValidationError(msg)
+            total_qty += rec.room_qty
+
+    @api.depends('room_qty', 'price_unit', 'discount')
     def _compute_price_total(self):
         for rec in self:
             _logger.info('_compute_price_total for room type %s', rec.room_type_id)
             rec.price_total = (rec.room_qty * rec.price_unit) * (1.0 - rec.discount * 0.01)
+            # TODO rec.price unit trigger _compute_restriction ¿? store = True?
+
+    @api.depends('checkin', 'checkout')
+    def _compute_nights(self):
+        for rec in self:
+            rec.nights = (fields.Date.from_string(rec.checkout) - fields.Date.from_string(rec.checkin)).days
 
     @api.depends('checkin', 'checkout')
     def _compute_restrictions(self):
@@ -164,23 +198,38 @@ class NodeRoomTypeWizard(models.TransientModel):
                 noderpc = odoorpc.ODOO(rec.node_id.odoo_host, rec.node_id.odoo_protocol, rec.node_id.odoo_port)
                 noderpc.login(rec.node_id.odoo_db, rec.node_id.odoo_user, rec.node_id.odoo_password)
 
-                _logger.info('_compute_restrictions [availability] for room type %s', rec.room_type_id)
+                _logger.warning('_compute_restrictions [availability] for room type %s', rec.room_type_id)
                 rec.room_type_availability = noderpc.env['hotel.room.type'].get_room_type_availability(
                         rec.checkin,
                         rec.checkout,
                         rec.room_type_id.remote_room_type_id)
 
-                _logger.info('_compute_restrictions [price_unit] for room type %s', rec.room_type_id)
+                _logger.warning('_compute_restrictions [price_unit] for room type %s', rec.room_type_id)
                 rec.price_unit = noderpc.env['hotel.room.type'].get_room_type_price_unit(
                         rec.checkin,
                         rec.checkout,
                         rec.room_type_id.remote_room_type_id)
 
-                _logger.info('_compute_restrictions [min days] for room type %s', rec.room_type_id)
+                _logger.warning('_compute_restrictions [min days] for room type %s', rec.room_type_id)
+                rec.min_stay = noderpc.env['hotel.room.type'].get_room_type_restrictions(
+                    rec.checkin,
+                    rec.checkout,
+                    rec.room_type_id.remote_room_type_id)
 
                 noderpc.logout()
             except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
                 raise ValidationError(err)
+
+    @api.onchange('room_qty')
+    def _onchange_room_qty(self):
+        if self.room_type_availability < self.room_qty:
+            msg = _("Please, review room type %s between %s and %s.") % (self.room_type_name, self.checkin, self.checkout)
+            return {
+                'warning': {
+                    'title': 'Warning: Invalid room quantity',
+                    'message': msg,
+                }
+            }
 
     @api.onchange('checkin', 'checkout')
     def _onchange_dates(self):
@@ -195,4 +244,3 @@ class NodeRoomTypeWizard(models.TransientModel):
             self.checkout = (fields.Date.from_string(self.checkin) + timedelta(days=1)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
 
-        self.nights = (fields.Date.from_string(self.checkout) - fields.Date.from_string(self.checkin)).days
