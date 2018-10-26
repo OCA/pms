@@ -8,7 +8,7 @@
             <form string="Hotel Node">
                 <sheet string="Hotel Node">
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
-                        <button name="%(hotel_node_reservation_action)d" type="action"
+                        <button name="%(hotel_node_reservation_wizard_action)d" type="action"
                                 string="Reserve" help="Make a reservation in this hotel"
                                 class="oe_stat_button" icon="fa-suitcase"
                                 context="{'node_id': id}">
@@ -105,7 +105,7 @@
         </field>
     </record>
 
-    <record id="hotel_node_action_open_dashboard" model="ir.actions.act_window">
+    <record id="hotel_node_action_kanban" model="ir.actions.act_window">
         <field name="name">Hotels</field>
         <field name="res_model">project.project</field>
         <field name="view_type">form</field>
@@ -114,81 +114,13 @@
         <field name="target">main</field>
     </record>
 
-    <!-- Action to open Hotel Nodes List -->
-    <act_window id="hotel_node_action"
-                name="List of Hotels"
-                res_model="project.project"
-                view_mode="tree,form"
-    />
-    <!-- Action to open Hotel Room Types List -->
-    <act_window id="hotel_node_room_type_action"
-                name="List of Room Types in Hotels"
-                res_model="hotel.node.room.type"
-                view_mode="tree,form"
-    />
-    <!-- Action to open Hotel Users List -->
-    <act_window id="hotel_node_user_action"
-                name="List of Users in Hotels"
-                res_model="hotel.node.user"
-                view_mode="tree,form"
-    />
-    <!-- Action to open Hotel Groups List -->
-    <act_window id="hotel_node_group_action"
-                name="List of Access Groups in Hotels"
-                res_model="hotel.node.group"
-                view_mode="tree,form"
-    />
-    <!-- Action to open Hotel Node Reservation List -->
-    <act_window id="hotel_node_reservation_action"
-                name="Hotel Reservation Wizard"
-                res_model="hotel.node.reservation.wizard"
-                view_mode="form"
-                target="new"
+    <menuitem id="hotel_node_menu"
+              name="Hotel Central Dashboard"
+              action="hotel_node_action_kanban"
     />
 
-    <!-- Menu default to open Hotel Nodes Dashboard -->
-    <menuitem id="hotel_node_dashboard_menu"
-              name="Hotel Central Dashboard"
-              action="hotel_node_action_open_dashboard"
-    />
-    <!-- Menu Management Section -->
-    <menuitem id="dashboard_menu"
+    <menuitem id="hotel_node_menu_dashboard"
               name="Management"
-              parent="hotel_node_dashboard_menu"
+              parent="hotel_node_menu"
     />
-    <!-- Menu item to open Hotel Nodes List -->
-    <menuitem id="hotel_node_menu"
-              name="Hotels"
-              action="hotel_node_action"
-              parent="dashboard_menu"
-              sequence="1"
-    />
-    <!-- Menu item to open Hotel Users List -->
-    <menuitem id="hotel_node_user_menu"
-              name="Users"
-              action="hotel_node_user_action"
-              parent="dashboard_menu"
-              sequence="2"
-    />
-    <!-- Menu item to open Hotel Users List -->
-    <menuitem id="hotel_node_group_menu"
-              name="Access Groups"
-              action="hotel_node_group_action"
-              parent="dashboard_menu"
-              sequence="3"
-    />
-    <!-- Menu item to open Hotel Nodes List -->
-    <menuitem id="hotel_node_room_type_menu"
-              name="Room Types"
-              action="hotel_node_room_type_action"
-              parent="dashboard_menu"
-              sequence="1"
-    />
-    <!-- Menu item to open Hotel Node Reservation List -->
-    <!--<menuitem id="hotel_node_reservation_menu"-->
-              <!--name="Reservations Wizard"-->
-              <!--action="hotel_node_reservation_action"-->
-              <!--parent="dashboard_menu"-->
-              <!--sequence="4"-->
-    <!--/>-->
 </odoo>
