@@ -32,11 +32,10 @@ class HotelRoomType(models.Model):
             ('date', '>=', dfrom),
             ('date', '<', dto),
             ('room_type_id', '=', room_type_id),
+        ], ['avail']) or [{'avail': availability_real}]
 
-        ], ['avail']) or float('inf')
-
-        if isinstance(availability_plan, list):
-            availability_plan = min([r['avail'] for r in availability_plan])
+        # if isinstance(availability_plan, list):
+        availability_plan = min([r['avail'] for r in availability_plan])
 
         return min(availability_real, availability_plan)
 
@@ -56,3 +55,15 @@ class HotelRoomType(models.Model):
             price_unit = price_unit + reservation_line_ids[x][2]['price']
 
         return price_unit
+
+    @api.model
+    def get_room_type_restrictions(self, dfrom, dto, room_type_id):
+        restrictions_plan = self.env['hotel.room.type.restriction.item'].search_read([
+            ('date', '>=', dfrom),
+            ('date', '<', dto),
+            ('room_type_id', '=', room_type_id),
+        ], ['min_stay']) or [{'min_stay': 0}]
+
+        min_stay = max([r['min_stay'] for r in restrictions_plan])
+
+        return min_stay
