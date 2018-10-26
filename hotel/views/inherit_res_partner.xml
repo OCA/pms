@@ -32,6 +32,10 @@
                     <field string="Folios" name="folios_count" widget="statinfo"/>
                 </button>
             </xpath>
+            <xpath expr='//page[@name="sales_purchases"]/group[@name="container_row_2"]/group[@name="sale"]/field[@name="customer"]' position='before'>
+                <field name="is_staff"/>
+            </xpath>
+            
         </field>
     </record>
 

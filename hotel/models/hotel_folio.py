@@ -352,19 +352,14 @@ class HotelFolio(models.Model):
                 #~ 'fiscal_position_id': False,
             #~ })
             return
-
         addr = self.partner_id.address_get(['invoice'])
-        #TEMP:
-        values = { 'user_id': self.partner_id.user_id.id or self.env.uid,
-                   'pricelist_id':self.partner_id.property_product_pricelist and \
-                self.partner_id.property_product_pricelist.id or \
-                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')}
-        #~ values = {
-            #~ 'pricelist_id': self.partner_id.property_product_pricelist and \
-                #~ self.partner_id.property_product_pricelist.id or False,
-            #~ 'partner_invoice_id': addr['invoice'],
-            #~ 'user_id': self.partner_id.user_id.id or self.env.uid
-        #~ }
+        values = {'user_id': self.partner_id.user_id.id or self.env.uid,
+                  'pricelist_id':self.partner_id.property_product_pricelist and \
+                                 self.partner_id.property_product_pricelist.id or \
+                                 self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id'),
+                   'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
+                                       self.partner_id.is_staff,
+                                       self.reservation_type)}
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
             self.env.user.company_id.sale_note:
             values['note'] = self.with_context(
@@ -373,6 +368,15 @@ class HotelFolio(models.Model):
         if self.partner_id.team_id:
             values['team_id'] = self.partner_id.team_id.id
         self.update(values)
+
+    @api.model
+    def calcule_reservation_type(self, is_staff, current_type):
+        if current_type == 'out':
+            return 'out'
+        elif is_staff:
+            return 'staff'
+        else:
+            return 'normal'
 
     @api.multi
     def action_invoice_create(self, grouped=False, states=None):

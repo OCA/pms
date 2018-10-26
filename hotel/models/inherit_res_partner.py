@@ -24,3 +24,13 @@ class ResPartner(models.Model):
     reservations_count = fields.Integer('Reservations',
                                         compute='_compute_reservations_count')
     folios_count = fields.Integer('Folios', compute='_compute_folios_count')
+    is_staff = fields.Boolean('Is Staff')
+
+    """ TODO
+    @api.onchange('is_staff')
+    def onchange_staff(self):
+        staff_listprice = TODO: Search the pricelist checked like staff_listprice
+        if staff_listprice:
+            values = {'pricelist_id': staff_listprice}
+            self.update(values)
+    """

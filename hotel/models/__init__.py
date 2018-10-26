@@ -12,9 +12,7 @@ from . import hotel_room
 from . import hotel_room_amenities
 from . import hotel_room_amenities_type
 from . import hotel_room_type
-# from . import hotel_service_line
 from . import hotel_service
-# from . import hotel_service_type
 from . import inherit_account_invoice
 # from . import inherit_product_category
 from . import inherit_product_product

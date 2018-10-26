@@ -448,8 +448,16 @@ class HotelReservation(models.Model):
             'pricelist_id': self.partner_id.property_product_pricelist and \
                 self.partner_id.property_product_pricelist.id or \
                 self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id'),
+            'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
+                                       self.partner_id.is_staff,
+                                       self.reservation_type)
         }
         self.update(values)
+
+    @api.onchange('reservation_type')
+    def assign_partner_company_on_out_service(self):
+        if self.reservation_type == 'out':
+            self.update({'partner_id': self.env.user.company_id.partner_id.id})
 
     # When we need to overwrite the prices even if they were already established
     @api.onchange('room_type_id', 'pricelist_id', 'reservation_type')

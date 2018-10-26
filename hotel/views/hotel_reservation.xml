@@ -167,12 +167,13 @@
                         <field name="closure_reason_id" default_focus="1"
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Closure Reason"
-                            attrs="{'readonly':[('folio_id','!=',False)],
-                            'invisible':[('reservation_type','not in',('out'))]}"
+                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"
                             required="1"/>
                          <span class="fa fa-user" style="margin-left:20px;"
-                            attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
-                         <span class="fa fa-ban" style="margin-left:20px;"
+                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"/>
+                         <span class="fa fa-black-tie" style="margin-left:20px; color: #C67;"
+                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"/>
+                         <span class="fa fa-ban" style="margin-left:20px; color: #9C4747;"
                             attrs="{'invisible': [('reservation_type','not in',('out'))]}"/>
                     </h1>
                     <h3>
