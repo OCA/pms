@@ -54,4 +54,19 @@
             </tree>
         </field>
     </record>
+
+    <record id="hotel_node_room_type_action" model="ir.actions.act_window">
+        <field name="name">List of Room Types in Hotels</field>
+        <field name="res_model">hotel.node.room.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">main</field>
+    </record>
+
+    <menuitem id="hotel_node_room_type_menu"
+              name="Room Types"
+              action="hotel_node_room_type_action"
+              parent="hotel_node_menu_dashboard"
+              sequence="1"
+    />
 </odoo>

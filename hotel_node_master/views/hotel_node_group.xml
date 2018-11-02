@@ -11,4 +11,19 @@
             </tree>
         </field>
     </record>
+
+    <record id="hotel_node_group_action" model="ir.actions.act_window">
+        <field name="name">List of Access Groups in Hotels</field>
+        <field name="res_model">hotel.node.group</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">main</field>
+    </record>
+
+    <menuitem id="hotel_node_group_menu"
+              name="Access Groups"
+              action="hotel_node_group_action"
+              parent="hotel_node_menu_dashboard"
+              sequence="3"
+    />
 </odoo>
