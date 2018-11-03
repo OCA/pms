@@ -142,7 +142,7 @@ class BindingHotelRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        if 'name' in fields or 'list_price' in fields:
+        if any(record.channel_bind_ids) and 'name' in fields or 'list_price' in fields:
             record.channel_bind_ids[0].modify_room()
 
     # @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))

@@ -84,6 +84,28 @@
                                         string="Import in background"/>
                                 </div>
                             </group>
+                            <group>
+                                <label string="Import Availability" class="oe_inline"/>
+                                <div>
+                                    <field name="avail_from" class="oe_inline" nolabel="1"/>
+                                    <field name="avail_to" class="oe_inline" nolabel="1"/>
+                                    <button name="import_availability"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
+                        </page>
+                        <page name="export" string="Exports">
+                            <group>
+                                <label string="Push Availability" class="oe_inline"/>
+                                <div>
+                                    <button name="push_availability"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in background"/>
+                                </div>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>

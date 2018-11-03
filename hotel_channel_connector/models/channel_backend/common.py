@@ -31,6 +31,9 @@ class ChannelBackend(models.Model):
     pkey = fields.Char('Channel Service PKey')
     security_token = fields.Char('Channel Service Security Token')
 
+    avail_from = fields.Date('Availability From')
+    avail_to = fields.Date('Availability To')
+
     @api.multi
     def generate_key(self):
         for record in self:
@@ -55,6 +58,23 @@ class ChannelBackend(models.Model):
         channel_ota_info_obj = self.env['channel.ota.info']
         for backend in self:
             channel_ota_info_obj.import_otas_info(backend)
+        return True
+
+    @api.multi
+    def import_availability(self):
+        channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
+        for backend in self:
+            channel_hotel_room_type_avail_obj.import_availability(
+                backend,
+                self.avail_from,
+                self.avail_to)
+        return True
+
+    @api.multi
+    def push_availability(self):
+        channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
+        for backend in self:
+            channel_hotel_room_type_avail_obj.push_availability(backend)
         return True
 
     @contextmanager

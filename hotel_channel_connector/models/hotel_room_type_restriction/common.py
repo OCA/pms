@@ -85,8 +85,13 @@ class HotelRoomTypeRestriction(models.Model):
         names = []
         for name in org_names:
             restriction_id = room_type_restriction_obj.browse(name[0])
-            if restriction_id.channel_bind_ids.channel_plan_id:
-                names.append((name[0], '%s (WuBook)' % name[1]))
+            if any(restriction_id.channel_bind_ids) and \
+                    restriction_id.channel_bind_ids[0].channel_plan_id:
+                names.append((
+                    name[0],
+                    '%s (%s Backend)' % (name[1],
+                                         restriction_id.channel_bind_ids[0].backend_id.name),
+                ))
             else:
                 names.append((name[0], name[1]))
         return names
