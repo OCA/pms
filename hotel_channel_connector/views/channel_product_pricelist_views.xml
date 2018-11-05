@@ -7,14 +7,18 @@
         <field name="arch" type="xml">
             <form string="Hotel Channel Product Pricelist">
                 <group>
-                    <field name="channel_plan_id" />
+                    <field name="id" invisible="1" />
+                    <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                </group>
+                <group>
+                    <field name="external_id" />
                     <field name="is_daily_plan" />
                 </group>
             </form>
         </field>
     </record>
 
-    <record id="view_channel_hotel_room_type_restriction_tree" model="ir.ui.view">
+    <record id="view_channel_product_pricelist_tree" model="ir.ui.view">
         <field name="name">channel.hotel.product.pricelist.tree</field>
         <field name="model">channel.product.pricelist</field>
         <field name="arch" type="xml">

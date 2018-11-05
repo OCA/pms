@@ -5,7 +5,7 @@ from . import channel_binding
 from . import channel_backend
 from . import hotel_room_type
 from . import product_pricelist
-from . import inherited_product_pricelist_item
+from . import product_pricelist_item
 from . import hotel_room_type_restriction
 from . import hotel_room_type_restriction_item
 from . import hotel_room_type_availability

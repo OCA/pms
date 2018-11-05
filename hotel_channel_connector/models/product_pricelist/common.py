@@ -34,7 +34,10 @@ class ChannelProductPricelist(models.Model):
                     if channel_plan_id:
                         self.channel_plan_id = channel_plan_id
                 except ValidationError as e:
-                    self.create_issue('room', "Can't create plan on channel", "sss")
+                    self.create_issue(
+                        backend=self.backend_adapter.id,
+                        section='room',
+                        internal_message="Can't create plan on channel")
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
@@ -49,7 +52,10 @@ class ChannelProductPricelist(models.Model):
                         self.channel_plan_id,
                         self.name)
                 except ValidationError as e:
-                    self.create_issue('room', "Can't update plan name on channel", "sss")
+                    self.create_issue(
+                        backend=self.backend_adapter.id,
+                        section='room',
+                        internal_message="Can't update plan name on channel")
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
@@ -62,7 +68,10 @@ class ChannelProductPricelist(models.Model):
                 try:
                     adapter.delete_plan(self.channel_plan_id)
                 except ValidationError as e:
-                    self.create_issue('room', "Can't delete plan on channel", "sss")
+                    self.create_issue(
+                        backend=self.backend_adapter.id,
+                        section='room',
+                        internal_message="Can't delete plan on channel")
 
     @job(default_channel='root.channel')
     @api.multi

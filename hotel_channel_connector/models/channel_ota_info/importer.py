@@ -42,7 +42,11 @@ class ChannelOtaInfoImporter(Component):
                     ota_info_bind.create(map_record.values(for_create=True))
                 count = count + 1
         except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't import rooms from WuBook"), err.data['message'])
+            self.create_issue(
+                backend=self.backend_adapter.id,
+                section='room',
+                internal_message=_("Can't import rooms from WuBook"),
+                channel_message=err.data['message'])
         return count
 
 

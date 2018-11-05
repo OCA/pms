@@ -16,6 +16,8 @@ class ChannelBinding(models.AbstractModel):
         required=True,
         ondelete='restrict')
 
+    external_id = fields.Char(string='ID on Channel')
+
     _sql_constraints = [
         ('channel_uniq', 'unique(backend_id, external_id)',
          'A binding already exists with the same Channel ID.'),

@@ -5,14 +5,19 @@
         <field name="model">product.pricelist</field>
         <field name="inherit_id" ref="product.product_pricelist_view" />
         <field name="arch" type="xml">
-            <xpath expr="//form[1]//sheet" position="before">
-                <header>
-                    <button name="%(action_wubook_import_plan_prices)d" string="Import Prices From Channel" type="action" class="oe_highlight" />
-                </header>
-            </xpath>
-            <xpath expr="//field[@name='company_id']" position="after">
-                <field name="id" invisible="1"/>
-            </xpath>
+          <xpath expr="//sheet" position="inside">
+               <notebook>
+                   <page name="connector" string="Channel Connector">
+                       <group string="Hotel Channel Bindings">
+                           <field name="channel_bind_ids" nolabel="1">
+                               <tree>
+                                   <field name="backend_id"/>
+                               </tree>
+                           </field>
+                       </group>
+                   </page>
+               </notebook>
+           </xpath>
         </field>
     </record>
 

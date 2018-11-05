@@ -51,10 +51,10 @@ class ChannelHotelRoomTypeAvailability(models.Model):
 
     @job(default_channel='root.channel')
     @api.model
-    def import_availability(self, backend, date_from, date_to):
+    def import_availability(self, backend):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='hotel.room.type.availability.importer')
-            return importer.get_availability(date_from, date_to)
+            return importer.get_availability(backend.avail_from, backend.avail_to)
 
     @job(default_channel='root.channel')
     @api.model

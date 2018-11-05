@@ -34,6 +34,16 @@ class ChannelBackend(models.Model):
     avail_from = fields.Date('Availability From')
     avail_to = fields.Date('Availability To')
 
+    restriction_from = fields.Date('Restriction From')
+    restriction_to = fields.Date('Restriction To')
+    restriction_id = fields.Many2one('channel.hotel.room.type.restriction',
+                                     'Channel Restriction')
+
+    issue_ids = fields.One2many('hotel.channel.connector.issue',
+                                'backend_id',
+                                string='Issues',
+                                copy=True)
+
     @api.multi
     def generate_key(self):
         for record in self:
@@ -64,10 +74,7 @@ class ChannelBackend(models.Model):
     def import_availability(self):
         channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
         for backend in self:
-            channel_hotel_room_type_avail_obj.import_availability(
-                backend,
-                self.avail_from,
-                self.avail_to)
+            channel_hotel_room_type_avail_obj.import_availability(backend)
         return True
 
     @api.multi
@@ -75,6 +82,20 @@ class ChannelBackend(models.Model):
         channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
         for backend in self:
             channel_hotel_room_type_avail_obj.push_availability(backend)
+        return True
+
+    @api.multi
+    def import_restriction_plans(self):
+        channel_hotel_room_type_restr_obj = self.env['channel.hotel.room.type.restriction']
+        for backend in self:
+            channel_hotel_room_type_restr_obj.import_restriction_plans(backend)
+        return True
+
+    @api.multi
+    def import_restriction_values(self):
+        channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
+        for backend in self:
+            channel_hotel_restr_item_obj.import_restriction_values(backend)
         return True
 
     @contextmanager

@@ -1,11 +1,13 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
 from odoo import api, models, fields
 from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+_logger = logging.getLogger(__name__)
 
 class ChannelHotelRoomTypeRestriction(models.Model):
     _name = 'channel.hotel.room.type.restriction'
@@ -17,57 +19,43 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                               string='Hotel Virtual Room Restriction',
                               required=True,
                               ondelete='cascade')
-    channel_plan_id = fields.Char("Channel Plan ID", readonly=True, old_name='wpid')
-    is_daily_plan = fields.Boolean("Channel Daily Plan", default=True, old_name='wdaily_plan')
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def create_plan(self):
         self.ensure_one()
-        if self._context.get('channel_action', True):
+        if not self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    channel_plan_id = adapter.create_rplan(self.name)
-                    if channel_plan_id:
-                        self.channel_plan_id = channel_plan_id
-                except ValidationError as e:
-                    self.create_issue('room', "Can't create restriction plan on channel", "sss")
+                exporter = work.component(usage='hotel.room.type.restriction.exporter')
+                exporter.create_rplan(self)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def update_plan_name(self):
         self.ensure_one()
-        if self._context.get('channel_action', True):
+        if self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    adapter.rename_rplan(self.channel_plan_id, self.name)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't update restriction plan name on channel", "sss")
+                exporter = work.component(usage='hotel.room.type.restriction.exporter')
+                exporter.rename_rplan(self)
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def delete_plan(self):
         self.ensure_one()
-        if self._context.get('channel_action', True) and self.channel_room_id:
+        if self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                try:
-                    adapter.delete_rplan(self.channel_plan_id)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't delete restriction plan on channel", "sss")
+                exporter = work.component(usage='hotel.room.type.restriction.exporter')
+                exporter.delete_rplan(self)
 
     @job(default_channel='root.channel')
-    @api.multi
-    def import_restriction_plans(self):
-        if self._context.get('channel_action', True):
-            with self.backend_id.work_on(self._name) as work:
-                importer = work.component(usage='channel.importer')
-                return importer.import_restriction_plans()
+    @api.model
+    def import_restriction_plans(self, backend):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='hotel.room.type.restriction.importer')
+            return importer.import_restriction_plans()
 
 class HotelRoomTypeRestriction(models.Model):
     _inherit = 'hotel.room.type.restriction'
@@ -86,7 +74,7 @@ class HotelRoomTypeRestriction(models.Model):
         for name in org_names:
             restriction_id = room_type_restriction_obj.browse(name[0])
             if any(restriction_id.channel_bind_ids) and \
-                    restriction_id.channel_bind_ids[0].channel_plan_id:
+                    restriction_id.channel_bind_ids[0].external_id:
                 names.append((
                     name[0],
                     '%s (%s Backend)' % (name[1],
@@ -96,6 +84,33 @@ class HotelRoomTypeRestriction(models.Model):
                 names.append((name[0], name[1]))
         return names
 
+class HotelRoomTypeRestrictionAdapter(Component):
+    _name = 'channel.hotel.room.type.restriction.adapter'
+    _inherit = 'wubook.adapter'
+    _apply_on = 'channel.hotel.room.type.restriction'
+
+    def rplan_rplans(self):
+        return super(HotelRoomTypeRestrictionAdapter, self).rplan_rplans()
+
+    def create_rplan(self, name):
+        return super(HotelRoomTypeRestrictionAdapter, self).create_rplan(name)
+
+    def delete_rplan(self, external_id):
+        return super(HotelRoomTypeRestrictionAdapter, self).delete_rplan(external_id)
+
+    def rename_rplan(self, external_id, new_name):
+        return super(HotelRoomTypeRestrictionAdapter, self).rename_rplan(external_id, new_name)
+
+class BindingHotelRoomTypeListener(Component):
+    _name = 'binding.hotel.room.type.restriction.listener'
+    _inherit = 'base.connector.listener'
+    _apply_on = ['hotel.room.type.restriction']
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+        if any(record.channel_bind_ids) and 'name' in fields:
+            record.channel_bind_ids[0].update_plan_name()
+
 class ChannelBindingHotelRoomTypeRestrictionListener(Component):
     _name = 'channel.binding.hotel.room.type.restriction.listener'
     _inherit = 'base.connector.listener'
@@ -103,13 +118,13 @@ class ChannelBindingHotelRoomTypeRestrictionListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
-        record.with_delay(priority=20).create_plan()
+        record.create_plan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):
-        record.with_delay(priority=20).delete_plan()
+        record.delete_plan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
         if 'name' in fields:
-            record.with_delay(priority=20).update_plan_name()
+            record.update_plan_name()

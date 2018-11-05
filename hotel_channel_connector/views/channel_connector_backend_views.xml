@@ -95,6 +95,27 @@
                                         string="Import in background"/>
                                 </div>
                             </group>
+                            <group>
+                                <label string="Import Restriction Plans" class="oe_inline"/>
+                                <div>
+                                    <button name="import_restriction_plans"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label string="Import Restriction Values" class="oe_inline"/>
+                                <div>
+                                    <field name="restriction_id" class="oe_inline" nolabel="1"/>
+                                    <field name="restriction_from" class="oe_inline" nolabel="1"/>
+                                    <field name="restriction_to" class="oe_inline" nolabel="1"/>
+                                    <button name="import_restriction_values"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
                         </page>
                         <page name="export" string="Exports">
                             <group>
@@ -106,6 +127,17 @@
                                         string="Export in background"/>
                                 </div>
                             </group>
+                        </page>
+                        <page name="issues" string="Issues">
+                          <field name="issue_ids" nolabel="1">
+                              <tree>
+                                  <field name="section"/>
+                                  <field name="internal_message"/>
+                                  <field name="channel_message"/>
+                                  <field name="date_start"/>
+                                  <field name="date_end"/>
+                              </tree>
+                          </field>
                         </page>
                     </notebook>
                 </sheet>

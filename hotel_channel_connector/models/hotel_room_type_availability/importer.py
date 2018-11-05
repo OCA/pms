@@ -66,9 +66,10 @@ class HotelRoomTypeAvailabilityImporter(Component):
                         iter_day += timedelta(days=1)
         except ChannelConnectorError as err:
             self.create_issue(
-                'room',
-                _("Can't import availability from WuBook"),
-                err.data['message'])
+                backend=self.backend_adapter.id,
+                section='avail',
+                internal_message=_("Can't import availability from WuBook"),
+                channel_message=err.data['message'])
         return count
 
 

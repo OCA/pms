@@ -9,11 +9,16 @@ class HotelChannelConnectorIssue(models.Model):
     _name = 'hotel.channel.connector.issue'
     _old_name = 'wubook.issue'
 
+    backend_id = fields.Many2one('channel.backend',
+                                 'Restriction Plan',
+                                 ondelete='cascade',
+                                 index=True)
+
     section = fields.Selection([
         ('channel', 'Channel'),
         ('reservation', 'Reservation'),
-        ('rplan', 'Restriction Plan'),
-        ('plan', 'Price Plan'),
+        ('restriction', 'Restriction Plan'),
+        ('pricelist', 'Price Plan'),
         ('room', 'Room'),
         ('avail', 'Availability')], required=True)
     to_read = fields.Boolean("To Read", default=True)

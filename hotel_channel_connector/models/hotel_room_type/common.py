@@ -19,7 +19,6 @@ class ChannelHotelRoomType(models.Model):
                               string='Room Type',
                               required=True,
                               ondelete='cascade')
-    channel_room_id = fields.Char("Channel Room ID", readonly=True, old_name='wrid')
     channel_short_code = fields.Char("Channel Short Code", readonly=True, old_name='wscode')
     ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity')
 
@@ -57,7 +56,7 @@ class ChannelHotelRoomType(models.Model):
     @api.multi
     def create_room(self):
         self.ensure_one()
-        if not self.channel_room_id:
+        if not self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.exporter')
                 exporter.create_room(self)
@@ -67,7 +66,7 @@ class ChannelHotelRoomType(models.Model):
     @api.multi
     def modify_room(self):
         self.ensure_one()
-        if self.channel_room_id:
+        if self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.exporter')
                 exporter.modify_room(self)
@@ -77,7 +76,7 @@ class ChannelHotelRoomType(models.Model):
     @api.multi
     def delete_room(self):
         self.ensure_one()
-        if self.channel_room_id:
+        if self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.exporter')
                 exporter.delete_room(self)

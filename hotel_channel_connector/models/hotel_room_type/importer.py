@@ -35,7 +35,7 @@ class HotelRoomTypeImporter(Component):
             for room in results:
                 map_record = room_mapper.map_record(room)
                 room_bind = channel_room_type_obj.search([
-                    ('channel_room_id', '=', room['id'])
+                    ('external_id', '=', room['id'])
                 ], limit=1)
                 if room_bind:
                     room_bind.with_context({'wubook_action': False}).write(map_record.values())
@@ -43,7 +43,11 @@ class HotelRoomTypeImporter(Component):
                     room_bind = channel_room_type_obj.with_context({'wubook_action': False}).create(
                         map_record.values(for_create=True))
         except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't import rooms from WuBook"), err.data['message'])
+            self.create_issue(
+                backend=self.backend_adapter.id,
+                section='room',
+                internal_message=_("Can't import rooms from WuBook"),
+                channel_message=err.data['message'])
 
         return count
 
@@ -69,8 +73,11 @@ class HotelRoomTypeImporter(Component):
             self._generate_room_values(dfrom, dto, results,
                                        set_max_avail=set_max_avail)
         except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't fetch rooms values from WuBook"),
-                              err.data['message'], dfrom=dfrom, dto=dto)
+            self.create_issue(
+                backend=self.backend_adapter.id,
+                section='room',
+                internal_message=_("Can't fetch rooms values from WuBook"),
+                channel_message=err.data['message'], dfrom=dfrom, dto=dto)
             return False
         return True
 
@@ -158,7 +165,7 @@ class HotelRoomTypeImportMapper(Component):
     _apply_on = 'channel.hotel.room.type'
 
     direct = [
-        ('id', 'channel_room_id'),
+        ('id', 'externa_id'),
         ('shortname', 'channel_short_code'),
         ('occupancy', 'ota_capacity'),
         ('price', 'list_price'),

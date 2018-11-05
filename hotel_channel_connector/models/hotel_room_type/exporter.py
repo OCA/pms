@@ -17,21 +17,29 @@ class HotelRoomTypeExporter(Component):
     def modify_room(self, binding):
         try:
             return self.backend_adapter.modify_room(
-                binding.channel_room_id,
+                binding.external_id,
                 binding.name,
                 binding.ota_capacity,
                 binding.list_price,
                 binding.total_rooms_count,
                 binding.channel_short_code)
         except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't modify rooms in WuBook"), err.data['message'])
+            self.create_issue(
+                backend=self.backend_adapter.id,
+                section='room',
+                internal_message=_("Can't modify rooms in WuBook"),
+                channel_message=err.data['message'])
 
     @api.model
     def delete_room(self, binding):
         try:
-            return self.backend_adapter.delete_room(binding.channel_room_id)
+            return self.backend_adapter.delete_room(binding.external_id)
         except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't delete room in WuBook"), err.data['message'])
+            self.create_issue(
+                backend=self.backend_adapter.id,
+                section='room',
+                internal_message=_("Can't delete room in WuBook"),
+                channel_message=err.data['message'])
 
     @api.model
     def create_room(self, binding):
@@ -46,10 +54,14 @@ class HotelRoomTypeExporter(Component):
                 binding.total_rooms_count
             )
             binding.write({
-                'channel_room_id': external_id,
+                'external_id': external_id,
                 'channel_short_code': short_code,
             })
         except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't delete room in WuBook"), err.data['message'])
+            self.create_issue(
+                backend=self.backend_adapter.id,
+                section='room',
+                internal_message=_("Can't create room in WuBook"),
+                channel_message=err.data['message'])
         else:
             self.binder.bind(external_id, binding)

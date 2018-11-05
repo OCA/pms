@@ -18,6 +18,36 @@ class HotelRoomTypeRestrictionImporter(Component):
     _apply_on = ['channel.hotel.room.type.restriction']
     _usage = 'hotel.room.type.restriction.importer'
 
+    @api.model
+    def import_restriction_plans(self):
+        count = 0
+        try:
+            results = self.backend_adapter.rplan_rplans()
+            channel_restriction_obj = self.env['channel.hotel.room.type.restriction']
+            restriction_mapper = self.component(usage='import.mapper',
+                                                model_name='channel.hotel.room.type.restriction')
+            for plan in results:
+                plan_record = restriction_mapper.map_record(plan)
+                plan_bind = channel_restriction_obj.search([
+                    ('external_id', '=', str(plan['id']))
+                ], limit=1)
+                if not plan_bind:
+                    channel_restriction_obj.with_context({
+                        'wubook_action': False,
+                        'rules': plan.get('rules'),
+                    }).create(plan_record.values())
+                else:
+                    plan_bind.with_context({'wubook_action': False}).write(
+                        plan_record.values(for_create=True))
+                count = count + 1
+        except ChannelConnectorError as err:
+            self.create_issue(
+                backend=self.backend_adapter.id,
+                section='rplan',
+                internal_message=_("Can't fetch restriction plans from wubook"),
+                channel_message=err.data['message'])
+        return count
+
 
 class HotelRoomTypeRestrictionImportMapper(Component):
     _name = 'channel.hotel.room.type.restriction.import.mapper'
@@ -25,11 +55,8 @@ class HotelRoomTypeRestrictionImportMapper(Component):
     _apply_on = 'channel.hotel.room.type.restriction'
 
     direct = [
-        ('no_ota', 'no_ota'),
-        ('booked', 'booked'),
-        ('avail', 'avail'),
-        ('room_type_id', 'room_type_id'),
-        ('date', 'date')
+        ('name', 'name'),
+        ('id', 'external_id'),
     ]
 
     @mapping

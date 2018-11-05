@@ -10,15 +10,15 @@ class BaseHotelChannelConnectorComponent(AbstractComponent):
     _collection = 'channel.backend'
 
     @api.model
-    def create_issue(self, section, message, channel_message, channel_object_id=False,
-                     dfrom=False, dto=False):
+    def create_issue(self, **kwargs):
         self.env['hotel.channel.connector.issue'].sudo().create({
-            'section': section,
-            'internal_message': message,
-            'channel_object_id': channel_object_id,
-            'channel_message': channel_message,
-            'date_start': dfrom,
-            'date_end': dto,
+            'backend_id': kwargs.get('backend', False),
+            'section': kwargs.get('section', False),
+            'internal_message': kwargs.get('internal_message', False),
+            'channel_object_id': kwargs.get('channel_object_id', False),
+            'channel_message': kwargs.get('channel_message', False),
+            'date_start': kwargs.get('dfrom', False),
+            'date_end': kwargs.get('dto', False),
         })
 
 class ChannelConnectorError(Exception):

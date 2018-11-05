@@ -32,9 +32,10 @@ class HotelRoomTypeAvailabilityExporter(Component):
                 })
             except ChannelConnectorError as err:
                 self.create_issue(
-                    'room',
-                    _("Can't update availability in WuBook"),
-                    err.data['message'])
+                    backend=self.backend_adapter.id,
+                    section='avail',
+                    internal_message=_("Can't update availability in WuBook"),
+                    channel_message=err.data['message'])
 
     def push_availability(self):
         channel_room_type_avail_ids = self.env['channel.hotel.room.type.availability'].search([
@@ -69,6 +70,7 @@ class HotelRoomTypeAvailabilityExporter(Component):
                 self.backend_adapter.update_availability(avails)
             except ChannelConnectorError as err:
                 self.create_issue(
-                    'room',
-                    _("Can't update availability in WuBook"),
-                    err.data['message'])
+                    backend=self.backend_adapter.id,
+                    section='avail',
+                    internal_message=_("Can't update availability in WuBook"),
+                    channel_message=err.data['message'])

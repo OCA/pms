@@ -9,6 +9,10 @@
             <form string="Channel OTA's Info" >
                 <sheet>
                     <group>
+                        <field name="id" invisible="1" />
+                        <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                    </group>
+                    <group>
                         <field name="ota_id" />
                         <field name="name" />
                         <field name="ical" readonly="True" widget="checkbox" />
