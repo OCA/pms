@@ -82,15 +82,6 @@
                             <field name="partner_id"/>
                         </group>
                     </group>
-                    <group>
-                        <group>
-                            <field name="folio"/>
-                            <field name="checkin"/>
-                        </group>
-                        <group>
-                            <field name="partner_id"/>
-                        </group>
-                    </group>
                     <footer attrs="{'invisible':[('node_id','=',False)]}">
                         <button name="search_node_reservation" string="Search Reservations" type="object"
 							class="oe_highlight" />

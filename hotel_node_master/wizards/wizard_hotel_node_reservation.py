@@ -234,7 +234,6 @@ class NodeRoomTypeWizard(models.TransientModel):
     @api.constrains('room_qty')
     def _check_room_qty(self):
         # At least one model cache has been invalidated, signaling through the database.
-        wdb.set_trace()
         for rec in self:
             if (rec.room_type_availability < rec.room_qty) or (rec.room_qty > 0 and rec.nights < rec.min_stay):
                 msg = _("At least one room type has not availability or does not meet restrictions.") + " " + \
@@ -360,17 +359,33 @@ class NodeSearchWizard(models.TransientModel):
             if self.checkin:
                 domain.append(('checkin', '=', self.checkin))
 
-            folio_id = noderpc.env['hotel.folio'].search(domain)
+            folio_ids = noderpc.env['hotel.folio'].search(domain)
 
-            if not folio_id:
-                raise UserError(_("No reservations found."))
+            if not folio_ids:
+                raise UserError(_("No reservations found for [%s].") % domain)
 
             noderpc.logout()
-            # TODO Need to manage more than one folio
-            return self._open_wizard_action_edit(folio_id.pop())
+
+            if len(folio_ids) > 1:
+                # TODO Need to manage more than one folio
+                return self._open_wizard_action_select(folio_ids)
+
+            return self._open_wizard_action_edit(folio_ids.pop())
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
+
+    @api.multi
+    def _open_wizard_action_select(self, folio_ids):
+        self.ensure_one()
+        return {
+            'name': _('Hotel Reservation Wizard Select'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'node.folio.wizard',
+            'view_id': self.env.ref('hotel_node_master.hotel_node_reservation_wizard_view_tree', False).id,
+            'view_type': 'tree',
+            'view_mode': 'tree',
+        }
 
     @api.multi
     def _open_wizard_action_edit(self, folio_id):
