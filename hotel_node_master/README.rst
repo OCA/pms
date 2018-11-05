@@ -1,5 +1,5 @@
 =================
-Hotel Master Node
+Hotel Node Master
 =================
 
 This module is for providing centralized hotel management features for hootel.
@@ -8,6 +8,7 @@ You can manage:
 
 - Node connection data
 - Remote users and access groups
+- Hotel reservations
 
 **Installation**
 

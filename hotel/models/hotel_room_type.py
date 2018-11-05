@@ -74,14 +74,12 @@ class HotelRoomType(models.Model):
         reservations_rooms = reservations.mapped('room_id.id')
         free_rooms = self.env['hotel.room'].search([
             ('id', 'not in', reservations_rooms),
-            ('id', 'not in', notthis)
+            ('room_type_id.id', 'not in', notthis)
         ])
         if room_type_id:
-            room_type_id = self.env['hotel.room.type'].search([
+            rooms_linked = self.env['hotel.room.type'].search([
                 ('id', '=', room_type_id)
-            ])
-            # QUESTION What linked represent? Rooms in this type ?
-            rooms_linked = self.room_ids
+            ]).room_ids
             free_rooms = free_rooms & rooms_linked
         return free_rooms.sorted(key=lambda r: r.sequence)
 

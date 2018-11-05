@@ -314,20 +314,21 @@ class HotelFolio(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
+        if vals.get('name', _('New')) == _('New') or 'name' not in vals:
             if 'company_id' in vals:
                 vals['name'] = self.env['ir.sequence'].with_context(
                     force_company=vals['company_id']
                 ).next_by_code('sale.order') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
+        
 
         # Makes sure partner_invoice_id' and 'pricelist_id' are defined
         lfields = ('partner_invoice_id', 'partner_shipping_id', 'pricelist_id')
         if any(f not in vals for f in lfields):
             partner = self.env['res.partner'].browse(vals.get('partner_id'))
             addr = partner.address_get(['delivery', 'invoice'])
-            vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
+            #~ vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
             vals['pricelist_id'] = vals.setdefault(
                 'pricelist_id',
                 partner.property_product_pricelist and partner.property_product_pricelist.id)
@@ -344,20 +345,25 @@ class HotelFolio(models.Model):
         - user_id
         """
         if not self.partner_id:
-            self.update({
-                'partner_invoice_id': False,
-                'payment_term_id': False,
-                'fiscal_position_id': False,
-            })
+            #~ self.update({
+                #~ 'partner_invoice_id': False,
+                #~ 'payment_term_id': False,
+                #~ 'fiscal_position_id': False,
+            #~ })
             return
 
         addr = self.partner_id.address_get(['invoice'])
-        values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and \
-                self.partner_id.property_product_pricelist.id or False,
-            'partner_invoice_id': addr['invoice'],
-            'user_id': self.partner_id.user_id.id or self.env.uid
-        }
+        #TEMP:
+        values = { 'user_id': self.partner_id.user_id.id or self.env.uid,
+                   'pricelist_id':self.partner_id.property_product_pricelist and \
+                self.partner_id.property_product_pricelist.id or \
+                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')}
+        #~ values = {
+            #~ 'pricelist_id': self.partner_id.property_product_pricelist and \
+                #~ self.partner_id.property_product_pricelist.id or False,
+            #~ 'partner_invoice_id': addr['invoice'],
+            #~ 'user_id': self.partner_id.user_id.id or self.env.uid
+        #~ }
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
             self.env.user.company_id.sale_note:
             values['note'] = self.with_context(
@@ -486,18 +492,16 @@ class HotelFolio(models.Model):
     def _compute_cardex_count(self):
         _logger.info('_compute_cardex_amount')
         for record in self:
-            if record.reservation_type == 'normal':
+            if record.reservation_type == 'normal' and record.room_lines:
                 write_vals = {}
-                filtered_reservs = record.filtered(
-                    lambda x: x.room_lines.state != 'cancelled' and \
-                        not x.room_lines.parent_reservation)
-
+                filtered_reservs = record.room_lines.filtered(
+                    lambda x: x.state != 'cancelled' and \
+                        not x.parent_reservation)
                 mapped_cardex = filtered_reservs.mapped('cardex_ids.id')
-                write_vals.update({'cardex_count': len(mapped_cardex)})
+                record.cardex_count = len(mapped_cardex)
                 mapped_cardex_count = filtered_reservs.mapped(
                     lambda x: (x.adults + x.children) - len(x.cardex_ids))
-                write_vals.update({'cardex_pending_count': sum(mapped_cardex_count)})
-                record.write(write_vals)
+                record.cardex_pending_count = sum(mapped_cardex_count)
 
     """
     MAILING PROCESS

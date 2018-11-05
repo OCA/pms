@@ -57,9 +57,8 @@ class HotelNode(models.Model):
         """
         for node in self:
             domain = [('id', 'in', node.group_ids.ids), ('odoo_version', '!=', node.odoo_version)]
-            # TODO Use search_count
-            invalid_groups = self.env["hotel.node.group"].search(domain)
-            if len(invalid_groups) > 0:
+            invalid_groups = self.env["hotel.node.group"].search_count(domain)
+            if invalid_groups > 0:
                 msg = _("At least one group is not within the node version.") + " " + \
                       _("Odoo version of the node: %s") % node.odoo_version
                 _logger.warning(msg)
@@ -83,6 +82,8 @@ class HotelNode(models.Model):
 
             vals.update({'odoo_version': noderpc.version})
 
+            # TODO Check if hotel_node_helper module is installed / available in the node.
+
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
         else:
@@ -98,13 +99,14 @@ class HotelNode(models.Model):
             noderpc.login(self.odoo_db, self.odoo_user, self.odoo_password)
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
+
         # TODO synchronize only if write_date in remote node is newer ¿?
         try:
             vals = {}
             # import remote groups
-            domain = [('model', '=', 'res.groups')]
-            fields = ['complete_name', 'display_name']
-            remote_groups = noderpc.env['ir.model.data'].search_read(domain, fields)
+            remote_groups = noderpc.env['ir.model.data'].search_read(
+                [('model', '=', 'res.groups')],
+                ['complete_name', 'display_name'])
 
             master_groups = self.env["hotel.node.group"].search_read(
                 [('odoo_version', '=', self.odoo_version)], ['xml_id'])
@@ -129,13 +131,122 @@ class HotelNode(models.Model):
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
-        # TODO logout from node in any case. Take into account each try / except block
+
+        try:
+            vals = {}
+            # import remote users
+            remote_users = noderpc.env['res.users'].search_read(
+                [('login', '!=', 'admin')],
+                ['name', 'login', 'email', 'is_company', 'partner_id', 'groups_id', 'active'])
+
+            master_users = self.env["hotel.node.user"].search_read(
+                [('node_id', '=', self.id)], ['remote_user_id'])
+
+            master_ids = [r['id'] for r in master_users]
+            remote_ids = [r['remote_user_id'] for r in master_users]
+
+            # For the first hotel, gui_ids and xml_ids is empty. You must recover the previously written groups
+            master_groups = self.env["hotel.node.group"].search_read(
+                [('odoo_version', '=', self.odoo_version)], ['xml_id'])
+
+            gui_ids = [r['id'] for r in master_groups]
+            xml_ids = [r['xml_id'] for r in master_groups]
+
+            user_ids = []
+            for user in remote_users:
+                group_ids = []
+                # retrieve the remote external ID(s) of group records
+                remote_xml_ids = noderpc.env['res.groups'].browse(user['groups_id']).get_external_id()
+                for key, value in remote_xml_ids.items():
+                    group_ids.append(gui_ids[xml_ids.index(value)])
+
+                if user['id'] in remote_ids:
+                    idx = remote_ids.index(user['id'])
+                    user_ids.append((1, master_ids[idx], {
+                        'name': user['name'],
+                        'login': user['login'],
+                        'email': user['email'],
+                        'active': user['active'],
+                        'remote_user_id': user['id'],
+                        'group_ids': [[
+                            6,
+                            False,
+                            group_ids
+                        ]]
+                    }))
+                else:
+                    partner = self.env['res.partner'].search([('email', '=', user['email'])])
+                    if not partner:
+                        partner = self.env['res.partner'].create({
+                            'name': user['name'],
+                            'is_company': False,
+                            'email': user['email'],
+                        })
+                    user_ids.append((0, 0, {
+                        'name': user['name'],
+                        'login': user['login'],
+                        'email': user['email'],
+                        'active': user['active'],
+                        'remote_user_id': user['id'],
+                        'partner_id': partner.id,
+                        'group_ids': [[
+                            6,
+                            False,
+                            group_ids
+                        ]]
+                    }))
+            vals.update({'user_ids': user_ids})
+
+            self.with_context({
+                    'is_synchronizing': True,
+                }).write(vals)
+
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
+
+        try:
+            # import remote partners
+            node_partners = noderpc.env['res.partner'].search_read(
+                [('email', '!=', '')],  # TODO import remote partners (exclude unconfirmed using DNI)
+                ['name', 'email', 'is_company', 'website', 'type', 'active'])
+            master_partners = self.env['res.partner'].search([('email', 'in', [r['email'] for r in node_partners])])
+
+            master_partner_emails = [r['email'] for r in master_partners]
+            master_partner_ids = master_partners.ids
+            for partner in node_partners:
+                if partner['email'] not in master_partner_emails:
+                    new_partner = self.env['res.partner'].create({
+                        'name': partner['name'],
+                        'email': partner['email'],
+                        'is_company': partner['is_company'],
+                        'website': partner['website'],
+                        'type': partner['type'],
+                        'active': partner['active'],
+                    })
+                    _logger.info('User #%s created res.partner with ID: [%s]',
+                                 self._context.get('uid'), new_partner.id)
+                else:
+                    partner_id = master_partner_ids[master_partner_emails.index(partner['email'])]
+                    self.env['res.partner'].browse(partner_id).write({
+                        'name': partner['name'],
+                        'is_company': partner['is_company'],
+                        'website': partner['website'],
+                        'type': partner['type'],
+                        'active': partner['active'],
+                        # Partners in different Nodes may have different parent_id
+                        #  TODO How to manage parent_id for related company ¿?
+                    })
+                    _logger.info('User #%s update res.partner with ID: [%s]',
+                                 self._context.get('uid'), partner_id)
+
+        except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            raise ValidationError(err)
 
         try:
             vals = {}
             # import remote room types
-            fields = ['name', 'active', 'sequence', 'room_ids']
-            remote_room_types = noderpc.env['hotel.room.type'].search_read([], fields)
+            remote_room_types = noderpc.env['hotel.room.type'].search_read(
+                [], ['name', 'active', 'sequence', 'room_ids'])
 
             master_room_types = self.env["hotel.node.room.type"].search_read(
                 [('node_id', '=', self.id)], ['remote_room_type_id'])
@@ -170,8 +281,9 @@ class HotelNode(models.Model):
         try:
             vals = {}
             # import remote rooms
-            fields = ['name', 'active', 'sequence', 'capacity', 'room_type_id']
-            remote_rooms = noderpc.env['hotel.room'].search_read([], fields)
+            remote_rooms = noderpc.env['hotel.room'].search_read(
+                [],
+                ['name', 'active', 'sequence', 'capacity', 'room_type_id'])
 
             master_rooms = self.env["hotel.node.room"].search_read(
                 [('node_id', '=', self.id)], ['remote_room_id'])
@@ -215,7 +327,6 @@ class HotelNode(models.Model):
 
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
             raise ValidationError(err)
-
 
         noderpc.logout()
         return True
