@@ -165,7 +165,7 @@ class HotelRoomTypeImportMapper(Component):
     _apply_on = 'channel.hotel.room.type'
 
     direct = [
-        ('id', 'externa_id'),
+        ('id', 'external_id'),
         ('shortname', 'channel_short_code'),
         ('occupancy', 'ota_capacity'),
         ('price', 'list_price'),

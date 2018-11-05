@@ -20,7 +20,7 @@ class HotelRoomTypeAvailabilityExporter(Component):
         if any(binding.room_type_id.channel_bind_ids):
             try:
                 sday_dt = fields.Date.from_string(binding.date)
-                # Supossed that only exists one channel connector per record
+                # FIXME: Supossed that only exists one channel connector per record
                 binding.channel_pushed = True
                 return self.backend_adapter.update_availability({
                     'id': binding.room_type_id.channel_bind_ids[0].channel_room_id,

@@ -35,15 +35,15 @@ class HotelRoomTypeRestrictionImporter(Component):
                     channel_restriction_obj.with_context({
                         'wubook_action': False,
                         'rules': plan.get('rules'),
-                    }).create(plan_record.values())
+                    }).create(plan_record.values(for_create=True))
                 else:
                     plan_bind.with_context({'wubook_action': False}).write(
-                        plan_record.values(for_create=True))
+                        plan_record.values())
                 count = count + 1
         except ChannelConnectorError as err:
             self.create_issue(
                 backend=self.backend_adapter.id,
-                section='rplan',
+                section='restriction',
                 internal_message=_("Can't fetch restriction plans from wubook"),
                 channel_message=err.data['message'])
         return count

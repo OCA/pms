@@ -39,6 +39,11 @@ class ChannelBackend(models.Model):
     restriction_id = fields.Many2one('channel.hotel.room.type.restriction',
                                      'Channel Restriction')
 
+    pricelist_from = fields.Date('Pricelist From')
+    pricelist_to = fields.Date('Pricelist To')
+    pricelist_id = fields.Many2one('channel.product.pricelist',
+                                   'Channel Product Pricelist')
+
     issue_ids = fields.One2many('hotel.channel.connector.issue',
                                 'backend_id',
                                 string='Issues',
@@ -96,6 +101,20 @@ class ChannelBackend(models.Model):
         channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
         for backend in self:
             channel_hotel_restr_item_obj.import_restriction_values(backend)
+        return True
+
+    @api.multi
+    def push_restriction(self):
+        channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
+        for backend in self:
+            channel_hotel_restr_item_obj.push_restriction(backend)
+        return True
+
+    @api.multi
+    def import_pricelist_plans(self):
+        channel_product_pricelist_obj = self.env['channel.product.pricelist']
+        for backend in self:
+            channel_product_pricelist_obj.import_price_plans(backend)
         return True
 
     @contextmanager

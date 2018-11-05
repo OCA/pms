@@ -164,8 +164,7 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
         if 'avail' in fields:
-            for binding in record.channel_bind_ids:
-                binding.channel_pushed = False
+            record.channel_bind_ids.write({'channel_pushed': False})
 
 class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
     _name = 'channel.binding.hotel.room.type.availability.listener'
@@ -173,5 +172,14 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
     _apply_on = ['channel.hotel.room.type.availability']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_create(self, record, fields=None):
+        record.channel_pushed = False
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+        if 'avail' in fields:
+            record.channel_pushed = False
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_fix_channel_availability(self, record, fields=None):
-        record.with_delay(priority=20).update_availability()
+        record.update_availability()

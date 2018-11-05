@@ -116,12 +116,30 @@
                                         string="Import in background"/>
                                 </div>
                             </group>
+                            <group>
+                                <label string="Import Pricelist Plans" class="oe_inline"/>
+                                <div>
+                                    <button name="import_pricelist_plans"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
                         </page>
                         <page name="export" string="Exports">
                             <group>
                                 <label string="Push Availability" class="oe_inline"/>
                                 <div>
                                     <button name="push_availability"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in background"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label string="Push Restriction" class="oe_inline"/>
+                                <div>
+                                    <button name="push_restriction"
                                         type="object"
                                         class="oe_highlight"
                                         string="Export in background"/>

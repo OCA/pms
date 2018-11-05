@@ -21,12 +21,6 @@ class ChannelHotelRoomTypeRestrictionItem(models.Model):
                                     old_name='wpushed')
 
     @job(default_channel='root.channel')
-    @api.multi
-    def update_channel_pushed(self, status):
-        self.ensure_one()
-        self.channel_pushed = status
-
-    @job(default_channel='root.channel')
     @api.model
     def import_restriction_values(self, backend):
         with backend.work_on(self._name) as work:
@@ -35,6 +29,13 @@ class ChannelHotelRoomTypeRestrictionItem(models.Model):
                 backend.restriction_from,
                 backend.restriction_to,
                 channel_restr_id=backend.restriction_id)
+
+    @job(default_channel='root.channel')
+    @api.model
+    def push_restriction(self, backend):
+        with backend.work_on(self._name) as work:
+            exporter = work.component(usage='hotel.room.type.restriction.item.exporter')
+            return exporter.push_restriction()
 
 class HotelRoomTypeRestrictionItem(models.Model):
     _inherit = 'hotel.room.type.restriction.item'
@@ -55,15 +56,34 @@ class HotelRoomTypeRestrictionItemAdapter(Component):
             date_to,
             channel_restriction_plan_id)
 
-class ChannelBindingHotelRoomTypeRestrictionItemListener(Component):
-    _name = 'channel.binding.hotel.room.type.restriction.item.listener'
+class BindingHotelRoomTypeRestrictionItemListener(Component):
+    _name = 'binding.hotel.room.type.restriction.item.listener'
     _inherit = 'base.connector.listener'
-    _apply_on = ['channel.hotel.room.type.restriction']
-
-    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_create(self, record, fields=None):
-        return True
+    _apply_on = ['hotel.room.type.restriction.item']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        return True
+        fields_to_check = ('min_stay', 'min_stay_arrival', 'max_stay', 'max_stay_arrival',
+                           'max_stay_arrival', 'closed', 'closed_departure', 'closed_arrival',
+                           'date')
+        fields_checked = [elm for elm in fields_to_check if elm in fields]
+        if any(fields_checked):
+            record.channel_bind_ids.write({'channel_pushed': False})
+
+class ChannelBindingHotelRoomTypeRestrictionItemListener(Component):
+    _name = 'channel.binding.hotel.room.type.restriction.item.listener'
+    _inherit = 'base.connector.listener'
+    _apply_on = ['channel.hotel.room.type.restriction.item']
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_create(self, record, fields=None):
+        record.channel_pushed = False
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+        fields_to_check = ('min_stay', 'min_stay_arrival', 'max_stay', 'max_stay_arrival',
+                           'max_stay_arrival', 'closed', 'closed_departure', 'closed_arrival',
+                           'date')
+        fields_checked = [elm for elm in fields_to_check if elm in fields]
+        if any(fields_checked):
+            record.channel_pushed = False

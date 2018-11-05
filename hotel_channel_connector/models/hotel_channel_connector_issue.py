@@ -11,6 +11,7 @@ class HotelChannelConnectorIssue(models.Model):
 
     backend_id = fields.Many2one('channel.backend',
                                  'Restriction Plan',
+                                 required=True,
                                  ondelete='cascade',
                                  index=True)
 
@@ -46,10 +47,9 @@ class HotelChannelConnectorIssue(models.Model):
                 reserv_ids.append(record.channel_object_id)
                 record.to_read = False
         if any(reserv_ids):
-            res = self.env['hotel.channel.connector'].mark_bookings(reserv_ids)
-            if not res:
-                raise ValidationError(
-                    ("Can't mark reservation as readed in Channel!"))
+            with self.backend_id.work_on('channel.hotel.reservation') as work:
+                exporter = work.component(usage='hotel.reservation.exporter')
+                return exporter.mark_bookings(reserv_ids)
 
     @api.model
     def _needaction_domain_get(self):

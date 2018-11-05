@@ -101,9 +101,7 @@ class HotelRoomType(models.Model):
         self._compute_capacity()
 
     @api.multi
-    def get_restrictions(self, date):
-        restriction_plan_id = int(self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_restrictions_id'))
+    def get_restrictions(self, date, restriction_plan_id):
         self.ensure_one()
         restriction = self.env['hotel.room.type.restriction.item'].search([
             ('date', '=', date),
@@ -141,7 +139,9 @@ class BindingHotelRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        if any(record.channel_bind_ids) and 'name' in fields or 'list_price' in fields:
+        if any(record.channel_bind_ids) and 'name' in fields or 'list_price' in fields or \
+                'room_ids' in fields:
+            # FIXME: Supossed that only exists one channel connector per record
             record.channel_bind_ids[0].modify_room()
 
     # @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))

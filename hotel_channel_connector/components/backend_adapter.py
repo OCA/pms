@@ -441,7 +441,7 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def update_plan_periods(self, channel_plan_id, periods):
-        rcode, results = self.SERVER.update_plan_periods(
+        rcode, results = self._server.update_plan_periods(
             self._session_info[0],
             self._session_info[1],
             channel_plan_id,
@@ -454,7 +454,7 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def get_pricing_plans(self):
-        rcode, results = self.SERVER.get_pricing_plans(
+        rcode, results = self._server.get_pricing_plans(
             self._session_info[0],
             self._session_info[1])
         if rcode != 0:
