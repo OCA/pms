@@ -41,17 +41,17 @@ class HotelNodeReservationWizard(models.TransientModel):
     price_total = fields.Float(string='Total Price', compute='_compute_price_total', store=True)
 
     # FIXED @constrains parameter 'room_type_wizard_ids.room_qty' is not a field name
-    @api.constrains('room_type_wizard_ids')
-    def _check_room_type_wizard_total_qty(self):
-        for rec in self:
-            total_qty = 0
-            for rec_room_type in rec.room_type_wizard_ids:
-                total_qty += rec_room_type.room_qty
-
-            if total_qty == 0:
-                msg = _("It is not possible to create the reservation.") + " " + \
-                      _("Maybe you forgot adding the quantity to at least one type of room?.")
-                raise ValidationError(msg)
+    # @api.constrains('room_type_wizard_ids')
+    # def _check_room_type_wizard_total_qty(self):
+    #     for rec in self:
+    #         total_qty = 0
+    #         for rec_room_type in rec.room_type_wizard_ids:
+    #             total_qty += rec_room_type.room_qty
+    #
+    #         if total_qty == 0:
+    #             msg = _("It is not possible to create the reservation.") + " " + \
+    #                   _("Maybe you forgot adding the quantity to at least one type of room?.")
+    #             raise ValidationError(msg)
 
     @api.depends('room_type_wizard_ids.price_total')
     def _compute_price_total(self):
@@ -75,50 +75,111 @@ class HotelNodeReservationWizard(models.TransientModel):
             }))
             self.room_type_wizard_ids = cmds
 
-    @api.multi
-    def create_node_reservation(self):
-        self.ensure_one()
+    @api.model
+    def create(self, vals):
+        # TODO review node.room.type.wizard @api.constrains('room_qty')
+        from pprint import pprint
         try:
-            noderpc = odoorpc.ODOO(self.node_id.odoo_host, self.node_id.odoo_protocol, self.node_id.odoo_port)
-            noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
+            node = self.env["project.project"].browse(vals['node_id'])
 
-            # prepare required fields for hotel folio
-            remote_partner_id = noderpc.env['res.partner'].search([('email', '=', self.partner_id.email)]).pop()
-            vals = {
+            noderpc = odoorpc.ODOO(node.odoo_host, node.odoo_protocol, node.odoo_port)
+            noderpc.login(node.odoo_db, node.odoo_user, node.odoo_password)
+
+            # prepare required fields for hotel.folio
+            remote_vals = {}
+            partner = self.env["res.partner"].browse(vals['partner_id'])
+            remote_partner_id = noderpc.env['res.partner'].search([('email', '=', partner.email)]).pop()
+            # TODO create partner if does not exist in remote node
+            remote_vals.update({
                 'partner_id': remote_partner_id,
-            }
-            # prepare hotel folio room_lines
+            })
+
+            # prepare hotel.folio.room_lines
             room_lines = []
-            for rec in self.room_type_wizard_ids:
-                for x in range(rec.room_qty):
-                    wdb.set_trace()
-                    # prepare hotel reservation lines with details by day
-                    reservation_line_cmds = rec.room_type_line_ids.mapped(lambda reservation_line: (0, False, {
-                        'date': reservation_line.date,
-                        'price': reservation_line.price,
-                    }))
-                    # add discount
+            for cmds in vals['room_type_wizard_ids']:
+                # cmds is a list of triples: [0, 'virtual_1008', {'checkin': '2018-11-05', ...
+                room_type_wizard_values = cmds[2]
+                remote_room_type_id = self.env['hotel.node.room.type'].search([
+                    ('id', '=', room_type_wizard_values['room_type_id'])
+                ]).remote_room_type_id
+                # prepare room_lines a number of times `room_qty` times
+                for room in range(room_type_wizard_values['room_qty']):
+                    # prepare hotel.reservation.reservation_line_ids
+                    reservation_line_cmds = []
+                    for room_type_line_cmds in room_type_wizard_values['room_type_line_ids']:
+                        reservation_line = room_type_line_cmds[2]
+                        reservation_line_cmds.append((0, False, {
+                            'date': reservation_line['date'],
+                            'price': reservation_line['price'],
+                        }))
+                    # add discount ¿?
                     room_lines.append((0, False, {
-                        'room_type_id': rec.room_type_id.remote_room_type_id,
-                        'checkin': rec.checkin,
-                        'checkout': rec.checkout,
+                        'room_type_id': remote_room_type_id,
+                        'checkin': room_type_wizard_values['checkin'],
+                        'checkout': room_type_wizard_values['checkout'],
                         'reservation_line_ids': reservation_line_cmds,
                     }))
-            vals.update({'room_lines': room_lines})
+            remote_vals.update({'room_lines': room_lines})
 
-            from pprint import pprint
-            pprint(vals)
-
-            folio_id = noderpc.env['hotel.folio'].create(vals)
-            _logger.info('User #%s created a hotel.folio with ID: [%s]',
+            pprint(remote_vals)
+            # if total_qty == 0:
+            #     msg = _("It is not possible to create the reservation.") + " " + \
+            #           _("Maybe you forgot adding the quantity to at least one type of room?.")
+            #     raise ValidationError(msg)
+            folio_id = noderpc.env['hotel.folio'].create(remote_vals)
+            _logger.info('User #%s created a remote hotel.folio with ID: [%s]',
                          self._context.get('uid'), folio_id)
 
             noderpc.logout()
 
-            # TODO return a wizard and preview the resevation
-
         except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+            _logger.error(err)
             raise ValidationError(err)
+        else:
+            return super().create(vals)
+
+    @api.multi
+    def create_node_reservation(self):
+        _logger.info('# TODO: return a wizard and preview the reservation')
+        # self.ensure_one()
+        # # NOTE This function is executed __after__ create(self, vals) where _compute_restrictions are executed again
+        # try:
+        #     noderpc = odoorpc.ODOO(self.node_id.odoo_host, self.node_id.odoo_protocol, self.node_id.odoo_port)
+        #     noderpc.login(self.node_id.odoo_db, self.node_id.odoo_user, self.node_id.odoo_password)
+        #
+        #     # prepare required fields for hotel folio
+        #     remote_partner_id = noderpc.env['res.partner'].search([('email', '=', self.partner_id.email)]).pop()
+        #     vals = {
+        #         'partner_id': remote_partner_id,
+        #     }
+        #     # prepare hotel folio room_lines
+        #     room_lines = []
+        #     for rec in self.room_type_wizard_ids:
+        #         for x in range(rec.room_qty):
+        #             # prepare hotel reservation lines with details by day
+        #             reservation_line_cmds = rec.room_type_line_ids.mapped(lambda reservation_line: (0, False, {
+        #                 'date': reservation_line.date,
+        #                 'price': reservation_line.price,
+        #             }))
+        #             # add discount
+        #             room_lines.append((0, False, {
+        #                 'room_type_id': rec.room_type_id.remote_room_type_id,
+        #                 'checkin': rec.checkin,
+        #                 'checkout': rec.checkout,
+        #                 'reservation_line_ids': reservation_line_cmds,
+        #             }))
+        #     vals.update({'room_lines': room_lines})
+        #
+        #     from pprint import pprint
+        #     pprint(vals)
+        #
+        #     folio_id = noderpc.env['hotel.folio'].create(vals)
+        #     _logger.info('User #%s created a hotel.folio with ID: [%s]',
+        #                  self._context.get('uid'), folio_id)
+        #
+        #     noderpc.logout()
+        # except (odoorpc.error.RPCError, odoorpc.error.InternalError, urllib.error.URLError) as err:
+        #     raise ValidationError(err)
 
     @api.multi
     def _open_wizard_action_search(self):
@@ -172,14 +233,14 @@ class NodeRoomTypeWizard(models.TransientModel):
 
     @api.constrains('room_qty')
     def _check_room_qty(self):
-        total_qty = 0
+        # At least one model cache has been invalidated, signaling through the database.
+        wdb.set_trace()
         for rec in self:
             if (rec.room_type_availability < rec.room_qty) or (rec.room_qty > 0 and rec.nights < rec.min_stay):
                 msg = _("At least one room type has not availability or does not meet restrictions.") + " " + \
                       _("Please, review room type %s between %s and %s.") % (rec.room_type_id.name, rec.checkin, rec.checkout)
                 _logger.warning(msg)
                 raise ValidationError(msg)
-            total_qty += rec.room_qty
 
     @api.depends('room_qty', 'price_unit', 'discount')
     def _compute_price_total(self):
@@ -217,7 +278,7 @@ class NodeRoomTypeWizard(models.TransientModel):
                     #     cmds.append((0, False, {
                     #         'date': (fields.Date.from_string(rec.checkin) + timedelta(days=x)).strftime(
                     #             DEFAULT_SERVER_DATE_FORMAT),
-                    #         'price': 25.0,
+                    #         'price': 11.50,
                     #     }))
                     # from pprint import pprint
                     # pprint(cmds)

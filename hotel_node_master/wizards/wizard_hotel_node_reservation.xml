@@ -30,7 +30,12 @@
                                     <field name="room_type_id" string="Room Type" readonly="1" force_save="1"/>
                                     <field name="room_type_availability" readonly="1"/>
                                     <field name="room_qty"/>
-                                    <field name="room_type_line_ids"/>
+                                    <field name="room_type_line_ids" widget="one2many_list" invisible="1">
+                                        <tree editable="bottom">
+                                            <field name="date"/>
+                                            <field name="price"/>
+                                        </tree>
+                                    </field>
                                     <field name="checkin" widget="date"/>
                                     <field name="checkout" widget="date"/>
                                     <field name="nights"/>

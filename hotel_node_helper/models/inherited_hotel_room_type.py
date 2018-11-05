@@ -48,7 +48,7 @@ class HotelRoomType(models.Model):
         )
         reservation_line_ids = reservation_line_ids['reservation_line_ids']
         # QUESTION Why add [[5, 0, 0], ¿?
-        del reservation_line_ids[0]
+        # del reservation_line_ids[0]
 
         return reservation_line_ids
 
