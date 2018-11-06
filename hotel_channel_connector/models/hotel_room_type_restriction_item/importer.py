@@ -66,21 +66,12 @@ class HotelRoomTypeRestrictionImporter(Component):
     @api.model
     def import_restriction_values(self, date_from, date_to, channel_restr_id=False):
         channel_restr_plan_id = channel_restr_id.external_id if channel_restr_id else False
-        try:
-            results = self.backend_adapter.wired_rplan_get_rplan_values(
-                date_from,
-                date_to,
-                int(channel_restr_plan_id))
-            if any(results):
-                self._generate_restriction_items(results)
-        except ChannelConnectorError as err:
-            self.create_issue(
-                section='restriction',
-                internal_message=_("Can't fetch plan restrictions from wubook"),
-                channel_message=err.data['message'],
-                channel_object_id=channel_restr_plan_id,
-                dfrom=date_from, dto=date_to)
-            return False
+        results = self.backend_adapter.wired_rplan_get_rplan_values(
+            date_from,
+            date_to,
+            int(channel_restr_plan_id))
+        if any(results):
+            self._generate_restriction_items(results)
 
 class HotelRoomTypeRestrictionItemImportMapper(Component):
     _name = 'channel.hotel.room.type.restriction.item.import.mapper'
@@ -102,6 +93,12 @@ class HotelRoomTypeRestrictionItemImportMapper(Component):
     @mapping
     def applied_on(self, record):
         return {'applied_on': '0_room_type'}
+
+    @only_create
+    @mapping
+    def channel_pushed(self, record):
+        return {'channel_pushed': True}
+
 
     @mapping
     def room_type_id(self, record):

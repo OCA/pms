@@ -5,7 +5,6 @@ import logging
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.connector.components.mapper import mapping
 from odoo.addons.hotel import date_utils
 from odoo import fields, api, _
@@ -20,32 +19,24 @@ class HotelRoomTypeRestrictionImporter(Component):
 
     @api.model
     def import_restriction_plans(self):
-        count = 0
-        try:
-            results = self.backend_adapter.rplan_rplans()
-            channel_restriction_obj = self.env['channel.hotel.room.type.restriction']
-            restriction_mapper = self.component(usage='import.mapper',
-                                                model_name='channel.hotel.room.type.restriction')
-            for plan in results:
-                plan_record = restriction_mapper.map_record(plan)
-                plan_bind = channel_restriction_obj.search([
-                    ('external_id', '=', str(plan['id']))
-                ], limit=1)
-                if not plan_bind:
-                    channel_restriction_obj.with_context({
-                        'wubook_action': False,
-                        'rules': plan.get('rules'),
-                    }).create(plan_record.values(for_create=True))
-                else:
-                    plan_bind.with_context({'wubook_action': False}).write(
-                        plan_record.values())
-                count = count + 1
-        except ChannelConnectorError as err:
-            self.create_issue(
-                backend=self.backend_adapter.id,
-                section='restriction',
-                internal_message=_("Can't fetch restriction plans from wubook"),
-                channel_message=err.data['message'])
+        results = self.backend_adapter.rplan_rplans()
+        channel_restriction_obj = self.env['channel.hotel.room.type.restriction']
+        restriction_mapper = self.component(usage='import.mapper',
+                                            model_name='channel.hotel.room.type.restriction')
+        for plan in results:
+            plan_record = restriction_mapper.map_record(plan)
+            plan_bind = channel_restriction_obj.search([
+                ('external_id', '=', str(plan['id']))
+            ], limit=1)
+            if not plan_bind:
+                channel_restriction_obj.with_context({
+                    'wubook_action': False,
+                    'rules': plan.get('rules'),
+                }).create(plan_record.values(for_create=True))
+            else:
+                plan_bind.with_context({'wubook_action': False}).write(
+                    plan_record.values())
+            count = count + 1
         return count
 
 

@@ -4,36 +4,42 @@
 import logging
 from datetime import timedelta
 from odoo.addons.component.core import Component
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.hotel_channel_connector.components.backend_adapter import (
     DEFAULT_WUBOOK_DATE_FORMAT)
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo import fields, api, _
 _logger = logging.getLogger(__name__)
 
-class HotelRoomTypeRestrictionItemExporter(Component):
-    _name = 'channel.hotel.room.type.restriction.item.exporter'
+class ProductPricelistItemExporter(Component):
+    _name = 'channel.product.pricelist.item.exporter'
     _inherit = 'hotel.channel.exporter'
-    _apply_on = ['channel.hotel.room.type.restriction.item']
-    _usage = 'hotel.room.type.restriction.item.exporter'
+    _apply_on = ['channel.product.pricelist.item']
+    _usage = 'product.pricelist.item.exporter'
 
     @api.model
     def update_restriction(self, binding):
         if any(binding.restriction_id.channel_bind_ids):
-            # FIXME: Supossed that only exists one channel connector per record
-            binding.channel_pushed = True
-            return self.backend_adapter.update_rplan_values(
-                binding.restriction_id.channel_bind_ids[0].external_id,
-                binding.date,
-                {
-                    'min_stay': binding.min_stay or 0,
-                    'min_stay_arrival': binding.min_stay_arrival or 0,
-                    'max_stay': binding.max_stay or 0,
-                    'max_stay_arrival': binding.max_stay_arrival or 0,
-                    'closed': binding.closed and 1 or 0,
-                    'closed_arrival': binding.closed_arrival and 1 or 0,
-                    'closed_departure': binding.closed_departure and 1 or 0,
-                })
+            try:
+                # FIXME: Supossed that only exists one channel connector per record
+                binding.channel_pushed = True
+                return self.backend_adapter.update_rplan_values(
+                    binding.restriction_id.channel_bind_ids[0].external_id,
+                    binding.date,
+                    {
+                        'min_stay': binding.min_stay or 0,
+                        'min_stay_arrival': binding.min_stay_arrival or 0,
+                        'max_stay': binding.max_stay or 0,
+                        'max_stay_arrival': binding.max_stay_arrival or 0,
+                        'closed': binding.closed and 1 or 0,
+                        'closed_arrival': binding.closed_arrival and 1 or 0,
+                        'closed_departure': binding.closed_departure and 1 or 0,
+                    })
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=self.backend_adapter.id,
+                    section='restriction',
+                    internal_message=_("Can't update restriction in WuBook"),
+                    channel_message=err.data['message'])
 
     @api.model
     def push_restriction(self):
@@ -84,10 +90,17 @@ class HotelRoomTypeRestrictionItemExporter(Component):
             _logger.info(restrictions)
             for k_res, v_res in restrictions.items():
                 if any(v_res):
-                    self.backend_adapter.update_rplan_values(
-                        int(k_res),
-                        date_start.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                        v_res)
+                    try:
+                        self.backend_adapter.update_rplan_values(
+                            int(k_res),
+                            date_start.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                            v_res)
+                    except ChannelConnectorError as err:
+                        self.create_issue(
+                            backend=self.backend_adapter.id,
+                            section='restriction',
+                            internal_message=_("Can't update restrictions in WuBook"),
+                            channel_message=err.data['message'])
             unpushed.with_context({
                 'wubook_action': False}).write({'channel_pushed': True})
         return True

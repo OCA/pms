@@ -14,4 +14,3 @@ from . import inherited_hotel_folio
 from . import inherited_res_partner
 from . import channel_ota_info
 from . import hotel_channel_connector_issue
-from . import res_config

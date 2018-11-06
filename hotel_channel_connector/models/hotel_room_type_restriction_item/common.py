@@ -6,6 +6,7 @@ from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 
 class ChannelHotelRoomTypeRestrictionItem(models.Model):
     _name = 'channel.hotel.room.type.restriction.item'
@@ -25,17 +26,33 @@ class ChannelHotelRoomTypeRestrictionItem(models.Model):
     def import_restriction_values(self, backend):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='hotel.room.type.restriction.item.importer')
-            return importer.import_restriction_values(
-                backend.restriction_from,
-                backend.restriction_to,
-                channel_restr_id=backend.restriction_id)
+            try:
+                return importer.import_restriction_values(
+                    backend.restriction_from,
+                    backend.restriction_to,
+                    channel_restr_id=backend.restriction_id)
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='restriction',
+                    internal_message=_("Can't fetch plan restrictions from wubook"),
+                    channel_message=err.data['message'],
+                    channel_object_id=backend.restriction_id,
+                    dfrom=backend.restriction_from, dto=backend.restriction_to)
 
     @job(default_channel='root.channel')
     @api.model
     def push_restriction(self, backend):
         with backend.work_on(self._name) as work:
             exporter = work.component(usage='hotel.room.type.restriction.item.exporter')
-            return exporter.push_restriction()
+            try:
+                return exporter.push_restriction()
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='restriction',
+                    internal_message=_("Can't update restrictions in WuBook"),
+                    channel_message=err.data['message'])
 
 class HotelRoomTypeRestrictionItem(models.Model):
     _inherit = 'hotel.room.type.restriction.item'
@@ -74,10 +91,6 @@ class ChannelBindingHotelRoomTypeRestrictionItemListener(Component):
     _name = 'channel.binding.hotel.room.type.restriction.item.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['channel.hotel.room.type.restriction.item']
-
-    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_create(self, record, fields=None):
-        record.channel_pushed = False
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):

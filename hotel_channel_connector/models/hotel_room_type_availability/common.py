@@ -8,6 +8,7 @@ from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.hotel_channel_connector.components.backend_adapter import (
     DEFAULT_WUBOOK_DATE_FORMAT)
 
@@ -47,21 +48,42 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     def update_availability(self, backend):
         with backend.work_on(self._name) as work:
             exporter = work.component(usage='hotel.room.type.availability.exporter')
-            return exporter.update_availability(self)
+            try:
+                return exporter.update_availability(self)
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='avail',
+                    internal_message=_("Can't update availability in WuBook"),
+                    channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
     @api.model
     def import_availability(self, backend):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='hotel.room.type.availability.importer')
-            return importer.get_availability(backend.avail_from, backend.avail_to)
+            try:
+                return importer.get_availability(backend.avail_from, backend.avail_to)
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='avail',
+                    internal_message=_("Can't import availability from WuBook"),
+                    channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
     @api.model
     def push_availability(self, backend):
         with backend.work_on(self._name) as work:
             exporter = work.component(usage='hotel.room.type.availability.exporter')
-            return exporter.push_availability()
+            try:
+                return exporter.push_availability()
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='avail',
+                    internal_message=_("Can't update availability in WuBook"),
+                    channel_message=err.data['message'])
 
 class HotelRoomTypeAvailability(models.Model):
     _inherit = 'hotel.room.type.availability'
@@ -170,10 +192,6 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
     _name = 'channel.binding.hotel.room.type.availability.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['channel.hotel.room.type.availability']
-
-    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    def on_record_create(self, record, fields=None):
-        record.channel_pushed = False
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):

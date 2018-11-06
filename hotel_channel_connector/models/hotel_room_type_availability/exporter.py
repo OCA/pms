@@ -18,24 +18,17 @@ class HotelRoomTypeAvailabilityExporter(Component):
     @api.model
     def update_availability(self, binding):
         if any(binding.room_type_id.channel_bind_ids):
-            try:
-                sday_dt = fields.Date.from_string(binding.date)
-                # FIXME: Supossed that only exists one channel connector per record
-                binding.channel_pushed = True
-                return self.backend_adapter.update_availability({
-                    'id': binding.room_type_id.channel_bind_ids[0].channel_room_id,
-                    'days': [{
-                        'date': sday_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                        'avail': binding.avail,
-                        'no_ota': binding.no_ota,
-                    }],
-                })
-            except ChannelConnectorError as err:
-                self.create_issue(
-                    backend=self.backend_adapter.id,
-                    section='avail',
-                    internal_message=_("Can't update availability in WuBook"),
-                    channel_message=err.data['message'])
+            sday_dt = fields.Date.from_string(binding.date)
+            # FIXME: Supossed that only exists one channel connector per record
+            binding.channel_pushed = True
+            return self.backend_adapter.update_availability({
+                'id': binding.room_type_id.channel_bind_ids[0].channel_room_id,
+                'days': [{
+                    'date': sday_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+                    'avail': binding.avail,
+                    'no_ota': binding.no_ota,
+                }],
+            })
 
     def push_availability(self):
         channel_room_type_avail_ids = self.env['channel.hotel.room.type.availability'].search([
@@ -66,11 +59,4 @@ class HotelRoomTypeAvailabilityExporter(Component):
         _logger.info("UPDATING AVAILABILITY IN WUBOOK...")
         _logger.info(avails)
         if any(avails):
-            try:
-                self.backend_adapter.update_availability(avails)
-            except ChannelConnectorError as err:
-                self.create_issue(
-                    backend=self.backend_adapter.id,
-                    section='avail',
-                    internal_message=_("Can't update availability in WuBook"),
-                    channel_message=err.data['message'])
+            self.backend_adapter.update_availability(avails)

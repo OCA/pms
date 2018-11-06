@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo.addons.connector.components.mapper import mapping, external_to_m2o
+from odoo.addons.connector.components.mapper import mapping, only_create
 from odoo.addons.hotel import date_utils
 from odoo import fields, api, _
 _logger = logging.getLogger(__name__)
@@ -29,47 +29,40 @@ class HotelRoomTypeAvailabilityImporter(Component):
             dfrom_dt, dto_dt = dto_dt, dfrom_dt
         if dto_dt < now_dt:
             return True
-        count = 0
-        try:
-            results = self.backend_adapter.fetch_rooms_values(date_from, date_to)
 
-            channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
-            channel_room_type_obj = self.env['channel.hotel.room.type']
-            room_avail_mapper = self.component(
-                usage='import.mapper',
-                model_name='channel.hotel.room.type.availability')
-            count = len(results)
-            for room_k, room_v in results.items():
-                iter_day = dfrom_dt
-                channel_room_type = channel_room_type_obj.search([
-                    ('channel_room_id', '=', room_k)
-                ], limit=1)
-                if channel_room_type:
-                    for room in room_v:
-                        room.update({
-                            'room_type_id': channel_room_type.odoo_id.id,
-                            'date': fields.Date.to_string(iter_day),
-                        })
-                        map_record = room_avail_mapper.map_record(room)
-                        room_type_avail_bind = channel_room_type_avail_obj.search([
-                            ('room_type_id', '=', room['room_type_id']),
-                            ('date', '=', room['date'])
-                        ], limit=1)
-                        if room_type_avail_bind:
-                            room_type_avail_bind.with_context({
-                                'wubook_action': False
-                            }).write(map_record.values())
-                        else:
-                            room_type_avail_bind = channel_room_type_avail_obj.with_context({
-                                'wubook_action': False
-                            }).create(map_record.values(for_create=True))
-                        iter_day += timedelta(days=1)
-        except ChannelConnectorError as err:
-            self.create_issue(
-                backend=self.backend_adapter.id,
-                section='avail',
-                internal_message=_("Can't import availability from WuBook"),
-                channel_message=err.data['message'])
+        results = self.backend_adapter.fetch_rooms_values(date_from, date_to)
+
+        channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
+        channel_room_type_obj = self.env['channel.hotel.room.type']
+        room_avail_mapper = self.component(
+            usage='import.mapper',
+            model_name='channel.hotel.room.type.availability')
+        count = len(results)
+        for room_k, room_v in results.items():
+            iter_day = dfrom_dt
+            channel_room_type = channel_room_type_obj.search([
+                ('channel_room_id', '=', room_k)
+            ], limit=1)
+            if channel_room_type:
+                for room in room_v:
+                    room.update({
+                        'room_type_id': channel_room_type.odoo_id.id,
+                        'date': fields.Date.to_string(iter_day),
+                    })
+                    map_record = room_avail_mapper.map_record(room)
+                    room_type_avail_bind = channel_room_type_avail_obj.search([
+                        ('room_type_id', '=', room['room_type_id']),
+                        ('date', '=', room['date'])
+                    ], limit=1)
+                    if room_type_avail_bind:
+                        room_type_avail_bind.with_context({
+                            'wubook_action': False
+                        }).write(map_record.values())
+                    else:
+                        room_type_avail_bind = channel_room_type_avail_obj.with_context({
+                            'wubook_action': False
+                        }).create(map_record.values(for_create=True))
+                    iter_day += timedelta(days=1)
         return count
 
 
@@ -84,6 +77,11 @@ class HotelRoomTypeAvailabilityImportMapper(Component):
         ('avail', 'avail'),
         ('date', 'date'),
     ]
+
+    @only_create
+    @mapping
+    def channel_pushed(self, record):
+        return {'channel_pushed': True}
 
     @mapping
     def backend_id(self, record):

@@ -46,8 +46,10 @@ class ChannelBackend(models.Model):
 
     issue_ids = fields.One2many('hotel.channel.connector.issue',
                                 'backend_id',
-                                string='Issues',
-                                copy=True)
+                                string='Issues')
+    ota_ids = fields.One2many('channel.ota.info',
+                              'backend_id',
+                              string="OTA's")
 
     @api.multi
     def generate_key(self):
@@ -115,6 +117,13 @@ class ChannelBackend(models.Model):
         channel_product_pricelist_obj = self.env['channel.product.pricelist']
         for backend in self:
             channel_product_pricelist_obj.import_price_plans(backend)
+        return True
+
+    @api.multi
+    def import_pricelist_values(self):
+        channel_product_pricelist_item_obj = self.env['channel.product.pricelist.item']
+        for backend in self:
+            channel_product_pricelist_item_obj.import_pricelist_values(backend)
         return True
 
     @contextmanager

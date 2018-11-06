@@ -34,11 +34,4 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="open_channel_ota_info_tree_all">
-    	<field name="name">Hotel Channel Connector OTA's Info</field>
-    	<field name="res_model">channel.ota.info</field>
-    	<field name="view_type">form</field>
-    	<field name="view_mode">tree,form</field>
-    </record>
-
 </odoo>

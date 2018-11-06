@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 _logger = logging.getLogger(__name__)
 
 class ChannelHotelRoomTypeRestriction(models.Model):
@@ -28,7 +29,14 @@ class ChannelHotelRoomTypeRestriction(models.Model):
         if not self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.restriction.exporter')
-                exporter.create_rplan(self)
+                try:
+                    exporter.create_rplan(self)
+                except ChannelConnectorError as err:
+                    self.create_issue(
+                        backend=self.backend_id.id,
+                        section='restriction',
+                        internal_message=_("Can't create restriction plan in WuBook"),
+                        channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
@@ -38,7 +46,14 @@ class ChannelHotelRoomTypeRestriction(models.Model):
         if self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.restriction.exporter')
-                exporter.rename_rplan(self)
+                try:
+                    exporter.rename_rplan(self)
+                except ChannelConnectorError as err:
+                    self.create_issue(
+                        backend=self.backend_id.id,
+                        section='restriction',
+                        internal_message=_("Can't modify restriction plan in WuBook"),
+                        channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
@@ -48,14 +63,28 @@ class ChannelHotelRoomTypeRestriction(models.Model):
         if self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.restriction.exporter')
-                exporter.delete_rplan(self)
+                try:
+                    exporter.delete_rplan(self)
+                except ChannelConnectorError as err:
+                    self.create_issue(
+                        backend=self.backend_id.id,
+                        section='restriction',
+                        internal_message=_("Can't delete restriction plan in WuBook"),
+                        channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
     @api.model
     def import_restriction_plans(self, backend):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='hotel.room.type.restriction.importer')
-            return importer.import_restriction_plans()
+            try:
+                return importer.import_restriction_plans()
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='restriction',
+                    internal_message=_("Can't fetch restriction plans from wubook"),
+                    channel_message=err.data['message'])
 
 class HotelRoomTypeRestriction(models.Model):
     _inherit = 'hotel.room.type.restriction'

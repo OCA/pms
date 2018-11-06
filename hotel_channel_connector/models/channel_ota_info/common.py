@@ -4,6 +4,7 @@
 from odoo import api, models, fields
 from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 
 class ChannelOtaInfo(models.Model):
     _name = 'channel.ota.info'
@@ -19,7 +20,14 @@ class ChannelOtaInfo(models.Model):
     def import_otas_info(self, backend):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='ota.info.importer')
-            return importer.import_otas_info()
+            try:
+                return importer.import_otas_info()
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='room',
+                    internal_message=_("Can't import ota info from WuBook"),
+                    channel_message=err.data['message'])
 
 class HotelRoomTypeAdapter(Component):
     _name = 'channel.ota.info.adapter'

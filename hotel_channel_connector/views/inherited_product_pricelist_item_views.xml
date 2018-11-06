@@ -12,6 +12,7 @@
                             <field name="channel_bind_ids" nolabel="1">
                                 <tree>
                                     <field name="backend_id"/>
+                                    <field name="channel_pushed"/>
                                 </tree>
                             </field>
                         </group>
