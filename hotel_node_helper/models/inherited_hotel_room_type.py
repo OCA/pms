@@ -32,10 +32,34 @@ class HotelRoomType(models.Model):
             ('date', '>=', dfrom),
             ('date', '<', dto),
             ('room_type_id', '=', room_type_id),
+        ], ['avail']) or [{'avail': availability_real}]
 
-        ], ['avail']) or float('inf')
-
-        if isinstance(availability_plan, list):
-            availability_plan = min([r['avail'] for r in availability_plan])
+        availability_plan = min([r['avail'] for r in availability_plan])
 
         return min(availability_real, availability_plan)
+
+    @api.model
+    def get_room_type_price_unit(self, dfrom, dto, room_type_id):
+        # TODO review how to get the prices
+        reservation_line_ids = self.env['hotel.reservation'].prepare_reservation_lines(
+            dfrom,
+            (fields.Date.from_string(dto) - fields.Date.from_string(dfrom)).days,
+            {'room_type_id': room_type_id}
+        )
+        reservation_line_ids = reservation_line_ids['reservation_line_ids']
+        # QUESTION Why add [[5, 0, 0], ¿?
+        del reservation_line_ids[0]
+
+        return reservation_line_ids
+
+    @api.model
+    def get_room_type_restrictions(self, dfrom, dto, room_type_id):
+        restrictions_plan = self.env['hotel.room.type.restriction.item'].search_read([
+            ('date', '>=', dfrom),
+            ('date', '<', dto),
+            ('room_type_id', '=', room_type_id),
+        ], ['min_stay']) or [{'min_stay': 0}]
+
+        min_stay = max([r['min_stay'] for r in restrictions_plan])
+
+        return min_stay

@@ -1,7 +1,7 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields
+from odoo import models, fields, api
 from odoo.addons import decimal_precision as dp
 
 class HotelServiceLine(models.Model):

@@ -145,6 +145,13 @@ class HotelNode(models.Model):
             master_ids = [r['id'] for r in master_users]
             remote_ids = [r['remote_user_id'] for r in master_users]
 
+            # For the first hotel, gui_ids and xml_ids is empty. You must recover the previously written groups
+            master_groups = self.env["hotel.node.group"].search_read(
+                [('odoo_version', '=', self.odoo_version)], ['xml_id'])
+
+            gui_ids = [r['id'] for r in master_groups]
+            xml_ids = [r['xml_id'] for r in master_groups]
+
             user_ids = []
             for user in remote_users:
                 group_ids = []
