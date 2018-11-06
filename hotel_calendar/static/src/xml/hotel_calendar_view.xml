@@ -17,7 +17,7 @@
                     BOOKS<br/>
                 </button>
                 <input type="edit" id="bookings_search" placeholder="Search..." style="width:100%; border:1px solid lightgray;" />
-                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_control" data-action="hotel_calendar.open_wizard_reservations">
+                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_control" data-action="hotel.open_wizard_reservations">
                     WIZARD
                 </button>
                 <button class="btn btn-default col-xs-12 col-md-12" id="btn_swap">

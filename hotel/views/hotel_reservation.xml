@@ -167,8 +167,7 @@
                         <field name="closure_reason_id" default_focus="1"
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Closure Reason"
-                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"
-                            required="1"/>
+                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"/>
                          <span class="fa fa-user" style="margin-left:20px;"
                             attrs="{'invisible': [('reservation_type','not in',('normal'))]}"/>
                          <span class="fa fa-black-tie" style="margin-left:20px; color: #C67;"
@@ -251,11 +250,11 @@
                                             <!-- <field name="sequence" widget="handle"/> -->
                                             <field name="folio_id" invisible="1"/>
                                             <field name="product_id"
-                                                domain="[('sale_ok', '=', True),('is_room_type', '=', False)]"
+                                                domain="[('sale_ok', '=', True)]"
                                                 options="{'create': False, 'create_edit': False}" />
                                             <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
                                             <field name="name"/>
-                                            <field name="list_price"/>
+                                            <field name="pricelist_id"/>
                                             <!-- <field name="ser_room_line" invisible="1" /> -->
                                             <!-- <field name="qty_delivered" invisible="1"
                                                 attrs="{'readonly': [('qty_delivered_updateable', '=', False)]}"/> -->

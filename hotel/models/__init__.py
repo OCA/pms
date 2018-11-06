@@ -15,7 +15,7 @@ from . import hotel_room_type
 from . import hotel_service
 from . import inherit_account_invoice
 # from . import inherit_product_category
-from . import inherit_product_product
+from . import inherit_product_template
 from . import inherit_res_company
 # from . import room_type
 from . import inherit_account_payment
@@ -30,4 +30,6 @@ from . import inherit_res_partner
 from . import inherited_mail_compose_message
 from . import hotel_room_type_class
 from . import room_closure_reason
+from . import hotel_service_line
+from . import hotel_board_service
 #~ from . import hotel_dashboard

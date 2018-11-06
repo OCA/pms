@@ -24,8 +24,6 @@
             <script type="text/javascript" src="/hotel_calendar/static/src/js/views/calendar_management/hotel_calendar_management_model.js"></script>
             <script type="text/javascript" src="/hotel_calendar/static/src/js/views/calendar_management/hotel_calendar_management_renderer.js"></script>
             <script type="text/javascript" src="/hotel_calendar/static/src/js/views/calendar_management/hotel_calendar_management_view.js"></script>
-
-            <script type="text/javascript" src="/hotel_calendar/static/src/js/open_reservation_wizard_listview_button.js"></script>
         </xpath>
     </template>
 

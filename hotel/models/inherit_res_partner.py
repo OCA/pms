@@ -24,7 +24,6 @@ class ResPartner(models.Model):
     reservations_count = fields.Integer('Reservations',
                                         compute='_compute_reservations_count')
     folios_count = fields.Integer('Folios', compute='_compute_folios_count')
-    is_staff = fields.Boolean('Is Staff')
 
     """ TODO
     @api.onchange('is_staff')

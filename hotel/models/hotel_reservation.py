@@ -196,6 +196,7 @@ class HotelReservation(models.Model):
     parent_reservation = fields.Many2one('hotel.reservation',
                                          'Parent Reservation')
     overbooking = fields.Boolean('Is Overbooking', default=False)
+    reselling = fields.Boolean('Is Reselling', default=False)
 
     nights = fields.Integer('Nights', compute='_computed_nights', store=True)
     channel_type = fields.Selection([
@@ -408,6 +409,7 @@ class HotelReservation(models.Model):
             'parent_reservation': self.parent_reservation.id,
             'state': self.state,
             'overbooking': self.overbooking,
+            'reselling': self.reselling,
             'price_unit': self.price_unit,
             'splitted': self.splitted,
             # 'room_type_id': self.room_type_id.id,
@@ -444,14 +446,20 @@ class HotelReservation(models.Model):
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         #TODO: Change parity pricelist by default pricelist
-        values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and \
+        pricelist = self.partner_id.property_product_pricelist and \
                 self.partner_id.property_product_pricelist.id or \
-                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id'),
-            'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
-                                       self.partner_id.is_staff,
-                                       self.reservation_type)
+                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')
+        values = {
+            'pricelist_id': pricelist,
         }
+        self.update(values)
+
+    @api.multi
+    @api.onchange('pricelist_id')
+    def onchange_pricelist_id(self):
+        values = {'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
+                                       self.pricelist_id.is_staff,
+                                       self.reservation_type)}
         self.update(values)
 
     @api.onchange('reservation_type')
@@ -507,7 +515,7 @@ class HotelReservation(models.Model):
     def onchange_room_availabiltiy_domain(self):
         self.ensure_one()
         if self.checkin and self.checkout:
-            if self.overbooking:
+            if self.overbooking or self.reselling:
                 return
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
@@ -842,7 +850,8 @@ class HotelReservation(models.Model):
         domain = [('reservation_line_ids.date', '>=', dfrom),
                   ('reservation_line_ids.date', '<', dto),
                   ('state', '!=', 'cancelled'),
-                  ('overbooking', '=', False)]
+                  ('overbooking', '=', False),
+                  ('reselling', '=', False),]
         return domain
 
     @api.model
@@ -872,7 +881,7 @@ class HotelReservation(models.Model):
         return reservations_dates
 
     # TODO: Use default values on checkin /checkout is empty
-    @api.constrains('checkin', 'checkout', 'state', 'room_id', 'overbooking')
+    @api.constrains('checkin', 'checkout', 'state', 'room_id', 'overbooking', 'reselling')
     def check_dates(self):
         """
         1.-When date_order is less then checkin date or

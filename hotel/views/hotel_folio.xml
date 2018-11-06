@@ -414,10 +414,10 @@
                                         <field name="folio_id" invisible="1"/>
                                         <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
                                         <field name="product_id"
-                                            domain="[('sale_ok', '=', True),('is_room_type', '=', False)]"
+                                            domain="[('sale_ok', '=', True)]"
                                             options="{'create': False, 'create_edit': False}" />
                                         <field name="name"/>
-                                        <field name="list_price"/>
+                                        <field name="pricelist_id"/>
                                         <field name="ser_room_line" options="{'create': False, 'create_edit': False}"/>
                                         <!-- <field name="product_uom_qty"
                                             string="Ordered Qty"

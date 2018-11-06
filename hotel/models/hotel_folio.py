@@ -353,13 +353,12 @@ class HotelFolio(models.Model):
             #~ })
             return
         addr = self.partner_id.address_get(['invoice'])
-        values = {'user_id': self.partner_id.user_id.id or self.env.uid,
-                  'pricelist_id':self.partner_id.property_product_pricelist and \
+        pricelist = self.partner_id.property_product_pricelist and \
                                  self.partner_id.property_product_pricelist.id or \
-                                 self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id'),
-                   'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
-                                       self.partner_id.is_staff,
-                                       self.reservation_type)}
+                                 self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')
+        values = {'user_id': self.partner_id.user_id.id or self.env.uid,
+                  'pricelist_id': pricelist
+                  }
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
             self.env.user.company_id.sale_note:
             values['note'] = self.with_context(
@@ -368,6 +367,15 @@ class HotelFolio(models.Model):
         if self.partner_id.team_id:
             values['team_id'] = self.partner_id.team_id.id
         self.update(values)
+
+    @api.multi
+    @api.onchange('pricelist_id')
+    def onchange_pricelist_id(self):
+        values = {'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
+                                       self.pricelist_id.is_staff,
+                                       self.reservation_type)}
+        self.update(values)
+    
 
     @api.model
     def calcule_reservation_type(self, is_staff, current_type):
