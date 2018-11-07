@@ -31,10 +31,12 @@
                             <field name="room_ids" widget="many2many"/>
                         </group>
                     </group>
-                    <page string="Room Amenities">
-                        <separator string=" Room Amenities" />
-                        <field name="room_amenities" colspan="4" nolabel="1" />
-                    </page>
+                    <notebook>
+                        <page string="Room Amenities">
+                            <separator string=" Room Amenities" />
+                            <field name="room_amenity_ids" colspan="4" nolabel="1" />
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

@@ -100,7 +100,7 @@
         <field name="res_model">hotel.amenity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_hotel_room_amenity_list" />
+        <field name="view_id" ref="hotel_amenity_view_list" />
     </record>
     <menuitem name="Amenities" id="menu_action_hotel_room_amenity_view_form"
         action="action_hotel_room_amenity_view_form" sequence="2"

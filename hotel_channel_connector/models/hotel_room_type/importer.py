@@ -5,7 +5,7 @@ import logging
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
-from odoo.addons.sconnector.components.mapper import mapping
+from odoo.addons.connector.components.mapper import mapping
 from odoo import fields, api, _
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
