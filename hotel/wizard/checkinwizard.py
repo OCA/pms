@@ -91,7 +91,7 @@ class Wizard(models.TransientModel):
             return True
         return False
 
-    checkin_partner_ids = fields.Many2many('hotel_checkin_partner', 'reservation_id',
+    checkin_partner_ids = fields.Many2many('hotel.checkin.partner', 'reservation_id',
                                   default=default_checkin_partner_ids)
     # count_checkin_partner = fields.Integer('Checkin counter',
     #                              default=default_count_checkin_partner)

@@ -470,7 +470,7 @@ class HotelFolio(models.Model):
             'name': _('Checkins'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'hotel_checkin_partner',
+            'res_model': 'hotel.checkin.partner',
             'type': 'ir.actions.act_window',
             'domain': [('reservation_id', 'in', rooms)],
             'target': 'new',

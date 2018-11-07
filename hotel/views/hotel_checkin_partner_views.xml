@@ -5,12 +5,12 @@
     <act_window
         id="action_checkin_partner"
         name="Action checkin"
-        res_model='hotel_checkin_partner'
+        res_model='hotel.checkin.partner'
         view_mode="tree,form" />
     <act_window
         id="action_checkin_partner_download"
         name="Action checkin download"
-        res_model='hotel_checkin_partner'
+        res_model='hotel.checkin.partner'
         view_mode="form" />         <!-- Menu item to open INE Codes list -->
     <menuitem
         id="menu_hotel_checkin_partner"
@@ -21,7 +21,7 @@
 
     <record id="view_form_checkin_partner" model="ir.ui.view">
         <field name="name">Checkin Form</field>
-        <field name="model">hotel_checkin_partner</field>
+        <field name="model">hotel.checkin.partner</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
@@ -42,7 +42,7 @@
 
     <record id="view_tree_checkin_partner" model="ir.ui.view">
         <field name="name">Checkin Tree</field>
-        <field name="model">hotel_checkin_partner</field>
+        <field name="model">hotel.checkin.partner</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="partner_id" string="Client name"/>

@@ -179,7 +179,7 @@ class HotelReservation(models.Model):
     pricelist_id = fields.Many2one('product.pricelist',
                                    related='folio_id.pricelist_id',
                                    readonly="1")
-    checkin_partner_ids = fields.One2many('hotel_checkin_partner', 'reservation_id')
+    checkin_partner_ids = fields.One2many('hotel.checkin.partner', 'reservation_id')
     # TODO: As checkin_partner_count is a computed field, it can't not be used in a domain filer
     # Non-stored field hotel.reservation.checkin_partner_count cannot be searched
     # searching on a computed field can also be enabled by setting the search parameter.
@@ -994,7 +994,7 @@ class HotelReservation(models.Model):
             'name': _('Checkins'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'hotel_checkin_partner',
+            'res_model': 'hotel.checkin.partner',
             'type': 'ir.actions.act_window',
             'domain': [('reservation_id', '=', self.id)],
             'target': 'new',
