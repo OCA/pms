@@ -4,7 +4,7 @@
     <!-- Backend stuff -->
     <template id="assets_backend" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
-            <script type="text/javascript" src="/hotel/static/src/js/open_reservation_wizard_listview_button.js"></script>
+            <script type="text/javascript" src="/hotel/static/src/js/views/list/list_controller.js"></script>
         </xpath>
     </template>
 
