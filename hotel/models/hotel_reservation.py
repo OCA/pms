@@ -811,7 +811,7 @@ class HotelReservation(models.Model):
         partner = self.partner_id.id
         amount = min(self.amount_reservation, self.folio_pending_amount)
         note = self.folio_id.name + ' (' + self.name + ')'
-        view_id = self.env.ref('hotel.view_account_payment_folio_form').id
+        view_id = self.env.ref('hotel.account_payment_view_form_folio').id
         return{
             'name': _('Register Payment'),
             'view_type': 'form',
