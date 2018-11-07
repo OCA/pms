@@ -12,7 +12,7 @@ class HotelRoomTypeClass(models.Model):
     _name = "hotel.room.type.class"
     _description = "Room Type Class"
     _order = "sequence, code_class, name"
-    _sql_constraints = [('code_type_unique', 'unique(code_type)',
+    _sql_constraints = [('code_class_unique', 'unique(code_class)',
                          'code must be unique!')]
 
     name = fields.Char('Class Name', required=True, translate=True)
