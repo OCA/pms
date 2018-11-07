@@ -20,8 +20,10 @@ class HotelNodeGroup(models.Model):
                               help="Gives the sequence order when displaying the list of Groups.")
 
     name = fields.Char(required=True, translate=True)
-    node_ids = fields.Many2many('project.project', 'hotel_node_group_rel', 'group_id', 'node_id',
-                                string='Hotels')
+    # node_ids = fields.Many2many('project.project', 'hotel_node_group_rel', 'group_id', 'node_id',
+    #                             string='Hotels')
+    remote_group_ids = fields.One2many('hotel.node.group.remote', 'group_id',
+                                'Access Groups')
     user_ids = fields.Many2many('hotel.node.user', 'hotel_node_user_group_rel', 'group_id', 'user_id',
                                 string='Users')
     # xml_id represents the complete module.name, xml_id = ("%s.%s" % (data['module'], data['name']))
@@ -32,5 +34,6 @@ class HotelNodeGroup(models.Model):
 
     _sql_constraints = [
         ('xml_id_uniq', 'unique (odoo_version, xml_id)',
-         '_(The external identifier of the group must be unique within an Odoo version!')
+         'The external identifier of the group must be unique within an Odoo version!')
     ]
+

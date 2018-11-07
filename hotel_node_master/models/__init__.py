@@ -3,6 +3,7 @@
 from . import hotel_node
 from . import hotel_node_user
 from . import hotel_node_group
+from . import hotel_node_group_remote
 from . import hotel_node_room
 from . import hotel_node_room_type
 from . import inherited_res_partner
