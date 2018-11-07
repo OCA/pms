@@ -1,6 +1,6 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from openerp import models, fields, api, _
+from odoo import models, fields
 
 
 class HotelFloor(models.Model):
@@ -8,4 +8,4 @@ class HotelFloor(models.Model):
     _description = "Ubication"
 
     name = fields.Char('Ubication Name', size=64, required=True, index=True)
-    sequence = fields.Integer('Sequence', size=64)
+    sequence = fields.Integer('Sequence')

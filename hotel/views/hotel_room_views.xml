@@ -47,10 +47,6 @@
                 <!-- <field name="taxes_id" colspan="4" nolabel='1'
                                 help='Customer taxes apply on the perticular room. ' /> -->
               </page>
-              <page string="Room Amenities">
-                <separator string=" Room Amenities" />
-                <field name="room_amenities" colspan="4" nolabel="1" />
-              </page>
               <page string="Descriptions">
                 <group>
                     <field name="description_sale" colspan="2" string="Name in reports"/>

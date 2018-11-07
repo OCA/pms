@@ -7,8 +7,8 @@ from . import hotel_floor
 from . import hotel_folio
 from . import hotel_reservation
 from . import hotel_room
-from . import hotel_room_amenities
-from . import hotel_room_amenities_type
+from . import hotel_room_amenitie
+from . import hotel_room_amenitie_type
 from . import hotel_room_type
 from . import hotel_service
 from . import inherited_account_invoice
