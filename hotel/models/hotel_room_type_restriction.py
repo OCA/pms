@@ -19,13 +19,13 @@ class HotelRoomTypeRestriction(models.Model):
     @api.depends('name')
     def name_get(self):
         restriction_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_restrictions_id')
+            'res.config.settings', 'default_restriction_id')
         if restriction_id:
             restriction_id = int(restriction_id)
         names = []
         for record in self:
             if record.id == restriction_id:
-                names.append((record.id, '%s (Parity)' % record.name))
+                names.append((record.id, '%s (Default)' % record.name))
             else:
                 names.append((record.id, record.name))
         return names
