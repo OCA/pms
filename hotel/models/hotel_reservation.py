@@ -11,7 +11,6 @@ from odoo.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
-from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
 
@@ -542,11 +541,6 @@ class HotelReservation(models.Model):
     def _generate_color(self):
         self.ensure_one()
         now_utc_dt = fields.Datetime.now()
-        # unused variables
-        # diff_checkin_now = date_utils.date_diff(now_utc_dt, self.checkin,
-        #                                         hours=False)
-        # diff_checkout_now = date_utils.date_diff(now_utc_dt, self.checkout,
-        #                                          hours=False)
 
         ir_values_obj = self.env['ir.default']
         reserv_color = '#FFFFFF'
@@ -960,13 +954,12 @@ class HotelReservation(models.Model):
                             is_checkout = True")
         checkins_res = reservations.filtered(lambda x: (
             x.state in ('confirm','draft')
-            and date_utils.date_compare(x.checkin, today_str, hours=False)
+            and x.checkin == today_str,)
             and x.reservation_type == 'normal'))
         checkins_res.write({'is_checkin': True})
         checkouts_res = reservations.filtered(lambda x: (
             x.state not in ('done','cancelled')
-            and date_utils.date_compare(x.checkout, today_str,
-                                        hours=False)
+            and x.checkout == today_str
             and x.reservation_type == 'normal'))
         checkouts_res.write({'is_checkout': True})
         self.env['hotel.folio'].daily_plan()
