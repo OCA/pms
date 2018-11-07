@@ -1,10 +1,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import logging
-from openerp.exceptions import except_orm
-from openerp import models, fields, api, _
-_logger = logging.getLogger(__name__)
-
+from odoo.exceptions import except_orm
+from odoo import models, fields, api, _
 
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
@@ -15,6 +12,7 @@ class AccountPayment(models.Model):
         string="Total amount in folio",
     )
 
+    """WIP"""
     @api.multi
     def return_payment_folio(self):
         journal = self.journal_id
@@ -78,7 +76,7 @@ class AccountPayment(models.Model):
                 return
             if not any(fol):
                 return
-            elif len(fol) > 1:
+            if len(fol) > 1:
                 raise except_orm(_('Warning'), _('This pay is related with \
                                                 more than one Reservation.'))
             else:

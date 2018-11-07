@@ -1,10 +1,8 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-import logging
-from openerp import models, fields, api, _
-from openerp.exceptions import UserError, ValidationError
-_logger = logging.getLogger(__name__)
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class AccountInvoice(models.Model):
@@ -12,12 +10,11 @@ class AccountInvoice(models.Model):
 
     @api.model
     def create(self, vals):
-        cr, uid, context = self.env.args
-        context = dict(context)
-        if context.get('invoice_origin', False):
-            vals.update({'origin': context['invoice_origin']})
+        if self.env.context.get('invoice_origin', False):
+            vals.update({'origin': self.env.context.get['invoice_origin']})
         return super(AccountInvoice, self).create(vals)
 
+    """WIP"""
     @api.multi
     def action_folio_payments(self):
         self.ensure_one()
@@ -70,16 +67,3 @@ class AccountInvoice(models.Model):
             raise ValidationError(vat_error)
         return super(AccountInvoice, self).action_invoice_open()
 
-    # ~ @api.multi
-    # ~ def confirm_paid(self):
-    #     ~ '''
-    #     ~ This method change pos orders states to done when folio invoice
-    #     ~ is in done.
-    #     ~ ----------------------------------------------------------
-    #     ~ @param self: object pointer
-    #     ~ '''
-    #     ~ pos_order_obj = self.env['pos.order']
-    #     ~ res = super(AccountInvoice, self).confirm_paid()
-    #     ~ pos_odr_rec = pos_order_obj.search([('invoice_id', 'in', self._ids)])
-    #     ~ pos_odr_rec and pos_odr_rec.write({'state': 'done'})
-    #     ~ return res
