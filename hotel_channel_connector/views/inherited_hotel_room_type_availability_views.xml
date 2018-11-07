@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
                 <notebook>
-                    <page name="connector">
+                    <page name="connector" string="Channel Connector">
                         <group string="Hotel Channel Bindings">
                             <field name="channel_bind_ids" nolabel="1">
                                 <tree>

@@ -5,7 +5,6 @@ import logging
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.connector.components.mapper import mapping
 from odoo.addons.hotel import date_utils
 from odoo import fields, api, _
@@ -18,6 +17,28 @@ class HotelRoomTypeRestrictionImporter(Component):
     _apply_on = ['channel.hotel.room.type.restriction']
     _usage = 'hotel.room.type.restriction.importer'
 
+    @api.model
+    def import_restriction_plans(self):
+        results = self.backend_adapter.rplan_rplans()
+        channel_restriction_obj = self.env['channel.hotel.room.type.restriction']
+        restriction_mapper = self.component(usage='import.mapper',
+                                            model_name='channel.hotel.room.type.restriction')
+        for plan in results:
+            plan_record = restriction_mapper.map_record(plan)
+            plan_bind = channel_restriction_obj.search([
+                ('external_id', '=', str(plan['id']))
+            ], limit=1)
+            if not plan_bind:
+                channel_restriction_obj.with_context({
+                    'wubook_action': False,
+                    'rules': plan.get('rules'),
+                }).create(plan_record.values(for_create=True))
+            else:
+                plan_bind.with_context({'wubook_action': False}).write(
+                    plan_record.values())
+            count = count + 1
+        return count
+
 
 class HotelRoomTypeRestrictionImportMapper(Component):
     _name = 'channel.hotel.room.type.restriction.import.mapper'
@@ -25,11 +46,8 @@ class HotelRoomTypeRestrictionImportMapper(Component):
     _apply_on = 'channel.hotel.room.type.restriction'
 
     direct = [
-        ('no_ota', 'no_ota'),
-        ('booked', 'booked'),
-        ('avail', 'avail'),
-        ('room_type_id', 'room_type_id'),
-        ('date', 'date')
+        ('name', 'name'),
+        ('id', 'external_id'),
     ]
 
     @mapping

@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
                 <notebook>
-                    <page name="connector">
+                    <page name="connector" string="Channel Connector">
                         <group string="Hotel Channel Bindings">
                             <field name="capacity" invisible="1" />
                             <field name="channel_bind_ids" context="{'default_ota_capacity': capacity}" nolabel="1">

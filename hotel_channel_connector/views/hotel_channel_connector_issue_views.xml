@@ -19,6 +19,9 @@
                             attrs="{'invisible':['|', ['section', '!=', 'reservation'], ['channel_object_id', '=', False]]}"/>
                         </div>
                         <group>
+                            <field name="backend_id"/>
+                        </group>
+                        <group>
                             <field name="section"/>
                             <field name="internal_message"/>
                         </group>
@@ -42,6 +45,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Channel Connector Issues">
+                    <field name="backend_id"/>
                     <field name="create_date"/>
                     <field name="section"/>
                     <field name="internal_message"/>
@@ -58,6 +62,7 @@
             <field name="model">hotel.channel.connector.issue</field>
             <field name="arch" type="xml">
                 <search string="Issues">
+                    <field name="backend_id"/>
                     <field name="create_date"/>
                     <field name="section"/>
                     <field name="internal_message"/>

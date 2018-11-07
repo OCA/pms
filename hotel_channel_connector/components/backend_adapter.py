@@ -9,7 +9,6 @@ from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo.addons.payment.models.payment_acquirer import _partner_split_name
-from odoo.addons.hotel import date_utils
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo import fields, _
 _logger = logging.getLogger(__name__)
@@ -276,8 +275,8 @@ class WuBookAdapter(AbstractComponent):
         rcode, results = self._server.fetch_rooms_values(
             self._session_info[0],
             self._session_info[1],
-            date_utils.get_datetime(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            date_utils.get_datetime(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             rooms)
         if rcode != 0:
             raise ChannelConnectorError("Can't fetch rooms values from WuBook", {
@@ -317,14 +316,14 @@ class WuBookAdapter(AbstractComponent):
             'phone': phone,
             'street': address,
             'country': country_code,
-            'arrival_hour': date_utils.get_datetime(checkin).strftime("%H:%M"),
+            'arrival_hour': fields.Datetime.from_string(checkin).strftime("%H:%M"),
             'notes': notes
         }
         rcode, results = self._server.new_reservation(
             self._session_info[0],
             self._session_info[1],
-            date_utils.get_datetime(checkin).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            date_utils.get_datetime(checkout).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(checkin).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(checkout).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             {channel_room_id: [adults+children, 'nb']},
             customer,
             adults+children)
@@ -431,7 +430,7 @@ class WuBookAdapter(AbstractComponent):
             self._session_info[0],
             self._session_info[1],
             channel_plan_id,
-            date_utils.get_datetime(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             prices)
         if rcode != 0:
             raise ChannelConnectorError("Can't update pricing plan in wubook", {
@@ -442,7 +441,7 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def update_plan_periods(self, channel_plan_id, periods):
-        rcode, results = self.SERVER.update_plan_periods(
+        rcode, results = self._server.update_plan_periods(
             self._session_info[0],
             self._session_info[1],
             channel_plan_id,
@@ -455,7 +454,7 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def get_pricing_plans(self):
-        rcode, results = self.SERVER.get_pricing_plans(
+        rcode, results = self._server.get_pricing_plans(
             self._session_info[0],
             self._session_info[1])
         if rcode != 0:
@@ -469,8 +468,8 @@ class WuBookAdapter(AbstractComponent):
             self._session_info[0],
             self._session_info[1],
             channel_plan_id,
-            date_utils(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            date_utils(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             rooms or [])
         if rcode != 0:
             raise ChannelConnectorError("Can't get pricing plans from wubook", {
@@ -496,8 +495,8 @@ class WuBookAdapter(AbstractComponent):
         rcode, results = self._server.wired_rplan_get_rplan_values(
             self._session_info[0],
             self._session_info[1],
-            date_utils(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            date_utils(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             channel_restriction_plan_id)
         if rcode != 0:
             raise ChannelConnectorError("Can't fetch restriction plans from wubook", {
@@ -513,7 +512,7 @@ class WuBookAdapter(AbstractComponent):
             self._session_info[0],
             self._session_info[1],
             channel_restriction_plan_id,
-            date_utils(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             values)
         if rcode != 0:
             raise ChannelConnectorError("Can't update plan restrictions on wubook", {

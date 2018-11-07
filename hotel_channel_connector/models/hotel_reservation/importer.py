@@ -26,9 +26,9 @@ class HotelReservationImporter(Component):
                 rcodeb, resultsb = self.backend_adapter.mark_bookings(uniq_rids)
                 if rcodeb != 0:
                     self.create_issue(
-                        'wubook',
-                        _("Problem trying mark bookings (%s)") % str(processed_rids),
-                        '')
+                        backend=self.backend_adapter.id,
+                        section='wubook',
+                        internal_message=_("Problem trying mark bookings (%s)") % str(processed_rids))
             # Update Odoo availability (don't wait for wubook)
             # This cause abuse service in first import!!
             if checkin_utc_dt and checkout_utc_dt:
@@ -37,8 +37,9 @@ class HotelReservationImporter(Component):
                     checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         except ChannelConnectorError as err:
             self.create_issue(
-                'reservation',
-                _("Can't process reservations from wubook"),
-                err.data['message'])
+                backend=self.backend_adapter.id,
+                section='reservation',
+                internal_message=_("Can't process reservations from wubook"),
+                channel_message=err.data['message'])
             return False
         return True

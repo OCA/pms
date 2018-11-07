@@ -5,12 +5,19 @@
         <field name="model">product.pricelist.item</field>
         <field name="inherit_id" ref="product.product_pricelist_item_form_view" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="after">
-                <!--field name="channel_pushed" readonly="True" /-->
-                <field name="is_daily_plan" invisible="1" />
-            </xpath>
-            <xpath expr="//field[@name='date_end']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_daily_plan', '=', True)]}</attribute>
+            <xpath expr="//form" position="inside">
+                <notebook>
+                    <page name="connector" string="Channel Connector">
+                        <group string="Hotel Channel Bindings">
+                            <field name="channel_bind_ids" nolabel="1">
+                                <tree>
+                                    <field name="backend_id"/>
+                                    <field name="channel_pushed"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </notebook>
             </xpath>
         </field>
     </record>

@@ -3,7 +3,6 @@
 
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.connector.components.mapper import mapping
 from odoo import fields, api, _
 from odoo.tools import (
@@ -19,30 +18,26 @@ class ChannelOtaInfoImporter(Component):
 
     @api.model
     def import_otas_info(self):
-        count = 0
-        try:
-            results = self.backend_adapter.get_channels_info()
+        results = self.backend_adapter.get_channels_info()
 
-            channel_ota_info_obj = self.env['channel.ota.info']
-            ota_info_mapper = self.component(usage='import.mapper',
-                                             model_name='channel.ota.info')
-            for ota_id in results.keys():
-                vals = {
-                    'id': ota_id,
-                    'name': results[ota_id]['name'],
-                    'ical': results[ota_id]['ical'] == 1,
-                }
-                map_record = ota_info_mapper.map_record(vals)
-                ota_info_bind = channel_ota_info_obj.search([
-                    ('ota_id', '=', ota_id)
-                ], limit=1)
-                if ota_info_bind:
-                    ota_info_bind.write(map_record.values())
-                else:
-                    ota_info_bind.create(map_record.values(for_create=True))
-                count = count + 1
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't import rooms from WuBook"), err.data['message'])
+        channel_ota_info_obj = self.env['channel.ota.info']
+        ota_info_mapper = self.component(usage='import.mapper',
+                                         model_name='channel.ota.info')
+        for ota_id in results.keys():
+            vals = {
+                'id': ota_id,
+                'name': results[ota_id]['name'],
+                'ical': results[ota_id]['ical'] == 1,
+            }
+            map_record = ota_info_mapper.map_record(vals)
+            ota_info_bind = channel_ota_info_obj.search([
+                ('ota_id', '=', ota_id)
+            ], limit=1)
+            if ota_info_bind:
+                ota_info_bind.write(map_record.values())
+            else:
+                ota_info_bind.create(map_record.values(for_create=True))
+            count = count + 1
         return count
 
 

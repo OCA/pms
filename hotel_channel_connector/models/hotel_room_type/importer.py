@@ -5,7 +5,6 @@ import logging
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.connector.components.mapper import mapping
 from odoo.addons.hotel import date_utils
 from odoo import fields, api, _
@@ -24,27 +23,22 @@ class HotelRoomTypeImporter(Component):
 
     @api.model
     def get_rooms(self):
-        count = 0
-        try:
-            results = self.backend_adapter.fetch_rooms()
+        results = self.backend_adapter.fetch_rooms()
 
-            channel_room_type_obj = self.env['channel.hotel.room.type']
-            room_mapper = self.component(usage='import.mapper',
-                                         model_name='channel.hotel.room.type')
-            count = len(results)
-            for room in results:
-                map_record = room_mapper.map_record(room)
-                room_bind = channel_room_type_obj.search([
-                    ('channel_room_id', '=', room['id'])
-                ], limit=1)
-                if room_bind:
-                    room_bind.with_context({'wubook_action': False}).write(map_record.values())
-                else:
-                    room_bind = channel_room_type_obj.with_context({'wubook_action': False}).create(
-                        map_record.values(for_create=True))
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't import rooms from WuBook"), err.data['message'])
-
+        channel_room_type_obj = self.env['channel.hotel.room.type']
+        room_mapper = self.component(usage='import.mapper',
+                                     model_name='channel.hotel.room.type')
+        count = len(results)
+        for room in results:
+            map_record = room_mapper.map_record(room)
+            room_bind = channel_room_type_obj.search([
+                ('external_id', '=', room['id'])
+            ], limit=1)
+            if room_bind:
+                room_bind.with_context({'wubook_action': False}).write(map_record.values())
+            else:
+                room_bind = channel_room_type_obj.with_context({'wubook_action': False}).create(
+                    map_record.values(for_create=True))
         return count
 
     @api.model
@@ -61,18 +55,12 @@ class HotelRoomTypeImporter(Component):
         if dfrom_dt > dto_dt:
             dfrom_dt, dto_dt = dto_dt, dfrom_dt
 
-        try:
-            results = self.backend_adapter.fetch_rooms_values(
-                dfrom_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                dto_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                rooms)
-            self._generate_room_values(dfrom, dto, results,
-                                       set_max_avail=set_max_avail)
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't fetch rooms values from WuBook"),
-                              err.data['message'], dfrom=dfrom, dto=dto)
-            return False
-        return True
+        results = self.backend_adapter.fetch_rooms_values(
+            dfrom_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            dto_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+            rooms)
+        self._generate_room_values(dfrom, dto, results,
+                                   set_max_avail=set_max_avail)
 
     @api.model
     def _map_room_values_availability(self, day_vals, set_max_avail):
@@ -158,7 +146,7 @@ class HotelRoomTypeImportMapper(Component):
     _apply_on = 'channel.hotel.room.type'
 
     direct = [
-        ('id', 'channel_room_id'),
+        ('id', 'external_id'),
         ('shortname', 'channel_short_code'),
         ('occupancy', 'ota_capacity'),
         ('price', 'list_price'),

@@ -7,6 +7,10 @@
         <field name="arch" type="xml">
             <form string="Hotel Channel Room Availability">
                 <group>
+                    <field name="id" invisible="1" />
+                    <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                </group>
+                <group>
                     <field name="channel_max_avail" />
                     <field name="channel_pushed" />
                 </group>

@@ -8,24 +8,22 @@
         <field name="priority" eval="80"/>
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div class="app_settings_block o_not_app" data-string="Hotel" string="Hotel" data-key="hotel" groups="hotel.group_hotel_manager">
-                    <h2>Calendar colors</h2>
-                    <div class="row mt16 o_settings_container">
-                        <div class="col-xs-12 col-md-6 o_setting_box">
-                            <field name="color_pre_reservation" required="True"  widget="color"/><field name="color_letter_pre_reservation" required="True"  widget="color" />
-                            <field name="color_reservation" required="True"  widget="color"/><field name="color_letter_reservation" required="True"  widget="color" />
-                            <field name="color_reservation_pay" required="True"  widget="color"/><field name="color_letter_reservation_pay" required="True"  widget="color" />
-                            <field name="color_stay" required="True"  widget="color"/><field name="color_letter_stay" required="True"  widget="color" />
-                            <field name="color_stay_pay" required="True"  widget="color"/><field name="color_letter_stay_pay" required="True"  widget="color" />
-                        </div>
-                        <div class="col-xs-12 col-md-6 o_setting_box">
-                            <field name="color_checkout" required="True"  widget="color"/><field name="color_letter_checkout" required="True"  widget="color" />
-                            <field name="color_dontsell" required="True"  widget="color"/><field name="color_letter_dontsell" required="True"  widget="color" />
-                            <field name="color_staff" required="True"  widget="color"/><field name="color_letter_staff" required="True"  widget="color" />
-                            <field name="color_to_assign" required="True"  widget="color"/><field name="color_letter_to_assign" required="True"  widget="color" />
-                            <field name="color_payment_pending" required="True"  widget="color"/><field name="color_letter_payment_pending" required="True"  widget="color" />
-                        </div>
+            <xpath expr="//div[@data-key='hotel']" position="inside">
+                <h2>Calendar colors</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <field name="color_pre_reservation" required="True"  widget="color"/><field name="color_letter_pre_reservation" required="True"  widget="color" />
+                        <field name="color_reservation" required="True"  widget="color"/><field name="color_letter_reservation" required="True"  widget="color" />
+                        <field name="color_reservation_pay" required="True"  widget="color"/><field name="color_letter_reservation_pay" required="True"  widget="color" />
+                        <field name="color_stay" required="True"  widget="color"/><field name="color_letter_stay" required="True"  widget="color" />
+                        <field name="color_stay_pay" required="True"  widget="color"/><field name="color_letter_stay_pay" required="True"  widget="color" />
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <field name="color_checkout" required="True"  widget="color"/><field name="color_letter_checkout" required="True"  widget="color" />
+                        <field name="color_dontsell" required="True"  widget="color"/><field name="color_letter_dontsell" required="True"  widget="color" />
+                        <field name="color_staff" required="True"  widget="color"/><field name="color_letter_staff" required="True"  widget="color" />
+                        <field name="color_to_assign" required="True"  widget="color"/><field name="color_letter_to_assign" required="True"  widget="color" />
+                        <field name="color_payment_pending" required="True"  widget="color"/><field name="color_letter_payment_pending" required="True"  widget="color" />
                     </div>
                 </div>
           	</xpath>

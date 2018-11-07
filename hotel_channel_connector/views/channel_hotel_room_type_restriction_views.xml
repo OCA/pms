@@ -7,8 +7,11 @@
         <field name="arch" type="xml">
             <form string="Hotel Channel Room Restriction">
                 <group>
-                    <field name="channel_plan_id" />
-                    <field name="is_daily_plan" />
+                    <field name="id" invisible="1" />
+                    <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                </group>
+                <group>
+                    <field name="external_id" />
                 </group>
             </form>
         </field>

@@ -2,12 +2,13 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from datetime import timedelta
-from odoo import api, models, fields
+from odoo import api, models, fields, _
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.hotel_channel_connector.components.backend_adapter import (
     DEFAULT_WUBOOK_DATE_FORMAT)
 
@@ -15,7 +16,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     _name = 'channel.hotel.room.type.availability'
     _inherit = 'channel.binding'
     _inherits = {'hotel.room.type.availability': 'odoo_id'}
-    _description = 'Channel Product Pricelist'
+    _description = 'Channel Availability'
 
     @api.model
     def _default_channel_max_avail(self):
@@ -27,6 +28,8 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                               string='Pricelist',
                               required=True,
                               ondelete='cascade')
+    no_ota = fields.Boolean('No OTA', default=False)
+    booked = fields.Boolean('Booked', default=False, readonly=True)
     channel_max_avail = fields.Integer("Max. Channel Avail",
                                        default=_default_channel_max_avail,
                                        old_name='wmax_avail')
@@ -44,19 +47,45 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
-    def update_availability(self):
-        self.ensure_one()
-        if self._context.get('channel_action', True):
-            with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                date_dt = fields.Date.from_string(self.date)
-                adapter.update_availability([{
-                    'id': self.odoo_id.room_type_id.channel_room_id,
-                    'days': [{
-                        'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                        'avail': self.odoo_id.avail,
-                    }],
-                }])
+    def update_availability(self, backend):
+        with backend.work_on(self._name) as work:
+            exporter = work.component(usage='hotel.room.type.availability.exporter')
+            try:
+                return exporter.update_availability(self)
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='avail',
+                    internal_message=_("Can't update availability in WuBook"),
+                    channel_message=err.data['message'])
+
+    @job(default_channel='root.channel')
+    @api.model
+    def import_availability(self, backend):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='hotel.room.type.availability.importer')
+            try:
+                return importer.get_availability(backend.avail_from, backend.avail_to)
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='avail',
+                    internal_message=_("Can't import availability from WuBook"),
+                    channel_message=err.data['message'])
+
+    @job(default_channel='root.channel')
+    @api.model
+    def push_availability(self, backend):
+        with backend.work_on(self._name) as work:
+            exporter = work.component(usage='hotel.room.type.availability.exporter')
+            try:
+                return exporter.push_availability()
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='avail',
+                    internal_message=_("Can't update availability in WuBook"),
+                    channel_message=err.data['message'])
 
 class HotelRoomTypeAvailability(models.Model):
     _inherit = 'hotel.room.type.availability'
@@ -79,16 +108,15 @@ class HotelRoomTypeAvailability(models.Model):
             if record.avail > max_avail:
                 issue_obj.sudo().create({
                     'section': 'avail',
-                    'message': _(r"The new availability can't be greater than \
-                        the actual availability \
-                        \n[%s]\nInput: %d\Limit: %d") % (record.room_type_id.name,
-                                                         record.avail,
-                                                         record),
-                    'channel_id': record.room_type_id.channel_bind_ids[0].channel_plan_id,
+                    'internal_message': _(r"The new availability can't be greater than \
+                        the max. availability \
+                        (%s) [Input: %d\Max: %d]") % (record.room_type_id.name,
+                                                      record.avail,
+                                                      max_avail),
                     'date_start': record.date,
                     'date_end': record.date,
                 })
-                # Auto-Fix wubook availability
+                # Auto-Fix channel availability
                 self._event('on_fix_channel_availability').notify(record)
         return super(HotelRoomTypeAvailability, self)._check_avail()
 
@@ -96,12 +124,6 @@ class HotelRoomTypeAvailability(models.Model):
     def onchange_room_type_id(self):
         if self.room_type_id:
             self.channel_max_avail = self.room_type_id.total_rooms_count
-
-    @api.multi
-    def write(self, vals):
-        if self._context.get('channel_action', True):
-            vals.update({'channel_pushed': False})
-        return super(HotelRoomTypeAvailability, self).write(vals)
 
     @api.model
     def refresh_availability(self, checkin, checkout, product_id):
@@ -143,11 +165,41 @@ class HotelRoomTypeAvailability(models.Model):
                             'avail': avail,
                         })
 
+class HotelRoomTypeAvailabilityAdapter(Component):
+    _name = 'channel.hotel.room.type.availability.adapter'
+    _inherit = 'wubook.adapter'
+    _apply_on = 'channel.hotel.room.type.availability'
+
+    def fetch_rooms_values(self, date_from, date_to, rooms=False):
+        return super(HotelRoomTypeAvailabilityAdapter, self).fetch_rooms_values(
+            date_from,
+            date_to,
+            rooms)
+
+    def update_availability(self, rooms_avail):
+        return super(HotelRoomTypeAvailabilityAdapter, self).update_availability(
+            rooms_avail)
+
+class BindingHotelRoomTypeAvailabilityListener(Component):
+    _name = 'binding.hotel.room.type.listener'
+    _inherit = 'base.connector.listener'
+    _apply_on = ['hotel.room.type.availability']
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+        if 'avail' in fields:
+            record.channel_bind_ids.write({'channel_pushed': False})
+
 class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
     _name = 'channel.binding.hotel.room.type.availability.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['channel.hotel.room.type.availability']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+        if 'avail' in fields:
+            record.channel_pushed = False
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_fix_channel_availability(self, record, fields=None):
-        record.with_delay(priority=20).update_availability()
+        record.update_availability()
