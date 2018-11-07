@@ -96,16 +96,16 @@ class TestHotel(TestMail):
 
         # Minimal Hotel Configuration
         cls.tz_hotel = 'Europe/Madrid'
-        cls.parity_pricelist_id = cls.pricelist_1.id
-        cls.parity_restrictions_id = cls.restriction_1.id
+        cls.default_pricelist_id = cls.pricelist_1.id
+        cls.default_restriction_id = cls.restriction_1.id
         cls.env['ir.values'].sudo().set_default('res.config.settings',
                                                 'tz_hotel', cls.tz_hotel)
         cls.env['ir.values'].sudo().set_default('res.config.settings',
-                                                'parity_pricelist_id',
-                                                cls.parity_pricelist_id)
+                                                'default_pricelist_id',
+                                                cls.default_pricelist_id)
         cls.env['ir.values'].sudo().set_default('res.config.settings',
-                                                'parity_restrictions_id',
-                                                cls.parity_restrictions_id)
+                                                'default_restriction_id',
+                                                cls.default_restriction_id)
 
         # User Groups
         user_group_hotel_manager = cls.env.ref('hotel.group_hotel_manager')
@@ -234,14 +234,14 @@ class TestHotel(TestMail):
                 })
                 room_type_rest_item_obj.create({
                     'room_type_id': k_vr,
-                    'restriction_id': cls.parity_restrictions_id,
+                    'restriction_id': cls.default_restriction_id,
                     'date_start': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'date_end': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'applied_on': '0_room_type',
                     'min_stay': cls.restrictions_min_stay_tmp[k_vr][i],
                 })
                 pricelist_item_obj.create({
-                    'pricelist_id': cls.parity_pricelist_id,
+                    'pricelist_id': cls.default_pricelist_id,
                     'date_start': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'date_end': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'compute_price': 'fixed',

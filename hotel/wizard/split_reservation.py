@@ -1,14 +1,11 @@
 # Copyright 2017  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import logging
 from datetime import timedelta
 from openerp.exceptions import ValidationError
 from openerp import models, fields, api, _
 from openerp.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT,
     DEFAULT_SERVER_DATE_FORMAT)
-from odoo.addons.hotel import date_utils
-_logger = logging.getLogger(__name__)
 
 
 class SplitReservationWizard(models.TransientModel):
@@ -38,10 +35,9 @@ class SplitReservationWizard(models.TransientModel):
                 # Days Price
                 reservation_lines = [[], []]
                 tprice = [0.0, 0.0]
-                div_dt = date_utils.dt_no_hours(new_start_date_dt)
                 for rline in reservation_id.reservation_lines:
                     rline_dt = fields.Date.from_string(rline.date)
-                    if rline_dt >= div_dt:
+                    if rline_dt >= new_start_date_dt:
                         reservation_lines[1].append((0, False, {
                             'date': rline.date,
                             'price': rline.price

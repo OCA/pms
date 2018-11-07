@@ -36,11 +36,11 @@ class TestProductPricelistItem(TestHotelWubook):
         budget_product_id = self.hotel_room_type_budget.product_id
         pr_item_obj = self.env['product.pricelist.item']
 
-        parity_pricelist = self.env['product.pricelist'].browse([
-                                                    self.parity_pricelist_id])
-        parity_pricelist.write({'wpid': 1234})
+        default_pricelist = self.env['product.pricelist'].browse([
+                                                    self.default_pricelist_id])
+        default_pricelist.write({'wpid': 1234})
         pricelist_item = pr_item_obj.sudo(self.user_hotel_manager).create({
-            'pricelist_id': self.parity_pricelist_id,
+            'pricelist_id': self.default_pricelist_id,
             'date_start': day_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             'date_end': day_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             'compute_price': 'fixed',
@@ -57,11 +57,11 @@ class TestProductPricelistItem(TestHotelWubook):
         budget_product_id = self.hotel_room_type_budget.product_id
         pr_item_obj = self.env['product.pricelist.item']
 
-        parity_pricelist = self.env['product.pricelist'].browse([
-                                                    self.parity_pricelist_id])
-        parity_pricelist.write({'wpid': 1234})
+        default_pricelist = self.env['product.pricelist'].browse([
+                                                    self.default_pricelist_id])
+        default_pricelist.write({'wpid': 1234})
         pricelist_item = pr_item_obj.sudo(self.user_hotel_manager).create({
-            'pricelist_id': self.parity_pricelist_id,
+            'pricelist_id': self.default_pricelist_id,
             'date_start': day_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             'date_end': day_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             'compute_price': 'fixed',

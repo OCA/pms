@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_channel_product_pricelist_item_form" model="ir.ui.view">
+        <field name="name">channel.product.pricelist.item.form</field>
+        <field name="model">channel.product.pricelist.item</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Channel Product Pricelist Item">
+                <group>
+                    <field name="id" invisible="1" />
+                    <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_channel_hotel_product_pricelist_item_tree" model="ir.ui.view">
+        <field name="name">channel.hotel.product.pricelist.item.tree</field>
+        <field name="model">channel.product.pricelist.item</field>
+        <field name="arch" type="xml">
+            <tree string="Hotel Channel Product Pricelist Item">
+                <field name="backend_id"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

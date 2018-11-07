@@ -1,5 +1,6 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
+# Copyright 2018  Pablo Quesada
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
@@ -18,11 +19,6 @@ class HotelRoom(models.Model):
     room_type_id = fields.Many2one('hotel.room.type', 'Hotel Room Type')
     floor_id = fields.Many2one('hotel.floor', 'Ubication',
                                help='At which floor the room is located.')
-    # TODO Q. Should the amenities be on the Room Type ? -
-    room_amenities = fields.Many2many('hotel.room.amenities', 'temp_tab',
-                                      'room_amenities', 'rcateg_id',
-                                      string='Room Amenities',
-                                      help='List of room amenities.')
     max_adult = fields.Integer('Max Adult')
     max_child = fields.Integer('Max Child')
     capacity = fields.Integer('Capacity')

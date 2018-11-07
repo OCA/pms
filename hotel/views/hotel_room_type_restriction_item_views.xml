@@ -8,9 +8,7 @@
     <field name="arch" type="xml">
       <form string="Restrictions">
         <group>
-          <field name="applied_on" widget="radio"/>
-          <!-- <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '1_global']]}" required="True"/> -->
-          <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '1_global']]}" required="True"/>
+          <field name="room_type_id" required="True"/>
         </group>
         <group>
           <field name="date"/>
@@ -37,9 +35,7 @@
     <field name="model">hotel.room.type.restriction.item</field>
     <field name="arch" type="xml">
       <tree string="Restrictions">
-        <field name="applied_on"/>
-        <!-- <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '1_room_type']]}"/> -->
-        <field name="room_type_id" attrs="{'invisible':[['applied_on', '=', '0_room_type']]}"/>
+        <field name="room_type_id"/>
         <field name="date"/>
         <field name="min_stay"/>
         <field name="closed"/>

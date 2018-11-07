@@ -10,7 +10,7 @@ class IrDefault(models.Model):
     @api.model
     def set(self, model_name, field_name, value, user_id=False, company_id=False, condition=False):
         super(IrDefault, self).set(model_name, field_name, value, user_id, company_id, condition)
-        if model_name == 'res.config.settings' and field_name == 'parity_pricelist_id':
+        if model_name == 'res.config.settings' and field_name == 'default_pricelist_id':
             pricelist_id = int(value)
             self.env['room.pricelist.cached'].search([]).unlink()
 
@@ -25,10 +25,10 @@ class IrDefault(models.Model):
                 fixed_price = pitem.fixed_price
                 room_type = room_type_obj.search([
                     ('product_id.product_tmpl_id', '=', product_tmpl_id),
-                    ('date_start', '>=', fields.Date.today())
                 ], limit=1)
-                room_pr_cached_obj.create({
-                    'room_type_id': room_type.id,
-                    'date': date_start,
-                    'price': fixed_price,
-                })
+                if room_type:
+                    room_pr_cached_obj.create({
+                        'room_id': room_type.id,
+                        'date': date_start,
+                        'price': fixed_price,
+                    })

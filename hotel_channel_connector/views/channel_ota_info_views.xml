@@ -9,6 +9,10 @@
             <form string="Channel OTA's Info" >
                 <sheet>
                     <group>
+                        <field name="id" invisible="1" />
+                        <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                    </group>
+                    <group>
                         <field name="ota_id" />
                         <field name="name" />
                         <field name="ical" readonly="True" widget="checkbox" />
@@ -28,13 +32,6 @@
                 <field name="name" />
             </tree>
         </field>
-    </record>
-
-    <record model="ir.actions.act_window" id="open_channel_ota_info_tree_all">
-    	<field name="name">Hotel Channel Connector OTA's Info</field>
-    	<field name="res_model">channel.ota.info</field>
-    	<field name="view_type">form</field>
-    	<field name="view_mode">tree,form</field>
     </record>
 
 </odoo>

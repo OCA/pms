@@ -34,7 +34,7 @@ class TestProductPricelist(TestHotelCalendar):
 
         pritem_obj = self.env['product.pricelist.item']
         plitem = pritem_obj.search([
-            ('pricelist_id', '=', self.parity_pricelist_id),
+            ('pricelist_id', '=', self.default_pricelist_id),
             ('product_tmpl_id', '=', room_type_tmpl_id.id),
             ('date_start', '=', now_utc_str),
             ('date_end', '=', now_utc_str),
@@ -49,7 +49,7 @@ class TestProductPricelist(TestHotelCalendar):
             999.9)
 
         plitem = pritem_obj.search([
-            ('pricelist_id', '=', self.parity_pricelist_id),
+            ('pricelist_id', '=', self.default_pricelist_id),
             ('product_tmpl_id', '=', room_type_tmpl_id.id),
             ('date_start', '=', now_utc_str),
             ('date_end', '=', now_utc_str),

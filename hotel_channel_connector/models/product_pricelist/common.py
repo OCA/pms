@@ -6,6 +6,7 @@ from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 
 class ChannelProductPricelist(models.Model):
     _name = 'channel.product.pricelist'
@@ -17,7 +18,6 @@ class ChannelProductPricelist(models.Model):
                               string='Pricelist',
                               required=True,
                               ondelete='cascade')
-    channel_plan_id = fields.Char("Channel Plan ID", readonly=True, old_name='wpid')
     is_daily_plan = fields.Boolean("Channel Daily Plan", default=True, old_name='wdaily_plan')
 
     @job(default_channel='root.channel')
@@ -25,52 +25,65 @@ class ChannelProductPricelist(models.Model):
     @api.multi
     def create_plan(self):
         self.ensure_one()
-        if self._context.get('channel_action', True):
+        if not self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
+                exporter = work.component(usage='product.pricelist.exporter')
                 try:
-                    channel_plan_id = adapter.create_plan(self.name,
-                                                          self.is_daily_plan and 1 or 0)
-                    if channel_plan_id:
-                        self.channel_plan_id = channel_plan_id
-                except ValidationError as e:
-                    self.create_issue('room', "Can't create plan on channel", "sss")
+                    exporter.create_plan(self)
+                except ChannelConnectorError as err:
+                    self.create_issue(
+                        backend=self.backend_id.id,
+                        section='restriction',
+                        internal_message=_("Can't create pricelist plan in WuBook"),
+                        channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def update_plan_name(self):
         self.ensure_one()
-        if self._context.get('channel_action', True):
+        if self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
+                exporter = work.component(usage='product.pricelist.exporter')
                 try:
-                    adapter.update_plan_name(
-                        self.channel_plan_id,
-                        self.name)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't update plan name on channel", "sss")
+                    exporter.rename_plan(self)
+                except ChannelConnectorError as err:
+                    self.create_issue(
+                        backend=self.backend_id.id,
+                        section='restriction',
+                        internal_message=_("Can't modify pricelist plan in WuBook"),
+                        channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
     @related_action(action='related_action_unwrap_binding')
     @api.multi
     def delete_plan(self):
         self.ensure_one()
-        if self._context.get('channel_action', True) and self.channel_room_id:
+        if self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
+                exporter = work.component(usage='product.pricelist.exporter')
                 try:
-                    adapter.delete_plan(self.channel_plan_id)
-                except ValidationError as e:
-                    self.create_issue('room', "Can't delete plan on channel", "sss")
+                    exporter.delete_plan(self)
+                except ChannelConnectorError as err:
+                    self.create_issue(
+                        backend=self.backend_id.id,
+                        section='restriction',
+                        internal_message=_("Can't delete pricelist plan in WuBook"),
+                        channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
-    @api.multi
-    def import_price_plans(self):
-        if self._context.get('channel_action', True):
-            with self.backend_id.work_on(self._name) as work:
-                importer = work.component(usage='channel.importer')
+    @api.model
+    def import_price_plans(self, backend):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='product.pricelist.importer')
+            try:
                 return importer.import_pricing_plans()
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='pricelist',
+                    internal_message=_("Can't get pricing plans from wubook"),
+                    channel_message=err.data['message'])
 
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
@@ -83,18 +96,46 @@ class ProductPricelist(models.Model):
     @api.multi
     @api.depends('name')
     def name_get(self):
-        self.ensure_one()
         pricelist_obj = self.env['product.pricelist']
         org_names = super(ProductPricelist, self).name_get()
         names = []
         for name in org_names:
             priclist_id = pricelist_obj.browse(name[0])
             if any(priclist_id.channel_bind_ids) and \
-                    priclist_id.channel_bind_ids[0].channel_plan_id:
-                names.append((name[0], '%s (Channel)' % name[1]))
+                    priclist_id.channel_bind_ids[0].external_id:
+                names.append((name[0], '%s (%s Backend)' % (
+                    name[1],
+                    priclist_id.channel_bind_ids[0].backend_id.name)))
             else:
                 names.append((name[0], name[1]))
         return names
+
+class ProductPricelistAdapter(Component):
+    _name = 'channel.product.pricelist.adapter'
+    _inherit = 'wubook.adapter'
+    _apply_on = 'channel.product.pricelist'
+
+    def get_pricing_plans(self):
+        return super(ProductPricelistAdapter, self).get_pricing_plans()
+
+    def create_plan(self, name):
+        return super(ProductPricelistAdapter, self).create_plan(name)
+
+    def delete_plan(self, external_id):
+        return super(ProductPricelistAdapter, self).delete_plan(external_id)
+
+    def rename_plan(self, external_id, new_name):
+        return super(ProductPricelistAdapter, self).rename_plan(external_id, new_name)
+
+class BindingProductPricelistListener(Component):
+    _name = 'binding.product.pricelist.listener'
+    _inherit = 'base.connector.listener'
+    _apply_on = ['product.pricelist']
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+        if any(record.channel_bind_ids) and 'name' in fields:
+            record.channel_bind_ids[0].update_plan_name()
 
 class ChannelBindingProductPricelistListener(Component):
     _name = 'channel.binding.product.pricelist.listener'
@@ -103,13 +144,13 @@ class ChannelBindingProductPricelistListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
-        record.with_delay(priority=20).create_plan()
+        record.create_plan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):
-        record.with_delay(priority=20).delete_plan()
+        record.delete_plan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
         if 'name' in fields:
-            record.with_delay(priority=20).update_plan_name()
+            record.update_plan_name()

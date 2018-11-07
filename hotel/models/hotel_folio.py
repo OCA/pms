@@ -48,6 +48,7 @@ class HotelFolio(models.Model):
                        default=lambda self: _('New'))
     partner_id = fields.Many2one('res.partner',
                                  track_visibility='onchange')
+    closure_reason_id = fields.Many2one('room.closure.reason')
     # partner_invoice_id = fields.Many2one('res.partner',
     #                                      string='Invoice Address',
     #                                      readonly=True, required=True,
@@ -104,13 +105,11 @@ class HotelFolio(models.Model):
                                     string="Payments")
 
     booking_pending = fields.Integer('Booking pending',
-                                     compute='_compute_cardex_count')
-    cardex_count = fields.Integer('Cardex counter',
-                                  compute='_compute_cardex_count')
-    cardex_pending_count = fields.Integer('Cardex Pending',
-                                          compute='_compute_cardex_count')
-    checkins_reservations = fields.Integer('checkins reservations')
-    checkouts_reservations = fields.Integer('checkouts reservations')
+                                     compute='_compute_checkin_partner_count')
+    checkin_partner_count = fields.Integer('Checkin counter',
+                                  compute='_compute_checkin_partner_count')
+    checkin_partner_pending_count = fields.Integer('Checkin Pending',
+                                          compute='_compute_checkin_partner_count')
     partner_internal_comment = fields.Text(string='Internal Partner Notes',
                                            related='partner_id.comment')
     internal_comment = fields.Text(string='Internal Folio Notes')
@@ -189,7 +188,7 @@ class HotelFolio(models.Model):
         self.ensure_one()
         partner = self.partner_id.id
         amount = self.pending_amount
-        view_id = self.env.ref('hotel.view_account_payment_folio_form').id
+        view_id = self.env.ref('hotel.account_payment_view_form_folio').id
         return{
             'name': _('Register Payment'),
             'view_type': 'form',
@@ -351,19 +350,13 @@ class HotelFolio(models.Model):
                 #~ 'fiscal_position_id': False,
             #~ })
             return
-
         addr = self.partner_id.address_get(['invoice'])
-        #TEMP:
-        values = { 'user_id': self.partner_id.user_id.id or self.env.uid,
-                   'pricelist_id':self.partner_id.property_product_pricelist and \
-                self.partner_id.property_product_pricelist.id or \
-                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')}
-        #~ values = {
-            #~ 'pricelist_id': self.partner_id.property_product_pricelist and \
-                #~ self.partner_id.property_product_pricelist.id or False,
-            #~ 'partner_invoice_id': addr['invoice'],
-            #~ 'user_id': self.partner_id.user_id.id or self.env.uid
-        #~ }
+        pricelist = self.partner_id.property_product_pricelist and \
+                                 self.partner_id.property_product_pricelist.id or \
+                                 self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
+        values = {'user_id': self.partner_id.user_id.id or self.env.uid,
+                  'pricelist_id': pricelist
+                  }
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
             self.env.user.company_id.sale_note:
             values['note'] = self.with_context(
@@ -372,6 +365,24 @@ class HotelFolio(models.Model):
         if self.partner_id.team_id:
             values['team_id'] = self.partner_id.team_id.id
         self.update(values)
+
+    @api.multi
+    @api.onchange('pricelist_id')
+    def onchange_pricelist_id(self):
+        values = {'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
+                                       self.pricelist_id.is_staff,
+                                       self.reservation_type)}
+        self.update(values)
+    
+
+    @api.model
+    def calcule_reservation_type(self, is_staff, current_type):
+        if current_type == 'out':
+            return 'out'
+        elif is_staff:
+            return 'staff'
+        else:
+            return 'normal'
 
     @api.multi
     def action_invoice_create(self, grouped=False, states=None):
@@ -454,54 +465,29 @@ class HotelFolio(models.Model):
         self.ensure_one()
         rooms = self.mapped('room_lines.id')
         return {
-            'name': _('Cardexs'),
+            'name': _('Checkins'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'cardex',
+            'res_model': 'hotel.checkin.partner',
             'type': 'ir.actions.act_window',
             'domain': [('reservation_id', 'in', rooms)],
             'target': 'new',
         }
 
-    @api.model
-    def daily_plan(self):
-        _logger.info('daily_plan')
-        self._cr.execute("update hotel_folio set checkins_reservations = 0, \
-            checkouts_reservations = 0 where checkins_reservations > 0  \
-            or checkouts_reservations > 0")
-        folios_in = self.env['hotel.folio'].search([
-            ('room_lines.is_checkin', '=', True)
-        ])
-        folios_out = self.env['hotel.folio'].search([
-            ('room_lines.is_checkout', '=', True)
-        ])
-        for fol in folios_in:
-            count_checkin = fol.room_lines.search_count([
-                ('is_checkin', '=', True), ('folio_id.id', '=', fol.id)
-            ])
-            fol.write({'checkins_reservations': count_checkin})
-        for fol in folios_out:
-            count_checkout = fol.room_lines.search_count([
-                ('is_checkout', '=', True),
-                ('folio_id.id', '=', fol.id)
-            ])
-            fol.write({'checkouts_reservations': count_checkout})
-        return True
-
     @api.multi
-    def _compute_cardex_count(self):
-        _logger.info('_compute_cardex_amount')
+    def _compute_checkin_partner_count(self):
+        _logger.info('_compute_checkin_partner_amount')
         for record in self:
             if record.reservation_type == 'normal' and record.room_lines:
                 write_vals = {}
                 filtered_reservs = record.room_lines.filtered(
                     lambda x: x.state != 'cancelled' and \
                         not x.parent_reservation)
-                mapped_cardex = filtered_reservs.mapped('cardex_ids.id')
-                record.cardex_count = len(mapped_cardex)
-                mapped_cardex_count = filtered_reservs.mapped(
-                    lambda x: (x.adults + x.children) - len(x.cardex_ids))
-                record.cardex_pending_count = sum(mapped_cardex_count)
+                mapped_checkin_partner = filtered_reservs.mapped('checkin_partner_ids.id')
+                record.checkin_partner_count = len(mapped_checkin_partner)
+                mapped_checkin_partner_count = filtered_reservs.mapped(
+                    lambda x: (x.adults + x.children) - len(x.checkin_partner_ids))
+                record.checkin_partner_pending_count = sum(mapped_checkin_partner_count)
 
     """
     MAILING PROCESS

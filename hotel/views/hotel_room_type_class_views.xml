@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form view of hotel room type class-->
+    <record model="ir.ui.view" id="hotel_room_type_class_view_form">
+        <field name="name">hotel.room.type.class.form</field>
+        <field name="model">hotel.room.type.class</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Room Type">
+                <sheet>
+                  <div class="oe_button_box" name="button_box">
+                      <button name="toggle_active" type="object"
+                              class="oe_stat_button" icon="fa-archive">
+                          <field name="active" widget="boolean_button"
+                              options='{"terminology": "archive"}'/>
+                      </button>
+                  </div>
+                    <group colspan="4">
+                      <group>
+                        <field name="name" />
+                        <field name="code_class" />
+                      </group>
+                    </group>
+                    <group colspan="2">
+                        <group>
+                            <field name="room_type_ids" widget="many2many"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view of hotel room type class -->
+    <record model="ir.ui.view" id="hotel_room_type_class_view_tree">
+        <field name="name">hotel.room.type.class.tree</field>
+        <field name="model">hotel.room.type.class</field>
+        <field name="arch" type="xml">
+            <tree string=" Hotel Room Type Class">
+                <field name="sequence" widget="handle"/>
+                <field name="name" />
+                <field name="code_class"/>
+                <field name="room_type_ids"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for hotel room type class -->
+    <record model="ir.actions.act_window" id="open_hotel_room_type_class_form_tree">
+        <field name="name">Room Type Class</field>
+        <field name="res_model">hotel.room.type.class</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem name="Type Class" id="menu_open_hotel_room_type_class_form_tree"
+        action="open_hotel_room_type_class_form_tree" sequence="15"
+        parent="hotel.menu_hotel_room" />
+
+</odoo>

@@ -11,7 +11,6 @@ from odoo.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
-from odoo.addons.hotel import date_utils
 _logger = logging.getLogger(__name__)
 
 
@@ -159,6 +158,7 @@ class HotelReservation(models.Model):
                                    required=True, track_visibility='onchange')
 
     partner_id = fields.Many2one(related='folio_id.partner_id')
+    closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
     company_id = fields.Many2one('res.company', 'Company')
     reservation_line_ids = fields.One2many('hotel.reservation.line',
                                            'reservation_id',
@@ -178,23 +178,22 @@ class HotelReservation(models.Model):
     pricelist_id = fields.Many2one('product.pricelist',
                                    related='folio_id.pricelist_id',
                                    readonly="1")
-    cardex_ids = fields.One2many('cardex', 'reservation_id')
-    # TODO: As cardex_count is a computed field, it can't not be used in a domain filer
-    # Non-stored field hotel.reservation.cardex_count cannot be searched
+    checkin_partner_ids = fields.One2many('hotel.checkin.partner', 'reservation_id')
+    # TODO: As checkin_partner_count is a computed field, it can't not be used in a domain filer
+    # Non-stored field hotel.reservation.checkin_partner_count cannot be searched
     # searching on a computed field can also be enabled by setting the search parameter.
     # The value is a method name returning a Domains
-    cardex_count = fields.Integer('Cardex counter',
-                                  compute='_compute_cardex_count')
-    cardex_pending_count = fields.Integer('Cardex Pending Num',
-                                          compute='_compute_cardex_count',
-                                          search='_search_cardex_pending')
+    checkin_partner_count = fields.Integer('Checkin counter',
+                                  compute='_compute_checkin_partner_count')
+    checkin_partner_pending_count = fields.Integer('Checkin Pending Num',
+                                          compute='_compute_checkin_partner_count',
+                                          search='_search_checkin_partner_pending')
     # check_rooms = fields.Boolean('Check Rooms')
-    is_checkin = fields.Boolean()
-    is_checkout = fields.Boolean()
     splitted = fields.Boolean('Splitted', default=False)
     parent_reservation = fields.Many2one('hotel.reservation',
                                          'Parent Reservation')
     overbooking = fields.Boolean('Is Overbooking', default=False)
+    reselling = fields.Boolean('Is Reselling', default=False)
 
     nights = fields.Integer('Nights', compute='_computed_nights', store=True)
     channel_type = fields.Selection([
@@ -350,11 +349,12 @@ class HotelReservation(models.Model):
     @api.model
     def _autoassign(self, values):
         res = {}
-        checkin = values.get('checkin')
+        checkin = values.get('checkin') 
         checkout = values.get('checkout')
         room_type = values.get('room_type_id')
         if checkin and checkout and room_type:
             room_chosen = self.env['hotel.room.type'].check_availability_room(checkin, checkout, room_type)[0]
+            # Check room_chosen exist
             res.update({
                 'room_id': room_chosen.id
             })
@@ -407,6 +407,7 @@ class HotelReservation(models.Model):
             'parent_reservation': self.parent_reservation.id,
             'state': self.state,
             'overbooking': self.overbooking,
+            'reselling': self.reselling,
             'price_unit': self.price_unit,
             'splitted': self.splitted,
             # 'room_type_id': self.room_type_id.id,
@@ -442,13 +443,26 @@ class HotelReservation(models.Model):
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
-        #TODO: Change parity pricelist by default pricelist
-        values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and \
+        pricelist = self.partner_id.property_product_pricelist and \
                 self.partner_id.property_product_pricelist.id or \
-                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id'),
+                self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
+        values = {
+            'pricelist_id': pricelist,
         }
         self.update(values)
+
+    @api.multi
+    @api.onchange('pricelist_id')
+    def onchange_pricelist_id(self):
+        values = {'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
+                                       self.pricelist_id.is_staff,
+                                       self.reservation_type)}
+        self.update(values)
+
+    @api.onchange('reservation_type')
+    def assign_partner_company_on_out_service(self):
+        if self.reservation_type == 'out':
+            self.update({'partner_id': self.env.user.company_id.partner_id.id})
 
     # When we need to overwrite the prices even if they were already established
     @api.onchange('room_type_id', 'pricelist_id', 'reservation_type')
@@ -498,7 +512,7 @@ class HotelReservation(models.Model):
     def onchange_room_availabiltiy_domain(self):
         self.ensure_one()
         if self.checkin and self.checkout:
-            if self.overbooking:
+            if self.overbooking or self.reselling:
                 return
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
@@ -524,11 +538,6 @@ class HotelReservation(models.Model):
     def _generate_color(self):
         self.ensure_one()
         now_utc_dt = fields.Datetime.now()
-        # unused variables
-        # diff_checkin_now = date_utils.date_diff(now_utc_dt, self.checkin,
-        #                                         hours=False)
-        # diff_checkout_now = date_utils.date_diff(now_utc_dt, self.checkout,
-        #                                          hours=False)
 
         ir_values_obj = self.env['ir.default']
         reserv_color = '#FFFFFF'
@@ -628,15 +637,10 @@ class HotelReservation(models.Model):
         hotel_reserv_obj = self.env['hotel.reservation']
         for record in self:
             vals = {}
-            if record.cardex_ids:
+            if record.checkin_partner_ids:
                 vals.update({'state': 'booking'})
             else:
                 vals.update({'state': 'confirm'})
-            if record.checkin_is_today():
-                vals.update({'is_checkin': True})
-                folio = hotel_folio_obj.browse(record.folio_id.id)
-                folio.checkins_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id), ('is_checkin', '=', True)])
             record.write(vals)
 
             if record.splitted:
@@ -669,14 +673,6 @@ class HotelReservation(models.Model):
                 'state': 'cancelled',
                 'discount': 100.0,
             })
-            if record.checkin_is_today:
-                record.is_checkin = False
-                folio = self.env['hotel.folio'].browse(record.folio_id.id)
-                folio.checkins_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id),
-                    ('is_checkin', '=', True)
-                ])
-
             if record.splitted:
                 master_reservation = record.parent_reservation or record
                 splitted_reservs = self.env['hotel.reservation'].search([
@@ -748,7 +744,7 @@ class HotelReservation(models.Model):
         if not vals:
             vals = {}
         pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
+            'res.config.settings', 'default_pricelist_id')
         #~ pricelist_id = vals.get('pricelist_id') or self.pricelist_id.id
         room_type_id = vals.get('room_type_id') or self.room_type_id.id
         product = self.env['hotel.room.type'].browse(room_type_id).product_id
@@ -793,7 +789,7 @@ class HotelReservation(models.Model):
         partner = self.partner_id.id
         amount = min(self.amount_reservation, self.folio_pending_amount)
         note = self.folio_id.name + ' (' + self.name + ')'
-        view_id = self.env.ref('hotel.view_account_payment_folio_form').id
+        view_id = self.env.ref('hotel.account_payment_view_form_folio').id
         return{
             'name': _('Register Payment'),
             'view_type': 'form',
@@ -833,7 +829,8 @@ class HotelReservation(models.Model):
         domain = [('reservation_line_ids.date', '>=', dfrom),
                   ('reservation_line_ids.date', '<', dto),
                   ('state', '!=', 'cancelled'),
-                  ('overbooking', '=', False)]
+                  ('overbooking', '=', False),
+                  ('reselling', '=', False),]
         return domain
 
     @api.model
@@ -863,7 +860,7 @@ class HotelReservation(models.Model):
         return reservations_dates
 
     # TODO: Use default values on checkin /checkout is empty
-    @api.constrains('checkin', 'checkout', 'state', 'room_id', 'overbooking')
+    @api.constrains('checkin', 'checkout', 'state', 'room_id', 'overbooking', 'reselling')
     def check_dates(self):
         """
         1.-When date_order is less then checkin date or
@@ -893,89 +890,33 @@ class HotelReservation(models.Model):
     """
 
     @api.multi
-    def _compute_cardex_count(self):
-        _logger.info('_compute_cardex_count')
+    def _compute_checkin_partner_count(self):
+        _logger.info('_compute_checkin_partner_count')
         for record in self:
-            record.cardex_count = len(record.cardex_ids)
-            record.cardex_pending_count = (record.adults + record.children) \
-                    - len(record.cardex_ids)
+            record.checkin_partner_count = len(record.checkin_partner_ids)
+            record.checkin_partner_pending_count = (record.adults + record.children) \
+                    - len(record.checkin_partner_ids)
 
     # https://www.odoo.com/es_ES/forum/ayuda-1/question/calculated-fields-in-search-filter-possible-118501
     @api.multi
-    def _search_cardex_pending(self, operator, value):
+    def _search_checkin_partner_pending(self, operator, value):
         self.ensure_one()
-        recs = self.search([]).filtered(lambda x: x.cardex_pending_count > 0)
+        recs = self.search([]).filtered(lambda x: x.checkin_partner_pending_count > 0)
         return [('id', 'in', [x.id for x in recs])] if recs else []
 
     @api.multi
     def action_reservation_checkout(self):
         for record in self:
             record.state = 'done'
-            if record.checkout_is_today():
-                record.is_checkout = False
-                folio = self.env['hotel.folio'].browse(self.folio_id.id)
-                folio.checkouts_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id),
-                    ('is_checkout', '=', True)
-                ])
-
-    @api.model
-    def daily_plan(self):
-        _logger.info('daily_plan')
-        today_str = fields.Date.today()
-        yesterday_utc_dt = datetime.now() - timedelta(days=1)
-        yesterday_str = yesterday_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-        reservations_to_checkout = self.env['hotel.reservation'].search([
-            ('state', 'not in', ['done']),
-            ('checkout', '<', today_str)
-            ])
-        for res in reservations_to_checkout:
-            res.action_reservation_checkout()
-
-        reservations = self.env['hotel.reservation'].search([
-            ('reservation_line_ids.date', 'in', [today_str, yesterday_str]),
-            ('state', 'in', ['confirm', 'booking'])
-        ])
-        self._cr.execute("update hotel_reservation set is_checkin = False, \
-                            is_checkout = False where is_checkin = True or \
-                            is_checkout = True")
-        checkins_res = reservations.filtered(lambda x: (
-            x.state in ('confirm','draft')
-            and date_utils.date_compare(x.checkin, today_str, hours=False)
-            and x.reservation_type == 'normal'))
-        checkins_res.write({'is_checkin': True})
-        checkouts_res = reservations.filtered(lambda x: (
-            x.state not in ('done','cancelled')
-            and date_utils.date_compare(x.checkout, today_str,
-                                        hours=False)
-            and x.reservation_type == 'normal'))
-        checkouts_res.write({'is_checkout': True})
-        self.env['hotel.folio'].daily_plan()
-        return True
-
-    @api.model
-    def checkin_is_today(self):
-        self.ensure_one()
-        tz_hotel = self.env['ir.default'].sudo().get('res.config.settings', 'tz_hotel')
-        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
-        return self.checkin == today
-
-    @api.model
-    def checkout_is_today(self):
-        self.ensure_one()
-        tz_hotel = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'tz_hotel')
-        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
-        return self.checkout == today
 
     @api.multi
     def action_checks(self):
         self.ensure_one()
         return {
-            'name': _('Cardexs'),
+            'name': _('Checkins'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'cardex',
+            'res_model': 'hotel.checkin.partner',
             'type': 'ir.actions.act_window',
             'domain': [('reservation_id', '=', self.id)],
             'target': 'new',

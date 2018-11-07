@@ -31,6 +31,26 @@ class ChannelBackend(models.Model):
     pkey = fields.Char('Channel Service PKey')
     security_token = fields.Char('Channel Service Security Token')
 
+    avail_from = fields.Date('Availability From')
+    avail_to = fields.Date('Availability To')
+
+    restriction_from = fields.Date('Restriction From')
+    restriction_to = fields.Date('Restriction To')
+    restriction_id = fields.Many2one('channel.hotel.room.type.restriction',
+                                     'Channel Restriction')
+
+    pricelist_from = fields.Date('Pricelist From')
+    pricelist_to = fields.Date('Pricelist To')
+    pricelist_id = fields.Many2one('channel.product.pricelist',
+                                   'Channel Product Pricelist')
+
+    issue_ids = fields.One2many('hotel.channel.connector.issue',
+                                'backend_id',
+                                string='Issues')
+    ota_ids = fields.One2many('channel.ota.info',
+                              'backend_id',
+                              string="OTA's")
+
     @api.multi
     def generate_key(self):
         for record in self:
@@ -55,6 +75,55 @@ class ChannelBackend(models.Model):
         channel_ota_info_obj = self.env['channel.ota.info']
         for backend in self:
             channel_ota_info_obj.import_otas_info(backend)
+        return True
+
+    @api.multi
+    def import_availability(self):
+        channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
+        for backend in self:
+            channel_hotel_room_type_avail_obj.import_availability(backend)
+        return True
+
+    @api.multi
+    def push_availability(self):
+        channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
+        for backend in self:
+            channel_hotel_room_type_avail_obj.push_availability(backend)
+        return True
+
+    @api.multi
+    def import_restriction_plans(self):
+        channel_hotel_room_type_restr_obj = self.env['channel.hotel.room.type.restriction']
+        for backend in self:
+            channel_hotel_room_type_restr_obj.import_restriction_plans(backend)
+        return True
+
+    @api.multi
+    def import_restriction_values(self):
+        channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
+        for backend in self:
+            channel_hotel_restr_item_obj.import_restriction_values(backend)
+        return True
+
+    @api.multi
+    def push_restriction(self):
+        channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
+        for backend in self:
+            channel_hotel_restr_item_obj.push_restriction(backend)
+        return True
+
+    @api.multi
+    def import_pricelist_plans(self):
+        channel_product_pricelist_obj = self.env['channel.product.pricelist']
+        for backend in self:
+            channel_product_pricelist_obj.import_price_plans(backend)
+        return True
+
+    @api.multi
+    def import_pricelist_values(self):
+        channel_product_pricelist_item_obj = self.env['channel.product.pricelist.item']
+        for backend in self:
+            channel_product_pricelist_item_obj.import_pricelist_values(backend)
         return True
 
     @contextmanager
@@ -149,11 +218,11 @@ class ChannelBackend(models.Model):
             'wstatus': 0
         })
 
-        # Get Parity Models
+        # Get Default Models
         pricelist_id = int(self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id'))
+            'res.config.settings', 'default_pricelist_id'))
         restriction_id = int(self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_restrictions_id'))
+            'res.config.settings', 'default_restriction_id'))
 
         room_type_restr_it_obj = self.env['hotel.room.type.restriction.item']
         # Secure Wubook Input

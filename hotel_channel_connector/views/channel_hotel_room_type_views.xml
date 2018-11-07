@@ -7,10 +7,11 @@
         <field name="arch" type="xml">
             <form string="Hotel Channel Virtual Room">
                 <group>
+                    <field name="id" invisible="1" />
                     <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
                 </group>
                 <group>
-                    <field name="channel_room_id" />
+                    <field name="external_id" />
                     <field name="channel_short_code" />
                     <field name="ota_capacity" />
                 </group>

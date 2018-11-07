@@ -81,20 +81,20 @@ class website_wubook(http.Controller):
         if wubook_obj.init_connection():
             wubook_obj.fetch_rooms_values(dfrom, dto)
 
-            parity_restr_id = request.env['ir.default'].sudo().get(
-                            'res.config.settings', 'parity_restrictions_id')
-            if parity_restr_id:
+            default_restr_id = request.env['ir.default'].sudo().get(
+                            'res.config.settings', 'default_restriction_id')
+            if default_restr_id:
                 room_type_restr_obj = request.env['hotel.room.type.restriction']
-                restr_id = room_type_restr_obj.sudo().browse(int(parity_restr_id))
+                restr_id = room_type_restr_obj.sudo().browse(int(default_restr_id))
                 if restr_id and restr_id.wpid and restr_id.wpid != '0':
                     wubook_obj.fetch_rplan_restrictions(dfrom, dto,
                                                         rpid=restr_id.wpid)
 
-            parity_pricelist_id = request.env['ir.default'].sudo().get(
-                                'res.config.settings', 'parity_pricelist_id')
-            if parity_pricelist_id:
+            default_pricelist_id = request.env['ir.default'].sudo().get(
+                                'res.config.settings', 'default_pricelist_id')
+            if default_pricelist_id:
                 pricelist_id = request.env['product.pricelist'].sudo().browse(
-                                                    int(parity_pricelist_id))
+                                                    int(default_pricelist_id))
                 if pricelist_id and pricelist_id.wpid:
                     wubook_obj.fetch_plan_prices(pricelist_id.wpid, dfrom, dto)
             wubook_obj.close_connection()

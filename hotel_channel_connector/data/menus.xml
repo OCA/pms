@@ -13,12 +13,6 @@
         parent="menu_channel_connector_root"
         action="action_channel_backend"/>
 
-    <menuitem id="channel_ota_info_menu"
-        name="OTA's"
-        sequence="2"
-        action="open_channel_ota_info_tree_all"
-        parent="menu_channel_connector_root"/>
-
     <menuitem id="hotel_channel_connector_issue_menu"
         name="Issues"
         sequence="3"

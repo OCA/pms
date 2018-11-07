@@ -116,6 +116,7 @@
             <field name="floor_id" search="[('name', '=', 'Second Floor')]"/>
             <field name="list_price">25.00</field>
             <field name="capacity">3</field>
-        </record>
+        </record
+
     </data>
 </odoo>

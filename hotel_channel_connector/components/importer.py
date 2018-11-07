@@ -8,7 +8,6 @@ from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import AbstractComponent, Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo.addons.hotel import date_utils
 from odoo import _
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
@@ -110,9 +109,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 ('wrid', '=', k_rid)
             ], limit=1)
             if room_type:
-                date_dt = date_utils.get_datetime(
-                    dfrom,
-                    dtformat=DEFAULT_WUBOOK_DATE_FORMAT)
+                date_dt = fields.Date.from_string(dfrom)
                 for day_vals in v_rid:
                     date_str = date_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
                     self._get_room_values_availability(
@@ -138,14 +135,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
         reservation_line_ids = []
         tprice = 0.0
         for brday in broom['roomdays']:
-            wndate = date_utils.get_datetime(
-                brday['day'],
-                dtformat=DEFAULT_WUBOOK_DATE_FORMAT
-            ).replace(tzinfo=pytz.utc)
-            if date_utils.date_in(wndate,
-                                  dates_checkin[0],
-                                  dates_checkout[0] - timedelta(days=1),
-                                  hours=False) == 0:
+            wndate = fields.Date.from_string(
+                brday['day']
+            )
+            if wndate >= dates_checkin[0] and wndate <= (dates_checkout[0] - timedelta(days=1)):
                 reservation_line_ids.append((0, False, {
                     'date': wndate.strftime(
                         DEFAULT_SERVER_DATE_FORMAT),
@@ -238,28 +231,22 @@ class HotelChannelConnectorImporter(AbstractComponent):
             # the same transaction an cancellation)
             if crcode in failed_reservations:
                 self.create_issue(
-                    'reservation',
-                    "Can't process a reservation that previusly failed!",
-                    '', channel_object_id=book['reservation_code'])
+                    section='reservation',
+                    internal_emssage="Can't process a reservation that previusly failed!",
+                    channel_object_id=book['reservation_code'])
                 continue
 
             # Get dates for the reservation (GMT->UTC)
             arr_hour = default_arrival_hour if book['arrival_hour'] == "--" \
                 else book['arrival_hour']
             checkin = "%s %s" % (book['date_arrival'], arr_hour)
-            checkin_dt = date_utils.get_datetime(
-                checkin,
-                dtformat=DEFAULT_WUBOOK_DATETIME_FORMAT,
-                stz=tz_hotel)
+            checkin_dt = fields.Date.from_string(checkin)
             checkin_utc_dt = date_utils.dt_as_timezone(checkin_dt, 'UTC')
             checkin = checkin_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
             checkout = "%s %s" % (book['date_departure'],
                                   default_departure_hour)
-            checkout_dt = date_utils.get_datetime(
-                checkout,
-                dtformat=DEFAULT_WUBOOK_DATETIME_FORMAT,
-                stz=tz_hotel)
+            checkout_dt = fields.Date.from_string(checkout)
             checkout_utc_dt = date_utils.dt_as_timezone(checkout_dt, 'UTC')
             checkout = checkout_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
@@ -342,10 +329,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 ], limit=1)
                 if not room_type:
                     self.create_issue(
-                        'reservation',
-                        "Can't found any room type associated to '%s' \
-                                                in this hotel" % book['rooms'],
-                        '', channel_object_id=book['reservation_code'])
+                        section='reservation',
+                        internal_message="Can't found any room type associated to '%s' \
+                                            in this hotel" % book['rooms'],
+                        channel_object_id=book['reservation_code'])
                     failed_reservations.append(crcode)
                     continue
 
@@ -376,9 +363,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
                     )
                     if vals['price_unit'] != book['amount']:
                         self.create_issue(
-                            'reservation',
-                            "Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
-                            '', channel_object_id=book['reservation_code'])
+                            section='reservation',
+                            internal_message="Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
+                            channel_object_id=book['reservation_code'])
 
                     free_rooms = room_type.odoo_id.check_availability_room(
                         checkin_str,
@@ -439,9 +426,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             })
                             reservations.append((0, False, vals))
                             self.create_issue(
-                                'reservation',
-                                "Reservation imported with overbooking state",
-                                '', channel_object_id=rcode)
+                                section='reservation',
+                                internal_message="Reservation imported with overbooking state",
+                                channel_object_id=rcode)
                             dates_checkin = [False, False]
                             dates_checkout = [False, False]
                             split_booking = False
@@ -458,9 +445,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
 
             if split_booking:
                 self.create_issue(
-                    'reservation',
-                    "Reservation Splitted",
-                    '', channel_object_id=rcode)
+                    section='reservation',
+                    internal_message="Reservation Splitted",
+                    channel_object_id=rcode)
 
             # Create Folio
             if not any(failed_reservations) and any(reservations):
@@ -498,9 +485,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
                     processed_rids.append(rcode)
                 except ChannelConnectorError as err:
                     self.create_issue(
-                        'reservation',
-                        err.data['message'],
-                        '', channel_object_id=rcode)
+                        section='reservation',
+                        internal_message=err.data['message'],
+                        channel_object_id=rcode)
                     failed_reservations.append(crcode)
         return (processed_rids, any(failed_reservations),
                 checkin_utc_dt, checkout_utc_dt)
@@ -539,9 +526,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
         ], limit=1)
         if pricelist:
             pricelist_item_obj = self.env['product.pricelist.item']
-            dfrom_dt = date_utils.get_datetime(date_from)
-            dto_dt = date_utils.get_datetime(date_to)
-            days_diff = date_utils.date_diff(dfrom_dt, dto_dt, hours=False) + 1
+            dfrom_dt = fields.Date.from_string(date_from)
+            dto_dt = fields.Date.from_string(date_to)
+            days_diff = (dfrom_dt - dto_dt) + 1
             for i in range(0, days_diff):
                 ndate_dt = dfrom_dt + timedelta(days=i)
                 for k_rid, v_rid in plan_prices.iteritems():
@@ -623,9 +610,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                     ], limit=1)
                     if room_type:
                         for item in v_rid:
-                            date_dt = date_utils.get_datetime(
-                                item['date'],
-                                dtformat=DEFAULT_WUBOOK_DATE_FORMAT)
+                            date_dt = fields.Date.from_string(item['date'])
                             restriction_item = restriction_item_obj.search([
                                 ('restriction_id', '=', restriction_id.id),
                                 ('date_start', '=', date_dt.strftime(
@@ -692,9 +677,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
             count = self._generate_pricelists(results)
         except ChannelConnectorError as err:
             self.create_issue(
-                'plan',
-                _("Can't get pricing plans from wubook"),
-                err.data['message'])
+                section='plan',
+                internal_message=_("Can't get pricing plans from wubook"),
+                channel_message=err.data['message'])
             return 0
         return count
 
@@ -709,9 +694,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
             self._generate_pricelist_items(channel_plan_id, date_from, date_to, results)
         except ChannelConnectorError as err:
             self.create_issue(
-                'plan',
-                _("Can't fetch plan prices from wubook"),
-                err.data['message'])
+                section='plan',
+                internal_message=_("Can't fetch plan prices from wubook"),
+                channel_message=err.data['message'])
             return False
         return True
 
@@ -732,9 +717,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
                     self._generate_pricelist_items(channel_plan_id, date_from, date_to, results)
             except ChannelConnectorError as err:
                 self.create_issue(
-                    'plan',
-                    "Can't fetch all plan prices from wubook!",
-                    err.data['message'],
+                    section='plan',
+                    internal_message="Can't fetch all plan prices from wubook!",
+                    channel_message=err.data['message'],
                     channel_object_id=channel_plan_id, dfrom=date_from, dto=date_to)
                 return False
         return no_errors
@@ -746,9 +731,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
             count = self._generate_restrictions(results)
         except ChannelConnectorError as err:
             self.create_issue(
-                'rplan',
-                _("Can't fetch restriction plans from wubook"),
-                err.data['message'])
+                section='rplan',
+                internal_message=_("Can't fetch restriction plans from wubook"),
+                channel_message=err.data['message'])
             return 0
         return count
 
@@ -763,9 +748,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 self._generate_restriction_items(results)
         except ChannelConnectorError as err:
             self.create_issue(
-                'rplan',
-                _("Can't fetch plan restrictions from wubook"),
-                err.data['message'],
+                section='rplan',
+                internal_message=_("Can't fetch plan restrictions from wubook"),
+                channel_message=err.data['message'],
                 channel_object_id=channel_restriction_plan_id,
                 dfrom=date_from, dto=date_to)
             return False

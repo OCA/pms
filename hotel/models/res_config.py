@@ -19,9 +19,9 @@ def _tz_get(self):
 class HotelConfiguration(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    parity_pricelist_id = fields.Many2one('product.pricelist',
+    default_pricelist_id = fields.Many2one('product.pricelist',
                                           'Product Pricelist')
-    parity_restrictions_id = fields.Many2one('hotel.room.type.restriction',
+    default_restriction_id = fields.Many2one('hotel.room.type.restriction',
                                              'Restrictions')
     default_arrival_hour = fields.Char('Default Arrival Hour (GMT)',
                                        help="HH:mm Format", default="14:00")
@@ -39,11 +39,11 @@ class HotelConfiguration(models.TransientModel):
         super(HotelConfiguration, self).set_values()
 
         self.env['ir.default'].sudo().set(
-            'res.config.settings', 'parity_pricelist_id',
-            self.parity_pricelist_id.id)
+            'res.config.settings', 'default_pricelist_id',
+            self.default_pricelist_id.id)
         self.env['ir.default'].sudo().set(
-            'res.config.settings', 'parity_restrictions_id',
-            self.parity_restrictions_id.id)
+            'res.config.settings', 'default_restriction_id',
+            self.default_restriction_id.id)
         self.env['ir.default'].sudo().set(
             'res.config.settings', 'tz_hotel', self.tz_hotel)
         self.env['ir.default'].sudo().set(
@@ -58,10 +58,10 @@ class HotelConfiguration(models.TransientModel):
         res = super(HotelConfiguration, self).get_values()
 
         # ONLY FOR v11. DO NOT FORWARD-PORT
-        parity_pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
-        parity_restrictions_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_restrictions_id')
+        default_pricelist_id = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_pricelist_id')
+        default_restriction_id = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_restriction_id')
         tz_hotel = self.env['ir.default'].sudo().get(
             'res.config.settings', 'tz_hotel')
         default_arrival_hour = self.env['ir.default'].sudo().get(
@@ -69,8 +69,8 @@ class HotelConfiguration(models.TransientModel):
         default_departure_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_departure_hour')
         res.update(
-            parity_pricelist_id=parity_pricelist_id,
-            parity_restrictions_id=parity_restrictions_id,
+            default_pricelist_id=default_pricelist_id,
+            default_restriction_id=default_restriction_id,
             tz_hotel=tz_hotel,
             default_arrival_hour=default_arrival_hour,
             default_departure_hour=default_departure_hour,

@@ -21,10 +21,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import hotel_wizard
 from . import folio_make_invoice_advance
 from . import checkinwizard
 from . import massive_changes
 from . import split_reservation
 from . import duplicate_reservation
 from . import massive_price_reservation_days
+from . import wizard_reservation

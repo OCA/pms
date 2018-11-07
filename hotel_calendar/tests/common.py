@@ -31,8 +31,8 @@ class TestHotelCalendar(TestHotel):
 
         # Minimal Hotel Calendar Configuration
         cls.tz_hotel = 'Europe/Madrid'
-        cls.parity_pricelist_id = cls.pricelist_1.id
-        cls.parity_restrictions_id = cls.restriction_1.id
+        cls.default_pricelist_id = cls.pricelist_1.id
+        cls.default_restriction_id = cls.restriction_1.id
         cls.env['ir.default'].sudo().set_default('res.config.settings',
                                                  'default_arrival_hour',
                                                  '14:00')

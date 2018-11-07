@@ -8,7 +8,7 @@
             <xpath expr="//field[@name='channel_type']" position="after">
                 <!-- field name="channel_reservation_id" attrs='{"readonly": [("able_to_modify_channel","=",False)], "invisible":[("channel_type","!=", "web")]}' string="OTA"/-->
             </xpath>
-            <xpath expr="//field[@name='cardex_pending_count']" position="before">
+            <xpath expr="//field[@name='checkin_partner_pending_count']" position="before">
                 <group colspan="6" col="6">
                     <field name="is_from_ota" readonly="True" invisible="True"/>
                 </group>
@@ -23,7 +23,7 @@
             </xpath>
 
             <xpath expr="//page[@name='days']" position="after">
-                <page name="connector">
+                <page name="connector" string="Channel Connector">
                     <group string="Hotel Channel Bindings">
                         <field name="channel_bind_ids" nolabel="1">
                             <tree>

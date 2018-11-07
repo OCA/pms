@@ -3,7 +3,6 @@
 
 import logging
 from odoo.addons.component.core import Component
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo import api, _
 _logger = logging.getLogger(__name__)
 
@@ -15,41 +14,31 @@ class HotelRoomTypeExporter(Component):
 
     @api.model
     def modify_room(self, binding):
-        try:
-            return self.backend_adapter.modify_room(
-                binding.channel_room_id,
-                binding.name,
-                binding.ota_capacity,
-                binding.list_price,
-                binding.total_rooms_count,
-                binding.channel_short_code)
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't modify rooms in WuBook"), err.data['message'])
+        return self.backend_adapter.modify_room(
+            binding.external_id,
+            binding.name,
+            binding.ota_capacity,
+            binding.list_price,
+            binding.total_rooms_count,
+            binding.channel_short_code)
 
     @api.model
     def delete_room(self, binding):
-        try:
-            return self.backend_adapter.delete_room(binding.channel_room_id)
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't delete room in WuBook"), err.data['message'])
+        return self.backend_adapter.delete_room(binding.external_id)
 
     @api.model
     def create_room(self, binding):
-        try:
-            seq_obj = self.env['ir.sequence']
-            short_code = seq_obj.next_by_code('hotel.room.type')[:4]
-            external_id = self.backend_adapter.create_room(
-                short_code,
-                binding.name,
-                binding.ota_capacity,
-                binding.list_price,
-                binding.total_rooms_count
-            )
-            binding.write({
-                'channel_room_id': external_id,
-                'channel_short_code': short_code,
-            })
-        except ChannelConnectorError as err:
-            self.create_issue('room', _("Can't delete room in WuBook"), err.data['message'])
-        else:
-            self.binder.bind(external_id, binding)
+        seq_obj = self.env['ir.sequence']
+        short_code = seq_obj.next_by_code('hotel.room.type')[:4]
+        external_id = self.backend_adapter.create_room(
+            short_code,
+            binding.name,
+            binding.ota_capacity,
+            binding.list_price,
+            binding.total_rooms_count
+        )
+        binding.write({
+            'external_id': external_id,
+            'channel_short_code': short_code,
+        })
+        self.binder.bind(external_id, binding)

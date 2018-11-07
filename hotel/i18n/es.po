@@ -2999,13 +2999,13 @@ msgid "Action Needed"
 msgstr "Action Needed"
 
 #. module: hotel
-#: model:ir.actions.act_window,name:hotel.action_cardex
-msgid "Action cardex"
+#: model:ir.actions.act_window,name:hotel.action_checkin_partner
+msgid "Action checkin"
 msgstr "Acción Checkin"
 
 #. module: hotel
-#: model:ir.actions.act_window,name:hotel.action_cardex_download
-msgid "Action cardex download"
+#: model:ir.actions.act_window,name:hotel.action_checkin_partner_download
+msgid "Action checkin download"
 msgstr "Accción descarga de checkin"
 
 #. module: hotel
@@ -3311,39 +3311,39 @@ msgid "Capacity:"
 msgstr "Capacidad:"
 
 #. module: hotel
-#: model:ir.ui.menu,name:hotel.menu_cardex
-msgid "Cardex"
+#: model:ir.ui.menu,name:hotel.menu_checkin_partner
+msgid "Checkin"
 msgstr "Checkin"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_cardex_pending
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_cardex_pending_num
-#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_cardex_pending
-msgid "Cardex Pending"
+#: model:ir.model.fields,field_description:hotel.field_hotel_folio_checkin_partner_pending
+#: model:ir.model.fields,field_description:hotel.field_hotel_folio_checkin_partner_pending_num
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_checkin_partner_pending
+msgid "Checkin Pending"
 msgstr "Checkin Pendientes"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_cardex_pending_num
-msgid "Cardex Pending Num"
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_checkin_partner_pending_num
+msgid "Checkin Pending Num"
 msgstr "Nº de Checkin Pendientes"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_cardex_count
-#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_cardex_count
-msgid "Cardex counter"
+#: model:ir.model.fields,field_description:hotel.field_hotel_folio_checkin_partner_count
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_checkin_partner_count
+msgid "Checkin counter"
 msgstr "Contador de Checkin"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_checkin_wizard_cardex_ids
-#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_cardex_ids
-msgid "Cardex ids"
+#: model:ir.model.fields,field_description:hotel.field_checkin_wizard_checkin_partner_ids
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_checkin_partner_ids
+msgid "Checkin ids"
 msgstr "Checkin ids"
 
 #. module: hotel
 #: code:addons/hotel/models/hotel_folio.py:333
 #: code:addons/hotel/models/hotel_reservation.py:359
 #, python-format
-msgid "Cardexs"
+msgid "Checkins"
 msgstr "Checkin"
 
 #. module: hotel
@@ -3483,7 +3483,7 @@ msgstr "Niños"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.checkin_wizard_form_2
-#: model:ir.ui.view,arch_db:hotel.view_tree_cardex
+#: model:ir.ui.view,arch_db:hotel.view_tree_checkin_partner
 msgid "Client name"
 msgstr "Nombre de Cliente"
 
@@ -3653,7 +3653,7 @@ msgid "Create invoice/bill"
 msgstr "Crear Factura/cuenta"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_create_uid
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_create_uid
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_create_uid
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange_create_uid
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_create_uid
@@ -3682,7 +3682,7 @@ msgid "Created by"
 msgstr "Creado por"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_create_date
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_create_date
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_create_date
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange_create_date
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_create_date
@@ -3926,13 +3926,13 @@ msgid "Delivery address for current sales order."
 msgstr "Dirección de entrega para el pedido de venta actual."
 
 #. module: hotel
-#: code:addons/hotel/models/cardex.py:38
+#: code:addons/hotel/models/checkin.py:38
 #, python-format
 msgid "Departure date (%s) is prior to arrival on %s"
 msgstr "La fecha de salida (%s) es anterior a la llegada el %s"
 
 #. module: hotel
-#: code:addons/hotel/models/cardex.py:80
+#: code:addons/hotel/models/checkin.py:80
 #, python-format
 msgid "Departure date, is prior to arrival. Check it now. %s"
 msgstr "La fecha de salida es anterior a la llegada. Revíselo ahora. %s"
@@ -3999,7 +3999,7 @@ msgid "Discount Type"
 msgstr "Tipo de Descuento"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_display_name
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_display_name
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_display_name
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange_display_name
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_display_name
@@ -4098,7 +4098,7 @@ msgid "Duration in Days"
 msgstr "Duración en días"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_checkin_wizard_email_cardex
+#: model:ir.model.fields,field_description:hotel.field_checkin_wizard_email_checkin_partner
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_email
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_email
 msgid "E-mail"
@@ -4127,13 +4127,13 @@ msgid "End Date"
 msgstr "Fecha finalización"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_enter_date
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_enter_date
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_enter_date
 msgid "Enter date"
 msgstr "Fecha Entrada"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_exit_date
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_exit_date
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_exit_date
 msgid "Exit date"
 msgstr "Fecha Salida"
@@ -4444,7 +4444,7 @@ msgstr "Nombre del Hotel"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_config_settings
-msgid "Hotel Parity"
+msgid "Hotel Default"
 msgstr "Emparejado"
 
 #. module: hotel
@@ -4532,7 +4532,7 @@ msgid "Hotel services detail provide tocustomer and it will include in main Invo
 msgstr "Los detalles de servicios al cliente que se incluirán en la Factura principal."
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_id
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_id
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_id
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange_id
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_id
@@ -4962,7 +4962,7 @@ msgid "Last Message Date"
 msgstr "Last Message Date"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex___last_update
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner___last_update
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard___last_update
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange___last_update
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv___last_update
@@ -4997,7 +4997,7 @@ msgid "Last Updated"
 msgstr "Actualizado el"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_write_uid
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_write_uid
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_write_uid
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange_write_uid
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_write_uid
@@ -5026,7 +5026,7 @@ msgid "Last Updated by"
 msgstr "Última actualización de"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_write_date
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_write_date
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_write_date
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange_write_date
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_write_date
@@ -5288,7 +5288,7 @@ msgid "Minimum Stock Rules"
 msgstr "Reglas de stock mínimo"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_checkin_wizard_mobile_cardex
+#: model:ir.model.fields,field_description:hotel.field_checkin_wizard_mobile_checkin_partner
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_mobile
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_mobile
 msgid "Mobile"
@@ -5570,7 +5570,7 @@ msgid "Partner for checkin"
 msgstr "Partner for checkin"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_partner_id
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_partner_id
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_partner_id
 msgid "Partner id"
 msgstr "Id del cliente"
@@ -5831,7 +5831,7 @@ msgid "Product Category"
 msgstr "Categoría de producto"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_parity_pricelist_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_default_pricelist_id
 msgid "Product Pricelist"
 msgstr "Lista de precios del producto"
 
@@ -6089,7 +6089,7 @@ msgid "Reservation has no adults"
 msgstr "La reserva no tiene adultos"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_cardex_reservation_id
+#: model:ir.model.fields,field_description:hotel.field_checkin_partner_reservation_id
 #: model:ir.model.fields,field_description:hotel.field_checkin_wizard_reservation_id
 msgid "Reservation id"
 msgstr "Reserva id"
@@ -6163,7 +6163,7 @@ msgstr "Nombre del Plan de Restricciones"
 
 #. module: hotel
 #: selection:hotel.wizard.massive.changes,section:0
-#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_parity_restrictions_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_default_restriction_id
 #: model:ir.ui.menu,name:hotel.reservation_restriction_menu
 #: model:ir.ui.view,arch_db:hotel.reservation_restriction_item_view_form
 #: model:ir.ui.view,arch_db:hotel.reservation_restriction_item_view_tree
@@ -7477,8 +7477,8 @@ msgid "can't assign the same date to more than                                  
 msgstr "no puede asignar la misma fecha a más de una habitación virtual"
 
 #. module: hotel
-#: model:ir.model,name:hotel.model_cardex
-msgid "cardex"
+#: model:ir.model,name:hotel.model_checkin_partner
+msgid "checkin"
 msgstr "checkin"
 
 #. module: hotel

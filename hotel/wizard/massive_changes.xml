@@ -36,10 +36,6 @@
 								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_avail" /> <strong> Avail</strong></td>
 								<td class="oe_form_group_cell" colspan="3"><field name="avail" attrs="{'readonly':[('change_avail', '=', False)]}" /></td>
 							</tr>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_no_ota" /> <strong> No OTA</strong></td>
-								<td class="oe_form_group_cell"><field name="no_ota" attrs="{'readonly':[('change_no_ota', '=', False)]}" /></td>
-							</tr>
 						</tbody>
 					</table>
 				</group>

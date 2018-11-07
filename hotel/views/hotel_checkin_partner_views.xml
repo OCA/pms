@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <!-- Action to open INE Codes list -->
+    <act_window
+        id="action_checkin_partner"
+        name="Action checkin"
+        res_model='hotel.checkin.partner'
+        view_mode="tree,form" />
+    <act_window
+        id="action_checkin_partner_download"
+        name="Action checkin download"
+        res_model='hotel.checkin.partner'
+        view_mode="form" />         <!-- Menu item to open INE Codes list -->
+    <menuitem
+        id="menu_hotel_checkin_partner"
+        name="Checkins"
+        parent="hotel.hotel_reports_menu"
+        sequence="25"
+        action="action_checkin_partner" />
+
+    <record id="hotel_checkin_partner_view_form" model="ir.ui.view">
+        <field name="name">Checkin Form</field>
+        <field name="model">hotel.checkin.partner</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group name="group_top">
+                        <group name="group_left">
+                            <field name="partner_id" required="True"/>
+                            <field name="enter_date"/>
+                            <field name="exit_date"/>
+                        </group>
+                        <group name="group_left">
+                            <field name="reservation_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hotel_checkin_partner_view_tree" model="ir.ui.view">
+        <field name="name">Checkin Tree</field>
+        <field name="model">hotel.checkin.partner</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="partner_id" string="Client name"/>
+                <field name="enter_date"/>
+                <field name="exit_date"/>
+                <field name="reservation_id"/>
+                <!-- button type="action" class="oe_stat_button" id="checkin_partner_smart_button" icon="fa-bed" /-->
+            </tree>
+        </field>
+    </record>
+
+</odoo>

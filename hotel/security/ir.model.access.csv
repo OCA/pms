@@ -14,8 +14,8 @@ access_hotel_folio_line,hotel_folio.line.user,model_hotel_reservation,hotel.grou
 access_hotel_folio_line_call,hotel_folio.line.call,model_hotel_reservation,hotel.group_hotel_call,1,1,1,1
 access_hotel_invoice_call,account.invoice.call,account.model_account_invoice,hotel.group_hotel_call,1,1,1,1
 access_hotel_invoice_user,account.invoice.user,account.model_account_invoice,hotel.group_hotel_user,1,1,1,1
-access_hotel_model_cardex_call,hotel.currency_exchange.call,hotel.model_cardex,hotel.group_hotel_call,1,1,1,1
-access_hotel_model_cardex_user,hotel.currency_exchange.user,hotel.model_cardex,hotel.group_hotel_user,1,1,1,1
+access_hotel_model_checkin_partner_call,hotel.currency_exchange.call,hotel.model_checkin_partner,hotel.group_hotel_call,1,1,1,1
+access_hotel_model_checkin_partner_user,hotel.currency_exchange.user,hotel.model_checkin_partner,hotel.group_hotel_user,1,1,1,1
 access_hotel_order_call,hotel.order.call,sale.model_sale_order,hotel.group_hotel_call,1,1,1,1
 access_hotel_order_line_call,hotel.order.line.call,sale.model_sale_order_line,hotel.group_hotel_call,1,1,1,1
 access_hotel_order_line_user,hotel.order.line.user,sale.model_sale_order_line,hotel.group_hotel_user,1,1,1,1

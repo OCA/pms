@@ -13,13 +13,15 @@
         sequence="15" parent="hotel_management_menu"
         groups="hotel.group_hotel_user"/>
 
-    <menuitem id="menu_account_finance_xls_reports" name="XLS Reports" parent="hotel.hotel_reports_menu" sequence="50"/>
+    <menuitem id="menu_account_finance_xls_reports" name="XLS Reports"
+        parent="hotel.hotel_reports_menu" sequence="50"/>
 
     <menuitem id="configuration_others" name="Configuration"
         parent="hotel.hotel_configuration_menu" sequence="10"
-         groups="hotel.group_hotel_manager" />
+        groups="hotel.group_hotel_manager" />
 
-    <menuitem id="hotel_massive_change" parent="hotel.configuration_others"
-        sequence="10" action="action_hotel_massive_change" name="Massive Changes"/>
+    <menuitem id="hotel_massive_change" name="Massive Changes"
+        parent="hotel.configuration_others"
+        sequence="10" action="action_hotel_massive_change"/>
 
 </odoo>

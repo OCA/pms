@@ -6,13 +6,13 @@
         </record>
 
 
-        <function id="default_generate_parity_pricelist_id"
+        <function id="default_pricelist_id"
             model="ir.default" name="set"
-            eval="('res.config.settings', 'parity_pricelist_id', 1)"/>
+            eval="('res.config.settings', 'default_pricelist_id', 1)"/>
 
-        <function id="default_generate_parity_restrictions_id"
+        <function id="default_restriction_id"
             model="ir.default" name="set"
-            eval="('res.config.settings', 'parity_restrictions_id', 1)"/>
+            eval="('res.config.settings', 'default_restriction_id', 1)"/>
 
         <function id="default_generate_default_arrival_hour"
             model="ir.default" name="set"

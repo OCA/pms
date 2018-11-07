@@ -201,7 +201,7 @@ msgstr "Información de canales importada con éxito"
 #. module: hotel_wubook_proto
 #: code:addons/hotel_wubook_proto/wizard/wubook_installer.py:95
 #, python-format
-msgid "Configure Hotel Parity"
+msgid "Configure Hotel Default"
 msgstr "Configurar paridad del hotel"
 
 #. module: hotel_wubook_proto
@@ -229,7 +229,7 @@ msgstr "Continuar"
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_create_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_create_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_create_uid
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_create_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_create_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_create_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_create_uid
@@ -241,7 +241,7 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_create_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_create_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_create_date
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_create_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_create_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_create_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_create_date
@@ -250,12 +250,12 @@ msgid "Created on"
 msgstr "Creado en"
 
 #. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_date_end
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_date_end
 msgid "Date End"
 msgstr "Fecha finalización"
 
 #. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_date_start
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_date_start
 msgid "Date Start"
 msgstr "Fecha de inicio"
 
@@ -264,7 +264,7 @@ msgstr "Fecha de inicio"
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_display_name
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_display_name
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_display_name
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_display_name
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_display_name
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_display_name
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_display_name
@@ -361,7 +361,7 @@ msgid "Fetch from WuBook"
 msgstr "Recuperar de WuBook"
 
 #. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_parity
+#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_default
 msgid "Finish Installation"
 msgstr "Finalizar instalación"
 
@@ -375,7 +375,7 @@ msgstr "De"
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_id
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_id
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_id
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_id
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_id
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_id
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_id
@@ -396,7 +396,7 @@ msgid "Import Availability"
 msgstr "Importar Disponibilidad"
 
 #. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_import_data
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_import_data
 msgid "Import Data From WuBook"
 msgstr "Importar datos de WuBook"
 
@@ -475,7 +475,7 @@ msgstr "LCode"
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info___last_update
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings___last_update
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity___last_update
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default___last_update
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue___last_update
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability___last_update
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices___last_update
@@ -486,7 +486,7 @@ msgstr "Última modificación en"
 #. module: hotel_wubook_proto
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_write_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_write_uid
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_write_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_write_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_write_uid
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_write_uid
@@ -498,7 +498,7 @@ msgstr "Última actualización por"
 #. module: hotel_wubook_proto
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_write_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_write_date
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_write_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_write_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_write_date
 #: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_write_date
@@ -657,7 +657,7 @@ msgid "Pricelist item"
 msgstr "Elemento Tarifa"
 
 #. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_parity_pricelist_id
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_default_pricelist_id
 msgid "Product Pricelist"
 msgstr "Lista de precios del producto"
 
@@ -700,7 +700,7 @@ msgid "Restriction Plans successfully imported"
 msgstr "Planes de precios importados con éxito"
 
 #. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_parity_parity_restrictions_id
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_default_restriction_id
 msgid "Restrictions"
 msgstr "Restricciones"
 
@@ -769,7 +769,7 @@ msgstr ""
 "Entrada: %d\\Límite: %d"
 
 #. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_parity
+#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_default
 msgid "These models are used as masters"
 msgstr "Estos modelos se usan como maestros"
 
@@ -855,8 +855,8 @@ msgid "WuBook Configuration"
 msgstr "WuBook Configuración"
 
 #. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_parity
-msgid "WuBook Configuration Parity"
+#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_default
+msgid "WuBook Configuration Default"
 msgstr "Paridad de configuración de WuBook"
 
 #. module: hotel_wubook_proto
@@ -1096,9 +1096,9 @@ msgid "wubook.installer"
 msgstr "wubook.installer"
 
 #. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_installer_parity
-msgid "wubook.installer.parity"
-msgstr "wubook.installer.parity"
+#: model:ir.model,name:hotel_wubook_proto.model_wubook_installer_default
+msgid "wubook.installer.default"
+msgstr "wubook.installer.default"
 
 #. module: hotel_wubook_proto
 #: model:ir.model,name:hotel_wubook_proto.model_wubook_issue

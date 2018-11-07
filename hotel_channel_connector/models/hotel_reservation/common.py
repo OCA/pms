@@ -25,7 +25,6 @@ class ChannelHotelReservation(models.Model):
                               string='Reservation',
                               required=True,
                               ondelete='cascade')
-    channel_reservation_id = fields.Char("Channel Reservation ID", readonly=True, old_name='wrid')
     ota_id = fields.Many2one('channel.ota.info',
                              string='Channel OTA ID',
                              readonly=True,
