@@ -78,7 +78,7 @@ class TestReservationsCalendar(TestHotelCalendar):
         pricelist_item_obj = self.env['product.pricelist.item'].sudo(
                                                     self.user_hotel_manager)
         pr_ids = pricelist_item_obj.search([
-            ('pricelist_id', '=', self.parity_pricelist_id),
+            ('pricelist_id', '=', self.default_pricelist_id),
             ('product_tmpl_id', 'in', (
                 self.hotel_room_type_budget.product_id.product_tmpl_id.id,
                 self.hotel_room_type_special.product_id.product_tmpl_id.id)),

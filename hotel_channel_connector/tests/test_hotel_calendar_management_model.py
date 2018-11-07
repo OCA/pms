@@ -86,8 +86,8 @@ class TestHotelCalendarManagement(TestHotelWubook):
 
         # Save new values
         hotel_cal_mngt_obj.save_changes(
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             cprices,
             crestrictions,
             cavails)
@@ -96,8 +96,8 @@ class TestHotelCalendarManagement(TestHotelWubook):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
 
         for room_type in room_types:

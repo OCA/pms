@@ -218,11 +218,11 @@ class ChannelBackend(models.Model):
             'wstatus': 0
         })
 
-        # Get Parity Models
+        # Get Default Models
         pricelist_id = int(self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id'))
+            'res.config.settings', 'default_pricelist_id'))
         restriction_id = int(self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_restrictions_id'))
+            'res.config.settings', 'default_restrictions_id'))
 
         room_type_restr_it_obj = self.env['hotel.room.type.restriction.item']
         # Secure Wubook Input

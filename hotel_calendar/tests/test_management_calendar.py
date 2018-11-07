@@ -45,8 +45,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
         for room_type in room_types:
             for k_pr, v_pr in hcal_data['prices'].iteritems():
@@ -67,7 +67,7 @@ class TestManagementCalendar(TestHotelCalendar):
             self.hotel_room_type_special.product_id.product_tmpl_id.id
         )
         pr_ids = prices_obj.search([
-            ('pricelist_id', '=', self.parity_pricelist_id),
+            ('pricelist_id', '=', self.default_pricelist_id),
             ('product_tmpl_id', 'in', prod_tmpl_ids),
         ])
         pr_ids.sudo(self.user_hotel_manager).unlink()
@@ -75,8 +75,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
         self.assertFalse(any(hcal_data['prices']), "Hotel Calendar Management \
                                         Prices doesn't match after remove!")
@@ -92,8 +92,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
         for room_type in room_types:
             for k_pr, v_pr in hcal_data['restrictions'].iteritems():
@@ -113,7 +113,7 @@ class TestManagementCalendar(TestHotelCalendar):
                                                     self.user_hotel_manager)
         rest_ids = rest_it_obj.search([
             ('applied_on', '=', '0_room_type'),
-            ('restriction_id', '=', self.parity_restrictions_id),
+            ('restriction_id', '=', self.default_restrictions_id),
             ('room_type_id', 'in', (self.hotel_room_type_budget.id,
                                        self.hotel_room_type_special.id)),
         ])
@@ -122,8 +122,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
         self.assertFalse(
             any(hcal_data['restrictions']),
@@ -143,8 +143,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
         for room_type in room_types:
             for k_pr, v_pr in hcal_data['availability'].iteritems():
@@ -168,8 +168,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
         for room_type in room_types:
             for k_pr, v_pr in hcal_data['availability'].iteritems():
@@ -191,8 +191,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
         for room_type in room_types:
             for k_pr, v_pr in hcal_data['availability'].iteritems():
@@ -260,8 +260,8 @@ class TestManagementCalendar(TestHotelCalendar):
 
         # Save new values
         hotel_cal_mngt_obj.save_changes(
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             cprices,
             crestrictions,
             cavails)
@@ -270,8 +270,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
 
         for room_type in room_types:
@@ -347,8 +347,8 @@ class TestManagementCalendar(TestHotelCalendar):
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
             adv_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-            self.parity_pricelist_id,
-            self.parity_restrictions_id,
+            self.default_pricelist_id,
+            self.default_restrictions_id,
             True)
 
         avail_end_utc_dt = reserv_end_utc_dt - timedelta(days=1)
@@ -376,22 +376,22 @@ class TestManagementCalendar(TestHotelCalendar):
             hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
                 False,
                 adv_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                self.parity_pricelist_id,
-                self.parity_restrictions_id,
+                self.default_pricelist_id,
+                self.default_restrictions_id,
                 True)
         with self.assertRaises(ValidationError):
             hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
                 now_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 False,
-                self.parity_pricelist_id,
-                self.parity_restrictions_id,
+                self.default_pricelist_id,
+                self.default_restrictions_id,
                 True)
         with self.assertRaises(ValidationError):
             hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
                 False,
                 False,
-                self.parity_pricelist_id,
-                self.parity_restrictions_id,
+                self.default_pricelist_id,
+                self.default_restrictions_id,
                 True)
         hcal_data = hotel_cal_mngt_obj.get_hcalendar_all_data(
             now_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
@@ -400,7 +400,7 @@ class TestManagementCalendar(TestHotelCalendar):
             False,
             True)
         self.assertTrue(any(hcal_data), "Hotel Calendar invalid default \
-                                                    management parity models!")
+                                                    management default models!")
 
     def test_calendar_settings(self):
         hotel_cal_mngt_obj = self.env['hotel.calendar.management'].sudo(

@@ -9,17 +9,17 @@ class ProductPricelistItem(models.Model):
     @api.model
     def create(self, vals):
         res = super(ProductPricelistItem, self).create(vals)
-        pricelist_parity_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
-        if pricelist_parity_id:
-            pricelist_parity_id = int(pricelist_parity_id)
+        pricelist_default_id = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_pricelist_id')
+        if pricelist_default_id:
+            pricelist_default_id = int(pricelist_default_id)
         pricelist_id = res.pricelist_id.id
         product_tmpl_id = res.product_tmpl_id.id
         date_start = res.date_start
         room_type = self.env['hotel.room.type'].search([
             ('product_id.product_tmpl_id', '=', product_tmpl_id)
         ], limit=1)
-        if pricelist_id == pricelist_parity_id and room_type:
+        if pricelist_id == pricelist_default_id and room_type:
             prod = room_type.product_id.with_context(
                 quantity=1,
                 date=date_start,
@@ -51,10 +51,10 @@ class ProductPricelistItem(models.Model):
 
     @api.multi
     def write(self, vals):
-        pricelist_parity_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
-        if pricelist_parity_id:
-            pricelist_parity_id = int(pricelist_parity_id)
+        pricelist_default_id = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_pricelist_id')
+        if pricelist_default_id:
+            pricelist_default_id = int(pricelist_default_id)
         ret_vals = super(ProductPricelistItem, self).write(vals)
 
         room_pr_cached_obj = self.env['room.pricelist.cached']
@@ -64,7 +64,7 @@ class ProductPricelistItem(models.Model):
             for record in self:
                 pricelist_id = vals.get('pricelist_id') or \
                     record.pricelist_id.id
-                if pricelist_id != pricelist_parity_id:
+                if pricelist_id != pricelist_default_id:
                     continue
                 date_start = vals.get('date_start') or record.date_start
                 product_tmpl_id = vals.get('product_tmpl_id') or \
@@ -104,14 +104,14 @@ class ProductPricelistItem(models.Model):
 
     @api.multi
     def unlink(self):
-        pricelist_parity_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
-        if pricelist_parity_id:
-            pricelist_parity_id = int(pricelist_parity_id)
+        pricelist_default_id = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_pricelist_id')
+        if pricelist_default_id:
+            pricelist_default_id = int(pricelist_default_id)
         # Construct dictionary with relevant info of removed records
         unlink_vals = []
         for record in self:
-            if record.pricelist_id.id != pricelist_parity_id:
+            if record.pricelist_id.id != pricelist_default_id:
                 continue
             room_type = self.env['hotel.room.type'].search([
                 ('product_id.product_tmpl_id', '=', record.product_tmpl_id.id)

@@ -10,7 +10,7 @@ class IrDefault(models.Model):
     @api.model
     def set(self, model_name, field_name, value, user_id=False, company_id=False, condition=False):
         super(IrDefault, self).set(model_name, field_name, value, user_id, company_id, condition)
-        if model_name == 'res.config.settings' and field_name == 'parity_pricelist_id':
+        if model_name == 'res.config.settings' and field_name == 'default_pricelist_id':
             pricelist_id = int(value)
             self.env['room.pricelist.cached'].search([]).unlink()
 

@@ -59,7 +59,7 @@ class HotelReservation(models.Model):
     @api.model
     def _hcalendar_room_data(self, rooms):
         pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
+            'res.config.settings', 'default_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
         json_rooms = []
@@ -117,7 +117,7 @@ class HotelReservation(models.Model):
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom, dto):
         pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
+            'res.config.settings', 'default_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
         date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
@@ -157,7 +157,7 @@ class HotelReservation(models.Model):
     @api.model
     def get_hcalendar_restrictions_data(self, dfrom, dto):
         restriction_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_restrictions_id')
+            'res.config.settings', 'default_restrictions_id')
         if restriction_id:
             restriction_id = int(restriction_id)
         date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
