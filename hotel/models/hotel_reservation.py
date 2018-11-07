@@ -189,8 +189,6 @@ class HotelReservation(models.Model):
                                           compute='_compute_checkin_partner_count',
                                           search='_search_checkin_partner_pending')
     # check_rooms = fields.Boolean('Check Rooms')
-    is_checkin = fields.Boolean()
-    is_checkout = fields.Boolean()
     splitted = fields.Boolean('Splitted', default=False)
     parent_reservation = fields.Many2one('hotel.reservation',
                                          'Parent Reservation')
@@ -644,11 +642,6 @@ class HotelReservation(models.Model):
                 vals.update({'state': 'booking'})
             else:
                 vals.update({'state': 'confirm'})
-            if record.checkin_is_today():
-                vals.update({'is_checkin': True})
-                folio = hotel_folio_obj.browse(record.folio_id.id)
-                folio.checkins_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id), ('is_checkin', '=', True)])
             record.write(vals)
 
             if record.splitted:
@@ -681,14 +674,6 @@ class HotelReservation(models.Model):
                 'state': 'cancelled',
                 'discount': 100.0,
             })
-            if record.checkin_is_today:
-                record.is_checkin = False
-                folio = self.env['hotel.folio'].browse(record.folio_id.id)
-                folio.checkins_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id),
-                    ('is_checkin', '=', True)
-                ])
-
             if record.splitted:
                 master_reservation = record.parent_reservation or record
                 splitted_reservs = self.env['hotel.reservation'].search([
@@ -924,61 +909,6 @@ class HotelReservation(models.Model):
     def action_reservation_checkout(self):
         for record in self:
             record.state = 'done'
-            if record.checkout_is_today():
-                record.is_checkout = False
-                folio = self.env['hotel.folio'].browse(self.folio_id.id)
-                folio.checkouts_reservations = folio.room_lines.search_count([
-                    ('folio_id', '=', folio.id),
-                    ('is_checkout', '=', True)
-                ])
-
-    @api.model
-    def daily_plan(self):
-        _logger.info('daily_plan')
-        today_str = fields.Date.today()
-        yesterday_utc_dt = datetime.now() - timedelta(days=1)
-        yesterday_str = yesterday_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-        reservations_to_checkout = self.env['hotel.reservation'].search([
-            ('state', 'not in', ['done']),
-            ('checkout', '<', today_str)
-            ])
-        for res in reservations_to_checkout:
-            res.action_reservation_checkout()
-
-        reservations = self.env['hotel.reservation'].search([
-            ('reservation_line_ids.date', 'in', [today_str, yesterday_str]),
-            ('state', 'in', ['confirm', 'booking'])
-        ])
-        self._cr.execute("update hotel_reservation set is_checkin = False, \
-                            is_checkout = False where is_checkin = True or \
-                            is_checkout = True")
-        checkins_res = reservations.filtered(lambda x: (
-            x.state in ('confirm','draft')
-            and x.checkin == today_str,)
-            and x.reservation_type == 'normal'))
-        checkins_res.write({'is_checkin': True})
-        checkouts_res = reservations.filtered(lambda x: (
-            x.state not in ('done','cancelled')
-            and x.checkout == today_str
-            and x.reservation_type == 'normal'))
-        checkouts_res.write({'is_checkout': True})
-        self.env['hotel.folio'].daily_plan()
-        return True
-
-    @api.model
-    def checkin_is_today(self):
-        self.ensure_one()
-        tz_hotel = self.env['ir.default'].sudo().get('res.config.settings', 'tz_hotel')
-        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
-        return self.checkin == today
-
-    @api.model
-    def checkout_is_today(self):
-        self.ensure_one()
-        tz_hotel = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'tz_hotel')
-        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
-        return self.checkout == today
 
     @api.multi
     def action_checks(self):

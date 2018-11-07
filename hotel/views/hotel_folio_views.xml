@@ -516,8 +516,6 @@
                 <field name="booking_pending"/>
                 <field name="checkin_partner_count"/>
                 <field name="checkin_partner_pending_count"/>
-                <field name="checkins_reservations"/>
-                <field name="checkouts_reservations"/>
                 <field name="partner_internal_comment"/>
                 <field name="cancelled_reason"/>
                 <field name="prepaid_warning_days"/>

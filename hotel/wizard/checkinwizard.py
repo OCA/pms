@@ -175,9 +175,6 @@ class Wizard(models.TransientModel):
         # update the state of the current reservation
         if record_id.checkin_partner_count > 0:
             record_id.state = 'booking'
-            record_id.is_checkin = False
-            folio = self.env['hotel.folio'].browse(self.reservation_id.folio_id.id)
-            folio.checkins_reservations -= 1
 
     @api.onchange('reservation_id')
     def change_enter_exit_date(self):

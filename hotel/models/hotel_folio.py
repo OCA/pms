@@ -110,8 +110,6 @@ class HotelFolio(models.Model):
                                   compute='_compute_checkin_partner_count')
     checkin_partner_pending_count = fields.Integer('Checkin Pending',
                                           compute='_compute_checkin_partner_count')
-    checkins_reservations = fields.Integer('checkins reservations')
-    checkouts_reservations = fields.Integer('checkouts reservations')
     partner_internal_comment = fields.Text(string='Internal Partner Notes',
                                            related='partner_id.comment')
     internal_comment = fields.Text(string='Internal Folio Notes')
@@ -475,31 +473,6 @@ class HotelFolio(models.Model):
             'domain': [('reservation_id', 'in', rooms)],
             'target': 'new',
         }
-
-    @api.model
-    def daily_plan(self):
-        _logger.info('daily_plan')
-        self._cr.execute("update hotel_folio set checkins_reservations = 0, \
-            checkouts_reservations = 0 where checkins_reservations > 0  \
-            or checkouts_reservations > 0")
-        folios_in = self.env['hotel.folio'].search([
-            ('room_lines.is_checkin', '=', True)
-        ])
-        folios_out = self.env['hotel.folio'].search([
-            ('room_lines.is_checkout', '=', True)
-        ])
-        for fol in folios_in:
-            count_checkin = fol.room_lines.search_count([
-                ('is_checkin', '=', True), ('folio_id.id', '=', fol.id)
-            ])
-            fol.write({'checkins_reservations': count_checkin})
-        for fol in folios_out:
-            count_checkout = fol.room_lines.search_count([
-                ('is_checkout', '=', True),
-                ('folio_id.id', '=', fol.id)
-            ])
-            fol.write({'checkouts_reservations': count_checkout})
-        return True
 
     @api.multi
     def _compute_checkin_partner_count(self):
