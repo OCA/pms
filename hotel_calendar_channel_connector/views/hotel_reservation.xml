@@ -58,7 +58,7 @@
                     <field name="price_total" string="Final Price"/>
                     <field name="folio_pending_amount" string="Folio Pending Amount"/>
                     <button type="object" class="oe_stat_button"
-                        id="cardex_smart_button" icon="fa fa-3x fa-money"
+                        id="checkin_partner_smart_button" icon="fa fa-3x fa-money"
                         name="action_pay_folio"
                         attrs="{'invisible':[('folio_pending_amount','==',0)]}"
                     />

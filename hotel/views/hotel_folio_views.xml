@@ -40,26 +40,26 @@
                 <sheet>
                     <div class=" oe_button_box">
                         <button type="action" class="oe_stat_button"
-                            id="cardex_smart_button"
+                            id="checkin_partner_smart_button"
                             icon="fa-user-plus"
                             name="%(launch_checkin_wizard_add)d"
-                            attrs="{'invisible': [('cardex_pending_count','&lt;=',0)]}"
+                            attrs="{'invisible': [('checkin_partner_pending_count','&lt;=',0)]}"
                             context="{'partner_id': partner_id,'reservation_ids': room_lines,
-                                        'hidden_cardex': True, 'folio': active_id}">
+                                        'hidden_checkin_partner': True, 'folio': active_id}">
                             <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value"><field name="cardex_pending_count"
+                                <span class="o_stat_value"><field name="checkin_partner_pending_count"
                                 widget="statinfo" nolabel="1"/></span>
                                 <span class="o_stat_text">Pending Checks</span>
                             </div>
                         </button>
 
                         <button type="object" class="oe_stat_button"
-                            id="cardex_smart_button"
+                            id="checkin_partner_smart_button"
                             icon="fa-users"
                             name="action_checks"
-                            attrs="{'invisible': [('cardex_count','&lt;=',0)]}">
+                            attrs="{'invisible': [('checkin_partner_count','&lt;=',0)]}">
                             <div class="o_form_field o_stat_info">
-                              <span class="o_stat_value"><field name="cardex_count"
+                              <span class="o_stat_value"><field name="checkin_partner_count"
                                widget="statinfo" nolabel="1"/></span>
                               <span class="o_stat_text">Checks</span>
                             </div>
@@ -175,12 +175,12 @@
                                     <field name="folio_id" invisible="1"/>
                                     <field name="state" />
                                     <button type="action" class="oe_stat_button"
-                                        id="cardex_smart_button" icon="fa fa-1x fa-user-plus"
+                                        id="checkin_partner_smart_button" icon="fa fa-1x fa-user-plus"
                                         name="%(launch_checkin_wizard_add)d"
                                         context="{'partner_id': partner_id,'enter_date': checkin,
-                                            'exit_date': checkout,'reservation_id': id, 'hidden_cardex': True, 'edit_cardex': True }"
+                                            'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
                                         attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),
-                                            ('cardex_pending_count','=', 0),('parent_reservation','!=',False)]}"
+                                            ('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}"
                                     />
                                     <field name="partner_id"/>
                                     <field name="splitted" invisible="1" />
@@ -191,9 +191,9 @@
                                     <field name="adults" string="Persons"/>
                                     <field name="checkin" widget="date"/>
                                     <field name="checkout"  widget="date"/>
-                                    <field name="cardex_ids" invisible ="1"/>
+                                    <field name="checkin_partner_ids" invisible ="1"/>
                                     <field name="to_assign" invisible="1"/>
-                                    <field name="cardex_pending_count" invisible="1"/>
+                                    <field name="checkin_partner_pending_count" invisible="1"/>
                                     <!-- <field name="qty_delivered" invisible="1"/> -->
                                         <!-- attrs="{'readonly': [('qty_delivered_updateable', '=', False)]}"/> -->
                                     <!-- <field name="qty_invoiced" invisible="1"/> -->
@@ -330,7 +330,7 @@
                                         <group invisible="1">
                                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                                             <!-- <field name="check_rooms" invisible="1"/> -->
-                                            <field name="cardex_pending_count" invisible="1"/>
+                                            <field name="checkin_partner_pending_count" invisible="1"/>
                                             <!-- <field name="pricelist_id" invisible="1"/> -->
                                             <field name="nights" invisible="1"/>
                                         </group>
@@ -514,8 +514,8 @@
                 <field name="refund_amount"/>
                 <field name="invoices_paid"/>
                 <field name="booking_pending"/>
-                <field name="cardex_count"/>
-                <field name="cardex_pending_count"/>
+                <field name="checkin_partner_count"/>
+                <field name="checkin_partner_pending_count"/>
                 <field name="checkins_reservations"/>
                 <field name="checkouts_reservations"/>
                 <field name="partner_internal_comment"/>
@@ -530,8 +530,8 @@
                                 <strong class="oe_partner_heading"><field name="partner_id"/></strong>
                                 <ul>
                                     <li t-if="record.name.raw_value"><field name="name"/></li>
-                                    <span t-if="record.cardex_count.value&gt;0" class="badge"><i class="fa fa-fw fa-bed"/><t t-esc="record.cardex_count.value"/></span>
-                                    <span t-if="record.cardex_pending_count.value&gt;0" class="badge"><i class="fa fa-fw fa-user-plus"/><t t-esc="record.cardex_pending_count.value"/></span>
+                                    <span t-if="record.checkin_partner_count.value&gt;0" class="badge"><i class="fa fa-fw fa-bed"/><t t-esc="record.checkin_partner_count.value"/></span>
+                                    <span t-if="record.checkin_partner_pending_count.value&gt;0" class="badge"><i class="fa fa-fw fa-user-plus"/><t t-esc="record.checkin_partner_pending_count.value"/></span>
                                 </ul>
                                 <div class="oe_kanban_partner_links"/>
                             </div>

@@ -105,11 +105,11 @@ class HotelFolio(models.Model):
                                     string="Payments")
 
     booking_pending = fields.Integer('Booking pending',
-                                     compute='_compute_cardex_count')
-    cardex_count = fields.Integer('Cardex counter',
-                                  compute='_compute_cardex_count')
-    cardex_pending_count = fields.Integer('Cardex Pending',
-                                          compute='_compute_cardex_count')
+                                     compute='_compute_checkin_partner_count')
+    checkin_partner_count = fields.Integer('Checkin counter',
+                                  compute='_compute_checkin_partner_count')
+    checkin_partner_pending_count = fields.Integer('Checkin Pending',
+                                          compute='_compute_checkin_partner_count')
     checkins_reservations = fields.Integer('checkins reservations')
     checkouts_reservations = fields.Integer('checkouts reservations')
     partner_internal_comment = fields.Text(string='Internal Partner Notes',
@@ -467,10 +467,10 @@ class HotelFolio(models.Model):
         self.ensure_one()
         rooms = self.mapped('room_lines.id')
         return {
-            'name': _('Cardexs'),
+            'name': _('Checkins'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'cardex',
+            'res_model': 'hotel_checkin_partner',
             'type': 'ir.actions.act_window',
             'domain': [('reservation_id', 'in', rooms)],
             'target': 'new',
@@ -502,19 +502,19 @@ class HotelFolio(models.Model):
         return True
 
     @api.multi
-    def _compute_cardex_count(self):
-        _logger.info('_compute_cardex_amount')
+    def _compute_checkin_partner_count(self):
+        _logger.info('_compute_checkin_partner_amount')
         for record in self:
             if record.reservation_type == 'normal' and record.room_lines:
                 write_vals = {}
                 filtered_reservs = record.room_lines.filtered(
                     lambda x: x.state != 'cancelled' and \
                         not x.parent_reservation)
-                mapped_cardex = filtered_reservs.mapped('cardex_ids.id')
-                record.cardex_count = len(mapped_cardex)
-                mapped_cardex_count = filtered_reservs.mapped(
-                    lambda x: (x.adults + x.children) - len(x.cardex_ids))
-                record.cardex_pending_count = sum(mapped_cardex_count)
+                mapped_checkin_partner = filtered_reservs.mapped('checkin_partner_ids.id')
+                record.checkin_partner_count = len(mapped_checkin_partner)
+                mapped_checkin_partner_count = filtered_reservs.mapped(
+                    lambda x: (x.adults + x.children) - len(x.checkin_partner_ids))
+                record.checkin_partner_pending_count = sum(mapped_checkin_partner_count)
 
     """
     MAILING PROCESS

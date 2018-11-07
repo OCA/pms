@@ -10,7 +10,7 @@
                 <group col="4">
                 <field options="{'no_quick_create': True, 'no_create_edit' : True, 'no_open': True}"
                        name="reservation_id" nolabel="1"
-                       domain="[('folio_id','=',context.get('folio')), ('state', '!=', 'cancelled'), ('cardex_pending_count', '>', 0)]"
+                       domain="[('folio_id','=',context.get('folio')), ('state', '!=', 'cancelled'), ('checkin_partner_pending_count', '>', 0)]"
                        style="max-width: 95%; width: 32.2em"/>
                 </group>
                 <group col="4">
@@ -25,13 +25,13 @@
                 </group>
 
                   <group col="4" attrs="{'invisible':[('checkin_mode', '=', 0)]}" >
-                    <field name="firstname_cardex" colspan="2"/>
-                    <field name="lastname_cardex" colspan="2"/>
+                    <field name="firstname_checkin_partner" colspan="2"/>
+                    <field name="lastname_checkin_partner" colspan="2"/>
                   </group>
 
                 <group col="4" attrs="{'invisible':[('checkin_mode', '=', 0)]}" >
-                    <field name="email_cardex" colspan="2"/>
-                    <field name="mobile_cardex" colspan="2"/>
+                    <field name="email_checkin_partner" colspan="2"/>
+                    <field name="mobile_checkin_partner" colspan="2"/>
                 </group>
 
                 <footer>
@@ -41,7 +41,7 @@
 
                     <field name="checkin_mode" invisible="True"/>
                     <!-- <field name="checkin_show" invisible="True"/> -->
-                    <!-- <field name="edit_checkin_cardex" invisible="True"/> -->
+                    <!-- <field name="edit_checkin_checkin_partner" invisible="True"/> -->
                 </footer>
             </sheet>
             </form>
@@ -66,17 +66,17 @@
                 <label for="reservation_id" string="Resevation"/>
                 <field name="reservation_id" nolabel="1" domain="[('folio_id','=',context.get('folio'))]"/>
                 <button type="action" class="oe_stat_button"
-                    id="cardex_smart_button"
+                    id="checkin_partner_smart_button"
                     icon="fa-user-plus"
                     name="%(launch_checkin_wizard_add)d"
-                    context="{'reservation_id': reservation_id, 'hidden_cardex': True}">
+                    context="{'reservation_id': reservation_id, 'hidden_checkin_partner': True}">
                     <div>
-                        <field name="pending_cardex"
+                        <field name="pending_checkin_partner"
                         string="Pending" widget="statinfo"/>
                     </div>
                 </button>
                 </group>
-                    <field name="cardex_ids" readonly="1"/>
+                    <field name="checkin_partner_ids" readonly="1"/>
                 </sheet>
             </form>
         </field>

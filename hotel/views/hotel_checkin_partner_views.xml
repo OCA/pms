@@ -3,25 +3,25 @@
 
     <!-- Action to open INE Codes list -->
     <act_window
-        id="action_cardex"
-        name="Action cardex"
-        res_model="cardex"
+        id="action_checkin_partner"
+        name="Action checkin"
+        res_model='hotel_checkin_partner'
         view_mode="tree,form" />
     <act_window
-        id="action_cardex_download"
-        name="Action cardex download"
-        res_model="cardex"
+        id="action_checkin_partner_download"
+        name="Action checkin download"
+        res_model='hotel_checkin_partner'
         view_mode="form" />         <!-- Menu item to open INE Codes list -->
     <menuitem
-        id="menu_cardex"
-        name="Cardex"
+        id="menu_hotel_checkin_partner"
+        name="Checkins"
         parent="hotel.hotel_reports_menu"
         sequence="25"
-        action="action_cardex" />
+        action="action_checkin_partner" />
 
-    <record id="view_form_cardex" model="ir.ui.view">
-        <field name="name">Cardex Form</field>
-        <field name="model">cardex</field>
+    <record id="view_form_checkin_partner" model="ir.ui.view">
+        <field name="name">Checkin Form</field>
+        <field name="model">hotel_checkin_partner</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
@@ -40,16 +40,16 @@
         </field>
     </record>
 
-    <record id="view_tree_cardex" model="ir.ui.view">
-        <field name="name">Cardex Tree</field>
-        <field name="model">cardex</field>
+    <record id="view_tree_checkin_partner" model="ir.ui.view">
+        <field name="name">Checkin Tree</field>
+        <field name="model">hotel_checkin_partner</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="partner_id" string="Client name"/>
                 <field name="enter_date"/>
                 <field name="exit_date"/>
                 <field name="reservation_id"/>
-                <!-- button type="action" class="oe_stat_button" id="cardex_smart_button" icon="fa-bed" /-->
+                <!-- button type="action" class="oe_stat_button" id="checkin_partner_smart_button" icon="fa-bed" /-->
             </tree>
         </field>
     </record>
