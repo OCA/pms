@@ -82,7 +82,7 @@ class website_wubook(http.Controller):
             wubook_obj.fetch_rooms_values(dfrom, dto)
 
             default_restr_id = request.env['ir.default'].sudo().get(
-                            'res.config.settings', 'default_restrictions_id')
+                            'res.config.settings', 'default_restriction_id')
             if default_restr_id:
                 room_type_restr_obj = request.env['hotel.room.type.restriction']
                 restr_id = room_type_restr_obj.sudo().browse(int(default_restr_id))

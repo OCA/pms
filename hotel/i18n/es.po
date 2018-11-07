@@ -6163,7 +6163,7 @@ msgstr "Nombre del Plan de Restricciones"
 
 #. module: hotel
 #: selection:hotel.wizard.massive.changes,section:0
-#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_default_restrictions_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_default_restriction_id
 #: model:ir.ui.menu,name:hotel.reservation_restriction_menu
 #: model:ir.ui.view,arch_db:hotel.reservation_restriction_item_view_form
 #: model:ir.ui.view,arch_db:hotel.reservation_restriction_item_view_tree

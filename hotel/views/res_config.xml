@@ -24,13 +24,13 @@
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6 o_setting_box">
-                            <label for="default_restrictions_id"/>
+                            <label for="default_restriction_id"/>
                             <div class="text-muted">
                                 Set restrictions default
                             </div>
                             <div class="content-group">
                                 <div class="mt16">
-                                    <field name="default_restrictions_id" required="True" />
+                                    <field name="default_restriction_id" required="True" />
                                 </div>
                             </div>
                         </div>

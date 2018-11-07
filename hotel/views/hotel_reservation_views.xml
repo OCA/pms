@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Action for hotel reservation -->
+    <record model="ir.actions.act_window" id="open_hotel_reservation_form_tree_all">
+        <field name="name">Hotel Reservation</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+    </record>
 
      <!--=== Hotel Reservation ==== -->
     <!-- Form view of hotel reservation -->
@@ -443,14 +450,6 @@
                 </group>
             </search>
         </field>
-    </record>
-
-    <!-- Action for hotel reservation -->
-    <record model="ir.actions.act_window" id="open_hotel_reservation_form_tree_all">
-        <field name="name">Hotel Reservation</field>
-        <field name="res_model">hotel.reservation</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form,graph,pivot</field>
     </record>
 
     <menuitem name="Reservation Rooms" id="menu_open_hotel_reservation_form_tree_all"

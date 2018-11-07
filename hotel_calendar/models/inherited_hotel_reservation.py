@@ -157,7 +157,7 @@ class HotelReservation(models.Model):
     @api.model
     def get_hcalendar_restrictions_data(self, dfrom, dto):
         restriction_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restrictions_id')
+            'res.config.settings', 'default_restriction_id')
         if restriction_id:
             restriction_id = int(restriction_id)
         date_start = fields.Date.from_string(dfrom) - timedelta(days=1)

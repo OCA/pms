@@ -21,7 +21,7 @@ class HotelConfiguration(models.TransientModel):
 
     default_pricelist_id = fields.Many2one('product.pricelist',
                                           'Product Pricelist')
-    default_restrictions_id = fields.Many2one('hotel.room.type.restriction',
+    default_restriction_id = fields.Many2one('hotel.room.type.restriction',
                                              'Restrictions')
     default_arrival_hour = fields.Char('Default Arrival Hour (GMT)',
                                        help="HH:mm Format", default="14:00")
@@ -42,8 +42,8 @@ class HotelConfiguration(models.TransientModel):
             'res.config.settings', 'default_pricelist_id',
             self.default_pricelist_id.id)
         self.env['ir.default'].sudo().set(
-            'res.config.settings', 'default_restrictions_id',
-            self.default_restrictions_id.id)
+            'res.config.settings', 'default_restriction_id',
+            self.default_restriction_id.id)
         self.env['ir.default'].sudo().set(
             'res.config.settings', 'tz_hotel', self.tz_hotel)
         self.env['ir.default'].sudo().set(
@@ -60,8 +60,8 @@ class HotelConfiguration(models.TransientModel):
         # ONLY FOR v11. DO NOT FORWARD-PORT
         default_pricelist_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_pricelist_id')
-        default_restrictions_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restrictions_id')
+        default_restriction_id = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_restriction_id')
         tz_hotel = self.env['ir.default'].sudo().get(
             'res.config.settings', 'tz_hotel')
         default_arrival_hour = self.env['ir.default'].sudo().get(
@@ -70,7 +70,7 @@ class HotelConfiguration(models.TransientModel):
             'res.config.settings', 'default_departure_hour')
         res.update(
             default_pricelist_id=default_pricelist_id,
-            default_restrictions_id=default_restrictions_id,
+            default_restriction_id=default_restriction_id,
             tz_hotel=tz_hotel,
             default_arrival_hour=default_arrival_hour,
             default_departure_hour=default_departure_hour,

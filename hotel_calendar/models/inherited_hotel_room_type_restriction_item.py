@@ -12,7 +12,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
     def create(self, vals):
         res = super(HotelRoomTypeResrtrictionItem, self).create(vals)
         restrictions_default_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restrictions_id')
+            'res.config.settings', 'default_restriction_id')
         if restrictions_default_id:
             restrictions_default_id = int(restrictions_default_id)
         restriction_id = res.restriction_id.id
@@ -36,7 +36,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
     @api.multi
     def write(self, vals):
         restrictions_default_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restrictions_id')
+            'res.config.settings', 'default_restriction_id')
         if restrictions_default_id:
             restrictions_default_id = int(restrictions_default_id)
         ret_vals = super(HotelRoomTypeResrtrictionItem, self).write(vals)
@@ -64,7 +64,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
     @api.multi
     def unlink(self):
         restrictions_default_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restrictions_id')
+            'res.config.settings', 'default_restriction_id')
         if restrictions_default_id:
             restrictions_default_id = int(restrictions_default_id)
         # Construct dictionary with relevant info of removed records

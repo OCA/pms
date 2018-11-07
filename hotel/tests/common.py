@@ -97,15 +97,15 @@ class TestHotel(TestMail):
         # Minimal Hotel Configuration
         cls.tz_hotel = 'Europe/Madrid'
         cls.default_pricelist_id = cls.pricelist_1.id
-        cls.default_restrictions_id = cls.restriction_1.id
+        cls.default_restriction_id = cls.restriction_1.id
         cls.env['ir.values'].sudo().set_default('res.config.settings',
                                                 'tz_hotel', cls.tz_hotel)
         cls.env['ir.values'].sudo().set_default('res.config.settings',
                                                 'default_pricelist_id',
                                                 cls.default_pricelist_id)
         cls.env['ir.values'].sudo().set_default('res.config.settings',
-                                                'default_restrictions_id',
-                                                cls.default_restrictions_id)
+                                                'default_restriction_id',
+                                                cls.default_restriction_id)
 
         # User Groups
         user_group_hotel_manager = cls.env.ref('hotel.group_hotel_manager')
@@ -234,7 +234,7 @@ class TestHotel(TestMail):
                 })
                 room_type_rest_item_obj.create({
                     'room_type_id': k_vr,
-                    'restriction_id': cls.default_restrictions_id,
+                    'restriction_id': cls.default_restriction_id,
                     'date_start': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'date_end': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'applied_on': '0_room_type',

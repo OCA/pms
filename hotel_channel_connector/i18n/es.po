@@ -700,7 +700,7 @@ msgid "Restriction Plans successfully imported"
 msgstr "Planes de precios importados con éxito"
 
 #. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_default_restrictions_id
+#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_default_restriction_id
 msgid "Restrictions"
 msgstr "Restricciones"
 
