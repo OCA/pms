@@ -28,6 +28,8 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                               string='Pricelist',
                               required=True,
                               ondelete='cascade')
+    no_ota = fields.Boolean('No OTA', default=False)
+    booked = fields.Boolean('Booked', default=False, readonly=True)
     channel_max_avail = fields.Integer("Max. Channel Avail",
                                        default=_default_channel_max_avail,
                                        old_name='wmax_avail')
