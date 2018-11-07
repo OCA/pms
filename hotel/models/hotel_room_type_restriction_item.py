@@ -13,11 +13,6 @@ class HotelRoomTypeRestrictionItem(models.Model):
     room_type_id = fields.Many2one('hotel.room.type', 'Room Type',
                                    required=True, ondelete='cascade')
     date = fields.Date('Date')
-    applied_on = fields.Selection([
-        ('1_global', 'Global'),
-        ('0_room_type', 'Room Type')], string="Apply On", required=True,
-                                  default='0_room_type',
-                                  help='Pricelist Item applicable on selected option')
 
     min_stay = fields.Integer("Min. Stay")
     min_stay_arrival = fields.Integer("Min. Stay Arrival")
@@ -47,9 +42,3 @@ class HotelRoomTypeRestrictionItem(models.Model):
                 raise ValidationError(
                     ("Max. Stay Arrival can't be less than zero"))
 
-    @api.constrains('applied_on')
-    def _check_applied_on(self):
-        for record in self:
-            count = record.search_count([('applied_on', '=', '1_global')])
-            if count > 1:
-                raise ValidationError(_("Already exists an global rule"))

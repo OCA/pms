@@ -167,7 +167,6 @@ class MassiveChangesWizard(models.TransientModel):
             ('date_start', '>=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('date_end', '<=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('restriction_id', '=', record.restriction_id.id),
-            ('applied_on', '=', '0_room_type'),
         ]
 
         for room_type in room_types:
@@ -185,7 +184,6 @@ class MassiveChangesWizard(models.TransientModel):
                     'date_end': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'restriction_id': record.restriction_id.id,
                     'room_type_id': room_type.id,
-                    'applied_on': '0_room_type',
                 })
                 hotel_room_type_re_it_obj.create(vals)
 

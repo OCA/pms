@@ -18,9 +18,7 @@
             <separator string="Pricelist Items"/>
             <field name="item_ids" nolabel="1">
               <tree string="Restriction Items">
-                <field name="applied_on"/>
-                <!-- <field name="room_type_id" attr="{'invisible':[['applied_on', '=', '1_room_type']]}"/> -->
-                <field name="room_type_id" attr="{'invisible':[['applied_on', '=', '0_room_type']]}"/>
+                <field name="room_type_id"/>
                 <field name="date"/>
                 <field name="min_stay"/>
                 <field name="closed"/>
