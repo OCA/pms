@@ -6,7 +6,6 @@ from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
-from odoo.addons.hotel import date_utils
 from odoo import fields, api, _
 _logger = logging.getLogger(__name__)
 

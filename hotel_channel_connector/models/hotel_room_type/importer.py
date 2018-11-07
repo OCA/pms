@@ -5,8 +5,7 @@ import logging
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
-from odoo.addons.connector.components.mapper import mapping
-from odoo.addons.hotel import date_utils
+from odoo.addons.sconnector.components.mapper import mapping
 from odoo import fields, api, _
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
@@ -45,9 +44,9 @@ class HotelRoomTypeImporter(Component):
     def fetch_rooms_values(self, dfrom, dto, rooms=False,
                            set_max_avail=False):
         # Sanitize Dates
-        now_dt = date_utils.now()
-        dfrom_dt = date_utils.get_datetime(dfrom)
-        dto_dt = date_utils.get_datetime(dto)
+        now_dt = fields.Datetime.now()
+        dfrom_dt = fields.Date.from_string(dfrom)
+        dto_dt = fields.Date.from_string(dto)
         if dto_dt < now_dt:
             return True
         if dfrom_dt < now_dt:
@@ -122,7 +121,7 @@ class HotelRoomTypeImporter(Component):
                 ('channel_plan_id', '=', k_rid)
             ], limit=1)
             if room_type:
-                date_dt = date_utils.get_datetime(
+                date_dt = fields.Date.from_string(
                     dfrom,
                     dtformat=DEFAULT_WUBOOK_DATE_FORMAT)
                 for day_vals in v_rid:

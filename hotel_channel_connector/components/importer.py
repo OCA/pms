@@ -8,7 +8,6 @@ from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import AbstractComponent, Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo.addons.hotel import date_utils
 from odoo import _
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
@@ -110,9 +109,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                 ('wrid', '=', k_rid)
             ], limit=1)
             if room_type:
-                date_dt = date_utils.get_datetime(
-                    dfrom,
-                    dtformat=DEFAULT_WUBOOK_DATE_FORMAT)
+                date_dt = fields.Date.from_string(dfrom)
                 for day_vals in v_rid:
                     date_str = date_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
                     self._get_room_values_availability(
@@ -138,14 +135,10 @@ class HotelChannelConnectorImporter(AbstractComponent):
         reservation_line_ids = []
         tprice = 0.0
         for brday in broom['roomdays']:
-            wndate = date_utils.get_datetime(
-                brday['day'],
-                dtformat=DEFAULT_WUBOOK_DATE_FORMAT
-            ).replace(tzinfo=pytz.utc)
-            if date_utils.date_in(wndate,
-                                  dates_checkin[0],
-                                  dates_checkout[0] - timedelta(days=1),
-                                  hours=False) == 0:
+            wndate = fields.Date.from_string(
+                brday['day']
+            )
+            if wndate >= dates_checkin[0] and wndate <= (dates_checkout[0] - timedelta(days=1)):
                 reservation_line_ids.append((0, False, {
                     'date': wndate.strftime(
                         DEFAULT_SERVER_DATE_FORMAT),
@@ -247,19 +240,13 @@ class HotelChannelConnectorImporter(AbstractComponent):
             arr_hour = default_arrival_hour if book['arrival_hour'] == "--" \
                 else book['arrival_hour']
             checkin = "%s %s" % (book['date_arrival'], arr_hour)
-            checkin_dt = date_utils.get_datetime(
-                checkin,
-                dtformat=DEFAULT_WUBOOK_DATETIME_FORMAT,
-                stz=tz_hotel)
+            checkin_dt = fields.Date.from_string(checkin)
             checkin_utc_dt = date_utils.dt_as_timezone(checkin_dt, 'UTC')
             checkin = checkin_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
             checkout = "%s %s" % (book['date_departure'],
                                   default_departure_hour)
-            checkout_dt = date_utils.get_datetime(
-                checkout,
-                dtformat=DEFAULT_WUBOOK_DATETIME_FORMAT,
-                stz=tz_hotel)
+            checkout_dt = fields.Date.from_string(checkout)
             checkout_utc_dt = date_utils.dt_as_timezone(checkout_dt, 'UTC')
             checkout = checkout_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
@@ -539,9 +526,9 @@ class HotelChannelConnectorImporter(AbstractComponent):
         ], limit=1)
         if pricelist:
             pricelist_item_obj = self.env['product.pricelist.item']
-            dfrom_dt = date_utils.get_datetime(date_from)
-            dto_dt = date_utils.get_datetime(date_to)
-            days_diff = date_utils.date_diff(dfrom_dt, dto_dt, hours=False) + 1
+            dfrom_dt = fields.Date.from_string(date_from)
+            dto_dt = fields.Date.from_string(date_to)
+            days_diff = (dfrom_dt - dto_dt) + 1
             for i in range(0, days_diff):
                 ndate_dt = dfrom_dt + timedelta(days=i)
                 for k_rid, v_rid in plan_prices.iteritems():
@@ -623,9 +610,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                     ], limit=1)
                     if room_type:
                         for item in v_rid:
-                            date_dt = date_utils.get_datetime(
-                                item['date'],
-                                dtformat=DEFAULT_WUBOOK_DATE_FORMAT)
+                            date_dt = fields.Date.from_string(item['date'])
                             restriction_item = restriction_item_obj.search([
                                 ('restriction_id', '=', restriction_id.id),
                                 ('date_start', '=', date_dt.strftime(

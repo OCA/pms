@@ -11,7 +11,6 @@ from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from .backend_adapter import DEFAULT_WUBOOK_DATE_FORMAT
-from odoo.addons.hotel import date_utils
 from odoo import api, fields
 _logger = logging.getLogger(__name__)
 
@@ -29,17 +28,13 @@ class HotelChannelConnectorExporter(AbstractComponent):
     def push_priceplans(self):
         unpushed = self.env['product.pricelist.item'].search([
             ('wpushed', '=', False),
-            ('date_start', '>=', date_utils.now(hours=False).strftime(
+            ('date_start', '>=', fields.Datetime.now().strftime(
                 DEFAULT_SERVER_DATE_FORMAT))
         ], order="date_start ASC")
         if any(unpushed):
-            date_start = date_utils.get_datetime(
-                unpushed[0].date_start,
-                dtformat=DEFAULT_SERVER_DATE_FORMAT)
-            date_end = date_utils.get_datetime(
-                unpushed[-1].date_start,
-                dtformat=DEFAULT_SERVER_DATE_FORMAT)
-            days_diff = date_utils.date_diff(date_start, date_end, hours=False) + 1
+            date_start = fields.Date.from_string(unpushed[0].date_start)
+            date_end = fields.Date.from_string(unpushed[-1].date_start)
+            days_diff = (date_start - date_end).days + 1
 
             prices = {}
             pricelist_ids = self.env['product.pricelist'].search([
@@ -82,20 +77,13 @@ class HotelChannelConnectorExporter(AbstractComponent):
         rest_item_obj = self.env['hotel.room.type.restriction.item']
         unpushed = rest_item_obj.search([
             ('wpushed', '=', False),
-            ('date_start', '>=', date_utils.now(hours=False).strftime(
+            ('date_start', '>=', fields.Datetime.now().strftime(
                 DEFAULT_SERVER_DATE_FORMAT))
         ], order="date_start ASC")
         if any(unpushed):
-            date_start = date_utils.get_datetime(
-                unpushed[0].date_start,
-                dtformat=DEFAULT_SERVER_DATE_FORMAT)
-            date_end = date_utils.get_datetime(
-                unpushed[-1].date_start,
-                dtformat=DEFAULT_SERVER_DATE_FORMAT)
-            days_diff = date_utils.date_diff(
-                date_start,
-                date_end,
-                hours=False) + 1
+            date_start = fields.Date.from_string(unpushed[0].date_start)
+            date_end = fields.Date.from_string(unpushed[-1].date_start)
+            days_diff = (date_start - date_end) + 1
             restrictions = {}
             restriction_plan_ids = room_type_rest_obj.search([
                 ('wpid', '!=', False),

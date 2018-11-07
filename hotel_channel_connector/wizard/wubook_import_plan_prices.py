@@ -21,7 +21,6 @@
 ##############################################################################
 from openerp.exceptions import ValidationError
 from openerp import models, fields, api, _
-from odoo.addons.hotel import date_utils
 from ..components.backend_adapter import DEFAULT_WUBOOK_DATE_FORMAT
 
 
@@ -37,8 +36,8 @@ class ImportPlanPricesWizard(models.TransientModel):
                                             self.env.context.get('active_id'))
         if pricelist_id:
             for record in self:
-                date_start_dt = date_utils.get_datetime(record.date_start)
-                date_end_dt = date_utils.get_datetime(record.date_end)
+                date_start_dt = fields.Date.from_string(record.date_start)
+                date_end_dt = fields.Date.from_string(record.date_end)
                 wres = self.env['wubook'].fetch_plan_prices(
                     pricelist_id.wpid,
                     date_start_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
