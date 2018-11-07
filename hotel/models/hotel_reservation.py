@@ -179,16 +179,16 @@ class HotelReservation(models.Model):
     pricelist_id = fields.Many2one('product.pricelist',
                                    related='folio_id.pricelist_id',
                                    readonly="1")
-    cardex_ids = fields.One2many('cardex', 'reservation_id')
-    # TODO: As cardex_count is a computed field, it can't not be used in a domain filer
-    # Non-stored field hotel.reservation.cardex_count cannot be searched
+    checkin_partner_ids = fields.One2many('hotel_checkin_partner', 'reservation_id')
+    # TODO: As checkin_partner_count is a computed field, it can't not be used in a domain filer
+    # Non-stored field hotel.reservation.checkin_partner_count cannot be searched
     # searching on a computed field can also be enabled by setting the search parameter.
     # The value is a method name returning a Domains
-    cardex_count = fields.Integer('Cardex counter',
-                                  compute='_compute_cardex_count')
-    cardex_pending_count = fields.Integer('Cardex Pending Num',
-                                          compute='_compute_cardex_count',
-                                          search='_search_cardex_pending')
+    checkin_partner_count = fields.Integer('Checkin counter',
+                                  compute='_compute_checkin_partner_count')
+    checkin_partner_pending_count = fields.Integer('Checkin Pending Num',
+                                          compute='_compute_checkin_partner_count',
+                                          search='_search_checkin_partner_pending')
     # check_rooms = fields.Boolean('Check Rooms')
     is_checkin = fields.Boolean()
     is_checkout = fields.Boolean()
@@ -646,7 +646,7 @@ class HotelReservation(models.Model):
         hotel_reserv_obj = self.env['hotel.reservation']
         for record in self:
             vals = {}
-            if record.cardex_ids:
+            if record.checkin_partner_ids:
                 vals.update({'state': 'booking'})
             else:
                 vals.update({'state': 'confirm'})
@@ -912,18 +912,18 @@ class HotelReservation(models.Model):
     """
 
     @api.multi
-    def _compute_cardex_count(self):
-        _logger.info('_compute_cardex_count')
+    def _compute_checkin_partner_count(self):
+        _logger.info('_compute_checkin_partner_count')
         for record in self:
-            record.cardex_count = len(record.cardex_ids)
-            record.cardex_pending_count = (record.adults + record.children) \
-                    - len(record.cardex_ids)
+            record.checkin_partner_count = len(record.checkin_partner_ids)
+            record.checkin_partner_pending_count = (record.adults + record.children) \
+                    - len(record.checkin_partner_ids)
 
     # https://www.odoo.com/es_ES/forum/ayuda-1/question/calculated-fields-in-search-filter-possible-118501
     @api.multi
-    def _search_cardex_pending(self, operator, value):
+    def _search_checkin_partner_pending(self, operator, value):
         self.ensure_one()
-        recs = self.search([]).filtered(lambda x: x.cardex_pending_count > 0)
+        recs = self.search([]).filtered(lambda x: x.checkin_partner_pending_count > 0)
         return [('id', 'in', [x.id for x in recs])] if recs else []
 
     @api.multi
@@ -991,10 +991,10 @@ class HotelReservation(models.Model):
     def action_checks(self):
         self.ensure_one()
         return {
-            'name': _('Cardexs'),
+            'name': _('Checkins'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'cardex',
+            'res_model': 'hotel_checkin_partner',
             'type': 'ir.actions.act_window',
             'domain': [('reservation_id', '=', self.id)],
             'target': 'new',

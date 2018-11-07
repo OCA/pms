@@ -127,11 +127,11 @@
                             icon="fa-user-plus"
                             name="%(launch_checkin_wizard_add)d"
                             context="{'partner_id': partner_id,'enter_date': checkin,
-                                'exit_date': checkout,'reservation_id': id, 'hidden_cardex': True, 'edit_cardex': True }"
+                                'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
                             attrs="{'invisible':['|', '|', ('state','not in',('confirm','booking')),
-                                ('cardex_pending_count','=', 0),('parent_reservation','!=',False)]}">
+                                ('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}">
                             <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value"><field name="cardex_pending_count"
+                                <span class="o_stat_value"><field name="checkin_partner_pending_count"
                                 widget="statinfo" nolabel="1"/></span>
                                 <span class="o_stat_text">Pending Checks</span>
                             </div>
@@ -140,10 +140,10 @@
                             id="checkin_smart_button"
                             icon="fa-users"
                             name="action_checks"
-                            attrs="{'invisible': ['|', ('cardex_count','&lt;=',0),
+                            attrs="{'invisible': ['|', ('checkin_partner_count','&lt;=',0),
                                 ('parent_reservation','!=',False)]}">
                             <div class="o_form_field o_stat_info">
-                              <span class="o_stat_value"><field name="cardex_count"
+                              <span class="o_stat_value"><field name="checkin_partner_count"
                                widget="statinfo" nolabel="1"/></span>
                               <span class="o_stat_text">Checks</span>
                             </div>
@@ -233,7 +233,7 @@
                     <group invisible="1">
                         <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                         <!-- <field name="check_rooms" invisible="1"/> -->
-                        <field name="cardex_pending_count" invisible="1"/>
+                        <field name="checkin_partner_pending_count" invisible="1"/>
                         <!-- <field name="pricelist_id" invisible="1"/> -->
                         <field name="nights" invisible="1"/>
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
@@ -335,8 +335,8 @@
                     icon="fa fa-1x fa-user-plus"
                     name="%(launch_checkin_wizard_add)d"
                     context="{'partner_id': partner_id,'enter_date': checkin,
-                        'exit_date': checkout,'reservation_id': id, 'hidden_cardex': True, 'edit_cardex': True }"
-                    attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),('cardex_pending_count','=', 0),('parent_reservation','!=',False)]}"
+                        'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
+                    attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}"
                 />
                 <button type="action" class="oe_stat_button"
                     icon="fa fa-2x fa-list-ul"
@@ -354,10 +354,10 @@
                 <field name="create_date"/>
                 <field name="overbooking" invisible="1" />
                 <field name="last_updated_res" string="Updated on"/>
-                <field name="cardex_ids" invisible ="1"/>
+                <field name="checkin_partner_ids" invisible ="1"/>
                 <field name="to_assign" invisible="1"/>
-                <!-- cardex_smart_button attrs depends on cardex_pending to be showed -->
-                <field name="cardex_pending_count" invisible="1"/>
+                <!-- checkin_partner_smart_button attrs depends on checkin_partner_pending to be showed -->
+                <field name="checkin_partner_pending_count" invisible="1"/>
                 <field name="folio_pending_amount" string="Folio Pending Amount"/>
                 <button type="object" class="oe_stat_button"
                     icon="fa fa-3x fa-money"

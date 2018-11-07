@@ -2,12 +2,12 @@
 # Copyright 2018  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import datetime
-from openerp import models, fields, api, _
-from openerp.exceptions import except_orm, ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import except_orm, ValidationError
 
 
-class Cardex(models.Model):
-    _name = 'cardex'
+class HotelCheckinPartner(models.Model):
+    _name = 'hotel_checkin_partner'
 
     # Validation for Departure date is after arrival date.
     @api.constrains('exit_date')
