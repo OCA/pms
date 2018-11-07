@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- Form view of hotel service -->
-    <record model="ir.ui.view" id="view_hotel_services_form">
+    <record model="ir.ui.view" id="hotel_service_view_form">
         <field name="name">.hotel.service.form</field>
         <field name="model">hotel.service</field>
         <field name="arch" type="xml">
@@ -64,7 +64,7 @@
     </record>
 
     <!-- search view of hotel service -->
-    <record model="ir.ui.view" id="view_hotel_services_search">
+    <record model="ir.ui.view" id="hotel_service_view_search">
         <field name="name">hotel.service.search</field>
         <field name="model">hotel.service</field>
         <field name="arch" type="xml">
@@ -83,7 +83,7 @@
     </record>
 
     <!-- Tree view of hotel service -->
-    <record model="ir.ui.view" id="view_hotel_services_tree">
+    <record model="ir.ui.view" id="hotel_service_view_tree">
         <field name="name">hotel.service.tree</field>
         <field name="model">hotel.service</field>
         <field name="arch" type="xml">

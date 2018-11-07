@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Action for hotel reservation -->
-    <record model="ir.actions.act_window" id="open_hotel_reservation_form_tree_all">
-        <field name="name">Hotel Reservation</field>
-        <field name="res_model">hotel.reservation</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form,graph,pivot</field>
-    </record>
-
-    <menuitem name="Reservation Rooms" id="menu_open_hotel_reservation_form_tree_all"
-        action="open_hotel_reservation_form_tree_all" sequence="10" parent="menu_all_folio"/>
-
      <!--=== Hotel Reservation ==== -->
     <!-- Form view of hotel reservation -->
-   <record model="ir.ui.view" id="view_hotel_reservation_form">
+   <record model="ir.ui.view" id="hotel_reservation_view_form">
         <field name="name">hotel.reservation.form</field>
         <field name="model">hotel.reservation</field>
         <field name="arch" type="xml">
@@ -306,7 +295,7 @@
     </record>
 
     <!-- Tree view of hotel reservation -->
-    <record model="ir.ui.view" id="view_hotel_reservation_tree">
+    <record model="ir.ui.view" id="hotel_reservation_view_tree">
         <field name="name">hotel.reservation.tree</field>
         <field name="model">hotel.reservation</field>
         <field name="arch" type="xml">
@@ -370,7 +359,7 @@
     </record>
 
      <!-- Search view of hotel reservation -->
-    <record model="ir.ui.view" id="view_hotel_reservation_search">
+    <record model="ir.ui.view" id="hotel_reservation_view_search">
         <field name="name">hotel.reservation.search</field>
         <field name="model">hotel.reservation</field>
         <field name="arch" type="xml">
@@ -455,5 +444,16 @@
             </search>
         </field>
     </record>
+
+    <!-- Action for hotel reservation -->
+    <record model="ir.actions.act_window" id="open_hotel_reservation_form_tree_all">
+        <field name="name">Hotel Reservation</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+    </record>
+
+    <menuitem name="Reservation Rooms" id="menu_open_hotel_reservation_form_tree_all"
+        action="open_hotel_reservation_form_tree_all" sequence="10" parent="menu_all_folio"/>
 
 </odoo>

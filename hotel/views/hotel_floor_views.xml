@@ -3,7 +3,7 @@
 
     <!--==================================================== Floor ==================================================== -->
     <!-- Form view of hotel floor -->
-    <record model="ir.ui.view" id="view_hotel_floor_form">
+    <record model="ir.ui.view" id="hotel_floor_view_form">
         <field name="name">hotel.floor.form</field>
         <field name="model">hotel.floor</field>
         <field name="arch" type="xml">
@@ -19,7 +19,7 @@
     </record>
 
     <!-- Tree view of hotel floor -->
-    <record model="ir.ui.view" id="view_hotel_floor_tree">
+    <record model="ir.ui.view" id="hotel_floor_view_tree">
         <field name="name">hotel.floor.tree</field>
         <field name="model">hotel.floor</field>
         <field name="arch" type="xml">

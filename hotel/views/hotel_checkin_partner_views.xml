@@ -19,7 +19,7 @@
         sequence="25"
         action="action_checkin_partner" />
 
-    <record id="view_form_checkin_partner" model="ir.ui.view">
+    <record id="hotel_checkin_partner_view_form" model="ir.ui.view">
         <field name="name">Checkin Form</field>
         <field name="model">hotel.checkin.partner</field>
         <field name="arch" type="xml">
@@ -40,7 +40,7 @@
         </field>
     </record>
 
-    <record id="view_tree_checkin_partner" model="ir.ui.view">
+    <record id="hotel_checkin_partner_view_tree" model="ir.ui.view">
         <field name="name">Checkin Tree</field>
         <field name="model">hotel.checkin.partner</field>
         <field name="arch" type="xml">

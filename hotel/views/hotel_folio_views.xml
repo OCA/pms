@@ -3,7 +3,7 @@
 
     <!--=== Hotel Folio ==== -->
     <!-- Form view of hotel folio -->
-    <record model="ir.ui.view" id="view_hotel_folio1_form">
+    <record model="ir.ui.view" id="hotel_folio_view_form">
         <field name="name">hotel.folio.form</field>
         <field name="model">hotel.folio</field>
         <field name="arch" type="xml">
@@ -483,7 +483,7 @@
     </record>
 
     <!-- Tree view of hotel folio -->
-    <record model="ir.ui.view" id="view_hotel_folio1_tree">
+    <record model="ir.ui.view" id="hotel_folio_view_tree">
         <field name="name">hotel.folio.tree</field>
         <field name="model">hotel.folio</field>
         <field name="arch" type="xml">
@@ -501,7 +501,7 @@
     </record>
 
     <!-- Folio Kanban View -->
-    <record model="ir.ui.view" id="hotel_folio_kanban_view">
+    <record model="ir.ui.view" id="hotel_folio_view_kanban">
         <field name="name">hotel.folio.kanban</field>
         <field name="model">hotel.folio</field>
         <field name="arch" type="xml">
@@ -543,7 +543,7 @@
     </record>
 
     <!-- Search view of hotel folio -->
-    <record model="ir.ui.view" id="view_hotel_folio_search">
+    <record model="ir.ui.view" id="hotel_folio_view_search">
         <field name="name">hotel.folio.search</field>
         <field name="model">hotel.folio</field>
         <field name="arch" type="xml">
@@ -558,7 +558,7 @@
     </record>
 
     <!--graph view of hotel folio -->
-    <record id="view_hotel_folio_graph" model="ir.ui.view">
+    <record id="hotel_folio_view_graph" model="ir.ui.view">
         <field name="name">view.hotel.folio.graph</field>
         <field name="model">hotel.folio</field>
         <field name="arch" type="xml">
