@@ -3,7 +3,7 @@
 
     <!--=== Hotel Service Line ==== -->
     <!-- Form view of Service Line -->
-    <record model="ir.ui.view" id="view_hotel_service_line_form">
+    <record model="ir.ui.view" id="hotel_service_line_view_form">
         <field name="name">hotel.service.line.form</field>
         <field name="model">hotel.service.line</field>
         <field name="arch" type="xml">
@@ -35,7 +35,7 @@
     </record>
 
     <!-- Tree view of hotel service -->
-    <record model="ir.ui.view" id="view_hotel_service_line_tree">
+    <record model="ir.ui.view" id="hotel_service_line_view_tree">
         <field name="name">hotel.service.line.tree</field>
         <field name="model">hotel.service.line</field>
         <field name="arch" type="xml">

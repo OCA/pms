@@ -4,11 +4,11 @@
 from odoo import models, fields
 
 class HotelRoomAmenitie(models.Model):
-    _name = 'hotel.room.amenitie'
+    _name = 'hotel.amenity'
     _description = 'Room amenities'
 
     name = fields.Char('Amenity Name', required=True)
     active = fields.Boolean('Active', default=True)
     default_code = fields.Char('Internal Reference')
-    room_amenitie_type_id = fields.Many2one('hotel.room.amenitie.type',
+    room_amenity_type_id = fields.Many2one('hotel.amenity.type',
                                              'Amenity Catagory')

@@ -2,21 +2,21 @@
 <odoo>
 
     <!-- Form view of hotel room type class-->
-    <record model="ir.ui.view" id="view_hotel_room_closure_reason_form">
+    <record model="ir.ui.view" id="hotel_room_closure_reason_view_form">
         <field name="name">hotel.room.closure.reason.form</field>
         <field name="model">room.closure.reason</field>
         <field name="arch" type="xml">
             <form string="Hotel Room Closure Reason">
-                <sheet>                    
+                <sheet>
                     <field name="name" />
-                    <field name="description" />  
+                    <field name="description" />
                 </sheet>
             </form>
         </field>
     </record>
 
     <!-- Tree view of hotel room type class -->
-    <record model="ir.ui.view" id="view_hotel_room_closure_reason_tree">
+    <record model="ir.ui.view" id="hotel_room_closure_reason_view_tree">
         <field name="name">>hotel.room.closure.reason.tree</field>
         <field name="model">room.closure.reason</field>
         <field name="arch" type="xml">

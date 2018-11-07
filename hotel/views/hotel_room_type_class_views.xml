@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- Form view of hotel room type class-->
-    <record model="ir.ui.view" id="view_hotel_room_type_class_form">
+    <record model="ir.ui.view" id="hotel_room_type_class_view_form">
         <field name="name">hotel.room.type.class.form</field>
         <field name="model">hotel.room.type.class</field>
         <field name="arch" type="xml">
@@ -18,7 +18,7 @@
                     <group colspan="4">
                       <group>
                         <field name="name" />
-                        <field name="code_class" />                        
+                        <field name="code_class" />
                       </group>
                     </group>
                     <group colspan="2">
@@ -32,7 +32,7 @@
     </record>
 
     <!-- Tree view of hotel room type class -->
-    <record model="ir.ui.view" id="view_hotel_room_type_class_tree">
+    <record model="ir.ui.view" id="hotel_room_type_class_view_tree">
         <field name="name">hotel.room.type.class.tree</field>
         <field name="model">hotel.room.type.class</field>
         <field name="arch" type="xml">

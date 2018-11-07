@@ -5,11 +5,11 @@ from odoo import models, fields
 
 
 class HotelRoomAmenitieType(models.Model):
-    _name = 'hotel.room.amenitie.type'
+    _name = 'hotel.amenity.type'
     _description = 'Amenities Type'
 
     name = fields.Char('Amenity Name', required=True)
     active = fields.Boolean('Active', default=True)
-    room_amenitie_ids = fields.One2many('hotel.room.amenitie',
-                                         'room_amenitie_type_id',
+    room_amenity_ids = fields.One2many('hotel.amenity',
+                                         'room_amenity_type_id',
                                          'Amenities in this category')
