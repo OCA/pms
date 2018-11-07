@@ -190,7 +190,7 @@ class HotelFolio(models.Model):
         self.ensure_one()
         partner = self.partner_id.id
         amount = self.pending_amount
-        view_id = self.env.ref('hotel.view_account_payment_folio_form').id
+        view_id = self.env.ref('hotel.account_payment_view_form_folio').id
         return{
             'name': _('Register Payment'),
             'view_type': 'form',
