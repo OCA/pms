@@ -103,7 +103,7 @@ class FolioWizard(models.TransientModel):
                 nights = abs((checkout_dt - checkin_dt).days)
                 for room in product_list:
                     pricelist_id = self.env['ir.default'].sudo().get(
-                        'res.config.settings', 'parity_pricelist_id')
+                        'res.config.settings', 'default_pricelist_id')
                     if pricelist_id:
                         pricelist_id = int(pricelist_id)
                     res_price = 0
@@ -331,7 +331,7 @@ class HotelRoomTypeWizards(models.TransientModel):
             nights = abs((chkout_utc_dt - chkin_utc_dt).days)
 
             pricelist_id = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'parity_pricelist_id')
+                'res.config.settings', 'default_pricelist_id')
             if pricelist_id:
                 pricelist_id = int(pricelist_id)
 
@@ -426,7 +426,7 @@ class ReservationWizard(models.TransientModel):
 
             if line.room_type_id:
                 pricelist_id = self.env['ir.default'].sudo().get(
-                    'res.config.settings', 'parity_pricelist_id')
+                    'res.config.settings', 'default_pricelist_id')
                 if pricelist_id:
                     pricelist_id = int(pricelist_id)
                 nights = abs((end_date_utc_dt - start_date_utc_dt).days)
@@ -479,7 +479,7 @@ class ServiceWizard(models.TransientModel):
         if self.product_id:
             #TODO change pricelist for partner
             pricelist_id = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'parity_pricelist_id')
+                'res.config.settings', 'default_pricelist_id')
             prod = self.product_id.with_context(
                 lang=self.folio_wizard_id.partner_id.lang,
                 partner=self.folio_wizard_id.partner_id.id,

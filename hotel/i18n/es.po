@@ -4444,7 +4444,7 @@ msgstr "Nombre del Hotel"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_config_settings
-msgid "Hotel Parity"
+msgid "Hotel Default"
 msgstr "Emparejado"
 
 #. module: hotel
@@ -5831,7 +5831,7 @@ msgid "Product Category"
 msgstr "Categoría de producto"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_parity_pricelist_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_default_pricelist_id
 msgid "Product Pricelist"
 msgstr "Lista de precios del producto"
 
@@ -6163,7 +6163,7 @@ msgstr "Nombre del Plan de Restricciones"
 
 #. module: hotel
 #: selection:hotel.wizard.massive.changes,section:0
-#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_parity_restrictions_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_config_settings_default_restrictions_id
 #: model:ir.ui.menu,name:hotel.reservation_restriction_menu
 #: model:ir.ui.view,arch_db:hotel.reservation_restriction_item_view_form
 #: model:ir.ui.view,arch_db:hotel.reservation_restriction_item_view_tree

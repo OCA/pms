@@ -443,10 +443,9 @@ class HotelReservation(models.Model):
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
-        #TODO: Change parity pricelist by default pricelist
         pricelist = self.partner_id.property_product_pricelist and \
                 self.partner_id.property_product_pricelist.id or \
-                self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')
+                self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
         values = {
             'pricelist_id': pricelist,
         }
@@ -745,7 +744,7 @@ class HotelReservation(models.Model):
         if not vals:
             vals = {}
         pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'parity_pricelist_id')
+            'res.config.settings', 'default_pricelist_id')
         #~ pricelist_id = vals.get('pricelist_id') or self.pricelist_id.id
         room_type_id = vals.get('room_type_id') or self.room_type_id.id
         product = self.env['hotel.room.type'].browse(room_type_id).product_id

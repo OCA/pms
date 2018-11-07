@@ -353,7 +353,7 @@ class HotelFolio(models.Model):
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
                                  self.partner_id.property_product_pricelist.id or \
-                                 self.env['ir.default'].sudo().get('res.config.settings', 'parity_pricelist_id')
+                                 self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
         values = {'user_id': self.partner_id.user_id.id or self.env.uid,
                   'pricelist_id': pricelist
                   }
