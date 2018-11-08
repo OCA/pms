@@ -2,7 +2,6 @@
 # Copyright 2018  Alexandre Díaz
 # Copyright 2018  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import wdb
 import logging
 import urllib.error
 import odoorpc.odoo
@@ -129,7 +128,6 @@ class HotelNodeReservationWizard(models.TransientModel):
                     #     (fields.Date.from_string(rec.checkout) - fields.Date.from_string(rec.checkin)).days,
                     #     vals_reservation_lines
                     # )  # [[5, 0, 0], ¿?
-                    wdb.set_trace()
                     room_lines.append((0, False, {
                         'room_type_id': rec.room_type_id.remote_room_type_id,
                         'checkin': rec.checkin,
