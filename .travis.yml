@@ -37,6 +37,10 @@ install:
   - git clone -b ${VERSION} https://github.com/OCA/web.git ${HOME}/dependencies/web --depth=1
   - git clone -b ${VERSION} https://github.com/OCA/partner-contact.git ${HOME}/dependencies/partner-contact --depth=1
   - git clone -b ${VERSION} https://github.com/OCA/account-payment.git ${HOME}/dependencies/account_payment_return --depth=1
+  - git clone -b ${VERSION} https://github.com/OCA/connector.git ${HOME}/dependencies/connector --depth=1
+  - git clone -b ${VERSION} https://github.com/OCA/queue.git ${HOME}/dependencies/queue --depth=1
+  - pip install odoorpc
+  - pip install cachetools
 
 script:
   - travis_wait travis_run_tests
