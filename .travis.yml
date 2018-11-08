@@ -12,9 +12,6 @@ addons:
     packages:
       - expect-dev  # provides unbuffer utility
       - python-lxml  # because pip installation is slow
-      # needed because server-tools is loaded in the dependency chain
-      - unixodbc-dev
-      - python-mysqldb
 
 env:
   global:
@@ -31,6 +28,7 @@ virtualenv:
   system_site_packages: true
 
 install:
+  - pip install anybox.testing.openerp
   - git clone https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools --depth=1
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
   - travis_install_nightly
