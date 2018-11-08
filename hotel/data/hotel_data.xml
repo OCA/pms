@@ -13,33 +13,33 @@
 
     <!-- hotel_room_amenities_type  -->
 
-        <record id="hotel_room_amenities_type_0" model="hotel.room.amenities.type">
+        <record id="hotel_amenitiy_type_0" model="hotel.room.amenities.type">
             <field name="name">Beds</field>
         </record>
-        <record id="hotel_room_amenities_type_1" model="hotel.room.amenities.type">
+        <record id="hotel_amenity_type_1" model="hotel.room.amenities.type">
             <field name="name">Connectivity</field>
         </record>
-        <record id="hotel_room_amenities_type_2" model="hotel.room.amenities.type">
+        <record id="hotel_amenity_type_2" model="hotel.room.amenities.type">
             <field name="name">Extra</field>
         </record>
 
     <!-- hotel_room_amenitues -->
 
-        <record id="hotel_room_amenities_0" model="hotel.room.amenities">
+        <record id="hotel_amenity_0" model="hotel.room.amenities">
             <field name="name">Twin Beds</field>
-            <field name="room_amenities_type_id" search="[('name', '=', 'Beds')]"/>
+            <field name="room_amenity_type_id" search="[('name', '=', 'Beds')]"/>
         </record>
-        <record id="hotel_room_amenities_1" model="hotel.room.amenities">
+        <record id="hotel_amenity_1" model="hotel.room.amenities">
             <field name="name">Double Beds</field>
-            <field name="room_amenities_type_id" search="[('name', '=', 'Beds')]"/>
+            <field name="room_amenity_type_id" search="[('name', '=', 'Beds')]"/>
         </record>
-        <record id="hotel_room_amenities_2" model="hotel.room.amenities">
+        <record id="hotel_amenity_2" model="hotel.room.amenities">
             <field name="name">Extra Bed</field>
-            <field name="room_amenities_type_id" search="[('name', '=', 'Beds')]"/>
+            <field name="room_amenity_type_id" search="[('name', '=', 'Beds')]"/>
         </record>
-        <record id="hotel_room_amenities_3" model="hotel.room.amenities">
+        <record id="hotel_amenity_3" model="hotel.room.amenities">
             <field name="name">4G</field>
-            <field name="room_amenities_type_id" search="[('name', '=', 'Connectivity')]"/>
+            <field name="room_amenity_type_id" search="[('name', '=', 'Connectivity')]"/>
         </record>
 
 
@@ -116,7 +116,7 @@
             <field name="floor_id" search="[('name', '=', 'Second Floor')]"/>
             <field name="list_price">25.00</field>
             <field name="capacity">3</field>
-        </record
+        </record>
 
     </data>
 </odoo>

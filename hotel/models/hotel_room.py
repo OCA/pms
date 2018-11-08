@@ -16,7 +16,9 @@ class HotelRoom(models.Model):
     name = fields.Char('Room Name', required=True)
     active = fields.Boolean('Active', default=True)
     sequence = fields.Integer('Sequence', default=0)
-    room_type_id = fields.Many2one('hotel.room.type', 'Hotel Room Type')
+    room_type_id = fields.Many2one('hotel.room.type', 'Hotel Room Type',
+                                    required=True,
+                                    ondelete='restrict')
     floor_id = fields.Many2one('hotel.floor', 'Ubication',
                                help='At which floor the room is located.')
     max_adult = fields.Integer('Max Adult')

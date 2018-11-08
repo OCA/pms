@@ -1,7 +1,8 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 class HotelRoomType(models.Model):
     """ Before creating a 'room type', you need to consider the following:
@@ -42,6 +43,15 @@ class HotelRoomType(models.Model):
                          'code must be unique!')]
     # total number of rooms in this type
     total_rooms_count = fields.Integer(compute='_compute_total_rooms')
+
+    @api.multi
+    @api.constrains('room_ids')
+    def _check_capacity(self):
+        for record in self:
+            for room in record.room_ids:
+                if room.room_type_id and room.room_type_id != record.id:
+                    raise ValidationError(_("You need change de room type from de room form"))
+                    
 
     @api.depends('room_ids')
     def _compute_total_rooms(self):
