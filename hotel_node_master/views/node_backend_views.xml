@@ -69,4 +69,12 @@
         <field name="view_id" ref="node_backend_views_tree"/>
     </record>
 
+    <record id="action_node_room_type" model="ir.actions.act_window">
+    <field name="name">Hotel Node Room Types</field>
+    <field name="res_model">node.room.type</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <!--<field name="view_id" ref="node_backend_views_tree"/>-->
+</record>
+
 </odoo>

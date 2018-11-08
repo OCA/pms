@@ -49,4 +49,4 @@ class NodeBackend(models.Model):
     def import_room_types(self):
         node_room_type_obj = self.env['node.room.type']
         for backend in self:
-            node_room_type_obj.with_delay().fetch_room_types(backend)
+            node_room_type_obj.fetch_room_types(backend)
