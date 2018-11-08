@@ -367,7 +367,7 @@ class HotelChannelConnectorImporter(AbstractComponent):
                             internal_message="Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
                             channel_object_id=book['reservation_code'])
 
-                    free_rooms = room_type.odoo_id.check_availability_room(
+                    free_rooms = room_type.odoo_id.check_availability_room_type(
                         checkin_str,
                         checkout_str,
                         room_type_id=room_type.odoo_id.id,

@@ -32,7 +32,7 @@ class DuplicateReservationWizard(models.TransientModel):
             }))
 
         # Check Input
-        avails = hotel_room_type_obj.check_availability_room(
+        avails = hotel_room_type_obj.check_availability_room_type(
             reservation_id.checkin,
             reservation_id.checkout,
             room_type_id=reservation_id.room_type_id.id)
@@ -43,7 +43,7 @@ class DuplicateReservationWizard(models.TransientModel):
                                     There are no '%d' free rooms") % self.num)
 
         for i in range(0, self.num):
-            free_rooms = hotel_room_type_obj.check_availability_room(
+            free_rooms = hotel_room_type_obj.check_availability_room_type(
                 reservation_id.checkin,
                 reservation_id.checkout,
                 room_type_id=reservation_id.room_type_id.id)

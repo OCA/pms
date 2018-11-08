@@ -12,7 +12,7 @@ class HotelRoomType(models.Model):
     _name = "hotel.room.type"
     _description = "Room Type"
     _inherits = {'product.product': 'product_id'}
-    
+
     # Relationship between models
     product_id = fields.Many2one('product.product', 'Product Room Type',
                                  required=True, delegate=True,
@@ -51,7 +51,7 @@ class HotelRoomType(models.Model):
             for room in record.room_ids:
                 if room.room_type_id and room.room_type_id != record.id:
                     raise ValidationError(_("You need change de room type from de room form"))
-                    
+
 
     @api.depends('room_ids')
     def _compute_total_rooms(self):
@@ -74,8 +74,7 @@ class HotelRoomType(models.Model):
         return min(capacities) if any(capacities) else 0
 
     @api.model
-    # TODO Rename to check_availability_room_type
-    def check_availability_room(self, dfrom, dto,
+    def check_availability_room_type(self, dfrom, dto,
                                         room_type_id=False, notthis=[]):
         """
         Check the avalability for an specific type of room

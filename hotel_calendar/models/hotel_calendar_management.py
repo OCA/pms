@@ -36,7 +36,7 @@ class HotelCalendarManagement(models.TransientModel):
     @api.model
     def _get_availability_values(self, avail, room_type):
         room_type_obj = self.env['hotel.room.type']
-        cavail = len(room_type_obj.check_availability_room(
+        cavail = len(room_type_obj.check_availability_room_type(
             avail['date'], avail['date'], room_type_id=room_type.id))
         ravail = min(cavail, room_type.total_rooms_count, int(avail['avail']))
         vals = {
@@ -251,7 +251,7 @@ class HotelCalendarManagement(models.TransientModel):
                 json_data.setdefault(room_type.id, []).append({
                     'date': cur_date_str,
                     'num': len(
-                        room_type_obj.check_availability_room(
+                        room_type_obj.check_availability_room_type(
                             cur_date_str,
                             cur_date_str,
                             room_type_id=room_type.id)),
