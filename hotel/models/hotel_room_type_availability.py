@@ -27,7 +27,7 @@ class HotelRoomTypeAvailability(models.Model):
                 record.avail = 0
             else:
                 room_type_obj = self.env['hotel.room.type']
-                cavail = len(room_type_obj.check_availability_room(
+                cavail = len(room_type_obj.check_availability_room_type(
                     record.date,
                     record.date,
                     room_type_id=record.room_type_id.id))
