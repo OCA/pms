@@ -22,3 +22,4 @@
 ##############################################################################
 #from . import test_reservation
 #from . import test_folio
+from . import test_hotel_room_type_model
