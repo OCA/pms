@@ -20,36 +20,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from datetime import timedelta
 from .common import TestHotel
-from odoo.addons.hotel import date_utils
+from odoo.exceptions import ValidationError
 
 
 class TestHotelRoom(TestHotel):
 
-    def test_cancel_folio(self):
-        now_utc_dt = date_utils.now()
-
-        org_reserv_start_utc_dt = now_utc_dt + timedelta(days=3)
-        org_reserv_end_utc_dt = org_reserv_start_utc_dt + timedelta(days=6)
-        folio = self.create_folio(self.user_hotel_manager, self.partner_2)
-        reservation_a = self.create_reservation(
-            self.user_hotel_manager,
-            folio,
-            org_reserv_start_utc_dt,
-            org_reserv_end_utc_dt,
-            self.hotel_room_double_200,
-            "Reservation Test #1")
-        reservation_b = self.create_reservation(
-            self.user_hotel_manager,
-            folio,
-            org_reserv_start_utc_dt,
-            org_reserv_end_utc_dt,
-            self.hotel_room_simple_100,
-            "Reservation Test #2")
-        self.assertEqual(len(folio.room_lines), 2, 'Invalid room lines count')
-        folio.action_cancel()
-        self.assertEqual(folio.state, 'cancel', 'Invalid folio state')
-        for rline in folio.room_lines:
-            self.assertEqual(rline.state, 'cancelled',
-                             'Invalid reservation state')
+    def test_check_capacity(self):
+        # TODO Do the test using different users
+        with self.assertRaises(ValidationError):
+            self.room_0.sudo().write({
+                'capacity': 0
+            })

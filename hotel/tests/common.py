@@ -21,7 +21,7 @@
 #
 ##############################################################################
 from datetime import timedelta
-from odoo import api, fields
+from odoo import    api, fields
 from odoo.tests import common
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
@@ -81,15 +81,15 @@ class TestHotel(common.SavepointCase):
         cls._init_mock_hotel()
 
         # Create Tests Records
-        cls.room_type_0 = cls.env.ref('hotel_room_type_0')
-        cls.room_type_1 = cls.env.ref('hotel_room_type_1')
-        cls.room_type_2 = cls.env.ref('hotel_room_type_2')
-        cls.room_type_3 = cls.env.ref('hotel_room_type_3')
+        cls.room_type_0 = cls.env.ref('hotel.hotel_room_type_0')
+        cls.room_type_1 = cls.env.ref('hotel.hotel_room_type_1')
+        cls.room_type_2 = cls.env.ref('hotel.hotel_room_type_2')
+        cls.room_type_3 = cls.env.ref('hotel.hotel_room_type_3')
 
-        cls.room_0 = cls.env.ref('hotel_room_0')
-        cls.room_1 = cls.env.ref('hotel_room_1')
-        cls.room_2 = cls.env.ref('hotel_room_2')
-        cls.room_3 = cls.env.ref('hotel_room_3')
-        cls.room_4 = cls.env.ref('hotel_room_4')
-        cls.room_5 = cls.env.ref('hotel_room_5')
-        cls.room_6 = cls.env.ref('hotel_room_6')
+        cls.room_0 = cls.env.ref('hotel.hotel_room_0')
+        cls.room_1 = cls.env.ref('hotel.hotel_room_1')
+        cls.room_2 = cls.env.ref('hotel.hotel_room_2')
+        cls.room_3 = cls.env.ref('hotel.hotel_room_3')
+        cls.room_4 = cls.env.ref('hotel.hotel_room_4')
+        cls.room_5 = cls.env.ref('hotel.hotel_room_5')
+        cls.room_6 = cls.env.ref('hotel.hotel_room_6')

@@ -21,15 +21,14 @@
 #
 ##############################################################################
 from .common import TestHotel
-from odoo.exceptions import ValidationError
+from psycopg2 import IntegrityError
+
 
 class TestHotelRoomType(TestHotel):
 
-    def test_change_room_ids(self):
-
-        # Avoid the unconscious change of room type_id from room_type
+    def test_code_type_unique(self):
         #TODO: use sudo users hotel
-        with self.assertRaises(ValidationError):
-            cls.room_type_0.sudo().write({
-                'room_ids':(4, cls.room_type_3.id)
+        with self.assertRaises(IntegrityError):
+            self.room_type_0.sudo().write({
+                'code_type': self.room_type_1.code_type
             })
