@@ -15,7 +15,7 @@
     'license': "AGPL-3",
     'data': [
         'wizards/wizard_hotel_node_reservation.xml',
-        #'views/hotel_node.xml',
+        'views/hotel_node.xml',
         'views/hotel_node_user.xml',
         'views/hotel_node_group.xml',
         'views/hotel_node_room_type.xml',
