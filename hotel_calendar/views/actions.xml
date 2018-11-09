@@ -6,7 +6,7 @@
         <field name="res_model">hotel.reservation</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('is_checkin','=', True)]</field>
+        <field name="domain">[('checkin','=', datetime.datetime.now().strftime('%Y-%m-%d'))]</field>
     </record>
 
     <record model="ir.actions.act_window" id="hotel_reservation_action_checkout">
@@ -14,7 +14,7 @@
         <field name="res_model">hotel.reservation</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('is_checkout','=', True)]</field>
+        <field name="domain">[('checkout','=', datetime.datetime.now().strftime('%Y-%m-%d'))]</field>
     </record>
 
     <record model="ir.actions.act_window" id="hotel_room_pricelist_cached_action_form_tree">

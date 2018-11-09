@@ -197,7 +197,7 @@
         <field name="res_model">channel.backend</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_channel_backend_tree"/>
+        <field name="view_id" ref="channel_backend_view_tree"/>
     </record>
 
 </odoo>

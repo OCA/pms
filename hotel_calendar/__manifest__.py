@@ -29,7 +29,6 @@
         'views/room_pricelist_cached_views.xml',
         'views/hotel_reservation_views.xml',
         'views/hotel_calendar_management_views.xml',
-        'data/views.xml',
         'data/menus.xml',
         'data/records.xml',
         'security/ir.model.access.csv',

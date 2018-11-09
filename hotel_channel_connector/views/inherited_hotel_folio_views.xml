@@ -3,19 +3,12 @@
 
     <record id="hotel_folio_view_form" model="ir.ui.view">
         <field name="model">hotel.folio</field>
-        <field name="inherit_id" ref="hotel.view_hotel_folio1_form" />
+        <field name="inherit_id" ref="hotel.hotel_folio_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_internal_comment']" position="before">
                 <field name="has_channel_reservations" invisible="True" />
                 <field name="customer_notes" readonly="True" attrs="{'invisible':[('has_channel_reservations', '=', False)]}"/>
             </xpath>
-        </field>
-    </record>
-
-    <record id="view_hotel_folio1_form" model="ir.ui.view">
-        <field name="model">hotel.folio</field>
-        <field name="inherit_id" ref="hotel.view_hotel_folio1_form" />
-        <field name="arch" type="xml">
             <xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkout']" position="after">
                 <field name="origin_sale"/>
                 <field name="is_from_ota" invisible="1"/>

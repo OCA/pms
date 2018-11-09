@@ -5,7 +5,7 @@
     'name': 'Hotel Channel Connector',
     'version': '1.0',
     'author': "Alexandre Díaz <dev@redneboa.es>",
-    'website': 'https://www.eiqui.com',
+    'website': 'https://github.com/hootel/hootel',
     'category': 'hotel/connector',
     'summary': "Hotel Channel Connector Base",
     'description': "Hotel Channel Connector Base",
@@ -18,9 +18,6 @@
     },
     'data': [
         'data/cron_jobs.xml',
-        'wizard/wubook_import_plan_prices.xml',
-        'wizard/wubook_import_plan_restrictions.xml',
-        'wizard/wubook_import_availability.xml',
         'views/general.xml',
         'views/hotel_channel_connector_issue_views.xml',
         'views/inherited_hotel_reservation_views.xml',

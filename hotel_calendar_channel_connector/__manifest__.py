@@ -21,16 +21,16 @@
 ##############################################################################
 
 {
-    'name': 'Hotel Calendar WuBook',
+    'name': 'Hotel Calendar Channel Connector',
     'version': '1.0',
-    'author': "Alexandre Díaz (Aloxa Solucións S.L.) <alex@aloxa.eu>",
-    'website': 'https://www.eiqui.com',
+    'author': "Alexandre Díaz <dev@redneboa.es>",
+    'website': 'https://github.com/hootel/hootel',
     'category': 'eiqui/hotel',
-    'summary': "Hotel Calendar",
-    'description': "Hotel Calendar WuBook",
+    'summary': "Hotel Calendar Channel Connector",
+    'description': "Unify 'hotel_calendar' and 'hotel_channel_connector'",
     'depends': [
         'hotel_calendar',
-        'hotel_wubook_proto',
+        'hotel_channel_connector',
     ],
     'external_dependencies': {
         'python': []
