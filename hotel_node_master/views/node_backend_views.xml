@@ -34,12 +34,13 @@
                     <notebook>
                         <page name="import" string="Imports">
                             <group>
-                                <label string="Import Reservations" class="oe_inline"/>
+                                <label string="Import Room Types" class="oe_inline"/>
                                 <div>
                                     <button name="import_room_types"
-                                        type="object"
-                                        class="oe_highlight"
-                                        string="Import in background"/>
+                                            type="object"
+                                            class="oe_highlight"
+                                            string="Import in background"
+                                            confirm="Synchronizing a node automatically updates Room Types in the Central Node. Do you want to proceed?"/>
                                 </div>
                             </group>
                         </page>
