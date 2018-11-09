@@ -10,7 +10,20 @@ class HotelCalendarManagement(models.TransientModel):
     def _get_availability_values(self, avail, room_type):
         vals = super(HotelCalendarManagement, self)._get_availability_values(
             avail, room_type)
-        vals.update({'wmax_avail': vals['avail']})
+        vals.update({
+            'wmax_avail': vals['avail'],
+            'no_ota': vals['no_ota'],
+            'booked': vals['booked'],
+        })
+        return vals
+
+    @api.model
+    def _generate_avalaibility_data(self, room_type, date, avail):
+        vals = super(HotelCalendarManagement, self)._generate_avalaibility_data(
+            room_type, date, avail)
+        vals.update({
+            'no_ota': avail and avail.no_ota or False,
+        })
         return vals
 
     @api.multi

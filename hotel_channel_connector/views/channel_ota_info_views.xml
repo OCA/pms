@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- Form view -->
-    <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_form">
+    <record model="ir.ui.view" id="hotel_channel_connector_ota_info_view_form">
         <field name="name">channel.ota.info.form</field>
         <field name="model">channel.ota.info</field>
         <field name="arch" type="xml">
@@ -23,7 +23,7 @@
     </record>
 
     <!-- Tree view -->
-    <record model="ir.ui.view" id="view_hotel_channel_connector_ota_info_tree">
+    <record model="ir.ui.view" id="hotel_channel_connector_ota_info_view_tree">
         <field name="name">channel.ota.info.tree</field>
         <field name="model">channel.ota.info</field>
         <field name="arch" type="xml">

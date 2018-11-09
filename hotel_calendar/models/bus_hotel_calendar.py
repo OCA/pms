@@ -113,7 +113,6 @@ class BusHotelCalendar(models.TransientModel):
                 vals['room_type_id']: {
                     date_dt.strftime("%d/%m/%Y"): [
                         vals['avail'],
-                        vals['no_ota'],
                         vals['id'],
                     ],
                 },

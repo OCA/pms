@@ -28,8 +28,6 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                               string='Pricelist',
                               required=True,
                               ondelete='cascade')
-    no_ota = fields.Boolean('No OTA', default=False)
-    booked = fields.Boolean('Booked', default=False, readonly=True)
     channel_max_avail = fields.Integer("Max. Channel Avail",
                                        default=_default_channel_max_avail,
                                        old_name='wmax_avail')
@@ -94,6 +92,16 @@ class HotelRoomTypeAvailability(models.Model):
         comodel_name='channel.hotel.room.type.availability',
         inverse_name='odoo_id',
         string='Hotel Room Type Availability Connector Bindings')
+
+    no_ota = fields.Boolean('No OTA', default=False)
+    booked = fields.Boolean('Booked', default=False, readonly=True)
+
+    def _prepare_notif_values(self, record):
+        vals = super(HotelRoomTypeAvailability, self)._prepare_notif_values()
+        vals.update({
+            'no_ota': record.no_ota,
+        })
+        return vals
 
     @api.constrains('avail')
     def _check_avail(self):
