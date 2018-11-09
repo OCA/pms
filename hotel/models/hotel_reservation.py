@@ -353,7 +353,7 @@ class HotelReservation(models.Model):
         checkout = values.get('checkout')
         room_type = values.get('room_type_id')
         if checkin and checkout and room_type:
-            room_chosen = self.env['hotel.room.type'].check_availability_room(checkin, checkout, room_type)[0]
+            room_chosen = self.env['hotel.room.type'].check_availability_room_type(checkin, checkout, room_type)[0]
             # Check room_chosen exist
             res.update({
                 'room_id': room_chosen.id

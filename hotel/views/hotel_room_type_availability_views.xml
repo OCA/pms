@@ -15,8 +15,6 @@
           <group>
             <field name="date" required="1"/>
             <field name="avail"/>
-            <field name="no_ota"/>
-            <field name="booked"/>
           </group>
         </sheet>
         <div class="oe_chatter">
@@ -37,8 +35,6 @@
         <field name="room_type_id" required="1"/>
         <field name="date" required="1"/>
         <field name="avail"/>
-        <field name="no_ota"/>
-        <field name="booked"/>
       </tree>
     </field>
   </record>

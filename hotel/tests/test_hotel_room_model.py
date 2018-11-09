@@ -20,7 +20,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#from . import test_reservation
-#from . import test_folio
-from . import test_hotel_room_type_model
-from . import test_hotel_room_model
+from .common import TestHotel
+from odoo.exceptions import ValidationError
+
+
+class TestHotelRoom(TestHotel):
+
+    def test_check_capacity(self):
+        # TODO Do the test using different users
+        with self.assertRaises(ValidationError):
+            self.room_0.sudo().write({
+                'capacity': 0
+            })

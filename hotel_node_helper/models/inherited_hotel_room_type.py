@@ -3,7 +3,6 @@
 # Copyright 2018  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import wdb
 from odoo import models, fields, api
 
 
@@ -18,12 +17,12 @@ class HotelRoomType(models.Model):
         Check availability for all or specific room types between dates
         @return: A list of `ids` with free rooms
         """
-        free_rooms = super().check_availability_room(dfrom, dto, room_type_id, notthis)
+        free_rooms = super().check_availability_room_type(dfrom, dto, room_type_id, notthis)
         return free_rooms.ids
 
     @api.model
     def get_room_type_availability(self, dfrom, dto, room_type_id):
-        free_rooms = self.check_availability_room(dfrom, dto)
+        free_rooms = self.check_availability_room_type(dfrom, dto)
         availability_real = self.env['hotel.room'].search_count([
             ('id', 'in', free_rooms.ids),
             ('room_type_id', '=', room_type_id),

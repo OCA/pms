@@ -281,7 +281,7 @@ class HotelRoomTypeWizards(models.TransientModel):
             avail_restrictions = self.env['hotel.room.type.availability'].search([
                 ('room_type_id', '=', res.room_type_id.id)
             ])
-            real_max = len(res.room_type_id.check_availability_room(
+            real_max = len(res.room_type_id.check_availability_room_type(
                 res.checkin,
                 res.checkout,
                 res.room_type_id.id))

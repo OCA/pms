@@ -20,7 +20,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-#from . import test_reservation
-#from . import test_folio
-from . import test_hotel_room_type_model
-from . import test_hotel_room_model
+from .common import TestHotel
+from psycopg2 import IntegrityError
+
+
+class TestHotelRoomType(TestHotel):
+
+    def test_code_type_unique(self):
+        #TODO: use sudo users hotel
+        with self.assertRaises(IntegrityError):
+            self.room_type_0.sudo().write({
+                'code_type': self.room_type_1.code_type
+            })

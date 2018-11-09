@@ -192,7 +192,7 @@ class MassiveChangesWizard(models.TransientModel):
         hotel_room_type_obj = self.env['hotel.room.type']
         vals = {}
         if record.change_avail:
-            cavail = len(hotel_room_type_obj.check_availability_room(
+            cavail = len(hotel_room_type_obj.check_availability_room_type(
                 ndate.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 ndate.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 room_type_id=room_type.id))

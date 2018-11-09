@@ -1,7 +1,8 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 class HotelRoomType(models.Model):
     """ Before creating a 'room type', you need to consider the following:
@@ -11,7 +12,7 @@ class HotelRoomType(models.Model):
     _name = "hotel.room.type"
     _description = "Room Type"
     _inherits = {'product.product': 'product_id'}
-    
+
     # Relationship between models
     product_id = fields.Many2one('product.product', 'Product Room Type',
                                  required=True, delegate=True,
@@ -64,8 +65,7 @@ class HotelRoomType(models.Model):
         return min(capacities) if any(capacities) else 0
 
     @api.model
-    # TODO Rename to check_availability_room_type
-    def check_availability_room(self, dfrom, dto,
+    def check_availability_room_type(self, dfrom, dto,
                                         room_type_id=False, notthis=[]):
         """
         Check the avalability for an specific type of room

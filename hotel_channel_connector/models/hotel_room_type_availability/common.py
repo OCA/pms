@@ -100,7 +100,7 @@ class HotelRoomTypeAvailability(models.Model):
         room_type_obj = self.env['hotel.room.type']
         issue_obj = self.env['hotel.channel.connector.issue']
         for record in self:
-            cavail = len(room_type_obj.check_availability_room(
+            cavail = len(room_type_obj.check_availability_room_type(
                 record.date,
                 record.date,
                 room_type_id=record.room_type_id.id))
@@ -143,7 +143,7 @@ class HotelRoomTypeAvailability(models.Model):
                 for i in range(0, date_diff):
                     ndate_dt = date_start + timedelta(days=i)
                     ndate_str = ndate_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                    avail = len(room_type_obj.check_availability_room(
+                    avail = len(room_type_obj.check_availability_room_type(
                         ndate_str,
                         ndate_str,
                         room_type_id=room_type.id))
