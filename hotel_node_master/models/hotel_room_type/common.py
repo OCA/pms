@@ -68,7 +68,7 @@ class NodeRoomTypeAdapter(Component):
 class NodeBindingRoomTypeListener(Component):
     _name = 'node.binding.room.type.listener'
     _inherit = 'base.connector.listener'
-    _apply_on = ['node.hotel.room.type']
+    _apply_on = ['node.room.type']
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):

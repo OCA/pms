@@ -23,12 +23,13 @@ class HotelRoomTypeImporter(Component):
         node_room_type_obj = self.env['node.room.type']
         for rec in results:
             map_record = room_type_mapper.map_record(rec)
-            room_bind = node_room_type_obj.search([('external_id', '=', rec['id'])],
+            room_type = node_room_type_obj.search([('external_id', '=', rec['id'])],
                                                   limit=1)
-            if room_bind:
-                room_bind.write(map_record.values())
+            # NEED REVIEW Import a record triggers a room_type.write / room_type.create back to the node
+            if room_type:
+                room_type.write(map_record.values())
             else:
-                room_bind.create(map_record.values(for_create=True))
+                room_type.create(map_record.values(for_create=True))
 
 
 class NodeRoomTypeImportMapper(Component):

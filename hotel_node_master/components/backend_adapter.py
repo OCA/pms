@@ -78,7 +78,6 @@ class HotelNodeInterfaceAdapter(AbstractComponent):
             )
         return node_server.server
 
-
 class HotelNodeAdapter(AbstractComponent):
     _name = 'hotel.node.adapter'
     _inherit = 'hotel.node.interface.adapter'
@@ -91,13 +90,15 @@ class HotelNodeAdapter(AbstractComponent):
 
     def modify_room_type(self, room_type_id, name, rooms_id):
         return self._server.env['hotel.room.type'].write(
-            room_type_id,
+            [room_type_id],
             {
                 'name': name
             })
 
     def delete_room_type(self, room_type_id):
-        return self._server.env['hotel.room.type'].unlink(room_type_id)
+        _logger.warning("_delete_room_type(%s, room_type_id) is not yet implemented.", self)
+        return True
+        # return self._server.env['hotel.room.type'].unlink(room_type_id)
 
     def fetch_room_types(self):
         return self._server.env['hotel.room.type'].search_read(

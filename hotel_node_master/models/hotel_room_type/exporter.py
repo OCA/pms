@@ -15,14 +15,14 @@ class NodeRoomTypeExporter(Component):
     @api.model
     def modify_room_type(self, binding):
         return self.backend_adapter.modify_room_type(
-            binding.room_type_id,
+            binding.external_id,
             binding.name,
             binding.room_ids
         )
 
     @api.model
     def delete_room_type(self, binding):
-        return self.backend_adapter.delete_room_type(binding.room_type_id)
+        return self.backend_adapter.delete_room_type(binding.external_id)
 
     @api.model
     def create_room_type(self, binding):
