@@ -42,7 +42,7 @@ class NodeServer(object):
                                    self._login_data.passwd)
             except Exception:
                 self._server = None
-                raise RetryableJobError("Can't connect with channel!")
+                raise RetryableJobError("Can't connect with node!")
         return self._server
 
     def close(self):
@@ -77,6 +77,7 @@ class HotelNodeInterfaceAdapter(AbstractComponent):
                 'Backend Adapter.'
             )
         return node_server.server
+
 
 class HotelNodeAdapter(AbstractComponent):
     _name = 'hotel.node.adapter'

@@ -13,20 +13,20 @@ class NodeRoomTypeExporter(Component):
     _usage = 'node.room.type.exporter'
 
     @api.model
-    def modify_room(self, binding):
-        return self.backend_adapter.modify_room(
+    def modify_room_type(self, binding):
+        return self.backend_adapter.modify_room_type(
             binding.room_type_id,
             binding.name,
             binding.room_ids
         )
 
     @api.model
-    def delete_room(self, binding):
-        return self.backend_adapter.delete_room(binding.room_type_id)
+    def delete_room_type(self, binding):
+        return self.backend_adapter.delete_room_type(binding.room_type_id)
 
     @api.model
-    def create_room(self, binding):
-        external_id = self.backend_adapter.create_room(
+    def create_room_type(self, binding):
+        external_id = self.backend_adapter.create_room_type(
             binding.name,
             binding.room_ids
         )

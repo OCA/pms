@@ -3,7 +3,7 @@
 
 from odoo.addons.component.core import AbstractComponent
 
-class BaseHotelChannelConnectorComponent(AbstractComponent):
+class BaseNodeConnectorComponent(AbstractComponent):
     _name = 'base.node.connector'
     _inherit = 'base.connector'
     _collection = 'node.backend'

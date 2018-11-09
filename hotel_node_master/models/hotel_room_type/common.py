@@ -29,6 +29,7 @@ class NodeRoomType(models.Model):
     @job(default_channel='root.channel')
     @api.model
     def modify_room_type(self):
+        import wdb; wdb.set_trace()
         with self.backend_id.work_on(self._name) as work:
             exporter = work.component(usage='node.room.type.exporter')
             return exporter.modify_room_type(self)
@@ -65,7 +66,7 @@ class NodeRoomTypeAdapter(Component):
         return super().fetch_room_types()
 
 
-class ChannelBindingRoomTypeListener(Component):
+class NodeBindingRoomTypeListener(Component):
     _name = 'node.binding.room.type.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['node.hotel.room.type']
