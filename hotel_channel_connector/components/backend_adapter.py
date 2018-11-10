@@ -497,7 +497,7 @@ class WuBookAdapter(AbstractComponent):
             self._session_info[1],
             fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            channel_restriction_plan_id)
+            int(channel_restriction_plan_id))
         if rcode != 0:
             raise ChannelConnectorError("Can't fetch restriction plans from wubook", {
                 'message': results,

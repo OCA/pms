@@ -99,7 +99,6 @@ class HotelRoomTypeRestrictionItemImportMapper(Component):
     def channel_pushed(self, record):
         return {'channel_pushed': True}
 
-
     @mapping
     def room_type_id(self, record):
         return {'room_type_id': record['room_type_id']}

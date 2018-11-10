@@ -23,6 +23,7 @@ class ChannelOtaInfoImporter(Component):
         channel_ota_info_obj = self.env['channel.ota.info']
         ota_info_mapper = self.component(usage='import.mapper',
                                          model_name='channel.ota.info')
+        count = 0
         for ota_id in results.keys():
             vals = {
                 'id': ota_id,
