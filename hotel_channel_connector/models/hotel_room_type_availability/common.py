@@ -35,7 +35,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                                     old_name='wpushed')
 
     @api.constrains('channel_max_avail')
-    def _check_wmax_avail(self):
+    def _check_channel_max_avail(self):
         for record in self:
             if record.channel_max_avail > record.odoo_id.room_type_id.total_rooms_count:
                 raise ValidationError(_("max avail for channel can't be high \

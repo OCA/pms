@@ -38,6 +38,7 @@
         'views/channel_product_pricelist_views.xml',
         'views/channel_product_pricelist_item_views.xml',
         'views/channel_connector_backend_views.xml',
+        'wizard/inherited_massive_changes.xml',
         'data/menus.xml',
         'data/sequences.xml',
         #'security/ir.model.access.csv',
