@@ -22,7 +22,6 @@
     'data': [
         'views/general.xml',
         'views/actions.xml',
-        'views/res_config_views.xml',
         'views/inherited_res_users_views.xml',
         'views/inherited_hotel_room_type_views.xml',
         'views/inherited_hotel_room_views.xml',
