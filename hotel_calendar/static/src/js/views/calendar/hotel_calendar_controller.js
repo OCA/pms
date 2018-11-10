@@ -221,8 +221,8 @@ var PMSCalendarController = AbstractController.extend({
 
     _onUpdateButtonsCounter: function (ev) {
         var self = this;
-        var domain_checkouts = [['is_checkout', '=', true]];
-        var domain_checkins = [['is_checkin', '=', true]];
+        var domain_checkouts = [['checkout', '=', moment().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)]];
+        var domain_checkins = [['checkin', '=', moment().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)]];
         var domain_overbookings = [['overbooking', '=', true], ['state', 'not in', ['cancelled']]];
         $.when(
             this.model.search_count(domain_checkouts),

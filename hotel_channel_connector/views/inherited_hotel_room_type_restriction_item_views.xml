@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <odoo>
 
-    <record id="room_type_restriction_item_view" model="ir.ui.view">
+    <record id="room_type_restriction_item_view_from" model="ir.ui.view">
         <field name="model">hotel.room.type.restriction.item</field>
         <field name="inherit_id" ref="hotel.room_type_restriction_item_view_form" />
         <field name="arch" type="xml">

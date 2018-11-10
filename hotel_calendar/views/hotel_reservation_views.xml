@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <odoo>
 
-    <record model="ir.ui.view" id="view_hotel_reservation_pms">
+    <record model="ir.ui.view" id="hotel_reservation_view_pms">
         <field name="name">hotel.reservation.pms</field>
         <field name="model">hotel.reservation</field>
         <field name="arch" type="xml">

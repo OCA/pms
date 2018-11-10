@@ -2,8 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 from datetime import datetime, timedelta
-from openerp import models, fields, api, _
-from openerp.tools import (
+from odoo import models, fields, api, _
+from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 _logger = logging.getLogger(__name__)
@@ -27,15 +27,17 @@ class HotelReservation(models.Model):
             room_name, partner_phone, state, fix_days)
         reserv = self.env['hotel.reservation'].browse(vals['reserv_id'])
         vals['reservation'].update({
-            'fix_days': (reserv.wrid and reserv.wrid != '') or fix_days,
-            'wchannel': (reserv.wchannel_id and reserv.wchannel_id.name),
+            'fix_days': (any(reserv.channel_bind_ids) and
+                         reserv.channel_bind_ids[0].external_id) or fix_days,
+            'ota_id': (any(reserv.channel_bind_ids) and
+                       reserv.channel_bind_ids[0].ota_id and
+                       reserv.channel_bind_ids[0].ota_id.name),
         })
         return vals
 
     @api.multi
     def _hcalendar_reservation_data(self, reservations):
-        vals = super(HotelReservation, self)._hcalendar_reservation_data(
-                                                                reservations)
+        vals = super(HotelReservation, self)._hcalendar_reservation_data(reservations)
         hotel_reservation_obj = self.env['hotel.reservation']
         json_reservations = []
         for v_rval in vals[0]:
@@ -56,12 +58,16 @@ class HotelReservation(models.Model):
                 # Read-Only
                 False,
                 # Fix Days
-                (reserv.wrid and reserv.wrid != '') or reserv.splitted,
+                (any(reserv.channel_bind_ids) and
+                 reserv.channel_bind_ids[0].external_id) or reserv.splitted,
                 # Fix Rooms
                 False,
                 reserv.overbooking))
             # Update tooltips
-            vals[1][reserv.id].append(reserv.wchannel_id.name)
+            if any(reserv.channel_bind_ids):
+                vals[1][reserv.id].append(reserv.channel_bind_ids[0].ota_id.name)
+            else:
+                vals[1][reserv.id].append(False)
         return (json_reservations, vals[1])
 
     @api.multi
@@ -92,7 +98,8 @@ class HotelReservation(models.Model):
                 'fix_days': record.splitted or record.is_from_ota,
                 'overbooking': record.overbooking,
                 'price': record.folio_id.amount_total,
-                'wrid': record.wrid,
+                'external_id': (any(record.channel_bind_ids) and
+                                record.channel_bind_ids[0].external_id),
             })
 
     @api.multi

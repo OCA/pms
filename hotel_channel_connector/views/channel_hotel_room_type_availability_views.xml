@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_channel_hotel_room_type_availability_form" model="ir.ui.view">
+    <record id="channel_hotel_room_type_availability_view_form" model="ir.ui.view">
         <field name="name">channel.hotel.room.type.availability.form</field>
         <field name="model">channel.hotel.room.type.availability</field>
         <field name="arch" type="xml">
@@ -11,6 +11,10 @@
                     <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
                 </group>
                 <group>
+                    <field name="no_ota" />
+                    <field name="booked" />
+                </group>
+                <group>
                     <field name="channel_max_avail" />
                     <field name="channel_pushed" />
                 </group>
@@ -18,7 +22,7 @@
         </field>
     </record>
 
-    <record id="view_channel_hotel_room_type_availability_tree" model="ir.ui.view">
+    <record id="channel_hotel_room_type_availability_view_tree" model="ir.ui.view">
         <field name="name">channel.hotel.room.type.availability.tree</field>
         <field name="model">channel.hotel.room.type.availability</field>
         <field name="arch" type="xml">

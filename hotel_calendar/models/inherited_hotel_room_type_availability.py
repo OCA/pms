@@ -6,16 +6,20 @@ from odoo import models, fields, api
 class HotelRoomTypeAvailability(models.Model):
     _inherit = 'hotel.room.type.availability'
 
+    def _prepare_notif_values(self, record):
+        return {
+            'date': record.date,
+            'avail': record.avail,
+            'room_type_id': record.room_type_id.id,
+            'id': record.id,
+        }
+
     @api.model
     def create(self, vals):
         res = super(HotelRoomTypeAvailability, self).create(vals)
-        self.env['bus.hotel.calendar'].send_availability_notification({
-            'date': res.date,
-            'avail': res.avail,
-            'no_ota': res.no_ota,
-            'room_type_id': res.room_type_id.id,
-            'id': res.id,
-        })
+        self.env['bus.hotel.calendar'].send_availability_notification(
+            self._prepare_notif_values(res)
+        )
         return res
 
     @api.multi
@@ -23,13 +27,9 @@ class HotelRoomTypeAvailability(models.Model):
         ret_vals = super(HotelRoomTypeAvailability, self).write(vals)
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for record in self:
-            bus_hotel_calendar_obj.send_availability_notification({
-                'date': record.date,
-                'avail': record.avail,
-                'no_ota': record.no_ota,
-                'room_type_id': record.room_type_id.id,
-                'id': record.id,
-            })
+            bus_hotel_calendar_obj.send_availability_notification(
+                self._prepare_notif_values(record)
+            )
         return ret_vals
 
     @api.multi
@@ -37,13 +37,9 @@ class HotelRoomTypeAvailability(models.Model):
         # Construct dictionary with relevant info of removed records
         unlink_vals = []
         for record in self:
-            unlink_vals.append({
-                'date': record.date,
-                'avail': record.room_type_id.total_rooms_count,
-                'room_type_id': record.room_type_id.id,
-                'no_ota': False,
-                'id': record.id,
-            })
+            unlink_vals.append(
+                self._prepare_notif_values(record)
+            )
         res = super(HotelRoomTypeAvailability, self).unlink()
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for uval in unlink_vals:

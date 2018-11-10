@@ -40,7 +40,6 @@ class HotelCalendarManagement(models.TransientModel):
             avail['date'], avail['date'], room_type_id=room_type.id))
         ravail = min(cavail, room_type.total_rooms_count, int(avail['avail']))
         vals = {
-            'no_ota': avail['no_ota'],
             'avail': ravail,
         }
         return vals
@@ -171,10 +170,19 @@ class HotelCalendarManagement(models.TransientModel):
         return json_data
 
     @api.model
+    def _generate_avalaibility_data(self, room_type, date, avail):
+        return {
+            'id': avail and avail.id or False,
+            'date': avail and avail.date or date,
+            'avail': avail and avail.avail or room_type.total_rooms_count,
+        }
+
+    @api.model
     def _hcalendar_availability_json_data(self, dfrom, dto):
         date_start = fields.Date.from_string(dfrom)
         date_end = fields.Date.from_string(dto)
         date_diff = abs((date_end - date_start).days) + 1
+        hotel_room_type_avail_obj = self.env['hotel.room.type.availability']
         room_types = self.env['hotel.room.type'].search([])
         json_data = {}
 
@@ -183,24 +191,12 @@ class HotelCalendarManagement(models.TransientModel):
             for i in range(0, date_diff):
                 cur_date = date_start + timedelta(days=i)
                 cur_date_str = cur_date.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                avail = self.env['hotel.room.type.availability'].search([
+                avail = hotel_room_type_avail_obj.search([
                     ('date', '=', cur_date_str),
                     ('room_type_id', '=', room_type.id)
                 ])
-                if avail:
-                    json_data[room_type.id].append({
-                        'id': avail.id,
-                        'date': avail.date,
-                        'avail': avail.avail,
-                        'no_ota': avail.no_ota,
-                    })
-                else:
-                    json_data[room_type.id].append({
-                        'id': False,
-                        'date': cur_date_str,
-                        'avail': room_type.total_rooms_count,
-                        'no_ota': False,
-                    })
+                json_data[room_type.id].append(
+                    self._generate_avalaibility_data(room_type, cur_date_str, avail))
         return json_data
 
     @api.model

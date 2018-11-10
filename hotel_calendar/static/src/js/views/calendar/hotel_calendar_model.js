@@ -73,7 +73,7 @@ return AbstractModel.extend({
     },
     get_amenities: function() {
         return this._rpc({
-            model: 'hotel.room.amenities',
+            model: 'hotel.amenity',
             method: 'search_read',
             args: [false, ['id','name']],
             context: Session.user_context,

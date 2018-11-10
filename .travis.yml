@@ -15,7 +15,7 @@ addons:
 
 env:
   global:
-  - VERSION="11.0" TESTS="0" LINT_CHECK="0" TRANSIFEX="0" UNIT_TEST="0"
+  - VERSION="11.0" TESTS="0" LINT_CHECK="0" TRANSIFEX="0" MAKEPOT="0"
 #  - TRANSIFEX_USER='transbot@odoo-community.org'
 #  - secure: "XLhGdCIh86zcqww9qBpnk8Xqsf1Pcgw9SKr7X0KYBHJofHj4Z6Kq/oVFjpZ1LSjadsaABKbwY7h4hvKEpxZwptCv+fNTOKYy7hXFLGYnDeNeWu4zA4LI7TA5uPvyZjZ+g2xc+9dzR/VbfRHNqjvmgiEidxxqLeOnNFZ5CHdOdCw="
   matrix:
@@ -27,14 +27,14 @@ env:
 install:
   - git clone https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools --depth=1
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
-  - travis_install_nightly
   - git clone -b ${VERSION} https://github.com/OCA/web.git ${HOME}/dependencies/web --depth=1
   - git clone -b ${VERSION} https://github.com/OCA/partner-contact.git ${HOME}/dependencies/partner-contact --depth=1
-  - git clone -b ${VERSION} https://github.com/OCA/account-payment.git ${HOME}/dependencies/account_payment_return --depth=1
+  - git clone -b ${VERSION} https://github.com/OCA/account-payment.git ${HOME}/dependencies/account-payment --depth=1
   - git clone -b ${VERSION} https://github.com/OCA/connector.git ${HOME}/dependencies/connector --depth=1
   - git clone -b ${VERSION} https://github.com/OCA/queue.git ${HOME}/dependencies/queue --depth=1
   - pip install odoorpc
-  - pip install cachetools
+  - pip install cachetools>=2.0.1
+  - travis_install_nightly
 
 script:
   - travis_wait travis_run_tests
