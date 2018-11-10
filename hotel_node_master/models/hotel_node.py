@@ -41,8 +41,10 @@ class HotelNode(models.Model):
     user_ids = fields.One2many('hotel.node.user', 'node_id',
                                'Users with access to this hotel')
 
-    group_ids = fields.Many2many('hotel.node.group', 'hotel_node_group_rel', 'node_id', 'group_id',
-                                 string='Access Groups')
+    # group_ids = fields.Many2many('hotel.node.group', 'hotel_node_group_rel', 'node_id', 'group_id',
+    #                              string='Access Groups')
+    group_ids = fields.One2many('hotel.node.group.remote', 'node_id',
+                                'Access Groups')
 
     room_type_ids = fields.One2many('hotel.node.room.type', 'node_id',
                                     'Rooms Type in this hotel')

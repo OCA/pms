@@ -13,22 +13,29 @@
                         </h1>
                     </div>
                     <group attrs="{'invisible':[('node_id','=',False)]}">
-                        <group name="dates">
-                            <field name="checkin" required="1" widget="date" />
-                            <field name="checkout" required="1" widget="date" />
-                        </group>
+                        <!--<group name="dates">-->
+                            <!--<field name="checkin" required="1" widget="date" />-->
+                            <!--<field name="checkout" required="1" widget="date" />-->
+                        <!--</group>-->
                         <group>
                             <field name="partner_id"/>
                         </group>
                         <group name="room_type_wizard_ids" colspan="2">
-                            <field name="room_type_wizard_ids" nolabel="1">
+                            <field name="room_type_wizard_ids" nolabel="1"
+                                   context="{'default_node_reservation_wizard_id': active_id}">
                                 <tree editable="bottom" create="false" delete="false"
                                       decoration-muted="room_type_availability == 0">
                                     <field name="node_reservation_wizard_id" invisible="1"/>
+                                    <field name="node_id" invisible="1"/>
                                     <field name="room_type_id" string="Room Type" readonly="1" force_save="1"/>
                                     <field name="room_type_availability" readonly="1"/>
                                     <field name="room_qty"/>
-                                    <field name="room_type_line_ids" invisible="1"/>
+                                    <field name="room_type_line_ids" widget="one2many_list" invisible="1">
+                                        <tree editable="bottom">
+                                            <field name="date"/>
+                                            <field name="price"/>
+                                        </tree>
+                                    </field>
                                     <field name="checkin" widget="date"/>
                                     <field name="checkout" widget="date"/>
                                     <field name="nights"/>
@@ -91,11 +98,9 @@
         <field name="model">node.folio.wizard</field>
         <field name="inherit_id" ref="hotel_node_reservation_wizard_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='dates']" position="replace">
+            <field name="partner_id" position="after">
                 <field name="folio_id" invisible="1"/>
                 <field name="folio_name"/>
-            </xpath>
-            <field name="partner_id" position="after">
                 <field name="email"/>
                 <field name="internal_comment"/>
             </field>
