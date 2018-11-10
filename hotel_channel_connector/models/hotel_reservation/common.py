@@ -178,7 +178,8 @@ class HotelReservation(models.Model):
     def unlink(self):
         vals = []
         for record in self:
-            if record.wrid and not record.parent_reservation:
+            if any(record.channel_bind_ids) and record.channel_bind_ids[0].external_id \
+                    and not record.parent_reservation:
                 raise UserError(_("You can't delete OTA's reservations"))
             vals.append({
                 'checkin': record.checkin,

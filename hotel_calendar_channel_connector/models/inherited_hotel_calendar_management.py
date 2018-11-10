@@ -11,9 +11,8 @@ class HotelCalendarManagement(models.TransientModel):
         vals = super(HotelCalendarManagement, self)._get_availability_values(
             avail, room_type)
         vals.update({
-            'wmax_avail': vals['avail'],
-            'no_ota': vals['no_ota'],
-            'booked': vals['booked'],
+            'channel_max_avail': vals['avail'],
+            'no_ota': avail['no_ota'],
         })
         return vals
 
