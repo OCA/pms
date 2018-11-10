@@ -20,7 +20,7 @@
     'demo': ['data/hotel_data.xml'],
     'data': [
         'security/hotel_security.xml',
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'wizard/massive_changes.xml',
         'wizard/split_reservation.xml',
         'wizard/duplicate_reservation.xml',

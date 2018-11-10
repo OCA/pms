@@ -22,13 +22,14 @@
 ##############################################################################
 from .common import TestHotel
 from psycopg2 import IntegrityError
+from odoo.tools import mute_logger
 
 
 class TestHotelRoomType(TestHotel):
 
     def test_code_type_unique(self):
         #TODO: use sudo users hotel
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'):
             self.room_type_0.sudo().write({
                 'code_type': self.room_type_1.code_type
             })

@@ -26,7 +26,7 @@ class HotelNode(models.Model):
 
     odoo_version = fields.Char()
     odoo_host = fields.Char('Host', required=True,
-                            help='Full URL to the host.')
+                            help='Full URL to the host.', default='localhost')
     odoo_db = fields.Char('Database Name',
                           help='Odoo database name.')
     odoo_user = fields.Char('Username',
