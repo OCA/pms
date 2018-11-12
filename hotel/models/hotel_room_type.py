@@ -98,7 +98,6 @@ class HotelRoomType(models.Model):
         @return: new record set for hotel room type.
         """
         vals.update({
-            'is_room_type': True,
             'purchase_ok': False,
             'type': 'service',
         })
