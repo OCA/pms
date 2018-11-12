@@ -176,7 +176,6 @@ class HotelReservation(models.Model):
                 rest_id = room_type_rest_obj.search([
                     ('room_type_id', '=', room_type.id),
                     ('date', '>=', ndate_str),
-                    ('applied_on', '=', '0_room_type'),
                     ('restriction_id', '=', restriction_id)
                 ], limit=1)
                 if rest_id and (rest_id.min_stay or rest_id.min_stay_arrival or
