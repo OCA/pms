@@ -76,8 +76,7 @@ class HotelReservation(models.Model):
                 or 0,
                 room.room_type_id.name,
                 room.room_type_id.id,
-                room.floor_id.id,
-                room.room_amenities.ids))
+                room.floor_id.id))
         return json_rooms
 
     @api.model
