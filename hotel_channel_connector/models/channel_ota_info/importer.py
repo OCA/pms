@@ -35,9 +35,13 @@ class ChannelOtaInfoImporter(Component):
                 ('ota_id', '=', ota_id)
             ], limit=1)
             if ota_info_bind:
-                ota_info_bind.write(map_record.values())
+                ota_info_bind.with_context({
+                    'connector_no_export': True,
+                }).write(map_record.values())
             else:
-                ota_info_bind.create(map_record.values(for_create=True))
+                ota_info_bind.with_context({
+                    'connector_no_export': True,
+                }).create(map_record.values(for_create=True))
             count = count + 1
         return count
 

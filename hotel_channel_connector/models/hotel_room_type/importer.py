@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
@@ -34,9 +34,9 @@ class HotelRoomTypeImporter(Component):
                 ('external_id', '=', room['id'])
             ], limit=1)
             if room_bind:
-                room_bind.with_context({'wubook_action': False}).write(map_record.values())
+                room_bind.with_context({'connector_no_export':True}).write(map_record.values())
             else:
-                room_bind = channel_room_type_obj.with_context({'wubook_action': False}).create(
+                room_bind = channel_room_type_obj.with_context({'connector_no_export':True}).create(
                     map_record.values(for_create=True))
         return count
 
@@ -44,7 +44,7 @@ class HotelRoomTypeImporter(Component):
     def fetch_rooms_values(self, dfrom, dto, rooms=False,
                            set_max_avail=False):
         # Sanitize Dates
-        now_dt = fields.Datetime.now()
+        now_dt = datetime.now()
         dfrom_dt = fields.Date.from_string(dfrom)
         dto_dt = fields.Date.from_string(dto)
         if dto_dt < now_dt:
@@ -77,11 +77,11 @@ class HotelRoomTypeImporter(Component):
         ], limit=1)
         if channel_room_type_avail:
             channel_room_type_avail.with_context({
-                'wubook_action': False,
+                'connector_no_export': True,
             }).write(map_record.values())
         else:
             channel_room_type_avail_obj.with_context({
-                'wubook_action': False,
+                'connector_no_export': True,
                 'mail_create_nosubscribe': True,
             }).create(map_record.values(for_create=True))
 
@@ -102,11 +102,11 @@ class HotelRoomTypeImporter(Component):
         ])
         if room_type_restr:
             room_type_restr.with_context({
-                'wubook_action': False,
+                'connector_no_export': True,
             }).write(map_record.values())
         else:
             channel_room_type_restr_item_obj.with_context({
-                'wubook_action': False,
+                'connector_no_export': True,
             }).create(map_record.values(for_create=True))
 
     @api.model

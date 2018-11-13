@@ -26,7 +26,7 @@ class ChannelOtaInfo(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='room',
-                    internal_message=_("Can't import ota info from WuBook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'])
 
 class HotelRoomTypeAdapter(Component):

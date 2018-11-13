@@ -18,7 +18,7 @@ class HotelRoomTypeAvailabilityImporter(Component):
     _usage = 'hotel.room.type.availability.importer'
 
     @api.model
-    def get_availability(self, date_from, date_to):
+    def import_availability_values(self, date_from, date_to):
         now_dt = date.today()
         dfrom_dt = fields.Date.from_string(date_from)
         dto_dt = fields.Date.from_string(date_to)
@@ -30,6 +30,9 @@ class HotelRoomTypeAvailabilityImporter(Component):
             return True
 
         results = self.backend_adapter.fetch_rooms_values(date_from, date_to)
+        _logger.info("==[CHANNEL->ODOO]==== AVAILABILITY (%s - %s) ==",
+                     date_from, date_to)
+        _logger.info(results)
 
         channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
         channel_room_type_obj = self.env['channel.hotel.room.type']
@@ -55,11 +58,11 @@ class HotelRoomTypeAvailabilityImporter(Component):
                     ], limit=1)
                     if room_type_avail_bind:
                         room_type_avail_bind.with_context({
-                            'wubook_action': False
+                            'connector_no_export': True,
                         }).write(map_record.values())
                     else:
                         room_type_avail_bind = channel_room_type_avail_obj.with_context({
-                            'wubook_action': False
+                            'connector_no_export': True,
                         }).create(map_record.values(for_create=True))
                     iter_day += timedelta(days=1)
         return count

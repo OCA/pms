@@ -39,7 +39,7 @@ class ChannelProductPricelistItem(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='pricelist',
-                    internal_message="Can't fetch plan prices from wubook!",
+                    internal_message=str(err),
                     channel_message=err.data['message'],
                     channel_object_id=backend.pricelist_id.external_id,
                     dfrom=backend.pricelist_from,
@@ -51,7 +51,14 @@ class ChannelProductPricelistItem(models.Model):
     def push_pricelist(self, backend):
         with backend.work_on(self._name) as work:
             exporter = work.component(usage='product.pricelist.item.exporter')
-            return exporter.push_pricelist()
+            try:
+                return exporter.push_pricelist()
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    backend=backend.id,
+                    section='pricelist',
+                    internal_message=str(err),
+                    channel_message=err.data['message'])
 
 class ProductPricelistItem(models.Model):
     _inherit = 'product.pricelist.item'

@@ -34,7 +34,7 @@ class ChannelProductPricelist(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='restriction',
-                        internal_message=_("Can't create pricelist plan in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -51,7 +51,7 @@ class ChannelProductPricelist(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='restriction',
-                        internal_message=_("Can't modify pricelist plan in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -68,7 +68,7 @@ class ChannelProductPricelist(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='restriction',
-                        internal_message=_("Can't delete pricelist plan in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -82,7 +82,7 @@ class ChannelProductPricelist(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='pricelist',
-                    internal_message=_("Can't get pricing plans from wubook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'])
 
 class ProductPricelist(models.Model):

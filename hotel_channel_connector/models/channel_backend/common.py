@@ -126,6 +126,19 @@ class ChannelBackend(models.Model):
             channel_product_pricelist_item_obj.import_pricelist_values(backend)
         return True
 
+    @api.multi
+    def push_pricelist(self):
+        channel_product_pricelist_item_obj = self.env['channel.product.pricelist.item']
+        for backend in self:
+            channel_product_pricelist_item_obj.push_pricelist(backend)
+        return True
+
+    @api.multi
+    def push_changes(self):
+        self.push_availability()
+        self.push_restriction()
+        self.push_pricelist()
+
     @contextmanager
     @api.multi
     def work_on(self, model_name, **kwargs):

@@ -73,7 +73,7 @@ class ChannelHotelRoomType(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='room',
-                        internal_message=_("Can't create room in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -90,7 +90,7 @@ class ChannelHotelRoomType(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='room',
-                        internal_message=_("Can't modify rooms in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -107,7 +107,7 @@ class ChannelHotelRoomType(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='room',
-                        internal_message=_("Can't delete room in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
 class HotelRoomType(models.Model):

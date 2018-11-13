@@ -29,11 +29,11 @@ class HotelRoomTypeRestrictionImporter(Component):
             ], limit=1)
             if not plan_bind:
                 channel_restriction_obj.with_context({
-                    'wubook_action': False,
+                    'connector_no_export': True,
                     'rules': plan.get('rules'),
                 }).create(plan_record.values(for_create=True))
             else:
-                plan_bind.with_context({'wubook_action': False}).write(
+                plan_bind.with_context({'connector_no_export':True}).write(
                     plan_record.values())
             count = count + 1
         return count

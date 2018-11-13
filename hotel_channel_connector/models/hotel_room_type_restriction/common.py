@@ -35,7 +35,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='restriction',
-                        internal_message=_("Can't create restriction plan in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -52,7 +52,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='restriction',
-                        internal_message=_("Can't modify restriction plan in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -69,7 +69,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                     self.create_issue(
                         backend=self.backend_id.id,
                         section='restriction',
-                        internal_message=_("Can't delete restriction plan in WuBook"),
+                        internal_message=str(err),
                         channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -83,7 +83,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='restriction',
-                    internal_message=_("Can't fetch restriction plans from wubook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'])
 
 class HotelRoomTypeRestriction(models.Model):

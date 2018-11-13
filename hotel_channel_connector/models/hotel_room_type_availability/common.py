@@ -54,7 +54,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='avail',
-                    internal_message=_("Can't update availability in WuBook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -63,12 +63,13 @@ class ChannelHotelRoomTypeAvailability(models.Model):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='hotel.room.type.availability.importer')
             try:
-                return importer.get_availability(backend.avail_from, backend.avail_to)
+                return importer.import_availability_values(backend.avail_from,
+                                                           backend.avail_to)
             except ChannelConnectorError as err:
                 self.create_issue(
                     backend=backend.id,
                     section='avail',
-                    internal_message=_("Can't import availability from WuBook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'])
 
     @job(default_channel='root.channel')
@@ -82,7 +83,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='avail',
-                    internal_message=_("Can't update availability in WuBook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'])
 
 class HotelRoomTypeAvailability(models.Model):

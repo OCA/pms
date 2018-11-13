@@ -57,10 +57,11 @@ class HotelRoomTypeRestrictionImporter(Component):
                             })
                             if channel_restriction_item:
                                 channel_restriction_item.with_context({
-                                    'wubook_action': False}).write(map_record.values())
+                                    'connector_no_export': True
+                                }).write(map_record.values())
                             else:
                                 channel_restriction_item_obj.with_context({
-                                    'wubook_action': False
+                                    'connector_no_export': True
                                 }).create(map_record.values(for_create=True))
 
     @api.model

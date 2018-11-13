@@ -34,9 +34,12 @@ class ProductPricelistImporter(Component):
             ], limit=1)
             if not plan_bind:
                 channel_product_listprice_obj.with_context({
-                    'wubook_action': False}).create(plan_record.values(for_create=True))
+                    'connector_no_export': True,
+                }).create(plan_record.values(for_create=True))
             else:
-                channel_product_listprice_obj.write(plan_record.values())
+                channel_product_listprice_obj.with_context({
+                    'connector_no_export': True,
+                }).write(plan_record.values())
             count = count + 1
         return count
 

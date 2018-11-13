@@ -2,9 +2,15 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
+from datetime import datetime
 from openerp import http, _
 from openerp.http import request
 from openerp.exceptions import ValidationError
+from odoo.addons.hotel_channel_connector.components.backend_adapter import (
+    DEFAULT_WUBOOK_DATE_FORMAT)
+from odoo.tools import (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT)
 _logger = logging.getLogger(__name__)
 
 
@@ -14,14 +20,6 @@ class website_wubook(http.Controller):
                 type='http', cors="*", auth="public", methods=['POST'],
                 website=True, csrf=False)
     def wubook_push_reservations(self, security_token, **kwargs):
-        # Check Security Token
-        hotel_security_token = request.env['ir.default'].sudo().get(
-                        'wubook.config.settings', 'wubook_push_security_token')
-        if security_token != hotel_security_token:
-            # _logger.info("Invalid Tokens: '%s' != '%s'" %
-            #              (security_token, hotel_security_token))
-            raise ValidationError(_('Invalid Security Token!'))
-
         rcode = kwargs.get('rcode')
         lcode = kwargs.get('lcode')
 
@@ -31,35 +29,27 @@ class website_wubook(http.Controller):
 
         # WuBook Check
         if rcode == '2000' and lcode == '1000':
-            return request.make_response(
-                                    '200 OK', [('Content-Type', 'text/plain')])
+            return request.make_response('200 OK', [('Content-Type', 'text/plain')])
 
-        # Poor Security Check
-        wlcode = request.env['ir.default'].sudo().get(
-                                    'wubook.config.settings', 'wubook_lcode')
-        if lcode != wlcode:
-            raise ValidationError(_("Error! lcode doesn't match!"))
+        # Get Backend
+        backend = request.env['channel.backend'].search([
+            ('security_token', '=', security_token),
+            ('lcode', '=', lcode),
+        ])
+        if not backend:
+            raise ValidationError(_("Can't found a backend!"))
 
         _logger.info(_("[WUBOOK->ODOO] Importing Booking..."))
         # Create Reservation
         request.env['wubook'].sudo().fetch_booking(lcode, rcode)
 
-        return request.make_response('200 OK',
-                                     [('Content-Type', 'text/plain')])
+        return request.make_response('200 OK', [('Content-Type', 'text/plain')])
 
     # Called when modify room values (Delay: ~5mins)
     @http.route(['/wubook/push/rooms/<string:security_token>'], type='http',
                 cors="*", auth="public", methods=['POST'], website=True,
                 csrf=False)
     def wubook_push_rooms(self, security_token, **kwargs):
-        # Check Security Token
-        hotel_security_token = request.env['ir.default'].sudo().get(
-                        'wubook.config.settings', 'wubook_push_security_token')
-        if security_token != hotel_security_token:
-            # _logger.info("Invalid Tokens: '%s' != '%s'" %
-            #              (security_token, hotel_security_token))
-            raise ValidationError(_('Invalid Security Token!'))
-
         lcode = kwargs.get('lcode')
         dfrom = kwargs.get('dfrom')
         dto = kwargs.get('dto')
@@ -68,36 +58,32 @@ class website_wubook(http.Controller):
         if not lcode or not dfrom or not dto:
             raise ValidationError(_('Invalid Input Parameters!'))
 
-        # Poor Security Check
-        wlcode = request.env['ir.default'].sudo().get(
-                                    'wubook.config.settings', 'wubook_lcode')
-        if lcode != wlcode:
-            raise ValidationError(_("Error! lcode doesn't match!"))
+        # Get Backend
+        backend = request.env['channel.backend'].search([
+            ('security_token', '=', security_token),
+            ('lcode', '=', lcode),
+        ])
+        if not backend:
+            raise ValidationError(_("Can't found a backend!"))
 
-        _logger.info(_("[WUBOOK->ODOO] Updating values..."))
-        wubook_obj = request.env['wubook'].sudo().with_context({
-            'init_connection': False
+        odoo_dfrom = datetime.strptime(
+            dfrom,
+            DEFAULT_WUBOOK_DATE_FORMAT).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        odoo_dto = datetime.strptime(
+            dto,
+            DEFAULT_WUBOOK_DATE_FORMAT).strftime(DEFAULT_SERVER_DATE_FORMAT)
+        backend.write({
+            'avail_from': odoo_dfrom,
+            'avail_to': odoo_dto,
+            'restriction_id': False,
+            'restriction_from': odoo_dfrom,
+            'restriction_to': odoo_dto,
+            'pricelist_id': False,
+            'pricelist_from': odoo_dfrom,
+            'pricelist_to': odoo_dto,
         })
-        if wubook_obj.init_connection():
-            wubook_obj.fetch_rooms_values(dfrom, dto)
+        backend.import_availability()
+        backend.import_restriction()
+        backend.import_pricelist()
 
-            default_restr_id = request.env['ir.default'].sudo().get(
-                            'res.config.settings', 'default_restriction_id')
-            if default_restr_id:
-                room_type_restr_obj = request.env['hotel.room.type.restriction']
-                restr_id = room_type_restr_obj.sudo().browse(int(default_restr_id))
-                if restr_id and restr_id.wpid and restr_id.wpid != '0':
-                    wubook_obj.fetch_rplan_restrictions(dfrom, dto,
-                                                        rpid=restr_id.wpid)
-
-            default_pricelist_id = request.env['ir.default'].sudo().get(
-                                'res.config.settings', 'default_pricelist_id')
-            if default_pricelist_id:
-                pricelist_id = request.env['product.pricelist'].sudo().browse(
-                                                    int(default_pricelist_id))
-                if pricelist_id and pricelist_id.wpid:
-                    wubook_obj.fetch_plan_prices(pricelist_id.wpid, dfrom, dto)
-            wubook_obj.close_connection()
-
-        return request.make_response('200 OK',
-                                     [('Content-Type', 'text/plain')])
+        return request.make_response('200 OK', [('Content-Type', 'text/plain')])

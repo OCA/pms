@@ -20,6 +20,9 @@ class ProductPricelistItemImporter(Component):
 
     @api.model
     def _generate_pricelist_items(self, channel_plan_id, date_from, date_to, plan_prices):
+        _logger.info("==[CHANNEL->ODOO]==== PRICELISTS [%d] (%s - %s) ==",
+                     int(channel_plan_id), date_from, date_to)
+        _logger.info(plan_prices)
         channel_hotel_room_type_obj = self.env['channel.hotel.room.type']
         pricelist_bind = self.env['channel.product.pricelist'].search([
             ('external_id', '=', channel_plan_id)
@@ -58,10 +61,12 @@ class ProductPricelistItemImporter(Component):
                         ], limit=1)
                         if pricelist_item:
                             pricelist_item.with_context({
-                                'wubook_action': False}).write(map_record.values())
+                                'connector_no_export': True,
+                            }).write(map_record.values())
                         else:
                             channel_pricelist_item_obj.with_context({
-                                'wubook_action': False}).create(map_record.values(for_create=True))
+                                'connector_no_export': True,
+                            }).create(map_record.values(for_create=True))
         return True
 
     @api.model

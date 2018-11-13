@@ -41,24 +41,6 @@
                     </group>
                     <notebook>
                         <page name="import" string="Imports">
-                            <p class="oe_grey oe_inline">
-                                By clicking on the buttons,
-                                you will initiate the synchronizations
-                                with Channel.
-                                Note that the import or exports
-                                won't be done directly,
-                                they will create 'Jobs'
-                                executed as soon as possible.
-                            </p>
-                            <p class="oe_grey oe_inline">
-                                Once imported,
-                                some types of records,
-                                like the reservations,
-                                need a manual review.
-                                You will find the list
-                                of the new records to review
-                                in the menu 'Connectors > Checkpoint'.
-                            </p>
                             <group>
                                 <label string="Import Reservations" class="oe_inline"/>
                                 <div>
@@ -147,9 +129,18 @@
                                 </div>
                             </group>
                             <group>
-                                <label string="Push Restriction" class="oe_inline"/>
+                                <label string="Push Restrictions" class="oe_inline"/>
                                 <div>
                                     <button name="push_restriction"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in background"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label string="Push Pricelists" class="oe_inline"/>
+                                <div>
+                                    <button name="push_pricelist"
                                         type="object"
                                         class="oe_highlight"
                                         string="Export in background"/>

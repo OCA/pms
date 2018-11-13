@@ -35,7 +35,7 @@ class ChannelHotelRoomTypeRestrictionItem(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='restriction',
-                    internal_message=_("Can't fetch plan restrictions from wubook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'],
                     channel_object_id=backend.restriction_id,
                     dfrom=backend.restriction_from, dto=backend.restriction_to)
@@ -51,7 +51,7 @@ class ChannelHotelRoomTypeRestrictionItem(models.Model):
                 self.create_issue(
                     backend=backend.id,
                     section='restriction',
-                    internal_message=_("Can't update restrictions in WuBook"),
+                    internal_message=str(err),
                     channel_message=err.data['message'])
 
 class HotelRoomTypeRestrictionItem(models.Model):

@@ -18,24 +18,6 @@ class HotelRoomTypeRestrictionItemExporter(Component):
     _usage = 'hotel.room.type.restriction.item.exporter'
 
     @api.model
-    def update_restriction(self, binding):
-        if any(binding.restriction_id.channel_bind_ids):
-            # FIXME: Supossed that only exists one channel connector per record
-            binding.channel_pushed = True
-            return self.backend_adapter.update_rplan_values(
-                binding.restriction_id.channel_bind_ids[0].external_id,
-                binding.date,
-                {
-                    'min_stay': binding.min_stay or 0,
-                    'min_stay_arrival': binding.min_stay_arrival or 0,
-                    'max_stay': binding.max_stay or 0,
-                    'max_stay_arrival': binding.max_stay_arrival or 0,
-                    'closed': binding.closed and 1 or 0,
-                    'closed_arrival': binding.closed_arrival and 1 or 0,
-                    'closed_departure': binding.closed_departure and 1 or 0,
-                })
-
-    @api.model
     def push_restriction(self):
         channel_room_type_rest_obj = self.env['channel.hotel.room.type.restriction']
         channel_rest_item_obj = self.env['channel.hotel.room.type.restriction.item']
@@ -80,7 +62,7 @@ class HotelRoomTypeRestrictionItemExporter(Component):
                                 })
                             else:
                                 restrictions[rp.external_id][room_type_external_id].append({})
-            _logger.info("==[ODOO->CHANNEL]==== UPDATING RESTRICTIONS ==")
+            _logger.info("==[ODOO->CHANNEL]==== RESTRICTIONS ==")
             _logger.info(restrictions)
             for k_res, v_res in restrictions.items():
                 if any(v_res):
