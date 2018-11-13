@@ -17,7 +17,7 @@
         'account_payment_return',
     ],
     'license': "AGPL-3",
-    'demo': ['data/hotel_data.xml'],
+    'demo': ['data/hotel_demo.xml'],
     'data': [
         'security/hotel_security.xml',
         'security/ir.model.access.csv',
