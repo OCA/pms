@@ -51,6 +51,16 @@
                                 </div>
                             </group>
                             <group>
+                                <label string="Import Reservation" class="oe_inline"/>
+                                <div>
+                                    <field name="reservation_id_str" class="oe_inline" nolabel="1"/>
+                                    <button name="import_reservation"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
+                            <group>
                                 <label string="Import Rooms" class="oe_inline"/>
                                 <div>
                                     <button name="import_rooms"

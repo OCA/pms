@@ -29,42 +29,52 @@ class HotelRoomTypeAvailabilityImporter(Component):
         if dto_dt < now_dt:
             return True
 
-        results = self.backend_adapter.fetch_rooms_values(date_from, date_to)
-        _logger.info("==[CHANNEL->ODOO]==== AVAILABILITY (%s - %s) ==",
-                     date_from, date_to)
-        _logger.info(results)
+        count = 0
+        try:
+            results = self.backend_adapter.fetch_rooms_values(date_from, date_to)
+        except ChannelConnectorError as err:
+            self.create_issue(
+                section='avail',
+                internal_message=str(err),
+                channel_message=err.data['message'],
+                dfrom=date_from, dto=date_to)
+        else:
+            _logger.info("==[CHANNEL->ODOO]==== AVAILABILITY (%s - %s) ==",
+                         date_from, date_to)
+            _logger.info(results)
 
-        channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
-        channel_room_type_obj = self.env['channel.hotel.room.type']
-        room_avail_mapper = self.component(
-            usage='import.mapper',
-            model_name='channel.hotel.room.type.availability')
-        count = len(results)
-        for room_k, room_v in results.items():
-            iter_day = dfrom_dt
-            channel_room_type = channel_room_type_obj.search([
-                ('channel_room_id', '=', room_k)
-            ], limit=1)
-            if channel_room_type:
-                for room in room_v:
-                    room.update({
-                        'room_type_id': channel_room_type.odoo_id.id,
-                        'date': fields.Date.to_string(iter_day),
-                    })
-                    map_record = room_avail_mapper.map_record(room)
-                    room_type_avail_bind = channel_room_type_avail_obj.search([
-                        ('room_type_id', '=', room['room_type_id']),
-                        ('date', '=', room['date'])
-                    ], limit=1)
-                    if room_type_avail_bind:
-                        room_type_avail_bind.with_context({
-                            'connector_no_export': True,
-                        }).write(map_record.values())
-                    else:
-                        room_type_avail_bind = channel_room_type_avail_obj.with_context({
-                            'connector_no_export': True,
-                        }).create(map_record.values(for_create=True))
-                    iter_day += timedelta(days=1)
+            channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
+            channel_room_type_obj = self.env['channel.hotel.room.type']
+            room_avail_mapper = self.component(
+                usage='import.mapper',
+                model_name='channel.hotel.room.type.availability')
+            for room_k, room_v in results.items():
+                iter_day = dfrom_dt
+                channel_room_type = channel_room_type_obj.search([
+                    ('channel_room_id', '=', room_k)
+                ], limit=1)
+                if channel_room_type:
+                    for room in room_v:
+                        room.update({
+                            'room_type_id': channel_room_type.odoo_id.id,
+                            'date': fields.Date.to_string(iter_day),
+                        })
+                        map_record = room_avail_mapper.map_record(room)
+                        room_type_avail_bind = channel_room_type_avail_obj.search([
+                            ('room_type_id', '=', room['room_type_id']),
+                            ('date', '=', room['date'])
+                        ], limit=1)
+                        if room_type_avail_bind:
+                            room_type_avail_bind.with_context({
+                                'connector_no_export': True,
+                            }).write(map_record.values())
+                        else:
+                            room_type_avail_bind = channel_room_type_avail_obj.with_context({
+                                'connector_no_export': True,
+                            }).create(map_record.values(for_create=True))
+                        room_type_avail_bind.channel_pushed = True
+                        iter_day += timedelta(days=1)
+                count = count + 1
         return count
 
 

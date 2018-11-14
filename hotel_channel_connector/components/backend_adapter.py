@@ -361,7 +361,7 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def fetch_booking(self, channel_reservation_id):
-        rcode, results = self.backend_adapter.fetch_booking(
+        rcode, results = self._server.fetch_booking(
             self._session_info[0],
             self._session_info[1],
             channel_reservation_id)
@@ -372,10 +372,6 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def mark_bookings(self, channel_reservation_ids):
-        init_connection = self._context.get('init_connection', True)
-        if init_connection:
-            if not self.init_connection():
-                return False
         rcode, results = self._server.mark_bookings(
             self._session_info[0],
             self._session_info[1],

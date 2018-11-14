@@ -39,9 +39,7 @@ class website_wubook(http.Controller):
         if not backend:
             raise ValidationError(_("Can't found a backend!"))
 
-        _logger.info(_("[WUBOOK->ODOO] Importing Booking..."))
-        # Create Reservation
-        request.env['wubook'].sudo().fetch_booking(lcode, rcode)
+        request.env['channel.hotel.reservation'].import_reservation(rcode)
 
         return request.make_response('200 OK', [('Content-Type', 'text/plain')])
 
@@ -72,18 +70,12 @@ class website_wubook(http.Controller):
         odoo_dto = datetime.strptime(
             dto,
             DEFAULT_WUBOOK_DATE_FORMAT).strftime(DEFAULT_SERVER_DATE_FORMAT)
-        backend.write({
-            'avail_from': odoo_dfrom,
-            'avail_to': odoo_dto,
-            'restriction_id': False,
-            'restriction_from': odoo_dfrom,
-            'restriction_to': odoo_dto,
-            'pricelist_id': False,
-            'pricelist_from': odoo_dfrom,
-            'pricelist_to': odoo_dto,
-        })
-        backend.import_availability()
-        backend.import_restriction()
-        backend.import_pricelist()
+
+        request.env['channel.hotel.room.type.availability'].import_availability(
+            backend, odoo_dfrom, odoo_dto)
+        request.env['channel.hotel.room.type.restriction.item'].import_restriction_values(
+            backend, odoo_dfrom, odoo_dto, False)
+        request.env['channel.product.pricelist.item'].import_pricelist_values(
+            backend, odoo_dfrom, odoo_dto, False)
 
         return request.make_response('200 OK', [('Content-Type', 'text/plain')])

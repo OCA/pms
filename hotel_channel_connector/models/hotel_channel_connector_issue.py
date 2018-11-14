@@ -10,7 +10,7 @@ class HotelChannelConnectorIssue(models.Model):
     _old_name = 'wubook.issue'
 
     backend_id = fields.Many2one('channel.backend',
-                                 'Restriction Plan',
+                                 'Backend',
                                  required=True,
                                  ondelete='cascade',
                                  index=True)

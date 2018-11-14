@@ -5,6 +5,7 @@ import logging
 from datetime import datetime, timedelta
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping, only_create
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.hotel_channel_connector.components.backend_adapter import (
     DEFAULT_WUBOOK_DATE_FORMAT)
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
@@ -20,27 +21,34 @@ class ProductPricelistImporter(Component):
 
     @api.model
     def import_pricing_plans(self):
-        channel_product_listprice_obj = self.env['channel.product.pricelist']
-        pricelist_mapper = self.component(usage='import.mapper',
-                                          model_name='channel.product.pricelist')
-        results = self.backend_adapter.get_pricing_plans()
         count = 0
-        for plan in results:
-            if 'vpid' in plan:
-                continue    # FIXME: Ignore Virtual Plans
-            plan_record = pricelist_mapper.map_record(plan)
-            plan_bind = channel_product_listprice_obj.search([
-                ('external_id', '=', str(plan['id']))
-            ], limit=1)
-            if not plan_bind:
-                channel_product_listprice_obj.with_context({
-                    'connector_no_export': True,
-                }).create(plan_record.values(for_create=True))
-            else:
-                channel_product_listprice_obj.with_context({
-                    'connector_no_export': True,
-                }).write(plan_record.values())
-            count = count + 1
+        try:
+            results = self.backend_adapter.get_pricing_plans()
+        except ChannelConnectorError as err:
+            self.create_issue(
+                section='pricelist',
+                internal_message=str(err),
+                channel_message=err.data['message'])
+        else:
+            channel_product_listprice_obj = self.env['channel.product.pricelist']
+            pricelist_mapper = self.component(usage='import.mapper',
+                                              model_name='channel.product.pricelist')
+            for plan in results:
+                if 'vpid' in plan:
+                    continue    # FIXME: Ignore Virtual Plans
+                plan_record = pricelist_mapper.map_record(plan)
+                plan_bind = channel_product_listprice_obj.search([
+                    ('external_id', '=', str(plan['id']))
+                ], limit=1)
+                if not plan_bind:
+                    channel_product_listprice_obj.with_context({
+                        'connector_no_export': True,
+                    }).create(plan_record.values(for_create=True))
+                else:
+                    channel_product_listprice_obj.with_context({
+                        'connector_no_export': True,
+                    }).write(plan_record.values())
+                count = count + 1
         return count
 
 

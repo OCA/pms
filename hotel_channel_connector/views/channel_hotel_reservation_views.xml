@@ -9,8 +9,8 @@
                 <group>
                     <field name="external_id" />
                     <field name="ota_reservation_id" />
-                    <field name="wstatus" />
-                    <field name="wstatus_reason" />
+                    <field name="channel_status" />
+                    <field name="channel_status_reason" />
                     <field name="to_read" />
                 </group>
             </form>

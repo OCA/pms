@@ -7,7 +7,6 @@ from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 _logger = logging.getLogger(__name__)
 
 class ChannelHotelRoomType(models.Model):
@@ -37,14 +36,7 @@ class ChannelHotelRoomType(models.Model):
     def import_rooms(self, backend):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='hotel.room.type.importer')
-            try:
-                return importer.get_rooms()
-            except ChannelConnectorError as err:
-                self.create_issue(
-                    backend=backend.id,
-                    section='room',
-                    internal_message=_("Can't import rooms from WuBook"),
-                    channel_message=err.data['message'])
+            return importer.get_rooms()
 
     @api.constrains('ota_capacity')
     def _check_ota_capacity(self):
@@ -60,55 +52,31 @@ class ChannelHotelRoomType(models.Model):
                 raise ValidationError(_("Chanel short code can't be longer than 4 characters"))
 
     @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
     @api.multi
     def create_room(self):
         self.ensure_one()
         if not self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.exporter')
-                try:
-                    exporter.create_room(self)
-                except ChannelConnectorError as err:
-                    self.create_issue(
-                        backend=self.backend_id.id,
-                        section='room',
-                        internal_message=str(err),
-                        channel_message=err.data['message'])
+                exporter.create_room(self)
 
     @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
     @api.multi
     def modify_room(self):
         self.ensure_one()
         if self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.exporter')
-                try:
-                    exporter.modify_room(self)
-                except ChannelConnectorError as err:
-                    self.create_issue(
-                        backend=self.backend_id.id,
-                        section='room',
-                        internal_message=str(err),
-                        channel_message=err.data['message'])
+                exporter.modify_room(self)
 
     @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
     @api.multi
     def delete_room(self):
         self.ensure_one()
         if self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                exporter = work.component(usage='hotel.room.type.exporter')
-                try:
-                    exporter.delete_room(self)
-                except ChannelConnectorError as err:
-                    self.create_issue(
-                        backend=self.backend_id.id,
-                        section='room',
-                        internal_message=str(err),
-                        channel_message=err.data['message'])
+                deleter = work.component(usage='hotel.room.type.deleter')
+                deleter.delete_room(self)
 
 class HotelRoomType(models.Model):
     _inherit = 'hotel.room.type'
@@ -158,8 +126,19 @@ class HotelRoomTypeAdapter(Component):
     _inherit = 'wubook.adapter'
     _apply_on = 'channel.hotel.room.type'
 
+    def create_room(self, shortcode, name, capacity, price, availability):
+        return super(HotelRoomTypeAdapter, self).create_room(
+            shortcode, name, capacity, price, availability)
+
     def fetch_rooms(self):
         return super(HotelRoomTypeAdapter, self).fetch_rooms()
+
+    def modify_room(self, channel_room_id, name, capacity, price, availability, scode):
+        return super(HotelRoomTypeAdapter, self).modify_room(
+            channel_room_id, name, capacity, price, availability, scode)
+
+    def delete_room(self, channel_room_id):
+        return super(HotelRoomTypeAdapter, self).delete_room(channel_room_id)
 
 class BindingHotelRoomTypeListener(Component):
     _name = 'binding.hotel.room.type.listener'

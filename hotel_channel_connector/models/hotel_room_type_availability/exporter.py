@@ -4,9 +4,9 @@
 import logging
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api, fields, _
 from odoo.addons.hotel_channel_connector.components.backend_adapter import (
     DEFAULT_WUBOOK_DATE_FORMAT)
+from odoo import api, fields, _
 _logger = logging.getLogger(__name__)
 
 class HotelRoomTypeAvailabilityExporter(Component):
@@ -28,7 +28,6 @@ class HotelRoomTypeAvailabilityExporter(Component):
                     lambda x: x.room_type_id.id == room_type.id)
                 days = []
                 for channel_room_type_avail in channel_room_type_avails:
-                    channel_room_type_avail.channel_pushed = True
                     cavail = channel_room_type_avail.avail
                     if channel_room_type_avail.channel_max_avail >= 0 and \
                             cavail > channel_room_type_avail.channel_max_avail:
@@ -44,4 +43,14 @@ class HotelRoomTypeAvailabilityExporter(Component):
         _logger.info("==[ODOO->CHANNEL]==== AVAILABILITY ==")
         _logger.info(avails)
         if any(avails):
-            self.backend_adapter.update_availability(avails)
+            try:
+                self.backend_adapter.update_availability(avails)
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    section='avail',
+                    internal_message=str(err),
+                    channel_message=err.data['message'])
+                return False
+            else:
+                channel_room_type_avails.write({'channel_pushed': True})
+        return True

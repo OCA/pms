@@ -5,6 +5,7 @@ import logging
 from datetime import timedelta
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping, only_create
+from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.hotel_channel_connector.components.backend_adapter import (
     DEFAULT_WUBOOK_DATE_FORMAT)
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
@@ -64,9 +65,10 @@ class ProductPricelistItemImporter(Component):
                                 'connector_no_export': True,
                             }).write(map_record.values())
                         else:
-                            channel_pricelist_item_obj.with_context({
+                            pricelist_item = channel_pricelist_item_obj.with_context({
                                 'connector_no_export': True,
                             }).create(map_record.values(for_create=True))
+                        pricelist_item.channel_pushed = True
         return True
 
     @api.model
@@ -79,12 +81,22 @@ class ProductPricelistItemImporter(Component):
 
     @api.model
     def import_pricelist_values(self, external_id, date_from, date_to, rooms=None):
-        results = self.backend_adapter.fetch_plan_prices(
-            external_id,
-            date_from,
-            date_to,
-            rooms)
-        self._generate_pricelist_items(external_id, date_from, date_to, results)
+        try:
+            results = self.backend_adapter.fetch_plan_prices(
+                external_id,
+                date_from,
+                date_to,
+                rooms)
+        except ChannelConnectorError as err:
+            self.create_issue(
+                section='pricelist',
+                internal_message=str(err),
+                channel_message=err.data['message'],
+                channel_object_id=external_id,
+                dfrom=date_from,
+                dto=date_to)
+        else:
+            self._generate_pricelist_items(external_id, date_from, date_to, results)
 
 class ProductPricelistItemImportMapper(Component):
     _name = 'channel.product.pricelist.item.import.mapper'

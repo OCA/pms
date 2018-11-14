@@ -7,7 +7,6 @@ from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 _logger = logging.getLogger(__name__)
 
 class ChannelHotelRoomTypeRestriction(models.Model):
@@ -22,69 +21,38 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                               ondelete='cascade')
 
     @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
     @api.multi
     def create_plan(self):
         self.ensure_one()
         if not self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.restriction.exporter')
-                try:
-                    exporter.create_rplan(self)
-                except ChannelConnectorError as err:
-                    self.create_issue(
-                        backend=self.backend_id.id,
-                        section='restriction',
-                        internal_message=str(err),
-                        channel_message=err.data['message'])
+                exporter.create_rplan(self)
 
     @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
     @api.multi
     def update_plan_name(self):
         self.ensure_one()
         if self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='hotel.room.type.restriction.exporter')
-                try:
-                    exporter.rename_rplan(self)
-                except ChannelConnectorError as err:
-                    self.create_issue(
-                        backend=self.backend_id.id,
-                        section='restriction',
-                        internal_message=str(err),
-                        channel_message=err.data['message'])
+                exporter.rename_rplan(self)
 
     @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
     @api.multi
     def delete_plan(self):
         self.ensure_one()
         if self.external_id:
             with self.backend_id.work_on(self._name) as work:
-                exporter = work.component(usage='hotel.room.type.restriction.exporter')
-                try:
-                    exporter.delete_rplan(self)
-                except ChannelConnectorError as err:
-                    self.create_issue(
-                        backend=self.backend_id.id,
-                        section='restriction',
-                        internal_message=str(err),
-                        channel_message=err.data['message'])
+                deleter = work.component(usage='hotel.room.type.restriction.deleter')
+                deleter.delete_rplan(self)
 
     @job(default_channel='root.channel')
     @api.model
     def import_restriction_plans(self, backend):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='hotel.room.type.restriction.importer')
-            try:
-                return importer.import_restriction_plans()
-            except ChannelConnectorError as err:
-                self.create_issue(
-                    backend=backend.id,
-                    section='restriction',
-                    internal_message=str(err),
-                    channel_message=err.data['message'])
+            return importer.import_restriction_plans()
 
 class HotelRoomTypeRestriction(models.Model):
     _inherit = 'hotel.room.type.restriction'

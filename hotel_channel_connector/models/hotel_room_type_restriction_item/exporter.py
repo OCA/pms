@@ -64,12 +64,18 @@ class HotelRoomTypeRestrictionItemExporter(Component):
                                 restrictions[rp.external_id][room_type_external_id].append({})
             _logger.info("==[ODOO->CHANNEL]==== RESTRICTIONS ==")
             _logger.info(restrictions)
-            for k_res, v_res in restrictions.items():
-                if any(v_res):
-                    self.backend_adapter.update_rplan_values(
-                        int(k_res),
-                        date_start.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                        v_res)
-            unpushed.with_context({
-                'wubook_action': False}).write({'channel_pushed': True})
+            try:
+                for k_res, v_res in restrictions.items():
+                    if any(v_res):
+                        self.backend_adapter.update_rplan_values(
+                            int(k_res),
+                            date_start.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                            v_res)
+            except ChannelConnectorError as err:
+                self.create_issue(
+                    section='restriction',
+                    internal_message=str(err),
+                    channel_message=err.data['message'])
+            else:
+                unpushed.write({'channel_pushed': True})
         return True

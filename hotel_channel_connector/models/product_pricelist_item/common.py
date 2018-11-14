@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
-from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
+
 
 class ChannelProductPricelistItem(models.Model):
     _name = 'channel.product.pricelist.item'
@@ -23,42 +23,24 @@ class ChannelProductPricelistItem(models.Model):
 
     @job(default_channel='root.channel')
     @api.model
-    def import_pricelist_values(self, backend):
+    def import_pricelist_values(self, backend, dfrom, dto, external_id):
         with backend.work_on(self._name) as work:
             importer = work.component(usage='product.pricelist.item.importer')
-            try:
-                if not backend.pricelist_id:
-                    return importer.import_all_pricelist_values(
-                        backend.pricelist_from,
-                        backend.pricelist_to)
-                return importer.import_pricelist_values(
-                    backend.pricelist_id.external_id,
+            if not backend.pricelist_id:
+                return importer.import_all_pricelist_values(
                     backend.pricelist_from,
                     backend.pricelist_to)
-            except ChannelConnectorError as err:
-                self.create_issue(
-                    backend=backend.id,
-                    section='pricelist',
-                    internal_message=str(err),
-                    channel_message=err.data['message'],
-                    channel_object_id=backend.pricelist_id.external_id,
-                    dfrom=backend.pricelist_from,
-                    dto=backend.pricelist_to)
-                return False
+            return importer.import_pricelist_values(
+                backend.pricelist_id.external_id,
+                backend.pricelist_from,
+                backend.pricelist_to)
 
     @job(default_channel='root.channel')
     @api.model
     def push_pricelist(self, backend):
         with backend.work_on(self._name) as work:
             exporter = work.component(usage='product.pricelist.item.exporter')
-            try:
-                return exporter.push_pricelist()
-            except ChannelConnectorError as err:
-                self.create_issue(
-                    backend=backend.id,
-                    section='pricelist',
-                    internal_message=str(err),
-                    channel_message=err.data['message'])
+            return exporter.push_pricelist()
 
 class ProductPricelistItem(models.Model):
     _inherit = 'product.pricelist.item'

@@ -34,19 +34,37 @@ class ChannelHotelReservation(models.Model):
                                      old_name='wchannel_reservation_code')
     channel_raw_data = fields.Text(readonly=True, old_name='wbook_json')
 
-    wstatus = fields.Selection([
+    channel_status = fields.Selection([
         ('0', 'No Channel'),
         (str(WUBOOK_STATUS_CONFIRMED), 'Confirmed'),
         (str(WUBOOK_STATUS_WAITING), 'Waiting'),
         (str(WUBOOK_STATUS_REFUSED), 'Refused'),
         (str(WUBOOK_STATUS_ACCEPTED), 'Accepted'),
         (str(WUBOOK_STATUS_CANCELLED), 'Cancelled'),
-        (str(WUBOOK_STATUS_CANCELLED_PENALTY), 'Cancelled with penalty')],
-                               string='WuBook Status',
-                               default='0',
-                               readonly=True)
-    wstatus_reason = fields.Char("WuBook Status Reason", readonly=True)
-    wmodified = fields.Boolean("WuBook Modified", readonly=True, default=False)
+        (str(WUBOOK_STATUS_CANCELLED_PENALTY), 'Cancelled with penalty'),
+    ], string='Channel Status', default='0', readonly=True, old_name='wstatus')
+    channel_status_reason = fields.Char("Channel Status Reason", readonly=True,
+                                        old_name='wstatus_reason')
+    channel_modified = fields.Boolean("Channel Modified", readonly=True,
+                                      default=False, old_name='wmodified')
+
+    @api.depends('channel_reservation_id', 'ota_id')
+    def _is_from_ota(self):
+        for record in self:
+            record.is_from_ota = (record.external_id and record.ota_id)
+
+    @job(default_channel='root.channel')
+    @api.model
+    def refresh_availability(self, checkin, checkout, product_id):
+        self.env['channel.hotel.room.type.availability'].refresh_availability(
+            checkin, checkout, product_id)
+
+    @job(default_channel='root.channel')
+    @api.model
+    def import_reservation(self, backend, channel_reservation_id):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='hotel.reservation.importer')
+            return importer.fetch_booking(channel_reservation_id)
 
     @job(default_channel='root.channel')
     @api.model
@@ -55,36 +73,19 @@ class ChannelHotelReservation(models.Model):
             importer = work.component(usage='hotel.reservation.importer')
             return importer.fetch_new_bookings()
 
-    @api.depends('channel_reservation_id', 'ota_id')
-    def _is_from_ota(self):
-        for record in self:
-            record.odoo_id.is_from_ota = (record.channel_reservation_id and \
-                                          record.ota_id)
-
     @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
-    @api.multi
-    def push_availability(self):
-        self.ensure_one()
-        if self._context.get('channel_action', True):
-            with self.backend_id.work_on(self._name) as work:
-                exporter = work.component(usage='channel.exporter')
-                exporter.push_availability()
-
-    @job(default_channel='root.channel')
-    @related_action(action='related_action_unwrap_binding')
     @api.multi
     def cancel_reservation(self):
-        self.ensure_one()
-        if self._context.get('channel_action', True):
-            user = self.env['res.user'].browse(self.env.uid)
-            with self.backend_id.work_on(self._name) as work:
-                adapter = work.component(usage='backend.adapter')
-                wres = adapter.cancel_reservation(
-                    self.channel_reservation_id,
-                    _('Cancelled by %s') % user.partner_id.name)
-                if not wres:
-                    raise ValidationError(_("Can't cancel reservation on WuBook"))
+        with self.backend_id.work_on(self._name) as work:
+            exporter = work.component(usage='hotel.reservation.exporter')
+            return exporter.cancel_reservation(self)
+
+    @job(default_channel='root.channel')
+    @api.multi
+    def mark_booking(self):
+        with self.backend_id.work_on(self._name) as work:
+            exporter = work.component(usage='hotel.reservation.exporter')
+            return exporter.mark_booking(self)
 
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
@@ -100,11 +101,14 @@ class HotelReservation(models.Model):
         for record in self:
             if not record.channel_type:
                 record.channel_type = 'door'
-            record.origin_sale = dict(
-                self.fields_get(
-                    allfields=['channel_type'])['channel_type']['selection'])[record.channel_type] \
-                        if record.channel_type != 'web' or not record.channel_bind_ids[0].ota_id \
-                        else record.channel_bind_ids[0].ota_id.name
+
+            if record.channel_type == 'web' and any(record.channel_bind_ids) and \
+                    record.channel_bind_ids[0].ota_id:
+                record.origin_sale = record.channel_bind_ids[0].ota_id.name
+            else:
+                record.origin_sale = dict(
+                    self.fields_get(allfields=['channel_type'])['channel_type']['selection']
+                )[record.channel_type]
 
     channel_bind_ids = fields.One2many(
         comodel_name='channel.hotel.reservation',
@@ -124,17 +128,12 @@ class HotelReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('channel_reservation_id') != None:
+        if vals.get('external_id') is not None:
             vals.update({'preconfirm': False})
         user = self.env['res.users'].browse(self.env.uid)
         if user.has_group('hotel.group_hotel_call'):
             vals.update({'to_read': True})
-        res = super(HotelReservation, self).create(vals)
-        self.env['hotel.room.type.availability'].refresh_availability(
-            vals['checkin'],
-            vals['checkout'],
-            vals['product_id'])
-        return res
+        return super(HotelReservation, self).create(vals)
 
     @api.multi
     def write(self, vals):
@@ -198,8 +197,8 @@ class HotelReservation(models.Model):
 
     @api.multi
     def action_cancel(self):
-        waction = self._context.get('wubook_action', True)
-        if waction:
+        no_export = self._context.get('connector_no_export', True)
+        if no_export:
             for record in self:
                 # Can't cancel in Odoo
                 if record.is_from_ota:
@@ -209,12 +208,13 @@ class HotelReservation(models.Model):
             self.write({'to_read': True, 'to_assign': True})
 
         res = super(HotelReservation, self).action_cancel()
-        if waction:
+        if no_export:
             for record in self:
                 # Only can cancel reservations created directly in wubook
-                if record.channel_bind_ids[0].channel_reservation_id and \
+                if any(record.channel_bind_ids) and \
+                        record.channel_bind_ids[0].external_id and \
                         not record.channel_bind_ids[0].ota_id and \
-                        record.channel_bind_ids[0].wstatus in ['1', '2', '4']:
+                        record.channel_bind_ids[0].channel_status in ['1', '2', '4']:
                     self._event('on_record_cancel').notify(record)
         return res
 
@@ -222,7 +222,8 @@ class HotelReservation(models.Model):
     def confirm(self):
         can_confirm = True
         for record in self:
-            if record.is_from_ota and int(record.wstatus) in WUBOOK_STATUS_BAD:
+            if record.is_from_ota and any(record.channel_bind_ids) and \
+                    int(record.channel_bind_ids[0].channel_status) in WUBOOK_STATUS_BAD:
                 can_confirm = False
                 break
         if not can_confirm:
@@ -276,22 +277,39 @@ class HotelReservationAdapter(Component):
     _inherit = 'wubook.adapter'
     _apply_on = 'channel.hotel.reservation'
 
+    def mark_bookings(self, channel_reservation_ids):
+        return super(HotelReservationAdapter, self).mark_bookings(
+            channel_reservation_ids)
+
     def fetch_new_bookings(self):
         return super(HotelReservationAdapter, self).fetch_new_bookings()
+
+    def fetch_booking(self, channel_reservation_id):
+        return super(HotelReservationAdapter, self).fetch_booking(
+            channel_reservation_id)
+
+    def cancel_reservation(self, channel_reservation_id, message):
+        return super(HotelReservationAdapter, self).cancel_reservation(
+            channel_reservation_id, message)
 
 class ChannelBindingHotelReservationListener(Component):
     _name = 'channel.binding.hotel.reservation.listener'
     _inherit = 'base.connector.listener'
     _apply_on = ['channel.hotel.reservation']
 
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_create(self, record, fields=None):
+        record.refresh_availability()
+
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        record.with_delay(priority=20).push_availability()
+        record.push_availability()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):
-        record.with_delay(priority=20).push_availability()
+        record.push_availability()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_cancel(self, record, fields=None):
-        record.with_delay(priority=20).cancel_reservation()
+        record.cancel_reservation()
