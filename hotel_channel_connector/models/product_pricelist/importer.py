@@ -38,7 +38,8 @@ class ProductPricelistImporter(Component):
                     continue    # FIXME: Ignore Virtual Plans
                 plan_record = pricelist_mapper.map_record(plan)
                 plan_bind = channel_product_listprice_obj.search([
-                    ('external_id', '=', str(plan['id']))
+                    ('backend_id', '=', self.backend_record.id),
+                    ('external_id', '=', str(plan['id'])),
                 ], limit=1)
                 if not plan_bind:
                     channel_product_listprice_obj.with_context({

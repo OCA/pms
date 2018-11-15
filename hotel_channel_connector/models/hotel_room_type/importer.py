@@ -38,7 +38,8 @@ class HotelRoomTypeImporter(Component):
             for room in results:
                 map_record = room_mapper.map_record(room)
                 room_bind = channel_room_type_obj.search([
-                    ('external_id', '=', room['id'])
+                    ('backend_id', '=', self.backend_record.id),
+                    ('external_id', '=', room['id']),
                 ], limit=1)
                 if room_bind:
                     room_bind.with_context({'connector_no_export':True}).write(map_record.values())

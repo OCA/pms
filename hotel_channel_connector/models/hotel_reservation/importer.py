@@ -108,6 +108,7 @@ class HotelReservationImporter(Component):
                 tprice += room_day_price
         # Get OTA
         ota_id = self.env['channel.ota.info'].search([
+            ('backend_id', '=', self.backend_record.id),
             ('ota_id', '=', str(book['id_channel'])),
         ], limit=1)
 
@@ -248,21 +249,25 @@ class HotelReservationImporter(Component):
             # Search Folio. If exists.
             folio_id = False
             if crcode != 'undefined':
-                reserv_folio = channel_reserv_obj.search([
-                    ('ota_reservation_id', '=', crcode)
+                reserv_bind = channel_reserv_obj.search([
+                    ('ota_reservation_id', '=', crcode),
                 ], limit=1)
-                if reserv_folio:
-                    folio_id = reserv_folio.odoo_id.folio_id
+                if reserv_bind:
+                    folio_id = reserv_bind.folio_id
             else:
-                reserv_folio = channel_reserv_obj.search([
-                    ('external_id', '=', rcode)
+                reserv_bind = channel_reserv_obj.search([
+                    ('backend_id', '=', self.backend_record.id),
+                    ('external_id', '=', rcode),
                 ], limit=1)
-                if reserv_folio:
-                    folio_id = reserv_folio.odoo_id.folio_id
+                if reserv_bind:
+                    folio_id = reserv_bind.folio_id
 
             # Need update reservations?
             reservs_processed = False
-            reservs_binds = channel_reserv_obj.search([('external_id', '=', rcode)])
+            reservs_binds = channel_reserv_obj.search([
+                ('backend_id', '=', self.backend_record.id),
+                ('external_id', '=', rcode),
+            ])
             for reserv_bind in reservs_binds:
                 self._update_reservation_binding(reserv_bind, book)
                 reservs_processed = True
@@ -286,6 +291,7 @@ class HotelReservationImporter(Component):
             # Iterate booked rooms
             for broom in book['booked_rooms']:
                 room_type_bind = channel_room_type_obj.search([
+                    ('backend_id', '=', self.backend_record.id),
                     ('external_id', '=', broom['room_id'])
                 ], limit=1)
                 if not room_type_bind:

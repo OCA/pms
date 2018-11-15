@@ -32,12 +32,14 @@ class HotelRoomTypeRestrictionImporter(Component):
         _logger.info(plan_restrictions)
         for k_rpid, v_rpid in plan_restrictions.items():
             channel_restriction_id = channel_reserv_restriction_obj.search([
-                ('external_id', '=', k_rpid)
+                ('backend_id', '=', self.backend_record.id),
+                ('external_id', '=', k_rpid),
             ], limit=1)
             if channel_restriction_id:
                 for k_rid, v_rid in v_rpid.items():
                     channel_room_type = channel_hotel_room_type_obj.search([
-                        ('external_id', '=', k_rid)
+                        ('backend_id', '=', self.backend_record.id),
+                        ('external_id', '=', k_rid),
                     ], limit=1)
                     if channel_room_type:
                         for item in v_rid:

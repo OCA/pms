@@ -34,7 +34,8 @@ class HotelRoomTypeRestrictionImporter(Component):
             for plan in results:
                 plan_record = restriction_mapper.map_record(plan)
                 plan_bind = channel_restriction_obj.search([
-                    ('external_id', '=', str(plan['id']))
+                    ('backend_id', '=', self.backend_record.id),
+                    ('external_id', '=', str(plan['id'])),
                 ], limit=1)
                 if not plan_bind:
                     channel_restriction_obj.with_context({
