@@ -209,7 +209,6 @@ class ChannelBackend(models.Model):
 
     @api.model
     def cron_push_changes(self):
-        _logger.info("======== PASA POR AKI!! AAAAA")
         backends = self.env[self._name].search([])
         backends.push_availability()
         backends.push_restriction()
@@ -217,7 +216,6 @@ class ChannelBackend(models.Model):
 
     @api.model
     def cron_import_reservations(self):
-        _logger.info("======== PASA POR AKI!! BBBBBB")
         self.env[self._name].search([]).import_reservations()
 
     @contextmanager
