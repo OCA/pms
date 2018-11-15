@@ -36,16 +36,17 @@ class HotelReservationImporter(Component):
                 channel_message=err.data['message'])
             return False
         else:
-            processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
-                self._generate_reservations(results)
-            if any(processed_rids):
-                self.backend_adapter.mark_bookings(list(set(processed_rids)))
-            # Update Odoo availability (don't wait for wubook)
-            # FIXME: This cause abuse service in first import!!
-            if checkin_utc_dt and checkout_utc_dt:
-                self.backend_adapter.fetch_rooms_values(
-                    checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+            if any(results):
+                processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
+                    self._generate_reservations(results)
+                if any(processed_rids):
+                    self.backend_adapter.mark_bookings(list(set(processed_rids)))
+                # Update Odoo availability (don't wait for wubook)
+                # FIXME: This cause abuse service in first import!!
+                if checkin_utc_dt and checkout_utc_dt:
+                    self.backend_adapter.fetch_rooms_values(
+                        checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                        checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         return True
 
     def fetch_new_bookings(self):
@@ -58,19 +59,20 @@ class HotelReservationImporter(Component):
                 internal_message=str(err),
                 channel_message=err.data['message'])
         else:
-            processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
-                self._generate_reservations(results)
-            if any(processed_rids):
-                uniq_rids = list(set(processed_rids))
-                self.backend_adapter.mark_bookings(uniq_rids)
-                count = len(uniq_rids)
-            # Update Odoo availability (don't wait for wubook)
-            # FIXME: This cause abuse service in first import!!
-            if checkin_utc_dt and checkout_utc_dt:
-                self.backend_adapter.fetch_rooms_values(
-                    checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        return count
+            if any(results):
+                processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
+                    self._generate_reservations(results)
+                if any(processed_rids):
+                    uniq_rids = list(set(processed_rids))
+                    self.backend_adapter.mark_bookings(uniq_rids)
+                    count = len(uniq_rids)
+                # Update Odoo availability (don't wait for wubook)
+                # FIXME: This cause abuse service in first import!!
+                if checkin_utc_dt and checkout_utc_dt:
+                    self.backend_adapter.fetch_rooms_values(
+                        checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                        checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+            return count
 
     @api.model
     def _generate_booking_vals(self, broom, crcode, rcode, room_type_bind,
