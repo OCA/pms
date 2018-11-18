@@ -250,6 +250,7 @@
                                                 options="{'create': False, 'create_edit': False}" />
                                             <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
                                             <field name="name"/>
+                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}"/>
                                             <field name="pricelist_id"/>
                                             <!-- <field name="ser_room_line" invisible="1" /> -->
                                             <!-- <field name="qty_delivered" invisible="1"

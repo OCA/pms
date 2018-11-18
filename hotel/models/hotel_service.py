@@ -22,6 +22,7 @@ class HotelService(models.Model):
     folio_id = fields.Many2one('hotel.folio', 'Folio', ondelete='cascade')
     ser_room_line = fields.Many2one('hotel.reservation', 'Room',
                                     default=_default_ser_room_line)
+    per_day = fields.Boolean(related='product_id.per_day', 'Unit increment per day')
     service_line_ids = fields.One2many('hotel.service.line', 'service_id')
     product_qty = fields.Integer('Quantity')
     pricelist_id = fields.Many2one(related='folio_id.pricelist_id')
