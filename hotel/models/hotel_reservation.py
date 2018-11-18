@@ -319,7 +319,7 @@ class HotelReservation(models.Model):
                     fields.Date.from_string(checkin)
                 ).days
                 record.update(record.prepare_reservation_lines(
-                    vals['checkin'],
+                    vals['checkin'] if 'checkin' in vals else record.checkin,
                     days_diff,
                     vals=vals)) #REVISAR el unlink
             if ('checkin' in vals and record.checkin != vals['checkin']) or \
