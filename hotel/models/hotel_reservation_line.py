@@ -1,8 +1,9 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields
+from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
+from odoo.exceptions import ValidationError
 
 class HotelReservationLine(models.Model):
     _name = "hotel.reservation.line"
@@ -16,3 +17,13 @@ class HotelReservationLine(models.Model):
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)
+
+    @api.constrains('date')
+    def constrains_duplicated_date(self):
+        for record in self:
+            duplicated = record.reservation_id.reservation_line_ids.filtered(
+                lambda r: r.date == record.date and
+                r.id != record.id
+            )
+            if duplicated:
+                raise ValidationError(_('Duplicated reservation line date'))
