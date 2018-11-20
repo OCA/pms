@@ -6,58 +6,26 @@
         <field name="name">.hotel.service.form</field>
         <field name="model">hotel.service</field>
         <field name="arch" type="xml">
-            <form string="Hotel Services">
+            <form string="Reservation Service">
                 <sheet>
                     <h1>
                         <label string="Service" />
                         <field name="name" select="1" />
                     </h1>
                     <group>
-                        <field name="default_code" select="1" />
+                        <field name="product_id" />
+                        <field name="product_qty" />
                     </group>
-                    <notebook>
-                        <page string="Information">
-                            <group>
-                                <group colspan="4" col="4">
-                                    <field name="service_type_id" select="2" string="Service Type" />
-                                    <!-- <field name="categ_id" domain="[('isservicetype','=',True)]"
-                                        select="1" /> -->
-                                 </group>
-                            </group>
-                            <newline />
-                            <separator colspan='4' string="Supplier Taxes" />
-                            <!-- <field name="supplier_taxes_id" colspan="4" nolabel='1'
-                                help='List of supplier taxes related to the service provided by hotel.' /> -->
-                            <newline />
-                            <separator colspan='4' string="Customer Taxes" />
-                            <!-- <field name="taxes_id" colspan="4" nolabel='1'
-                                help='Customer taxes applied on the service.' /> -->
-                        </page>
-                        <page string="Procurement">
-                            <group colspan="4" col="4">
-                                <field name="active" select="2" />
-                                <field name="list_price" />
-                                <!-- <field name="cost_method" string="Cost Method"/> -->
-                                <!-- <field name="sale_ok" select="2" /> -->
-                                <!-- <field name="standard_price" /> -->
-                                <!-- <field name="rental" select="2" /> -->
-                            </group>
-                            <newline />
-                            <group>
-                                <!-- <separator string="Suplliers" />
-                                <field name="seller_ids" colspan="4" nolabel="1"
-                                    widget="one2many_list" /> -->
-                            </group>
-                        </page>
-                        <page string="Descriptions">
-                            <!-- <separator string="Description" />
-                            <field name="description" colspan="4" nolabel="1" />
-                            <separator string="Sale Description" />
-                            <field name="description_sale" colspan="4" nolabel="1" />
-                            <separator string="Purchase Description" />
-                            <field name="description_purchase" colspan="4" nolabel="1" /> -->
-                        </page>
-                    </notebook>
+                    <group>
+                        <field name="price_subtotal" />
+                        <field name="price_total" />
+                    </group>
+                    <field name="service_line_ids">
+                        <tree string="Days" >
+                            <field name="date" />
+                            <field name="day_qty" />
+                        </tree>
+                    </field>
                 </sheet>
             </form>
         </field>
@@ -68,10 +36,10 @@
         <field name="name">hotel.service.search</field>
         <field name="model">hotel.service</field>
         <field name="arch" type="xml">
-            <search string="Hotel Services">
+            <search string="Reservation Service">
                 <field name="name" />
-                <field name="service_type_id" select="1" />
-                <field name="list_price" string="Service rate" />
+                <field name="product_id"/>
+                <field name="product_qty"  />
                 <newline />
                 <group expand="0" string="Group By...">
                 <!--    <filter name="categ_id" string="Catagory"
@@ -89,8 +57,8 @@
         <field name="arch" type="xml">
             <tree string="Hotel Services">
                 <field name="name" />
-                <field name="service_type_id" />
-                <field name="list_price" string="Service rate" />
+                <field name="product_id" />
+                <field name="product_qty" />
             </tree>
         </field>
     </record>

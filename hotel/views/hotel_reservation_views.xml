@@ -239,34 +239,38 @@
                             <group col="9">
                                 <group colspan="6" string="Reservation Services" name="reservation_services" attrs="{'invisible': [('folio_id','=',False)]}">
                                     <field name="service_line_ids"
-                                        context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id}"
                                         nolabel="1" style="padding-right:10px !important;">
                                         <!-- <field name="service_line_ids"> -->
-                                        <tree string="Services"  editable="bottom">
+                                        <tree string="Services">
                                             <!-- <field name="sequence" widget="handle"/> -->
+                                            <field name="per_day" />
                                             <field name="folio_id" invisible="1"/>
                                             <field name="product_id"
                                                 domain="[('sale_ok', '=', True)]"
                                                 options="{'create': False, 'create_edit': False}" />
                                             <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
                                             <field name="name"/>
-                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}"/>
-                                            <field name="pricelist_id"/>
-                                            <!-- <field name="ser_room_line" invisible="1" /> -->
-                                            <!-- <field name="qty_delivered" invisible="1"
-                                                attrs="{'readonly': [('qty_delivered_updateable', '=', False)]}"/> -->
-                                            <!-- <field name="product_uom"
-                                                attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
-                                                context="{'company_id': parent.company_id}"
-                                                groups="product.group_uom" options='{"no_open": True}'/> -->
-                                            <!-- <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags"/> -->
-                                            <!-- <field name="tax_id" widget="many2many_tags" invisible="1"/> -->
-                                            <!-- <field name="qty_delivered_updateable" invisible="1"/> -->
-                                            <!-- <field name="state" invisible="1"/> -->
-                                            <!-- <field name="invoice_status" invisible="1"/> -->
-                                            <!-- <field name="customer_lead" invisible="1"/> -->
-                                            <!-- <field name="currency_id" invisible="1"/> -->
+                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
+                                            <field name="days_qty" />
+                                            <field name="service_line_ids" />
                                         </tree>
+                                        <form string="Services">
+                                            <!-- <field name="sequence" widget="handle"/> -->
+                                            <field name="per_day" />
+                                            <field name="folio_id" invisible="1"/>
+                                            <field name="product_id"
+                                                domain="[('sale_ok', '=', True)]"
+                                                options="{'create': False, 'create_edit': False}" />
+                                            <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
+                                            <field name="name"/>
+                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
+                                            <field name="service_line_ids">
+                                                <tree string="Days" >
+                                                    <field name="date" />
+                                                    <field name="day_qty" />
+                                                </tree>
+                                            </field>
+                                        </form>
                                     </field>
                                 </group>
                                 <group colspan="4" string="Days" name="days">

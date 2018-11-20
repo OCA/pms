@@ -103,7 +103,7 @@ class HotelReservation(models.Model):
             if record.folio_id:
                 record.shared_folio = len(record.folio_id.room_lines) > 1 or \
                         any(record.folio_id.service_line_ids.filtered(
-                            lambda x: x.ser_room_line != record.id))
+                            lambda x: x.ser_room_line.id != record.id))
 
     @api.depends('checkin', 'checkout')
     def _computed_nights(self):
@@ -310,24 +310,51 @@ class HotelReservation(models.Model):
                 'last_updated_res': fields.Datetime.now()
             })
         for record in self:
+            checkin = vals['checkin'] if 'checkin' in vals else record.checkin
+            checkout = vals['checkout'] if 'checkout' in vals else record.checkout
+            days_diff = (
+                fields.Date.from_string(checkout) - \
+                fields.Date.from_string(checkin)
+            ).days
             if record.compute_price_out_vals(vals):
-                checkin = vals['checkin'] if 'checkin' in vals else record.checkin
-                checkout = vals['checkout'] if 'checkout' in vals else record.checkout
-
-                days_diff = (
-                    fields.Date.from_string(checkout) - \
-                    fields.Date.from_string(checkin)
-                ).days
                 record.update(record.prepare_reservation_lines(
-                    vals['checkin'] if 'checkin' in vals else record.checkin,
+                    checkin,
                     days_diff,
                     vals=vals)) #REVISAR el unlink
+            if record.compute_qty_service_day(vals):
+                for service in record.service_line_ids:
+                    if service.product_id.per_day:
+                        params = {
+                            'per_person': service.product_id.per_person,
+                            'persons': vals['adults'] if 'adults' in vals else record.adults
+                            }
+                        service.update(service.prepare_service_lines(
+                            checkin,
+                            days_diff,
+                            params
+                            ))
             if ('checkin' in vals and record.checkin != vals['checkin']) or \
-                    ('checkout' in vals and record.checkout != vals['checkout']) or \
-                    ('state' in vals and record.state != vals['state']):
-                vals.update({'to_send': True})
+                ('checkout' in vals and record.checkout != vals['checkout']) or \
+                ('state' in vals and record.state != vals['state']):
+                    record.update({'to_send': True})
         res = super(HotelReservation, self).write(vals)
         return res
+
+    @api.multi
+    def compute_qty_service_day(self, vals):
+        """
+        Compute if It is necesary calc price in write/create
+        """
+        self.ensure_one()
+        if not vals:
+            vals = {}
+        if 'service_line_ids' in vals:
+            return False
+        if ('checkin' in vals and self.checkin != vals['checkin']) or \
+                ('checkout' in vals and self.checkout != vals['checkout']) or \
+                ('adults' in vals and self.checkout != vals['adults']):
+            return True
+        return False
 
     @api.model
     def _prepare_add_missing_fields(self, values):
@@ -506,6 +533,12 @@ class HotelReservation(models.Model):
             checkout_str = checkout_dt.strftime('%d/%m/%Y')
             self.name = self.room_type_id.name + ': ' + checkin_str + ' - '\
                 + checkout_str
+
+    @api.onchange('checkin', 'checkout')
+    def onchange_update_service_per_day(self):
+        services = self.service_line_ids.filtered(lambda r: r.per_day == True)
+        for service in services:
+            service.onchange_product_calc_qty()
 
     @api.multi
     @api.onchange('checkin', 'checkout', 'room_id')
@@ -748,7 +781,8 @@ class HotelReservation(models.Model):
         #~ pricelist_id = vals.get('pricelist_id') or self.pricelist_id.id
         room_type_id = vals.get('room_type_id') or self.room_type_id.id
         product = self.env['hotel.room.type'].browse(room_type_id).product_id
-        old_lines_days = self.mapped('reservation_line_ids.date')
+        old_lines_days = self.mapped('reservation_line_ids.date') #TODO: This is a
+        # PROBLEM when self is multirecord and the records has different old lines
         partner = self.env['res.partner'].browse(vals.get('partner_id') or self.partner_id.id)
         for i in range(0, days):
             idate = (fields.Date.from_string(dfrom) + timedelta(days=i)).strftime(
