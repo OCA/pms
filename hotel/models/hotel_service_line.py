@@ -26,7 +26,6 @@ class HotelServiceLine(models.Model):
                 if limit < out_qty + record.day_qty:
                     raise ValidationError(
                     _("Limit exceeded for %s")% record.date)
-                    
 
                 
         
