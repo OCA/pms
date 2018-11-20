@@ -189,6 +189,7 @@
                         <group colspan="4" string="Reservation Details" name="reservation_details">
                             <field name="arrival_hour"/>
                             <field name="departure_hour"/>
+                            <field name="board_service_id" />
                             <field name="name"/>
                             <field name="adults"/>
                             <field name="children"/>

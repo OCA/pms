@@ -133,6 +133,7 @@ class HotelReservation(models.Model):
                              track_visibility='onchange')
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
+    board_service_id = fields.Many2one('hotel.board.service', string='Board Service')
     cancelled_reason = fields.Selection([
         ('late', 'Late'),
         ('intime', 'In time'),
