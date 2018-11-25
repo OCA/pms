@@ -6,6 +6,7 @@ Go to connector section and create a new channel backend. Fill form and use butt
 5. Import Availiability, Restrictions & Price Values
 6. Synch Push URL
 7. Import Reservations
+*** Update hotel settings to use imported plans as default plans
 
 Avaliability, Restrictions and Pricelist are flagged when change to know when need be uploaded.
 All other records modifications are handled to be sent to server as it changes.
