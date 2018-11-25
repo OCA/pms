@@ -15,21 +15,19 @@ class HotelRoomTypeResrtrictionItem(models.Model):
             'res.config.settings', 'default_restriction_id')
         if restrictions_default_id:
             restrictions_default_id = int(restrictions_default_id)
-        restriction_id = res.restriction_id.id
-        if restriction_id == restrictions_default_id and \
-                self.applied_on == '0_room_type':
+        if res.restriction_id.id == restrictions_default_id:
             self.env['bus.hotel.calendar'].send_restriction_notification({
-                'restriction_id': self.restriction_id.id,
-                'date': self.date,
-                'min_stay': self.min_stay,
-                'min_stay_arrival': self.min_stay_arrival,
-                'max_stay': self.max_stay,
-                'max_stay_arrival': self.max_stay_arrival,
-                'closed': self.closed,
-                'closed_departure': self.closed_departure,
-                'closed_arrival': self.closed_arrival,
-                'room_type_id': self.room_type_id.id,
-                'id': self.id,
+                'restriction_id': res.restriction_id.id,
+                'date': res.date,
+                'min_stay': res.min_stay,
+                'min_stay_arrival': res.min_stay_arrival,
+                'max_stay': res.max_stay,
+                'max_stay_arrival': res.max_stay_arrival,
+                'closed': res.closed,
+                'closed_departure': res.closed_departure,
+                'closed_arrival': res.closed_arrival,
+                'room_type_id': res.room_type_id.id,
+                'id': res.id,
             })
         return res
 

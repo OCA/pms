@@ -43,7 +43,7 @@ class HotelReservation(models.Model):
         for v_rval in vals[0]:
             reserv = hotel_reservation_obj.browse(v_rval[1])
             json_reservations.append((
-                reserv.product_id.id,
+                reserv.room_id.id,
                 reserv.id,
                 reserv.folio_id.partner_id.name,
                 reserv.adults,
@@ -78,7 +78,7 @@ class HotelReservation(models.Model):
                 'action': naction,
                 'type': ntype,
                 'title': ntitle,
-                'product_id': record.product_id.id,
+                'room_id': record.room_id.id,
                 'reserv_id': record.id,
                 'partner_name': record.partner_id.name,
                 'adults': record.adults,
@@ -91,7 +91,7 @@ class HotelReservation(models.Model):
                 'splitted': record.splitted,
                 'parent_reservation': record.parent_reservation and
                                       record.parent_reservation.id or 0,
-                'room_name': record.product_id.name,
+                'room_name': record.room_id.name,
                 'partner_phone': record.partner_id.mobile or
                                  record.partner_id.phone or _('Undefined'),
                 'state': record.state,

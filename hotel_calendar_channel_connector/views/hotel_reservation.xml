@@ -11,7 +11,7 @@
                 decoration-muted="state == 'cancelled' and not overbooking"
                 decoration-warning="overbooking"
                 >
-                    <button icon="fa fa-2x fa-thumb-tack"
+                    <!--button icon="fa fa-2x fa-thumb-tack"
                         type="object"
                         class="oe_stat_button"
                         id="mark_readed"
@@ -25,20 +25,20 @@
                         id="splitted"
                         name="open_master"
                         attrs="{'invisible':[('splitted','=', False)]}"
-                    />
+                    /-->
                     <field name="state" />
-                    <button type="object" class="oe_stat_button"
+                    <!--button type="object" class="oe_stat_button"
                         id="go_folio" icon="fa fa-2x fa-file"
                         name="open_folio"
-                    />
-                    <field name="folio_id"/>
-                    <field name="product_id" string="Room"/>
-                    <button type="action" class="oe_stat_button"
+                    /-->
+                    <!--field name="folio_id"/>
+                    <field name="room_id" string="Room"/-->
+                    <!--button type="action" class="oe_stat_button"
                         id="reservations_partner" icon="fa fa-2x fa-list-ul"
                         name="%(hotel.open_hotel_reservation_form_tree_all)d"
                         context="{'search_default_partner_id': partner_id}"
-                    />
-                    <field name="partner_id"/>
+                    /-->
+                    <!--field name="partner_id"/>
                     <field name="splitted" invisible="1" />
                     <field name="parent_reservation" invisible="1" />
                     <field name="room_type_id" string="Reserved Room Type"/>
@@ -49,19 +49,17 @@
                     <field name="checkout"  widget="date"/>
                     <field name="create_date"/>
                     <field name="overbooking" invisible="1" />
-                    <field name="last_updated_res" string="Updated on"/>
-                    <field name="origin_sale"/>
+                    <field name="last_updated_res" string="Updated on"/-->
                     <field name="overbooking" invisible="1" />
-                    <field name="to_assign" invisible="1"/>
-                    <field name="price_unit" string="Reservation Price"/>
+                    <!--field name="to_assign" invisible="1"/>
                     <field name="discount" groups="sale.group_discount_per_so_line"/>
                     <field name="price_total" string="Final Price"/>
-                    <field name="folio_pending_amount" string="Folio Pending Amount"/>
-                    <button type="object" class="oe_stat_button"
+                    <field name="folio_pending_amount" string="Folio Pending Amount"/-->
+                    <!--button type="object" class="oe_stat_button"
                         id="checkin_partner_smart_button" icon="fa fa-3x fa-money"
                         name="action_pay_folio"
                         attrs="{'invisible':[('folio_pending_amount','==',0)]}"
-                    />
+                    /-->
                 </tree>
             </field>
         </record>
@@ -71,6 +69,7 @@
         <field name="inherit_id" ref="hotel.hotel_reservation_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//button[@name='unify']" position="after">
+                <field name="to_read" invisible="1"/>
                 <button name="mark_as_readed" string="Mark as Read"
                     type="object" class="oe_highlight"
                     icon="fa-1x fa-thumb-tack"

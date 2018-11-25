@@ -5,11 +5,10 @@ from datetime import timedelta
 from odoo import api, models, fields, _
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo.exceptions import ValidationError
-from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
-from odoo.addons.hotel_channel_connector.components.backend_adapter import (
-    DEFAULT_WUBOOK_DATE_FORMAT)
+
 
 class ChannelHotelRoomTypeAvailability(models.Model):
     _name = 'channel.hotel.room.type.availability'
@@ -42,7 +41,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                     count: %d") % record.odoo_id.room_type_id.total_rooms_count)
 
     @api.model
-    def refresh_availability(self, checkin, checkout, product_id):
+    def refresh_availability(self, checkin, checkout, room_id):
         date_start = fields.Date.from_string(checkin)
         date_end = fields.Date.from_string(checkout)
         # Not count end day of the reservation
@@ -51,7 +50,10 @@ class ChannelHotelRoomTypeAvailability(models.Model):
         channel_room_type_obj = self.env['channel.hotel.room.type']
         channel_room_type_avail_obj = self.env['hotel.room.type.availability']
 
-        room_type_binds = channel_room_type_obj.search([('product_id', '=', product_id)])
+        room_type_binds = channel_room_type_obj.search([
+            ('backend_id', '=', self.backend_id.id),
+            ('room_ids', '=', room_id),
+        ])
         for room_type_bind in room_type_binds:
             if room_type_bind.external_id:
                 for i in range(0, date_diff):
@@ -105,7 +107,7 @@ class HotelRoomTypeAvailability(models.Model):
     booked = fields.Boolean('Booked', default=False, readonly=True)
 
     def _prepare_notif_values(self, record):
-        vals = super(HotelRoomTypeAvailability, self)._prepare_notif_values()
+        vals = super(HotelRoomTypeAvailability, self)._prepare_notif_values(record)
         vals.update({
             'no_ota': record.no_ota,
         })
@@ -140,21 +142,6 @@ class HotelRoomTypeAvailability(models.Model):
     def onchange_room_type_id(self):
         if self.room_type_id:
             self.channel_max_avail = self.room_type_id.total_rooms_count
-
-class HotelRoomTypeAvailabilityAdapter(Component):
-    _name = 'channel.hotel.room.type.availability.adapter'
-    _inherit = 'wubook.adapter'
-    _apply_on = 'channel.hotel.room.type.availability'
-
-    def fetch_rooms_values(self, date_from, date_to, rooms=False):
-        return super(HotelRoomTypeAvailabilityAdapter, self).fetch_rooms_values(
-            date_from,
-            date_to,
-            rooms)
-
-    def update_availability(self, rooms_avail):
-        return super(HotelRoomTypeAvailabilityAdapter, self).update_availability(
-            rooms_avail)
 
 class BindingHotelRoomTypeAvailabilityListener(Component):
     _name = 'binding.hotel.room.type.listener'

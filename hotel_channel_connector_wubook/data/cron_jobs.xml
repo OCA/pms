@@ -10,7 +10,7 @@
       <field name="state">code</field>
       <field name="doall" eval="False" />
       <field name="model_id" ref="model_channel_backend" />
-      <field name="code">model.cron_push_changes()</field>
+      <field name="code">model.with_context({'show_notify': False}).cron_push_changes()</field>
     </record>
 
     <record model="ir.cron" id="channel_connector_fetch_new_bookings">
@@ -22,7 +22,7 @@
       <field name="state">code</field>
       <field name="doall" eval="False" />
       <field name="model_id" ref="model_channel_backend" />
-      <field name="code">model.cron_import_reservations()</field>
+      <field name="code">model.with_context({'show_notify': False}).cron_import_reservations()</field>
     </record>
 
   </data>

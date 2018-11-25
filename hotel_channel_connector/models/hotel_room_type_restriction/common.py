@@ -1,13 +1,11 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import logging
 from odoo import api, models, fields
-from odoo.exceptions import ValidationError
-from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
-_logger = logging.getLogger(__name__)
+
 
 class ChannelHotelRoomTypeRestriction(models.Model):
     _name = 'channel.hotel.room.type.restriction'
@@ -80,23 +78,6 @@ class HotelRoomTypeRestriction(models.Model):
             else:
                 names.append((name[0], name[1]))
         return names
-
-class HotelRoomTypeRestrictionAdapter(Component):
-    _name = 'channel.hotel.room.type.restriction.adapter'
-    _inherit = 'wubook.adapter'
-    _apply_on = 'channel.hotel.room.type.restriction'
-
-    def rplan_rplans(self):
-        return super(HotelRoomTypeRestrictionAdapter, self).rplan_rplans()
-
-    def create_rplan(self, name):
-        return super(HotelRoomTypeRestrictionAdapter, self).create_rplan(name)
-
-    def delete_rplan(self, external_id):
-        return super(HotelRoomTypeRestrictionAdapter, self).delete_rplan(external_id)
-
-    def rename_rplan(self, external_id, new_name):
-        return super(HotelRoomTypeRestrictionAdapter, self).rename_rplan(external_id, new_name)
 
 class BindingHotelRoomTypeListener(Component):
     _name = 'binding.hotel.room.type.restriction.listener'

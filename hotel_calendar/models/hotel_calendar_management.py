@@ -85,7 +85,6 @@ class HotelCalendarManagement(models.TransientModel):
                 res_id = room_type_rest_item_obj.search([
                     ('date', '=', restriction['date']),
                     ('restriction_id', '=', int(restriction_id)),
-                    ('applied_on', '=', '0_room_type'),
                     ('room_type_id', '=', int(k_res)),
                 ], limit=1)
                 vals = self._get_restrictions_values(restriction)
@@ -93,7 +92,6 @@ class HotelCalendarManagement(models.TransientModel):
                     vals.update({
                         'date': restriction['date'],
                         'restriction_id': int(restriction_id),
-                        'applied_on': '0_room_type',
                         'room_type_id': int(k_res),
                     })
                     res_id = room_type_rest_item_obj.create(vals)
@@ -277,7 +275,6 @@ class HotelCalendarManagement(models.TransientModel):
         restriction_item_ids = room_type_rest_it_obj.search([
             ('date', '>=', dfrom), ('date', '<=', dto),
             ('restriction_id', '=', restriction_id),
-            ('applied_on', '=', '0_room_type'),
         ])
 
         pricelist_item_ids = self.env['product.pricelist.item'].search([

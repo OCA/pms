@@ -2,8 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, fields
-from odoo.exceptions import ValidationError
-from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
 
@@ -78,23 +77,6 @@ class ProductPricelist(models.Model):
             else:
                 names.append((name[0], name[1]))
         return names
-
-class ProductPricelistAdapter(Component):
-    _name = 'channel.product.pricelist.adapter'
-    _inherit = 'wubook.adapter'
-    _apply_on = 'channel.product.pricelist'
-
-    def get_pricing_plans(self):
-        return super(ProductPricelistAdapter, self).get_pricing_plans()
-
-    def create_plan(self, name):
-        return super(ProductPricelistAdapter, self).create_plan(name)
-
-    def delete_plan(self, external_id):
-        return super(ProductPricelistAdapter, self).delete_plan(external_id)
-
-    def rename_plan(self, external_id, new_name):
-        return super(ProductPricelistAdapter, self).rename_plan(external_id, new_name)
 
 class BindingProductPricelistListener(Component):
     _name = 'binding.product.pricelist.listener'

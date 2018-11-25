@@ -1,10 +1,6 @@
-HOTEL WUBOOK PROTOTYPE (NOT USING ODOO CONNECTOR)
+HOTEL CHANNEL CONNECTOR
 =============
-- Experimental Connector for WuBook
-    - Active push notifications
-    - Create reservations
-    - Update availability
-    - Handle rooms
+Base implementation for hotel channels
 
 ** UNDER DEVELOPMENT: NOT USE IN PRODUCTION **
 

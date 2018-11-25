@@ -3,7 +3,6 @@
 
 from odoo import api, models, fields
 from odoo.addons.queue_job.job import job
-from odoo.addons.component.core import Component
 
 
 class ChannelOtaInfo(models.Model):
@@ -13,7 +12,6 @@ class ChannelOtaInfo(models.Model):
 
     ota_id = fields.Char("Channel OTA ID", required=True)
     name = fields.Char("OTA Name", required=True)
-    ical = fields.Boolean("ical", default=False)
 
     @job(default_channel='root.channel')
     @api.model
@@ -22,10 +20,9 @@ class ChannelOtaInfo(models.Model):
             importer = work.component(usage='ota.info.importer')
             return importer.import_otas_info()
 
-class HotelRoomTypeAdapter(Component):
-    _name = 'channel.ota.info.adapter'
-    _inherit = 'wubook.adapter'
-    _apply_on = 'channel.ota.info'
-
-    def fetch_rooms(self):
-        return super(HotelRoomTypeAdapter, self).fetch_rooms()
+    @job(default_channel='root.channel')
+    @api.model
+    def push_activation(self, backend, base_url):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='ota.info.importer')
+            return importer.push_activation(base_url)

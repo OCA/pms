@@ -15,7 +15,6 @@
                     <group>
                         <field name="ota_id" />
                         <field name="name" />
-                        <field name="ical" readonly="True" widget="checkbox" />
                     </group>
                 </sheet>
             </form>

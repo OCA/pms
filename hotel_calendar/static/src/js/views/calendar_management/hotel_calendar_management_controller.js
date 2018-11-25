@@ -115,7 +115,6 @@ var MPMSCalendarController = AbstractController.extend({
     _onLoadCalendarSettings: function (ev) {
         var self = this;
         this.model.get_hcalendar_settings().then(function(results){
-          console.log(results);
             self.renderer.setHCalendarSettings(results);
         });
     },

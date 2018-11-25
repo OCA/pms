@@ -3,10 +3,10 @@
     <data>
 
         <record id="hotel_reservation_action_manager_request" model="ir.actions.act_window">
-             <field name="name">Reservations to Assign from WuBook</field>
+             <field name="name">Reservations to Assign from Channel</field>
              <field name="res_model">hotel.reservation</field>
              <field name="view_mode">tree,form</field>
-             <field name="view_id" ref="view_hotel_toassign_reservation_tree" />
+             <field name="view_id" ref="hotel_toassign_reservation_view_tree" />
              <field name="domain">[('to_assign','=',True),('to_read','=',True)]</field>
         </record>
 
