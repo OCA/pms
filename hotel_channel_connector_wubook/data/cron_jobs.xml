@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
-  <data noupdate="1">
+<odoo noupdate="1">
 
     <record model="ir.cron" id="channel_connector_push_changes">
-      <field name="name">Channel Connector Push Changes</field>
-      <field name="interval_number">5</field>
-      <field name="interval_type">minutes</field>
-      <field name="numbercall">-1</field>
-      <field name="state">code</field>
-      <field name="doall" eval="False" />
-      <field name="model_id" ref="model_channel_backend" />
-      <field name="code">model.with_context({'show_notify': False}).cron_push_changes()</field>
+        <field name="name">Channel Connector Push Changes</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="state">code</field>
+        <field name="doall" eval="False" />
+        <field name="model_id" ref="model_channel_backend" />
+        <field name="code">model.with_context({'show_notify': False}).cron_push_changes()</field>
     </record>
 
     <record model="ir.cron" id="channel_connector_fetch_new_bookings">
-      <field name="name">Channel Connector Fetch New Bookings</field>
-      <field name="user_id" ref="base.user_root" />
-      <field name="interval_number">1</field>
-      <field name="interval_type">minutes</field>
-      <field name="numbercall">-1</field>
-      <field name="state">code</field>
-      <field name="doall" eval="False" />
-      <field name="model_id" ref="model_channel_backend" />
-      <field name="code">model.with_context({'show_notify': False}).cron_import_reservations()</field>
+        <field name="name">Channel Connector Fetch New Bookings</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="state">code</field>
+        <field name="doall" eval="False" />
+        <field name="model_id" ref="model_channel_backend" />
+        <field name="code">model.with_context({'show_notify': False}).cron_import_reservations()</field>
     </record>
 
-  </data>
 </odoo>
