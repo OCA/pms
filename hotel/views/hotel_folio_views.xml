@@ -338,7 +338,7 @@
                                             <page name="days" string="Service and Days">
                                                 <group col="9">
                                                     <group colspan="6" string="Reservation Services" name="reservation_services" attrs="{'invisible': [('folio_id','=',False)]}">
-                                                        <field name="service_line_ids"
+                                                        <field name="service_ids"
                                                             context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id}"
                                                             nolabel="1" style="padding-right:10px !important;">
                                                             <tree string="Services"  editable="bottom">
@@ -407,7 +407,7 @@
                                 </form>
                             </field>
                             <separator string="Service Lines" colspan="4"/>
-                            <field name="service_line_ids"
+                            <field name="service_ids"
                                     context="{'default_folio_id': active_id}"
                                     nolabel="1">
                                     <tree string="Services" editable="bottom">
@@ -509,7 +509,7 @@
                 <field name="name"/>
                 <field name="partner_id"/>
                 <field name="room_lines"/>
-                <field name="service_line_ids"/>
+                <field name="service_ids"/>
                 <field name="pending_amount"/>
                 <field name="refund_amount"/>
                 <field name="invoices_paid"/>

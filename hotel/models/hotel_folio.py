@@ -74,7 +74,7 @@ class HotelFolio(models.Model):
                                  states={'done': [('readonly', True)]},
                                  help="Hotel room reservation detail.",)
 
-    service_line_ids = fields.One2many('hotel.service', 'folio_id',
+    service_ids = fields.One2many('hotel.service', 'folio_id',
                                        readonly=False,
                                        states={'done': [('readonly', True)]},
                                        help="Hotel services detail provide to "

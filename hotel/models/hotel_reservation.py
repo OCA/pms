@@ -102,7 +102,7 @@ class HotelReservation(models.Model):
         for record in self:
             if record.folio_id:
                 record.shared_folio = len(record.folio_id.room_lines) > 1 or \
-                        any(record.folio_id.service_line_ids.filtered(
+                        any(record.folio_id.service_ids.filtered(
                             lambda x: x.ser_room_line.id != record.id))
 
     @api.depends('checkin', 'checkout')
@@ -174,7 +174,7 @@ class HotelReservation(models.Model):
                                 store=True)
     reserve_color_text = fields.Char(compute='_compute_color', string='Color',
                                      store=True)
-    service_line_ids = fields.One2many('hotel.service', 'ser_room_line')
+    service_ids = fields.One2many('hotel.service', 'ser_room_line')
 
     pricelist_id = fields.Many2one('product.pricelist',
                                    related='folio_id.pricelist_id',
@@ -323,7 +323,7 @@ class HotelReservation(models.Model):
                     days_diff,
                     vals=vals)) #REVISAR el unlink
             if record.compute_qty_service_day(vals):
-                for service in record.service_line_ids:
+                for service in record.service_ids:
                     if service.product_id.per_day:
                         params = {
                             'per_person': service.product_id.per_person,
@@ -349,7 +349,7 @@ class HotelReservation(models.Model):
         self.ensure_one()
         if not vals:
             vals = {}
-        if 'service_line_ids' in vals:
+        if 'service_ids' in vals:
             return False
         if ('checkin' in vals and self.checkin != vals['checkin']) or \
                 ('checkout' in vals and self.checkout != vals['checkout']) or \
@@ -537,7 +537,7 @@ class HotelReservation(models.Model):
 
     @api.onchange('checkin', 'checkout')
     def onchange_update_service_per_day(self):
-        services = self.service_line_ids.filtered(lambda r: r.per_day == True)
+        services = self.service_ids.filtered(lambda r: r.per_day == True)
         for service in services:
             service.onchange_product_calc_qty()
 
@@ -567,7 +567,7 @@ class HotelReservation(models.Model):
     @api.onchange('board_service_id')
     def onchange_board_service(self):
         if self.board_service_id:
-            self.service_line_ids.filtered(lambda r: r.is_board_service == True).unlink()
+            self.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
             board_services = []
             for product in self.board_service_id.service_ids:
                 board_services.append((0, False, {
@@ -575,8 +575,8 @@ class HotelReservation(models.Model):
                     'is_board_service': True,
                     }))
             # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
-            self.update({'service_line_ids':  [(6, 0, self.service_line_ids.ids)] + board_services})
-            update_services = self.service_line_ids.filtered(
+            self.update({'service_ids':  [(6, 0, self.service_ids.ids)] + board_services})
+            update_services = self.service_ids.filtered(
                 lambda r: r.is_board_service == True
             )
             for service in update_services:

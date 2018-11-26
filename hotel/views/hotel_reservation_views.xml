@@ -239,9 +239,9 @@
                         <page name="days" string="Service and Days">
                             <group col="9">
                                 <group colspan="6" string="Reservation Services" name="reservation_services" attrs="{'invisible': [('folio_id','=',False)]}">
-                                    <field name="service_line_ids"
+                                    <field name="service_ids"
                                         nolabel="1" style="padding-right:10px !important;">
-                                        <!-- <field name="service_line_ids"> -->
+                                        <!-- <field name="service_ids"> -->
                                         <tree string="Services">
                                             <!-- <field name="sequence" widget="handle"/> -->
                                             <field name="per_day" />
