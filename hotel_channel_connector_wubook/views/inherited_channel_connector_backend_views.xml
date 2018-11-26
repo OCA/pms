@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="channel_backend_view_form" model="ir.ui.view">
+        <field name="model">channel.backend</field>
+        <field name="inherit_id" ref="hotel_channel_connector.channel_backend_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='passwd']" position="before">
+              <field name="lcode" colspan="2"/>
+              <field name="pkey" colspan="2"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

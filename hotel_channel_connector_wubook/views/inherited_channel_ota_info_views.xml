@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form view -->
+    <record model="ir.ui.view" id="hotel_channel_connector_ota_info_view_form">
+        <field name="model">channel.ota.info</field>
+        <field name="inherit_id" ref="hotel_channel_connector.hotel_channel_connector_ota_info_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="ical" readonly="True" widget="checkbox" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

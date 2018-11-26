@@ -20,8 +20,8 @@
 
 	<t t-extend="HotelCalendar.Notification">
 		<t t-jquery="ul > li:first-child" t-operation="before">
-			<t t-if="wchannel">
-				<li><b>Channel:</b> <t t-esc="wchannel"/></li>
+			<t t-if="channel_name">
+				<li><b>Channel:</b> <t t-esc="channel_name"/></li>
 			</t>
 		</t>
 	</t>

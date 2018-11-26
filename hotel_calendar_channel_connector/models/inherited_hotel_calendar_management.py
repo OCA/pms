@@ -34,5 +34,5 @@ class HotelCalendarManagement(models.TransientModel):
             pricelist,
             restrictions,
             availability)
-        self.env['wubook'].push_changes()
+        self.env['channel.backend'].cron_push_changes()
         return res

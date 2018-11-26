@@ -14,7 +14,6 @@ class HotelFolio(models.Model):
             channel_reservations = record.room_lines.filtered(lambda x: x.room_id)
             record.has_channel_reservations = any(channel_reservations)
 
-    wseed = fields.Char("Wubook Session Seed", readonly=True)
     customer_notes = fields.Text("Channel Customer Notes",
                                  readonly=True, old_name='wcustomer_notes')
     has_channel_reservations = fields.Boolean(compute=_has_channel_reservations,

@@ -31,7 +31,7 @@ class HotelRoomTypeRestrictionItem(models.Model):
                     'max_stay_arrival')
     def _check_min_stay(self):
         for record in self:
-            if record.self.min_stay < 0:
+            if record.min_stay < 0:
                 raise ValidationError(_("Min. Stay can't be less than zero"))
             elif record.min_stay_arrival < 0:
                 raise ValidationError(
@@ -40,5 +40,4 @@ class HotelRoomTypeRestrictionItem(models.Model):
                 raise ValidationError(_("Max. Stay can't be less than zero"))
             elif record.max_stay_arrival < 0:
                 raise ValidationError(
-                    ("Max. Stay Arrival can't be less than zero"))
-
+                    _("Max. Stay Arrival can't be less than zero"))

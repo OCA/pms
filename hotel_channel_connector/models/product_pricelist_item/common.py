@@ -2,8 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, fields
-from odoo.exceptions import ValidationError
-from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
 
@@ -28,12 +27,12 @@ class ChannelProductPricelistItem(models.Model):
             importer = work.component(usage='product.pricelist.item.importer')
             if not backend.pricelist_id:
                 return importer.import_all_pricelist_values(
-                    backend.pricelist_from,
-                    backend.pricelist_to)
+                    dfrom,
+                    dto)
             return importer.import_pricelist_values(
-                backend.pricelist_id.external_id,
-                backend.pricelist_from,
-                backend.pricelist_to)
+                external_id,
+                dfrom,
+                dto)
 
     @job(default_channel='root.channel')
     @api.model
@@ -49,18 +48,6 @@ class ProductPricelistItem(models.Model):
         comodel_name='channel.product.pricelist.item',
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
-
-class ProducrPricelistItemAdapter(Component):
-    _name = 'channel.product.pricelist.item.adapter'
-    _inherit = 'wubook.adapter'
-    _apply_on = 'channel.product.pricelist.item'
-
-    def fetch_plan_prices(self, external_id, date_from, date_to, rooms):
-        return super(ProducrPricelistItemAdapter, self).fetch_plan_prices(
-            external_id,
-            date_from,
-            date_to,
-            rooms)
 
 class BindingProductPricelistItemListener(Component):
     _name = 'binding.product.pricelist.item.listener'

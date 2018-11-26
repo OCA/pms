@@ -39,7 +39,7 @@ class BusHotelCalendar(models.TransientModel):
             'username': user_id.partner_id.name,
             'userid': user_id.id,
             'reservation': {
-                'id': vals['id'],
+                'room_id': vals['room_id'],
                 'reserv_id': vals['reserv_id'],
                 'partner_name': vals['partner_name'],
                 'adults': vals['adults'],
@@ -89,7 +89,7 @@ class BusHotelCalendar(models.TransientModel):
         return {
             'type': 'restriction',
             'restriction': {
-                vals['room_id']: {
+                vals['room_type_id']: {
                     date_dt.strftime("%d/%m/%Y"): [
                         vals['min_stay'],
                         vals['min_stay_arrival'],

@@ -66,7 +66,7 @@ var PMSHotelCalendarControllerChannelConnector = PMSCalendarController.include({
                 }
                 else if (notif[1]['type'] === 'reservation') {
                     var reserv = notif[1]['reservation'];
-                    if (reserv['wrid']) {
+                    if (reserv['external_id']) {
                         if (notif[1]['action'] === 'create') {
                             this._play_sound(this.SOUNDS.BOOK_NEW);
                         } else if (notif[1]['action'] !== 'unlink' && reserv['state'] === 'cancelled') {

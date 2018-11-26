@@ -81,11 +81,7 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
         var availability = this._hcalendar.getAvailability(true);
 
         var params = this.generate_params();
-        console.log("---- PARAMS");
-        console.log(params);
         var oparams = [params['prices'], params['restrictions'], pricelist, restrictions, availability];
-        console.log("---- OPARAMS");
-        console.log(oparams);
         this.trigger_up('onSaveChanges', oparams);
     },
 
@@ -240,7 +236,6 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
 
         /** VIEW CONTROLS INITIALIZATION **/
         // DATE TIME PICKERS
-        console.log("asdads");
         var DTPickerOptions = {
             viewMode: 'months',
             icons : {

@@ -281,10 +281,10 @@ var PMSCalendarController = AbstractController.extend({
                   nreservs = _.reject(nreservs, function(item){ return item.id == reserv['reserv_id']; });
                 } else {
                   nreservs = _.reject(nreservs, {'id': reserv['reserv_id']}); // Only like last changes
-                  var room = this.renderer._hcalendar.getRoom(reserv['id'], reserv['overbooking'], reserv['reserv_id']);
+                  var room = this.renderer._hcalendar.getRoom(reserv['room_id'], reserv['overbooking'], reserv['reserv_id']);
                   // need create a overbooking row?
                   if (!room && reserv['overbooking']) {
-                    room = this.renderer._hcalendar.createOBRoom(this.renderer._hcalendar.getRoom(reserv['id']), reserv['reserv_id']);
+                    room = this.renderer._hcalendar.createOBRoom(this.renderer._hcalendar.getRoom(reserv['room_id']), reserv['reserv_id']);
                     this.renderer._hcalendar.createOBRoomRow(room);
                   }
                   if (!room) {

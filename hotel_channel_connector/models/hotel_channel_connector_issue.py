@@ -29,6 +29,14 @@ class HotelChannelConnectorIssue(models.Model):
     channel_object_id = fields.Char("Channel Object ID", old_name='wid', readonly=True)
     channel_message = fields.Char("Channel Message", old_name='wmessage', readonly=True)
 
+    @api.model
+    def create(self, vals):
+        issue_id = super(HotelChannelConnectorIssue, self).create(vals)
+        self.env.user.notify_warning(
+            issue_id.internal_message or issue_id.channel_message,
+            title=_("Oops! %s Issue Reported!!") % issue_id.section)
+        return issue_id
+
     @api.multi
     def mark_readed(self):
         for record in self:

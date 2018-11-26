@@ -24,5 +24,5 @@ class MassiveChangesWizard(models.TransientModel):
     @api.multi
     def massive_change(self):
         res = super(MassiveChangesWizard, self).massive_change()
-        self.env['wubook'].push_changes()
+        self.env['channel.backend'].push_changes()
         return res

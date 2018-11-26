@@ -3,6 +3,7 @@
 
 from odoo.addons.component.core import AbstractComponent
 
+
 class HotelChannelConnectorDeleter(AbstractComponent):
     _name = 'hotel.channel.deleter'
     _inherit = ['base.deleter', 'base.hotel.channel.connector']

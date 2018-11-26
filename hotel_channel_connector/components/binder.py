@@ -3,6 +3,7 @@
 
 from odoo.addons.component.core import Component
 
+
 class HotelConnectorModelBinder(Component):
     _name = 'hotel.channel.connector.binder'
     _inherit = ['base.binder', 'base.hotel.channel.connector']

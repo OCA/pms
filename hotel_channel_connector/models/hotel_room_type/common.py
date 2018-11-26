@@ -1,13 +1,12 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import logging
 from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError
-from odoo.addons.queue_job.job import job, related_action
+from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
-_logger = logging.getLogger(__name__)
+
 
 class ChannelHotelRoomType(models.Model):
     _name = 'channel.hotel.room.type'
@@ -106,39 +105,6 @@ class HotelRoomType(models.Model):
             ('restriction_id', '=', restriction_plan_id)
         ], limit=1)
         return restriction
-
-    @api.multi
-    def create_bindings(self):
-        backends = self.env['channel.backend'].search([])
-        binding_obj = self.env['channel.hotel.room.type']
-        for backend in backends:
-            binding = binding_obj.search([
-                ('odoo_id', '=', self.id),
-                ('backend_id', '=', backend.id)], limit=1)
-            if not binding:
-                binding_obj.sudo().create({
-                    'odoo_id': self.id,
-                    'backend_id': backend.id,
-                })
-
-class HotelRoomTypeAdapter(Component):
-    _name = 'channel.hotel.room.type.adapter'
-    _inherit = 'wubook.adapter'
-    _apply_on = 'channel.hotel.room.type'
-
-    def create_room(self, shortcode, name, capacity, price, availability):
-        return super(HotelRoomTypeAdapter, self).create_room(
-            shortcode, name, capacity, price, availability)
-
-    def fetch_rooms(self):
-        return super(HotelRoomTypeAdapter, self).fetch_rooms()
-
-    def modify_room(self, channel_room_id, name, capacity, price, availability, scode):
-        return super(HotelRoomTypeAdapter, self).modify_room(
-            channel_room_id, name, capacity, price, availability, scode)
-
-    def delete_room(self, channel_room_id):
-        return super(HotelRoomTypeAdapter, self).delete_room(channel_room_id)
 
 class BindingHotelRoomTypeListener(Component):
     _name = 'binding.hotel.room.type.listener'

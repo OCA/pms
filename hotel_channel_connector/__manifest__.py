@@ -18,7 +18,6 @@
         'python': ['xmlrpc']
     },
     'data': [
-        'data/cron_jobs.xml',
         'views/hotel_channel_connector_issue_views.xml',
         'views/inherited_hotel_reservation_views.xml',
         'views/inherited_hotel_room_type_views.xml',
@@ -40,7 +39,6 @@
         'views/channel_ota_info_views.xml',
         'wizard/inherited_massive_changes.xml',
         'data/menus.xml',
-        'data/sequences.xml',
         'security/ir.model.access.csv',
         #'security/wubook_security.xml',
         # 'views/res_config.xml'

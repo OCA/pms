@@ -4,6 +4,7 @@
 from odoo.addons.component.core import AbstractComponent
 from odoo import api
 
+
 class BaseHotelChannelConnectorComponent(AbstractComponent):
     _name = 'base.hotel.channel.connector'
     _inherit = 'base.connector'

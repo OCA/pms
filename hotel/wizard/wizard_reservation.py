@@ -203,7 +203,7 @@ class FolioWizard(models.TransientModel):
                 'checkout': line.checkout,
                 'discount': line.discount,
                 'room_type_id': line.room_type_id.id,
-                'to_read': line.to_read, #REFACT: wubook module
+                'to_read': line.to_read,
                 'to_assign': line.to_assign,
             }))
         for line in self.service_wizard_ids:
