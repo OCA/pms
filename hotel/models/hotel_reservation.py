@@ -408,7 +408,7 @@ class HotelReservation(models.Model):
     def open_folio(self):
         action = self.env.ref('hotel.open_hotel_folio1_form_tree_all').read()[0]
         if self.folio_id:
-            action['views'] = [(self.env.ref('hotel.view_hotel_folio1_form').id, 'form')]
+            action['views'] = [(self.env.ref('hotel.hotel_folio_view_form').id, 'form')]
             action['res_id'] = self.folio_id.id
         else:
             action = {'type': 'ir.actions.act_window_close'}
@@ -417,7 +417,7 @@ class HotelReservation(models.Model):
     @api.multi
     def open_reservation_form(self):
         action = self.env.ref('hotel.open_hotel_reservation_form_tree_all').read()[0]
-        action['views'] = [(self.env.ref('hotel.view_hotel_reservation_form').id, 'form')]
+        action['views'] = [(self.env.ref('hotel.hotel_reservation_view_form').id, 'form')]
         action['res_id'] = self.id
         return action
 
@@ -563,6 +563,25 @@ class HotelReservation(models.Model):
                 ('id', 'not in', rooms_occupied)
             ]
             return {'domain': {'room_id': domain_rooms}}
+
+    @api.onchange('board_service_id')
+    def onchange_board_service(self):
+        if self.board_service_id:
+            self.service_line_ids.filtered(lambda r: r.is_board_service == True).unlink()
+            board_services = []
+            for product in self.board_service_id.service_ids:
+                board_services.append((0, False, {
+                    'product_id': product.id,
+                    'is_board_service': True,
+                    }))
+            # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
+            self.update({'service_line_ids':  [(6, 0, self.service_line_ids.ids)] + board_services})
+            update_services = self.service_line_ids.filtered(
+                lambda r: r.is_board_service == True
+            )
+            for service in update_services:
+                service.onchange_product_calc_qty()
+
 
     """
     COMPUTE RESERVE COLOR ----------------------------------------------

@@ -1,7 +1,7 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from datetime import timedelta
 from odoo.exceptions import ValidationError
@@ -9,6 +9,28 @@ from odoo.exceptions import ValidationError
 class HotelService(models.Model):
     _name = 'hotel.service'
     _description = 'Hotel Services and its charges'
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        if not(name == '' and operator == 'ilike'):
+            args += [
+                '|',
+                ('ser_room_line.name', operator, name),
+                ('name', operator, name)
+            ]
+        return super(HotelService, self).name_search(
+            name='', args=args, operator='ilike', limit=limit)
+
+    @api.multi
+    def name_get(self):
+        result = []
+        for res in self:
+            name = u'%s (%s)' % (res.name, res.ser_room_line.name)
+            result.append((res.id, name))
+        return result
+
 
     @api.model
     def _default_ser_room_line(self):
@@ -27,6 +49,7 @@ class HotelService(models.Model):
     service_line_ids = fields.One2many('hotel.service.line', 'service_id')
     product_qty = fields.Integer('Quantity')
     days_qty = fields.Integer(compute="_compute_days_qty", store=True)
+    is_board_service = fields.Boolean()
     pricelist_id = fields.Many2one(related='folio_id.pricelist_id')
     channel_type = fields.Selection([
         ('door', 'Door'),
@@ -53,7 +76,7 @@ class HotelService(models.Model):
     @api.model
     def create(self, vals):
         if self.compute_lines_out_vals(vals):
-            reservation = self.env['hotel.reservation'].browse(vals['reservation_id'])
+            reservation = self.env['hotel.reservation'].browse(vals['ser_room_line'])
             product = self.env['product.product'].browse(vals['product_id'])
             params = {
                     'per_person': product.per_person,
@@ -61,7 +84,7 @@ class HotelService(models.Model):
                     }
             vals.update(self.prepare_service_lines(
                 reservation.checkin,
-                reservation.days,
+                reservation.nights,
                 params
                 ))
         record = super(HotelService, self).create(vals)
@@ -80,15 +103,15 @@ class HotelService(models.Model):
             else:
                 for record in self:
                     reservations = self.env['hotel.reservation']
-                    reservation = reservations.browse(vals['reservation_id']) \
-                        if 'reservation_id' in vals else record.reservation_id
+                    reservation = reservations.browse(vals['ser_room_line']) \
+                        if 'ser_room_line' in vals else record.ser_room_line
                     params = {
                         'per_person': product.per_person,
                         'persons': reservation.adults
                         }
                     record.update(record.prepare_service_lines(
                         reservation.checkin,
-                        reservation.days,
+                        reservation.nights,
                         params
                         ))
         res = super(HotelService, self).write(vals)

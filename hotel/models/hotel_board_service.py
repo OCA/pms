@@ -8,8 +8,8 @@ class HotelBoardService(models.Model):
     _description = "Board Services"
 
     name = fields.Char('Board Name', size=64, required=True, index=True)
-    service_ids = fields.Many2many(comodel_name='product.template',
-                                   relation='hotel_board_services_room',
+    service_ids = fields.Many2many(comodel_name='product.product',
+                                   relation='hotel_board_services_reservation',
                                    column1='board_id',
                                    column2='service_id')
     sequence = fields.Integer('Sequence')
