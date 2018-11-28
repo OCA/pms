@@ -75,5 +75,8 @@ class HotelRoomTypeRestrictionItemExporter(Component):
                     internal_message=str(err),
                     channel_message=err.data['message'])
             else:
-                unpushed.write({'channel_pushed': True})
+                unpushed.write({
+                    'channel_pushed': True,
+                    'sync_date': fields.Datetime.now(),
+                })
         return True

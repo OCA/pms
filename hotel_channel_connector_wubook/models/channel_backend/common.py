@@ -20,11 +20,12 @@ class ChannelBackend(models.Model):
         return [('1.2', '1.2+')]
 
     def _get_default_server(self):
-        super(ChannelBackend, self)._get_default_server()
         return 'https://wired.wubook.net/xrws/'
 
     lcode = fields.Char('Channel Service lcode')
     pkey = fields.Char('Channel Service PKey')
+    server = fields.Char('Channel Service Server',
+                         default=_get_default_server)
 
     @contextmanager
     @api.multi

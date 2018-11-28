@@ -33,13 +33,14 @@ class ProductPricelistImporter(Component):
                     ('external_id', '=', str(plan['id'])),
                 ], limit=1)
                 if not plan_bind:
-                    channel_product_listprice_obj.with_context({
+                    plan_bind = channel_product_listprice_obj.with_context({
                         'connector_no_export': True,
                     }).create(plan_record.values(for_create=True))
                 else:
-                    channel_product_listprice_obj.with_context({
+                    plan_bind.with_context({
                         'connector_no_export': True,
                     }).write(plan_record.values())
+                self.binder(str(plan['id']), plan_bind)
                 count = count + 1
         return count
 

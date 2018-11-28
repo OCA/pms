@@ -4,7 +4,7 @@
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api
+from odoo import api. fields
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
@@ -78,3 +78,7 @@ class ChannelOtaInfoImportMapper(Component):
     @mapping
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
+
+    @mapping
+    def sync_date(self, record):
+        return {'sync_date': fields.Datetime.now()}

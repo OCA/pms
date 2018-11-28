@@ -28,7 +28,6 @@ class ProductPricelistItemImporter(Component):
             usage='import.mapper',
             model_name='channel.product.pricelist.item')
         if pricelist_bind:
-            _logger.info("==== PASA BIND")
             channel_pricelist_item_obj = self.env['channel.product.pricelist.item']
             dfrom_dt = fields.Date.from_string(date_from)
             dto_dt = fields.Date.from_string(date_to)
@@ -59,7 +58,6 @@ class ProductPricelistItemImporter(Component):
                             ('product_tmpl_id', '=',
                              channel_room_type.product_id.product_tmpl_id.id)
                         ], limit=1)
-                        _logger.info("=== ESCRIBEINDO")
                         if pricelist_item:
                             pricelist_item.with_context({
                                 'connector_no_export': True,
@@ -139,3 +137,7 @@ class ProductPricelistItemImportMapper(Component):
     @mapping
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
+
+    @mapping
+    def sync_date(self, record):
+        return {'sync_date': fields.Datetime.now()}

@@ -101,3 +101,7 @@ class HotelRoomTypeAvailabilityImportMapper(Component):
     @mapping
     def room_type_id(self, record):
         return {'room_type_id': record['room_type_id']}
+
+    @mapping
+    def sync_date(self, record):
+        return {'sync_date': fields.Datetime.now()}
