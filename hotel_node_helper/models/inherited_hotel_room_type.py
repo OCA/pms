@@ -11,16 +11,6 @@ class HotelRoomType(models.Model):
     _inherit = 'hotel.room.type'
 
     @api.model
-    def check_availability_room_ids(self, dfrom, dto,
-                                room_type_id=False, notthis=[]):
-        """
-        Check availability for all or specific room types between dates
-        @return: A list of `ids` with free rooms
-        """
-        free_rooms = super().check_availability_room_type(dfrom, dto, room_type_id, notthis)
-        return free_rooms.ids
-
-    @api.model
     def get_room_type_availability(self, dfrom, dto, room_type_id):
         free_rooms = self.check_availability_room_type(dfrom, dto)
         availability_real = self.env['hotel.room'].search_count([
@@ -62,3 +52,13 @@ class HotelRoomType(models.Model):
         min_stay = max([r['min_stay'] for r in restrictions_plan])
 
         return min_stay
+
+    @api.model
+    def get_room_type_planning(self, dfrom, dto, room_type_id):
+        availability = self.get_room_type_availability(self, dfrom, dto, room_type_id)
+
+        price_unit = self.get_room_type_price_unit(self, dfrom, dto, room_type_id)
+
+        restrictions = self.get_room_type_restrictions(self, dfrom, dto, room_type_id)
+
+        return {'availability': availability, 'price_unit': price_unit, 'restrictions': restrictions}
