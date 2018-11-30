@@ -55,10 +55,10 @@ class HotelRoomType(models.Model):
 
     @api.model
     def get_room_type_planning(self, dfrom, dto, room_type_id):
-        availability = self.get_room_type_availability(self, dfrom, dto, room_type_id)
+        availability = self.get_room_type_availability(dfrom, dto, room_type_id)
 
-        price_unit = self.get_room_type_price_unit(self, dfrom, dto, room_type_id)
+        price_unit = self.get_room_type_price_unit(dfrom, dto, room_type_id)
 
-        restrictions = self.get_room_type_restrictions(self, dfrom, dto, room_type_id)
+        restrictions = self.get_room_type_restrictions(dfrom, dto, room_type_id)
 
         return {'availability': availability, 'price_unit': price_unit, 'restrictions': restrictions}
