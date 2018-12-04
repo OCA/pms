@@ -290,6 +290,15 @@ class HotelReservation(models.Model):
             #~ 'reserve_color': colors[0],
             #~ 'reserve_color_text': colors[1],
         })
+        if 'board_service_id' in vals:
+                board_services = []
+                board = self.env['hotel.board.service'].browse(vals['board_service_id'])
+                for product in board.service_ids:
+                    board_services.append((0, False, {
+                        'product_id': product.id,
+                        'is_board_service': True,
+                        }))
+                vals.update({'service_ids': board_services})
         if self.compute_price_out_vals(vals):
             days_diff = (
                 fields.Date.from_string(vals['checkout']) - fields.Date.from_string(vals['checkin'])
@@ -317,6 +326,22 @@ class HotelReservation(models.Model):
                 fields.Date.from_string(checkout) - \
                 fields.Date.from_string(checkin)
             ).days
+            if self.compute_board_services(vals):
+                record.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
+                board_services = []
+                board = self.env['hotel.board.service'].browse(vals['board_service_id'])
+                for product in board.service_ids:
+                    board_services.append((0, False, {
+                        'product_id': product.id,
+                        'is_board_service': True,
+                        }))
+                # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
+                record.update({'service_ids':  [(6, 0, record.service_ids.ids)] + board_services})
+                update_services = record.service_ids.filtered(
+                    lambda r: r.is_board_service == True
+                )
+                for service in update_services:
+                    service.onchange_product_calc_qty()
             if record.compute_price_out_vals(vals):
                 record.update(record.prepare_reservation_lines(
                     checkin,
@@ -325,14 +350,12 @@ class HotelReservation(models.Model):
             if record.compute_qty_service_day(vals):
                 for service in record.service_ids:
                     if service.product_id.per_day:
-                        params = {
-                            'per_person': service.product_id.per_person,
-                            'persons': vals['adults'] if 'adults' in vals else record.adults
-                            }
                         service.update(service.prepare_service_lines(
-                            checkin,
-                            days_diff,
-                            params
+                            dfrom=checkin,
+                            days=days_diff,
+                            per_person=product.per_person,
+                            persons=reservation.adults,
+                            old_line_days=service.service_line_ids
                             ))
             if ('checkin' in vals and record.checkin != vals['checkin']) or \
                 ('checkout' in vals and record.checkout != vals['checkout']) or \
@@ -340,6 +363,21 @@ class HotelReservation(models.Model):
                     record.update({'to_send': True})
         res = super(HotelReservation, self).write(vals)
         return res
+
+    @api.multi
+    def compute_board_services(self, vals):
+        """
+        We must compute service_ids when we hace a board_service_id without
+        service_ids associated to reservation
+        """
+        if 'board_service_id' in vals:
+            if 'service_ids' in vals:
+                for service in vals['service_ids']:
+                    if 'is_board_service' in service[2] and \
+                        service[2]['is_board_service'] == True:
+                            return False
+            return True
+        return False
 
     @api.multi
     def compute_qty_service_day(self, vals):
@@ -361,12 +399,14 @@ class HotelReservation(models.Model):
     def _prepare_add_missing_fields(self, values):
         """ Deduce missing required fields from the onchange """
         res = {}
-        onchange_fields = ['room_id', 'reservation_type', 'currency_id', 'name']
+        onchange_fields = ['room_id', 'reservation_type',
+            'currency_id', 'name', 'board_service_id']
         if values.get('room_type_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
                 line.onchange_room_id()
                 line.onchange_compute_reservation_description()
+                line.onchange_board_service()
             if 'pricelist_id' not in values:
                 line.onchange_partner_id()
             for field in onchange_fields:
@@ -567,21 +607,23 @@ class HotelReservation(models.Model):
     @api.onchange('board_service_id')
     def onchange_board_service(self):
         if self.board_service_id:
-            self.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
             board_services = []
             for product in self.board_service_id.service_ids:
-                board_services.append((0, False, {
-                    'product_id': product.id,
-                    'is_board_service': True,
-                    }))
-            # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
-            self.update({'service_ids':  [(6, 0, self.service_ids.ids)] + board_services})
-            update_services = self.service_ids.filtered(
-                lambda r: r.is_board_service == True
-            )
-            for service in update_services:
-                service.onchange_product_calc_qty()
-
+                if product.per_day:
+                    vals = {
+                        'product_id': product.id,
+                        'is_board_service': True,
+                        }
+                    vals.update(self.env['hotel.service'].prepare_service_lines(
+                        dfrom=self.checkin,
+                        days=self.nights,
+                        per_person=product.per_person,
+                        persons=self.adults,
+                        old_line_days=False))                    
+                    board_services.append((0, False, vals))
+            other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
+            
+            self.update({'service_ids':  [(6, 0, other_services.ids)] + board_services})
 
     """
     COMPUTE RESERVE COLOR ----------------------------------------------

@@ -78,14 +78,13 @@ class HotelService(models.Model):
         if self.compute_lines_out_vals(vals):
             reservation = self.env['hotel.reservation'].browse(vals['ser_room_line'])
             product = self.env['product.product'].browse(vals['product_id'])
-            params = {
-                    'per_person': product.per_person,
-                    'persons': reservation.adults
-                    }
+            
             vals.update(self.prepare_service_lines(
-                reservation.checkin,
-                reservation.nights,
-                params
+                dfrom=reservation.checkin,
+                days=reservation.nights,
+                per_person=product.per_person,
+                persons=reservation.adults,
+                old_day_lines=False,
                 ))
         record = super(HotelService, self).create(vals)
         return record
@@ -105,14 +104,12 @@ class HotelService(models.Model):
                     reservations = self.env['hotel.reservation']
                     reservation = reservations.browse(vals['ser_room_line']) \
                         if 'ser_room_line' in vals else record.ser_room_line
-                    params = {
-                        'per_person': product.per_person,
-                        'persons': reservation.adults
-                        }
                     record.update(record.prepare_service_lines(
-                        reservation.checkin,
-                        reservation.nights,
-                        params
+                        dfrom=reservation.checkin,
+                        days=reservation.nights,
+                        per_person=product.per_person,
+                        persons=reservation.adults,
+                        old_line_days=self.service_line_ids
                         ))
         res = super(HotelService, self).write(vals)
         return res
@@ -142,37 +139,36 @@ class HotelService(models.Model):
             if record.per_day and record.ser_room_line:
                 product = record.product_id
                 reservation = record.ser_room_line
-                params = {
-                    'per_person': product.per_person,
-                    'persons': reservation.adults
-                    }
                 record.update(self.prepare_service_lines(
-                    reservation.checkin,
-                    reservation.nights,
-                    params))
-    @api.multi
-    def prepare_service_lines(self, dfrom, days, params=False):
+                        dfrom=reservation.checkin,
+                        days=reservation.nights,
+                        per_person=product.per_person,
+                        persons=reservation.adults,
+                        old_line_days=self.service_line_ids))
+
+    @api.model
+    def prepare_service_lines(self, **kwargs):
         """
-        Respect the old manual changes on lines
+        Prepare line and respect the old manual changes on lines
         """
-        self.ensure_one()
         cmds = [(5, 0, 0)]
-        old_lines_days = self.mapped('service_line_ids.date')
+        old_lines_days = kwargs.get('old_lines_days')
         total_qty = 0
         day_qty = 1
-        if params.get('per_person'): #WARNING: Change adults in reservation NOT update qty service!!
-            day_qty = params.get('persons')
-        for i in range(0, days):
-            idate = (fields.Date.from_string(dfrom) + timedelta(days=i)).strftime(
+        if kwargs.get('per_person'): #WARNING: Change adults in reservation NOT update qty service!!
+            day_qty = kwargs.get('persons')
+        old_line_days = self.env['hotel.service.line'].browse(kwargs.get('old_line_days'))
+        for i in range(0, kwargs.get('days')):
+            idate = (fields.Date.from_string(kwargs.get('dfrom')) + timedelta(days=i)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
-            old_line = self.service_line_ids.filtered(lambda r: r.date == idate)
-            if idate not in old_lines_days:
+            if not old_lines_days or idate not in old_lines_days.mapped('date'):
                 cmds.append((0, False, {
                     'date': idate,
                     'day_qty': day_qty
                 }))
                 total_qty = total_qty + day_qty
             else:
+                old_line = old_line_days.filtered(lambda r: r.date == idate)
                 cmds.append((4, old_line.id))
                 total_qty = total_qty + old_line.day_qty
         return {'service_line_ids': cmds, 'product_qty': total_qty}

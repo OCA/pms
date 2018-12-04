@@ -265,6 +265,7 @@
                     'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'adults': 2,
                     'state': 'confirm',
+                    'board_service_id': ref('hotel_board_service_1'),
                     })]"/>
         </record>
         <!-- reservation of 1 triple room for 3 people on behalf on the company -->
@@ -276,6 +277,7 @@
                     'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 3,
+                    'board_service_id': ref('hotel_board_service_2'),
                     })]"/>
         </record>
         <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
@@ -312,6 +314,7 @@
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 1,
                     'state': 'confirm',
+                    'board_service_id': ref('hotel_board_service_1'),
                     })]"/>
         </record>
 
