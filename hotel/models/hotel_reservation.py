@@ -102,7 +102,7 @@ class HotelReservation(models.Model):
         for record in self:
             if record.folio_id:
                 record.shared_folio = len(record.folio_id.room_lines) > 1 or \
-                        any(record.folio_id.service_line_ids.filtered(
+                        any(record.folio_id.service_ids.filtered(
                             lambda x: x.ser_room_line.id != record.id))
 
     @api.depends('checkin', 'checkout')
@@ -133,6 +133,7 @@ class HotelReservation(models.Model):
                              track_visibility='onchange')
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
+    board_service_id = fields.Many2one('hotel.board.service', string='Board Service')
     cancelled_reason = fields.Selection([
         ('late', 'Late'),
         ('intime', 'In time'),
@@ -173,7 +174,7 @@ class HotelReservation(models.Model):
                                 store=True)
     reserve_color_text = fields.Char(compute='_compute_color', string='Color',
                                      store=True)
-    service_line_ids = fields.One2many('hotel.service', 'ser_room_line')
+    service_ids = fields.One2many('hotel.service', 'ser_room_line')
 
     pricelist_id = fields.Many2one('product.pricelist',
                                    related='folio_id.pricelist_id',
@@ -289,6 +290,15 @@ class HotelReservation(models.Model):
             #~ 'reserve_color': colors[0],
             #~ 'reserve_color_text': colors[1],
         })
+        if 'board_service_id' in vals:
+                board_services = []
+                board = self.env['hotel.board.service'].browse(vals['board_service_id'])
+                for product in board.service_ids:
+                    board_services.append((0, False, {
+                        'product_id': product.id,
+                        'is_board_service': True,
+                        }))
+                vals.update({'service_ids': board_services})
         if self.compute_price_out_vals(vals):
             days_diff = (
                 fields.Date.from_string(vals['checkout']) - fields.Date.from_string(vals['checkin'])
@@ -316,22 +326,36 @@ class HotelReservation(models.Model):
                 fields.Date.from_string(checkout) - \
                 fields.Date.from_string(checkin)
             ).days
+            if self.compute_board_services(vals):
+                record.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
+                board_services = []
+                board = self.env['hotel.board.service'].browse(vals['board_service_id'])
+                for product in board.service_ids:
+                    board_services.append((0, False, {
+                        'product_id': product.id,
+                        'is_board_service': True,
+                        }))
+                # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
+                record.update({'service_ids':  [(6, 0, record.service_ids.ids)] + board_services})
+                update_services = record.service_ids.filtered(
+                    lambda r: r.is_board_service == True
+                )
+                for service in update_services:
+                    service.onchange_product_calc_qty()
             if record.compute_price_out_vals(vals):
                 record.update(record.prepare_reservation_lines(
                     checkin,
                     days_diff,
                     vals=vals)) #REVISAR el unlink
             if record.compute_qty_service_day(vals):
-                for service in record.service_line_ids:
+                for service in record.service_ids:
                     if service.product_id.per_day:
-                        params = {
-                            'per_person': service.product_id.per_person,
-                            'persons': vals['adults'] if 'adults' in vals else record.adults
-                            }
                         service.update(service.prepare_service_lines(
-                            checkin,
-                            days_diff,
-                            params
+                            dfrom=checkin,
+                            days=days_diff,
+                            per_person=product.per_person,
+                            persons=reservation.adults,
+                            old_line_days=service.service_line_ids
                             ))
             if ('checkin' in vals and record.checkin != vals['checkin']) or \
                 ('checkout' in vals and record.checkout != vals['checkout']) or \
@@ -341,6 +365,21 @@ class HotelReservation(models.Model):
         return res
 
     @api.multi
+    def compute_board_services(self, vals):
+        """
+        We must compute service_ids when we hace a board_service_id without
+        service_ids associated to reservation
+        """
+        if 'board_service_id' in vals:
+            if 'service_ids' in vals:
+                for service in vals['service_ids']:
+                    if 'is_board_service' in service[2] and \
+                        service[2]['is_board_service'] == True:
+                            return False
+            return True
+        return False
+
+    @api.multi
     def compute_qty_service_day(self, vals):
         """
         Compute if It is necesary calc price in write/create
@@ -348,7 +387,7 @@ class HotelReservation(models.Model):
         self.ensure_one()
         if not vals:
             vals = {}
-        if 'service_line_ids' in vals:
+        if 'service_ids' in vals:
             return False
         if ('checkin' in vals and self.checkin != vals['checkin']) or \
                 ('checkout' in vals and self.checkout != vals['checkout']) or \
@@ -360,12 +399,14 @@ class HotelReservation(models.Model):
     def _prepare_add_missing_fields(self, values):
         """ Deduce missing required fields from the onchange """
         res = {}
-        onchange_fields = ['room_id', 'reservation_type', 'currency_id', 'name']
+        onchange_fields = ['room_id', 'reservation_type',
+            'currency_id', 'name', 'board_service_id']
         if values.get('room_type_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
                 line.onchange_room_id()
                 line.onchange_compute_reservation_description()
+                line.onchange_board_service()
             if 'pricelist_id' not in values:
                 line.onchange_partner_id()
             for field in onchange_fields:
@@ -407,7 +448,7 @@ class HotelReservation(models.Model):
     def open_folio(self):
         action = self.env.ref('hotel.open_hotel_folio1_form_tree_all').read()[0]
         if self.folio_id:
-            action['views'] = [(self.env.ref('hotel.view_hotel_folio1_form').id, 'form')]
+            action['views'] = [(self.env.ref('hotel.hotel_folio_view_form').id, 'form')]
             action['res_id'] = self.folio_id.id
         else:
             action = {'type': 'ir.actions.act_window_close'}
@@ -416,7 +457,7 @@ class HotelReservation(models.Model):
     @api.multi
     def open_reservation_form(self):
         action = self.env.ref('hotel.open_hotel_reservation_form_tree_all').read()[0]
-        action['views'] = [(self.env.ref('hotel.view_hotel_reservation_form').id, 'form')]
+        action['views'] = [(self.env.ref('hotel.hotel_reservation_view_form').id, 'form')]
         action['res_id'] = self.id
         return action
 
@@ -536,7 +577,7 @@ class HotelReservation(models.Model):
 
     @api.onchange('checkin', 'checkout')
     def onchange_update_service_per_day(self):
-        services = self.service_line_ids.filtered(lambda r: r.per_day == True)
+        services = self.service_ids.filtered(lambda r: r.per_day == True)
         for service in services:
             service.onchange_product_calc_qty()
 
@@ -562,6 +603,27 @@ class HotelReservation(models.Model):
                 ('id', 'not in', rooms_occupied)
             ]
             return {'domain': {'room_id': domain_rooms}}
+
+    @api.onchange('board_service_id')
+    def onchange_board_service(self):
+        if self.board_service_id:
+            board_services = []
+            for product in self.board_service_id.service_ids:
+                if product.per_day:
+                    vals = {
+                        'product_id': product.id,
+                        'is_board_service': True,
+                        }
+                    vals.update(self.env['hotel.service'].prepare_service_lines(
+                        dfrom=self.checkin,
+                        days=self.nights,
+                        per_person=product.per_person,
+                        persons=self.adults,
+                        old_line_days=False))                    
+                    board_services.append((0, False, vals))
+            other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
+            
+            self.update({'service_ids':  [(6, 0, other_services.ids)] + board_services})
 
     """
     COMPUTE RESERVE COLOR ----------------------------------------------

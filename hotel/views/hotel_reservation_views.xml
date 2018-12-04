@@ -189,6 +189,7 @@
                         <group colspan="4" string="Reservation Details" name="reservation_details">
                             <field name="arrival_hour"/>
                             <field name="departure_hour"/>
+                            <field name="board_service_id" />
                             <field name="name"/>
                             <field name="adults"/>
                             <field name="children"/>
@@ -238,12 +239,13 @@
                         <page name="days" string="Service and Days">
                             <group col="9">
                                 <group colspan="6" string="Reservation Services" name="reservation_services" attrs="{'invisible': [('folio_id','=',False)]}">
-                                    <field name="service_line_ids"
+                                    <field name="service_ids"
                                         nolabel="1" style="padding-right:10px !important;">
-                                        <!-- <field name="service_line_ids"> -->
+                                        <!-- <field name="service_ids"> -->
                                         <tree string="Services">
                                             <!-- <field name="sequence" widget="handle"/> -->
                                             <field name="per_day" />
+                                            <field name="is_board_service" />
                                             <field name="folio_id" invisible="1"/>
                                             <field name="product_id"
                                                 domain="[('sale_ok', '=', True)]"
@@ -252,7 +254,12 @@
                                             <field name="name"/>
                                             <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
                                             <field name="days_qty" />
-                                            <field name="service_line_ids" />
+                                            <field name="service_line_ids" invisible="1">
+                                                <tree string="Days" >
+                                                    <field name="date" />
+                                                    <field name="day_qty" />
+                                                </tree>
+                                            </field>
                                         </tree>
                                         <form string="Services">
                                             <!-- <field name="sequence" widget="handle"/> -->

@@ -2,6 +2,16 @@
 <odoo>
     <data noupdate="0">
 
+    <!-- hotel.users -->
+
+        <record id="base.user_root" model="res.users">
+            <field name="groups_id" eval="[(4,ref('hotel.group_hotel_manager'))]"/> 
+        </record>
+
+        <record id="base.user_demo" model="res.users">
+            <field name="groups_id" eval="[(4,ref('hotel.group_hotel_user'))]"/> 
+        </record>
+
     <!-- hotel.floor -->
 
         <record id="hotel_floor_0" model="hotel.floor">
@@ -56,8 +66,6 @@
             <field name="name">Half-sized Refrigerator</field>
             <field name="room_amenity_type_id" ref="hotel_amenity_type_2"/>
         </record>
-
-    <!-- hotel.board.service -->
 
     <!-- hotel.room.type.class -->
 
@@ -171,7 +179,6 @@
             <field name="list_price">5.0</field>
             <field name="type">service</field>
             <field name="purchase_ok">False</field>
-            <field name="is_hotel_service">True</field>
             <field name="per_day">True</field>
             <field name="per_person">True</field>
         </record>
@@ -181,7 +188,6 @@
             <field name="list_price">15.0</field>
             <field name="type">service</field>
             <field name="purchase_ok">False</field>
-            <field name="is_hotel_service">True</field>
             <field name="per_day">False</field>
             <field name="per_person">True</field>
             <field name="daily_limit">1</field>
@@ -192,9 +198,59 @@
             <field name="list_price">10.0</field>
             <field name="type">service</field>
             <field name="purchase_ok">False</field>
-            <field name="is_hotel_service">True</field>
             <field name="per_day">False</field>
             <field name="per_person">False</field>
+        </record>
+
+        <record id="hotel_service_4" model="product.product">
+            <field name="name">Menú A</field>
+            <field name="list_price">15.0</field>
+            <field name="type">service</field>
+            <field name="purchase_ok">False</field>
+            <field name="per_day">True</field>
+            <field name="per_person">True</field>
+        </record>
+
+        <record id="hotel_service_5" model="product.product">
+            <field name="name">Menú B</field>
+            <field name="list_price">20.0</field>
+            <field name="type">service</field>
+            <field name="purchase_ok">False</field>
+            <field name="per_day">True</field>
+            <field name="per_person">True</field>
+        </record>
+
+        <record id="hotel_service_6" model="product.product">
+            <field name="name">Menú C</field>
+            <field name="list_price">25.0</field>
+            <field name="type">service</field>
+            <field name="purchase_ok">False</field>
+            <field name="per_day">True</field>
+            <field name="per_person">True</field>
+        </record>
+
+    <!-- hotel.board.service -->
+
+        <record id="hotel_board_service_0" model="hotel.board.service">
+            <field name="name">BreakFast</field>
+            <field name="service_ids"
+                   eval="[(4, ref('hotel_service_0'))]"/>
+            <field name="sequence">0</field>
+        </record>
+
+        <record id="hotel_board_service_1" model="hotel.board.service">
+            <field name="name">Half Board</field>
+            <field name="service_ids"
+                   eval="[(4, ref('hotel_service_0')), (4, ref('hotel_service_4'))]"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="hotel_board_service_2" model="hotel.board.service">
+            <field name="name">FullBoard</field>
+            <field name="service_ids"
+                   eval="[(4, ref('hotel_service_0')), (4, ref('hotel_service_4')),
+                   (4, ref('hotel_service_5'))]"/>
+            <field name="sequence">10</field>
         </record>
 
     <!-- hotel.folio -->
@@ -209,6 +265,7 @@
                     'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'adults': 2,
                     'state': 'confirm',
+                    'board_service_id': ref('hotel_board_service_1'),
                     })]"/>
         </record>
         <!-- reservation of 1 triple room for 3 people on behalf on the company -->
@@ -220,6 +277,7 @@
                     'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 3,
+                    'board_service_id': ref('hotel_board_service_2'),
                     })]"/>
         </record>
         <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
@@ -256,6 +314,7 @@
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 1,
                     'state': 'confirm',
+                    'board_service_id': ref('hotel_board_service_1'),
                     })]"/>
         </record>
 
