@@ -31,5 +31,4 @@ class HotelRoomTypeRestrictionExporter(Component):
                 internal_message=str(err),
                 channel_message=err.data['message'])
         else:
-            binding.external_id = external_id
             self.binder.bind(external_id, binding)

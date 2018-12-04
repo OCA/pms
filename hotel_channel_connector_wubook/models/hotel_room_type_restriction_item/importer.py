@@ -9,7 +9,7 @@ from odoo.addons.connector.components.mapper import mapping, only_create
 from odoo.addons.hotel_channel_connector_wubook.components.backend_adapter import (
     DEFAULT_WUBOOK_DATE_FORMAT)
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-from odoo import api
+from odoo import api, fields
 _logger = logging.getLogger(__name__)
 
 
@@ -117,3 +117,7 @@ class HotelRoomTypeRestrictionItemImportMapper(Component):
     @mapping
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
+
+    @mapping
+    def sync_date(self, record):
+        return {'sync_date': fields.Datetime.now()}

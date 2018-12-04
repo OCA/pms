@@ -51,5 +51,8 @@ class HotelRoomTypeAvailabilityExporter(Component):
                     channel_message=err.data['message'])
                 return False
             else:
-                channel_room_type_avails.write({'channel_pushed': True})
+                channel_room_type_avails.write({
+                    'channel_pushed': True,
+                    'sync_date': fields.Datetime.now(),
+                })
         return True

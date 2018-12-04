@@ -20,17 +20,11 @@ class ChannelBackend(models.Model):
         """
         return []
 
-    def _get_default_server(self):
-        return ''
-
     name = fields.Char('Name')
     version = fields.Selection(selection='select_versions', required=True)
     username = fields.Char('Channel Service Username')
     passwd = fields.Char('Channel Service Password')
-    lcode = fields.Char('Channel Service lcode')
-    server = fields.Char('Channel Service Server',
-                         default=_get_default_server)
-    pkey = fields.Char('Channel Service PKey')
+    server = fields.Char('Channel Service Server')
     security_token = fields.Char('Channel Service Security Token')
 
     reservation_id_str = fields.Char('Channel Reservation ID')

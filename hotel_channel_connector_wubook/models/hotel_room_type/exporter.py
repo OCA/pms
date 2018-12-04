@@ -44,7 +44,6 @@ class HotelRoomTypeExporter(Component):
                 channel_message=err.data['message'])
         else:
             binding.write({
-                'external_id': external_id,
                 'channel_short_code': short_code,
             })
             self.binder.bind(external_id, binding)
