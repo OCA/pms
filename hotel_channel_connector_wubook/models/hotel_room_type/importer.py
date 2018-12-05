@@ -22,9 +22,16 @@ class HotelRoomTypeImporter(Component):
                 channel_message=err.data['message'])
         else:
             channel_room_type_obj = self.env['channel.hotel.room.type']
+            hotel_room_type_class_obj = self.env['hotel.room.type.class']
             room_mapper = self.component(usage='import.mapper',
                                          model_name='channel.hotel.room.type')
             for room in results:
+                room_type_class = hotel_room_type_class_obj.search([
+                    ('code_class', '=', str(room['rtype'])),
+                ])
+                room.update({
+                    'class_id': room_type_class and room_type_class.id or False,
+                })
                 map_record = room_mapper.map_record(room)
                 room_bind = channel_room_type_obj.search([
                     ('backend_id', '=', self.backend_record.id),
@@ -57,3 +64,7 @@ class HotelRoomTypeImportMapper(Component):
     @mapping
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
+
+    @mapping
+    def class_id(self, record):
+        return {'class_id': record['class_id']}

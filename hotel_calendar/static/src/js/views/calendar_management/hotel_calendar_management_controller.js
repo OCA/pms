@@ -89,10 +89,10 @@ var MPMSCalendarController = AbstractController.extend({
             var rooms = [];
             for (var r of results['rooms']) {
                 var nroom = new HRoomType(
-                    r[0], // Id
-                    r[1], // Name
-                    r[2], // Capacity
-                    r[3], // Price
+                    r['id'],
+                    r['name'],
+                    r['capacity'],
+                    r['price'],
                 );
                 rooms.push(nroom);
             }

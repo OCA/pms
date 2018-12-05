@@ -27,6 +27,7 @@ class HotelRoomTypeRestrictionImporter(Component):
             model_name='channel.hotel.room.type.restriction.item')
         _logger.info("==[CHANNEL->ODOO]==== RESTRICTIONS ==")
         _logger.info(plan_restrictions)
+        count = 0
         for k_rpid, v_rpid in plan_restrictions.items():
             channel_restriction_id = channel_reserv_restriction_obj.search([
                 ('backend_id', '=', self.backend_record.id),
@@ -40,6 +41,7 @@ class HotelRoomTypeRestrictionImporter(Component):
                     ], limit=1)
                     if channel_room_type:
                         for item in v_rid:
+                            _logger.info(item)
                             map_record = restriction_item_mapper.map_record(item)
                             date_dt = datetime.strptime(item['date'], DEFAULT_WUBOOK_DATE_FORMAT)
                             date_str = date_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
@@ -47,7 +49,6 @@ class HotelRoomTypeRestrictionImporter(Component):
                                 ('backend_id', '=', self.backend_record.id),
                                 ('restriction_id', '=', channel_restriction_id.odoo_id.id),
                                 ('date', '=', date_str),
-                                ('applied_on', '=', '0_room_type'),
                                 ('room_type_id', '=', channel_room_type.odoo_id.id)
                             ], limit=1)
                             item.update({
@@ -64,6 +65,8 @@ class HotelRoomTypeRestrictionImporter(Component):
                                     'connector_no_export': True
                                 }).create(map_record.values(for_create=True))
                             channel_restriction_item.channel_pushed = True
+                            count += 1
+        return count
 
     @api.model
     def import_restriction_values(self, date_from, date_to, channel_restr_id=False):
@@ -82,7 +85,8 @@ class HotelRoomTypeRestrictionImporter(Component):
                 dfrom=date_from, dto=date_to)
         else:
             if any(results):
-                self._generate_restriction_items(results)
+                return self._generate_restriction_items(results)
+        return 0
 
 
 class HotelRoomTypeRestrictionItemImportMapper(Component):
@@ -96,7 +100,7 @@ class HotelRoomTypeRestrictionItemImportMapper(Component):
         ('max_stay', 'max_stay'),
         ('max_stay_arrival', 'max_stay_arrival'),
         ('closed', 'closed'),
-        ('closed_departure', 'closed_departure'),
+        #('closed_departure', 'closed_departure'),
         ('closed_arrival', 'closed_arrival'),
         ('date', 'date'),
     ]
@@ -121,3 +125,7 @@ class HotelRoomTypeRestrictionItemImportMapper(Component):
     @mapping
     def sync_date(self, record):
         return {'sync_date': fields.Datetime.now()}
+
+    @mapping
+    def closed_departure(self, record):
+        return {'closed_departure': int(record['closed_departure'])}

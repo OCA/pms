@@ -64,19 +64,20 @@ class HotelReservation(models.Model):
             pricelist_id = int(pricelist_id)
         json_rooms = []
         for room in rooms:
-            json_rooms.append((
-                room.id,
-                room.name,
-                room.capacity,
-                '', # Reserved for type code
-                room.shared_room,
-                room.room_type_id
-                and ['pricelist', room.room_type_id.id, pricelist_id,
-                     room.room_type_id.name]
-                or 0,
-                room.room_type_id.name,
-                room.room_type_id.id,
-                room.floor_id.id))
+            json_rooms.append({
+                'id': room.id,
+                'name': room.name,
+                'capacity': room.capacity,
+                'class_id': room.room_type_id.class_id.id,
+                'shared': room.shared_room,
+                'price': room.room_type_id
+                         and ['pricelist', room.room_type_id.id, pricelist_id,
+                              room.room_type_id.name] or 0,
+                'room_type_name': room.room_type_id.name,
+                'room_type_id': room.room_type_id.id,
+                'floor_id': room.floor_id.id,
+                'amentity_ids': room.room_type_id.room_amenity_ids.ids,
+            })
         return json_rooms
 
     @api.model

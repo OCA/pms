@@ -1,5 +1,6 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from . import hotel_calendar
 from . import bus_hotel_calendar
 from . import room_pricelist_cached
 from . import hotel_calendar_management

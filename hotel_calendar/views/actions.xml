@@ -24,4 +24,11 @@
         <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.act_window" id="hotel_calendar_action_form_tree">
+        <field name="name">Hotel Calendar</field>
+        <field name="res_model">hotel.calendar</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
  </odoo>

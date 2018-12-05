@@ -68,14 +68,13 @@ class ProductPricelist(models.Model):
         org_names = super(ProductPricelist, self).name_get()
         names = []
         for name in org_names:
-            priclist_id = pricelist_obj.browse(name[0])
-            if any(priclist_id.channel_bind_ids) and \
-                    priclist_id.channel_bind_ids[0].external_id:
-                names.append((name[0], '%s (%s Backend)' % (
-                    name[1],
-                    priclist_id.channel_bind_ids[0].backend_id.name)))
-            else:
-                names.append((name[0], name[1]))
+            pricelist_id = pricelist_obj.browse(name[0])
+            new_name = name[1]
+            if any(pricelist_id.channel_bind_ids):
+                for pricelist_bind in pricelist_id.channel_bind_ids:
+                    if pricelist_bind.external_id:
+                        new_name += ' (%s Backend)' % pricelist_bind.backend_id.name
+                names.append((name[0], new_name))
         return names
 
 class BindingProductPricelistListener(Component):
@@ -85,8 +84,9 @@ class BindingProductPricelistListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        if any(record.channel_bind_ids) and 'name' in fields:
-            record.channel_bind_ids[0].update_plan_name()
+        if 'name' in fields:
+            for binding in record.channel_bind_ids:
+                binding.update_plan_name()
 
 class ChannelBindingProductPricelistListener(Component):
     _name = 'channel.binding.product.pricelist.listener'

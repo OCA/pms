@@ -30,6 +30,7 @@ var HotelCalendarView = AbstractRenderer.extend({
     _reserv_tooltips: {},
     _days_tooltips: [],
     _last_dates: [false, false],
+    _hcalendars: [],
 
 
     /** VIEW METHODS **/
@@ -771,7 +772,7 @@ var HotelCalendarView = AbstractRenderer.extend({
       var virtual = _.map(this.$el.find('#pms-search #virtual_list').val(), function(item){ return +item; });
       var domain = [];
       if (category && category.length > 0) {
-        domain.push(['categ_id', 'in', category]);
+        domain.push(['class_id', 'in', category]);
       }
       if (floor && floor.length > 0) {
         domain.push(['floor_id', 'in', floor]);

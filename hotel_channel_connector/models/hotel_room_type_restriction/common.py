@@ -68,13 +68,12 @@ class HotelRoomTypeRestriction(models.Model):
         names = []
         for name in org_names:
             restriction_id = room_type_restriction_obj.browse(name[0])
-            if any(restriction_id.channel_bind_ids) and \
-                    restriction_id.channel_bind_ids[0].external_id:
-                names.append((
-                    name[0],
-                    '%s (%s Backend)' % (name[1],
-                                         restriction_id.channel_bind_ids[0].backend_id.name),
-                ))
+            new_name = name[1]
+            if any(restriction_id.channel_bind_ids):
+                for restriction_bind in restriction_id.channel_bind_ids:
+                    if restriction_bind.external_id:
+                        new_name += ' (%s Backend)' % restriction_bind.backend_id.name
+                names.append((name[0], new_name))
             else:
                 names.append((name[0], name[1]))
         return names
@@ -86,8 +85,9 @@ class BindingHotelRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        if any(record.channel_bind_ids) and 'name' in fields:
-            record.channel_bind_ids[0].update_plan_name()
+        if 'name' in fields:
+            for binding in record.channel_bind_ids:
+                binding.update_plan_name()
 
 class ChannelBindingHotelRoomTypeRestrictionListener(Component):
     _name = 'channel.binding.hotel.room.type.restriction.listener'

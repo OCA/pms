@@ -79,9 +79,9 @@ return AbstractModel.extend({
             context: Session.user_context,
         });
     },
-    get_rooms: function() {
+    get_room_type_class: function() {
         return this._rpc({
-            model: 'hotel.room.type',
+            model: 'hotel.room.type.class',
             method: 'search_read',
             args: [false, ['id','name']],
             context: Session.user_context,

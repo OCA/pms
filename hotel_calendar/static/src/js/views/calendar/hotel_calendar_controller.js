@@ -110,18 +110,19 @@ var PMSCalendarController = AbstractController.extend({
             var rooms = [];
             for (var r of results['rooms']) {
                 var nroom = new HRoom(
-                    r[0], // Id
-                    r[1], // Name
-                    r[2], // Capacity
-                    r[3], // Category
-                    r[4], // Shared Room
-                    r[5]  // Price
+                    r['id'],
+                    r['name'],
+                    r['capacity'],
+                    r['class_id'],
+                    r['shared'],
+                    r['price']
                 );
                 nroom.addUserData({
-                    'room_type_name': r[6],
-                    'room_type_id': r[7],
-                    'floor_id': r[8],
-                    'amenities': r[9]
+                    'room_type_name': r['room_type_name'],
+                    'room_type_id': r['room_type_id'],
+                    'floor_id': r['floor_id'],
+                    'amenities': r['amenity_ids'],
+                    'class_id': r['class_id']
                 });
                 rooms.push(nroom);
             }
@@ -236,10 +237,10 @@ var PMSCalendarController = AbstractController.extend({
     _onLoadViewFilters: function (ev) {
         var self = this;
         $.when(
-            this.model.get_room_types(),
+            this.model.get_room_type_class(),
             this.model.get_floors(),
             this.model.get_amenities(),
-            this.model.get_rooms()
+            this.model.get_room_types()
         ).then(function(a1, a2, a3, a4){
             self.renderer.loadViewFilters(a1, a2, a3, a4);
         });

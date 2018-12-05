@@ -61,6 +61,23 @@ class BindingProductPricelistItemListener(Component):
         if any(fields_checked):
             record.channel_bind_ids.write({'channel_pushed': False})
 
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_create(self, record, fields=None):
+        if not any(record.channel_bind_ids):
+            channel_product_pricelist_item_obj = self.env[
+                'channel.product.pricelist.item']
+            for pricelist_bind in record.restriction_id.channel_bind_ids:
+                pricelist_item_bind = channel_product_pricelist_item_obj.search([
+                    ('odoo_id', '=', record.id),
+                    ('backend_id', '=', pricelist_bind.backend_id.id),
+                ])
+                if not pricelist_item_bind:
+                    channel_product_pricelist_item_obj.create({
+                        'odoo_id': record.id,
+                        'channel_pushed': False,
+                        'backend_id': pricelist_bind.backend_id.id,
+                    })
+
 class ChannelBindingProductPricelistItemListener(Component):
     _name = 'channel.binding.product.pricelist.item.listener'
     _inherit = 'base.connector.listener'

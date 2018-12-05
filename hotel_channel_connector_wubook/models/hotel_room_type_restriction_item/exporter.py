@@ -13,6 +13,7 @@ class HotelRoomTypeRestrictionItemExporter(Component):
 
     @api.model
     def push_restriction(self):
+        channel_hotel_room_type_obj = self.env['channel.hotel.room.type']
         channel_room_type_rest_obj = self.env['channel.hotel.room.type.restriction']
         channel_rest_item_obj = self.env['channel.hotel.room.type.restriction.item']
         unpushed = channel_rest_item_obj.search([
@@ -38,8 +39,11 @@ class HotelRoomTypeRestrictionItemExporter(Component):
                 room_type_ids = unpushed_rp.mapped('room_type_id')
                 for room_type in room_type_ids:
                     if any(room_type.channel_bind_ids):
-                        # FIXME: Supossed that only exists one channel connector per record
-                        room_type_external_id = room_type.channel_bind_ids[0].external_id
+                        room_type_bind = channel_hotel_room_type_obj.search([
+                            ('odoo_id', '=', room_type.id),
+                            ('backend_id', '=', self.backend_record.id),
+                        ], limit=1)
+                        room_type_external_id = room_type_bind.external_id
                         restrictions[rp.external_id].update({
                             room_type_external_id: [],
                         })

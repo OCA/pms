@@ -14,6 +14,7 @@ class HotelRoomTypeAvailabilityExporter(Component):
     _inherit = 'channel.hotel.room.type.availability.exporter'
 
     def push_availability(self):
+        channel_hotel_room_type_obj = self.env['channel.hotel.room.type']
         channel_room_type_avail_ids = self.env['channel.hotel.room.type.availability'].search([
             ('backend_id', '=', self.backend_record.id),
             ('channel_pushed', '=', False),
@@ -38,7 +39,11 @@ class HotelRoomTypeAvailabilityExporter(Component):
                         'no_ota': channel_room_type_avail.no_ota and 1 or 0,
                         # 'booked': room_type_avail.booked and 1 or 0,
                     })
-                avails.append({'id': room_type.channel_bind_ids[0].channel_room_id, 'days': days})
+                room_type_bind = channel_hotel_room_type_obj.search([
+                    ('odoo_id', '=', room_type.id),
+                    ('backend_id', '=', self.backend_record.id),
+                ], limit=1)
+                avails.append({'id': room_type_bind.external_id, 'days': days})
         _logger.info("==[ODOO->CHANNEL]==== AVAILABILITY ==")
         _logger.info(avails)
         if any(avails):

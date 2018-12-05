@@ -73,8 +73,7 @@
                 <button name="mark_as_readed" string="Mark as Read"
                     type="object" class="oe_highlight"
                     icon="fa-1x fa-thumb-tack"
-                    attrs="{'invisible':[('to_read','=', False)]}"
-                />
+                    attrs="{'invisible':[('to_read','=', False)]}" />
             </xpath>
         </field>
     </record>

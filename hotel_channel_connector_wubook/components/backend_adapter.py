@@ -102,8 +102,7 @@ class WuBookAdapter(AbstractComponent):
         rcode_a, results_a = self._server.push_activation(
             self._session_info[0],
             self._session_info[1],
-            urljoin(base_url,
-                    "/wubook/push/reservations/%s" % security_token),
+            urljoin(base_url, "wubook/push/reservations/%s" % security_token),
             1)
         if rcode_a != 0:
             raise ChannelConnectorError(_("Can't activate push reservations"), {
@@ -113,7 +112,7 @@ class WuBookAdapter(AbstractComponent):
         rcode_b, results_b = self._server.push_update_activation(
             self._session_info[0],
             self._session_info[1],
-            urljoin(base_url, "/wubook/push/rooms/%s" % security_token))
+            urljoin(base_url, "wubook/push/rooms/%s" % security_token))
         if rcode_b != 0:
             raise ChannelConnectorError(_("Can't activate push rooms"), {
                 'message': results_b,
@@ -122,7 +121,7 @@ class WuBookAdapter(AbstractComponent):
         return rcode_a == 0 and results_b == 0
 
     # === ROOMS
-    def create_room(self, shortcode, name, capacity, price, availability):
+    def create_room(self, shortcode, name, capacity, price, availability, defboard, rtype):
         rcode, results = self._server.new_room(
             self._session_info[0],
             self._session_info[1],
@@ -132,8 +131,8 @@ class WuBookAdapter(AbstractComponent):
             price,
             availability,
             shortcode[:4],
-            'nb'    # TODO: Complete this part
-            # rtype=('name' in vals and vals['name'] and 3) or 1
+            defboard,
+            rtype=rtype
         )
         if rcode != 0:
             raise ChannelConnectorError(_("Can't create room in WuBook"), {
@@ -141,7 +140,7 @@ class WuBookAdapter(AbstractComponent):
             })
         return results
 
-    def modify_room(self, channel_room_id, name, capacity, price, availability, scode):
+    def modify_room(self, channel_room_id, name, capacity, price, availability, scode, defboard, rtype):
         rcode, results = self._server.mod_room(
             self._session_info[0],
             self._session_info[1],
@@ -151,8 +150,8 @@ class WuBookAdapter(AbstractComponent):
             price,
             availability,
             scode,
-            'nb'
-            # rtype=('name' in vals and vals['name'] and 3) or 1
+            defboard,
+            rtype=rtype
         )
         if rcode != 0:
             raise ChannelConnectorError(_("Can't modify room in WuBook"), {
@@ -405,6 +404,7 @@ class WuBookAdapter(AbstractComponent):
         rcode, results = self._server.wired_rplan_get_rplan_values(
             self._session_info[0],
             self._session_info[1],
+            '1.1',
             fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             int(channel_restriction_plan_id))

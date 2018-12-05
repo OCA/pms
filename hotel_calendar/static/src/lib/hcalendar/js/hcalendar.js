@@ -41,23 +41,23 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
   };
 
   /** Options **/
-  options = options || {};
-  this.options = {
-    startDate: ((options.startDate && HotelCalendar.toMomentUTC(options.startDate)) || moment(new Date()).utc()).subtract('1', 'd'),
-    days: (options.days || ((options.startDate && HotelCalendar.toMomentUTC(options.startDate)) || moment(new Date())).clone().local().daysInMonth()),
-    rooms: options.rooms || [],
-    allowInvalidActions: options.allowInvalidActions || false,
-    assistedMovement: options.assistedMovement || false,
-    endOfWeek: options.endOfWeek || 6,
-    endOfWeekOffset: options.endOfWeekOffset || 0,
-    divideRoomsByCapacity: options.divideRoomsByCapacity || false,
-    currencySymbol: options.currencySymbol || '€',
-    showPricelist: options.showPricelist || false,
-    showAvailability: options.showAvailability || false,
-    showNumRooms: options.showNumRooms || 0,
-    paginatorStepsMin: options.paginatorAdv || 1,
-    paginatorStepsMax: options.paginatorAdv || 15,
-  };
+  this.options = _.extend({
+    startDate: moment(new Date()).utc(),
+    days: moment(new Date()).local().daysInMonth(),
+    rooms: [],
+    allowInvalidActions: false,
+    assistedMovement: false,
+    endOfWeek: 6,
+    endOfWeekOffset: 0,
+    divideRoomsByCapacity: false,
+    currencySymbol: '€',
+    showPricelist: false,
+    showAvailability: false,
+    showNumRooms: 0,
+    paginatorStepsMin: 1,
+    paginatorStepsMax: 15,
+  }, options);
+  this.options.startDate.subtract('1', 'd');
 
   // Check correct values
   if (this.options.rooms.length > 0 && !(this.options.rooms[0] instanceof HRoom)) {
@@ -104,14 +104,15 @@ HotelCalendar.prototype = {
   //==== CALENDAR
   setStartDate: function(/*String,MomentObject*/date, /*Int?*/days, /*Bool*/fullUpdate, /*Functions*/callback) {
     if (moment.isMoment(date)) {
-      this.options.startDate = date.subtract('1','d');
+      this.options.startDate = date;
     } else if (typeof date === 'string'){
-      this.options.startDate = HotelCalendar.toMomentUTC(date).subtract('1','d');
+      this.options.startDate = HotelCalendar.toMomentUTC(date);
     } else {
       console.warn("[Hotel Calendar][setStartDate] Invalid date format!");
       return;
     }
 
+    this.options.startDate.subtract('1','d');
     if (typeof days !== 'undefined') {
       this.options.days = days;
     }

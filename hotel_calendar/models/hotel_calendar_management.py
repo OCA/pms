@@ -122,13 +122,13 @@ class HotelCalendarManagement(models.TransientModel):
     def _hcalendar_room_json_data(self, rooms):
         json_data = []
         for room in rooms:
-            json_data.append((
-                room.id,
-                room.name,
-                room.get_capacity(),
-                room.list_price,
-                room.total_rooms_count,
-            ))
+            json_data.append({
+                'id': room.id,
+                'name': room.name,
+                'capacity': room.get_capacity(),
+                'price': room.list_price,
+                'total_rooms': room.total_rooms_count,
+            })
         return json_data
 
     @api.model

@@ -113,8 +113,7 @@ class ChannelHotelReservation(models.Model):
     def unlink(self):
         vals = []
         for record in self:
-            if any(record.channel_bind_ids) and record.channel_bind_ids[0].external_id \
-                    and not record.parent_reservation:
+            if record.is_from_ota and self._context.get('ota_limits', True):
                 raise UserError(_("You can't delete OTA's reservations"))
             vals.append({
                 'checkin': record.checkin,
@@ -140,26 +139,28 @@ class HotelReservation(models.Model):
             user = self.env['res.users'].browse(self.env.uid)
             record.able_to_modify_channel = user.has_group('base.group_system')
 
-    @api.depends('channel_type', 'channel_bind_ids.ota_id')
-    def _get_origin_sale(self):
-        for record in self:
-            if not record.channel_type:
-                record.channel_type = 'door'
-
-            if record.channel_type == 'web' and any(record.channel_bind_ids) and \
-                    record.channel_bind_ids[0].ota_id:
-                record.origin_sale = record.channel_bind_ids[0].ota_id.name
-            else:
-                record.origin_sale = dict(
-                    self.fields_get(allfields=['channel_type'])['channel_type']['selection']
-                )[record.channel_type]
+    # TODO: Dario v2
+    # @api.depends('channel_type', 'channel_bind_ids.ota_id')
+    # def _get_origin_sale(self):
+    #     for record in self:
+    #         if not record.channel_type:
+    #             record.channel_type = 'door'
+    #
+    #         if record.channel_type == 'web' and any(record.channel_bind_ids) and \
+    #                 record.channel_bind_ids[0].ota_id:
+    #             record.origin_sale = record.channel_bind_ids[0].ota_id.name
+    #         else:
+    #             record.origin_sale = dict(
+    #                 self.fields_get(allfields=['channel_type'])['channel_type']['selection']
+    #             )[record.channel_type]
 
     channel_bind_ids = fields.One2many(
         comodel_name='channel.hotel.reservation',
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
-    origin_sale = fields.Char('Origin', compute=_get_origin_sale,
-                              store=True)
+    # TODO: Dario v2
+    # origin_sale = fields.Char('Origin', compute=_get_origin_sale,
+    #                           store=True)
     is_from_ota = fields.Boolean('Is From OTA',
                                  readonly=True,
                                  old_name='wis_from_channel')

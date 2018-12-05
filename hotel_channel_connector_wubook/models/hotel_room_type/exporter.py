@@ -3,7 +3,7 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api
+from odoo import api, fields
 
 
 class HotelRoomTypeExporter(Component):
@@ -12,13 +12,16 @@ class HotelRoomTypeExporter(Component):
     @api.model
     def modify_room(self, binding):
         try:
+            binding.sync_date = fields.Datetime.now()
             return self.backend_adapter.modify_room(
                 binding.external_id,
                 binding.name,
                 binding.ota_capacity,
                 binding.list_price,
                 binding.total_rooms_count,
-                binding.channel_short_code)
+                binding.channel_short_code,
+                'nb',
+                binding.class_id and binding.class_id.class_code or False)
         except ChannelConnectorError as err:
             self.create_issue(
                 section='room',
@@ -35,8 +38,9 @@ class HotelRoomTypeExporter(Component):
                 binding.name,
                 binding.ota_capacity,
                 binding.list_price,
-                binding.total_rooms_count
-            )
+                binding.total_rooms_count,
+                'nb',
+                binding.class_id and binding.class_id.class_code or False)
         except ChannelConnectorError as err:
             self.create_issue(
                 section='room',

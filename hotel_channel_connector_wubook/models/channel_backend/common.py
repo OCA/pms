@@ -17,7 +17,7 @@ class ChannelBackend(models.Model):
         to redefine the ``version`` field in the ``_inherit`` model.
         """
         super(ChannelBackend, self).select_versions()
-        return [('1.2', '1.2+')]
+        return [('1.1', '1.1')]
 
     def _get_default_server(self):
         return 'https://wired.wubook.net/xrws/'

@@ -10,4 +10,5 @@ from . import hotel_room_type_restriction_item
 from . import hotel_room_type_availability
 from . import hotel_reservation
 from . import inherited_hotel_folio
+from . import inherited_hotel_room_type_class
 from . import channel_ota_info

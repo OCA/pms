@@ -11,7 +11,8 @@ from odoo.addons.hotel_channel_connector_wubook.components.backend_adapter impor
     WUBOOK_STATUS_ACCEPTED,
     WUBOOK_STATUS_CANCELLED,
     WUBOOK_STATUS_CANCELLED_PENALTY,
-    WUBOOK_STATUS_BAD)
+    WUBOOK_STATUS_BAD,
+    WUBOOK_STATUS_GOOD)
 
 
 class ChannelHotelReservation(models.Model):
@@ -32,37 +33,31 @@ class HotelReservation(models.Model):
 
     @api.multi
     def action_cancel(self):
-        no_export = self._context.get('connector_no_export', True)
-        if no_export:
-            for record in self:
-                # Can't cancel in Odoo
-                if record.is_from_ota:
-                    raise ValidationError(_("Can't cancel reservations from OTA's"))
+        for record in self:
+            # Can't cancel in Odoo
+            if record.is_from_ota and self._context.get('ota_limits', True):
+                raise ValidationError(_("Can't cancel reservations from OTA's"))
         user = self.env['res.users'].browse(self.env.uid)
         if user.has_group('hotel.group_hotel_call'):
             self.write({'to_read': True, 'to_assign': True})
 
         res = super(HotelReservation, self).action_cancel()
-        if no_export:
-            for record in self:
-                # Only can cancel reservations created directly in wubook
-                if any(record.channel_bind_ids) and \
-                        record.channel_bind_ids[0].external_id and \
-                        not record.channel_bind_ids[0].ota_id and \
-                        record.channel_bind_ids[0].channel_status in ['1', '2', '4']:
-                    self._event('on_record_cancel').notify(record)
+        for record in self:
+            # Only can cancel reservations created directly in wubook
+            for binding in record.channel_bind_ids:
+                if binding.external_id and not binding.ota_id and \
+                        binding.channel_status in WUBOOK_STATUS_GOOD:
+                    self._event('on_record_cancel').notify(binding)
         return res
 
     @api.multi
     def confirm(self):
-        can_confirm = True
         for record in self:
-            if record.is_from_ota and any(record.channel_bind_ids) and \
-                    int(record.channel_bind_ids[0].channel_status) in WUBOOK_STATUS_BAD:
-                can_confirm = False
-                break
-        if not can_confirm:
-            raise ValidationError(_("Can't confirm OTA's cancelled reservations"))
+            if record.is_from_ota:
+                for binding in record.channel_bind_ids:
+                    if int(binding.channel_status) in WUBOOK_STATUS_BAD \
+                            and self._context.get('ota_limits', True):
+                        raise ValidationError(_("Can't confirm OTA's cancelled reservations"))
         return super(HotelReservation, self).confirm()
 
 

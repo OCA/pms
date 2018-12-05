@@ -33,17 +33,9 @@ class HotelRoomTypeResrtrictionItem(models.Model):
 
     @api.multi
     def write(self, vals):
-        restrictions_default_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restriction_id')
-        if restrictions_default_id:
-            restrictions_default_id = int(restrictions_default_id)
         ret_vals = super(HotelRoomTypeResrtrictionItem, self).write(vals)
-
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for record in self:
-            if record.restriction_id.id != restrictions_default_id or \
-                    record.applied_on != '0_room_type':
-                continue
             bus_hotel_calendar_obj.send_restriction_notification({
                 'restriction_id': record.restriction_id.id,
                 'date': record.date,

@@ -25,4 +25,9 @@
     <menuitem id="hotel_room_pricelist_cached" name="Room Pricelist Cached"
         sequence="1" action="hotel_room_pricelist_cached_action_form_tree" parent="sale.menu_sale_config"/>
 
+    <menuitem id="hotel_calendar_record_menu" name="Calendars"
+        parent="hotel.hotel_configuration_menu" sequence="10"
+        groups="hotel.group_hotel_manager"
+        action="hotel_calendar_action_form_tree" />
+
 </odoo>

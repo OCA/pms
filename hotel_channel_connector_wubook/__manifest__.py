@@ -18,6 +18,7 @@
     'data': [
         'data/cron_jobs.xml',
         'data/sequences.xml',
+        'data/records.xml',
         'views/inherited_channel_connector_backend_views.xml',
         'views/inherited_channel_ota_info_views.xml',
         #'security/wubook_security.xml',

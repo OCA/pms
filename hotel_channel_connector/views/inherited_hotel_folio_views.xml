@@ -10,7 +10,7 @@
                 <field name="customer_notes" readonly="True" attrs="{'invisible':[('has_channel_reservations', '=', False)]}"/>
             </xpath>
             <xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkout']" position="after">
-                <field name="origin_sale"/>
+                <!-- field name="origin_sale"/-->
                 <field name="is_from_ota" invisible="1"/>
             </xpath>
             <xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkout']" position="attributes">
@@ -20,7 +20,7 @@
                 <attribute name="attrs">{'readonly': [('is_from_ota', '!=', False)]}</attribute>
             </xpath>
             <xpath expr="//notebook/page/field[@name='room_lines']/form/sheet/header/field[@name='folio_id']" position="after">
-                <field name="origin_sale" invisible="1"/>
+                <!-- field name="origin_sale" invisible="1"/-->
                 <field name="is_from_ota" invisible="1"/>
             </xpath>
             <xpath expr="//notebook/page/field[@name='room_lines']/form/sheet/h3/field[@name='checkout']" position="attributes">

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record model="hotel.room.type.class">
+        <field name="name">Room</field>
+        <field name="code_class">1</field>
+    </record>
+
+    <record model="hotel.room.type.class">
+        <field name="name">Apartment</field>
+        <field name="code_class">2</field>
+    </record>
+
+    <record model="hotel.room.type.class">
+        <field name="name">Beds Number</field>
+        <field name="code_class">3</field>
+    </record>
+
+    <record model="hotel.room.type.class">
+        <field name="name">Beds</field>
+        <field name="code_class">4</field>
+    </record>
+
+    <record model="hotel.room.type.class">
+        <field name="name">Bungalow</field>
+        <field name="code_class">5</field>
+    </record>
+
+    <record model="hotel.room.type.class">
+        <field name="name">Tent</field>
+        <field name="code_class">6</field>
+    </record>
+
+    <record model="hotel.room.type.class">
+        <field name="name">Villa</field>
+        <field name="code_class">7</field>
+    </record>
+
+    <record model="hotel.room.type.class">
+        <field name="name">Chalet</field>
+        <field name="code_class">8</field>
+    </record>
+
+</odoo>
