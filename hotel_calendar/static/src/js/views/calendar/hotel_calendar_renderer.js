@@ -772,7 +772,7 @@ var HotelCalendarView = AbstractRenderer.extend({
       var virtual = _.map(this.$el.find('#pms-search #virtual_list').val(), function(item){ return +item; });
       var domain = [];
       if (category && category.length > 0) {
-        domain.push(['class_id', 'in', category]);
+        domain.push(['class_name', 'in', category]);
       }
       if (floor && floor.length > 0) {
         domain.push(['floor_id', 'in', floor]);

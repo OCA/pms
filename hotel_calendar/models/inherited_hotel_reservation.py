@@ -68,7 +68,7 @@ class HotelReservation(models.Model):
                 'id': room.id,
                 'name': room.name,
                 'capacity': room.capacity,
-                'class_id': room.room_type_id.class_id.id,
+                'class_name': room.room_type_id.class_id.name,
                 'shared': room.shared_room,
                 'price': room.room_type_id
                          and ['pricelist', room.room_type_id.id, pricelist_id,
