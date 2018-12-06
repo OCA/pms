@@ -274,7 +274,8 @@ class HotelReservation(models.Model):
                 'title': ntitle,
                 'room_id': record.room_id.id,
                 'reserv_id': record.id,
-                'partner_name': record.partner_id.name,
+                'partner_name': record.closure_reason_id.name or _('Out of service') if record.reservation_type == 'out'
+                else record.partner_id.name,
                 'adults': record.adults,
                 'children': record.children,
                 'checkin': record.checkin,
@@ -292,6 +293,9 @@ class HotelReservation(models.Model):
                 'fix_days': record.splitted,
                 'overbooking': record.overbooking,
                 'price': record.folio_id.amount_total,
+                'reservation_type': record.reservation_type,
+                'closure_reason_id': record.closure_reason_id or None,
+                'out_service_description': record.out_service_description or _('No reason given')
             })
 
     @api.model
@@ -344,6 +348,8 @@ class HotelReservation(models.Model):
                 'checkout' in vals or 'product_id' in vals or \
                 'adults' in vals or 'children' in vals or \
                 'state' in vals or 'splitted' in vals or \
+                'closure_reason_id' in vals or 'out_service_description' in vals or \
+                'reservation_type' in vals or \
                 'reserve_color' in vals or \
                 'reserve_color_text' in vals or 'product_id' in vals or \
                 'parent_reservation' in vals or 'overbooking' in vals:
