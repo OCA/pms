@@ -90,7 +90,14 @@ var PMSCalendarController = AbstractController.extend({
     _onLoadCalendarSettings: function  (ev) {
         var self = this;
         return this.model.get_hcalendar_settings().then(function(options){
-            self.renderer.load_hcalendar_options(options);
+          self._view_options = options;
+          var date_begin = moment().startOf('day');
+          if (['xs', 'md'].indexOf(self._find_bootstrap_environment()) >= 0) {
+            self._view_options['days'] = 7;
+          } else {
+            self._view_options['days'] = (self._view_options['days'] !== 'month')?parseInt(self._view_options['days']):date_begin.daysInMonth();
+          }
+          self.renderer.load_hcalendar_options(self._view_options);
         });
     },
 
@@ -104,9 +111,8 @@ var PMSCalendarController = AbstractController.extend({
           hcal_dates[1].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)
         ];
         this.model.get_calendar_data(oparams).then(function(results){
-
-            self.renderer._days_tooltips = results['events'];
-            self.renderer._reserv_tooltips = results['tooltips'];
+            self.renderer._multi_calendar._days_tooltips = results['events'];
+            self.renderer._multi_calendar._reserv_tooltips = results['tooltips'];
             var rooms = [];
             for (var r of results['rooms']) {
                 var nroom = new HRoom(
@@ -127,7 +133,23 @@ var PMSCalendarController = AbstractController.extend({
                 rooms.push(nroom);
             }
 
-            self.renderer.create_calendar('#hcal_widget', rooms, results['pricelist'], results['restrictions']);
+            var options = {
+                startDate: HotelCalendar.toMomentUTC(self.renderer._last_dates[0], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+                days: self.renderer._view_options['days'] + 1,
+                rooms: rooms,
+                endOfWeek: parseInt(self.renderer._view_options['eday_week']) || 6,
+                divideRoomsByCapacity: self.renderer._view_options['divide_rooms_by_capacity'] || false,
+                allowInvalidActions: self.renderer._view_options['allow_invalid_actions'] || false,
+                assistedMovement: self.renderer._view_options['assisted_movement'] || false,
+                showPricelist: self.renderer._view_options['show_pricelist'] || false,
+                showAvailability: self.renderer._view_options['show_availability'] || false,
+                showNumRooms: self.renderer._view_options['show_num_rooms'] || 0,
+                endOfWeekOffset: self.renderer._view_options['eday_week_offset'] || 0
+            };
+
+            for (var calendar of results['calendars']) {
+              self.renderer._multi_calendar.create_calendar(calendar['name'], options, results['pricelist'], results['restrictions'], self.renderer.$el[0]);
+            }
 
             // TODO: Not read this... do the change!!
             var reservs = [];
@@ -338,6 +360,22 @@ var PMSCalendarController = AbstractController.extend({
         }
     },
 
+    _find_bootstrap_environment: function() {
+        var envs = ['xs', 'sm', 'md', 'lg'];
+
+        var $el = $('<div>');
+        $el.appendTo($('body'));
+
+        for (var i = envs.length - 1; i >= 0; i--) {
+            var env = envs[i];
+
+            $el.addClass('hidden-'+env);
+            if ($el.is(':hidden')) {
+                $el.remove();
+                return env;
+            }
+        }
+    },
 });
 
 return PMSCalendarController;

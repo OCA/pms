@@ -67,6 +67,13 @@
 	padding: 0.1em;
 }
 
+.warn-message {
+  text-align: center;
+  line-height: 100vh;
+  font-size: xx-large;
+  color: gray;
+}
+
 /** SELECT 2 **/
 #pms-search .select2-search-choice {
 	padding-top: 1px !important;

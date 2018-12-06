@@ -88,11 +88,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         // View Options
         this._view_options = options;
         var date_begin = moment().startOf('day');
-        if (['xs', 'md'].indexOf(this._find_bootstrap_environment()) >= 0) {
-          this._view_options['days'] = 7;
-        } else {
-          this._view_options['days'] = (this._view_options['days'] !== 'month')?parseInt(this._view_options['days']):date_begin.daysInMonth();
-        }
         var date_end = date_begin.clone().add(this._view_options['days'], 'd').endOf('day');
         var $dateTimePickerBegin = this.$el.find('#pms-search #date_begin');
         var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
@@ -108,27 +103,6 @@ var HotelCalendarView = AbstractRenderer.extend({
             this._hcalendar.$base.empty();
             delete this._hcalendar;
         }
-    },
-
-    create_calendar: function(containerSelector, rooms, pricelist, restrictions) {
-        this.destroy_calendar();
-
-        var options = {
-            startDate: HotelCalendar.toMomentUTC(this._last_dates[0], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-            days: this._view_options['days'] + 1,
-            rooms: rooms,
-            endOfWeek: parseInt(this._view_options['eday_week']) || 6,
-            divideRoomsByCapacity: this._view_options['divide_rooms_by_capacity'] || false,
-            allowInvalidActions: this._view_options['allow_invalid_actions'] || false,
-            assistedMovement: this._view_options['assisted_movement'] || false,
-            showPricelist: this._view_options['show_pricelist'] || false,
-            showAvailability: this._view_options['show_availability'] || false,
-            showNumRooms: this._view_options['show_num_rooms'] || 0,
-            endOfWeekOffset: this._view_options['eday_week_offset'] || 0
-        };
-
-        //this._hcalendar = new HotelCalendar(containerSelector, options, pricelist, restrictions, this.$el[0]);
-        //this._assign_hcalendar_events();
     },
 
     _assign_hcalendar_events: function() {
@@ -796,23 +770,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         }
       }
     },
-
-    _find_bootstrap_environment: function() {
-        var envs = ['xs', 'sm', 'md', 'lg'];
-
-        var $el = $('<div>');
-        $el.appendTo($('body'));
-
-        for (var i = envs.length - 1; i >= 0; i--) {
-            var env = envs[i];
-
-            $el.addClass('hidden-'+env);
-            if ($el.is(':hidden')) {
-                $el.remove();
-                return env;
-            }
-        }
-    }
 });
 
 return HotelCalendarView;

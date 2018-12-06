@@ -145,6 +145,16 @@ class HotelReservation(models.Model):
         return json_rooms
 
     @api.model
+    def _hcalendar_calendar_data(self, calendars):
+        json_calendars = []
+        for calendar in calendars:
+            json_calendars.append({
+                'id': calendar.id,
+                'name': calendar.name,
+            })
+        return json_calendars
+
+    @api.model
     def _hcalendar_event_data(self, events):
         json_events = []
         for event in events:
@@ -310,6 +320,7 @@ class HotelReservation(models.Model):
             raise ValidationError(_('Input Error: No dates defined!'))
 
         rooms = self.env['hotel.room'].search([], order='hcal_sequence ASC')
+        calendars = self.env['hotel.calendar'].search([])
         json_res, json_res_tooltips = self.get_hcalendar_reservations_data(
             dfrom, dto, rooms)
 
@@ -320,6 +331,7 @@ class HotelReservation(models.Model):
             'pricelist': self.get_hcalendar_pricelist_data(dfrom, dto),
             'restrictions': self.get_hcalendar_restrictions_data(dfrom, dto),
             'events': self.get_hcalendar_events_data(dfrom, dto),
+            'calendars': self._hcalendar_calendar_data(calendars)
         }
 
         return vals
