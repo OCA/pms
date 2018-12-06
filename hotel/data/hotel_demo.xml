@@ -253,6 +253,19 @@
             <field name="sequence">10</field>
         </record>
 
+    <!-- room.closure.reason -->
+
+        <record id="hotel_room_closure_reason_0" model="room.closure.reason">
+            <field name="name">Maintenance</field>
+            <field name="description">Used for closing of rooms which require a maintenance.
+                You can specify the reason in the own reservation.</field>
+        </record>
+
+        <record id="hotel_room_closure_reason_1" model="room.closure.reason">
+            <field name="name">VIP Privacy</field>
+            <field name="description">Used for closing of rooms for extra privacy.</field>
+        </record>
+
     <!-- hotel.folio -->
 
         <!-- reservation of 1 economic room for 1 person -->
@@ -315,6 +328,20 @@
                     'adults': 1,
                     'state': 'confirm',
                     'board_service_id': ref('hotel_board_service_1'),
+                    })]"/>
+        </record>
+
+        <!-- out of service room -->
+        <record id="hotel_folio_4" model="hotel.folio">
+            <field name="partner_id" ref="base.res_partner_1"/>
+            <field name="reservation_type">out</field>
+            <field name="closure_reason_id" ref="hotel_room_closure_reason_0"/>
+            <field name="room_lines"
+                   eval="[(5, 0), (0, 0, {'room_type_id': ref('hotel_room_type_1'),
+                    'checkin': DateTime.today().strftime('%Y-%m-%d'),
+                    'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
+                    'state': 'confirm',
+                    'out_service_description': 'Change of lighting',
                     })]"/>
         </record>
 

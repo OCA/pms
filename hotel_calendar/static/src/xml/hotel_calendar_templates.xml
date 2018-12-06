@@ -70,15 +70,22 @@
 
 <t t-name="HotelCalendar.TooltipReservation">
 	<div class="oe_tooltip_string"><t t-esc="name"/></div>
-	<ul class="oe_tooltip_technical">
-		<li><b>Phone:</b> <t t-esc="phone"/></li>
-		<li><b>Arrival Hour:</b> <t t-esc="arrival_hour"/></li>
-		<t t-if="num_split &gt; 1">
-			<li><b>Splitted:</b> <t t-esc="num_split"/></li>
-		</t>
-		<!-- FIXME: HARD CURRENCY -->
-		<li><b>Total Amount:</b> <t t-esc="amount_total" t-widget="monetary"/>€</li>
-	</ul>
+	<t t-if="reservation_type == 'normal'">
+		<ul class="oe_tooltip_technical">
+			<li><b>Phone:</b> <t t-esc="phone"/></li>
+			<li><b>Arrival Hour:</b> <t t-esc="arrival_hour"/></li>
+			<t t-if="num_split &gt; 1">
+				<li><b>Splitted:</b> <t t-esc="num_split"/></li>
+			</t>
+			<!-- FIXME: HARD CURRENCY -->
+			<li><b>Total Amount:</b> <t t-esc="amount_total" t-widget="monetary"/>€</li>
+		</ul>
+	</t>
+	<t t-elif="reservation_type == 'out'">
+		<ul class="oe_tooltip_technical">
+			<li><b>Reason:</b> <t t-esc="out_service_description"/></li>
+		</ul>
+	</t>
 </t>
 
 <t t-name="HotelCalendar.TooltipRoom">

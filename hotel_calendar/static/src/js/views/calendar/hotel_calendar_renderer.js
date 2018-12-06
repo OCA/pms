@@ -67,7 +67,9 @@ var HotelCalendarView = AbstractRenderer.extend({
         'phone': tp[1],
         'arrival_hour': HotelCalendar.toMomentUTC(tp[2], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
         'num_split': tp[3],
-        'amount_total': Number(tp[4]).toLocaleString()
+        'amount_total': Number(tp[4]).toLocaleString(),
+        'reservation_type': tp[5],
+        'out_service_description': tp[6]
       };
     },
 
@@ -772,7 +774,7 @@ var HotelCalendarView = AbstractRenderer.extend({
       var virtual = _.map(this.$el.find('#pms-search #virtual_list').val(), function(item){ return +item; });
       var domain = [];
       if (category && category.length > 0) {
-        domain.push(['class_id', 'in', category]);
+        domain.push(['class_name', 'in', category]);
       }
       if (floor && floor.length > 0) {
         domain.push(['floor_id', 'in', floor]);

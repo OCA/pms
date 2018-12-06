@@ -64,6 +64,8 @@ class BusHotelCalendar(models.TransientModel):
                 vals['checkin'],
                 num_split,
                 vals['price'],
+                vals['reservation_type'],
+                vals['out_service_description'],
             ]
         }
 

@@ -113,7 +113,7 @@ var PMSCalendarController = AbstractController.extend({
                     r['id'],
                     r['name'],
                     r['capacity'],
-                    r['class_id'],
+                    r['class_name'],
                     r['shared'],
                     r['price']
                 );
@@ -122,7 +122,7 @@ var PMSCalendarController = AbstractController.extend({
                     'room_type_id': r['room_type_id'],
                     'floor_id': r['floor_id'],
                     'amenities': r['amenity_ids'],
-                    'class_id': r['class_id']
+                    'class_name': r['class_name']
                 });
                 rooms.push(nroom);
             }

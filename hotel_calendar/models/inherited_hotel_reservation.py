@@ -21,7 +21,8 @@ class HotelReservation(models.Model):
             json_reservations.append([
                 reserv.room_id.id,
                 reserv.id,
-                reserv.folio_id.partner_id.name,
+                reserv.folio_id.closure_reason_id.name or _('Out of service') if reserv.folio_id.reservation_type == 'out'
+                else reserv.folio_id.partner_id.name,
                 reserv.adults,
                 reserv.children,
                 reserv.checkin,
@@ -47,12 +48,15 @@ class HotelReservation(models.Model):
                 ])
             json_reservation_tooltips.update({
                 reserv.id: [
-                    reserv.folio_id.partner_id.name,
+                    _('Out of service') if reserv.folio_id.reservation_type == 'out' else reserv.folio_id.partner_id.name,
                     reserv.folio_id.partner_id.mobile or
                     reserv.folio_id.partner_id.phone or _('Undefined'),
                     reserv.checkin,
                     num_split,
-                    reserv.folio_id.amount_total]
+                    reserv.folio_id.amount_total,
+                    reserv.reservation_type,
+                    reserv.out_service_description or _('No reason given'),
+                ]
             })
         return (json_reservations, json_reservation_tooltips)
 
@@ -68,7 +72,7 @@ class HotelReservation(models.Model):
                 'id': room.id,
                 'name': room.name,
                 'capacity': room.capacity,
-                'class_id': room.room_type_id.class_id.id,
+                'class_name': room.room_type_id.class_id.name,
                 'shared': room.shared_room,
                 'price': room.room_type_id
                          and ['pricelist', room.room_type_id.id, pricelist_id,
@@ -270,7 +274,8 @@ class HotelReservation(models.Model):
                 'title': ntitle,
                 'room_id': record.room_id.id,
                 'reserv_id': record.id,
-                'partner_name': record.partner_id.name,
+                'partner_name': record.closure_reason_id.name or _('Out of service') if record.reservation_type == 'out'
+                else record.partner_id.name,
                 'adults': record.adults,
                 'children': record.children,
                 'checkin': record.checkin,
@@ -288,6 +293,9 @@ class HotelReservation(models.Model):
                 'fix_days': record.splitted,
                 'overbooking': record.overbooking,
                 'price': record.folio_id.amount_total,
+                'reservation_type': record.reservation_type,
+                'closure_reason_id': record.closure_reason_id or None,
+                'out_service_description': record.out_service_description or _('No reason given')
             })
 
     @api.model
@@ -340,6 +348,8 @@ class HotelReservation(models.Model):
                 'checkout' in vals or 'product_id' in vals or \
                 'adults' in vals or 'children' in vals or \
                 'state' in vals or 'splitted' in vals or \
+                'closure_reason_id' in vals or 'out_service_description' in vals or \
+                'reservation_type' in vals or \
                 'reserve_color' in vals or \
                 'reserve_color_text' in vals or 'product_id' in vals or \
                 'parent_reservation' in vals or 'overbooking' in vals:
