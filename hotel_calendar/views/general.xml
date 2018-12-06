@@ -15,6 +15,8 @@
 
             <!-- Hotel Calendar (Internal) -->
             <link rel="stylesheet" href="/hotel_calendar/static/src/css/view.css" />
+            <script type="text/javascript" src="/hotel_calendar/static/src/lib/hcalendar/js/hcalendar.js"></script>
+            <script type="text/javascript" src="/hotel_calendar/static/src/js/widgets/MultiCalendar.js"></script>
             <script type="text/javascript" src="/hotel_calendar/static/src/js/views/constants.js"></script>
             <script type="text/javascript" src="/hotel_calendar/static/src/js/views/calendar/hotel_calendar_controller.js"></script>
             <script type="text/javascript" src="/hotel_calendar/static/src/js/views/calendar/hotel_calendar_model.js"></script>

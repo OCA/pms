@@ -162,7 +162,7 @@ var CalendarMenu = Widget.extend({
 var PMSCalendarView = AbstractView.extend({
     display_name: _lt('Calendar PMS'),
     icon: 'fa-calendar',
-    jsLibs: ['/hotel_calendar/static/src/lib/hcalendar/js/hcalendar.js'],
+    //jsLibs: [],
     cssLibs: ['/hotel_calendar/static/src/lib/hcalendar/css/hcalendar.css'],
     config: {
         Model: PMSCalendarModel,

@@ -10,6 +10,7 @@ var Core = require('web.core'),
     Session = require('web.session'),
     AbstractRenderer = require('web.AbstractRenderer'),
     HotelConstants = require('hotel_calendar.Constants'),
+    MultiCalendar = require('hotel_calendar.MultiCalendar'),
     //Formats = require('web.formats'),
 
     _t = Core._t,
@@ -30,33 +31,29 @@ var HotelCalendarView = AbstractRenderer.extend({
     _reserv_tooltips: {},
     _days_tooltips: [],
     _last_dates: [false, false],
-    _hcalendars: [],
+    _multi_calendar: null,
 
 
     /** VIEW METHODS **/
     init: function(parent, state, params) {
       this._super.apply(this, arguments);
+
+      this._multi_calendar = new MultiCalendar(this);
     },
 
     start: function () {
-      return this._super().then(function() {
-          this.init_calendar_view();
-      }.bind(this));
+      this._multi_calendar.setElement(this.$el.find('#hcal_widget'));
+      this._multi_calendar.start();
+      this.init_calendar_view();
+      return this._super();
     },
 
     on_attach_callback: function() {
       this._super();
 
-      if (this._hcalendar && !this._is_visible) {
+      if (!this._is_visible) {
         // FIXME: Workaround for restore "lost" reservations (Drawn when the view is hidden)
-        setTimeout(function(){
-          for (var reserv of this._hcalendar._reservations) {
-            var style = window.getComputedStyle(reserv._html, null);
-            if (parseInt(style.width, 10) < 15 || parseInt(style.height, 10) < 15 || parseInt(style.top, 10) === 0) {
-              this._hcalendar._updateReservation(reserv);
-            }
-          }
-        }.bind(this), 300);
+        this._multi_calendar.recalculate_reservation_positions();
       }
     },
 
@@ -130,8 +127,8 @@ var HotelCalendarView = AbstractRenderer.extend({
             endOfWeekOffset: this._view_options['eday_week_offset'] || 0
         };
 
-        this._hcalendar = new HotelCalendar(containerSelector, options, pricelist, restrictions, this.$el[0]);
-        this._assign_hcalendar_events();
+        //this._hcalendar = new HotelCalendar(containerSelector, options, pricelist, restrictions, this.$el[0]);
+        //this._assign_hcalendar_events();
     },
 
     _assign_hcalendar_events: function() {
