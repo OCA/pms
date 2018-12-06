@@ -67,7 +67,9 @@ var HotelCalendarView = AbstractRenderer.extend({
         'phone': tp[1],
         'arrival_hour': HotelCalendar.toMomentUTC(tp[2], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
         'num_split': tp[3],
-        'amount_total': Number(tp[4]).toLocaleString()
+        'amount_total': Number(tp[4]).toLocaleString(),
+        'reservation_type': tp[5],
+        'out_service_description': tp[6]
       };
     },
 

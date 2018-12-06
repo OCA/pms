@@ -21,7 +21,8 @@ class HotelReservation(models.Model):
             json_reservations.append([
                 reserv.room_id.id,
                 reserv.id,
-                reserv.folio_id.partner_id.name,
+                reserv.folio_id.closure_reason_id.name or _('Out of service') if reserv.folio_id.reservation_type == 'out'
+                else reserv.folio_id.partner_id.name,
                 reserv.adults,
                 reserv.children,
                 reserv.checkin,
@@ -47,12 +48,15 @@ class HotelReservation(models.Model):
                 ])
             json_reservation_tooltips.update({
                 reserv.id: [
-                    reserv.folio_id.partner_id.name,
+                    _('Out of service') if reserv.folio_id.reservation_type == 'out' else reserv.folio_id.partner_id.name,
                     reserv.folio_id.partner_id.mobile or
                     reserv.folio_id.partner_id.phone or _('Undefined'),
                     reserv.checkin,
                     num_split,
-                    reserv.folio_id.amount_total]
+                    reserv.folio_id.amount_total,
+                    reserv.reservation_type,
+                    reserv.out_service_description or _('No reason given'),
+                ]
             })
         return (json_reservations, json_reservation_tooltips)
 
