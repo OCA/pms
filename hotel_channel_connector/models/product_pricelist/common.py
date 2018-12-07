@@ -35,7 +35,7 @@ class ChannelProductPricelist(models.Model):
         if self.external_id:
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='product.pricelist.exporter')
-                exporter.rename_plan(self)
+                exporter.update_plan_name(self)
 
     @job(default_channel='root.channel')
     @api.multi

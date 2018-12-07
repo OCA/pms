@@ -18,5 +18,5 @@ class ProductPricelistAdapter(Component):
     def delete_plan(self, external_id):
         return super(ProductPricelistAdapter, self).delete_plan(external_id)
 
-    def rename_plan(self, external_id, new_name):
-        return super(ProductPricelistAdapter, self).rename_plan(external_id, new_name)
+    def update_plan_name(self, external_id, new_name):
+        return super(ProductPricelistAdapter, self).update_plan_name(external_id, new_name)
