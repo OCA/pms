@@ -1,11 +1,3 @@
-.. raw:: html
-
-    <style>
-        .red {color:#FF0000; font-weight:bold;}
-    </style>
-
-.. role:: red
-
 ==============================
 HOTEL CHANNEL CONNECTOR WUBOOK
 ==============================
@@ -161,7 +153,7 @@ Test TC008
 
 :Result: The name in WuBook is also updated.
 
-:Status: :red:`Failed`.
+:Status: Failed.
 
 :Reason: The field was not updated in WuBook
 
