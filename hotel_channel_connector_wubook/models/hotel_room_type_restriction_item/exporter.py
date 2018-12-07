@@ -1,11 +1,13 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
 from datetime import timedelta
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo import api,fields
+_logger = logging.getLogger(__name__)
 
 
 class HotelRoomTypeRestrictionItemExporter(Component):
@@ -79,7 +81,9 @@ class HotelRoomTypeRestrictionItemExporter(Component):
                     internal_message=str(err),
                     channel_message=err.data['message'])
             else:
-                unpushed.write({
+                unpushed.with_context({
+                    'connector_no_export': True,
+                }).write({
                     'channel_pushed': True,
                     'sync_date': fields.Datetime.now(),
                 })

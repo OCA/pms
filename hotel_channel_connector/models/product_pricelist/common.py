@@ -75,6 +75,8 @@ class ProductPricelist(models.Model):
                     if pricelist_bind.external_id:
                         new_name += ' (%s Backend)' % pricelist_bind.backend_id.name
                 names.append((name[0], new_name))
+            else:
+                names.append((name[0], name[1]))
         return names
 
 class BindingProductPricelistListener(Component):

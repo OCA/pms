@@ -12,7 +12,9 @@ class HotelRoomTypeExporter(Component):
     @api.model
     def modify_room(self, binding):
         try:
-            binding.sync_date = fields.Datetime.now()
+            binding.with_context({
+                'connector_no_export': True,
+            }).write({'sync_date': fields.Datetime.now()})
             return self.backend_adapter.modify_room(
                 binding.external_id,
                 binding.name,
@@ -47,7 +49,9 @@ class HotelRoomTypeExporter(Component):
                 internal_message=str(err),
                 channel_message=err.data['message'])
         else:
-            binding.write({
+            binding.with_context({
+                'connector_no_export': True,
+            }).write({
                 'channel_short_code': short_code,
             })
             self.binder.bind(external_id, binding)

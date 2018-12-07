@@ -136,4 +136,7 @@ class ChannelBindingRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        record.modify_room()
+        fields_to_check = ('name', 'ota_capacity', 'list_price', 'total_rooms_count')
+        fields_checked = [elm for elm in fields_to_check if elm in fields]
+        if any(fields_checked):
+            record.modify_room()

@@ -234,11 +234,15 @@ class ChannelBindingHotelReservationListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        record.push_availability()
+        fields_to_check = ('room_id', 'state', 'checkin', 'checkout', 'room_type_id',
+                           'reservation_line_ids', 'splitted', 'overbooking')
+        fields_checked = [elm for elm in fields_to_check if elm in fields]
+        if any(fields_checked):
+            record.refresh_availability()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):
-        record.push_availability()
+        record.refresh_availability()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_cancel(self, record, fields=None):

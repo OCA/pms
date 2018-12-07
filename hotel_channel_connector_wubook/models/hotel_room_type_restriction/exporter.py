@@ -3,7 +3,7 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api
+from odoo import api, fields
 
 
 class HotelRoomTypeRestrictionExporter(Component):
@@ -12,6 +12,9 @@ class HotelRoomTypeRestrictionExporter(Component):
     @api.model
     def rename_rplan(self, binding):
         try:
+            binding.with_context({
+                'connector_no_export': True,
+            }).write({'sync_date': fields.Datetime.now()})
             return self.backend_adapter.rename_rplan(
                 binding.external_id,
                 binding.name)

@@ -153,6 +153,24 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
         if 'avail' in fields:
             record.channel_bind_ids.write({'channel_pushed': False})
 
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_create(self, record, fields=None):
+        if not any(record.channel_bind_ids):
+            channel_room_type_avail_obj = self.env[
+                'channel.room.type.availability']
+            backends = self.env['channel.backend'].search([])
+            for backend in backends:
+                avail_bind = channel_room_type_avail_obj.search([
+                    ('odoo_id', '=', record.id),
+                    ('backend_id', '=', backend.id),
+                ])
+                if not avail_bind:
+                    channel_room_type_avail_obj.create({
+                        'odoo_id': record.id,
+                        'channel_pushed': False,
+                        'backend_id': backend.id,
+                    })
+
 class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
     _name = 'channel.binding.hotel.room.type.availability.listener'
     _inherit = 'base.connector.listener'
@@ -160,7 +178,9 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        if 'avail' in fields:
+        fields_to_check = ('avail', 'date')
+        fields_checked = [elm for elm in fields_to_check if elm in fields]
+        if any(fields_checked):
             record.channel_pushed = False
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))

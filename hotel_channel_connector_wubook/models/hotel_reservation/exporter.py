@@ -3,7 +3,7 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api, _
+from odoo import api, _, fields
 
 class HotelReservationExporter(Component):
     _inherit = 'channel.hotel.reservation.exporter'
@@ -12,6 +12,9 @@ class HotelReservationExporter(Component):
     def cancel_reservation(self, binding):
         user = self.env['res.user'].browse(self.env.uid)
         try:
+            binding.with_context({
+                'connector_no_export': True,
+            }).write({'sync_date': fields.Datetime.now()})
             return self.backend_adapter.cancel_reservation(
                 binding.external_id,
                 _('Cancelled by %s') % user.partner_id.name)

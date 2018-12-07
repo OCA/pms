@@ -72,7 +72,9 @@ class ProductPricelistItemExporter(Component):
                     internal_message=str(err),
                     channel_message=err.data['message'])
             else:
-                channel_unpushed.write({
+                channel_unpushed.with_context({
+                    'connector_no_export': True,
+                }).write({
                     'channel_pushed': True,
                     'sync_date': fields.Datetime.now(),
                 })
