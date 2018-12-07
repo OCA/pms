@@ -157,7 +157,7 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
     def on_record_create(self, record, fields=None):
         if not any(record.channel_bind_ids):
             channel_room_type_avail_obj = self.env[
-                'channel.room.type.availability']
+                'channel.hotel.room.type.availability']
             backends = self.env['channel.backend'].search([])
             for backend in backends:
                 avail_bind = channel_room_type_avail_obj.search([
