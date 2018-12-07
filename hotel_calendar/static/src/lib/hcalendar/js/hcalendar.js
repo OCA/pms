@@ -218,7 +218,17 @@ HotelCalendar.prototype = {
           this._reservations[rindex] = r;
           this._cleanUnusedZones(r);
         } else {
-          this._reservations.push(r);
+          var room = this.getRoom(r.room_id, r.overbooking, r.id);
+          // need create a overbooking row?
+          if (!room && r.overbooking) {
+            room = this.createOBRoom(this.getRoom(r.room_id), r.id);
+            this.createOBRoomRow(room);
+          }
+          if (room) {
+            this._reservations.push(r);
+          } else {
+            console.warn(`Can't found a room for the reservation '${r[0]}'!`);
+          }
         }
       }
 
@@ -1138,7 +1148,10 @@ HotelCalendar.prototype = {
       this.btnSaveChanges.innerHTML = "<i class='fa fa-save fa-2x'> </i>";
       this.btnSaveChanges.addEventListener('click', function(ev){
         if (this.classList.contains('need-save')) {
-          $this._dispatchEvent('hcalOnSavePricelist');
+          $this._dispatchEvent('hcalOnSavePricelist', {
+            pricelist: $this.getPricelist(),
+            pricelist_id: $this._pricelist_id,
+          });
         }
       });
       cell.appendChild(this.btnSaveChanges);
@@ -2234,7 +2247,10 @@ HotelCalendar.prototype = {
   },
 
   _dispatchEvent: function(/*String*/eventName, /*Dictionary*/data) {
-    this.e.dispatchEvent(new CustomEvent(eventName, { 'detail': data }));
+    this.e.dispatchEvent(new CustomEvent(eventName, {
+      'detail': data,
+      'calendar': this,
+    }));
   },
 
   _sanitizeId: function(/*String*/str) {
@@ -2744,7 +2760,7 @@ function HReservation(/*Dictionary*/rValues) {
   }
 
   this.id = rValues.id;
-  this.room = rValues.room;
+  this.room_id = rValues.room_id;
   this.adults = rValues.adults || 1;
   this.childrens = rValues.childrens || 0;
   this.title = rValues.title || '';

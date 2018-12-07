@@ -10,7 +10,6 @@ var Core = require('web.core'),
     Session = require('web.session'),
     AbstractRenderer = require('web.AbstractRenderer'),
     HotelConstants = require('hotel_calendar.Constants'),
-    MultiCalendar = require('hotel_calendar.MultiCalendar'),
     //Formats = require('web.formats'),
 
     _t = Core._t,
@@ -27,23 +26,17 @@ var HotelCalendarView = AbstractRenderer.extend({
 
     // Custom Options
     _view_options: {},
-    _hcalendar: null,
     _reserv_tooltips: {},
     _days_tooltips: [],
     _last_dates: [false, false],
-    _multi_calendar: null,
 
 
     /** VIEW METHODS **/
     init: function(parent, state, params) {
       this._super.apply(this, arguments);
-
-      this._multi_calendar = new MultiCalendar(this);
     },
 
     start: function () {
-      this._multi_calendar.setElement(this.$el.find('#hcal_widget'));
-      this._multi_calendar.start();
       this.init_calendar_view();
       return this._super();
     },
@@ -53,7 +46,7 @@ var HotelCalendarView = AbstractRenderer.extend({
 
       if (!this._is_visible) {
         // FIXME: Workaround for restore "lost" reservations (Drawn when the view is hidden)
-        this._multi_calendar.recalculate_reservation_positions();
+        this.trigger_up('onViewAttached');
       }
     },
 
@@ -68,11 +61,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         'reservation_type': tp[5],
         'out_service_description': tp[6]
       };
-    },
-
-    load_reservations: function(reservs) {
-        this._hcalendar.setReservations(reservs);
-        this._assign_extra_info();
     },
 
     get_view_filter_dates: function () {
@@ -96,327 +84,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         //$dateTimePickerEnd.data("ignore_onchange", true);
         $dateTimePickerEnd.data("DateTimePicker").date(date_end);
         this._last_dates = this.get_view_filter_dates();
-    },
-
-    destroy_calendar: function() {
-        if (this._hcalendar) {
-            this._hcalendar.$base.empty();
-            delete this._hcalendar;
-        }
-    },
-
-    _assign_hcalendar_events: function() {
-        var self = this;
-        this._hcalendar.addEventListener('hcalOnSavePricelist', function(ev){
-          var pricelist = self._hcalendar.getPricelist();
-          var oparams = [self._hcalendar._pricelist_id, false, pricelist, {}, {}];
-          self.trigger_up('onSaveChanges', oparams);
-        });
-        this._hcalendar.addEventListener('hcalOnMouseEnterReservation', function(ev){
-          if (ev.detail.reservationObj) {
-            var tp = self._reserv_tooltips[ev.detail.reservationObj.id];
-            var qdict = self._generate_reservation_tooltip_dict(tp);
-            $(ev.detail.reservationDiv).tooltip('destroy').tooltip({
-              animation: false,
-              html: true,
-              placement: 'bottom',
-              title: QWeb.render('HotelCalendar.TooltipReservation', qdict)
-            }).tooltip('show');
-          }
-        });
-        this._hcalendar.addEventListener('hcalOnClickReservation', function(ev){
-            //var res_id = ev.detail.reservationObj.getUserData('folio_id');
-            $(ev.detail.reservationDiv).tooltip('hide');
-            self.do_action({
-              type: 'ir.actions.act_window',
-              res_model: 'hotel.reservation',
-              res_id: ev.detail.reservationObj.id,
-              views: [[false, 'form']]
-            });
-            // self._model.call('get_formview_id', [res_id, Session.user_context]).then(function(view_id){
-            //     var pop = new ViewDialogs.FormViewDialog(self, {
-            //         res_model: 'hotel.folio',
-            //         res_id: res_id,
-            //         title: _t("Open: ") + ev.detail.reservationObj.title,
-            //         view_id: view_id
-            //         //readonly: false
-            //     }).open();
-            //     pop.on('write_completed', self, function(){
-            //         self.trigger('changed_value');
-            //     });
-            // });
-        });
-        this._hcalendar.addEventListener('hcalOnSwapReservations', function(ev){
-          var qdict = {};
-          var dialog = new Dialog(self, {
-              title: _t("Confirm Reservation Swap"),
-              buttons: [
-                  {
-                    text: _t("Yes, swap it"),
-                    classes: 'btn-primary',
-                    close: true,
-                    click: function () {
-                      if (self._hcalendar.swapReservations(ev.detail.inReservs, ev.detail.outReservs)) {
-                        var fromIds = _.pluck(ev.detail.inReservs, 'id');
-                        var toIds = _.pluck(ev.detail.outReservs, 'id');
-                        var refFromReservDiv = ev.detail.inReservs[0]._html;
-                        var refToReservDiv = ev.detail.outReservs[0]._html;
-
-                        // Animate Movement
-                        for (var nreserv of ev.detail.inReservs) {
-                          $(nreserv._html).animate({'top': refToReservDiv.style.top});
-                        }
-                        for (var nreserv of ev.detail.outReservs) {
-                          $(nreserv._html).animate({'top': refFromReservDiv.style.top});
-                        }
-                        self.trigger_up('onSwapReservations', {
-                            'fromIds': fromIds,
-                            'toIds': toIds,
-                            'detail': ev.detail,
-                            'refFromReservDiv': refFromReservDiv,
-                            'refToReservDiv': refToReservDiv
-                        });
-                      } else {
-                        var qdict = {};
-                        var dialog = new Dialog(self, {
-                          title: _t("Invalid Reservation Swap"),
-                          buttons: [
-                            {
-                              text: _t("Oops, Ok!"),
-                              classes: 'btn-primary',
-                              close: true
-                            }
-                          ],
-                          $content: QWeb.render('HotelCalendar.InvalidSwapOperation', qdict)
-                        }).open();
-                      }
-                    }
-                  },
-                  {
-                    text: _t("No"),
-                    close: true
-                  }
-              ],
-              $content: QWeb.render('HotelCalendar.ConfirmSwapOperation', qdict)
-          }).open();
-        });
-        this._hcalendar.addEventListener('hcalOnCancelSwapReservations', function(ev){
-          $("#btn_swap span.ntext").html(_t("START SWAP"));
-          $("#btn_swap").css({
-            'backgroundColor': '',
-            'fontWeight': 'normal'
-          });
-        });
-        this._hcalendar.addEventListener('hcalOnChangeReservation', function(ev){
-            var newReservation = ev.detail.newReserv;
-            var oldReservation = ev.detail.oldReserv;
-            var oldPrice = ev.detail.oldPrice;
-            var newPrice = ev.detail.newPrice;
-            var folio_id = newReservation.getUserData('folio_id');
-
-            var linkedReservs = _.find(self._hcalendar._reservations, function(item){
-                return item.id !== newReservation.id && !item.unusedZone && item.getUserData('folio_id') === folio_id;
-            });
-
-            var hasChanged = false;
-
-            var qdict = {
-                ncheckin: newReservation.startDate.clone().local().format(HotelConstants.L10N_DATETIME_MOMENT_FORMAT),
-                ncheckout: newReservation.endDate.clone().local().format(HotelConstants.L10N_DATETIME_MOMENT_FORMAT),
-                nroom: newReservation.room.number,
-                nprice: newPrice,
-                ocheckin: oldReservation.startDate.clone().local().format(HotelConstants.L10N_DATETIME_MOMENT_FORMAT),
-                ocheckout: oldReservation.endDate.clone().local().format(HotelConstants.L10N_DATETIME_MOMENT_FORMAT),
-                oroom: oldReservation.room.number,
-                oprice: oldPrice,
-                hasReservsLinked: (linkedReservs && linkedReservs.length !== 0)?true:false
-            };
-            var dialog = new Dialog(self, {
-                title: _t("Confirm Reservation Changes"),
-                buttons: [
-                    {
-                        text: _t("Yes, change it"),
-                        classes: 'btn-primary',
-                        close: true,
-                        disabled: !newReservation.id,
-                        click: function () {
-                            var roomId = newReservation.room.id;
-                            if (newReservation.room.overbooking) {
-                              roomId = +newReservation.room.id.substr(newReservation.room.id.indexOf('@')+1);
-                            }
-                            var write_values = {
-                                'checkin': newReservation.startDate.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                                'checkout': newReservation.endDate.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                                'room_id': roomId,
-                                'overbooking': newReservation.room.overbooking
-                            };
-                            self.trigger_up('onUpdateReservations', {
-                                'ids': [newReservation.id],
-                                'values': write_values,
-                                'oldReservation': oldReservation,
-                                'newReservation': newReservation
-                            });
-                            // Workarround for dispatch room lines regeneration
-                            // new Model('hotel.reservation').call('on_change_checkin_checkout_product_id', [[newReservation.id], false]);
-                            hasChanged = true;
-                        }
-                    },
-                    {
-                        text: _t("No"),
-                        close: true,
-                    }
-                ],
-                $content: QWeb.render('HotelCalendar.ConfirmReservationChanges', qdict)
-            }).open();
-            dialog.opened(function(e){
-              if (!hasChanged) {
-                self._hcalendar.replaceReservation(newReservation, oldReservation);
-              }
-            });
-        });
-        this._hcalendar.addEventListener('hcalOnUpdateSelection', function(ev){
-        	for (var td of ev.detail.old_cells) {
-        		$(td).tooltip('destroy');
-        	}
-        	if (ev.detail.cells.length > 1) {
-	        	var last_cell = ev.detail.cells[ev.detail.cells.length-1];
-	        	var date_cell_start = HotelCalendar.toMoment(self._hcalendar.etable.querySelector(`#${ev.detail.cells[0].dataset.hcalParentCell}`).dataset.hcalDate);
-	        	var date_cell_end = HotelCalendar.toMoment(self._hcalendar.etable.querySelector(`#${last_cell.dataset.hcalParentCell}`).dataset.hcalDate);
-                var parentRow = document.querySelector(`#${ev.detail.cells[0].dataset.hcalParentRow}`);
-                var room = self._hcalendar.getRoom(parentRow.dataset.hcalRoomObjId);
-                if (room.overbooking) {
-                  return;
-                }
-                var nights = date_cell_end.diff(date_cell_start, 'days');
-	        	var qdict = {
-	        		'total_price': Number(ev.detail.totalPrice).toLocaleString(),
-	        		'nights': nights
-	        	};
-	        	$(last_cell).tooltip({
-	                animation: false,
-	                html: true,
-	                placement: 'top',
-	                title: QWeb.render('HotelCalendar.TooltipSelection', qdict)
-	            }).tooltip('show');
-        	}
-        });
-        this._hcalendar.addEventListener('hcalOnChangeSelection', function(ev){
-            var parentRow = document.querySelector(`#${ev.detail.cellStart.dataset.hcalParentRow}`);
-            var parentCellStart = document.querySelector(`#${ev.detail.cellStart.dataset.hcalParentCell}`);
-            var parentCellEnd = document.querySelector(`#${ev.detail.cellEnd.dataset.hcalParentCell}`);
-            var startDate = HotelCalendar.toMoment(parentCellStart.dataset.hcalDate);
-            var endDate = HotelCalendar.toMoment(parentCellEnd.dataset.hcalDate);
-            var room = self._hcalendar.getRoom(parentRow.dataset.hcalRoomObjId);
-            if (room.overbooking) {
-              return;
-            }
-            var numBeds = (room.shared || self._hcalendar.getOptions('divideRoomsByCapacity'))?(ev.detail.cellEnd.dataset.hcalBedNum - ev.detail.cellStart.dataset.hcalBedNum)+1:room.capacity;
-            if (numBeds <= 0) {
-                return;
-            }
-
-            // Normalize Dates
-            if (startDate.isAfter(endDate)) {
-                var tt = endDate;
-                endDate = startDate;
-                startDate = tt;
-            }
-
-            var def_arrival_hour = self._view_options['default_arrival_hour'].split(':');
-            var def_departure_hour = self._view_options['default_departure_hour'].split(':');
-            startDate.set({'hour': def_arrival_hour[0], 'minute': def_arrival_hour[1], 'second': 0});
-            endDate.set({'hour': def_departure_hour[0], 'minute': def_departure_hour[1], 'second': 0});
-
-            var popCreate = new ViewDialogs.FormViewDialog(self, {
-                res_model: 'hotel.reservation',
-                context: {
-                  'default_checkin': startDate.utc().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                  'default_checkout': endDate.utc().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                  'default_adults': numBeds,
-                  'default_children': 0,
-                  'default_room_id': room.id,
-                  'default_room_type_id': room.getUserData('room_type_id'),
-                },
-                title: _t("Create: ") + _t("Reservation"),
-                initial_view: "form",
-                disable_multiple_selection: true,
-            }).open();
-        });
-
-        this._hcalendar.addEventListener('hcalOnDateChanged', function(ev){
-          var $dateTimePickerBegin = this.$el.find('#pms-search #date_begin');
-          var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
-          $dateTimePickerBegin.data("ignore_onchange", true);
-          $dateTimePickerEnd.data("DateTimePicker").minDate(false);
-          $dateTimePickerEnd.data("DateTimePicker").maxDate(false);
-          $dateTimePickerBegin.data("DateTimePicker").date(ev.detail.date_begin.local().add(1, 'd'));
-          $dateTimePickerEnd.data("ignore_onchange", true);
-          $dateTimePickerEnd.data("DateTimePicker").date(ev.detail.date_end.local());
-          this.reload_hcalendar_reservations(false);
-        }.bind(this));
-    },
-
-    _assign_extra_info: function() {
-    	var self = this;
-      $(this._hcalendar.etable).find('.hcal-cell-room-type-group-item.btn-hcal-3d').on("mouseenter", function(){
-          var $this = $(this);
-          var room = self._hcalendar.getRoom($this.parent().data("hcalRoomObjId"));
-          if (room.overbooking) {
-            $this.tooltip({
-                animation: true,
-                html: true,
-                placement: 'right',
-                title: QWeb.render('HotelCalendar.TooltipRoomOverbooking', {'name': room.number})
-            }).tooltip('show');
-          return;
-        } else {
-            var qdict = {
-                'room_type_name': room.getUserData('room_type_name'),
-                'name': room.number
-            };
-            $this.tooltip({
-                animation: true,
-                html: true,
-                placement: 'right',
-                title: QWeb.render('HotelCalendar.TooltipRoom', qdict)
-            }).tooltip('show');
-        }
-      });
-
-      $(this._hcalendar.etableHeader).find('.hcal-cell-header-day').each(function(index, elm){
-        var $elm = $(elm);
-        var cdate = HotelCalendar.toMoment($elm.data('hcalDate'), HotelConstants.L10N_DATE_MOMENT_FORMAT);
-        var data = _.filter(self._days_tooltips, function(item) {
-          var ndate = HotelCalendar.toMoment(item[2], HotelConstants.ODOO_DATE_MOMENT_FORMAT);
-          return ndate.isSame(cdate, 'd');
-        });
-        if (data.length > 0) {
-          $elm.addClass('hcal-event-day');
-          $elm.prepend("<i class='fa fa-bell' style='margin-right: 0.1em'></i>");
-          $elm.on("mouseenter", function(data){
-            var $this = $(this);
-            if (data.length > 0) {
-              var qdict = {
-                'date': $this.data('hcalDate'),
-                'events': _.map(data, function(item){
-                  return {
-                    'name': item[1],
-                    'date': item[2],
-                    'location': item[3]
-                  };
-                })
-              };
-              $this.attr('title', '');
-              $this.tooltip({
-                  animation: true,
-                  html: true,
-                  placement: 'bottom',
-                  title: QWeb.render('HotelCalendar.TooltipEvent', qdict)
-              }).tooltip('show');
-            }
-          }.bind(elm, data));
-        }
-      });
     },
 
     update_buttons_counter: function(ncheckouts, ncheckins, noverbookings) {
@@ -581,7 +248,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         return $.when(
             this.trigger_up('onLoadCalendarSettings'),
             this.trigger_up('onUpdateButtonsCounter'),
-            this.trigger_up('onLoadCalendar'),
             this.trigger_up('onLoadViewFilters'),
         );
     },
