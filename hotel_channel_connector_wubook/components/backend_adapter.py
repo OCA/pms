@@ -132,7 +132,7 @@ class WuBookAdapter(AbstractComponent):
             availability,
             shortcode[:4],
             defboard,
-            rtype=rtype
+            rtype
         )
         if rcode != 0:
             raise ChannelConnectorError(_("Can't create room in WuBook"), {
@@ -151,7 +151,7 @@ class WuBookAdapter(AbstractComponent):
             availability,
             scode,
             defboard,
-            rtype=rtype
+            rtype
         )
         if rcode != 0:
             raise ChannelConnectorError(_("Can't modify room in WuBook"), {
