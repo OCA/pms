@@ -20,7 +20,7 @@ class HotelBoardServiceRoomType(models.Model):
         'product.pricelist', 'Pricelist', required=False)
     price_type = fields.Selection([
         ('fixed','Fixed'),
-        ('percent','Percent')], string='Type')
+        ('percent','Percent')], string='Type', default='fixed', required=True)
     amount = fields.Float('Amount', digits=dp.get_precision('Product Price'), default=0.0)
     
     @api.model_cr
