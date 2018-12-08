@@ -19,6 +19,8 @@ class HotelRoomType(models.Model):
                                  ondelete='cascade')
     room_ids = fields.One2many('hotel.room', 'room_type_id', 'Rooms')
     class_id = fields.Many2one('hotel.room.type.class', 'Hotel Type Class')
+    board_service_room_type_ids = fields.One2many(
+        'hotel.board.service.room.type', 'hotel_room_type_id', string='Board Services')
     room_amenity_ids = fields.Many2many('hotel.amenity',
                                       'hotel_room_type_aminity_rel',
                                       'room_type_ids', 'amenity_ids',

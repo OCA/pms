@@ -36,6 +36,19 @@
                             <separator string=" Room Amenities" />
                             <field name="room_amenity_ids" colspan="4" nolabel="1" />
                         </page>
+                        <page string="Board Services">
+                            <separator string="Board Services" />
+                            <field name="board_service_room_type_ids" colspan="4" nolabel="1"
+                                    context="{'default_hotel_room_type_id':id}">
+                                <tree editable="bottom">
+                                    <field name="hotel_room_type_id" />
+                                    <field name="hotel_board_service_id" />
+                                    <field name="price_type" />
+                                    <field name="amount" />
+                                    <field name="pricelist_id" />
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
