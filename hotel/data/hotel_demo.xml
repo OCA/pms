@@ -152,6 +152,7 @@
             <field name="room_type_id" ref="hotel_room_type_2"/>
             <field name="floor_id" ref="hotel_floor_2"/>
             <field name="capacity">2</field>
+            <field name="extra_beds_allowed">1</field>
         </record>
         <record id="hotel_room_5" model="hotel.room">
             <field name="name">Double-202</field>
@@ -188,9 +189,10 @@
             <field name="list_price">15.0</field>
             <field name="type">service</field>
             <field name="purchase_ok">False</field>
-            <field name="per_day">False</field>
-            <field name="per_person">True</field>
+            <field name="per_day">True</field>
+            <field name="per_person">False</field>
             <field name="daily_limit">1</field>
+            <field name="is_extra_bed">True</field>
         </record>
 
         <record id="hotel_service_3" model="product.product">

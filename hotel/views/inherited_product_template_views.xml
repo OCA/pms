@@ -10,7 +10,7 @@
                 <page string="Hotel Service">
                     <group colspan="4">
                         <group>
-                            <field name="is_hotel_service" />
+                            <field name="is_extra_bed" />
                             <field name="daily_limit" />
                         </group>
                         <group>

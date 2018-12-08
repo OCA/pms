@@ -34,6 +34,7 @@
                   <field name="room_type_id" string="Room Type" />
                   <field name="capacity" />
                   <field name="shared_room" help="It allows several reservations on the same room simultaneously based on the capacity of people"/>
+                  <field name="extra_beds_allowed" />
                   <!-- <field name="uom_id" invisible="1" /> -->
                 </group>
                 <group>

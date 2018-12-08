@@ -32,8 +32,15 @@ class HotelRoom(models.Model):
         help="A description of the Product that you want to communicate to "
              " your customers. This description will be copied to every Sales "
              " Order, Delivery Order and Customer Invoice/Credit Note")
+    extra_beds_allowed = fields.Integer('Extra beds allowed',
+                                        default='0',
+                                        required=True)
 
     @api.constrains('capacity')
     def _check_capacity(self):
         if self.capacity < 1:
             raise ValidationError(_("Room capacity can't be less than one"))
+
+    @api.multi
+    def get_capacity(self, extra_bed=0):
+        return self.capacity + extra_bed

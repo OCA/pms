@@ -353,8 +353,8 @@ class HotelReservation(models.Model):
                         service.update(service.prepare_service_lines(
                             dfrom=checkin,
                             days=days_diff,
-                            per_person=product.per_person,
-                            persons=reservation.adults,
+                            per_person=service.product_id.per_person,
+                            persons=service.ser_room_line.adults,
                             old_line_days=service.service_line_ids
                             ))
             if ('checkin' in vals and record.checkin != vals['checkin']) or \
@@ -485,7 +485,9 @@ class HotelReservation(models.Model):
     @api.constrains('adults')
     def _check_adults(self):
         for record in self:
-            if record.adults > record.room_id.capacity:
+            extra_bed = record.service_ids.filtered(    
+                        lambda r: r.product_id.is_extra_bed == True)
+            if record.adults > record.room_id.get_capacity(len(extra_bed)):
                 raise ValidationError(
                     _("Reservation persons can't be higher than room capacity"))
             if record.adults == 0:
@@ -499,7 +501,9 @@ class HotelReservation(models.Model):
     def onchange_room_id(self):
         if self.room_id:
             write_vals = {}
-            if self.room_id.capacity < self.adults:
+            extra_bed = self.service_ids.filtered(
+                        lambda r: r.product_id.is_extra_bed == True)
+            if self.room_id.get_capacity(len(extra_bed)) < self.adults:
                 raise UserError(
                     _('%s people do not fit in this room! ;)') % (self.adults))
             if self.adults == 0:

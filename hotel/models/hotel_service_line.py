@@ -20,12 +20,15 @@ class HotelServiceLine(models.Model):
         for record in self:
             limit = record.product_id.daily_limit
             if limit > 0:
-                out_qty = sum(self.env['hotel.service.line'].search([(
-                    'product_id', '=', record.product_id,
-                    'date', '=', record.date)]).mapped('day_qty'))
+                out_qty = sum(self.env['hotel.service.line'].search([
+                    ('product_id', '=', record.product_id.id),
+                    ('date', '=', record.date),
+                    ('service_id', '!=', record.service_id.id)
+                    ]).mapped('day_qty'))
                 if limit < out_qty + record.day_qty:
                     raise ValidationError(
-                    _("Limit exceeded for %s")% record.date)
+                    _("%s limit exceeded for %s")% (record.service_id.product_id.name,
+                                                    record.date))
 
                 
         
