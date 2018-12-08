@@ -13,6 +13,66 @@ _logger = logging.getLogger(__name__)
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
+    reserve_color = fields.Char(compute='_compute_color', string='Color',
+                                store=True)
+    reserve_color_text = fields.Char(compute='_compute_color', string='Color',
+                                     store=True)
+
+    """
+    COMPUTE RESERVE COLOR ----------------------------------------------
+    """
+
+    @api.multi
+    def _generate_color(self):
+        self.ensure_one()
+
+        reserv_color = '#FFFFFF'
+        reserv_color_text = '#000000'
+        user = self.env.user
+        if self.reservation_type == 'staff':
+            reserv_color = user.color_staff
+            reserv_color_text = user.color_letter_staff
+        elif self.reservation_type == 'out':
+            reserv_color = user.color_dontsell
+            reserv_color_text = user.color_letter_dontsell
+        elif self.to_assign:
+            reserv_color = user.color_to_assign
+            reserv_color_text = user.color_letter_to_assign
+        elif self.state == 'draft':
+            reserv_color = user.color_pre_reservation
+            reserv_color_text = user.color_letter_pre_reservation
+        elif self.state == 'confirm':
+            if self.folio_id.pending_amount <= 0:
+                reserv_color = user.color_reservation_pay
+                reserv_color_text = user.color_letter_reservation_pay
+            else:
+                reserv_color = user.color_reservation
+                reserv_color_text = user.color_letter_reservation
+        elif self.state == 'booking':
+            if self.folio_id.pending_amount <= 0:
+                reserv_color = user.color_stay_pay
+                reserv_color_text = user.color_letter_stay_pay
+            else:
+                reserv_color = user.color_stay
+                reserv_color_text = user.color_letter_stay
+        else:
+            if self.folio_id.pending_amount <= 0:
+                reserv_color = user.color_checkout
+                reserv_color_text = user.color_letter_checkout
+            else:
+                reserv_color = user.color_payment_pending
+                reserv_color_text = user.color_letter_payment_pending
+        return (reserv_color, reserv_color_text)
+
+    @api.depends('state', 'reservation_type', 'folio_id.pending_amount', 'to_assign')
+    def _compute_color(self):
+        for record in self:
+            colors = record._generate_color()
+            record.update({
+                'reserve_color': colors[0],
+                'reserve_color_text': colors[1],
+            })
+
     @api.model
     def _hcalendar_reservation_data(self, reservations):
         json_reservations = []
