@@ -197,9 +197,7 @@ HotelCalendar.prototype = {
   },
 
   addReservations: function(/*List*/reservations, /*Bool*/forced) {
-    if (!reservations) {
-      return;
-    }
+    reservations = reservations || [];
 
     if (reservations.length > 0 && !(reservations[0] instanceof HReservation)) {
       console.warn("[HotelCalendar][addReservations] Invalid Reservation definition!");
@@ -207,9 +205,11 @@ HotelCalendar.prototype = {
       // Merge
       var uzr = [];
       for (var r of reservations) {
+        r = _.clone(r); // HOT-FIX: Multi-Calendar Support
         var rindex = !forced?_.findKey(this._reservations, {'id': r.id}):false;
         if (rindex) {
           r._html = this._reservations[rindex]._html;
+          r.room = this._reservations[rindex].room;
           if (this._reservations[rindex].overbooking && !r.overbooking) {
             if (this.getReservationsByRoom(this._reservations[rindex].room).length === 1) {
               this.removeOBRoomRow(this._reservations[rindex]);
@@ -225,6 +225,7 @@ HotelCalendar.prototype = {
             this.createOBRoomRow(room);
           }
           if (room) {
+            r.room = room;
             this._reservations.push(r);
           } else {
             console.warn(`Can't found a room for the reservation '${r[0]}'!`);
@@ -264,7 +265,7 @@ HotelCalendar.prototype = {
           }
           this._updateReservation(r);
         }
-      }.bind(this), reservations);
+      }.bind(this), this._reservations);
 
       _.defer(function(){ this._updateReservationOccupation(); }.bind(this));
     }
@@ -697,19 +698,6 @@ HotelCalendar.prototype = {
   //==== RESTRICTIONS
   setRestrictions: function(/*Object*/restrictions) {
     this._restrictions = restrictions;
-    this._updateRestrictions();
-  },
-
-  addRestrictions: function(/*Object*/restrictions) {
-    var room_type_ids = Object.keys(restrictions);
-    for (var vid of room_type_ids) {
-      if (vid in this._restrictions) {
-        this._restrictions[vid] = _.extend(this._restrictions[vid], restrictions[vid]);
-      }
-      else {
-        this._restrictions[vid] = restrictions[vid];
-      }
-    }
     this._updateRestrictions();
   },
 
@@ -2093,34 +2081,6 @@ HotelCalendar.prototype = {
     this._updatePriceList();
   },
 
-  addPricelist: function(/*Dictionary*/pricelist) {
-    var keys = _.keys(pricelist);
-    for (var k of keys) {
-      var pr = pricelist[k];
-      for (var pr_k in pr) {
-        var pr_item = pricelist[k][pr_k];
-        var pr_fk = _.findKey(this._pricelist[k], {'room': pr_item.room});
-        if (pr_fk) {
-          this._pricelist[k][pr_fk].room = pr_item.room;
-          this._pricelist[k][pr_fk].days = _.extend(this._pricelist[k][pr_fk].days, pr_item.days);
-          if (pr_item.title) {
-            this._pricelist[k][pr_fk].title = pr_item.title;
-          }
-        } else {
-          if (!(k in this._pricelist)) {
-            this._pricelist[k] = [];
-          }
-          this._pricelist[k].push({
-            'room': pr_item.room,
-            'days': pr_item.days,
-            'title': pr_item.title
-          });
-        }
-      }
-    }
-    this._updatePriceList();
-  },
-
   updateRoomTypePrice: function(pricelist_id, room_type_id, date, price) {
     var strDate = date.format(HotelCalendar.DATE_FORMAT_SHORT_);
     var cellId = this._sanitizeId(`CELL_PRICE_${pricelist_id}_${room_type_id}_${strDate}`);
@@ -2248,8 +2208,7 @@ HotelCalendar.prototype = {
 
   _dispatchEvent: function(/*String*/eventName, /*Dictionary*/data) {
     this.e.dispatchEvent(new CustomEvent(eventName, {
-      'detail': data,
-      'calendar': this,
+      detail: _.extend({calendar_obj: this}, data),
     }));
   },
 
@@ -2753,7 +2712,7 @@ HRoom.prototype = {
 
 /** RESERVATION OBJECT **/
 function HReservation(/*Dictionary*/rValues) {
-  if (typeof rValues.room === 'undefined') {
+  if (typeof rValues.room_id === 'undefined' && typeof rValues.room === 'undefined') {
     delete this;
     console.warn("[Hotel Calendar][HReservation] room can't be empty!");
     return;
@@ -2775,6 +2734,7 @@ function HReservation(/*Dictionary*/rValues) {
   this.linkedId = rValues.linkedId || -1;
   this.splitted = rValues.splitted || false;
   this.overbooking = rValues.overbooking || false;
+  this.room = rValues.room || null;
 
   this._drawModes = ['hard-start', 'hard-end'];
   this._html = false;
@@ -2826,7 +2786,8 @@ HReservation.prototype = {
       'unusedZone': this.unusedZone,
       'linkedId': this.linkedId,
       'splitted': this.splitted,
-      'overbooking': this.overbooking
+      'overbooking': this.overbooking,
+      'room_id': this.room_id,
     });
     nreserv._beds = _.clone(this._beds);
     nreserv._html = this._html;

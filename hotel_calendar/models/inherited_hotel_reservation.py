@@ -416,6 +416,7 @@ class HotelReservation(models.Model):
     @api.multi
     def write(self, vals):
         ret = super(HotelReservation, self).write(vals)
+        _logger.info("RESERV WRITE")
         if 'partner_id' in vals or 'checkin' in vals or \
                 'checkout' in vals or 'product_id' in vals or \
                 'adults' in vals or 'children' in vals or \
@@ -425,7 +426,9 @@ class HotelReservation(models.Model):
                 'reserve_color' in vals or \
                 'reserve_color_text' in vals or 'product_id' in vals or \
                 'parent_reservation' in vals or 'overbooking' in vals:
+            _logger.info("PASA RESERV WRITE")
             for record in self:
+                _logger.info("PASA RESERV WRITE 22")
                 record.send_bus_notification(
                     'write',
                     (record.state == 'cancelled') and 'warn' or 'notify',

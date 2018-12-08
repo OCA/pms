@@ -51,18 +51,6 @@ var HotelCalendarView = AbstractRenderer.extend({
     },
 
     /** CUSTOM METHODS **/
-    _generate_reservation_tooltip_dict: function(tp) {
-      return {
-        'name': tp[0],
-        'phone': tp[1],
-        'arrival_hour': HotelCalendar.toMomentUTC(tp[2], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
-        'num_split': tp[3],
-        'amount_total': Number(tp[4]).toLocaleString(),
-        'reservation_type': tp[5],
-        'out_service_description': tp[6]
-      };
-    },
-
     get_view_filter_dates: function () {
         var $dateTimePickerBegin = this.$el.find('#pms-search #date_begin');
         var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
@@ -143,16 +131,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
         $dateTimePickerBegin.datetimepicker(DTPickerOptions);
         $dateTimePickerEnd.datetimepicker($.extend({}, DTPickerOptions, { 'useCurrent': false }));
-        $dateTimePickerBegin.on("dp.change", function (e) {
-            $dateTimePickerEnd.data("DateTimePicker").minDate(e.date.clone().add(3,'d'));
-            $dateTimePickerEnd.data("DateTimePicker").maxDate(e.date.clone().add(2,'M'));
-            $dateTimePickerBegin.data("DateTimePicker").hide();
-            self.on_change_filter_date(true);
-        });
-        $dateTimePickerEnd.on("dp.change", function (e) {
-            $dateTimePickerEnd.data("DateTimePicker").hide();
-            self.on_change_filter_date(false);
-        });
 
         var date_begin = moment().startOf('day');
         var days = date_begin.daysInMonth();
@@ -219,32 +197,6 @@ var HotelCalendarView = AbstractRenderer.extend({
           self.do_action(this.dataset.action);
         });
 
-        this.$el.find("#btn_swap").on('click', function(ev){
-          var hcalSwapMode = self._hcalendar.getSwapMode();
-          if (hcalSwapMode === HotelCalendar.MODE.NONE) {
-            self._hcalendar.setSwapMode(HotelCalendar.MODE.SWAP_FROM);
-            $("#btn_swap span.ntext").html(_t("CONTINUE"));
-            $("#btn_swap").css({
-              'backgroundColor': 'rgb(145, 255, 0)',
-              'fontWeight': 'bold'
-            });
-          } else if (self._hcalendar.getReservationAction().inReservations.length > 0 && hcalSwapMode === HotelCalendar.MODE.SWAP_FROM) {
-            self._hcalendar.setSwapMode(HotelCalendar.MODE.SWAP_TO);
-            $("#btn_swap span.ntext").html(_t("END"));
-            $("#btn_swap").css({
-              'backgroundColor': 'orange',
-              'fontWeight': 'bold'
-            });
-          } else {
-            self._hcalendar.setSwapMode(HotelCalendar.MODE.NONE);
-            $("#btn_swap span.ntext").html(_t("START SWAP"));
-            $("#btn_swap").css({
-              'backgroundColor': '',
-              'fontWeight': ''
-            });
-          }
-        });
-
         return $.when(
             this.trigger_up('onLoadCalendarSettings'),
             this.trigger_up('onUpdateButtonsCounter'),
@@ -262,7 +214,7 @@ var HotelCalendarView = AbstractRenderer.extend({
           theme: "classic"
         });
         $list.on('change', function(ev){
-            this._apply_filters();
+            this.trigger_up('onApplyFilters');
         }.bind(this));
 
         // Get Floors
@@ -273,7 +225,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         });
         $list.select2();
         $list.on('change', function(ev){
-            this._apply_filters();
+            this.trigger_up('onApplyFilters');
         }.bind(this));
 
         // Get Amenities
@@ -284,7 +236,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         });
         $list.select2();
         $list.on('change', function(ev){
-            this._apply_filters();
+            this.trigger_up('onApplyFilters');
         }.bind(this));
 
         // Get Virtual Rooms
@@ -295,7 +247,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         });
         $list.select2();
         $list.on('change', function(ev){
-            this._apply_filters();
+            this.trigger_up('onApplyFilters');
         }.bind(this));
     },
 
@@ -347,94 +299,6 @@ var HotelCalendarView = AbstractRenderer.extend({
       });
 
       $elm.val('');
-    },
-
-    on_change_filter_date: function(isStartDate) {
-        isStartDate = isStartDate || false;
-        var $dateTimePickerBegin = this.$el.find('#pms-search #date_begin');
-        var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
-
-        // FIXME: Hackish onchange ignore (Used when change dates from code)
-        if ($dateTimePickerBegin.data("ignore_onchange") || $dateTimePickerEnd.data("ignore_onchange")) {
-            $dateTimePickerBegin.data("ignore_onchange", false);
-            $dateTimePickerEnd.data("ignore_onchange", false)
-            return true;
-        }
-
-        var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().utc();
-
-        if (this._hcalendar && date_begin) {
-            if (isStartDate) {
-                var ndate_end = date_begin.clone().add(this._view_options['days'], 'd');
-                $dateTimePickerEnd.data("ignore_onchange", true);
-                $dateTimePickerEnd.data("DateTimePicker").date(ndate_end.local());
-            }
-
-            if (!date_begin.isSame(this._last_dates[0].clone().utc(), 'd') || !date_end.isSame(this._last_dates[1].clone().utc(), 'd')) {
-                var date_end = $dateTimePickerEnd.data("DateTimePicker").date().set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
-                this._hcalendar.setStartDate(date_begin, this._hcalendar.getDateDiffDays(date_begin, date_end), false, function(){
-                    this.reload_hcalendar_reservations(false);
-                }.bind(this));
-            }
-        }
-    },
-
-    reload_hcalendar_reservations: function(clearReservations) {
-        var filterDates = this.get_view_filter_dates();
-        // Clip dates
-        var dfrom = filterDates[0].clone(),
-        	dto = filterDates[1].clone();
-        if (filterDates[0].isBetween(this._last_dates[0], this._last_dates[1], 'days') && filterDates[1].isAfter(this._last_dates[1], 'day')) {
-        	dfrom = this._last_dates[1].clone().local().startOf('day').utc();
-        } else if (this._last_dates[0].isBetween(filterDates[0], filterDates[1], 'days') && this._last_dates[1].isAfter(filterDates[0], 'day')) {
-        	dto = this._last_dates[0].clone().local().endOf('day').utc();
-        } else {
-          clearReservations = true;
-        }
-
-        return $.when(this.trigger_up('onReloadCalendar', {
-            oparams: [
-                dfrom.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                dto.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                false,
-            ],
-            clearReservations: clearReservations,
-        })).then(function(){
-            this._last_dates = filterDates;
-        });
-    },
-
-    _apply_filters: function() {
-      var category = _.map(this.$el.find('#pms-search #type_list').val(), function(item){ return +item; });
-      var floor = _.map(this.$el.find('#pms-search #floor_list').val(), function(item){ return +item; });
-      var amenities = _.map(this.$el.find('#pms-search #amenities_list').val(), function(item){ return +item; });
-      var virtual = _.map(this.$el.find('#pms-search #virtual_list').val(), function(item){ return +item; });
-      var domain = [];
-      if (category && category.length > 0) {
-        domain.push(['class_name', 'in', category]);
-      }
-      if (floor && floor.length > 0) {
-        domain.push(['floor_id', 'in', floor]);
-      }
-      if (amenities && amenities.length > 0) {
-        domain.push(['amenities', 'in', amenities]);
-      }
-      if (virtual && virtual.length > 0) {
-        domain.push(['room_type_id', 'some', virtual]);
-      }
-
-      this._hcalendar.setDomain(HotelCalendar.DOMAIN.ROOMS, domain);
-    },
-
-    _merge_days_tooltips: function(new_tooltips) {
-      for (var nt of new_tooltips) {
-        var fnt = _.find(this._days_tooltips, function(item) { return item[0] === nt[0]});
-        if (fnt) {
-          fnt = nt;
-        } else {
-          this._days_tooltips.push(nt);
-        }
-      }
     },
 });
 

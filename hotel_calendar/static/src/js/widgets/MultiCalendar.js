@@ -6,6 +6,9 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
   var core = require('web.core');
   var session = require('web.session');
   var Widget = require('web.Widget');
+  var HotelConstants = require('hotel_calendar.Constants');
+
+  var QWeb = core.qweb;
 
   var MultiCalendar = Widget.extend({
     _calendars: [],
@@ -14,6 +17,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
     _tabs: [],
     _dataset: {},
     _base: null,
+
 
     init: function(parent) {
       this._super.apply(this, arguments);
@@ -38,7 +42,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
     },
 
     get_active_calendar: function() {
-      return this._calendars[this._active_index];
+      return this._calendars[this._active_index-1];
     },
 
     get_active_tab: function() {
@@ -46,14 +50,23 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
     },
 
     recalculate_reservation_positions: function() {
-      setTimeout(function(){
-        for (var reserv of this.get_active_calendar()._reservations) {
-          var style = window.getComputedStyle(reserv._html, null);
-          if (parseInt(style.width, 10) < 15 || parseInt(style.height, 10) < 15 || parseInt(style.top, 10) === 0) {
-            this.get_active_calendar()._updateReservation(reserv);
+      var active_calendar = this.get_active_calendar();
+      if (active_calendar) {
+        setTimeout(function(calendar){
+          for (var reserv of calendar._reservations) {
+            var style = window.getComputedStyle(reserv._html, null);
+            if (parseInt(style.width, 10) < 15 || parseInt(style.height, 10) < 15 || parseInt(style.top, 10) === 0) {
+              this.get_active_calendar()._updateReservation(reserv);
+            }
           }
-        }
-      }.bind(this), 200);
+        }.bind(this, active_calendar), 200);
+      }
+    },
+
+    remove_reservation: function(reserv_id) {
+      for (var calendar of this._calendars) {
+        calendar.removeReservation(reserv['reserv_id']);
+      }
     },
 
     update_all_reservations: function() {
@@ -64,11 +77,28 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
 
     update_reservations: function(calendar) {
       calendar.setReservations(this._dataset['reservations']);
-      this._assign_extra_info(calendar);
+    },
+
+    replace_reservation: function(newReserv, oldReserv) {
+      for (var calendar of this._calendars) {
+        calendar.replaceReservation(newReserv, oldReserv);
+      }
+    },
+
+    remove_obroom_row: function(reserv) {
+      for (var calendar of this._calendars) {
+        calendar.removeOBRoomRow(reserv);
+      }
+    },
+
+    swap_reservations: function(outReservs, inReservs) {
+      for (var calendar of this._calendars) {
+        calendar.swapReservations(outReservs, inReservs);
+      }
     },
 
     set_active_calendar: function(index) {
-      this._tabs[index][0].tab('show');
+      this._tabs[index+1][0].tab('show');
     },
 
     set_datasets: function(pricelist, restrictions, reservations) {
@@ -87,6 +117,79 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       this._base = element;
     },
 
+    merge_pricelist: function(pricelist) {
+      var keys = _.keys(pricelist);
+      for (var k of keys) {
+        var pr = pricelist[k];
+        for (var pr_k in pr) {
+          var pr_item = pricelist[k][pr_k];
+          var pr_fk = _.findKey(this._dataset['pricelist'][k], {'room': pr_item.room});
+          if (pr_fk) {
+            this._dataset['pricelist'][k][pr_fk].room = pr_item.room;
+            this._dataset['pricelist'][k][pr_fk].days = _.extend(this._dataset['pricelist'][k][pr_fk].days, pr_item.days);
+            if (pr_item.title) {
+              this._dataset['pricelist'][k][pr_fk].title = pr_item.title;
+            }
+          } else {
+            if (!(k in this._dataset['pricelist'])) {
+              this._dataset['pricelist'][k] = [];
+            }
+            this._dataset['pricelist'][k].push({
+              'room': pr_item.room,
+              'days': pr_item.days,
+              'title': pr_item.title
+            });
+          }
+        }
+      }
+
+      for (var calendar of this._calendars) {
+        calendar.setPricelist(this._dataset['pricelist']);
+      }
+    },
+
+    merge_restrictions: function(restrictions) {
+      var room_type_ids = Object.keys(restrictions);
+      for (var vid of room_type_ids) {
+        if (vid in this._dataset['restrictions']) {
+          this._dataset['restrictions'][vid] = _.extend(this._dataset['restrictions'][vid], restrictions[vid]);
+        }
+        else {
+          this._dataset['restrictions'][vid] = restrictions[vid];
+        }
+      }
+
+      for (var calendar of this._calendars) {
+        calendar.setRestrictions(this._dataset['restrictions']);
+      }
+    },
+
+    merge_reservations: function(reservations) {
+      for (var r of reservations) {
+        var rindex = _.findKey(this._dataset['reservations'], {'id': r.id});
+        if (rindex) {
+          this._dataset['reservations'][rindex] = r;
+        } else {
+          this._dataset['reservations'].push(r);
+        }
+      }
+
+      for (var calendar of this._calendars) {
+        calendar.addReservations(_.clone(this._dataset['reservations']));
+      }
+    },
+
+    merge_days_tooltips: function(new_tooltips) {
+      for (var nt of new_tooltips) {
+        var fnt = _.find(this._days_tooltips, function(item) { return item[0] === nt[0]});
+        if (fnt) {
+          fnt = nt;
+        } else {
+          this._days_tooltips.push(nt);
+        }
+      }
+    },
+
     create_calendar: function(name) {
       var [$tab, $panel] = this._create_tab(name, `calendar-pane-${name}`);
       var calendar = new HotelCalendar(
@@ -96,6 +199,8 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
           this._dataset['restrictions'],
           this._base);
       this._assign_calendar_events(calendar);
+      this._assign_extra_info(calendar);
+      calendar.setReservations(_.clone(this._dataset['reservations']));
       this._calendars.push(calendar);
       return this._calendars.length-1;
     },
@@ -106,6 +211,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
 
 
     _create_tab: function(name, id) {
+      var self = this;
       var sanitized_id = this._sanitizeId(id);
       // '+' Tab
       var $tab = $('<a/>', {
@@ -114,6 +220,10 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
         text: name,
         role: 'tab',
       }).data('tabindex', this._tabs.length).appendTo($('<li/>').prependTo(this.$tabs));
+      $tab.on('shown.bs.tab', function(ev){
+        self._active_index = $(ev.target).data('tabindex');
+        self.recalculate_reservation_positions();
+      });
       $tab[0].dataset.toggle = 'tab';
       var $panel = $('<div/>', {
         id: sanitized_id,
