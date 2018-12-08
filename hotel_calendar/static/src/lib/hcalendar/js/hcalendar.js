@@ -57,6 +57,7 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
     paginatorStepsMin: 1,
     paginatorStepsMax: 15,
   }, options);
+  this.options.startDate = this.options.startDate.clone();
   this.options.startDate.subtract('1', 'd');
 
   // Check correct values
@@ -148,6 +149,15 @@ HotelCalendar.prototype = {
     return this._modeSwap;
   },
 
+  cancelSwap: function() {
+    if (this._modeSwap !== HotelCalendar.MODE.NONE) {
+      this._modeSwap = HotelCalendar.MODE.NONE;
+      this._dispatchEvent('hcalOnCancelSwapReservations');
+      this._reset_action_reservation();
+      this._updateHighlightSwapReservations();
+    }
+  },
+
   //==== DOMAINS
   setDomain: function(/*Int*/section, /*Array*/domain) {
     if (this._domains[section] !== domain) {
@@ -205,7 +215,7 @@ HotelCalendar.prototype = {
       // Merge
       var uzr = [];
       for (var r of reservations) {
-        r = _.clone(r); // HOT-FIX: Multi-Calendar Support
+        r = r.clone(); // HOT-FIX: Multi-Calendar Support
         var rindex = !forced?_.findKey(this._reservations, {'id': r.id}):false;
         if (rindex) {
           r._html = this._reservations[rindex]._html;
@@ -2433,21 +2443,16 @@ HotelCalendar.prototype = {
     if (this.reservationAction.action === HotelCalendar.ACTION.SWAP || this.getSwapMode() !== HotelCalendar.MODE.NONE) {
       var needReset = false;
       if (ev.keyCode === 27) {
-        this._dispatchEvent('hcalOnCancelSwapReservations');
-        needReset = true;
+        this.cancelSwap();
       }
       else if (ev.keyCode === 13) {
         this._dispatchSwapReservations();
-        needReset = true;
-      }
-      else if (ev.keyCode === 17 && this.getSwapMode() === HotelCalendar.MODE.SWAP_FROM) {
-        this.setSwapMode(HotelCalendar.MODE.SWAP_TO);
-      }
-
-      if (needReset) {
         this._reset_action_reservation();
         this._updateHighlightSwapReservations();
         this._modeSwap = HotelCalendar.MODE.NONE;
+      }
+      else if (ev.keyCode === 17 && this.getSwapMode() === HotelCalendar.MODE.SWAP_FROM) {
+        this.setSwapMode(HotelCalendar.MODE.SWAP_TO);
       }
     }
   },

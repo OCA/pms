@@ -55,7 +55,7 @@ var PMSCalendarController = AbstractController.extend({
       var oparams = [pricelist_id, false, pricelist, {}, {}];
       this.model.save_changes(oparams).then(function(results){
         $(calendar.btnSaveChanges).removeClass('need-save');
-        calendar.$el.find('.hcal-input-changed').removeClass('hcal-input-changed');
+        $(calendar.edtable).find('.hcal-input-changed').removeClass('hcal-input-changed');
       });
     },
 
@@ -163,6 +163,7 @@ var PMSCalendarController = AbstractController.extend({
     },
 
     _reload_active_calendar: function() {
+      var self = this;
       var filterDates = this.renderer.get_view_filter_dates();
       // Clip dates
       var dfrom = filterDates[0].clone(),
@@ -181,13 +182,11 @@ var PMSCalendarController = AbstractController.extend({
         false
       ];
       this.model.get_calendar_data(oparams).then(function(results){
-        this._multi_calendar._merge_days_tooltips(results['events']);
-        this._multi_calendar._reserv_tooltips = _.extend(this._multi_calendar._reserv_tooltips, results['tooltips']);
         var reservs = [];
         for (var r of results['reservations']) {
           var nreserv = new HReservation({
             'id': r[1],
-            'room_id': r[15],
+            'room_id': r[0],
             'title': r[2],
             'adults': r[3],
             'childrens': r[4],
@@ -208,13 +207,15 @@ var PMSCalendarController = AbstractController.extend({
           reservs.push(nreserv);
         }
 
-        this._multi_calendar.merge_pricelist(results['pricelist']);
-        this._multi_calendar.merge_restrictions(results['restrictions']);
-        this._multi_calendar.merge_reservations(reservs);
+        self._multi_calendar._reserv_tooltips = _.extend(this._multi_calendar._reserv_tooltips, results['tooltips']);
+        self._multi_calendar.merge_days_tooltips(results['events']);
+        self._multi_calendar.merge_pricelist(results['pricelist']);
+        self._multi_calendar.merge_restrictions(results['restrictions']);
+        self._multi_calendar.merge_reservations(reservs);
 
-        this._multi_calendar._assign_extra_info(this._multi_calendar.get_active_calendar());
+        self._multi_calendar._assign_extra_info(this._multi_calendar.get_active_calendar());
       }.bind(this)).then(function(){
-        this.renderer._last_dates = filterDates;
+        self.renderer._last_dates = filterDates;
       });
     },
 
@@ -574,12 +575,10 @@ var PMSCalendarController = AbstractController.extend({
       var need_reload_pricelists = false;
       var need_update_counters = false;
       var nreservs = []
-      console.log("BUS!");
       for (var notif of notifications) {
         if (notif[0][1] === 'hotel.reservation') {
           switch (notif[1]['type']) {
             case 'reservation':
-              console.log("BUS RESERVA");
               var reserv = notif[1]['reservation'];
               // Only show notifications of other users
               // if (notif[1]['subtype'] !== 'noshow' && this._view_options['show_notifications'] && notif[1]['userid'] != this.dataset.context.uid) {
@@ -953,7 +952,6 @@ var PMSCalendarController = AbstractController.extend({
 
             if (!date_begin.isSame(this.renderer._last_dates[0].clone().utc(), 'd') || !date_end.isSame(this.renderer._last_dates[1].clone().utc(), 'd')) {
                 var date_end = $dateTimePickerEnd.data("DateTimePicker").date().set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
-                console.log(date_end);
                 active_calendar.setStartDate(date_begin, active_calendar.getDateDiffDays(date_begin, date_end), false, function(){
                     this._reload_active_calendar();
                 }.bind(this));

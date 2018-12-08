@@ -488,6 +488,12 @@ input#bookings_search {
 	margin-bottom: 0.2em;
 }
 
+.multi-calendar-tab-plus {
+	background-color: darkgray;
+	font-weight: bold;
+	color: white;
+}
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
