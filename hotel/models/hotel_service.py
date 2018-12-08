@@ -145,6 +145,9 @@ class HotelService(models.Model):
                         per_person=product.per_person,
                         persons=reservation.adults,
                         old_line_days=self.service_line_ids))
+                if record.product_id.daily_limit > 0:
+                    for day in record.service_line_ids:
+                        day.no_free_resources()
 
     @api.model
     def prepare_service_lines(self, **kwargs):
