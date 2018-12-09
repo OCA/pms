@@ -170,10 +170,6 @@ class HotelReservation(models.Model):
                                                'confirm': [('readonly', False)],
                                                'booking': [('readonly', False)],
                                            })
-    reserve_color = fields.Char(compute='_compute_color', string='Color',
-                                store=True)
-    reserve_color_text = fields.Char(compute='_compute_color', string='Color',
-                                     store=True)
     service_ids = fields.One2many('hotel.service', 'ser_room_line')
 
     pricelist_id = fields.Many2one('product.pricelist',
@@ -284,11 +280,8 @@ class HotelReservation(models.Model):
             vals.update({'folio_id': folio.id,
                          'reservation_type': vals.get('reservation_type'),
                          'channel_type': vals.get('channel_type')})
-        #~ colors = self._generate_color()
         vals.update({
             'last_updated_res': fields.Datetime.now(),
-            #~ 'reserve_color': colors[0],
-            #~ 'reserve_color_text': colors[1],
         })
         if 'board_service_id' in vals:
                 board_services = []
@@ -628,99 +621,6 @@ class HotelReservation(models.Model):
             other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
             
             self.update({'service_ids':  [(6, 0, other_services.ids)] + board_services})
-
-    """
-    COMPUTE RESERVE COLOR ----------------------------------------------
-    """
-
-    @api.multi
-    def _generate_color(self):
-        self.ensure_one()
-        now_utc_dt = fields.Datetime.now()
-
-        ir_values_obj = self.env['ir.default']
-        reserv_color = '#FFFFFF'
-        reserv_color_text = '#000000'
-        # FIXME added for migration
-        return ('#4E9DC4', '#000000')
-
-        if self.reservation_type == 'staff':
-            reserv_color = ir_values_obj.get('res.config.settings', 'color_staff')
-            reserv_color_text = ir_values_obj.get(
-                'res.config.settings',
-                'color_letter_staff')
-        elif self.reservation_type == 'out':
-            reserv_color = ir_values_obj.get('res.config.settings', 'color_dontsell')
-            reserv_color_text = ir_values_obj.get(
-                'res.config.settings',
-                'color_letter_dontsell')
-        elif self.to_assign:
-            reserv_color = ir_values_obj.get('res.config.settings', 'color_to_assign')
-            reserv_color_text = ir_values_obj.get(
-                'res.config.settings',
-                'color_letter_to_assign')
-        elif self.state == 'draft':
-            reserv_color = ir_values_obj.get('res.config.settings', 'color_pre_reservation')
-            reserv_color_text = ir_values_obj.get(
-                'res.config.settings',
-                'color_letter_pre_reservation')
-        elif self.state == 'confirm':
-            if self.folio_id.pending_amount == 0:
-                reserv_color = ir_values_obj.get(
-                    'res.config.settings', 'color_reservation_pay')
-                reserv_color_text = ir_values_obj.get(
-                    'res.config.settings', 'color_letter_reservation_pay')
-            else:
-                reserv_color = ir_values_obj.get(
-                    'res.config.settings', 'color_reservation')
-                reserv_color_text = ir_values_obj.get(
-                    'res.config.settings', 'color_letter_reservation')
-        elif self.state == 'booking':
-            if self.folio_id.pending_amount == 0:
-                reserv_color = ir_values_obj.get(
-                    'res.config.settings', 'color_stay_pay')
-                reserv_color_text = ir_values_obj.get(
-                    'res.config.settings', 'color_letter_stay_pay')
-            else:
-                reserv_color = ir_values_obj.get(
-                    'res.config.settings', 'color_stay')
-                reserv_color_text = ir_values_obj.get(
-                    'res.config.settings', 'color_letter_stay')
-        else:
-            if self.folio_id.pending_amount == 0:
-                reserv_color = ir_values_obj.get(
-                    'res.config.settings', 'color_checkout')
-                reserv_color_text = ir_values_obj.get(
-                    'res.config.settings', 'color_letter_checkout')
-            else:
-                reserv_color = ir_values_obj.get(
-                    'res.config.settings', 'color_payment_pending')
-                reserv_color_text = ir_values_obj.get(
-                    'res.config.settings', 'color_letter_payment_pending')
-        return (reserv_color, reserv_color_text)
-
-    @api.depends('state', 'reservation_type', 'folio_id.pending_amount', 'to_assign')
-    def _compute_color(self):
-        _logger.info('_compute_color')
-        for record in self:
-            colors = record._generate_color()
-            record.update({
-                'reserve_color': colors[0],
-                'reserve_color_text': colors[1],
-            })
-            record.folio_id.color = colors[0]
-
-            # hotel_reserv_obj = self.env['hotel.reservation']
-            # if rec.splitted:
-            #     master_reservation = rec.parent_reservation or rec
-            #     splitted_reservs = hotel_reserv_obj.search([
-            #         ('splitted', '=', True),
-            #         '|', ('parent_reservation', '=', master_reservation.id),
-            #              ('id', '=', master_reservation.id),
-            #         ('folio_id', '=', rec.folio_id.id),
-            #         ('id', '!=', rec.id),
-            #     ])
-            #     splitted_reservs.write({'reserve_color': rec.reserve_color})
 
     """
     STATE WORKFLOW -----------------------------------------------------
