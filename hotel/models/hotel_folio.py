@@ -122,8 +122,13 @@ class HotelFolio(models.Model):
     invoices_paid = fields.Monetary(compute='compute_amount',
                                     store=True, track_visibility='onchange',
                                     string="Payments")
-    amount_total = fields.Float(string='Total', store=True, readonly=True,
-                                track_visibility='always')
+    amount_untaxed = fields.Monetary(string='Untaxed Amount', store=True,
+                                     readonly=True, compute='_amount_all',
+                                     track_visibility='onchange')
+    amount_tax = fields.Monetary(string='Taxes', store=True,
+                                 readonly=True, compute='_amount_all')
+    amount_total = fields.Monetary(string='Total', store=True, readonly=True,
+                                   compute='_amount_all', track_visibility='always')
 
     #Checkin Fields-----------------------------------------------------
     booking_pending = fields.Integer('Booking pending',
@@ -145,12 +150,12 @@ class HotelFolio(models.Model):
                                       string='Invoice Status',
                                       compute='_compute_invoice_status',
                                       store=True, readonly=True, default='no')
-    partner_invoice_id = fields.Many2one('res.partner',
-                                         string='Invoice Address',
-                                         readonly=True, required=True,
-                                         states={'draft': [('readonly', False)],
-                                                 'sent': [('readonly', False)]},
-                                         help="Invoice address for current sales order.")
+    #~ partner_invoice_id = fields.Many2one('res.partner',
+                                         #~ string='Invoice Address',
+                                         #~ readonly=True, required=True,
+                                         #~ states={'draft': [('readonly', False)],
+                                                 #~ 'sent': [('readonly', False)]},
+                                         #~ help="Invoice address for current sales order.")
 
     #WorkFlow Mail Fields-----------------------------------------------
     has_confirmed_reservations_to_send = fields.Boolean(
@@ -174,7 +179,23 @@ class HotelFolio(models.Model):
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
     note = fields.Text('Terms and conditions')
     sequence = fields.Integer(string='Sequence', default=10)
-    
+
+    @api.depends('room_lines.price_total','service_ids.price_total')
+    def _amount_all(self):
+        """
+        Compute the total amounts of the SO.
+        """
+        for record in self:
+            amount_untaxed = amount_tax = 0.0
+            amount_untaxed = sum(record.room_lines.mapped('price_subtotal')) + \
+                             sum(record.service_ids.mapped('price_subtotal'))
+            amount_tax = sum(record.room_lines.mapped('price_tax')) + \
+                         sum(record.service_ids.mapped('price_tax'))
+            record.update({
+                'amount_untaxed': record.pricelist_id.currency_id.round(amount_untaxed),
+                'amount_tax': record.pricelist_id.currency_id.round(amount_tax),
+                'amount_total': amount_untaxed + amount_tax,
+            })
 
     def _computed_rooms_char(self):
         for record in self:
@@ -325,7 +346,7 @@ class HotelFolio(models.Model):
             if 'company_id' in vals:
                 vals['name'] = self.env['ir.sequence'].with_context(
                     force_company=vals['company_id']
-                ).next_by_code('sale.order') or _('New')
+                ).next_by_code('hotel.folio') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
         

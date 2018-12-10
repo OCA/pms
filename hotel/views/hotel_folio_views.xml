@@ -135,6 +135,7 @@
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancel'))]}"/>
                         </group>
                         <group>
+                            <field name="pricelist_id" domain="[('type','=','sale')]" />
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>
@@ -149,14 +150,12 @@
                         </group>
                      </group>
                     <group invisible="1">
-                        <!-- <field name="pricelist_id" domain="[('type','=','sale')]" invisible="1"/> -->
                         <!-- <field name="partner_shipping_id" invisible="1" domain="[('parent_id','=',partner_id)]" /> -->
                         <!-- <field name="warehouse_id" string="Branch" invisible="1"/> -->
                         <field name="invoice_ids" invisible="1"/>
                         <field name="invoice_status" invisible="1" />
                         <!-- <field name="hotel_invoice_id" states='progress,done,cancel'
                             readonly="1" invisible="1" /> -->
-                        <!-- <field name="fix_price" invisible="1" /> -->
                     </group>
                     <notebook colspan="4" col="1">
                         <page string="Lines">
@@ -449,6 +448,15 @@
                                         <field name="channel_type" sttrs="{'invisible':[('channel_type', '!=', 'call')]"/>
                                     </tree>
                                 </field>
+                                <group colspan="2" class="oe_subtotal_footer oe_right">
+                                    <field name="amount_untaxed" sum="Untaxed amount" widget='monetary' />
+                                    <field name="amount_tax" widget='monetary' />
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total" />
+                                    </div>
+                                    <field name="amount_total" nolabel="1" sum="Total amount"
+                                       widget='monetary' />
+                                </group>
                             <div class="oe_clear" />
                             <group>
                                 <field name="note" />
