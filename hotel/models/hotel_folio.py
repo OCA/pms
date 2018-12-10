@@ -61,13 +61,16 @@ class HotelFolio(models.Model):
     mobile = fields.Char('Mobile', related='partner_id.mobile')
     phone = fields.Char('Phone', related='partner_id.phone')
 
-    #Review: How to use state in folio?
-    state = fields.Selection([('draft', 'Pre-reservation'), ('confirm', 'Pending Entry'),
-                              ('booking', 'On Board'), ('done', 'Out'),
-                              ('cancelled', 'Cancelled')],
-                             'State', readonly=True,
-                             default=lambda *a: 'draft',
-                             track_visibility='onchange')
+    state = fields.Selection([
+        ('draft', 'Quotation'),
+        ('sent', 'Quotation Sent'),
+        ('confirm', 'Confirmed'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
+        ], string='Status',
+        readonly=True, copy=False,
+        index=True, track_visibility='onchange',
+        default='draft')
 
     room_lines = fields.One2many('hotel.reservation', 'folio_id',
                                  readonly=False,
