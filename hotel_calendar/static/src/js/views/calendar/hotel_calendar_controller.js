@@ -68,8 +68,7 @@ var PMSCalendarController = AbstractController.extend({
       return this.model.update_records(ids, values).then(function(result){
         // Remove OB Room Row?
         if (oldReserv.room.overbooking && !newReserv.room.overbooking) {
-          console.log("DISPARA BORRADO!");
-          self._multi_calendar.remove_obroom_row(oldReserv);
+           self._multi_calendar.remove_obroom_row(oldReserv, true);
         }
       }).fail(function(err, errev){
         self._multi_calendar.replace_reservation(newReserv, oldReserv);

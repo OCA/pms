@@ -573,24 +573,24 @@ HotelCalendar.prototype = {
     }
 
     var obRoomRow = this.getOBRoomRow(ob_reserv);
-
-    // Update Reservations Position
-    var bounds = obRoomRow.getBoundingClientRect();
-    var cheight = bounds.bottom-bounds.top;
-    var start_index = _.indexOf(this.options.rooms, ob_reserv.room) + 1;
-    for (var i=start_index; i<this.options.rooms.length; i++) {
-      var reservs = this.getReservationsByRoom(this.options.rooms[i], true);
-      for (var reserv of reservs) {
-        if (reserv && reserv._html) {
-          var top = parseInt(reserv._html.style.top, 10);
-          reserv._html.style.top = `${top - cheight}px`;
+    if (obRoomRow) {
+      // Update Reservations Position
+      var bounds = obRoomRow.getBoundingClientRect();
+      var cheight = bounds.bottom-bounds.top;
+      var start_index = _.indexOf(this.options.rooms, ob_reserv.room) + 1;
+      for (var i=start_index; i<this.options.rooms.length; i++) {
+        var reservs = this.getReservationsByRoom(this.options.rooms[i], true);
+        for (var reserv of reservs) {
+          if (reserv && reserv._html) {
+            var top = parseInt(reserv._html.style.top, 10);
+            reserv._html.style.top = `${top - cheight}px`;
+          }
         }
       }
-    }
 
-    obRoomRow.parentNode.removeChild(obRoomRow);
-    this.options.rooms = _.reject(this.options.rooms, function(item){ return item === ob_reserv.room; });
-    ob_reserv.room = false;
+      obRoomRow.parentNode.removeChild(obRoomRow);
+      this.options.rooms = _.reject(this.options.rooms, function(item){ return item.id === ob_reserv.room.id; });
+    }
   },
 
   getOBRealRoomInfo: function(/*HRoomObject*/room) {
@@ -2511,8 +2511,6 @@ HotelCalendar.prototype = {
                 newPrice += this.getRoomPrice(newReservation.room, ndate);
               }
 
-              console.log("OLLL----");
-              console.log(oldReservation);
               this._dispatchEvent(
                 'hcalOnChangeReservation',
                 {

@@ -80,9 +80,13 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       }
     },
 
-    remove_obroom_row: function(reserv) {
-      for (var calendar of this._calendars) {
-        calendar.removeOBRoomRow(reserv);
+    remove_obroom_row: function(reserv, only_active_calendar) {
+      if (only_active_calendar) {
+        this.get_active_calendar().removeOBRoomRow(reserv);
+      } else {
+        for (var calendar of this._calendars) {
+          calendar.removeOBRoomRow(reserv);
+        }
       }
     },
 
