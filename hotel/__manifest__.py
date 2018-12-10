@@ -46,6 +46,7 @@
         'views/hotel_room_type_restriction_item_views.xml',
         'views/hotel_reservation_views.xml',
         'views/hotel_room_closure_reason_views.xml',
+        'views/hotel_service_views.xml',
         'views/hotel_board_service_views.xml',
         'views/hotel_checkin_partner_views.xml',
         'views/hotel_room_type_availability_views.xml',

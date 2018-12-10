@@ -5,6 +5,10 @@ from odoo import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from datetime import timedelta
 from odoo.exceptions import ValidationError
+from odoo.addons import decimal_precision as dp
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class HotelService(models.Model):
     _name = 'hotel.service'
@@ -50,31 +54,34 @@ class HotelService(models.Model):
     product_qty = fields.Integer('Quantity')
     days_qty = fields.Integer(compute="_compute_days_qty", store=True)
     is_board_service = fields.Boolean()
-    pricelist_id = fields.Many2one(related='folio_id.pricelist_id')
+    # Non-stored related field to allow portal user to see the image of the product he has ordered
+    product_image = fields.Binary('Product Image', related="product_id.image", store=False)
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
         ('phone', 'Phone'),
         ('call', 'Call Center'),
         ('web', 'Web')], 'Sales Channel')
-    currency_id = fields.Many2one('res.currency',
-                                  related='pricelist_id.currency_id',
-                                  string='Currency', readonly=True, required=True)
+    price_unit = fields.Float('Unit Price', required=True, digits=dp.get_precision('Product Price'), default=0.0)
+    tax_ids = fields.Many2many('account.tax', string='Taxes', domain=['|', ('active', '=', False), ('active', '=', True)])
+    discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
+    currency_id = fields.Many2one(related='folio_id.currency_id', store=True, string='Currency', readonly=True)
     price_subtotal = fields.Monetary(string='Subtotal',
                                      readonly=True,
                                      store=True,
-                                     compute='_compute_amount_reservation')
+                                     compute='_compute_amount_service')
     price_total = fields.Monetary(string='Total',
                                   readonly=True,
                                   store=True,
-                                  compute='_compute_amount_reservation')
+                                  compute='_compute_amount_service')
     price_tax = fields.Float(string='Taxes',
                              readonly=True,
                              store=True,
-                             compute='_compute_amount_reservation')
+                             compute='_compute_amount_service')
 
     @api.model
     def create(self, vals):
+        vals.update(self._prepare_add_missing_fields(vals))
         if self.compute_lines_out_vals(vals):
             reservation = self.env['hotel.reservation'].browse(vals['ser_room_line'])
             product = self.env['product.product'].browse(vals['product_id'])
@@ -114,6 +121,20 @@ class HotelService(models.Model):
         res = super(HotelService, self).write(vals)
         return res
 
+    @api.model
+    def _prepare_add_missing_fields(self, values):
+        """ Deduce missing required fields from the onchange """
+        res = {}
+        onchange_fields = ['price_unit','tax_ids']
+        if values.get('product_id'):
+            line = self.new(values)
+            if any(f not in values for f in onchange_fields):
+                line.onchange_product_calc_qty()
+            for field in onchange_fields:
+                if field not in values:
+                    res[field] = line._fields[field].convert_to_write(line[field], line)
+        return res
+
     @api.multi
     def compute_lines_out_vals(self, vals):
         """
@@ -128,6 +149,26 @@ class HotelService(models.Model):
                 return True
         return False
 
+    @api.multi
+    def _compute_tax_ids(self):
+        for record in self:
+            # If company_id is set, always filter taxes by the company
+            folio = self.folio_id or self.env.context.get('default_folio_id')
+            record.tax_id = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
+
+    @api.multi
+    def _get_display_price(self, product):
+        folio = self.folio_id or self.env.context.get('default_folio_id')
+        if folio.pricelist_id.discount_policy == 'with_discount':
+            return product.with_context(pricelist=folio.pricelist_id.id).price
+        product_context = dict(self.env.context, partner_id=folio.partner_id.id, date=folio.date_order, uom=self.product_id.uom_id.id)
+        final_price, rule_id = folio.pricelist_id.with_context(product_context).get_product_price_rule(self.product_id, self.product_qty or 1.0, folio.partner_id)
+        base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.product_qty, product_id.uom_id, folio.pricelist_id.id)
+        if currency_id != folio.pricelist_id.currency_id.id:
+            base_price = self.env['res.currency'].browse(currency_id).with_context(product_context).compute(base_price, folio.pricelist_id.currency_id)
+        # negative discounts (= surcharge) are included in the display price
+        return max(base_price, final_price)
+
     @api.onchange('product_id')
     def onchange_product_calc_qty(self):
         """
@@ -135,11 +176,15 @@ class HotelService(models.Model):
         configuration of the selected product, in per_day product configuration,
         the qty is autocalculated and readonly based on service_lines qty
         """
+        if not self.product_id:
+            return
+        vals = {}
+        vals['product_qty'] = 1.0
         for record in self:
             if record.per_day and record.ser_room_line:
                 product = record.product_id
                 reservation = record.ser_room_line
-                record.update(self.prepare_service_lines(
+                vals.update(self.prepare_service_lines(
                         dfrom=reservation.checkin,
                         days=reservation.nights,
                         per_person=product.per_person,
@@ -148,6 +193,30 @@ class HotelService(models.Model):
                 if record.product_id.daily_limit > 0:
                     for day in record.service_line_ids:
                         day.no_free_resources()
+        """
+        Compute tax and price unit
+        """
+        self._compute_tax_ids()
+        vals['price_unit'] = self._compute_price_unit()
+        record.update(vals)
+
+    @api.multi
+    def _compute_price_unit(self):
+        """
+        Compute tax and price unit
+        """
+        folio = self.folio_id or self.env.context.get('default_folio_id')
+        product = self.product_id.with_context(
+                lang=folio.partner_id.lang,
+                partner=folio.partner_id.id,
+                quantity=self.product_qty,
+                date=folio.date_order,
+                pricelist=folio.pricelist_id.id,
+                uom=self.product_id.uom_id.id,
+                fiscal_position=False
+            )
+        return self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_ids, folio.company_id)
+         
 
     @api.model
     def prepare_service_lines(self, **kwargs):
@@ -155,16 +224,15 @@ class HotelService(models.Model):
         Prepare line and respect the old manual changes on lines
         """
         cmds = [(5, 0, 0)]
-        old_lines_days = kwargs.get('old_lines_days')
+        old_line_days = kwargs.get('old_line_days')
         total_qty = 0
         day_qty = 1
         if kwargs.get('per_person'): #WARNING: Change adults in reservation NOT update qty service!!
             day_qty = kwargs.get('persons')
-        old_line_days = self.env['hotel.service.line'].browse(kwargs.get('old_line_days'))
         for i in range(0, kwargs.get('days')):
             idate = (fields.Date.from_string(kwargs.get('dfrom')) + timedelta(days=i)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
-            if not old_lines_days or idate not in old_lines_days.mapped('date'):
+            if not old_line_days or idate not in old_line_days.mapped('date'):
                 cmds.append((0, False, {
                     'date': idate,
                     'day_qty': day_qty
@@ -176,15 +244,16 @@ class HotelService(models.Model):
                 total_qty = total_qty + old_line.day_qty
         return {'service_line_ids': cmds, 'product_qty': total_qty}
 
-    @api.depends('qty_product', 'tax_id')
+    @api.depends('product_qty', 'discount', 'price_unit', 'tax_ids')
     def _compute_amount_service(self):
         """
         Compute the amounts of the service line.
         """
         for record in self:
+            folio = record.folio_id or self.env.context.get('default_folio_id')
             product = record.product_id
-            price = amount_room * (1 - (record.discount or 0.0) * 0.01)
-            taxes = record.tax_id.compute_all(price, record.currency_id, 1, product=product)
+            price = record.price_unit * (1 - (record.discount or 0.0) * 0.01)
+            taxes = record.tax_ids.compute_all(price, folio.currency_id, record.product_qty, product=product)
             record.update({
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
@@ -203,12 +272,20 @@ class HotelService(models.Model):
             else:
                 vals = {'days_qty': 0}
             record.update(vals)
+
+    @api.multi
+    def open_service_lines(self):
+        action = self.env.ref('hotel.action_hotel_services_form').read()[0]
+        action['views'] = [(self.env.ref('hotel.hotel_service_view_form').id, 'form')]
+        action['res_id'] = self.id
+        action['target'] = 'new'
+        return action
     
-    @api.constrains('qty_product')
-    def constrains_qty_per_day(self):
-        for record in self:
-            if record.per_day:
-                service_lines = self.env['hotel.service_line']
-                total_day_qty = sum(service_lines.with_context({'service_id': record.id}).mapped('day_qty'))
-                if record.qty_product != total_day_qty:
-                    raise ValidationError (_('The quantity per line and per day does not correspond'))
+    #~ @api.constrains('product_qty')
+    #~ def constrains_qty_per_day(self):
+        #~ for record in self:
+            #~ if record.per_day:
+                #~ service_lines = self.env['hotel.service_line']
+                #~ total_day_qty = sum(service_lines.with_context({'service_id': record.id}).mapped('day_qty'))
+                #~ if record.product_qty != total_day_qty:
+                    #~ raise ValidationError (_('The quantity per line and per day does not correspond'))

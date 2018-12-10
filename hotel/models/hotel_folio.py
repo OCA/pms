@@ -90,7 +90,6 @@ class HotelFolio(models.Model):
     pricelist_id = fields.Many2one('product.pricelist',
                                    string='Pricelist',
                                    required=True,
-                                   readonly=True,
                                    states={'draft': [('readonly', False)],
                                            'sent': [('readonly', False)]},
                                    help="Pricelist for current folio.")
