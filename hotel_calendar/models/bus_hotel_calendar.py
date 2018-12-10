@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-from odoo import models, api
+from odoo import models, api, _
 from odoo.addons.hotel_calendar.controllers.bus import HOTEL_BUS_CHANNEL_ID
 
 
@@ -65,7 +65,7 @@ class BusHotelCalendar(models.TransientModel):
                 num_split,
                 vals['price'],
                 vals['reservation_type'] if 'reservation_type' in vals else 'normal',
-                vals['out_service_description'] if 'out_service_description' in vals else '',
+                vals['out_service_description'] if 'out_service_description' in vals else _('No reason given'),
             ]
         }
 

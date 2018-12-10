@@ -29,6 +29,10 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       this._create_tabs_panel();
     },
 
+    on: function(event_name, callback) {
+      this.$el.on(event_name, callback.bind(this));
+    },
+
     get_calendar: function(index) {
       return this._calendars[index-1];
     },
@@ -64,8 +68,9 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
     },
 
     remove_reservation: function(reserv_id) {
+      this._dataset['reservations'] = _.reject(this._dataset['reservations'], {id: reserv_id});
       for (var calendar of this._calendars) {
-        calendar.removeReservation(reserv['reserv_id']);
+        calendar.removeReservation(reserv_id);
       }
     },
 
@@ -195,7 +200,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       return this._calendars.length-1;
     },
 
-    on: function(event_name, callback) {
+    on_calendar: function(event_name, callback) {
       this._events[event_name] = callback;
     },
 
@@ -219,6 +224,8 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
             self.get_calendar(prev_index).cancelSwap();
           }
         }
+
+        self.$el.trigger('tab_changed', [self._active_index]);
       });
       $tab[0].dataset.toggle = 'tab';
       var $panel = $('<div/>', {

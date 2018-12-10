@@ -59,6 +59,7 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
   }, options);
   this.options.startDate = this.options.startDate.clone();
   this.options.startDate.subtract('1', 'd');
+  this.options.rooms = _.map(this.options.rooms, function(item){ return item.clone(); });
 
   // Check correct values
   if (this.options.rooms.length > 0 && !(this.options.rooms[0] instanceof HRoom)) {
@@ -216,10 +217,21 @@ HotelCalendar.prototype = {
       var uzr = [];
       for (var r of reservations) {
         r = r.clone(); // HOT-FIX: Multi-Calendar Support
+
+        r.room = this.getRoom(r.room_id, r.overbooking, r.id);
+        // need create a overbooking row?
+        if (!r.room && r.overbooking) {
+          r.room = this.createOBRoom(this.getRoom(r.room_id), r.id);
+          this.createOBRoomRow(r.room);
+        }
+        if (!r.room) {
+          console.warn(`Can't found a room for the reservation '${r[0]}'!`);
+          continue;
+        }
+
         var rindex = !forced?_.findKey(this._reservations, {'id': r.id}):false;
         if (rindex) {
           r._html = this._reservations[rindex]._html;
-          r.room = this._reservations[rindex].room;
           if (this._reservations[rindex].overbooking && !r.overbooking) {
             if (this.getReservationsByRoom(this._reservations[rindex].room).length === 1) {
               this.removeOBRoomRow(this._reservations[rindex]);
@@ -228,18 +240,7 @@ HotelCalendar.prototype = {
           this._reservations[rindex] = r;
           this._cleanUnusedZones(r);
         } else {
-          var room = this.getRoom(r.room_id, r.overbooking, r.id);
-          // need create a overbooking row?
-          if (!room && r.overbooking) {
-            room = this.createOBRoom(this.getRoom(r.room_id), r.id);
-            this.createOBRoomRow(room);
-          }
-          if (room) {
-            r.room = room;
-            this._reservations.push(r);
-          } else {
-            console.warn(`Can't found a room for the reservation '${r[0]}'!`);
-          }
+          this._reservations.push(r);
         }
       }
 
@@ -304,7 +305,7 @@ HotelCalendar.prototype = {
       // Remove Unused Zones
       this._cleanUnusedZones(reserv);
 
-      this._reservations = _.without(this._reservations, reserv);
+      this._reservations = _.reject(this._reservations, {id: reserv.id});
       this._updateReservationsMap();
     } else {
       console.warn(`[HotelCalendar][removeReservation] Can't remove '${reservation.id}' reservation!`);
@@ -615,7 +616,6 @@ HotelCalendar.prototype = {
     var isfb = ob_reserv.room.number.search('/#');
     var cnumber = ob_reserv.room.number;
     if (isf != -1 && isfb != -1) { cnumber = cnumber.substr(isf+3, isfb-(isf+3)); }
-
     return this.e.querySelector(`#${this._sanitizeId(`ROW_${cnumber}_${ob_reserv.room.type}_OVER${ob_reserv.id}`)}`);
   },
 
@@ -2334,7 +2334,7 @@ HotelCalendar.prototype = {
     var date_cell = HotelCalendar.toMoment(this.etable.querySelector(`#${ev.target.dataset.hcalParentCell}`).dataset.hcalDate);
     var reserv;
     if (this.reservationAction.reservation) {
-      var reserv = this.getReservation(this.reservationAction.reservation.dataset.hcalReservationObjId);
+      reserv = this.getReservation(this.reservationAction.reservation.dataset.hcalReservationObjId);
       if (!this.reservationAction.oldReservationObj) {
         this.reservationAction.oldReservationObj = reserv.clone();
         this.reservationAction.daysOffset = this.getDateDiffDays(reserv.startDate.clone().local(), date_cell);
@@ -2511,6 +2511,8 @@ HotelCalendar.prototype = {
                 newPrice += this.getRoomPrice(newReservation.room, ndate);
               }
 
+              console.log("OLLL----");
+              console.log(oldReservation);
               this._dispatchEvent(
                 'hcalOnChangeReservation',
                 {
@@ -2701,11 +2703,11 @@ HRoom.prototype = {
   clone: function() {
     var nroom = new HRoom(
         this.id,
-        this.number, // Name
-        this.capacity, // Capacity
-        this.type, // Category
-        this.shared, // Shared Room
-        this.price  // Price
+        this.number,
+        this.capacity,
+        this.type,
+        this.shared,
+        this.price
     );
     nroom.overbooking = this.overbooking;
     nroom._html = this._html;
@@ -2777,7 +2779,7 @@ HReservation.prototype = {
   clone: function() {
     var nreserv = new HReservation({
       'id': this.id,
-      'room': this.room,
+      'room': this.room?this.room.clone():null,
       'adults': this.adults,
       'childrens': this.childrens,
       'title': this.title,

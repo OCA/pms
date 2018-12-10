@@ -114,7 +114,7 @@ class HotelReservation(models.Model):
                     reserv.checkin,
                     num_split,
                     reserv.folio_id.amount_total,
-                    reserv.reservation_type,
+                    reserv.reservation_type or 'normal',
                     reserv.out_service_description or _('No reason given'),
                 ]
             })
@@ -346,8 +346,8 @@ class HotelReservation(models.Model):
                 'title': ntitle,
                 'room_id': record.room_id.id,
                 'reserv_id': record.id,
-                'partner_name': record.closure_reason_id.name or _('Out of service') if record.reservation_type == 'out'
-                else record.partner_id.name,
+                'partner_name': (record.closure_reason_id.name or _('Out of service'))
+                                if record.reservation_type == 'out' else record.partner_id.name,
                 'adults': record.adults,
                 'children': record.children,
                 'checkin': record.checkin,
@@ -366,8 +366,8 @@ class HotelReservation(models.Model):
                 'overbooking': record.overbooking,
                 'price': record.folio_id.amount_total,
                 'reservation_type': record.reservation_type,
-                'closure_reason_id': record.closure_reason_id or None,
-                'out_service_description': record.out_service_description or _('No reason given')
+                'closure_reason_id': record.closure_reason_id,
+                'out_service_description': record.out_service_description or _('No reason given'),
             })
 
     @api.model
