@@ -258,6 +258,14 @@ class HotelReservation(models.Model):
                              readonly=True,
                              store=True,
                              compute='_compute_amount_reservation')
+    price_services = fields.Monetary(string='Services Total',
+                                     readonly=True,
+                                     store=True,
+                                     compute='_compute_amount_room_services')
+    price_room_services_set = fields.Monetary(string='Room Services Total',
+                                              readonly=True,
+                                              store=True,
+                                              compute='_compute_amount_set')
     # FIXME discount per night
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
 
@@ -710,6 +718,16 @@ class HotelReservation(models.Model):
     """
     PRICE PROCESS ------------------------------------------------------
     """
+    @api.depends('service_ids.price_total')
+    def _compute_amount_room_services(self):
+        for record in self:
+            record.price_services = sum(record.mapped('service_ids.price_total'))
+
+    @api.depends('price_services','price_total')
+    def _compute_amount_set(self):
+        for record in self:
+            record.price_room_services_set = record.price_services + record.price_total
+
     @api.multi
     def compute_price_out_vals(self, vals):
         """

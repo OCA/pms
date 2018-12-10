@@ -224,6 +224,8 @@
                             <!-- <field name="customer_lead" invisible="1"/> -->
                              <field name="currency_id" invisible="1"/>
                             <field name="price_subtotal" widget="monetary"/>
+                            <field name="price_services" widget="monetary"/>
+                            <field name="price_room_services_set" widget="monetary"/>
                         </group>
                     </group>
                     <field name="folio_internal_comment" nolabel="1" placeholder="Reservation Notes"/>
