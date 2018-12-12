@@ -202,20 +202,41 @@ class HotelService(models.Model):
 
     @api.multi
     def _compute_price_unit(self):
-        """
-        Compute tax and price unit
-        """
+        self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')
-        product = self.product_id.with_context(
-                lang=folio.partner_id.lang,
-                partner=folio.partner_id.id,
-                quantity=self.product_qty,
-                date=folio.date_order,
-                pricelist=folio.pricelist_id.id,
-                uom=self.product_id.uom_id.id,
-                fiscal_position=False
-            )
-        return self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_ids, folio.company_id)
+        reservation = self.ser_room_line or self.env.context.get('ser_room_line')
+        if self.is_board_service:
+            board_room_type = self.env['hotel.board.service.room.type'].search([
+                ('hotel_board_service_id', '=', reservation.board_service_id.id),
+                ('hotel_room_type_id', '=', reservation.room_type_id.id),
+                ('pricelist_id', '=', folio.pricelist_id.id)
+            ])
+            if not board_room_type:
+                board_room_type = self.env['hotel.board.service.room.type'].search([
+                ('hotel_board_service_id', '=', reservation.board_service_id.id),
+                ('hotel_room_type_id', '=', reservation.room_type_id.id)
+            ])
+            if board_room_type.price_type = 'fixed':
+                return self.env['hotel.board.service.room.type.line'].search([
+                    ('hotel_board_service_room_type_id', '=', board_room_type.id),
+                    ('service_id','=',self.product_id.id)]).amount
+            else:
+                return (reservation.price_total * self.env['hotel.board.service.room.type.line'].search([
+                    ('hotel_board_service_room_type_id', '=', board_room_type.id),
+                    ('service_id','=',self.product_id.id)]).amount) / 100
+        else:
+            folio = self.folio_id or self.env.context.get('default_folio_id')
+            product = self.product_id.with_context(
+                    lang=folio.partner_id.lang,
+                    partner=folio.partner_id.id,
+                    quantity=self.product_qty,
+                    date=folio.date_order,
+                    pricelist=folio.pricelist_id.id,
+                    uom=self.product_id.uom_id.id,
+                    fiscal_position=False
+                )
+            return self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_ids, folio.company_id)
+            
          
 
     @api.model
