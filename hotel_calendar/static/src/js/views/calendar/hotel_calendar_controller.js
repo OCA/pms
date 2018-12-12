@@ -65,7 +65,7 @@ var PMSCalendarController = AbstractController.extend({
       });
     },
 
-    updateReservations: function (ids, values, oldReserv, newReserv) {
+    updateReservations: function (calendar, ids, values, oldReserv, newReserv) {
       var self = this;
       return this.model.update_records(ids, values).then(function(result){
         // Remove OB Room Row?
@@ -73,7 +73,7 @@ var PMSCalendarController = AbstractController.extend({
            self._multi_calendar.remove_obroom_row(oldReserv, true);
         }
       }).fail(function(err, errev){
-        self._multi_calendar.replace_reservation(newReserv, oldReserv);
+        calendar.replaceReservation(newReserv, oldReserv);
       });
     },
 
@@ -299,6 +299,12 @@ var PMSCalendarController = AbstractController.extend({
         active_calendar.addReservations(self._multi_calendar._dataset['reservations']);
       });
 
+      this.renderer.$el.find('#pms-menu #btn_action_divide button').on('click', function(ev){
+        var active_calendar = self._multi_calendar.get_active_calendar();
+        var cur_mode = active_calendar.getSelectionMode();
+        active_calendar.setSelectionMode(cur_mode===HotelCalendar.MODE.DIVIDE?HotelCalendar.MODE.NONE:HotelCalendar.MODE.DIVIDE);
+      });
+
       this.renderer.$el.find('#pms-menu #btn_save_calendar_record').on('click', function(ev){
         var active_calendar_record = self._multi_calendar.get_calendar_record(self._multi_calendar.get_active_index());
         active_calendar_record.name = "LOLO";
@@ -470,8 +476,8 @@ var PMSCalendarController = AbstractController.extend({
                     'room_id': roomId,
                     'overbooking': newReservation.room.overbooking
                   };
-                  self.updateReservations([newReservation.id], write_values,
-                                          oldReservation, newReservation);
+                  self.updateReservations(ev.detail.calendar_obj, [newReservation.id],
+                                          write_values, oldReservation, newReservation);
                   hasChanged = true;
                 }
               },
@@ -514,6 +520,14 @@ var PMSCalendarController = AbstractController.extend({
             }).tooltip('show');
           }
         });
+        this._multi_calendar.on_calendar('hcalOnChangeSelectionMode', function(ev){
+            var $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
+            if (ev.detail.newMode === HotelCalendar.MODE.DIVIDE) {
+                $led.removeClass('led-disabled').addClass('led-enabled');
+            } else {
+                $led.removeClass('led-enabled').addClass('led-disabled');
+            }
+        }.bind(this));
         this._multi_calendar.on_calendar('hcalOnChangeSelection', function(ev){
           var parentRow = document.querySelector(`#${ev.detail.cellStart.dataset.hcalParentRow}`);
           var parentCellStart = document.querySelector(`#${ev.detail.cellStart.dataset.hcalParentCell}`);
@@ -801,6 +815,14 @@ var PMSCalendarController = AbstractController.extend({
         $led.removeClass('led-disabled').addClass('led-enabled');
       } else {
         $led.removeClass('led-enabled').addClass('led-disabled');
+      }
+
+      /* Divide Led */
+      var $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
+      if (active_calendar.getSelectionMode() === HotelCalendar.MODE.DIVIDE) {
+          $led.removeClass('led-disabled').addClass('led-enabled');
+      } else {
+          $led.removeClass('led-enabled').addClass('led-disabled');
       }
 
       /* Calendar Record */

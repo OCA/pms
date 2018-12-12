@@ -76,11 +76,13 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
   this._reservations = [];  // Store Reservations
   this._reservationsMap = {}; // Store Reservations Mapped by Room for Search Purposes
   this._modeSwap = HotelCalendar.MODE.NONE; // Store Swap Mode
+  this._selectionMode = HotelCalendar.MODE.NONE;
   this._endDate = this.options.startDate.clone().add(this.options.days, 'd'); // Store End Calendar Day
   this._tableCreated = false; // Store Flag to Know Calendar Creation
   this._cellSelection = {start:false, end:false, current:false}; // Store Info About Selected Cells
   this._lazyModeReservationsSelection = false; // Store Info About Timer for Selection Action
   this._domains = {}; // Store domains for filter rooms & reservations
+  this._divideDivs = false;
 
   /***/
   this._reset_action_reservation();
@@ -150,10 +152,42 @@ HotelCalendar.prototype = {
       if (this._modeSwap === HotelCalendar.MODE.NONE) {
         this._dispatchSwapReservations();
         this._reset_action_reservation();
+      } else {
+        this.setSelectionMode(HotelCalendar.MODE.NONE);
       }
 
       this._updateHighlightSwapReservations();
     }
+  },
+
+  setSelectionMode: function(/*Int*/mode) {
+    if (this._modeSwap === HotelCalendar.MODE.NONE) {
+      this._selectionMode = mode;
+      if (this._selectionMode === HotelCalendar.MODE.DIVIDE) {
+        for (var reserv of this._reservations) {
+          reserv._active = false;
+          this._updateDivReservation(reserv, true);
+        }
+      } else {
+        for (var reserv of this._reservations) {
+          reserv._active = true;
+          this._updateDivReservation(reserv, true);
+        }
+        if (this._divideDivs) {
+          this._divideDivs[0].remove();
+          this._divideDivs[1].remove();
+          this._divideDivs = false;
+        }
+      }
+
+      this._dispatchEvent('hcalOnChangeSelectionMode', {
+        'newMode': this._selectionMode,
+      });
+    }
+  },
+
+  getSelectionMode: function() {
+    return this._selectionMode;
   },
 
   getSwapMode: function() {
@@ -1553,7 +1587,7 @@ HotelCalendar.prototype = {
       var limitRightDate = this.etable.querySelector(`#${reserv._limits.right.dataset.hcalParentCell}`).dataset.hcalDate;
       var limitLeftDateMoment = HotelCalendar.toMoment(limitLeftDate);
       var limitRightDateMoment = HotelCalendar.toMoment(limitRightDate);
-      var diff_date = this.getDateDiffDays(limitLeftDateMoment, limitRightDateMoment);
+      var diff_date = this.getDateDiffDays(limitLeftDateMoment, limitRightDateMoment)+1;
       if (reserv._drawModes[1] === 'hard-end') { --diff_date; }
       var date = limitLeftDateMoment.clone().startOf('day');
       var selector = [];
@@ -1624,15 +1658,13 @@ HotelCalendar.prototype = {
             // FIXME: Normalize data calendar (gmt) vs extra info (utc)
             var date_cell = HotelCalendar.toMoment(this.etable.querySelector(`#${c.dataset.hcalParentCell}`).dataset.hcalDate);
             var room_price = this.getRoomPrice(parentRow.dataset.hcalRoomObjId, date_cell);
-            if (c === cells[0]) {
-	            c.textContent = room_price + ' ' + this.options.currencySymbol;
-	            if (!room.shared && c.dataset.hcalBedNum > limits.left.dataset.hcalBedNum) {
-	              c.style.color = 'lightgray';
-	            }
-	            else {
-	              c.style.color = 'black';
-	              total_price += room_price;
-	            }
+            c.textContent = room_price + ' ' + this.options.currencySymbol;
+            if (!room.shared && c.dataset.hcalBedNum > limits.left.dataset.hcalBedNum) {
+              c.style.color = 'lightgray';
+            }
+            else {
+              c.style.color = 'black';
+              total_price += room_price;
             }
           }
         }
@@ -1701,12 +1733,10 @@ HotelCalendar.prototype = {
 
       reserv._html.style.top = `${boundsInit.top-etableOffset.top}px`;
       var divHeight = (boundsEnd.bottom-etableOffset.top)-(boundsInit.top-etableOffset.top);
-      reserv._html.style.height = `${divHeight}px`;
-      reserv._html.style.lineHeight = `${divHeight}px`;
       var fontHeight = divHeight/1.2;
-      if (fontHeight > 16) {
-        fontHeight = 16;
-      }
+      if (fontHeight > 16) { fontHeight = 16; }
+      reserv._html.style.height = `${divHeight}px`;
+      reserv._html.style.lineHeight = `${divHeight+fontHeight/2.0}px`;
       reserv._html.style.fontSize = `${fontHeight}px`;
 
       var clearBorderLeft = function(/*HTMLObject*/elm) {
@@ -2186,7 +2216,9 @@ HotelCalendar.prototype = {
   },
 
   getDateDiffDays: function(/*MomentObject*/start, /*MomentObject*/end) {
-	  return end.clone().startOf('day').diff(start.clone().startOf('day'), 'days');
+    var end_date = end.clone().startOf('day');
+    var start_date = start.clone().startOf('day');
+	  return end_date.diff(start_date, 'days');
   },
 
   getDateLimits: function(/*List HReservationObject*/reservs) {
@@ -2353,7 +2385,7 @@ HotelCalendar.prototype = {
         }
       }
     }
-    if (this._isLeftButtonPressed(ev)) {
+    if (this._selectionMode === HotelCalendar.MODE.NONE && this._isLeftButtonPressed(ev)) {
       var toRoom = undefined;
       var needUpdate = false;
       if (!this.reservationAction.reservation) {
@@ -2446,6 +2478,29 @@ HotelCalendar.prototype = {
           }
         }
       }
+    } else if (this._selectionMode === HotelCalendar.MODE.DIVIDE) {
+      var parentRow = ev.target.parentNode.parentNode.parentNode.parentNode;
+      var room_id = parentRow.dataset.hcalRoomObjId;
+      var reservs = this.getReservationsByDay(date_cell, true, false, room_id);
+      if (this._divideDivs) {
+        this._divideDivs[0].remove();
+        this._divideDivs[1].remove();
+        this._divideDivs = false;
+      }
+      if (reservs.length) {
+        this._divideDivs = [$(reservs[0]._html).clone().text('').appendTo(this.edivr), $(reservs[0]._html).clone().text('').appendTo(this.edivr)];
+        var diff = this.getDateDiffDays(reservs[0].startDate, date_cell);
+        this._divideDivs[0].css('background-color', 'red');
+        this._divideDivs[1].css('background-color', 'blue');
+
+        var etableOffset = this.etable.getBoundingClientRect();
+        var boundsCell = ev.target.getBoundingClientRect();
+        var beginCell = reservs[0]._limits.left.getBoundingClientRect();
+        var endCell = reservs[0]._limits.right.getBoundingClientRect();
+        this._divideDivs[0][0].style.width = `${(boundsCell.left-beginCell.left)+boundsCell.width}px`;
+        this._divideDivs[1][0].style.left = `${(boundsCell.left-etableOffset.left)+boundsCell.width}px`;
+        this._divideDivs[1][0].style.width = `${(endCell.left-boundsCell.left)}px`;
+      }
     }
   },
 
@@ -2464,6 +2519,8 @@ HotelCalendar.prototype = {
       else if (ev.keyCode === 17 && this.getSwapMode() === HotelCalendar.MODE.SWAP_FROM) {
         this.setSwapMode(HotelCalendar.MODE.SWAP_TO);
       }
+    } else if (ev.keyCode === 27 && this._selectionMode !== HotelCalendar.MODE.NONE) {
+      this.setSelectionMode(HotelCalendar.MODE.NONE);
     }
   },
 
@@ -2645,7 +2702,7 @@ HotelCalendar.prototype = {
 /** CONSTANTS **/
 HotelCalendar.DOMAIN = { NONE: -1, RESERVATIONS: 0, ROOMS: 1 };
 HotelCalendar.ACTION = { NONE: -1, MOVE_ALL: 0, MOVE_LEFT: 1, MOVE_RIGHT: 2, SWAP: 3 };
-HotelCalendar.MODE = { NONE: -1, SWAP_FROM: 0, SWAP_TO: 1 };
+HotelCalendar.MODE = { NONE: -1, SWAP_FROM: 0, SWAP_TO: 1, DIVIDE: 2, UNIFY: 3 };
 HotelCalendar.DATE_FORMAT_SHORT_ = 'DD/MM/YYYY';
 HotelCalendar.DATE_FORMAT_LONG_ = HotelCalendar.DATE_FORMAT_SHORT_ + ' HH:mm:ss';
 /** STATIC METHODS **/
