@@ -21,13 +21,63 @@ class HotelBoardServiceRoomType(models.Model):
     price_type = fields.Selection([
         ('fixed','Fixed'),
         ('percent','Percent')], string='Type', default='fixed', required=True)
-    amount = fields.Float('Amount', digits=dp.get_precision('Product Price'), default=0.0)
+    amount = fields.Float('Amount',
+                          digits=dp.get_precision('Product Price'),
+                          compute='_compute_board_amount',
+                          store=True)
+    board_service_line_ids = fields.One2many('hotel.board.service.room.type.line', 'hotel_board_service_room_type_id')
     
     @api.model_cr
     def init(self):
         self._cr.execute('SELECT indexname FROM pg_indexes WHERE indexname = %s', ('hotel_board_service_id_hotel_room_type_id_pricelist_id',))
         if not self._cr.fetchone():
             self._cr.execute('CREATE INDEX hotel_board_service_id_hotel_room_type_id_pricelist_id ON hotel_board_service_room_type_rel (hotel_board_service_id, hotel_room_type_id, pricelist_id)')
+
+    @api.model
+    def create(self, vals):
+        if 'hotel_board_service_id' in vals:
+            vals.update(
+                    self.prepare_board_service_room_lines(vals['hotel_board_service_id'])
+                )
+        return super(HotelBoardServiceRoomType, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if 'hotel_board_service_id' in vals:
+            vals.update(
+                    self.prepare_board_service_room_lines(vals['hotel_board_service_id'])
+                )
+        return super(HotelBoardServiceRoomType, self).write(vals)
+
+    @api.multi
+    def open_board_lines_form(self):
+        action = self.env.ref('hotel.action_hotel_board_service_room_type_view').read()[0]
+        action['views'] = [(self.env.ref('hotel.hotel_board_service_room_type_form').id, 'form')]
+        action['res_id'] = self.id
+        return action
+
+    @api.depends('board_service_line_ids.amount')
+    def _compute_board_amount(self):
+        for record in self:
+            total = 0
+            for service in record.board_service_line_ids:
+                total += service.amount
+            record.update({'amount': total})
+
+    @api.model
+    def prepare_board_service_room_lines(self, board_service_id):
+        """
+        Prepare line to price products config
+        """
+        cmds=[(5,0,0)]
+        board_service = self.env['hotel.board.service'].browse(board_service_id)
+        today = fields.Date.today()
+        for product in board_service.service_ids:
+                cmds.append((0, False, {
+                    'service_id': product.id,
+                    'amount': product.list_price #TODO: default amomunt?¿
+                }))
+        return {'board_service_line_ids': cmds}
 
     @api.constrains('pricelist_id')
     def constrains_pricelist_id(self):
