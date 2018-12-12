@@ -3,88 +3,139 @@
 
     <t t-name="hotel_calendar.HotelCalendarView">
         <div class="col-xs-12 col-md-12 nopadding">
-            <div class="col-lg-1 hidden-xs hidden-sm nopadding" id="pms-menu">
-                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_checkout" data-action="hotel_calendar.hotel_reservation_action_checkout">
-                    <div class="ninfo"><span class="badge badge-danger">0</span></div>
-                    CHECK-OUT
-                </button>
-                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_checkin" data-action="hotel_calendar.hotel_reservation_action_checkin">
-                    <div class="ninfo"><span class="badge badge-danger">0</span></div>
-                    CHECK-IN
-                </button>
-                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_bookings">
-                    <!--div class="ninfo"><span class="badge badge-danger">0</span></div-->
-                    BOOKS<br/>
-                </button>
-                <input type="edit" id="bookings_search" placeholder="Search..." style="width:100%; border:1px solid lightgray;" />
-                <button class="btn btn-default col-xs-12 col-md-12" id="btn_action_control" data-action="hotel.open_wizard_reservations">
-                    WIZARD
-                </button>
-                <button class="btn btn-default col-xs-12 col-md-12" id="btn_swap">
-                    <div class="ninfo"><span class="badge badge-danger">0</span></div>
-                    <span class="ntext">START SWAP</span>
-                </button>
-                <!--button class="btn btn-default col-xs-12 col-md-12" id="btn_action_refresh">
-                    <i class="fa fa-4x fa-refresh"> </i>
-                </button-->
-            </div>
-            <div class="col-xs-12 col-sm-12 col-md-11 nopadding">
-                <div class="col-xs-11 col-md-11 nopadding" id="pms-search">
-                    <table class="col-xs-12 col-md-12 nopadding" id="pms-search-table">
-                        <tbody>
-                            <tr>
-                                <td class="col-xs-3 col-md-4">
-                                    <div class="col-xs-12 col-md-12 text-left">
-                                        <label for="type_list">SEGMENTATION:</label>
-                                        <select class="form-control" id="type_list" multiple="multiple"/>
-                                    </div>
-                                    <div class="col-xs-12 col-md-12 text-left">
-                                        <label for="floor_list">LOCATION:</label>
-                                        <select class="list form-control" id="floor_list" multiple="multiple"/>
-                                    </div>
-                                </td>
-                                <td class="col-xs-3 col-md-4">
-                                    <div class="col-xs-12 col-md-12 text-left">
-                                        <label for="amenities_list">AMENITIES:</label>
-                                        <select class="list form-control" id="amenities_list" multiple="multiple"/>
-                                    </div>
-                                    <div class="col-xs-12 col-md-12 text-left">
-                                        <label for="virtual_list">VIRTUAL:</label>
-                                        <select class="list form-control" id="virtual_list" multiple="multiple"/>
-                                    </div>
-                                </td>
-                                <td class="col-xs-6 col-md-4">
-                                    <div class="col-xs-12 col-md-12">
-                                        <table style="margin: 0 auto">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <label for="date_begin">FROM</label>
-                                                        <div class="input-group date" id="date_begin">
-                                                            <input type="text" class="o_datepicker_input form-control" name="date_begin" required="required"/>
-                                                            <span class="input-group-addon">
-                                                                <span class="fa fa-calendar"></span>
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <label for="date_end">TO</label>
-                                                        <div class="input-group date" id="date_end">
-                                                            <input type="text" class="o_datepicker_input form-control" name="date_end" required="required"/>
-                                                            <span class="input-group-addon">
-                                                                <span class="fa fa-calendar"></span>
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="col-lg-2 hidden-xs hidden-sm" id="pms-menu">
+                <div class="col-xs-12 col-md-12 nopadding menu-date-box">
+                    <div class="input-group date" id="date_begin">
+                        <input type="text" class="o_datepicker_input form-control" name="date_begin" required="required"/>
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                    <div class="input-group date" id="date_end">
+                        <input type="text" class="o_datepicker_input form-control" name="date_end" required="required"/>
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
                 </div>
+                <div class="col-xs-12 col-md-12 nopadding menu-button-box">
+                    <div class="col-xs-6 col-md-6" id="btn_action_checkout">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box" data-action="hotel_calendar.hotel_reservation_action_checkout">
+                            <i class="fa fa-fw o_button_icon fa-sign-out"> </i>
+                            <div class="o_button_text">
+                                <span class="ninfo">0</span><br/>
+                                Checkouts
+                            </div>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 col-md-6" id="btn_action_checkin">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box" data-action="hotel_calendar.hotel_reservation_action_checkin">
+                            <i class="fa fa-fw o_button_icon fa-sign-in"> </i>
+                            <div class="o_button_text">
+                                <span class="ninfo">0</span><br/>
+                                Checkins
+                            </div>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 col-md-6" id="btn_swap">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box">
+                            <div class='led led-disabled'></div>
+                            <i class="fa fa-fw o_button_icon fa-retweet"> </i>
+                            <div class="o_button_text">
+                                <span class="ntext">Start Swap</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 col-md-6" id="btn_action_control">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box" data-action="hotel.open_wizard_reservations">
+                            <i class="fa fa-fw o_button_icon fa-magic"> </i>
+                            <div class="o_button_text">
+                                Wizard
+                            </div>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 col-md-6" id="btn_action_overbooking">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box">
+                            <div class='led led-disabled'></div>
+                            <i class="fa fa-fw o_button_icon fa-clock-o"> </i>
+                            <div class="o_button_text">
+                                <span class="ninfo">0</span><br/>
+                                Overbooking
+                            </div>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 col-md-6" id="btn_action_cancelled">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box">
+                            <div class='led led-disabled'></div>
+                            <i class="fa fa-fw o_button_icon fa-calendar-times-o"> </i>
+                            <div class="o_button_text">
+                                Cancelled
+                            </div>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 col-md-6" id="btn_action_divide">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box">
+                            <div class='led led-disabled'></div>
+                            <i class="fa fa-fw o_button_icon fa-scissors"> </i>
+                            <div class="o_button_text">
+                                Divide
+                            </div>
+                        </button>
+                    </div>
+                    <div class="col-xs-6 col-md-6" id="btn_action_unify">
+                        <button class="btn btn-default col-xs-12 col-md-12 button-box">
+                            <div class='led led-disabled'></div>
+                            <i class="fa fa-fw o_button_icon fa-compress"> </i>
+                            <div class="o_button_text">
+                                Unify
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12 nopadding menu-search-box">
+                    <div class="input-group">
+                        <input type="edit" id="bookings_search" placeholder="Name, Mail, Vat, Book..." class="form-control extra-search" />
+                        <span class="input-group-addon bg-primary">
+                            <span class="fa fa-search"></span>
+                        </span>
+                    </div>
+                    <button class="btn btn-primary col-xs-6 col-md-6" id="btn_action_bookings">
+                        Books
+                    </button>
+                    <button class="btn btn-primary col-xs-6 col-md-6" id="btn_action_checkins">
+                        Checkins
+                    </button>
+                    <button class="btn btn-primary col-xs-6 col-md-6" id="btn_action_invoices">
+                        Invoices
+                    </button>
+                    <button class="btn btn-primary col-xs-6 col-md-6" id="btn_action_folios">
+                        Folios
+                    </button>
+                </div>
+                <div class="col-xs-12 col-md-12 nopadding menu-filter-box">
+                    <h4>Filters</h4>
+                    <select class="form-control" id="type_list" placeholder="Select Segmentation..." multiple="multiple"/>
+                    <select class="list form-control" id="floor_list" placeholder="Select Location..." multiple="multiple"/>
+                    <select class="list form-control" id="amenities_list" placeholder="Select Amenities..." multiple="multiple"/>
+                    <select class="list form-control" id="virtual_list" placeholder="Select Type..." multiple="multiple"/>
+                    <div class="filter-record col-xs-12 col-md-12" style="padding:4px">
+                        <div class="col-xs-8 col-md-8 nopadding">
+                            <input type="edit" id="calendar_name" class="form-control" />
+                        </div>
+                        <div class="col-xs-2 col-md-2 nopadding">
+                            <button class="btn btn-primary col-xs-12 col-md-12" id="btn_save_calendar_record">
+                                <i class="fa fa-fw fa-save"> </i>
+                            </button>
+                        </div>
+                        <div class="col-xs-2 col-md-2 nopadding">
+                            <button class="btn btn-primary col-xs-12 col-md-12" id="btn_reload_calendar_filters">
+                                <i class="fa fa-fw fa-refresh"> </i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-10 nopadding">
                 <div id="hcal_widget" class="col-xs-12 col-md-12 nopadding">
                     <div id="hcal_load">
                         <span>

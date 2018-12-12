@@ -4,7 +4,7 @@
  * Aloxa Solucions S.L. <info@aloxa.eu>
  *     Alexandre Díaz <alex@aloxa.eu>
  */
- 
+
  /** ANIMATIONS **/
  @keyframes channel-manager-changes {
     0% {
@@ -34,16 +34,10 @@
     	color: black;
     }
 }
- 
- 
+
+
 #pms-menu #btn_channel_manager_request.incoming i {
 	animation-name: channel-manager-changes;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-#pms-menu #btn_channel_manager_request.incoming span {
-	animation-name: channel-manager-changes-text;
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-direction: alternate;

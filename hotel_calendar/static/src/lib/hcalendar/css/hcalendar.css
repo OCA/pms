@@ -53,6 +53,7 @@
 
 #hcal_widget {
   max-height: 100%;
+	background-color: white;
 }
 
 #cal-pag-prev-plus, #cal-pag-prev, #cal-pag-selector, #cal-pag-next, #cal-pag-next-plus {
@@ -105,17 +106,22 @@
  	color: #654a37;
 }
 .btn-hcal.hcal-cell-end-week {
-	background-color: #0D5A8F;
+	background-color: #CBE5F8;
 }
 .btn-hcal-3d {
- 	color: white;
- 	background-color: #7c7bad;
- 	border: 1px solid #cfcfdd;
+ 	border: 1px solid #eaeaea;
+	border-top-width: 0;
+	border-bottom-width: 0;
  	/*border-color: white black black white !important;*/
 }
 .btn-hcal-flat {
-	background-color: #cfcfdd;
- 	border: 1px solid #cfcfdd;
+	background-color: white;
+ 	border: 1px solid #eaeaea;
+}
+.btn-hcal-left {
+	background-color: white;
+ 	border: 1px solid #eaeaea;
+	border-left-width: 0;
 }
 
 .hcal-warn-ob-indicator {
@@ -168,7 +174,7 @@
 .hcal-table-day {
 	height: 100%;
 	border-collapse: collapse !important;
-	border: 0 dotted #cfcfcf;
+	border: 0 dotted #eaeaea;
   border-width: 2px 0;
 }
 /*.hcal-table-day tr:first-child td{
@@ -189,17 +195,17 @@
 	font-size: 7px;
 	vertical-align: middle;
 	font-weight: bold;
-	border: 1px solid #cecece !important;
+	border: 1px solid #eaeaea !important;
 }
 .hcal-table-day td:hover:not(.hcal-cell-highlight):not(.hcal-cell-invalid) {
 	background-color: #FCFEE1 !important;
 }
 
 .hcal-cell-current-day {
-	background-color: #E0F8B0;
+	background-color: #FAFFD9;
 }
 .hcal-cell-end-week {
-	background-color: #E2EAF9;
+	background-color: #ECF3FF;
 }
 
 .hcal-cell-day-selector {
@@ -292,8 +298,8 @@
 	text-align: center;
 	/*background-color: #729fcf;*/
 	/*transform: skewX(-25deg);*/
-	border-radius: 5px;
-	border: 1px solid #3465a4;
+	/*border-radius: 5px;*/
+	border: 0 double #3465a4;
 	color: white;
 	white-space: nowrap;
 	overflow: hidden;
@@ -377,7 +383,7 @@
 }
 
 tr.hcal-row-room-type-group-overbooking-item td {
-	background-color: #c78585;
+	background-color: #fcebeb;
 }
 
 .hcal-cell-month-day {
@@ -475,23 +481,6 @@ td.hcal-cell-month-day-occupied {
 	border-style: none !important;
 	border-radius: 0 !important;
 	text-align: center;
-}
-
-button#btn_action_bookings {
-	margin-bottom: -1px !important;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-}
-input#bookings_search {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-	margin-bottom: 0.2em;
-}
-
-.multi-calendar-tab-plus {
-	background-color: darkgray;
-	font-weight: bold;
-	color: white;
 }
 
 .noselect {

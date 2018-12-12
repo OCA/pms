@@ -18,53 +18,89 @@
 #pms-menu {
 	padding: 0 0.2em !important;
 }
+
+#pms-menu .input-group span, #pms-menu input {
+	border-radius: 0;
+}
+
 #pms-menu button {
-	min-height: 45px;
-	margin: 0.2em 0;
+  border-radius: 0;
+  border: 1px solid lightgray;
+  font-size: x-small;
 }
 
-#pms-search {
-	padding: 0.5em !important;
-	background-color: white;
-	box-shadow: 10px 1px 12px #333;
-}
-#pms-search fieldset {
+button .led {
+	position: absolute;
 	display: inline-block;
+	right: 5px;
+	top: -1px;
+	width: 8px;
+	height: 8px;
+	border: 1px solid lightgray;
+	border-top-width: 0;
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
+	transition: all 0.5s ease;
 }
-#pms-search fieldset legend {
-	font-size: initial !important;
-	margin: initial !important;
+button .led-disabled {
+	background-color: dimgrey;
 }
-#pms-search .list {
-	overflow-y: auto;
+button .led-enabled {
+	background-color: khaki;
+	box-shadow: 0 0 8px 0px khaki;
+}
+
+button .led-green {
+	background-color: chartreuse;
+	box-shadow: 0 0 8px 0px chartreuse;
+}
+
+button .led-blue {
+	background-color: cornflowerblue;
+	box-shadow: 0 0 8px 0px cornflowerblue;
+}
+
+input#bookings_search {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border: 1px solid lightgray;
+}
+
+#pms-menu .menu-date-box {
+	margin-top: 2px !important;
+}
+
+#pms-menu .menu-button-box, #pms-menu .menu-search-box, #pms-menu .menu-filter-box {
+	margin-top: 2em !important;
+}
+
+#pms-menu .menu-filter-box .filter-record {
+	margin-top: 1em;
+}
+
+#pms-menu .button-box {
 	text-align: left;
-}
-#pms-search label {
-	font-size: 12px;
-}
-
-#pms-search-table > tbody > tr > td {
-	background-color: white;
-	padding: 0.1em;
-	border: 1px solid #efefef;
-	border-width: 0 2px;
-	vertical-align: middle;
-	text-align: center;
-}
-#pms-search-table > tbody > tr > td:first-child {
-	border-width: 0 2px 0 0;
-}
-#pms-search-table > tbody > tr > td:last-child {
-	border-width: 0 0 0 2px;
+	min-height: 3.5em;
+	padding: 3px;
+	transition: all 0.5s ease;
 }
 
-#pms-search-cal-pag .btn {
-	background-color: transparent;
-	padding: 0.1em;
+.button-highlight {
+	background-color: orange;
+	color: white;
+}
+.button-highlight i {
+	color: white;
 }
 
-.input-group {
-	padding: 0.1em;
+.multi-calendar-tab-plus {
+	background-color: darkgray;
+	font-weight: bold;
+	color: white;
+}
+
+#pms-menu div[id^=btn_] {
+	padding: 2px;
 }
 
 .warn-message {
@@ -75,29 +111,33 @@
 }
 
 /** SELECT 2 **/
-#pms-search .select2-search-choice {
-	padding-top: 1px !important;
-	padding-bottom: 1px !important;
-	font-size: 10px !important;
+#pms-menu .select2-container {
+	border-radius: 0;
 }
-#pms-search .select2-search-choice-close {
-	top: 1px !important;
-}
-
 /** BOOTSTRAP **/
 .badge-danger {
 	background-color: #d34f2a !important;
 }
 
-/** FONT AWESOME **/
-.cloud-text {
-	margin-top: .12em;
-	font-size: 26px;
-	font-family: sans-serif;
-	font-weight: bold;
-}
-
 /** ODOO **/
 .o_chat_window {
   z-index: 8 !important;
+}
+
+.o_button_icon {
+	display: inline-block;
+	width: 37px;
+	padding: 0px 3px;
+	text-align: center;
+	vertical-align: middle;
+	color: #7C7BAD;
+	font-size: 24px;
+}
+
+.o_button_text {
+	display: inline-block;
+	vertical-align: middle;
+	max-width: 70%;
+	line-height: 1.2;
+	text-align: left;
 }

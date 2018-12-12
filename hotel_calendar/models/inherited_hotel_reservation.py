@@ -133,6 +133,7 @@ class HotelReservation(models.Model):
                 'name': room.name,
                 'capacity': room.capacity,
                 'class_name': room.room_type_id.class_id.name,
+                'class_id': room.room_type_id.class_id.id,
                 'shared': room.shared_room,
                 'price': room.room_type_id
                          and ['pricelist', room.room_type_id.id, pricelist_id,
@@ -151,6 +152,10 @@ class HotelReservation(models.Model):
             json_calendars.append({
                 'id': calendar.id,
                 'name': calendar.name,
+                'segmentation_ids': calendar.segmentation_ids.ids,
+                'location_ids': calendar.location_ids.ids,
+                'amenity_ids': calendar.amenity_ids.ids,
+                'room_type_ids': calendar.room_type_ids.ids,
             })
         return json_calendars
 

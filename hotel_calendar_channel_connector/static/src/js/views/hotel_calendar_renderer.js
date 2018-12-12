@@ -10,26 +10,22 @@ odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarRendererChannelCon
 
     update_buttons_counter_channel_connector: function (nreservations, nissues) {
       // Cloud Reservations
-      var $button = this.$el.find('#btn_channel_manager_request');
       var $text = this.$el.find('#btn_channel_manager_request .cloud-text');
       if (nreservations > 0) {
-          $button.addClass('incoming');
+          $text.parent().parent().addClass('button-highlight');
+          $text.parent().addClass('incoming');
           $text.text(nreservations);
-          $text.show();
       } else {
-          $button.removeClass('incoming');
-          $text.hide();
+          $text.parent().removeClass('incoming');
       }
 
       // Issues
       var $ninfo = this.$el.find('#pms-menu #btn_action_issues div.ninfo');
-      var $badge_issues = $ninfo.find('.badge');
-      if (nissues > 0) {
-          $badge_issues.text(nissues);
-          $badge_issues.parent().show();
-          $ninfo.show();
+      $ninfo.text(nissues);
+      if (nissues) {
+        $ninfo.parent().parent().addClass('button-highlight');
       } else {
-          $ninfo.hide();
+        $ninfo.parent().parent().removeClass('button-highlight');
       }
     },
 

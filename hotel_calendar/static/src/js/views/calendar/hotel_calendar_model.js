@@ -106,6 +106,23 @@ return AbstractModel.extend({
         });
     },
 
+    update_or_create_calendar_record: function(ids, vals) {
+        if (!ids) {
+            return this._rpc({
+                model: 'hotel.calendar',
+                method: 'create',
+                args: [vals],
+                context: Session.user_context,
+            });
+        }
+        return this._rpc({
+            model: 'hotel.calendar',
+            method: 'write',
+            args: [ids, vals],
+            context: Session.user_context,
+        });
+    },
+
     folio_search_count: function(domain) {
         return this._rpc({
             model: 'hotel.folio',

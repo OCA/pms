@@ -12,6 +12,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
 
   var MultiCalendar = Widget.extend({
     _calendars: [],
+    _calendar_records: [],
     _active_index: -1,
     _events: {},
     _tabs: [],
@@ -37,6 +38,10 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       return this._calendars[index-1];
     },
 
+    get_calendar_record: function(index) {
+      return this._calendar_records[index-1];
+    },
+
     get_tab: function(index) {
       return this._tabs[index];
     },
@@ -51,6 +56,23 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
 
     get_active_tab: function() {
       return this._tabs[this._active_index];
+    },
+
+    update_active_tab_name: function(name) {
+      var [$tab, $panel] = this.get_tab(this.get_active_index());
+      $tab.text(name);
+    },
+
+    get_active_filters: function() {
+      var calendar = this.get_active_calendar();
+      var domain = calendar.getDomain(HotelCalendar.DOMAIN.ROOMS);
+
+      var filters = {};
+      for (var rule of domain) {
+        filters[rule[0]] = rule[2];
+      }
+
+      return filters;
     },
 
     recalculate_reservation_positions: function() {
@@ -189,8 +211,8 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       }
     },
 
-    create_calendar: function(name) {
-      var [$tab, $panel] = this._create_tab(name, `calendar-pane-${name}`);
+    create_calendar: function(calendar_record) {
+      var [$tab, $panel] = this._create_tab(calendar_record['name'], `calendar-pane-${calendar_record['name']}`);
       var calendar = new HotelCalendar(
           $panel[0],
           this._options,
@@ -201,6 +223,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       this._assign_extra_info(calendar);
       calendar.setReservations(this._dataset['reservations']);
       this._calendars.push(calendar);
+      this._calendar_records.push(calendar_record);
       return this._calendars.length-1;
     },
 
@@ -256,7 +279,15 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       var [$tab, $panel] = this._create_tab('+', 'default', {class: 'multi-calendar-tab-plus'});
       $tab.on('shown.bs.tab', function(ev){
         ev.preventDefault();
-        var new_calendar_id = self.create_calendar(`Calendar #${self._calendars.length}`);
+        var calendar_record = {
+          id: false,
+          name: `Calendar #${self._calendars.length}`,
+          segmentation_ids: [],
+          location_ids: [],
+          amenity_ids: [],
+          room_type_ids: []
+        };
+        var new_calendar_id = self.create_calendar(calendar_record);
         self.set_active_calendar(new_calendar_id);
       });
       $('<p/>', {

@@ -52,8 +52,8 @@ var HotelCalendarView = AbstractRenderer.extend({
 
     /** CUSTOM METHODS **/
     get_view_filter_dates: function () {
-        var $dateTimePickerBegin = this.$el.find('#pms-search #date_begin');
-        var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
+        var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
+        var $dateTimePickerEnd = this.$el.find('#pms-menu #date_end');
         var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().utc();
         var date_end = $dateTimePickerEnd.data("DateTimePicker").date().set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
 
@@ -65,8 +65,8 @@ var HotelCalendarView = AbstractRenderer.extend({
         this._view_options = options;
         var date_begin = moment().startOf('day');
         var date_end = date_begin.clone().add(this._view_options['days'], 'd').endOf('day');
-        var $dateTimePickerBegin = this.$el.find('#pms-search #date_begin');
-        var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
+        var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
+        var $dateTimePickerEnd = this.$el.find('#pms-menu #date_end');
         //$dateTimePickerBegin.data("ignore_onchange", true);
         $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
         //$dateTimePickerEnd.data("ignore_onchange", true);
@@ -77,36 +77,30 @@ var HotelCalendarView = AbstractRenderer.extend({
     update_buttons_counter: function(ncheckouts, ncheckins, noverbookings) {
         var self = this;
          // Checkouts Button
-        var $ninfo = self.$el.find('#pms-menu #btn_action_checkout div.ninfo');
-        var $badge_checkout = $ninfo.find('.badge');
-        if (ncheckouts > 0) {
-            $badge_checkout.text(ncheckouts);
-            $badge_checkout.parent().show();
-            $ninfo.show();
+        var $ninfo = self.$el.find('#pms-menu #btn_action_checkout span.ninfo');
+        $ninfo.text(ncheckouts);
+        if (ncheckouts) {
+            $ninfo.parent().parent().addClass('button-highlight');
         } else {
-            $ninfo.hide();
+            $ninfo.parent().parent().removeClass('button-highlight');
         }
 
         // Checkins Button
-        $ninfo = self.$el.find('#pms-menu #btn_action_checkin div.ninfo');
-        var $badge_checkin = $ninfo.find('.badge');
-        if (ncheckins > 0) {
-            $badge_checkin.text(ncheckins);
-            $badge_checkin.parent().show();
-            $ninfo.show();
+        $ninfo = self.$el.find('#pms-menu #btn_action_checkin span.ninfo');
+        $ninfo.text(ncheckins);
+        if (ncheckins) {
+            $ninfo.parent().parent().addClass('button-highlight');
         } else {
-            $ninfo.hide();
+            $ninfo.parent().parent().removeClass('button-highlight');
         }
 
         // OverBookings
-        $ninfo = self.$el.find('#pms-menu #btn_swap div.ninfo');
-        var $badge_swap = $ninfo.find('.badge');
-        if (noverbookings > 0) {
-            $badge_swap.text(noverbookings);
-            $badge_swap.parent().show();
-            $ninfo.show();
+        $ninfo = self.$el.find('#pms-menu #btn_action_overbooking span.ninfo');
+        $ninfo.text(noverbookings);
+        if (noverbookings) {
+            $ninfo.parent().parent().addClass('button-highlight');
         } else {
-            $ninfo.hide();
+            $ninfo.parent().parent().removeClass('button-highlight');
         }
     },
 
@@ -127,8 +121,8 @@ var HotelCalendarView = AbstractRenderer.extend({
             locale : moment.locale(),
             format : HotelConstants.L10N_DATE_MOMENT_FORMAT,
         };
-        var $dateTimePickerBegin = this.$el.find('#pms-search #date_begin');
-        var $dateTimePickerEnd = this.$el.find('#pms-search #date_end');
+        var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
+        var $dateTimePickerEnd = this.$el.find('#pms-menu #date_end');
         $dateTimePickerBegin.datetimepicker(DTPickerOptions);
         $dateTimePickerEnd.datetimepicker($.extend({}, DTPickerOptions, { 'useCurrent': false }));
 
@@ -139,21 +133,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
         $dateTimePickerEnd.data("DateTimePicker").date(date_end);
         this._last_dates = this.get_view_filter_dates();
-
-        // Initial State
-        var $pms_search = this.$el.find('#pms-search');
-        $pms_search.css({
-          'top': `-100%`,
-          'opacity': 0.0,
-        });
-        // Show search (Alt+S)
-        $(document).keydown(function(ev){
-          if (ev.altKey){
-            if (ev.key == 'x' || ev.key == 'X'){
-              self.toggle_pms_search();
-            }
-          }
-        });
 
         /* TOUCH EVENTS */
         this.$el.on('touchstart', function(ev){
@@ -185,13 +164,19 @@ var HotelCalendarView = AbstractRenderer.extend({
 
         /* BUTTONS */
         var $button = this.$el.find('#pms-menu #btn_action_bookings');
-        $button.on('click', function(ev){ self._open_bookings_tree(); });
-        var $btnInput = this.$el.find('#pms-menu #bookings_search');
-        $btnInput.on('keypress', function(ev){
-          if (ev.keyCode === 13) {
-             self._open_bookings_tree();
-          }
-        });
+        $button.on('click', function(ev){ self._open_search_tree('book'); });
+        $button = this.$el.find('#pms-menu #btn_action_checkins');
+        $button.on('click', function(ev){ self._open_search_tree('checkin'); });
+        $button = this.$el.find('#pms-menu #btn_action_invoices');
+        $button.on('click', function(ev){ self._open_search_tree('invoice'); });
+        $button = this.$el.find('#pms-menu #btn_action_folios');
+        $button.on('click', function(ev){ self._open_search_tree('folio'); });
+        // $button = this.$el.find('#pms-menu #bookings_search');
+        // $button.on('keypress', function(ev){
+        //   if (ev.keyCode === 13) {
+        //      self._open_bookings_tree();
+        //   }
+        // });
 
         this.$el.find("button[data-action]").on('click', function(ev){
           self.do_action(this.dataset.action);
@@ -205,7 +190,7 @@ var HotelCalendarView = AbstractRenderer.extend({
     },
 
     loadViewFilters: function(resultsHotelRoomType, resultsHotelFloor, resultsHotelRoomAmenities, resultsHotelVirtualRooms) {
-        var $list = this.$el.find('#pms-search #type_list');
+        var $list = this.$el.find('#pms-menu #type_list');
         $list.html('');
         resultsHotelRoomType.forEach(function(item, index){
             $list.append(`<option value="${item.id}">${item.name}</option>`);
@@ -218,7 +203,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         }.bind(this));
 
         // Get Floors
-        $list = this.$el.find('#pms-search #floor_list');
+        $list = this.$el.find('#pms-menu #floor_list');
         $list.html('');
         resultsHotelFloor.forEach(function(item, index){
             $list.append(`<option value="${item.id}">${item.name}</option>`);
@@ -229,7 +214,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         }.bind(this));
 
         // Get Amenities
-        $list = this.$el.find('#pms-search #amenities_list');
+        $list = this.$el.find('#pms-menu #amenities_list');
         $list.html('');
         resultsHotelRoomAmenities.forEach(function(item, index){
             $list.append(`<option value="${item.id}">${item.name}</option>`);
@@ -240,7 +225,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         }.bind(this));
 
         // Get Virtual Rooms
-        $list = this.$el.find('#pms-search #virtual_list');
+        $list = this.$el.find('#pms-menu #virtual_list');
         $list.html('');
         resultsHotelVirtualRooms.forEach(function(item, index){
             $list.append(`<option value="${item.id}">${item.name}</option>`);
@@ -252,7 +237,7 @@ var HotelCalendarView = AbstractRenderer.extend({
     },
 
     toggle_pms_search: function() {
-      var $pms_search = this.$el.find('#pms-search');
+      var $pms_search = this.$el.find('#pms-menu');
       if ($pms_search.position().top < 0)
       {
         var $navbar = $('.navbar');
@@ -269,7 +254,7 @@ var HotelCalendarView = AbstractRenderer.extend({
       }
     },
 
-    _generate_bookings_domain: function(tsearch) {
+    _generate_search_domain: function(tsearch) {
       var domain = [];
       domain.push('|', '|', '|', '|',
                   ['partner_id.name', 'ilike', tsearch],
@@ -280,22 +265,41 @@ var HotelCalendarView = AbstractRenderer.extend({
       return domain;
     },
 
-    _open_bookings_tree: function() {
+    _open_search_tree: function(type) {
       var $elm = this.$el.find('#pms-menu #bookings_search');
       var searchQuery = $elm.val();
       var domain = false;
       if (searchQuery) {
-        domain = this._generate_bookings_domain(searchQuery);
+        domain = this._generate_search_domain(searchQuery);
+      } else {
+        domain = [];
+      }
+
+      var model = '';
+      var title = '';
+      if (type === 'book' || type === 'book') {
+        model = 'hotel.reservation';
+        title = _t('Reservations');
+      } else if (type === 'checkin') {
+        model = 'hotel.reservation';
+        title = _t('Checkins');
+        domain.splice(0, 0, ['checkin', '=', moment().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)]);
+      } else if (type === 'invoice') {
+        model = 'sale.order';
+        title = _t('Invoices');
+      } else if (type === 'folio') {
+        model = 'hotel.folio'
+        title = _t('Folios');
       }
 
       this.do_action({
         type: 'ir.actions.act_window',
         view_mode: 'form',
         view_type: 'tree,form',
-        res_model: 'hotel.reservation',
+        res_model: model,
         views: [[false, 'list'], [false, 'form']],
         domain: domain,
-        name: searchQuery?'Reservations for ' + searchQuery:'All Reservations'
+        name: searchQuery?`${title} for ${searchQuery}`:`All ${title}`
       });
 
       $elm.val('');
