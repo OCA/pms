@@ -112,7 +112,6 @@ class TestManagementCalendar(TestHotelCalendar):
         rest_it_obj = self.env['hotel.room.type.restriction.item'].sudo(
                                                     self.user_hotel_manager)
         rest_ids = rest_it_obj.search([
-            ('applied_on', '=', '0_room_type'),
             ('restriction_id', '=', self.default_restriction_id),
             ('room_type_id', 'in', (self.hotel_room_type_budget.id,
                                        self.hotel_room_type_special.id)),
