@@ -64,7 +64,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
                 continue
             unlink_vals.append({
                 'restriction_id': record.restriction_id.id,
-                'date': record.date_start,
+                'date': record.date,
                 'min_stay': 0,
                 'min_stay_arrival': 0,
                 'max_stay': 0,
