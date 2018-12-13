@@ -114,17 +114,17 @@ Test TC006
 ----------
 
 :Summary: Bind the **default Restriction Plan** in Odoo to the Hotel Channel Connector Backend
- will start its **parity** with the default Restriction Plan **in WuBook**.
+ using ``ID on Channel=0`` will start its **parity** with the default Restriction Plan **in WuBook**.
 
 :Requirement: TC001
 
-:Procedure: Not defined yet.
+:Procedure: Add the Hotel Channel Connector Backend to the Restriction Plan using ``ID on Channel=0``.
 
 :Result:
- - The Odoo Restriction Plan created in WuBook is in parity with the
+ - The Odoo Restriction Plan will be in parity with the
    default WuBook Restrictions Plan with ``rpid=0``.
 
-:Status: Unknown.
+:Status: Test Passed.
 
 Test TC007
 ----------
@@ -156,5 +156,4 @@ Test TC008
 :Status: Failed.
 
 :Reason: The field was not updated in WuBook
-
 
