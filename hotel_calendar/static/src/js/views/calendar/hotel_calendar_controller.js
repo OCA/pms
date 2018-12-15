@@ -16,7 +16,6 @@ var AbstractController = require('web.AbstractController'),
 
 var PMSCalendarController = AbstractController.extend({
     custom_events: _.extend({}, AbstractController.prototype.custom_events, {
-      onLoadCalendar: '_onLoadCalendar',
       onLoadCalendarSettings: '_onLoadCalendarSettings',
       onLoadViewFilters: '_onLoadViewFilters',
       onUpdateButtonsCounter: '_onUpdateButtonsCounter',
@@ -42,12 +41,14 @@ var PMSCalendarController = AbstractController.extend({
       var self = this;
 
       this._multi_calendar.setElement(this.renderer.$el.find('#hcal_widget'));
-      this._multi_calendar.start();
       this._multi_calendar.on('tab_changed', function(ev, active_index){
         if (active_index) {
           self._refresh_filters(active_index);
         }
       });
+      this._multi_calendar.reset();
+      this._multi_calendar.start();
+
       this._assign_multi_calendar_events();
       this._load_calendars();
       this._assign_view_events();
@@ -167,6 +168,7 @@ var PMSCalendarController = AbstractController.extend({
           var calendar = self._multi_calendar.get_calendar(calendar_index+1);
           calendar.setDomain(HotelCalendar.DOMAIN.ROOMS, domain);
         }
+
         self._multi_calendar.set_active_calendar(self._multi_calendar._calendars.length-1);
       });
     },
@@ -302,7 +304,7 @@ var PMSCalendarController = AbstractController.extend({
       this.renderer.$el.find('#pms-menu #btn_action_divide button').on('click', function(ev){
         var active_calendar = self._multi_calendar.get_active_calendar();
         var cur_mode = active_calendar.getSelectionMode();
-        active_calendar.setSelectionMode(cur_mode===HotelCalendar.MODE.DIVIDE?HotelCalendar.MODE.NONE:HotelCalendar.MODE.DIVIDE);
+        active_calendar.setSelectionMode(cur_mode===HotelCalendar.ACTION.DIVIDE?HotelCalendar.MODE.NONE:HotelCalendar.ACTION.DIVIDE);
       });
 
       this.renderer.$el.find('#pms-menu #btn_save_calendar_record').on('click', function(ev){
@@ -351,6 +353,9 @@ var PMSCalendarController = AbstractController.extend({
               title: QWeb.render('HotelCalendar.TooltipReservation', qdict)
             }).tooltip('show');
           }
+        });
+        this._multi_calendar.on_calendar('hcalOnSplitReservation', function(ev){
+          self.model.split_reservation(ev.detail.obj_id, ev.detail.nights);
         });
         this._multi_calendar.on_calendar('hcalOnClickReservation', function(ev){
           //var res_id = ev.detail.reservationObj.getUserData('folio_id');
@@ -522,7 +527,7 @@ var PMSCalendarController = AbstractController.extend({
         });
         this._multi_calendar.on_calendar('hcalOnChangeSelectionMode', function(ev){
             var $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
-            if (ev.detail.newMode === HotelCalendar.MODE.DIVIDE) {
+            if (ev.detail.newMode === HotelCalendar.ACTION.DIVIDE) {
                 $led.removeClass('led-disabled').addClass('led-enabled');
             } else {
                 $led.removeClass('led-enabled').addClass('led-disabled');
@@ -819,7 +824,7 @@ var PMSCalendarController = AbstractController.extend({
 
       /* Divide Led */
       var $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
-      if (active_calendar.getSelectionMode() === HotelCalendar.MODE.DIVIDE) {
+      if (active_calendar.getSelectionMode() === HotelCalendar.ACTION.DIVIDE) {
           $led.removeClass('led-disabled').addClass('led-enabled');
       } else {
           $led.removeClass('led-enabled').addClass('led-disabled');

@@ -71,13 +71,13 @@ class HotelFolio(models.Model):
     @api.depends('room_lines')
     def _compute_has_cancelled_reservations_to_send(self):
         super()._compute_has_cancelled_reservations_to_send()
-        hotel_reserv_obj = self.env['hotel.reservation']
+        channel_hotel_reserv_obj = self.env['channel.hotel.reservation']
         for record in self:
             splitted_reservation_ids = record.room_lines.filtered(lambda x: x.splitted)
             has_to_send = False
             for rline in splitted_reservation_ids:
                 master_reservation = rline.parent_reservation or rline
-                has_to_send = hotel_reserv_obj.search_count([
+                has_to_send = channel_hotel_reserv_obj.search_count([
                     ('splitted', '=', True),
                     ('folio_id', '=', self.id),
                     ('to_send', '=', True),

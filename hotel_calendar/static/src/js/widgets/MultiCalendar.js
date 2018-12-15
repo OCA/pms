@@ -34,6 +34,24 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       this.$el.on(event_name, callback.bind(this));
     },
 
+    reset: function() {
+      for (var i in this._calendars) {
+        delete this._calendars[i];
+      }
+      for (var [$tab, $panel] of this._tabs) {
+        $tab.remove();
+        $panel.remove();
+      }
+      $('#multicalendar_tabs').remove();
+      $('#multicalendar_panels').remove();
+      this._calendars = [];
+      this._calendar_records = [];
+      this._tabs = [];
+      this._datasets = {};
+      this._active_index = -1;
+      this._events = {};
+    },
+
     get_calendar: function(index) {
       return this._calendars[index-1];
     },
@@ -264,9 +282,11 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       this.$el.empty();
       this.$tabs = $('<ul/>', {
         class: 'nav nav-tabs',
+        id: 'multicalendar_tabs'
       }).appendTo(this.$el);
       this.$tabs_content = $('<div/>', {
         class: 'tab-content',
+        id: 'multicalendar_panels'
       }).appendTo(this.$el);
 
       // '+' Tab

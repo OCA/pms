@@ -314,6 +314,7 @@
 
 .hcal-reservation-splitted {
 	border-width: 1px 6px;
+	border-style: solid;
 }
 
 .hcal-reservation-invalid {
@@ -376,6 +377,28 @@
 .hcal-reservation-swap-out-selected {
 	border-color: #005B96 !important;
 	background-color: #99bdd5 !important;
+}
+
+.hcal-reservation-to-divide {
+	pointer-events: none;
+}
+
+.hcal-reservation-divide-l {
+	background-color: transparent !important;
+	border: 2px dashed black;
+	cursor: copy;
+	pointer-events: none;
+	border-color: black !important;
+	border-right-style: solid !important;
+}
+
+.hcal-reservation-divide-r {
+	background-color: transparent !important;
+	border: 2px dashed black;
+	cursor: copy;
+	pointer-events: none;
+	border-color: black !important;
+	border-left-style: solid !important;
 }
 
 .hcal-row-room-type-group-item {

@@ -132,6 +132,15 @@ return AbstractModel.extend({
         });
     },
 
+    split_reservation: function(id, nights) {
+        return this._rpc({
+            model: 'hotel.reservation',
+            method: 'split',
+            args: [[id], nights],
+            context: Session.user_context,
+        })
+    },
+
     save_changes: function(params) {
       params.splice(0, 0, false); // FIXME: ID=False because first parameter its an integer
       return this._rpc({
