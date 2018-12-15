@@ -352,6 +352,19 @@
 	);
 }
 
+.hcal-reservation-invalid-unify {
+	pointer-events: none;
+	opacity: 0.9;
+	color: transparent !important;
+	background: repeating-linear-gradient(
+	  45deg,
+	  #BA6359,
+	  #BA6359 10px,
+	  #dfe066 10px,
+	  #dfe066 20px
+	);
+}
+
 .hcal-reservation-action {
 	border: 2px dashed #3465a4;
 	opacity: 0.9;
@@ -369,6 +382,11 @@
 	background: -moz-repeating-radial-gradient(circle farthest-corner at right center, #ffee00 0%, #2c2c2c 5%, #ffff00 10%, #2c2c2c 20%, #2c2c2c 100%);
 }
 
+.hcal-reservation-unify-selected {
+	background-color: #005B96 !important;
+	border-color: #99bdd5 !important;
+}
+
 .hcal-reservation-swap-in-selected {
 	background-color: #005B96 !important;
 	border-color: #99bdd5 !important;
@@ -377,6 +395,11 @@
 .hcal-reservation-swap-out-selected {
 	border-color: #005B96 !important;
 	background-color: #99bdd5 !important;
+}
+
+.hcal-reservation-unify-selected {
+	background-color: #005B96 !important;
+	border-color: #99bdd5 !important;
 }
 
 .hcal-reservation-to-divide {

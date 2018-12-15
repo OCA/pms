@@ -307,6 +307,12 @@ var PMSCalendarController = AbstractController.extend({
         active_calendar.setSelectionMode(cur_mode===HotelCalendar.ACTION.DIVIDE?HotelCalendar.MODE.NONE:HotelCalendar.ACTION.DIVIDE);
       });
 
+      this.renderer.$el.find('#pms-menu #btn_action_unify button').on('click', function(ev){
+        var active_calendar = self._multi_calendar.get_active_calendar();
+        var cur_mode = active_calendar.getSelectionMode();
+        active_calendar.setSelectionMode(cur_mode===HotelCalendar.ACTION.UNIFY?HotelCalendar.MODE.NONE:HotelCalendar.ACTION.UNIFY);
+      });
+
       this.renderer.$el.find('#pms-menu #btn_save_calendar_record').on('click', function(ev){
         var active_calendar_record = self._multi_calendar.get_calendar_record(self._multi_calendar.get_active_index());
         active_calendar_record.name = "LOLO";
@@ -378,6 +384,10 @@ var PMSCalendarController = AbstractController.extend({
           //         self.trigger('changed_value');
           //     });
           // });
+        });
+        this._multi_calendar.on_calendar('hcalOnUnifyReservations', function(ev){
+            console.log("TO UNIFY");
+            console.log(ev.detail.toUnify);
         });
         this._multi_calendar.on_calendar('hcalOnSwapReservations', function(ev){
           var qdict = {};
@@ -526,11 +536,17 @@ var PMSCalendarController = AbstractController.extend({
           }
         });
         this._multi_calendar.on_calendar('hcalOnChangeSelectionMode', function(ev){
-            var $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
+            var $ledDivide = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
+            var $ledUnify = this.renderer.$el.find('#pms-menu #btn_action_unify button .led');
             if (ev.detail.newMode === HotelCalendar.ACTION.DIVIDE) {
-                $led.removeClass('led-disabled').addClass('led-enabled');
+                $ledDivide.removeClass('led-disabled').addClass('led-enabled');
             } else {
-                $led.removeClass('led-enabled').addClass('led-disabled');
+                $ledDivide.removeClass('led-enabled').addClass('led-disabled');
+            }
+            if (ev.detail.newMode === HotelCalendar.ACTION.UNIFY) {
+                $ledUnify.removeClass('led-disabled').addClass('led-enabled');
+            } else {
+                $ledUnify.removeClass('led-enabled').addClass('led-disabled');
             }
         }.bind(this));
         this._multi_calendar.on_calendar('hcalOnChangeSelection', function(ev){
@@ -825,6 +841,14 @@ var PMSCalendarController = AbstractController.extend({
       /* Divide Led */
       var $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
       if (active_calendar.getSelectionMode() === HotelCalendar.ACTION.DIVIDE) {
+          $led.removeClass('led-disabled').addClass('led-enabled');
+      } else {
+          $led.removeClass('led-enabled').addClass('led-disabled');
+      }
+
+      /* Unify Led */
+      var $led = this.renderer.$el.find('#pms-menu #btn_action_unify button .led');
+      if (active_calendar.getSelectionMode() === HotelCalendar.ACTION.UNIFY) {
           $led.removeClass('led-disabled').addClass('led-enabled');
       } else {
           $led.removeClass('led-enabled').addClass('led-disabled');
