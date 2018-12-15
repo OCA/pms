@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
     <t t-name="hotel_calendar.HotelCalendarView">
-        <div class="col-xs-12 col-md-12 nopadding">
+        <div class="col-xs-12 col-md-12 nopadding o_hotel_calendar_view">
             <div class="col-lg-2 hidden-xs hidden-sm" id="pms-menu">
                 <div class="col-xs-12 col-md-12 nopadding menu-date-box">
                     <div class="input-group date" id="date_begin">
@@ -135,7 +135,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-10 nopadding">
+            <div class="col-xs-12 col-sm-12 col-md-10 nopadding" id="pms-calendar">
                 <div id="hcal_widget" class="col-xs-12 col-md-12 nopadding">
                     <div id="hcal_load">
                         <span>

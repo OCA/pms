@@ -10,6 +10,12 @@
 	overflow: initial !important;
 }
  */
+
+.o_hotel_calendar_view {
+  display: flex;
+	height: 100%;
+}
+
 .nopadding {
    padding: 0 !important;
    margin: 0 !important;
@@ -17,6 +23,7 @@
 
 #pms-menu {
 	padding: 0 0.2em !important;
+	overflow: auto;
 }
 
 #pms-menu .input-group span, #pms-menu input {
@@ -27,6 +34,11 @@
   border-radius: 0;
   border: 1px solid lightgray;
   font-size: x-small;
+}
+
+#pms-calendar: {
+	flex: 1 1 auto;
+	overflow: auto;
 }
 
 button .led {
