@@ -214,7 +214,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
 
     merge_days_tooltips: function(new_tooltips) {
       for (var nt of new_tooltips) {
-        var fnt = _.find(this._days_tooltips, function(item) { return item[0] === nt[0]});
+        var fnt = _.find(this._days_tooltips, function(item) { return item['id'] === nt['id']});
         if (fnt) {
           fnt = nt;
         } else {
@@ -347,7 +347,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
         var $elm = $(elm);
         var cdate = HotelCalendar.toMoment($elm.data('hcalDate'), HotelConstants.L10N_DATE_MOMENT_FORMAT);
         var data = _.filter(self._days_tooltips, function(item) {
-          var ndate = HotelCalendar.toMoment(item[2], HotelConstants.ODOO_DATE_MOMENT_FORMAT);
+          var ndate = HotelCalendar.toMoment(item['date'], HotelConstants.ODOO_DATE_MOMENT_FORMAT);
           return ndate.isSame(cdate, 'd');
         });
         if (data.length > 0) {
@@ -360,9 +360,9 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
                 'date': $this.data('hcalDate'),
                 'events': _.map(data, function(item){
                   return {
-                    'name': item[1],
-                    'date': item[2],
-                    'location': item[3]
+                    'name': item['name'],
+                    'date': item['date'],
+                    'location': item['location']
                   };
                 })
               };

@@ -78,25 +78,25 @@ class HotelReservation(models.Model):
         json_reservations = []
         json_reservation_tooltips = {}
         for reserv in reservations:
-            json_reservations.append([
-                reserv.room_id.id,
-                reserv.id,
-                reserv.folio_id.closure_reason_id.name or _('Out of service') if reserv.folio_id.reservation_type == 'out'
-                else reserv.folio_id.partner_id.name,
-                reserv.adults,
-                reserv.children,
-                reserv.checkin,
-                reserv.checkout,
-                reserv.folio_id.id,
-                reserv.reserve_color,
-                reserv.reserve_color_text,
-                reserv.splitted,
-                reserv.parent_reservation and reserv.parent_reservation.id
-                or False,
-                False,  # Read-Only
-                reserv.splitted,   # Fix Days
-                False,  # Fix Rooms
-                reserv.overbooking])
+            json_reservations.append({
+                'room_id': reserv.room_id.id,
+                'id': reserv.id,
+                'name': reserv.folio_id.closure_reason_id.name or _('Out of service') if reserv.folio_id.reservation_type == 'out'
+                        else reserv.folio_id.partner_id.name,
+                'adults': reserv.adults,
+                'childrens': reserv.children,
+                'checkin': reserv.checkin,
+                'checkout': reserv.checkout,
+                'folio_id': reserv.folio_id.id,
+                'bgcolor': reserv.reserve_color,
+                'color': reserv.reserve_color_text,
+                'splitted': reserv.splitted,
+                'parent_reservation': reserv.parent_reservation and reserv.parent_reservation.id or False,
+                'read_only': False,  # Read-Only
+                'fix_days': reserv.splitted,   # Fix Days
+                'fix_room': False,  # Fix Rooms
+                'overbooking': reserv.overbooking,
+                'real_dates': reserv.get_real_checkin_checkout()})
             num_split = 0
             if reserv.splitted:
                 master_reserv = reserv.parent_reservation or reserv
@@ -107,16 +107,17 @@ class HotelReservation(models.Model):
                     ('splitted', '=', True),
                 ])
             json_reservation_tooltips.update({
-                reserv.id: [
-                    _('Out of service') if reserv.folio_id.reservation_type == 'out' else reserv.folio_id.partner_id.name,
-                    reserv.folio_id.partner_id.mobile or
-                    reserv.folio_id.partner_id.phone or _('Undefined'),
-                    reserv.checkin,
-                    num_split,
-                    reserv.folio_id.amount_total,
-                    reserv.reservation_type or 'normal',
-                    reserv.out_service_description or _('No reason given'),
-                ]
+                reserv.id: {
+                    'name': _('Out of service') if reserv.folio_id.reservation_type == 'out' else reserv.folio_id.partner_id.name,
+                    'phone': reserv.folio_id.partner_id.mobile or
+                             reserv.folio_id.partner_id.phone or _('Undefined'),
+                    'checkin': reserv.checkin,
+                    'num_split': num_split,
+                    'amount_total': reserv.folio_id.amount_total,
+                    'type': reserv.reservation_type or 'normal',
+                    'out_service_description': reserv.out_service_description or
+                                               _('No reason given'),
+                }
             })
         return (json_reservations, json_reservation_tooltips)
 
@@ -163,12 +164,12 @@ class HotelReservation(models.Model):
     def _hcalendar_event_data(self, events):
         json_events = []
         for event in events:
-            json_events.append([
-                event.id,
-                event.name,
-                event.start,
-                event.location,
-            ])
+            json_events.append({
+                'id': event.id,
+                'name': event.name,
+                'date': event.start,
+                'location': event.location,
+            })
         return json_events
 
     @api.model
@@ -342,38 +343,45 @@ class HotelReservation(models.Model):
         return vals
 
     @api.multi
+    def generate_bus_values(self, naction, ntype, ntitle=''):
+        self.ensure_one()
+        return {
+            'action': naction,
+            'type': ntype,
+            'title': ntitle,
+            'room_id': self.room_id.id,
+            'reserv_id': self.id,
+            'partner_name': (self.closure_reason_id.name or _('Out of service'))
+                            if self.reservation_type == 'out' else self.partner_id.name,
+            'adults': self.adults,
+            'children': self.children,
+            'checkin': self.checkin,
+            'checkout': self.checkout,
+            'folio_id': self.folio_id.id,
+            'reserve_color': self.reserve_color,
+            'reserve_color_text': self.reserve_color_text,
+            'splitted': self.splitted,
+            'parent_reservation': self.parent_reservation and
+                                  self.parent_reservation.id or 0,
+            'room_name': self.room_id.name,
+            'partner_phone': self.partner_id.mobile
+                             or self.partner_id.phone or _('Undefined'),
+            'state': self.state,
+            'fix_days': self.splitted,
+            'overbooking': self.overbooking,
+            'amount_total': self.folio_id.amount_total,
+            'reservation_type': self.reservation_type or 'normal',
+            'closure_reason_id': self.closure_reason_id,
+            'out_service_description': self.out_service_description or _('No reason given'),
+            'real_dates': self.get_real_checkin_checkout(),
+        }
+
+    @api.multi
     def send_bus_notification(self, naction, ntype, ntitle=''):
         hotel_cal_obj = self.env['bus.hotel.calendar']
         for record in self:
-            hotel_cal_obj.send_reservation_notification({
-                'action': naction,
-                'type': ntype,
-                'title': ntitle,
-                'room_id': record.room_id.id,
-                'reserv_id': record.id,
-                'partner_name': (record.closure_reason_id.name or _('Out of service'))
-                                if record.reservation_type == 'out' else record.partner_id.name,
-                'adults': record.adults,
-                'children': record.children,
-                'checkin': record.checkin,
-                'checkout': record.checkout,
-                'folio_id': record.folio_id.id,
-                'reserve_color': record.reserve_color,
-                'reserve_color_text': record.reserve_color_text,
-                'splitted': record.splitted,
-                'parent_reservation': record.parent_reservation and
-                                      record.parent_reservation.id or 0,
-                'room_name': record.room_id.name,
-                'partner_phone': record.partner_id.mobile
-                                 or record.partner_id.phone or _('Undefined'),
-                'state': record.state,
-                'fix_days': record.splitted,
-                'overbooking': record.overbooking,
-                'price': record.folio_id.amount_total,
-                'reservation_type': record.reservation_type,
-                'closure_reason_id': record.closure_reason_id,
-                'out_service_description': record.out_service_description or _('No reason given'),
-            })
+            hotel_cal_obj.send_reservation_notification(
+                record.generate_bus_values(naction, ntype, ntitle))
 
     @api.model
     def swap_reservations(self, fromReservsIds, toReservsIds):
@@ -431,9 +439,7 @@ class HotelReservation(models.Model):
                 'reserve_color' in vals or \
                 'reserve_color_text' in vals or 'product_id' in vals or \
                 'parent_reservation' in vals or 'overbooking' in vals:
-            _logger.info("PASA RESERV WRITE")
             for record in self:
-                _logger.info("PASA RESERV WRITE 22")
                 record.send_bus_notification(
                     'write',
                     (record.state == 'cancelled') and 'warn' or 'notify',

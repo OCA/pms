@@ -40,33 +40,34 @@ class BusHotelCalendar(models.TransientModel):
             'userid': user_id.id,
             'reservation': {
                 'room_id': vals['room_id'],
-                'reserv_id': vals['reserv_id'],
-                'partner_name': vals['partner_name'],
+                'id': vals['reserv_id'],
+                'name': vals['partner_name'],
                 'adults': vals['adults'],
                 'childer': vals['children'],
                 'checkin': vals['checkin'],
                 'checkout': vals['checkout'],
                 'folio_id': vals['folio_id'],
-                'reserve_color': vals['reserve_color'],
-                'reserve_color_text': vals['reserve_color_text'],
+                'bgcolor': vals['reserve_color'],
+                'color': vals['reserve_color_text'],
                 'splitted': vals['splitted'],
                 'parent_reservation': vals['parent_reservation'],
                 'room_name': vals['room_name'],
                 'state': vals['state'],
                 'only_read': False,
                 'fix_days': vals['fix_days'],
-                'fix_rooms': False,
+                'fix_room': False,
                 'overbooking': vals['overbooking'],
+                'real_dates': vals['real_dates'],
             },
-            'tooltip': [
-                vals['partner_name'],
-                vals['partner_phone'],
-                vals['checkin'],
-                num_split,
-                vals['price'],
-                vals['reservation_type'] if 'reservation_type' in vals else 'normal',
-                vals['out_service_description'] if 'out_service_description' in vals else _('No reason given'),
-            ]
+            'tooltip': {
+                'name': vals['partner_name'],
+                'phone': vals['partner_phone'],
+                'checkin': vals['checkin'],
+                'num_split': num_split,
+                'amount_total': vals['amount_total'],
+                'type': vals['reservation_type'] if 'reservation_type' in vals else 'normal',
+                'out_service_description': vals['out_service_description'] if 'out_service_description' in vals else _('No reason given'),
+            }
         }
 
     @api.model

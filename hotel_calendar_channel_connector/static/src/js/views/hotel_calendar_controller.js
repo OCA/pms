@@ -31,6 +31,12 @@ var PMSHotelCalendarControllerChannelConnector = PMSCalendarController.include({
       this._sounds[SoundID].play();
     },
 
+    _generate_reservation_tooltip_dict: function(tp) {
+      var qdict = this._super(tp);
+      qdict['ota_name'] = tp['ota_name'];
+      return qdict;
+    },
+
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------

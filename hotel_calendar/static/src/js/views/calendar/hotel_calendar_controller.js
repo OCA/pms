@@ -19,7 +19,6 @@ var PMSCalendarController = AbstractController.extend({
       onLoadCalendarSettings: '_onLoadCalendarSettings',
       onLoadViewFilters: '_onLoadViewFilters',
       onUpdateButtonsCounter: '_onUpdateButtonsCounter',
-      onReloadCalendar: '_onReloadCalendar',
       onSwapReservations: '_onSwapReservations',
       onViewAttached: '_onViewAttached',
       onApplyFilters: '_onApplyFilters',
@@ -118,29 +117,13 @@ var PMSCalendarController = AbstractController.extend({
           rooms.push(nroom);
         }
 
-        // TODO: Not read this... do the change!!
         var reservs = [];
         for (var r of results['reservations']) {
-          var nreserv = new HReservation({
-            'id': r[1],
-            'room_id': r[0],
-            'title': r[2],
-            'adults': r[3],
-            'childrens': r[4],
-            'startDate': HotelCalendar.toMomentUTC(r[5], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-            'endDate': HotelCalendar.toMomentUTC(r[6], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-            'color': r[8],
-            'colorText': r[9],
-            'splitted': r[10],
-            'readOnly': r[12],
-            'fixDays': r[13],
-            'fixRooms': r[14],
-            'unusedZone': false,
-            'linkedId': false,
-            'overbooking': r[15],
+          var nreserv = new HReservation(self._generate_reservation_obj_values(r));
+          nreserv.addUserData({
+            'folio_id': r['folio_id'],
+            'parent_reservation': r['parent_reservation']
           });
-          nreserv.addUserData({'folio_id': r[7]});
-          nreserv.addUserData({'parent_reservation': r[11]});
           reservs.push(nreserv);
         }
 
@@ -210,26 +193,11 @@ var PMSCalendarController = AbstractController.extend({
       this.model.get_calendar_data(oparams).then(function(results){
         var reservs = [];
         for (var r of results['reservations']) {
-          var nreserv = new HReservation({
-            'id': r[1],
-            'room_id': r[0],
-            'title': r[2],
-            'adults': r[3],
-            'childrens': r[4],
-            'startDate': HotelCalendar.toMomentUTC(r[5], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-            'endDate': HotelCalendar.toMomentUTC(r[6], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-            'color': r[8],
-            'colorText': r[9],
-            'splitted': r[10],
-            'readOnly': r[12] || false,
-            'fixDays': r[13] || false,
-            'fixRooms': r[14] || false,
-            'unusedZone': false,
-            'linkedId': false,
-            'overbooking': r[15],
+          var nreserv = new HReservation(self._generate_reservation_obj_values(r));
+          nreserv.addUserData({
+            'folio_id': r['folio_id'],
+            'parent_reservation': r['parent_reservation']
           });
-          nreserv.addUserData({'folio_id': r[7]});
-          nreserv.addUserData({'parent_reservation': r[11]});
           reservs.push(nreserv);
         }
 
@@ -659,6 +627,28 @@ var PMSCalendarController = AbstractController.extend({
       });
     },
 
+    _generate_reservation_obj_values: function(reserv) {
+      return {
+        'id': reserv['id'],
+        'room_id': reserv['room_id'],
+        'title': reserv['name'],
+        'adults': reserv['adults'],
+        'childrens': reserv['childrens'],
+        'startDate': HotelCalendar.toMomentUTC(reserv['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        'endDate': HotelCalendar.toMomentUTC(reserv['checkout'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        'color': reserv['bgcolor'],
+        'colorText': reserv['color'],
+        'splitted': reserv['splitted'] || false,
+        'readOnly': reserv['read_only'] || false,
+        'fixDays': reserv['fix_days'] || false,
+        'fixRooms': reserv['fix_room'],
+        'unusedZone': false,
+        'linkedId': false,
+        'overbooking': reserv['overbooking'],
+        'realDates': reserv['real_dates']
+      }
+    },
+
     _onBusNotification: function(notifications) {
       var need_reload_pricelists = false;
       var need_update_counters = false;
@@ -687,34 +677,17 @@ var PMSCalendarController = AbstractController.extend({
 
               // Create/Update/Delete reservation
               if (notif[1]['action'] === 'unlink' || reserv['state'] === 'cancelled') {
-                this._multi_calendar.remove_reservation(reserv['reserv_id']);
-                this._multi_calendar._reserv_tooltips = _.pick(this._multi_calendar._reserv_tooltips, function(value, key, obj){ return key != reserv['reserv_id']; });
-                nreservs = _.reject(nreservs, function(item){ return item.id == reserv['reserv_id']; });
+                this._multi_calendar.remove_reservation(reserv['id']);
+                this._multi_calendar._reserv_tooltips = _.pick(this._multi_calendar._reserv_tooltips, function(value, key, obj){ return key != reserv['id']; });
+                nreservs = _.reject(nreservs, function(item){ return item.id == reserv['id']; });
               } else {
-                nreservs = _.reject(nreservs, {'id': reserv['reserv_id']}); // Only like last changes
-                var nreserv = new HReservation({
-                  'id': reserv['reserv_id'],
-                  'room_id': reserv['room_id'],
-                  'title': reserv['partner_name'],
-                  'adults': reserv['adults'],
-                  'childrens': reserv['children'],
-                  'startDate': HotelCalendar.toMomentUTC(reserv['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                  'endDate': HotelCalendar.toMomentUTC(reserv['checkout'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-                  'color': reserv['reserve_color'],
-                  'colorText': reserv['reserve_color_text'],
-                  'splitted': reserv['splitted'],
-                  'readOnly': reserv['read_only'],
-                  'fixDays': reserv['fix_days'],
-                  'fixRooms': reserv['fix_rooms'],
-                  'unusedZone': false,
-                  'linkedId': false,
-                  'overbooking': reserv['overbooking'],
-                });
+                nreservs = _.reject(nreservs, {'id': reserv['id']}); // Only like last changes
+                var nreserv = new HReservation(this._generate_reservation_obj_values(reserv));
                 nreserv.addUserData({
                   'folio_id': reserv['folio_id'],
                   'parent_reservation': reserv['parent_reservation'],
                 });
-                this._multi_calendar._reserv_tooltips[reserv['reserv_id']] = notif[1]['tooltip'];
+                this._multi_calendar._reserv_tooltips[reserv['id']] = notif[1]['tooltip'];
                 nreservs.push(nreserv);
               }
               need_update_counters = true;
@@ -761,13 +734,13 @@ var PMSCalendarController = AbstractController.extend({
 
     _generate_reservation_tooltip_dict: function(tp) {
       return {
-        'name': tp[0],
-        'phone': tp[1],
-        'arrival_hour': HotelCalendar.toMomentUTC(tp[2], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
-        'num_split': tp[3],
-        'amount_total': Number(tp[4]).toLocaleString(),
-        'reservation_type': tp[5],
-        'out_service_description': tp[6]
+        'name': tp['name'],
+        'phone': tp['phone'],
+        'arrival_hour': HotelCalendar.toMomentUTC(tp['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
+        'num_split': tp['num_split'],
+        'amount_total': Number(tp['amount_total']).toLocaleString(),
+        'reservation_type': tp['type'],
+        'out_service_description': tp['out_service_description']
       };
     },
 

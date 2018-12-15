@@ -7,7 +7,7 @@
 
 <t t-extend="HotelCalendar.TooltipReservation">
 	<t t-jquery="ul.oe_tooltip_technical li:last-child" t-operation="after">
-		<li t-if="channel_name"><b>Channel:</b> <t t-esc="channel_name"/></li>
+		<li t-if="ota_name"><b>OTA:</b> <t t-esc="ota_name"/></li>
 	</t>
 </t>
 

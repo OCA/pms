@@ -180,21 +180,20 @@ class HotelReservation(models.Model):
             vals.update({'to_read': True})
         return super(HotelReservation, self).create(vals)
 
-    # @api.multi
-    # def generate_copy_values(self, checkin=False, checkout=False):
-    #     self.ensure_one()
-    #     res = super().generate_copy_values(checkin=checkin, checkout=checkout)
-    #     res.update({
-    #         'channel_reservation_id': self.channel_reservation_id,
-    #         'ota_id': self.ota_id and self.ota_id.id or False,
-    #         'ota_reservation_code': self.ota_reservation_code,
-    #         'is_from_ota': self.is_from_ota,
-    #         'to_read': self.to_read,
-    #         'wstatus': self.wstatus,
-    #         'wstatus_reason': self.wstatus_reason,
-    #         'customer_notes': self.customer_notes,
-    #     })
-    #     return res
+    @api.multi
+    def generate_copy_values(self, checkin=False, checkout=False):
+        self.ensure_one()
+        res = super().generate_copy_values(checkin=checkin, checkout=checkout)
+        commands = []
+        for bind_id in self.channel_bind_ids.ids:
+            commands.append((4, bind_id, False))
+        res.update({
+            'channel_bind_ids': commands,
+            'customer_notes': self.customer_notes,
+            'is_from_ota': self.is_from_ota,
+            'to_read': self.to_read,
+        })
+        return res
 
     @api.multi
     def action_reservation_checkout(self):
@@ -208,8 +207,8 @@ class HotelReservation(models.Model):
 
         reserv_obj = self.env['hotel.reservation']
         for reserv in json_reservs:
-            reservation = reserv_obj.browse(reserv[1])
-            reserv[13] = reservation.splitted or reservation.is_from_ota
+            reservation = reserv_obj.browse(reserv['id'])
+            reserv['fix_days'] = reservation.splitted or reservation.is_from_ota
 
         return (json_reservs, json_tooltips)
 

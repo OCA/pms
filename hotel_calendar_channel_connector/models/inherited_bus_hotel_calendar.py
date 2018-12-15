@@ -27,14 +27,6 @@ class BusHotelCalendar(models.TransientModel):
         }
 
     @api.model
-    def _generate_reservation_notif(self, vals):
-        json = super(BusHotelCalendar, self)._generate_reservation_notif(vals)
-        json['reservation'].update({
-            'external_id': vals['external_id'],
-        })
-        return json
-
-    @api.model
     def _generate_availability_notification(self, vals):
         date_dt = datetime.strptime(vals['date'], DEFAULT_SERVER_DATE_FORMAT)
         json = super(BusHotelCalendar, self)._generate_availability_notification(vals)
