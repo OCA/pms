@@ -208,7 +208,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       }
 
       for (var calendar of this._calendars) {
-        calendar.addReservations(this._dataset['reservations']);
+        calendar.addReservations(reservations);
       }
     },
 

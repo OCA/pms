@@ -177,11 +177,15 @@ HotelCalendar.prototype = {
           this._divideDivs[1].remove();
           this._divideDivs = false;
         }
+        this._reset_action_reservation();
       }
 
       if (this._selectionMode === HotelCalendar.ACTION.UNIFY) {
         this.reservationAction.action = HotelCalendar.ACTION.UNIFY;
         this.reservationAction.toUnify = [];
+      } else {
+        this._reset_action_reservation();
+        this._updateHighlightUnifyReservations();
       }
 
       this._dispatchEvent('hcalOnChangeSelectionMode', {
@@ -1488,7 +1492,7 @@ HotelCalendar.prototype = {
       for (var elm of elms) { elm.classList.remove('hcal-reservation-unify-selected'); }
     }
     else {
-      var dateLimits = this.getDateLimits(this.reservationAction.toUnify);
+      var dateLimits = this.getDateLimits(this.reservationAction.toUnify, false);
       var refUnifyReservation = this.reservationAction.toUnify[0];
       var uniRoom = refUnifyReservation?refUnifyReservation.room.id:false;
       for (var nreserv of this._reservations) {
@@ -1519,7 +1523,7 @@ HotelCalendar.prototype = {
       for (var elm of elms) { elm.classList.remove('hcal-reservation-swap-out-selected'); }
     }
     else {
-      var dateLimits = this.getDateLimits(this.reservationAction.inReservations);
+      var dateLimits = this.getDateLimits(this.reservationAction.inReservations, true);
       var refInReservation = this.reservationAction.inReservations[0];
       var refOutReservation = this.reservationAction.outReservations[0];
       var inCapacity = refInReservation?refInReservation.room.capacity:false;
@@ -1546,7 +1550,7 @@ HotelCalendar.prototype = {
           }
         }
         // Invalid reservations out of dates
-        else if (nreserv.startDate.isBefore(realDateLimits[0], 'day') || nreserv.endDate.isAfter(realDateLimits[1], 'day')) {
+        else if (nreserv.startDate.isBefore(realDateLimits[0], 'day') || nreserv.endDate.clone().subtract('1', 'd').isAfter(realDateLimits[1], 'day')) {
           if (nreserv.room.id !== refInReservation.room.id) {
             nreserv._html.classList.add('hcal-reservation-invalid-swap');
           }
@@ -1781,9 +1785,9 @@ HotelCalendar.prototype = {
       console.warn("[HotelCalendar][swapReservations] Invalid Swap Operation!");
       return false;
     }
-    var fromDateLimits = this.getDateLimits(fromReservations);
+    var fromDateLimits = this.getDateLimits(fromReservations, true);
     var fromRealDateLimits = this.getFreeDatesByRoom(fromDateLimits[0], fromDateLimits[1], fromReservations[0].room.id);
-    var toDateLimits = this.getDateLimits(toReservations);
+    var toDateLimits = this.getDateLimits(toReservations, true);
     var toRealDateLimits = this.getFreeDatesByRoom(toDateLimits[0], toDateLimits[1], toReservations[0].room.id);
 
     if (fromDateLimits[0].clone().local().isSameOrAfter(toRealDateLimits[0].clone().local(), 'd') && fromDateLimits[1].clone().local().isSameOrBefore(toRealDateLimits[1].clone().local(), 'd') &&
@@ -1839,12 +1843,12 @@ HotelCalendar.prototype = {
         nreserv.room = refFromRoom;
       }
 
-      if (this.options.divideRoomsByCapacity) {
-        var allReservs = toReservations.concat(fromReservations);
-        for (var nreserv of allReservs) { this._updateUnusedZones(nreserv); }
-      }
+      // if (this.options.divideRoomsByCapacity) {
+      //   var allReservs = toReservations.concat(fromReservations);
+      //   for (var nreserv of allReservs) { this._updateUnusedZones(nreserv); }
+      // }
     } else {
-      console.warn("[HotelCalendar][swapReservations] Invalid Swap Operation!");
+       console.warn("[HotelCalendar][swapReservations] Invalid Swap Operation!");
       return false;
     }
 
@@ -1940,7 +1944,7 @@ HotelCalendar.prototype = {
           // MODE UNIFY RESERVATIONS
           if ($this._selectionMode === HotelCalendar.ACTION.UNIFY) {
             var reserv = $this.getReservation(this.dataset.hcalReservationObjId);
-            var dateLimits = $this.getDateLimits($this.reservationAction.toUnify);
+            var dateLimits = $this.getDateLimits($this.reservationAction.toUnify, false);
             var refUnifyReserv = ($this.reservationAction.toUnify.length > 0)?$this.reservationAction.toUnify[0]:false;
             if ($this.reservationAction.toUnify.indexOf(reserv) != -1) {
               $this.reservationAction.toUnify = _.reject($this.reservationAction.toUnify, function(item){ return item === reserv});
@@ -2065,21 +2069,6 @@ HotelCalendar.prototype = {
     else if (posX >= bounds.width-10) { return HotelCalendar.ACTION.MOVE_RIGHT; }
     return HotelCalendar.ACTION.MOVE_ALL;
   },
-
-  // _getRerservationPositionAction: function(/*HTMLObject*/elm, /*Int*/posX, /*Int*/posY) {
-  //   var bounds = elm.getBoundingClientRect();
-  //   var mouseActMargin = 10*bounds.width*0.01;
-  //   console.log("------- Esta aiki");
-  //   console.log(posX);
-  //   var ppOsX = posX - posX*(1.0-window.devicePixelRatio);
-  //   posX -= ppOsX;
-  //   console.log(posX);
-  //   var mouseActMarginV = (10*bounds.width)/100;
-  //   //debugger;
-  //   if (posX <= mouseActMargin) { return HotelCalendar.ACTION.MOVE_LEFT; }
-  //   else if (posX >= bounds.width-mouseActMargin) { return HotelCalendar.ACTION.MOVE_RIGHT; }
-  //   return HotelCalendar.ACTION.MOVE_ALL;
-  // },
 
   _cleanUnusedZones: function(/*HReservationObject*/reserv) {
     var reservs = _.filter(this._reservations, function(item){ return item.unusedZone && item.linkedId === reserv.id; });
@@ -2267,17 +2256,21 @@ HotelCalendar.prototype = {
 	  return end_date.diff(start_date, 'days');
   },
 
-  getDateLimits: function(/*List HReservationObject*/reservs) {
+  getDateLimits: function(/*List HReservationObject*/reservs, /*Bool?*/noCheckouts) {
     var start_date = false;
     var end_date = false;
     for (var creserv of reservs) {
-      if (!start_date) { start_date = creserv.startDate; }
+      if (!start_date) { start_date = creserv.startDate.clone(); }
       else if (creserv.startDate.isBefore(start_date, 'day')) {
-        start_date = creserv.startDate;
+        start_date = creserv.startDate.clone();
       }
-      if (!end_date) { end_date = creserv.endDate; }
+      if (!end_date) { end_date = creserv.endDate.clone(); }
       else if (creserv.endDate.isAfter(end_date, 'day')) {
-        end_date = creserv.endDate;
+        end_date = creserv.endDate.clone();
+      }
+
+      if (noCheckouts) {
+        end_date.subtract(1, 'd');
       }
     }
 
@@ -2289,17 +2282,19 @@ HotelCalendar.prototype = {
     var daysRight = this.getDateDiffDays(dateEnd, this._endDate);
     var freeDates = [dateStart, dateEnd];
 
+    var ndate = dateStart.clone();
     for (var i=1; i<daysLeft; i++) {
-      var ndate = dateStart.clone().subtract(i, 'd');
-      var reservs = this.getReservationsByDay(ndate, false, false, roomId);
+      ndate.subtract(1, 'd');
+      var reservs = this.getReservationsByDay(ndate, true, false, roomId);
       if (reservs.length != 0) { break; }
-      freeDates[0] = ndate;
+      freeDates[0] = ndate.clone();
     }
+    ndate = dateEnd.clone();
     for (var i=1; i<daysRight; i++) {
-      var ndate = dateEnd.clone().add(i, 'd');
-      var reservs = this.getReservationsByDay(ndate, false, false, roomId);
+      ndate.add(1, 'd');
+      var reservs = this.getReservationsByDay(ndate, true, false, roomId);
       if (reservs.length != 0) { break; }
-      freeDates[1] = ndate;
+      freeDates[1] = ndate.clone();
     }
 
     return freeDates;
@@ -2414,6 +2409,9 @@ HotelCalendar.prototype = {
           this.setSelectionMode(HotelCalendar.ACTION.NONE);
         }
       }
+    }
+    else if (this.reservationAction.action !== HotelCalendar.ACTION.NONE) {
+      return;
     }
     else if (this._cellSelection.start &&
              this._cellSelection.start.dataset.hcalParentRow === ev.target.dataset.hcalParentRow) {
@@ -2612,7 +2610,7 @@ HotelCalendar.prototype = {
         this._updateHighlightUnifyReservations();
       }
 
-      if (ev.keyCode === 27) {
+      if (ev.keyCode === 27 || ev.keyCode === 13) {
         this.setSelectionMode(HotelCalendar.MODE.NONE);
       }
     }
