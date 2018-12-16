@@ -244,7 +244,12 @@
                                     <field name="service_ids"
                                         context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id}"
                                         nolabel="1">
-                                        <tree string="Services" editable="bottom">
+                                        <tree string="Services" editable="bottom"
+                                        decoration-success="is_board_service == True">
+                                            <button type="object" class="oe_stat_button"
+                                                id="included_in_room" icon="fa fa-1x fa-bed"                                                                                              
+                                                name="open_service_lines"
+                                                attrs="{'invisible':[('is_board_service','=', False)]}" />
                                             <!-- <field name="sequence" widget="handle"/> -->
                                             <field name="per_day" invisible="1"/>
                                             <field name="is_board_service" invisible="1" />

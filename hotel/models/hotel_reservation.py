@@ -333,7 +333,7 @@ class HotelReservation(models.Model):
                 record.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
                 board_services = []
                 board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
-                for product in board.service_ids:
+                for line in board.board_service_line_ids:
                     board_services.append((0, False, {
                         'product_id': line.product_id.id,
                         'is_board_service': True,
@@ -615,7 +615,6 @@ class HotelReservation(models.Model):
     @api.onchange('board_service_room_id')
     def onchange_board_service(self):
         if self.board_service_room_id:
-            import wdb; wdb.set_trace()
             board_services = []
             for line in self.board_service_room_id.board_service_line_ids:
                 product = line.product_id
