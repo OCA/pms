@@ -13,3 +13,6 @@ class HotelBoardService(models.Model):
                                    column1='board_id',
                                    column2='service_id')
     sequence = fields.Integer('Sequence')
+    hotel_board_service_room_type_ids = fields.One2many(
+        'hotel.board.service.room.type', 'hotel_board_service_id')
+    

@@ -153,7 +153,7 @@ class HotelService(models.Model):
     def _compute_tax_ids(self):
         for record in self:
             # If company_id is set, always filter taxes by the company
-            folio = self.folio_id or self.env.context.get('default_folio_id')
+            folio = record.folio_id or self.env.context.get('default_folio_id')
             record.tax_id = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
 
     @api.multi
@@ -184,12 +184,12 @@ class HotelService(models.Model):
             if record.per_day and record.ser_room_line:
                 product = record.product_id
                 reservation = record.ser_room_line
-                vals.update(self.prepare_service_lines(
+                vals.update(record.prepare_service_lines(
                         dfrom=reservation.checkin,
                         days=reservation.nights,
                         per_person=product.per_person,
                         persons=reservation.adults,
-                        old_line_days=self.service_line_ids))
+                        old_line_days=record.service_line_ids))
                 if record.product_id.daily_limit > 0:
                     for day in record.service_line_ids:
                         day.no_free_resources()
@@ -205,33 +205,25 @@ class HotelService(models.Model):
         self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')
         reservation = self.ser_room_line or self.env.context.get('ser_room_line')
-        if self.is_board_service:
-            board_room_type = self.env['hotel.board.service.room.type'].search([
-                ('hotel_board_service_id', '=', reservation.board_service_id.id),
-                ('hotel_room_type_id', '=', reservation.room_type_id.id),
-                ('pricelist_id', '=', folio.pricelist_id.id)
-            ])
-            if not board_room_type:
-                board_room_type = self.env['hotel.board.service.room.type'].search([
-                ('hotel_board_service_id', '=', reservation.board_service_id.id),
-                ('hotel_room_type_id', '=', reservation.room_type_id.id)
-            ])
-            if board_room_type.price_type = 'fixed':
+        partner = folio.partner_id if folio else reservation.partner_id
+        pricelist = folio.pricelist_id if folio else reservation.pricelist_id
+        if reservation and self.is_board_service:
+            board_room_type = reservation.board_service_room_id
+            if board_room_type.price_type == 'fixed':
                 return self.env['hotel.board.service.room.type.line'].search([
                     ('hotel_board_service_room_type_id', '=', board_room_type.id),
-                    ('service_id','=',self.product_id.id)]).amount
+                    ('product_id','=',self.product_id.id)]).amount
             else:
                 return (reservation.price_total * self.env['hotel.board.service.room.type.line'].search([
                     ('hotel_board_service_room_type_id', '=', board_room_type.id),
-                    ('service_id','=',self.product_id.id)]).amount) / 100
+                    ('product_id','=',self.product_id.id)]).amount) / 100
         else:
-            folio = self.folio_id or self.env.context.get('default_folio_id')
             product = self.product_id.with_context(
-                    lang=folio.partner_id.lang,
-                    partner=folio.partner_id.id,
+                    lang=partner.lang,
+                    partner=partner.id,
                     quantity=self.product_qty,
-                    date=folio.date_order,
-                    pricelist=folio.pricelist_id.id,
+                    date=folio.date_order or fields.Date.today(),
+                    pricelist=pricelist.id,
                     uom=self.product_id.uom_id.id,
                     fiscal_position=False
                 )
@@ -272,9 +264,11 @@ class HotelService(models.Model):
         """
         for record in self:
             folio = record.folio_id or self.env.context.get('default_folio_id')
+            reservation = record.ser_room_line or self.env.context.get('ser_room_line')
+            currency = folio.currency_id if folio else reservation.currency_id
             product = record.product_id
             price = record.price_unit * (1 - (record.discount or 0.0) * 0.01)
-            taxes = record.tax_ids.compute_all(price, folio.currency_id, record.product_qty, product=product)
+            taxes = record.tax_ids.compute_all(price, currency, record.product_qty, product=product)
             record.update({
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],

@@ -4,6 +4,7 @@
 import logging
 import time
 from datetime import timedelta
+from lxml import etree
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import (
     misc,
@@ -133,7 +134,8 @@ class HotelReservation(models.Model):
                              track_visibility='onchange')
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
-    board_service_id = fields.Many2one('hotel.board.service', string='Board Service')
+    board_service_room_id = fields.Many2one('hotel.board.service.room.type',
+                                            string='Board Service')
     cancelled_reason = fields.Selection([
         ('late', 'Late'),
         ('intime', 'In time'),
@@ -290,12 +292,12 @@ class HotelReservation(models.Model):
         vals.update({
             'last_updated_res': fields.Datetime.now(),
         })
-        if 'board_service_id' in vals:
+        if 'board_service_room_id' in vals:
                 board_services = []
-                board = self.env['hotel.board.service'].browse(vals['board_service_id'])
-                for product in board.service_ids:
+                board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
+                for line in board.board_service_line_ids:
                     board_services.append((0, False, {
-                        'product_id': product.id,
+                        'product_id': line.product_id.id,
                         'is_board_service': True,
                         'folio_id': vals.get('folio_id'),
                         }))
@@ -330,10 +332,10 @@ class HotelReservation(models.Model):
             if self.compute_board_services(vals):
                 record.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
                 board_services = []
-                board = self.env['hotel.board.service'].browse(vals['board_service_id'])
+                board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
                 for product in board.service_ids:
                     board_services.append((0, False, {
-                        'product_id': product.id,
+                        'product_id': line.product_id.id,
                         'is_board_service': True,
                         'folio_id': record.folio_id.id or vals.get('folio_id')
                         }))
@@ -369,10 +371,10 @@ class HotelReservation(models.Model):
     @api.multi
     def compute_board_services(self, vals):
         """
-        We must compute service_ids when we hace a board_service_id without
+        We must compute service_ids when we have a board_service_id without
         service_ids associated to reservation
         """
-        if 'board_service_id' in vals:
+        if 'board_service_room_id' in vals:
             if 'service_ids' in vals:
                 for service in vals['service_ids']:
                     if 'is_board_service' in service[2] and \
@@ -402,7 +404,7 @@ class HotelReservation(models.Model):
         """ Deduce missing required fields from the onchange """
         res = {}
         onchange_fields = ['room_id', 'reservation_type',
-            'currency_id', 'name', 'board_service_id']
+            'currency_id', 'name', 'board_service_room_id']
         if values.get('room_type_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
@@ -610,11 +612,13 @@ class HotelReservation(models.Model):
             ]
             return {'domain': {'room_id': domain_rooms}}
 
-    @api.onchange('board_service_id')
+    @api.onchange('board_service_room_id')
     def onchange_board_service(self):
-        if self.board_service_id:
+        if self.board_service_room_id:
+            import wdb; wdb.set_trace()
             board_services = []
-            for product in self.board_service_id.service_ids:
+            for line in self.board_service_room_id.board_service_line_ids:
+                product = line.product_id
                 if product.per_day:
                     vals = {
                         'product_id': product.id,

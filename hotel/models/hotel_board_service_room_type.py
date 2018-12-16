@@ -12,6 +12,17 @@ class HotelBoardServiceRoomType(models.Model):
     _log_access = False
     _description = 'Board Service included in Room'
 
+    @api.multi
+    def name_get(self):
+        result = []
+        for res in self:
+            if res.pricelist_id:
+                name = u'%s (%s)' % (res.hotel_board_service_id.name, res.pricelist_id.name)
+            else:
+                name = u'%s (%s)' % (res.hotel_board_service_id.name, _('Generic'))
+            result.append((res.id, name))
+        return result
+
     hotel_board_service_id = fields.Many2one(
         'hotel.board.service', 'Board Service', index=True, ondelete='cascade', required=True)
     hotel_room_type_id = fields.Many2one(
@@ -74,7 +85,7 @@ class HotelBoardServiceRoomType(models.Model):
         today = fields.Date.today()
         for product in board_service.service_ids:
                 cmds.append((0, False, {
-                    'service_id': product.id,
+                    'product_id': product.id,
                     'amount': product.list_price #TODO: default amomunt?¿
                 }))
         return {'board_service_line_ids': cmds}

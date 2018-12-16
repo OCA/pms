@@ -13,7 +13,7 @@ class HotelBoardServiceRoomTypeLine(models.Model):
 
     hotel_board_service_room_type_id = fields.Many2one(
         'hotel.board.service.room.type', 'Board Service Room', ondelete='cascade', required=True)
-    service_id = fields.Many2one(
+    product_id = fields.Many2one(
         'product.product', 'Product', required=True, readonly=True)
     amount = fields.Float('Amount', digits=dp.get_precision('Product Price'), default=0.0)
     

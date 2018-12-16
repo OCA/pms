@@ -298,7 +298,9 @@
                                                 <field name="arrival_hour"/>
                                                 <field name="departure_hour"/>
                                                 <field name="nights" invisible="1"/>
-                                                <field name="board_service_id" />
+                                                <field name="board_service_room_id" domain="[
+                                                    ('hotel_room_type_id', '=', room_type_id),
+                                                    ('pricelist_id', 'in', [pricelist_id, False])]" />
                                                 <field name="name"/>
                                                 <field name="adults"/>
                                                 <field name="children"/>

@@ -191,7 +191,10 @@
                             <field name="arrival_hour"/>
                             <field name="departure_hour"/>
                             <field name="nights" invisible="1"/>
-                            <field name="board_service_id" />
+                            <!-- TODO: How to filter to avoid show False (generic) pricelist board when exist a specific pricelist board¿? -->
+                            <field name="board_service_room_id" domain="[
+                                    ('hotel_room_type_id', '=', room_type_id),
+                                    ('pricelist_id', 'in', [pricelist_id, False])]" />
                             <field name="name"/>
                             <field name="adults"/>
                             <field name="children"/>
@@ -237,7 +240,7 @@
                     </group>
                     <notebook>
                         <page name="days" string="Service and Days">
-                                <group string="Reservation Services" name="reservation_services" attrs="{'invisible': [('folio_id','=',False)]}">
+                                <group string="Reservation Services" name="reservation_services">
                                     <field name="service_ids"
                                         context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id}"
                                         nolabel="1">
