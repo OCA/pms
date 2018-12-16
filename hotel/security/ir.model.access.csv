@@ -18,3 +18,4 @@ access_hotel_folio,access_hotel_folio,model_hotel_folio,base.group_user,1,0,0,0
 access_hotel_room_type,access_hotel_room_type,model_hotel_room_type,base.group_user,1,0,0,0
 access_hotel_board_service_room_type,access_hotel_board_service_room_type,model_hotel_board_service_room_type,base.group_user,1,0,0,0
 access_hotel_board_service_room_type_line,access_hotel_board_service_room_type_line,model_hotel_board_service_room_type_line,base.group_user,1,0,0,0
+access_hotel_board_service_line,access_hotel_board_service_line,model_hotel_board_service_line,base.group_user,1,0,0,0

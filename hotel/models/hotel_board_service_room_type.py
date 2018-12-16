@@ -82,11 +82,10 @@ class HotelBoardServiceRoomType(models.Model):
         """
         cmds=[(5,0,0)]
         board_service = self.env['hotel.board.service'].browse(board_service_id)
-        today = fields.Date.today()
-        for product in board_service.service_ids:
+        for line in board_service.board_service_line_ids:
                 cmds.append((0, False, {
-                    'product_id': product.id,
-                    'amount': product.list_price #TODO: default amomunt?¿
+                    'product_id': line.product_id.id,
+                    'amount': line.amount
                 }))
         return {'board_service_line_ids': cmds}
 
