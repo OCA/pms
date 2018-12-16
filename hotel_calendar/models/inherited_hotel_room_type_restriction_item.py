@@ -60,12 +60,11 @@ class HotelRoomTypeResrtrictionItem(models.Model):
         # Construct dictionary with relevant info of removed records
         unlink_vals = []
         for record in self:
-            if record.restriction_id.id != restrictions_default_id or \
-                    record.applied_on != '0_room_type':
+            if record.restriction_id.id != restrictions_default_id:
                 continue
             unlink_vals.append({
                 'restriction_id': record.restriction_id.id,
-                'date': record.date_start,
+                'date': record.date,
                 'min_stay': 0,
                 'min_stay_arrival': 0,
                 'max_stay': 0,
