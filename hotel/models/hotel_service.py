@@ -205,29 +205,30 @@ class HotelService(models.Model):
         self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')
         reservation = self.ser_room_line or self.env.context.get('ser_room_line')
-        partner = folio.partner_id if folio else reservation.partner_id
-        pricelist = folio.pricelist_id if folio else reservation.pricelist_id
-        if reservation and self.is_board_service:
-            board_room_type = reservation.board_service_room_id
-            if board_room_type.price_type == 'fixed':
-                return self.env['hotel.board.service.room.type.line'].search([
-                    ('hotel_board_service_room_type_id', '=', board_room_type.id),
-                    ('product_id','=',self.product_id.id)]).amount
+        if folio or reservation:
+            partner = folio.partner_id if folio else reservation.partner_id
+            pricelist = folio.pricelist_id if folio else reservation.pricelist_id
+            if reservation and self.is_board_service:
+                board_room_type = reservation.board_service_room_id
+                if board_room_type.price_type == 'fixed':
+                    return self.env['hotel.board.service.room.type.line'].search([
+                        ('hotel_board_service_room_type_id', '=', board_room_type.id),
+                        ('product_id','=',self.product_id.id)]).amount
+                else:
+                    return (reservation.price_total * self.env['hotel.board.service.room.type.line'].search([
+                        ('hotel_board_service_room_type_id', '=', board_room_type.id),
+                        ('product_id','=',self.product_id.id)]).amount) / 100
             else:
-                return (reservation.price_total * self.env['hotel.board.service.room.type.line'].search([
-                    ('hotel_board_service_room_type_id', '=', board_room_type.id),
-                    ('product_id','=',self.product_id.id)]).amount) / 100
-        else:
-            product = self.product_id.with_context(
-                    lang=partner.lang,
-                    partner=partner.id,
-                    quantity=self.product_qty,
-                    date=folio.date_order or fields.Date.today(),
-                    pricelist=pricelist.id,
-                    uom=self.product_id.uom_id.id,
-                    fiscal_position=False
-                )
-            return self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_ids, folio.company_id)
+                product = self.product_id.with_context(
+                        lang=partner.lang,
+                        partner=partner.id,
+                        quantity=self.product_qty,
+                        date=folio.date_order or fields.Date.today(),
+                        pricelist=pricelist.id,
+                        uom=self.product_id.uom_id.id,
+                        fiscal_position=False
+                    )
+                return self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_ids, folio.company_id)
             
          
 

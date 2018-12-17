@@ -65,6 +65,7 @@ class HotelBoardServiceRoomType(models.Model):
         action = self.env.ref('hotel.action_hotel_board_service_room_type_view').read()[0]
         action['views'] = [(self.env.ref('hotel.hotel_board_service_room_type_form').id, 'form')]
         action['res_id'] = self.id
+        action['target'] = 'new'
         return action
 
     @api.depends('board_service_line_ids.amount')

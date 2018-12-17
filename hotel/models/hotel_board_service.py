@@ -11,6 +11,9 @@ class HotelBoardService(models.Model):
     name = fields.Char('Board Name', size=64, required=True, index=True)
     board_service_line_ids = fields.One2many('hotel.board.service.line',
                                              'hotel_board_service_id')
+    price_type = fields.Selection([
+        ('fixed','Fixed'),
+        ('percent','Percent')], string='Type', default='fixed', required=True)
     hotel_board_service_room_type_ids = fields.One2many(
         'hotel.board.service.room.type', 'hotel_board_service_id')
     amount = fields.Float('Amount',
