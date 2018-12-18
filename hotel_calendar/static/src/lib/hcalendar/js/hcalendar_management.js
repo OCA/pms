@@ -769,7 +769,7 @@ HotelCalendarManagement.prototype = {
   },
 
   _sanitizeId: function(/*String*/str) {
-    return str.replace(/[^a-zA-Z0-9\.\-_:]/g, '_');
+    return str.replace(/[^a-zA-Z0-9\-_]/g, '_');
   },
 
   _isNumeric: function(/*?*/n) {

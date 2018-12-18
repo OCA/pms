@@ -339,7 +339,7 @@ HotelCalendar.prototype = {
           }
           this._updateReservation(r);
         }
-        this._updateReservationsMap();
+
         this._assignReservationsEvents(toAssignEvents);
       }.bind(this), addedReservations);
 
@@ -1508,7 +1508,8 @@ HotelCalendar.prototype = {
         }
 
         // Invalid?
-        if (nreserv.room.id !== uniRoom || (!nreserv.startDate.isSame(dateLimits[1], 'day') && !nreserv.endDate.isSame(dateLimits[0], 'day')))
+        if (nreserv.room.id !== uniRoom || (!nreserv.startDate.isSame(dateLimits[1], 'day') && !nreserv.endDate.isSame(dateLimits[0], 'day')) ||
+            (nreserv.id !== refUnifyReservation.id && nreserv.getUserData('parent_reservation') !== refUnifyReservation.id))
         {
           nreserv._html.classList.add('hcal-reservation-invalid-unify');
         }
