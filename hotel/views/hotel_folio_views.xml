@@ -135,6 +135,7 @@
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancel'))]}"/>
                         </group>
                         <group>
+                            <field name="pricelist_id" domain="[('type','=','sale')]" />
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>
@@ -149,14 +150,12 @@
                         </group>
                      </group>
                     <group invisible="1">
-                        <!-- <field name="pricelist_id" domain="[('type','=','sale')]" invisible="1"/> -->
                         <!-- <field name="partner_shipping_id" invisible="1" domain="[('parent_id','=',partner_id)]" /> -->
                         <!-- <field name="warehouse_id" string="Branch" invisible="1"/> -->
                         <field name="invoice_ids" invisible="1"/>
                         <field name="invoice_status" invisible="1" />
                         <!-- <field name="hotel_invoice_id" states='progress,done,cancel'
                             readonly="1" invisible="1" /> -->
-                        <!-- <field name="fix_price" invisible="1" /> -->
                     </group>
                     <notebook colspan="4" col="1">
                         <page string="Lines">
@@ -287,19 +286,24 @@
                                         </h3>
 
                                         <group col="6">
-                                            <group string="General Info" name="contact_details"  invisible="1">
+                                            <group string="General Info" name="contact_details" >
                                                 <field name="email" placeholder="email" widget="email" />
                                                 <field name="mobile" placeholder="mobile" widget="phone" />
                                                 <field name="phone" placeholder="phone" widget="phone" />
+                                                <field name="pricelist_id"/>
                                                 <field name="partner_internal_comment" string="Partner Note"/>
+                                                <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
                                             </group>
                                             <group colspan="4" string="Reservation Details" name="reservation_details">
-                                                <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
+                                                <field name="arrival_hour"/>
+                                                <field name="departure_hour"/>
+                                                <field name="nights" invisible="1"/>
+                                                <field name="board_service_id" />
                                                 <field name="name"/>
                                                 <field name="adults"/>
                                                 <field name="children"/>
                                                 <field name="room_type_id" on_change="1" options="{'no_create': True,'no_open': True}"
-                                                       attrs="{'readonly':[('state','not in',('draft'))]}"/>
+                                                    attrs="{'readonly':[('state','not in',('draft'))]}"/>
                                                 <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
                                             </group>
                                             <group class="oe_subtotal_footer" style="margin-right: 20px; !important" colspan="2" name="reservation_total" string="Amounts">
@@ -331,8 +335,6 @@
                                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                                             <!-- <field name="check_rooms" invisible="1"/> -->
                                             <field name="checkin_partner_pending_count" invisible="1"/>
-                                            <!-- <field name="pricelist_id" invisible="1"/> -->
-                                            <field name="nights" invisible="1"/>
                                         </group>
                                         <notebook>
                                             <page name="days" string="Service and Days">
@@ -417,7 +419,6 @@
                                             domain="[('sale_ok', '=', True)]"
                                             options="{'create': False, 'create_edit': False}" />
                                         <field name="name"/>
-                                        <field name="pricelist_id"/>
                                         <field name="ser_room_line" options="{'create': False, 'create_edit': False}"/>
                                         <!-- <field name="product_uom_qty"
                                             string="Ordered Qty"
@@ -447,6 +448,15 @@
                                         <field name="channel_type" sttrs="{'invisible':[('channel_type', '!=', 'call')]"/>
                                     </tree>
                                 </field>
+                                <group colspan="2" class="oe_subtotal_footer oe_right">
+                                    <field name="amount_untaxed" sum="Untaxed amount" widget='monetary' />
+                                    <field name="amount_tax" widget='monetary' />
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total" />
+                                    </div>
+                                    <field name="amount_total" nolabel="1" sum="Total amount"
+                                       widget='monetary' />
+                                </group>
                             <div class="oe_clear" />
                             <group>
                                 <field name="note" />

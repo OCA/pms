@@ -44,30 +44,11 @@ class HotelFolio(models.Model):
     def _amount_all(self):
         pass
 
+    #Main Fields--------------------------------------------------------
     name = fields.Char('Folio Number', readonly=True, index=True,
                        default=lambda self: _('New'))
     partner_id = fields.Many2one('res.partner',
                                  track_visibility='onchange')
-    closure_reason_id = fields.Many2one('room.closure.reason')
-    # partner_invoice_id = fields.Many2one('res.partner',
-    #                                      string='Invoice Address',
-    #                                      readonly=True, required=True,
-    #                                      states={'draft': [('readonly', False)],
-    #                                              'sent': [('readonly', False)]},
-    #                                      help="Invoice address for current sales order.")
-
-    # For being used directly in the Folio views
-    email = fields.Char('E-mail', related='partner_id.email')
-    mobile = fields.Char('Mobile', related='partner_id.mobile')
-    phone = fields.Char('Phone', related='partner_id.phone')
-
-    #Review: How to use state in folio?
-    state = fields.Selection([('draft', 'Pre-reservation'), ('confirm', 'Pending Entry'),
-                              ('booking', 'On Board'), ('done', 'Out'),
-                              ('cancelled', 'Cancelled')],
-                             'State', readonly=True,
-                             default=lambda *a: 'draft',
-                             track_visibility='onchange')
 
     room_lines = fields.One2many('hotel.reservation', 'folio_id',
                                  readonly=False,
@@ -80,8 +61,6 @@ class HotelFolio(models.Model):
                                        help="Hotel services detail provide to "
                                        "customer and it will include in "
                                        "main Invoice.")
-    hotel_invoice_id = fields.Many2one('account.invoice', 'Invoice')
-
     company_id = fields.Many2one('res.company', 'Company')
 
     currency_id = fields.Many2one('res.currency', related='pricelist_id.currency_id',
@@ -90,10 +69,50 @@ class HotelFolio(models.Model):
     pricelist_id = fields.Many2one('product.pricelist',
                                    string='Pricelist',
                                    required=True,
-                                   readonly=True,
                                    states={'draft': [('readonly', False)],
                                            'sent': [('readonly', False)]},
                                    help="Pricelist for current folio.")
+    reservation_type = fields.Selection([('normal', 'Normal'),
+                                         ('staff', 'Staff'),
+                                         ('out', 'Out of Service')],
+                                        'Type', default=lambda *a: 'normal')
+    channel_type = fields.Selection([('door', 'Door'),
+                                     ('mail', 'Mail'),
+                                     ('phone', 'Phone'),
+                                     ('web', 'Web')], 'Sales Channel', default='door')
+    user_id = fields.Many2one('res.users', string='Salesperson', index=True,
+                              track_visibility='onchange', default=lambda self: self.env.user)
+    date_order = fields.Datetime(
+        string='Order Date',
+        required=True, readonly=True, index=True,
+        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+        copy=False, default=fields.Datetime.now)
+    state = fields.Selection([
+        ('draft', 'Quotation'),
+        ('sent', 'Quotation Sent'),
+        ('confirm', 'Confirmed'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
+        ], string='Status',
+        readonly=True, copy=False,
+        index=True, track_visibility='onchange',
+        default='draft')
+    
+
+    # Partner fields for being used directly in the Folio views---------
+    email = fields.Char('E-mail', related='partner_id.email')
+    mobile = fields.Char('Mobile', related='partner_id.mobile')
+    phone = fields.Char('Phone', related='partner_id.phone')
+    partner_internal_comment = fields.Text(string='Internal Partner Notes',
+                                           related='partner_id.comment')
+
+    #Payment Fields-----------------------------------------------------
+    payment_ids = fields.One2many('account.payment', 'folio_id',
+                                  readonly=True)
+    return_ids = fields.One2many('payment.return', 'folio_id',
+                                 readonly=True)
+
+    #Amount Fields------------------------------------------------------
     pending_amount = fields.Monetary(compute='compute_amount',
                                      store=True,
                                      string="Pending in Folio")
@@ -103,50 +122,25 @@ class HotelFolio(models.Model):
     invoices_paid = fields.Monetary(compute='compute_amount',
                                     store=True, track_visibility='onchange',
                                     string="Payments")
+    amount_untaxed = fields.Monetary(string='Untaxed Amount', store=True,
+                                     readonly=True, compute='_amount_all',
+                                     track_visibility='onchange')
+    amount_tax = fields.Monetary(string='Taxes', store=True,
+                                 readonly=True, compute='_amount_all')
+    amount_total = fields.Monetary(string='Total', store=True, readonly=True,
+                                   compute='_amount_all', track_visibility='always')
 
+    #Checkin Fields-----------------------------------------------------
     booking_pending = fields.Integer('Booking pending',
                                      compute='_compute_checkin_partner_count')
     checkin_partner_count = fields.Integer('Checkin counter',
                                   compute='_compute_checkin_partner_count')
     checkin_partner_pending_count = fields.Integer('Checkin Pending',
                                           compute='_compute_checkin_partner_count')
-    partner_internal_comment = fields.Text(string='Internal Partner Notes',
-                                           related='partner_id.comment')
-    internal_comment = fields.Text(string='Internal Folio Notes')
-    cancelled_reason = fields.Text('Cause of cancelled')
-    payment_ids = fields.One2many('account.payment', 'folio_id',
-                                  readonly=True)
-    return_ids = fields.One2many('payment.return', 'folio_id',
-                                 readonly=True)
-    prepaid_warning_days = fields.Integer(
-        'Prepaid Warning Days',
-        help='Margin in days to create a notice if a payment \
-                advance has not been recorded')
-    reservation_type = fields.Selection([('normal', 'Normal'),
-                                         ('staff', 'Staff'),
-                                         ('out', 'Out of Service')],
-                                        'Type', default=lambda *a: 'normal')
-    channel_type = fields.Selection([('door', 'Door'),
-                                     ('mail', 'Mail'),
-                                     ('phone', 'Phone'),
-                                     ('web', 'Web')], 'Sales Channel', default='door')
-    num_invoices = fields.Integer(compute='_compute_num_invoices')
-    rooms_char = fields.Char('Rooms', compute='_computed_rooms_char')
-    segmentation_ids = fields.Many2many('res.partner.category',
-                                        string='Segmentation')
-    has_confirmed_reservations_to_send = fields.Boolean(
-        compute='_compute_has_confirmed_reservations_to_send')
-    has_cancelled_reservations_to_send = fields.Boolean(
-        compute='_compute_has_cancelled_reservations_to_send')
-    has_checkout_to_send = fields.Boolean(
-        compute='_compute_has_checkout_to_send')
-    # fix_price = fields.Boolean(compute='_compute_fix_price')
-    date_order = fields.Datetime(
-        string='Order Date',
-        required=True, readonly=True, index=True,
-        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
-        copy=False, default=fields.Datetime.now)
 
+    #Invoice Fields-----------------------------------------------------
+    hotel_invoice_id = fields.Many2one('account.invoice', 'Invoice')
+    num_invoices = fields.Integer(compute='_compute_num_invoices')
     invoice_ids = fields.Many2many('account.invoice', string='Invoices',
                                    compute='_get_invoiced', readonly=True, copy=False)
     invoice_status = fields.Selection([('upselling', 'Upselling Opportunity'),
@@ -156,17 +150,52 @@ class HotelFolio(models.Model):
                                       string='Invoice Status',
                                       compute='_compute_invoice_status',
                                       store=True, readonly=True, default='no')
+    #~ partner_invoice_id = fields.Many2one('res.partner',
+                                         #~ string='Invoice Address',
+                                         #~ readonly=True, required=True,
+                                         #~ states={'draft': [('readonly', False)],
+                                                 #~ 'sent': [('readonly', False)]},
+                                         #~ help="Invoice address for current sales order.")
+
+    #WorkFlow Mail Fields-----------------------------------------------
+    has_confirmed_reservations_to_send = fields.Boolean(
+        compute='_compute_has_confirmed_reservations_to_send')
+    has_cancelled_reservations_to_send = fields.Boolean(
+        compute='_compute_has_cancelled_reservations_to_send')
+    has_checkout_to_send = fields.Boolean(
+        compute='_compute_has_checkout_to_send')
+
+    #Generic Fields-----------------------------------------------------    
+    internal_comment = fields.Text(string='Internal Folio Notes')
+    cancelled_reason = fields.Text('Cause of cancelled')
+    closure_reason_id = fields.Many2one('room.closure.reason')
+    prepaid_warning_days = fields.Integer(
+        'Prepaid Warning Days',
+        help='Margin in days to create a notice if a payment \
+                advance has not been recorded')
+    rooms_char = fields.Char('Rooms', compute='_computed_rooms_char')
+    segmentation_ids = fields.Many2many('res.partner.category',
+                                        string='Segmentation')
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
     note = fields.Text('Terms and conditions')
-    # layout_category_id = fields.Many2one('sale.layout_category', string='Section')
-
-    user_id = fields.Many2one('res.users', string='Salesperson', index=True,
-                              track_visibility='onchange', default=lambda self: self.env.user)
-
     sequence = fields.Integer(string='Sequence', default=10)
-    # sale.order
-    amount_total = fields.Float(string='Total', store=True, readonly=True,
-                                track_visibility='always')
+
+    @api.depends('room_lines.price_total','service_ids.price_total')
+    def _amount_all(self):
+        """
+        Compute the total amounts of the SO.
+        """
+        for record in self:
+            amount_untaxed = amount_tax = 0.0
+            amount_untaxed = sum(record.room_lines.mapped('price_subtotal')) + \
+                             sum(record.service_ids.mapped('price_subtotal'))
+            amount_tax = sum(record.room_lines.mapped('price_tax')) + \
+                         sum(record.service_ids.mapped('price_tax'))
+            record.update({
+                'amount_untaxed': record.pricelist_id.currency_id.round(amount_untaxed),
+                'amount_tax': record.pricelist_id.currency_id.round(amount_tax),
+                'amount_total': amount_untaxed + amount_tax,
+            })
 
     def _computed_rooms_char(self):
         for record in self:
@@ -317,7 +346,7 @@ class HotelFolio(models.Model):
             if 'company_id' in vals:
                 vals['name'] = self.env['ir.sequence'].with_context(
                     force_company=vals['company_id']
-                ).next_by_code('sale.order') or _('New')
+                ).next_by_code('hotel.folio') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
         

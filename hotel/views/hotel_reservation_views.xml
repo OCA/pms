@@ -183,18 +183,18 @@
                             <field name="email" placeholder="email" widget="email" />
                             <field name="mobile" placeholder="mobile" widget="phone" />
                             <field name="phone" placeholder="phone" widget="phone" />
+                            <field name="pricelist_id"/>
                             <field name="partner_internal_comment" string="Partner Note"/>
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
                         </group>
                         <group colspan="4" string="Reservation Details" name="reservation_details">
                             <field name="arrival_hour"/>
                             <field name="departure_hour"/>
+                            <field name="nights" invisible="1"/>
                             <field name="board_service_id" />
                             <field name="name"/>
                             <field name="adults"/>
                             <field name="children"/>
-                            <!-- <field name="room_type_id" on_change="1" options="{'no_create': True,'no_open': True}"
-                                   attrs="{'readonly':[('state','not in',('draft'))]}"/> -->
                             <field name="room_type_id" on_change="1" options="{'no_create': True,'no_open': True}"
                                 attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
@@ -224,6 +224,8 @@
                             <!-- <field name="customer_lead" invisible="1"/> -->
                              <field name="currency_id" invisible="1"/>
                             <field name="price_subtotal" widget="monetary"/>
+                            <field name="price_services" widget="monetary"/>
+                            <field name="price_room_services_set" widget="monetary"/>
                         </group>
                     </group>
                     <field name="folio_internal_comment" nolabel="1" placeholder="Reservation Notes"/>
@@ -231,29 +233,36 @@
                         <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                         <!-- <field name="check_rooms" invisible="1"/> -->
                         <field name="checkin_partner_pending_count" invisible="1"/>
-                        <!-- <field name="pricelist_id" invisible="1"/> -->
-                        <field name="nights" invisible="1"/>
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
                     </group>
                     <notebook>
                         <page name="days" string="Service and Days">
-                            <group col="9">
-                                <group colspan="6" string="Reservation Services" name="reservation_services" attrs="{'invisible': [('folio_id','=',False)]}">
+                                <group string="Reservation Services" name="reservation_services" attrs="{'invisible': [('folio_id','=',False)]}">
                                     <field name="service_ids"
-                                        nolabel="1" style="padding-right:10px !important;">
-                                        <!-- <field name="service_ids"> -->
-                                        <tree string="Services">
+                                        context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id}"
+                                        nolabel="1">
+                                        <tree string="Services" editable="bottom">
                                             <!-- <field name="sequence" widget="handle"/> -->
-                                            <field name="per_day" />
-                                            <field name="is_board_service" />
+                                            <field name="per_day" invisible="1"/>
+                                            <field name="is_board_service" invisible="1" />
                                             <field name="folio_id" invisible="1"/>
                                             <field name="product_id"
                                                 domain="[('sale_ok', '=', True)]"
                                                 options="{'create': False, 'create_edit': False}" />
                                             <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
                                             <field name="name"/>
-                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
-                                            <field name="days_qty" />
+                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>                                            
+                                            <button type="object" class="oe_stat_button"
+                                                id="go_service_lines" icon="fa fa-2x fa-bars"
+                                                name="open_service_lines"
+                                                attrs="{'invisible': [('per_day','=',False)]}"/>
+                                            <field name="days_qty" invisible="1"/>
+                                            <field name="price_unit" />
+                                            <field name="discount" />
+                                            <field name="tax_ids" widget="many2many_tags"/>
+                                            <field name="price_subtotal" />
+                                            <field name="price_tax" />
+                                            <field name="price_total" />      
                                             <field name="service_line_ids" invisible="1">
                                                 <tree string="Days" >
                                                     <field name="date" />
@@ -261,26 +270,9 @@
                                                 </tree>
                                             </field>
                                         </tree>
-                                        <form string="Services">
-                                            <!-- <field name="sequence" widget="handle"/> -->
-                                            <field name="per_day" />
-                                            <field name="folio_id" invisible="1"/>
-                                            <field name="product_id"
-                                                domain="[('sale_ok', '=', True)]"
-                                                options="{'create': False, 'create_edit': False}" />
-                                            <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
-                                            <field name="name"/>
-                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
-                                            <field name="service_line_ids">
-                                                <tree string="Days" >
-                                                    <field name="date" />
-                                                    <field name="day_qty" />
-                                                </tree>
-                                            </field>
-                                        </form>
                                     </field>
                                 </group>
-                                <group colspan="4" string="Days" name="days">
+                                <group string="Days" name="days">
                                     <field name="reservation_line_ids" nolabel="1">
                                         <tree create="false" delete="false" editable="bottom">
                                             <field name="date" />
@@ -289,7 +281,6 @@
                                         </tree>
                                     </field>
                                 </group>
-                             </group>
                         </page>
                         <page name="others" string="Others">
                             <group>

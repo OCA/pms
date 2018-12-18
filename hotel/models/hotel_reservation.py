@@ -173,8 +173,7 @@ class HotelReservation(models.Model):
     service_ids = fields.One2many('hotel.service', 'ser_room_line')
 
     pricelist_id = fields.Many2one('product.pricelist',
-                                   related='folio_id.pricelist_id',
-                                   readonly="1")
+                                   related='folio_id.pricelist_id') #TODO: Warning Mens to update pricelist
     checkin_partner_ids = fields.One2many('hotel.checkin.partner', 'reservation_id')
     # TODO: As checkin_partner_count is a computed field, it can't not be used in a domain filer
     # Non-stored field hotel.reservation.checkin_partner_count cannot be searched
@@ -259,6 +258,14 @@ class HotelReservation(models.Model):
                              readonly=True,
                              store=True,
                              compute='_compute_amount_reservation')
+    price_services = fields.Monetary(string='Services Total',
+                                     readonly=True,
+                                     store=True,
+                                     compute='_compute_amount_room_services')
+    price_room_services_set = fields.Monetary(string='Room Services Total',
+                                              readonly=True,
+                                              store=True,
+                                              compute='_compute_amount_set')
     # FIXME discount per night
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
 
@@ -290,6 +297,7 @@ class HotelReservation(models.Model):
                     board_services.append((0, False, {
                         'product_id': product.id,
                         'is_board_service': True,
+                        'folio_id': vals.get('folio_id'),
                         }))
                 vals.update({'service_ids': board_services})
         if self.compute_price_out_vals(vals):
@@ -327,6 +335,7 @@ class HotelReservation(models.Model):
                     board_services.append((0, False, {
                         'product_id': product.id,
                         'is_board_service': True,
+                        'folio_id': record.folio_id.id or vals.get('folio_id')
                         }))
                 # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
                 record.update({'service_ids':  [(6, 0, record.service_ids.ids)] + board_services})
@@ -610,6 +619,7 @@ class HotelReservation(models.Model):
                     vals = {
                         'product_id': product.id,
                         'is_board_service': True,
+                        'folio_id': self.folio_id.id,
                         }
                     vals.update(self.env['hotel.service'].prepare_service_lines(
                         dfrom=self.checkin,
@@ -619,8 +629,10 @@ class HotelReservation(models.Model):
                         old_line_days=False))                    
                     board_services.append((0, False, vals))
             other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
-            
             self.update({'service_ids':  [(6, 0, other_services.ids)] + board_services})
+            for service in self.service_ids.filtered(lambda r: r.is_board_service == True):
+                service._compute_tax_ids()
+                service.price_unit = service._compute_price_unit()
 
     """
     STATE WORKFLOW -----------------------------------------------------
@@ -706,6 +718,16 @@ class HotelReservation(models.Model):
     """
     PRICE PROCESS ------------------------------------------------------
     """
+    @api.depends('service_ids.price_total')
+    def _compute_amount_room_services(self):
+        for record in self:
+            record.price_services = sum(record.mapped('service_ids.price_total'))
+
+    @api.depends('price_services','price_total')
+    def _compute_amount_set(self):
+        for record in self:
+            record.price_room_services_set = record.price_services + record.price_total
+
     @api.multi
     def compute_price_out_vals(self, vals):
         """
