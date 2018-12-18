@@ -29,3 +29,5 @@ from . import hotel_room_type_class
 from . import hotel_room_closure_reason
 from . import hotel_service_line
 from . import hotel_board_service
+from . import hotel_board_service_room_type_line
+from . import hotel_board_service_line

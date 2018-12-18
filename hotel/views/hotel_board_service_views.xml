@@ -3,20 +3,20 @@
 
     <!--==================================================== Board Services ==================================================== -->
     <!-- Form view of hotel board service -->
-    <record model="ir.ui.view" id="hotel_board_service_view_form">
+    <record model="ir.ui.view" id="hotel_board_service_form">
         <field name="name">hotel.board.service.form</field>
         <field name="model">hotel.board.service</field>
         <field name="arch" type="xml">
-            <form string="Hotel Board Service">
-                <sheet>
-                    <group>
-                        <field name="name" select="1" />
-                        <field name="sequence" />
-                    </group>
-                    <group>
-                        <field name="service_ids" />
-                    </group>
-                </sheet>
+            <form string="Board Service Line">
+                <group>
+                    <field name="amount"/>
+                    <field name="board_service_line_ids">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="amount" />
+                        </tree>
+                    </field>
+                </group>
             </form>
         </field>
     </record>
@@ -28,7 +28,7 @@
         <field name="arch" type="xml">
             <tree string="Hotel Board Services">
                 <field name="name" />
-                <field name="sequence" />
+                <field name="amount" />
             </tree>
         </field>
     </record>

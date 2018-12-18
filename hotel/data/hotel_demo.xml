@@ -235,24 +235,90 @@
 
         <record id="hotel_board_service_0" model="hotel.board.service">
             <field name="name">BreakFast</field>
-            <field name="service_ids"
-                   eval="[(4, ref('hotel_service_0'))]"/>
-            <field name="sequence">0</field>
+            <field name="board_service_line_ids"
+                   eval="[(5, 0), (0, 0, {
+                    'product_id': ref('hotel_service_0'),
+                    'amount': 3})]"/>
+            <field name="price_type">fixed</field>
         </record>
 
         <record id="hotel_board_service_1" model="hotel.board.service">
             <field name="name">Half Board</field>
-            <field name="service_ids"
-                   eval="[(4, ref('hotel_service_0')), (4, ref('hotel_service_4'))]"/>
-            <field name="sequence">10</field>
+            <field name="board_service_line_ids"
+                   eval="[(5, 0), (0, 0, {
+                    'product_id': ref('hotel_service_0'),
+                    'amount': 3}),
+                    (0, 0, {'product_id': ref('hotel_service_4'),
+                    'amount': 8})
+                    ]"/>
+            <field name="price_type">fixed</field>
         </record>
 
         <record id="hotel_board_service_2" model="hotel.board.service">
             <field name="name">FullBoard</field>
-            <field name="service_ids"
-                   eval="[(4, ref('hotel_service_0')), (4, ref('hotel_service_4')),
-                   (4, ref('hotel_service_5'))]"/>
-            <field name="sequence">10</field>
+            <field name="board_service_line_ids"
+                   eval="[(5, 0), (0, 0, {
+                    'product_id': ref('hotel_service_0'),
+                    'amount': 3}),
+                    (0, 0, {'product_id': ref('hotel_service_4'),
+                    'amount': 8}),
+                    (0, 0, {'product_id': ref('hotel_service_5'),
+                    'amount': 8})
+                    ]"/>
+            <field name="price_type">fixed</field>
+        </record>
+
+    <!-- hotel.board.service.room.type -->
+
+                            <!--Room 0 Economic-->
+
+        <record id="hotel_board_service_room_0"
+                model="hotel.board.service.room.type">
+            <field name="hotel_board_service_id"
+                    ref="hotel_board_service_0"/>
+            <field name="hotel_room_type_id"
+                    ref="hotel_room_type_0"/>
+            <field name="price_type">fixed</field>
+        </record>
+
+        <record id="hotel_board_service_room_1"
+                model="hotel.board.service.room.type">
+            <field name="hotel_board_service_id"
+                    ref="hotel_board_service_1"/>
+            <field name="hotel_room_type_id"
+                    ref="hotel_room_type_0"/>
+            <field name="price_type">fixed</field>
+        </record>
+
+        <record id="hotel_board_service_room_2"
+                model="hotel.board.service.room.type">
+            <field name="hotel_board_service_id"
+                    ref="hotel_board_service_1"/>
+            <field name="hotel_room_type_id"
+                    ref="hotel_room_type_0"/>
+            <field name="pricelist_id"
+                    ref="product.list0"/>
+            <field name="price_type">fixed</field>
+        </record>
+
+                            <!--Room 3 Triple-->
+
+        <record id="hotel_board_service_room_3"
+                model="hotel.board.service.room.type">
+            <field name="hotel_board_service_id"
+                    ref="hotel_board_service_0"/>
+            <field name="hotel_room_type_id"
+                    ref="hotel_room_type_3"/>
+            <field name="price_type">fixed</field>
+        </record>
+
+        <record id="hotel_board_service_room_4"
+                model="hotel.board.service.room.type">
+            <field name="hotel_board_service_id"
+                    ref="hotel_board_service_2"/>
+            <field name="hotel_room_type_id"
+                    ref="hotel_room_type_3"/>
+            <field name="price_type">fixed</field>
         </record>
 
     <!-- room.closure.reason -->
@@ -280,7 +346,7 @@
                     'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'adults': 2,
                     'state': 'confirm',
-                    'board_service_id': ref('hotel_board_service_1'),
+                    'board_service_room_id': ref('hotel_board_service_room_1'),
                     })]"/>
         </record>
         <!-- reservation of 1 triple room for 3 people on behalf on the company -->
@@ -292,7 +358,7 @@
                     'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 3,
-                    'board_service_id': ref('hotel_board_service_2'),
+                    'board_service_room_id': ref('hotel_board_service_room_3'),
                     })]"/>
         </record>
         <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
@@ -329,7 +395,6 @@
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 1,
                     'state': 'confirm',
-                    'board_service_id': ref('hotel_board_service_1'),
                     })]"/>
         </record>
 

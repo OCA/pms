@@ -46,6 +46,9 @@
                                     <field name="price_type" />
                                     <field name="amount" />
                                     <field name="pricelist_id" />
+                                    <button type="object" class="oe_stat_button"
+                                        id="go_board_lines" icon="fa fa-2x fa-bars"
+                                        name="open_board_lines_form"/>
                                 </tree>
                             </field>
                         </page>
