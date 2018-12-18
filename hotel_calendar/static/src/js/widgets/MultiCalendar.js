@@ -150,7 +150,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       this._base = element;
     },
 
-    merge_pricelist: function(pricelist) {
+    merge_pricelist: function(pricelist, calendar) {
       var keys = _.keys(pricelist);
       for (var k of keys) {
         var pr = pricelist[k];
@@ -176,12 +176,16 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
         }
       }
 
-      for (var calendar of this._calendars) {
+      if (!calendar) {
+        for (var calendar of this._calendars) {
+          calendar.setPricelist(this._dataset['pricelist']);
+        }
+      } else {
         calendar.setPricelist(this._dataset['pricelist']);
       }
     },
 
-    merge_restrictions: function(restrictions) {
+    merge_restrictions: function(restrictions, calendar) {
       var room_type_ids = Object.keys(restrictions);
       for (var vid of room_type_ids) {
         if (vid in this._dataset['restrictions']) {
@@ -192,12 +196,16 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
         }
       }
 
-      for (var calendar of this._calendars) {
+      if (!calendar) {
+        for (var calendar of this._calendars) {
+          calendar.setRestrictions(this._dataset['restrictions']);
+        }
+      } else {
         calendar.setRestrictions(this._dataset['restrictions']);
       }
     },
 
-    merge_reservations: function(reservations) {
+    merge_reservations: function(reservations, calendar) {
       for (var r of reservations) {
         var rindex = _.findKey(this._dataset['reservations'], {'id': r.id});
         if (rindex) {
@@ -207,7 +215,11 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
         }
       }
 
-      for (var calendar of this._calendars) {
+      if (!calendar) {
+        for (var calendar of this._calendars) {
+          calendar.addReservations(reservations);
+        }
+      } else {
         calendar.addReservations(reservations);
       }
     },
@@ -352,7 +364,7 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
         });
         if (data.length > 0) {
           $elm.addClass('hcal-event-day');
-          $elm.prepend("<i class='fa fa-bell' style='margin-right: 0.1em'></i>");
+          $elm.append("<i class='fa fa-bell' style='margin-right: 0.1em'></i>");
           $elm.on("mouseenter", function(data){
             var $this = $(this);
             if (data.length > 0) {

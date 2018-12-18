@@ -53,10 +53,12 @@ var HotelCalendarView = AbstractRenderer.extend({
     /** CUSTOM METHODS **/
     get_view_filter_dates: function () {
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
-        var $dateTimePickerEnd = this.$el.find('#pms-menu #date_end');
+        var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
         var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().utc();
-        var date_end = $dateTimePickerEnd.data("DateTimePicker").date().set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
+        var date_end = date_begin.clone().add($dateEndDays.val(), 'd').set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
 
+        console.log("---- YEAH");
+        console.log(date_end.format("DD-MM-YYYY"));
         return [date_begin, date_end];
     },
 
@@ -64,13 +66,13 @@ var HotelCalendarView = AbstractRenderer.extend({
         // View Options
         this._view_options = options;
         var date_begin = moment().startOf('day');
-        var date_end = date_begin.clone().add(this._view_options['days'], 'd').endOf('day');
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
-        var $dateTimePickerEnd = this.$el.find('#pms-menu #date_end');
+        var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
         //$dateTimePickerBegin.data("ignore_onchange", true);
         $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
         //$dateTimePickerEnd.data("ignore_onchange", true);
-        $dateTimePickerEnd.data("DateTimePicker").date(date_end);
+        $dateEndDays.val(30);
+        $dateEndDays.trigger('change');
         this._last_dates = this.get_view_filter_dates();
     },
 
@@ -122,16 +124,26 @@ var HotelCalendarView = AbstractRenderer.extend({
             format : HotelConstants.L10N_DATE_MOMENT_FORMAT,
         };
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
-        var $dateTimePickerEnd = this.$el.find('#pms-menu #date_end');
+        var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
         $dateTimePickerBegin.datetimepicker(DTPickerOptions);
-        $dateTimePickerEnd.datetimepicker($.extend({}, DTPickerOptions, { 'useCurrent': false }));
+        // $dateEndDays.select2({
+        //     data: [
+        //         {id:7, text: '1 Week'},
+        //         {id:12, text: '2 Weeks'},
+        //         {id:21, text: '3 Weeks'},
+        //         {id:30, text: '1 Month'},
+        //         {id:60, text: '2 Months'},
+        //         {id:90, text: '3 Months'},
+        //     ],
+        //     allowClear: true
+        // });
+
 
         var date_begin = moment().startOf('day');
-        var days = date_begin.daysInMonth();
-        var date_end = date_begin.clone().add(days, 'd').endOf('day');
         $dateTimePickerBegin.data("ignore_onchange", true);
         $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
-        $dateTimePickerEnd.data("DateTimePicker").date(date_end);
+        $dateEndDays.val(30);
+        $dateEndDays.trigger('change');
         this._last_dates = this.get_view_filter_dates();
 
         /* TOUCH EVENTS */
@@ -154,9 +166,6 @@ var HotelCalendarView = AbstractRenderer.extend({
               date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().subtract(days, 'd');
             }
             if (date_begin) {
-              var date_end = date_begin.clone().add(self._view_options['days'], 'd').endOf('day');
-              $dateTimePickerEnd.data("ignore_onchange", true);
-              $dateTimePickerEnd.data("DateTimePicker").date(date_end);
               $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
             }
           }
@@ -195,9 +204,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         resultsHotelRoomType.forEach(function(item, index){
             $list.append(`<option value="${item.id}">${item.name}</option>`);
         });
-        $list.select2({
-          theme: "classic"
-        });
+        $list.select2();
         $list.on('change', function(ev){
             this.trigger_up('onApplyFilters');
         }.bind(this));
