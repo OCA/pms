@@ -69,23 +69,85 @@
 </t>
 
 <t t-name="HotelCalendar.TooltipReservation">
-	<div class="oe_tooltip_string"><t t-esc="name"/></div>
-	<t t-if="reservation_type == 'normal'">
-		<ul class="oe_tooltip_technical">
-			<li><b>Phone:</b> <t t-esc="phone"/></li>
-			<li><b>Arrival Hour:</b> <t t-esc="arrival_hour"/></li>
-			<t t-if="num_split &gt; 1">
-				<li><b>Splitted:</b> <t t-esc="num_split"/></li>
-			</t>
-			<!-- FIXME: HARD CURRENCY -->
-			<li><b>Total Amount:</b> <t t-esc="amount_total" t-widget="monetary"/>€</li>
-		</ul>
-	</t>
-	<t t-elif="reservation_type == 'out'">
-		<ul class="oe_tooltip_technical">
-			<li><b>Reason:</b> <t t-esc="out_service_description"/></li>
-		</ul>
-	</t>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-6">
+				<ul class="list-group">
+				<li class="list-group-item fa fa-user-circle-o fa-2x">
+					<t t-esc="name"/>
+				</li>
+				<li class="list-group-item"><t t-esc="phone"/></li>
+				<li class="list-group-item"><t t-esc="email"/></li>
+				</ul>
+			</div>
+			<div class="col-sm-6">
+				<ul class="list-group">
+				<li class="list-group-item fa fa-hotel fa-2x">
+					<t t-esc="room_type"/>
+				</li>
+				<span class="fa fa-1x">Board Service Undefined</span>
+					<span>Adults: <t t-esc="adults"/></span>
+					<span>Children: <t t-esc="children"/></span>
+				<li class="list-group-item fa-stack fa-2x">
+					<span class="fa fa-circle fa-stack-2x"></span>
+					<span class="fa fa-stack-1x fa-inverse">
+						<t t-esc="amount_total" t-widget="monetary"/>€
+					</span>
+				</li>
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<!-- FIXME: HARD CURRENCY -->
+				Por Pagar <t t-esc="amount_total" t-widget="monetary"/>€ <br/>
+				Pagado <t t-esc="amount_paid" t-widget="monetary"/>€
+			</div>
+			<div class="col-sm-6">
+				WuBook: 1544109684
+				Booking: 4253096846
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<ul class="list-group">
+				<li class="list-group-item fa fa-arrow-circle-o-right fa-2x"><t t-esc="checkin"/></li>
+				<li class="list-group-item">
+					<t t-esc="checkin_day_of_week"/> <t t-esc="arrival_hour"/>
+				</li>
+				</ul>
+			</div>
+			<div class="col-sm-6">
+				<ul class="list-group">
+				<li class="list-group-item fa-2x"><t t-esc="checkout"/><span class="fa fa-arrow-circle-o-right"/></li>
+				<li class="list-group-item">
+					<t t-esc="checkout_day_of_week"/> <t t-esc="departure_hour"/></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-2">
+				<span class="fa fa-file-text-o fa-2x"><t t-esc="folio_name"/></span>
+			</div>
+			<div class="col-sm-2">
+				<span class="fa fa-external-link fa-2x"/>
+			</div>
+			<div class="col-sm-2">
+				<span class="fa fa-user-plus fa-2x"/>
+			</div>
+			<div class="col-sm-2">
+				<span class="fa fa-envelope fa-2x"/>
+			</div>
+			<div class="col-sm-2">
+				<span class="fa fa-money fa-2x"/>
+			</div>
+			<div class="col-sm-2">
+				<span class="fa fa-window-close fa-2x"/>
+			</div>
+		</div>
+	</div>
 </t>
 
 <t t-name="HotelCalendar.TooltipRoom">

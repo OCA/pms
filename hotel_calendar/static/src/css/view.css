@@ -158,3 +158,21 @@ input#bookings_search {
 	line-height: 1.2;
 	text-align: left;
 }
+
+/** TOOLTIPS **/
+.tooltip {
+
+}
+.tooltip .tooltip-inner {
+    border: 1px solid #5C5C5C;
+	background-color: white;
+	color: #5C5C5C;
+}
+
+.tooltip .container {
+	max-width: 500px;
+}
+
+.tooltip .list-group-item {
+    border: none;
+}

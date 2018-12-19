@@ -367,6 +367,7 @@ var PMSCalendarController = AbstractController.extend({
             var tp = self._multi_calendar._reserv_tooltips[ev.detail.reservationObj.id];
             var qdict = self._generate_reservation_tooltip_dict(tp);
             $(ev.detail.reservationDiv).tooltip('destroy').tooltip({
+              trigger: 'manual',
               animation: false,
               html: true,
               placement: 'bottom',
@@ -634,11 +635,23 @@ var PMSCalendarController = AbstractController.extend({
 
     _generate_reservation_tooltip_dict: function(tp) {
       return {
+        'folio_name': tp['folio_name'],
         'name': tp['name'],
         'phone': tp['phone'],
-        'arrival_hour': HotelCalendar.toMomentUTC(tp['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
+        'email': tp['email'],
+        'room_type': tp['room_type'],
+        'adults': tp['adults'],
+        'children': tp['children'],
+        'checkin': HotelCalendar.toMomentUTC(tp['checkin'], '').format("DD MMMM"),
+        'checkin_day_of_week': HotelCalendar.toMomentUTC(tp['checkin'], '').format("dddd"),
+        'checkout': HotelCalendar.toMomentUTC(tp['checkout'], '').format("DD MMMM"),
+        'checkout_day_of_week': HotelCalendar.toMomentUTC(tp['checkout'], '').format("dddd"),
+        'arrival_hour': tp['arrival_hour'],
+        'departure_hour': tp['departure_hour'],
         'num_split': tp['num_split'],
         'amount_total': Number(tp['amount_total']).toLocaleString(),
+        'pending_amount': Number(tp['pending_amount']).toLocaleString(),
+        'amount_paid': Number(tp['amount_paid']).toLocaleString(),
         'reservation_type': tp['type'],
         'out_service_description': tp['out_service_description']
       };

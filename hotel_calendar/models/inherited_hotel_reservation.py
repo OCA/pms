@@ -109,12 +109,21 @@ class HotelReservation(models.Model):
                 ])
             json_reservation_tooltips.update({
                 reserv.id: {
+                    'folio_name': reserv.folio_id.name,
                     'name': _('Out of service') if reserv.folio_id.reservation_type == 'out' else reserv.folio_id.partner_id.name,
-                    'phone': reserv.folio_id.partner_id.mobile or
-                             reserv.folio_id.partner_id.phone or _('Undefined'),
+                    'phone': reserv.mobile or reserv.phone or _('Phone not provided'),
+                    'email': reserv.email or _('Email not provided'),
+                    'room_type': reserv.room_type_id.name,
+                    'adults': reserv.adults,
+                    'childrens': reserv.children,
                     'checkin': reserv.checkin,
+                    'checkout': reserv.checkout,
+                    'arrival_hour': reserv.arrival_hour,
+                    'departure_hour': reserv.departure_hour,
                     'num_split': num_split,
                     'amount_total': reserv.folio_id.amount_total,
+                    'pending_amount': reserv.folio_id.pending_amount,
+                    'amount_paid': reserv.folio_id.amount_total - reserv.folio_id.pending_amount,
                     'type': reserv.reservation_type or 'normal',
                     'out_service_description': reserv.out_service_description or
                                                _('No reason given'),
@@ -342,6 +351,7 @@ class HotelReservation(models.Model):
     @api.multi
     def generate_bus_values(self, naction, ntype, ntitle=''):
         self.ensure_one()
+        import wdb; wdb.set_trace()
         return {
             'action': naction,
             'type': ntype,
