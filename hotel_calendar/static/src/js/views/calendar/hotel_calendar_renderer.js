@@ -76,7 +76,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         this._last_dates = this.get_view_filter_dates();
     },
 
-    update_buttons_counter: function(ncheckouts, ncheckins, noverbookings) {
+    update_buttons_counter: function(ncheckouts, ncheckins, noverbookings, ncancelled) {
         var self = this;
          // Checkouts Button
         var $ninfo = self.$el.find('#pms-menu #btn_action_checkout span.ninfo');
@@ -100,6 +100,15 @@ var HotelCalendarView = AbstractRenderer.extend({
         $ninfo = self.$el.find('#pms-menu #btn_action_overbooking span.ninfo');
         $ninfo.text(noverbookings);
         if (noverbookings) {
+            $ninfo.parent().parent().addClass('button-highlight');
+        } else {
+            $ninfo.parent().parent().removeClass('button-highlight');
+        }
+
+        // Cancelled
+        $ninfo = self.$el.find('#pms-menu #btn_action_cancelled span.ninfo');
+        $ninfo.text(ncancelled);
+        if (ncancelled) {
             $ninfo.parent().parent().addClass('button-highlight');
         } else {
             $ninfo.parent().parent().removeClass('button-highlight');

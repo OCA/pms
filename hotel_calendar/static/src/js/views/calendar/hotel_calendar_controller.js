@@ -69,8 +69,8 @@ var PMSCalendarController = AbstractController.extend({
       var self = this;
       return this.model.update_records(ids, values).then(function(result){
         // Remove OB Room Row?
-        if (oldReserv.room.overbooking && !newReserv.room.overbooking) {
-           self._multi_calendar.remove_obroom_row(oldReserv, true);
+        if ((oldReserv.room.overbooking && !newReserv.room.overbooking) || (oldReserv.room.cancelled && !newReserv.room.cancelled)) {
+           self._multi_calendar.remove_extra_room_row(oldReserv, true);
         }
       }).fail(function(err, errev){
         calendar.replaceReservation(newReserv, oldReserv);
@@ -262,9 +262,16 @@ var PMSCalendarController = AbstractController.extend({
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_cancelled button').on('click', function(ev){
-        var active_calendar = self._multi_calendar.get_active_calendar();
-        active_calendar.toggleCancelledVisibility();
-        active_calendar.addReservations(self._multi_calendar._dataset['reservations']);
+          var active_calendar = self._multi_calendar.get_active_calendar();
+          active_calendar.toggleCancelledVisibility();
+          active_calendar.addReservations(self._multi_calendar._dataset['reservations']);
+          if (active_calendar.options.showCancelled) {
+            $(this).find('.led').removeClass('led-disabled');
+            $(this).find('.led').addClass('led-enabled');
+          } else {
+            $(this).find('.led').addClass('led-disabled');
+            $(this).find('.led').removeClass('led-enabled');
+          }
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_divide button').on('click', function(ev){
@@ -436,7 +443,7 @@ var PMSCalendarController = AbstractController.extend({
                 disabled: !newReservation.id,
                 click: function () {
                   var roomId = newReservation.room.id;
-                  if (newReservation.room.overbooking) {
+                  if (newReservation.room.overbooking || newReservation.room.cancelled) {
                     roomId = +newReservation.room.id.substr(newReservation.room.id.indexOf('@')+1);
                   }
                   var write_values = {
@@ -445,6 +452,11 @@ var PMSCalendarController = AbstractController.extend({
                     'room_id': roomId,
                     'overbooking': newReservation.room.overbooking
                   };
+                  if (newReservation.room.cancelled) {
+                      write_values['state'] = 'cancelled';
+                  } else if (!newReservation.room.cancelled && oldReservation.cancelled) {
+                      write_values['state'] = 'draft';
+                  }
                   self.updateReservations(ev.detail.calendar_obj, [newReservation.id],
                                           write_values, oldReservation, newReservation);
                   hasChanged = true;
@@ -473,7 +485,7 @@ var PMSCalendarController = AbstractController.extend({
             var date_cell_end = HotelCalendar.toMoment(ev.detail.calendar_obj.etable.querySelector(`#${last_cell.dataset.hcalParentCell}`).dataset.hcalDate).add(1, 'd');
             var parentRow = document.querySelector(`#${ev.detail.cells[0].dataset.hcalParentRow}`);
             var room = ev.detail.calendar_obj.getRoom(parentRow.dataset.hcalRoomObjId);
-            if (room.overbooking) {
+            if (room.overbooking || room.cancelled) {
               return;
             }
             var nights = date_cell_end.diff(date_cell_start, 'days');
@@ -510,7 +522,7 @@ var PMSCalendarController = AbstractController.extend({
           var startDate = HotelCalendar.toMoment(parentCellStart.dataset.hcalDate);
           var endDate = HotelCalendar.toMoment(parentCellEnd.dataset.hcalDate).add(1, 'd');
           var room = ev.detail.calendar_obj.getRoom(parentRow.dataset.hcalRoomObjId);
-          if (room.overbooking) {
+          if (room.overbooking || room.cancelled) {
             return;
           }
           var numBeds = (room.shared || ev.detail.calendar_obj.getOptions('divideRoomsByCapacity'))?(ev.detail.cellEnd.dataset.hcalBedNum - ev.detail.cellStart.dataset.hcalBedNum)+1:room.capacity;
@@ -599,12 +611,14 @@ var PMSCalendarController = AbstractController.extend({
       var domain_checkouts = [['checkout', '=', moment().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)]];
       var domain_checkins = [['checkin', '=', moment().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)]];
       var domain_overbookings = [['overbooking', '=', true], ['state', 'not in', ['cancelled']]];
+      var domain_cancelled = [['state', '=', 'cancelled']];
       $.when(
         this.model.search_count(domain_checkouts),
         this.model.search_count(domain_checkins),
         this.model.search_count(domain_overbookings),
-      ).then(function(a1, a2, a3){
-        self.renderer.update_buttons_counter(a1, a2, a3);
+        this.model.search_count(domain_cancelled),
+      ).then(function(a1, a2, a3, a4){
+        self.renderer.update_buttons_counter(a1, a2, a3, a4);
       });
     },
 
@@ -638,6 +652,7 @@ var PMSCalendarController = AbstractController.extend({
         'unusedZone': false,
         'linkedId': false,
         'overbooking': reserv['overbooking'],
+        'cancelled': reserv['state'] === 'cancelled',
         'realDates': reserv['real_dates']
       }
     },
@@ -669,7 +684,7 @@ var PMSCalendarController = AbstractController.extend({
               // }
 
               // Create/Update/Delete reservation
-              if (notif[1]['action'] === 'unlink' || reserv['state'] === 'cancelled') {
+              if (notif[1]['action'] === 'unlink') {
                 this._multi_calendar.remove_reservation(reserv['id']);
                 this._multi_calendar._reserv_tooltips = _.pick(this._multi_calendar._reserv_tooltips, function(value, key, obj){ return key != reserv['id']; });
                 nreservs = _.reject(nreservs, function(item){ return item.id == reserv['id']; });
@@ -789,8 +804,16 @@ var PMSCalendarController = AbstractController.extend({
         $led.removeClass('led-enabled').addClass('led-disabled');
       }
 
+      /* Cancelled Led */
+      $led = this.renderer.$el.find('#pms-menu #btn_action_cancelled button .led');
+      if (active_calendar.options.showCancelled) {
+        $led.removeClass('led-disabled').addClass('led-enabled');
+      } else {
+        $led.removeClass('led-enabled').addClass('led-disabled');
+      }
+
       /* Divide Led */
-      var $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
+      $led = this.renderer.$el.find('#pms-menu #btn_action_divide button .led');
       if (active_calendar.getSelectionMode() === HotelCalendar.ACTION.DIVIDE) {
           $led.removeClass('led-disabled').addClass('led-enabled');
       } else {
@@ -798,7 +821,7 @@ var PMSCalendarController = AbstractController.extend({
       }
 
       /* Unify Led */
-      var $led = this.renderer.$el.find('#pms-menu #btn_action_unify button .led');
+      $led = this.renderer.$el.find('#pms-menu #btn_action_unify button .led');
       if (active_calendar.getSelectionMode() === HotelCalendar.ACTION.UNIFY) {
           $led.removeClass('led-disabled').addClass('led-enabled');
       } else {

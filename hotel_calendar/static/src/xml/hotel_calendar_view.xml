@@ -68,6 +68,7 @@
                             <div class='led led-disabled'></div>
                             <i class="fa fa-fw o_button_icon fa-calendar-times-o"> </i>
                             <div class="o_button_text">
+                                <span class="ninfo">0</span><br/>
                                 Cancelled
                             </div>
                         </button>

@@ -96,6 +96,7 @@ class HotelReservation(models.Model):
                 'fix_days': reserv.splitted,   # Fix Days
                 'fix_room': False,  # Fix Rooms
                 'overbooking': reserv.overbooking,
+                'state': reserv.state,
                 'real_dates': reserv.get_real_checkin_checkout()})
             num_split = 0
             if reserv.splitted:
@@ -177,11 +178,7 @@ class HotelReservation(models.Model):
         date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
         date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         reservations_raw = self.env['hotel.reservation'].search(
-            [
-                ('room_id', 'in', rooms.ids),
-                ('state', 'in',
-                 ['draft', 'confirm', 'booking', 'done', False]),
-            ],
+            [('room_id', 'in', rooms.ids)],
             order="checkin DESC, checkout ASC, adults DESC, children DESC")
         reservations_ll = self.env['hotel.reservation'].search([
             ('checkin', '<=', dto),
