@@ -115,7 +115,7 @@ class HotelReservation(models.Model):
                     'email': reserv.email or _('Email not provided'),
                     'room_type': reserv.room_type_id.name,
                     'adults': reserv.adults,
-                    'childrens': reserv.children,
+                    'children': reserv.children,
                     'checkin': reserv.checkin,
                     'checkout': reserv.checkout,
                     'arrival_hour': reserv.arrival_hour,
