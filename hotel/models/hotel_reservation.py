@@ -962,7 +962,7 @@ class HotelReservation(models.Model):
         splitted_reservs = self.env['hotel.reservation'].search([
             '|',
             ('splitted', '=', True),
-            ('id', '=', master_reservation.id),
+            ('id', '=', master_reservation.id), # This here because can create a splitted reserv before set as splitted the parent reservation (master)
             ('folio_id', '=', self.folio_id.id),
             '|',
             ('parent_reservation', '=', master_reservation.id),
