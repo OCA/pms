@@ -16,13 +16,14 @@ var AbstractController = require('web.AbstractController'),
 
 var PMSCalendarController = AbstractController.extend({
     custom_events: _.extend({}, AbstractController.prototype.custom_events, {
-      onLoadCalendarSettings: '_onLoadCalendarSettings',
       onLoadViewFilters: '_onLoadViewFilters',
       onUpdateButtonsCounter: '_onUpdateButtonsCounter',
       onSwapReservations: '_onSwapReservations',
       onViewAttached: '_onViewAttached',
       onApplyFilters: '_onApplyFilters',
     }),
+
+    _last_dates: [],
 
     init: function (parent, model, renderer, params) {
       this._super.apply(this, arguments);
@@ -40,17 +41,11 @@ var PMSCalendarController = AbstractController.extend({
       var self = this;
 
       this._multi_calendar.setElement(this.renderer.$el.find('#hcal_widget'));
-      this._multi_calendar.on('tab_changed', function(ev, active_index){
-        if (active_index) {
-          self._refresh_filters(active_index);
-        }
-      });
       this._multi_calendar.reset();
       this._multi_calendar.start();
 
       this._assign_multi_calendar_events();
-      this._load_calendars();
-      this._assign_view_events();
+      this._load_calendar_settings();
     },
 
     //--------------------------------------------------------------------------
@@ -128,8 +123,8 @@ var PMSCalendarController = AbstractController.extend({
         }
 
         var options = {
-          startDate: HotelCalendar.toMomentUTC(self.renderer._last_dates[0], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-          days: self._view_options['days'] + 1,
+          startDate: HotelCalendar.toMomentUTC(self._last_dates[0], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+          days: self._view_options['days'],
           rooms: rooms,
           endOfWeek: parseInt(self._view_options['eday_week']) || 6,
           divideRoomsByCapacity: self._view_options['divide_rooms_by_capacity'] || false,
@@ -173,6 +168,35 @@ var PMSCalendarController = AbstractController.extend({
       return domain;
     },
 
+    _load_calendar_settings: function (ev) {
+      var self = this;
+      return this.model.get_hcalendar_settings().then(function(options){
+        self._view_options = options;
+
+        if (['xs', 'md'].indexOf(self._find_bootstrap_environment()) >= 0) {
+          self._view_options['days'] = 7;
+        }
+
+        var date_begin = moment().startOf('day');
+        var days = self._view_options['days'];
+        if (self._view_options['days'] === 'month') {
+            days = date_begin.daysInMonth();
+        }
+        self._last_dates[0] = date_begin.clone();
+        self._last_dates[1] = date_begin.clone().add(days, 'd');
+
+        var $dateTimePickerBegin = self.renderer.$el.find('#pms-menu #date_begin');
+        var $dateEndDays = self.renderer.$el.find('#pms-menu #date_end_days');
+        $dateTimePickerBegin.data("ignore_onchange", true);
+        $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
+        $dateEndDays.val(self._view_options['days']);
+
+        //self.renderer.init_calendar_view();
+        self._load_calendars();
+        self._assign_view_events();
+      });
+    },
+
     _reload_active_calendar: function() {
       var self = this;
       var filterDates = this.renderer.get_view_filter_dates();
@@ -180,10 +204,11 @@ var PMSCalendarController = AbstractController.extend({
       // Clip dates
       var dfrom = filterDates[0].clone(),
         dto = filterDates[1].clone();
-      if (filterDates[0].isBetween(this.renderer._last_dates[0], this.renderer._last_dates[1], 'days') && filterDates[1].isAfter(this.renderer._last_dates[1], 'day')) {
-        dfrom = this.renderer._last_dates[1].clone().local().startOf('day').utc();
-      } else if (this.renderer._last_dates[0].isBetween(filterDates[0], filterDates[1], 'days') && this.renderer._last_dates[1].isAfter(filterDates[0], 'day')) {
-        dto = this.renderer._last_dates[0].clone().local().endOf('day').utc();
+
+      if (filterDates[0].isBetween(this._last_dates[0], this._last_dates[1], 'days') && filterDates[1].isAfter(this._last_dates[1], 'day')) {
+        dfrom = this._last_dates[1].clone().local().startOf('day').utc();
+      } else if (this._last_dates[0].isBetween(filterDates[0], filterDates[1], 'days') && this._last_dates[1].isAfter(filterDates[0], 'day')) {
+        dto = this._last_dates[0].clone().local().endOf('day').utc();
       }
 
       var oparams = [
@@ -210,7 +235,7 @@ var PMSCalendarController = AbstractController.extend({
 
         self._multi_calendar._assign_extra_info(active_calendar);
       }.bind(this)).then(function(){
-        self.renderer._last_dates = filterDates;
+        self._last_dates = filterDates;
       });
     },
 
@@ -313,6 +338,12 @@ var PMSCalendarController = AbstractController.extend({
         }).fail(function(){
           self._multi_calendar.update_active_tab_name(active_calendar_record.name);
         });
+      });
+
+      this._multi_calendar.on('tab_changed', function(ev, active_index){
+        if (active_index) {
+          self._refresh_filters(active_index);
+        }
       });
     },
 
@@ -561,7 +592,7 @@ var PMSCalendarController = AbstractController.extend({
         this._multi_calendar.on_calendar('hcalOnDateChanged', function(ev){
           var $dateTimePickerBegin = this.renderer.$el.find('#pms-menu #date_begin');
           $dateTimePickerBegin.data("ignore_onchange", true);
-          $dateTimePickerBegin.data("DateTimePicker").date(ev.detail.date_begin.local().add(1, 'd'));
+          $dateTimePickerBegin.data("DateTimePicker").date(ev.detail.date_begin.local());
           this._reload_active_calendar();
         }.bind(this));
     },
@@ -585,20 +616,6 @@ var PMSCalendarController = AbstractController.extend({
         }
 
         self._multi_calendar.swap_reservations(ev.data.detail.outReservs, ev.data.detail.inReservs);
-      });
-    },
-
-    _onLoadCalendarSettings: function  (ev) {
-      var self = this;
-      return this.model.get_hcalendar_settings().then(function(options){
-        self._view_options = options;
-        var date_begin = moment().startOf('day');
-        if (['xs', 'md'].indexOf(self._find_bootstrap_environment()) >= 0) {
-          self._view_options['days'] = 7;
-        } else {
-          self._view_options['days'] = 30;
-        }
-        self.renderer.load_hcalendar_options(self._view_options);
       });
     },
 
@@ -769,9 +786,12 @@ var PMSCalendarController = AbstractController.extend({
         var active_calendar = this._multi_calendar.get_active_calendar();
         if (active_calendar && date_begin) {
             var days = $dateEndDays.val();
+            if (days === 'month') {
+                days = date_begin.daysInMonth();
+            }
             var date_end = date_begin.clone().add(days, 'd');
-            if (!date_begin.isSame(this.renderer._last_dates[0].clone().utc(), 'd') || !date_end.isSame(this.renderer._last_dates[1].clone().utc(), 'd')) {
-                active_calendar.setStartDate(date_begin, days, false, function(){
+            if (!date_begin.isSame(this._last_dates[0].clone().utc(), 'd') || !date_end.isSame(this._last_dates[1].clone().utc(), 'd')) {
+                active_calendar.setStartDate(date_begin, $dateEndDays.val(), false, function(){
                     this._reload_active_calendar();
                 }.bind(this));
             }
@@ -791,9 +811,7 @@ var PMSCalendarController = AbstractController.extend({
       $dateTimePickerBegin.data("ignore_onchange", true);
       $dateTimePickerBegin.data("DateTimePicker").date(start_date.local());
       $dateEndDays.data("ignore_onchange", true);
-      console.log("---- LLL");
-      console.log(active_calendar.getOptions('days'));
-      $dateEndDays.val(active_calendar.getOptions('days'));
+      $dateEndDays.val(active_calendar.getOptions('orig_days'));
       $dateEndDays.trigger('change');
 
       /* Overbooking Led */

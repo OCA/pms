@@ -429,6 +429,10 @@
 }
 
 tr.hcal-row-room-type-group-overbooking-item td {
+	background-color: #fccc9f;
+}
+
+tr.hcal-row-room-type-group-cancelled-item td {
 	background-color: #fcebeb;
 }
 

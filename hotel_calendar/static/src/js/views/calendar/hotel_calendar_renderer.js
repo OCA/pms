@@ -25,7 +25,6 @@ var HotelCalendarView = AbstractRenderer.extend({
     searchview_hidden: true,
 
     // Custom Options
-    _view_options: {},
     _reserv_tooltips: {},
     _days_tooltips: [],
     _last_dates: [false, false],
@@ -55,25 +54,12 @@ var HotelCalendarView = AbstractRenderer.extend({
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
         var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
         var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().utc();
-        var date_end = date_begin.clone().add($dateEndDays.val(), 'd').set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
-
-        console.log("---- YEAH");
-        console.log(date_end.format("DD-MM-YYYY"));
+        var days = $dateEndDays.val();
+        if (days === 'month') {
+          days = date_begin.daysInMonth();
+        }
+        var date_end = date_begin.clone().add(days, 'd').set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
         return [date_begin, date_end];
-    },
-
-    load_hcalendar_options: function(options) {
-        // View Options
-        this._view_options = options;
-        var date_begin = moment().startOf('day');
-        var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
-        var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
-        //$dateTimePickerBegin.data("ignore_onchange", true);
-        $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
-        //$dateTimePickerEnd.data("ignore_onchange", true);
-        $dateEndDays.val(30);
-        $dateEndDays.trigger('change');
-        this._last_dates = this.get_view_filter_dates();
     },
 
     update_buttons_counter: function(ncheckouts, ncheckins, noverbookings, ncancelled) {
@@ -135,25 +121,18 @@ var HotelCalendarView = AbstractRenderer.extend({
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
         var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
         $dateTimePickerBegin.datetimepicker(DTPickerOptions);
-        // $dateEndDays.select2({
-        //     data: [
-        //         {id:7, text: '1 Week'},
-        //         {id:12, text: '2 Weeks'},
-        //         {id:21, text: '3 Weeks'},
-        //         {id:30, text: '1 Month'},
-        //         {id:60, text: '2 Months'},
-        //         {id:90, text: '3 Months'},
-        //     ],
-        //     allowClear: true
-        // });
-
-
-        var date_begin = moment().startOf('day');
-        $dateTimePickerBegin.data("ignore_onchange", true);
-        $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
-        $dateEndDays.val(30);
-        $dateEndDays.trigger('change');
-        this._last_dates = this.get_view_filter_dates();
+        $dateEndDays.select2({
+            data: [
+                {id:7, text: '1w'},
+                {id:12, text: '2w'},
+                {id:21, text: '3w'},
+                {id:'month', text: '1m'},
+                {id:60, text: '2m'},
+                {id:90, text: '3m'},
+            ],
+            allowClear: true,
+            minimumResultsForSearch: -1
+        });
 
         /* TOUCH EVENTS */
         this.$el.on('touchstart', function(ev){
@@ -201,7 +180,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         });
 
         return $.when(
-            this.trigger_up('onLoadCalendarSettings'),
             this.trigger_up('onUpdateButtonsCounter'),
             this.trigger_up('onLoadViewFilters'),
         );

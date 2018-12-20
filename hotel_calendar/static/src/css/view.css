@@ -83,7 +83,7 @@ input#bookings_search {
 }
 
 #pms-menu .menu-button-box, #pms-menu .menu-search-box, #pms-menu .menu-filter-box {
-	margin-top: 2em !important;
+	margin-top: 1em !important;
 }
 
 #pms-menu .menu-filter-box .filter-record {
@@ -123,9 +123,14 @@ input#bookings_search {
 }
 
 /** SELECT 2 **/
-#pms-menu .select2-container {
+#pms-menu .select2-container, #pms-menu .select2-choice {
 	border-radius: 0;
 }
+#pms-menu .select2-choice {
+	height: 100%;
+	padding: 2px;
+}
+
 /** BOOTSTRAP **/
 .badge-danger {
 	background-color: #d34f2a !important;

@@ -5,7 +5,7 @@
         <div class="col-xs-12 col-md-12 nopadding o_hotel_calendar_view">
             <div class="col-lg-2 hidden-xs hidden-sm" id="pms-menu">
                 <div class="row nopadding menu-date-box">
-                    <div class="form-group nopadding col-xs-7 col-md-7">
+                    <div class="form-group nopadding col-xs-8 col-md-8">
                         <div class="input-group date" id="date_begin">
                             <input type="text" class="o_datepicker_input form-control" name="date_begin" required="required"/>
                             <span class="input-group-addon">
@@ -13,8 +13,8 @@
                             </span>
                         </div>
                     </div>
-                    <div class="form-group nopadding col-xs-5 col-md-5">
-                        <input id="date_end_days" required="required" />
+                    <div class="form-group nopadding col-xs-4 col-md-4">
+                        <input id="date_end_days" required="required" class="pull-right" />
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-12 nopadding menu-button-box">
