@@ -18,7 +18,6 @@ var PMSCalendarController = AbstractController.extend({
     custom_events: _.extend({}, AbstractController.prototype.custom_events, {
       onLoadViewFilters: '_onLoadViewFilters',
       onUpdateButtonsCounter: '_onUpdateButtonsCounter',
-      onSwapReservations: '_onSwapReservations',
       onViewAttached: '_onViewAttached',
       onApplyFilters: '_onApplyFilters',
     }),
@@ -72,6 +71,25 @@ var PMSCalendarController = AbstractController.extend({
       });
     },
 
+    swapReservations: function (fromIds, toIds, detail, refFromReservDiv, refToReservDiv) {
+      var self = this;
+      return this.model.swap_reservations(fromIds, toIds).then(function(results){
+        var allReservs = detail.inReservs.concat(detail.outReservs);
+        for (var nreserv of allReservs) {
+          self.renderer.$el.find(nreserv._html).stop(true);
+        }
+      }).fail(function(err, errev){
+        for (var nreserv of detail.inReservs) {
+          self.renderer.$el.find(nreserv._html).animate({'top': refFromReservDiv.style.top}, 'fast');
+        }
+        for (var nreserv of detail.outReservs) {
+          self.renderer.$el.find(nreserv._html).animate({'top': refToReservDiv.style.top}, 'fast');
+        }
+
+        self._multi_calendar.swap_reservations(detail.outReservs, detail.inReservs);
+      });
+    },
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -114,11 +132,7 @@ var PMSCalendarController = AbstractController.extend({
 
         var reservs = [];
         for (var r of results['reservations']) {
-          var nreserv = new HReservation(self._generate_reservation_obj_values(r));
-          nreserv.addUserData({
-            'folio_id': r['folio_id'],
-            'parent_reservation': r['parent_reservation']
-          });
+          var nreserv = self._create_reservation_obj(r);
           reservs.push(nreserv);
         }
 
@@ -219,11 +233,7 @@ var PMSCalendarController = AbstractController.extend({
       this.model.get_calendar_data(oparams).then(function(results){
         var reservs = [];
         for (var r of results['reservations']) {
-          var nreserv = new HReservation(self._generate_reservation_obj_values(r));
-          nreserv.addUserData({
-            'folio_id': r['folio_id'],
-            'parent_reservation': r['parent_reservation']
-          });
+          var nreserv = self._create_reservation_obj(r);
           reservs.push(nreserv);
         }
 
@@ -378,8 +388,7 @@ var PMSCalendarController = AbstractController.extend({
           });
         });
         this._multi_calendar.on_calendar('hcalOnUnifyReservations', function(ev){
-            console.log("TO UNIFY");
-            console.log(ev.detail.toUnify);
+          self.model.unify_reservations(_.map(ev.detail.toUnify, 'id'));
         });
         this._multi_calendar.on_calendar('hcalOnSwapReservations', function(ev){
           var qdict = {};
@@ -404,13 +413,7 @@ var PMSCalendarController = AbstractController.extend({
                       for (var nreserv of ev.detail.outReservs) {
                         $(nreserv._html).animate({'top': refFromReservDiv.style.top});
                       }
-                      self.trigger_up('onSwapReservations', {
-                        'fromIds': fromIds,
-                        'toIds': toIds,
-                        'detail': ev.detail,
-                        'refFromReservDiv': refFromReservDiv,
-                        'refToReservDiv': refToReservDiv
-                      });
+                      self.swapReservations(fromIds, toIds, ev.detail, refFromReservDiv, refToReservDiv);
                     } else {
                       var qdict = {};
                       var dialog = new Dialog(self, {
@@ -597,28 +600,53 @@ var PMSCalendarController = AbstractController.extend({
         }.bind(this));
     },
 
+    _create_reservation_obj: function(json_reserv) {
+      var nreserv = new HReservation({
+        'id': json_reserv['id'],
+        'room_id': json_reserv['room_id'],
+        'title': json_reserv['name'],
+        'adults': json_reserv['adults'],
+        'childrens': json_reserv['childrens'],
+        'startDate': HotelCalendar.toMoment(json_reserv['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        'endDate': HotelCalendar.toMoment(json_reserv['checkout'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        'color': json_reserv['bgcolor'],
+        'colorText': json_reserv['color'],
+        'splitted': json_reserv['splitted'] || false,
+        'readOnly': json_reserv['read_only'] || false,
+        'fixDays': json_reserv['fix_days'] || false,
+        'fixRooms': json_reserv['fix_room'],
+        'unusedZone': false,
+        'linkedId': false,
+        'overbooking': json_reserv['overbooking'],
+        'cancelled': json_reserv['state'] === 'cancelled'
+      });
+      nreserv.addUserData({
+        'folio_id': json_reserv['folio_id'],
+        'parent_reservation': json_reserv['parent_reservation'],
+        'realDates': [
+            HotelCalendar.toMoment(json_reserv['real_dates'][0], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+            HotelCalendar.toMoment(json_reserv['real_dates'][1], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)
+        ]
+      });
+
+      return nreserv;
+    },
+
+    _generate_reservation_tooltip_dict: function(tp) {
+      return {
+        'name': tp['name'],
+        'phone': tp['phone'],
+        'arrival_hour': HotelCalendar.toMomentUTC(tp['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
+        'num_split': tp['num_split'],
+        'amount_total': Number(tp['amount_total']).toLocaleString(),
+        'reservation_type': tp['type'],
+        'out_service_description': tp['out_service_description']
+      };
+    },
+
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
-    _onSwapReservations: function (ev) {
-      var self = this;
-      return this.model.swap_reservations(ev.data.fromIds, ev.data.toIds).then(function(results){
-        var allReservs = ev.data.detail.inReservs.concat(ev.data.detail.outReservs);
-        for (var nreserv of allReservs) {
-          self.renderer.$el.find(nreserv._html).stop(true);
-        }
-      }).fail(function(err, errev){
-        for (var nreserv of ev.data.detail.inReservs) {
-          self.renderer.$el.find(nreserv._html).animate({'top': refFromReservDiv.style.top}, 'fast');
-        }
-        for (var nreserv of ev.detail.outReservs) {
-          self.renderer.$el.find(nreserv._html).animate({'top': refToReservDiv.style.top}, 'fast');
-        }
-
-        self._multi_calendar.swap_reservations(ev.data.detail.outReservs, ev.data.detail.inReservs);
-      });
-    },
-
     _onViewAttached: function (ev) {
       this._multi_calendar.recalculate_reservation_positions();
     },
@@ -649,29 +677,6 @@ var PMSCalendarController = AbstractController.extend({
       ).then(function(a1, a2, a3, a4){
         self.renderer.loadViewFilters(a1, a2, a3, a4);
       });
-    },
-
-    _generate_reservation_obj_values: function(reserv) {
-      return {
-        'id': reserv['id'],
-        'room_id': reserv['room_id'],
-        'title': reserv['name'],
-        'adults': reserv['adults'],
-        'childrens': reserv['childrens'],
-        'startDate': HotelCalendar.toMomentUTC(reserv['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-        'endDate': HotelCalendar.toMomentUTC(reserv['checkout'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-        'color': reserv['bgcolor'],
-        'colorText': reserv['color'],
-        'splitted': reserv['splitted'] || false,
-        'readOnly': reserv['read_only'] || false,
-        'fixDays': reserv['fix_days'] || false,
-        'fixRooms': reserv['fix_room'],
-        'unusedZone': false,
-        'linkedId': false,
-        'overbooking': reserv['overbooking'],
-        'cancelled': reserv['state'] === 'cancelled',
-        'realDates': reserv['real_dates']
-      }
     },
 
     _onBusNotification: function(notifications) {
@@ -707,11 +712,7 @@ var PMSCalendarController = AbstractController.extend({
                 nreservs = _.reject(nreservs, function(item){ return item.id == reserv['id']; });
               } else {
                 nreservs = _.reject(nreservs, {'id': reserv['id']}); // Only like last changes
-                var nreserv = new HReservation(this._generate_reservation_obj_values(reserv));
-                nreserv.addUserData({
-                  'folio_id': reserv['folio_id'],
-                  'parent_reservation': reserv['parent_reservation'],
-                });
+                var nreserv = this._create_reservation_obj(reserv);
                 this._multi_calendar._reserv_tooltips[reserv['id']] = notif[1]['tooltip'];
                 nreservs.push(nreserv);
               }
@@ -755,18 +756,6 @@ var PMSCalendarController = AbstractController.extend({
         domain.push(['room_type_id', 'some', virtual]);
       }
       this._multi_calendar.get_active_calendar().setDomain(HotelCalendar.DOMAIN.ROOMS, domain);
-    },
-
-    _generate_reservation_tooltip_dict: function(tp) {
-      return {
-        'name': tp['name'],
-        'phone': tp['phone'],
-        'arrival_hour': HotelCalendar.toMomentUTC(tp['checkin'], HotelConstants.ODOO_DATETIME_MOMENT_FORMAT).local().format('HH:mm'),
-        'num_split': tp['num_split'],
-        'amount_total': Number(tp['amount_total']).toLocaleString(),
-        'reservation_type': tp['type'],
-        'out_service_description': tp['out_service_description']
-      };
     },
 
     _on_change_filter_date: function(isStartDate) {
@@ -867,6 +856,9 @@ var PMSCalendarController = AbstractController.extend({
       $types.trigger('change');
     },
 
+    //--------------------------------------------------------------------------
+    // Helpers
+    //--------------------------------------------------------------------------
     _find_bootstrap_environment: function() {
       var envs = ['xs', 'sm', 'md', 'lg'];
 

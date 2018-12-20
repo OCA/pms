@@ -434,8 +434,9 @@ class HotelReservation(models.Model):
                 'closure_reason_id' in vals or 'out_service_description' in vals or \
                 'reservation_type' in vals or \
                 'reserve_color' in vals or \
-                'reserve_color_text' in vals or 'product_id' in vals or \
-                'parent_reservation' in vals or 'overbooking' in vals:
+                'reserve_color_text' in vals or 'price_total' in vals or \
+                'parent_reservation' in vals or 'overbooking' in vals or \
+                'room_type_id' in vals:
             for record in self:
                 record.send_bus_notification(
                     'write',

@@ -24,11 +24,6 @@ var HotelCalendarView = AbstractRenderer.extend({
     searchable: false,
     searchview_hidden: true,
 
-    // Custom Options
-    _reserv_tooltips: {},
-    _days_tooltips: [],
-    _last_dates: [false, false],
-
 
     /** VIEW METHODS **/
     init: function(parent, state, params) {
@@ -228,24 +223,6 @@ var HotelCalendarView = AbstractRenderer.extend({
         $list.on('change', function(ev){
             this.trigger_up('onApplyFilters');
         }.bind(this));
-    },
-
-    toggle_pms_search: function() {
-      var $pms_search = this.$el.find('#pms-menu');
-      if ($pms_search.position().top < 0)
-      {
-        var $navbar = $('.navbar');
-        var toPos = $navbar.height() + parseInt($navbar.css('border-top-width'), 10) + parseInt($navbar.css('border-bottom-width'), 10);
-        $pms_search.animate({
-          'top': `${toPos}px`,
-          'opacity': 1.0,
-        }, 'fast');
-      } else {
-        $pms_search.animate({
-          'top': `-${$pms_search.height()}px`,
-          'opacity': 0.0,
-        }, 'slow');
-      }
     },
 
     _generate_search_domain: function(tsearch) {

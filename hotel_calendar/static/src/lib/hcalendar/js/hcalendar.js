@@ -136,8 +136,7 @@ HotelCalendar.prototype = {
     this._updateView(!fullUpdate, callback);
   },
 
-  getOptions: function(/*String?*/key) {+
-    console.log(this.options);
+  getOptions: function(/*String?*/key) {
     if (typeof key !== 'undefined') {
       return this.options[key];
     }
@@ -1769,7 +1768,13 @@ HotelCalendar.prototype = {
 
       if (reserv.splitted) {
         reserv._html.classList.add('hcal-reservation-splitted');
-        var magicNumber = Math.floor(Math.abs(Math.sin((reserv.getUserData('parent_reservation') || reserv.id))) * 100000);
+        // 1. Use reservation ID as seed
+        // 2. Use sinusiudal function
+        // 3. Only use positive values (This decrease longitude, increase frequency)
+        // 4. Use the first 5 decimals to make the integer value
+        // 5. Get integer value (Bitwise tilde method)
+        // TODO: Improve pseudo-random number generator
+        var magicNumber = ~~(Math.abs(Math.sin((reserv.getUserData('parent_reservation') || reserv.id))) * 100000);
         var bbColor = this._intToRgb(magicNumber);
         reserv._html.style.borderColor = `rgb(${bbColor[0]},${bbColor[1]},${bbColor[2]})`;
       } else {
@@ -1787,23 +1792,19 @@ HotelCalendar.prototype = {
       reserv._html.style.height = `${divHeight}px`;
       reserv._html.style.lineHeight = `${divHeight+fontHeight/2.0}px`;
       reserv._html.style.fontSize = `${fontHeight}px`;
-
-      var clearBorderLeft = function(/*HTMLObject*/elm) {
-        elm.style.borderLeftWidth = '3px';
-        elm.style.borderLeftStyle = 'double';
-      };
-      var clearBorderRight = function(/*HTMLObject*/elm) {
-        elm.style.borderRightWidth = '3px';
-        elm.style.borderRightStyle = 'double';
-      };
-
       reserv._html.style.left = `${boundsInit.left-etableOffset.left}px`;
       reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width}px`;
       if (reserv._drawModes[0] === 'soft-start') {
-        clearBorderLeft(reserv._html);
+        reserv._html.style.borderLeftWidth = '3px';
+        reserv._html.style.borderLeftStyle = 'double';
+      } else if (reserv.splitted && reserv.startDate.isSame(reserv.getUserData('realDates')[0], 'day')) {
+        reserv._html.style.borderLeftWidth = '0';
       }
       if (reserv._drawModes[1] === 'soft-end') {
-        clearBorderRight(reserv._html);
+        reserv._html.style.borderRightWidth = '3px';
+        reserv._html.style.borderRightStyle = 'double';
+      } else if (reserv.splitted && reserv.endDate.isSame(reserv.getUserData('realDates')[1], 'day')) {
+        reserv._html.style.borderRightWidth = '0';
       }
     }
   },

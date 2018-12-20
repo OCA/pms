@@ -110,7 +110,10 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
     remove_reservation: function(reserv_id) {
       this._dataset['reservations'] = _.reject(this._dataset['reservations'], {id: reserv_id});
       for (var calendar of this._calendars) {
-        calendar.removeReservation(reserv_id);
+        var reserv = calendar.getReservation(reserv_id);
+        if (reserv) {
+          calendar.removeReservation(reserv);
+        }
       }
     },
 

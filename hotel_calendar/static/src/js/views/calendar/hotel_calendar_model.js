@@ -134,9 +134,18 @@ return AbstractModel.extend({
 
     split_reservation: function(id, nights) {
         return this._rpc({
-            model: 'hotel.reservation',
+            model: this.modelName,
             method: 'split',
             args: [[id], nights],
+            context: Session.user_context,
+        })
+    },
+
+    unify_reservations: function(reserv_ids) {
+        return this._rpc({
+            model: this.modelName,
+            method: 'unify_ids',
+            args: [reserv_ids],
             context: Session.user_context,
         })
     },
