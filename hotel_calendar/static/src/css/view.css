@@ -160,6 +160,10 @@ input#bookings_search {
 }
 
 /** TOOLTIPS **/
+.tooltip {
+    opacity: unset !important;
+}
+
 .tooltip .tooltip-inner {
     font-family: Garuda, sans-serif;
     border: 1px solid #5C5C5C;
@@ -169,7 +173,6 @@ input#bookings_search {
 .tooltip .container {
 	max-width: 500px;
 }
-
 .tooltip .list-group {
     margin-bottom: 0px;
 }
@@ -180,19 +183,16 @@ input#bookings_search {
     background-color: unset;
     word-break: break-word;
 }
-
-header {
-    font-size: 1.2em;
-}
-
-.tooltip .container h3 {
-    margin-top: 0px;
+.tooltip h1, .h1, h2, .h2, h3, .h3 {
+    margin-top: 2px;
     margin-bottom: 0px;
 }
-
 .tooltip .container p {
     margin-top: 2px;
     margin-bottom: 2px;
+}
+.tooltip header {
+    font-size: 1.3em;
 }
 
 .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
@@ -200,10 +200,21 @@ header {
     padding-bottom: 3px;
 }
 
-.tt-margin {
+/* Spacing in Bootstrap v4.0 */
+.mt-3 {
     margin-top: 3px;
 }
-
+.mr-5 {
+    margin-right: 5px;
+}
+.mx-25 {
+    margin-left: 25px;
+    margin-right: 25px;
+}
+.py-5 {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
 
 /* WARNING: The .row-eq-height class uses CSS3's flexbox layout mode,
             which is not supported in Internet Explorer 9 and below. */

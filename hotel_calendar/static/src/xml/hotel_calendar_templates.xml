@@ -68,88 +68,68 @@
 	</div>
 </t>
 
-<t t-name="HotelCalendar.TooltipReservation">
+
+<t t-name="HotelCalendar.TooltipReservation.Channel.ota">
+	<p>WuBook: 1544109684</p>
+	<p>Booking: 4253096846</p>
+</t>
+<t t-name="HotelCalendar.TooltipReservation.Channel.direct">
+	<h3><small class="text-white">Sales Channel</small> Direct</h3>
+</t>
+<t t-name="HotelCalendar.TooltipReservation.normal">
 	<div class="container">
 		<div class="row row-eq-height">
 			<div class="col-sm-6 bg-gray-dark">
-				<div class="row">
-					<div class="col-sm-2">
-						<span class="fa fa fa-user-circle-o fa-2x"/>
-					</div>
-					<div class="col-sm-10">
-						<header><t t-esc="name"/></header>
-					</div>
-					<div class="col-sm-12">
-						<p><t t-esc="phone"/></p>
-						<p><t t-esc="email"/></p>
-					</div>
-				</div>
+				<i class="fa fa-user-circle-o fa-2x fa-pull-left"/>
+				<header><t t-esc="name"/></header>
+				<p><t t-esc="phone"/></p>
+				<p><t t-esc="email"/></p>
 			</div>
 			<div class="col-sm-6 bg-gray-light">
-				<div class="row">
-					<div class="col-sm-2">
-						<span class="fa fa-hotel fa-2x"/>
-					</div>
-					<div class="col-sm-10">
-						<header><t t-esc="room_type"/></header>
-						Board Service Undefined
-					</div>
-					<div class="col-sm-2">
-						<h3><t t-esc="amount_total" t-widget="monetary"/>€</h3>
-					</div>
-					<div class="col-sm-10">
-						<p>Adults: <t t-esc="adults"/></p>
-						<p>Children: <t t-esc="children"/></p>
-					</div>
-				</div>
+				<i class="fa fa-hotel fa-2x fa-pull-left"/>
+				<h3 class="pull-right mt-3"><t t-esc="amount_total" t-widget="monetary"/>€</h3>
+				<header><t t-esc="room_type"/></header>
+
+				<p>Board Service Undefined</p>
+				<p>Adults: <t t-esc="adults"/> - Children: <t t-esc="children"/></p>
 			</div>
 		</div>
-		<div class="row row-eq-height tt-margin">
-			<div class="col-sm-6 bg-gray-light">
+		<div class="row row-eq-height mt-3">
+			<div class="col-sm-3 bg-warning">
 				<!-- FIXME: HARD CURRENCY -->
-				<div class="row">
-					<div class="col-sm-6">
-						<p>Pending</p>
-						<h3><t t-esc="amount_total" t-widget="monetary"/> €</h3>
-					</div>
-					<div class="col-sm-6">
-						<h3><t t-esc="amount_paid" t-widget="monetary"/> €</h3>
-						<p>Paid</p>
-					</div>
-				</div>
+				<p>Folio Pending</p>
+				<h3><t t-esc="amount_total" t-widget="monetary"/> €</h3>
+			</div>
+			<div class="col-sm-3 bg-info">
+				<!-- FIXME: HARD CURRENCY -->
+				<h3><t t-esc="amount_paid" t-widget="monetary"/> €</h3>
+				<p>Total Paid</p>
 			</div>
 			<div class="col-sm-6 bg-gray-dark">
-				<p>WuBook: 1544109684</p>
-				<p>Booking: 4253096846</p>
+				<t t-if="channel_type == 'web' or channel_type=='call'">
+					<t t-call="HotelCalendar.TooltipReservation.Channel.ota"/>
+				</t>
+				<t t-else="reservation_type == 'out'">
+				    <t t-call="HotelCalendar.TooltipReservation.Channel.direct"/>
+				</t>
 			</div>
 		</div>
-		<div class="row row-eq-height tt-margin">
-			<div class="col-sm-6 bg-gray-dark">
-				<div class="row">
-					<div class="col-sm-2">
-						<i class="fa fa-arrow-circle-o-right fa-2x"/>
-					</div>
-					<div class="col-sm-7">
-						<h3><t t-esc="checkin"/></h3>
-						<p><t t-esc="checkin_day_of_week"/> <t t-esc="arrival_hour"/></p>
-					</div>
-				</div>
+		<div class="row row-eq-height mt-3">
+			<div class="col-sm-6 bg-gray-dark py-5">
+				<i class="fa fa-arrow-circle-o-right fa-2x fa-pull-left"/>
+				<h3><t t-esc="checkin"/></h3>
+				<p><t t-esc="checkin_day_of_week"/> <t t-esc="arrival_hour"/></p>
 			</div>
-			<div class="col-sm-6 bg-gray-light">
-				<div class="row">
-					<div class="col-sm-7">
-						<h3><t t-esc="checkout"/></h3>
-						<p><t t-esc="checkout_day_of_week"/> <t t-esc="departure_hour"/></p>
-					</div>
-					<div class="col-sm-2">
-						<i class="fa fa-arrow-circle-o-right fa-2x"/>
-					</div>
-				</div>
+			<div class="col-sm-6 bg-gray-light d-sm-2 py-5">
+				<i class="fa fa-arrow-circle-o-right fa-2x fa-pull-right"/>
+				<h3><t t-esc="checkout"/></h3>
+				<p><t t-esc="checkout_day_of_week"/> <t t-esc="departure_hour"/></p>
 			</div>
 		</div>
-		<div class="row row-eq-height tt-margin">
+		<div class="row row-eq-height mt-3">
 			<div class="col-sm-2">
-				<span class="fa fa-file-text-o fa-2x" role="button"/><t t-esc="folio_name"/>
+				<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"/>
+				<p><t t-esc="folio_name"/></p>
 			</div>
 			<div class="col-sm-2">
 				<span class="fa fa-external-link fa-2x" role="button"/>
@@ -168,6 +148,20 @@
 			</div>
 		</div>
 	</div>
+</t>
+<t t-name="HotelCalendar.TooltipReservation.out">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12 bg-gray-dark py-5">
+				<i class="fa fa-ban fa-2x fa-pull-left"/>
+				<h2><t t-esc="name"/> <small class="text-white"><t t-esc="out_service_description"/></small> </h2>
+			</div>
+		</div>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.TooltipReservation">
+	<t t-call="HotelCalendar.TooltipReservation.#{ reservation_type }"/>
 </t>
 
 <t t-name="HotelCalendar.TooltipRoom">
