@@ -351,7 +351,6 @@ class HotelReservation(models.Model):
     @api.multi
     def generate_bus_values(self, naction, ntype, ntitle=''):
         self.ensure_one()
-        import wdb; wdb.set_trace()
         return {
             'action': naction,
             'type': ntype,

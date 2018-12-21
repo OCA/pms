@@ -188,8 +188,8 @@ input#bookings_search {
     margin-bottom: 0px;
 }
 .tooltip .container p {
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin-top: 3px;
+    margin-bottom: 0px;
 }
 .tooltip header {
     font-size: 1.3em;
@@ -199,10 +199,26 @@ input#bookings_search {
     padding-top: 3px;
     padding-bottom: 3px;
 }
+.tooltip .fa-border {
+    padding: .25em;
+    border: solid 0.1em #777777;
+    border-radius: .2em;
+}
+.tooltip .fa-border > text-primary {
+    padding: .25em;
+    border: solid 0.1em #777777;
+    border-radius: .2em;
+}
 
 /* Spacing in Bootstrap v4.0 */
 .mt-3 {
     margin-top: 3px;
+}
+.mt-10 {
+    margin-top: 10px !important;
+}
+.mt-25 {
+    margin-top: 25px;
 }
 .mr-5 {
     margin-right: 5px;
@@ -214,6 +230,9 @@ input#bookings_search {
 .py-5 {
     padding-top: 5px;
     padding-bottom: 5px;
+}
+.pb-10 {
+    padding-bottom: 10px;
 }
 
 /* WARNING: The .row-eq-height class uses CSS3's flexbox layout mode,

@@ -30,7 +30,6 @@ class BusHotelCalendar(models.TransientModel):
             ('id', '=', master_reserv),
             ('splitted', '=', True),
         ])
-        import wdb; wdb.set_trace()
         return {
             'type': 'reservation',
             'action': vals['action'],
