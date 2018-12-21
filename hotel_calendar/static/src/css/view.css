@@ -160,19 +160,58 @@ input#bookings_search {
 }
 
 /** TOOLTIPS **/
-.tooltip {
-
-}
 .tooltip .tooltip-inner {
+    font-family: Garuda, sans-serif;
     border: 1px solid #5C5C5C;
 	background-color: white;
 	color: #5C5C5C;
 }
-
 .tooltip .container {
 	max-width: 500px;
 }
 
+.tooltip .list-group {
+    margin-bottom: 0px;
+}
 .tooltip .list-group-item {
     border: none;
+    padding: 2px 5px;
+    margin-bottom: 0px;
+    background-color: unset;
+    word-break: break-word;
 }
+
+header {
+    font-size: 1.2em;
+}
+
+.tooltip .container h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.tooltip .container p {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.tt-margin {
+    margin-top: 3px;
+}
+
+
+/* WARNING: The .row-eq-height class uses CSS3's flexbox layout mode,
+            which is not supported in Internet Explorer 9 and below. */
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+/* TODO: Use Odoo Colours based on http://www.odoo.com/openerp_website/static/src/less/variables.less */

@@ -70,81 +70,101 @@
 
 <t t-name="HotelCalendar.TooltipReservation">
 	<div class="container">
-		<div class="row">
-			<div class="col-sm-6">
-				<ul class="list-group">
-				<li class="list-group-item fa fa-user-circle-o fa-2x">
-					<t t-esc="name"/>
-				</li>
-				<li class="list-group-item"><t t-esc="phone"/></li>
-				<li class="list-group-item"><t t-esc="email"/></li>
-				</ul>
+		<div class="row row-eq-height">
+			<div class="col-sm-6 bg-gray-dark">
+				<div class="row">
+					<div class="col-sm-2">
+						<span class="fa fa fa-user-circle-o fa-2x"/>
+					</div>
+					<div class="col-sm-10">
+						<header><t t-esc="name"/></header>
+					</div>
+					<div class="col-sm-12">
+						<p><t t-esc="phone"/></p>
+						<p><t t-esc="email"/></p>
+					</div>
+				</div>
 			</div>
-			<div class="col-sm-6">
-				<ul class="list-group">
-				<li class="list-group-item fa fa-hotel fa-2x">
-					<t t-esc="room_type"/>
-				</li>
-				<span class="fa fa-1x">Board Service Undefined</span>
-					<span>Adults: <t t-esc="adults"/></span>
-					<span>Children: <t t-esc="children"/></span>
-				<li class="list-group-item fa-stack fa-2x">
-					<span class="fa fa-circle fa-stack-2x"></span>
-					<span class="fa fa-stack-1x fa-inverse">
-						<t t-esc="amount_total" t-widget="monetary"/>€
-					</span>
-				</li>
-				</ul>
+			<div class="col-sm-6 bg-gray-light">
+				<div class="row">
+					<div class="col-sm-2">
+						<span class="fa fa-hotel fa-2x"/>
+					</div>
+					<div class="col-sm-10">
+						<header><t t-esc="room_type"/></header>
+						Board Service Undefined
+					</div>
+					<div class="col-sm-2">
+						<h3><t t-esc="amount_total" t-widget="monetary"/>€</h3>
+					</div>
+					<div class="col-sm-10">
+						<p>Adults: <t t-esc="adults"/></p>
+						<p>Children: <t t-esc="children"/></p>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-6">
+		<div class="row row-eq-height tt-margin">
+			<div class="col-sm-6 bg-gray-light">
 				<!-- FIXME: HARD CURRENCY -->
-				Por Pagar <t t-esc="amount_total" t-widget="monetary"/>€ <br/>
-				Pagado <t t-esc="amount_paid" t-widget="monetary"/>€
+				<div class="row">
+					<div class="col-sm-6">
+						<p>Pending</p>
+						<h3><t t-esc="amount_total" t-widget="monetary"/> €</h3>
+					</div>
+					<div class="col-sm-6">
+						<h3><t t-esc="amount_paid" t-widget="monetary"/> €</h3>
+						<p>Paid</p>
+					</div>
+				</div>
 			</div>
-			<div class="col-sm-6">
-				WuBook: 1544109684
-				Booking: 4253096846
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<ul class="list-group">
-				<li class="list-group-item fa fa-arrow-circle-o-right fa-2x"><t t-esc="checkin"/></li>
-				<li class="list-group-item">
-					<t t-esc="checkin_day_of_week"/> <t t-esc="arrival_hour"/>
-				</li>
-				</ul>
-			</div>
-			<div class="col-sm-6">
-				<ul class="list-group">
-				<li class="list-group-item fa-2x"><t t-esc="checkout"/><span class="fa fa-arrow-circle-o-right"/></li>
-				<li class="list-group-item">
-					<t t-esc="checkout_day_of_week"/> <t t-esc="departure_hour"/></li>
-				</ul>
+			<div class="col-sm-6 bg-gray-dark">
+				<p>WuBook: 1544109684</p>
+				<p>Booking: 4253096846</p>
 			</div>
 		</div>
-	</div>
-	<div class="container">
-		<div class="row">
+		<div class="row row-eq-height tt-margin">
+			<div class="col-sm-6 bg-gray-dark">
+				<div class="row">
+					<div class="col-sm-2">
+						<i class="fa fa-arrow-circle-o-right fa-2x"/>
+					</div>
+					<div class="col-sm-7">
+						<h3><t t-esc="checkin"/></h3>
+						<p><t t-esc="checkin_day_of_week"/> <t t-esc="arrival_hour"/></p>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6 bg-gray-light">
+				<div class="row">
+					<div class="col-sm-7">
+						<h3><t t-esc="checkout"/></h3>
+						<p><t t-esc="checkout_day_of_week"/> <t t-esc="departure_hour"/></p>
+					</div>
+					<div class="col-sm-2">
+						<i class="fa fa-arrow-circle-o-right fa-2x"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row row-eq-height tt-margin">
 			<div class="col-sm-2">
-				<span class="fa fa-file-text-o fa-2x"><t t-esc="folio_name"/></span>
+				<span class="fa fa-file-text-o fa-2x" role="button"/><t t-esc="folio_name"/>
 			</div>
 			<div class="col-sm-2">
-				<span class="fa fa-external-link fa-2x"/>
+				<span class="fa fa-external-link fa-2x" role="button"/>
 			</div>
 			<div class="col-sm-2">
-				<span class="fa fa-user-plus fa-2x"/>
+				<span class="fa fa-user-plus fa-2x" role="button"/>
 			</div>
 			<div class="col-sm-2">
-				<span class="fa fa-envelope fa-2x"/>
+				<span class="fa fa-envelope fa-2x" role="button"/>
 			</div>
 			<div class="col-sm-2">
-				<span class="fa fa-money fa-2x"/>
+				<span class="fa fa-money fa-2x" role="button"/>
 			</div>
 			<div class="col-sm-2">
-				<span class="fa fa-window-close fa-2x"/>
+				<span class="fa fa-window-close fa-2x" role="button"/>
 			</div>
 		</div>
 	</div>
