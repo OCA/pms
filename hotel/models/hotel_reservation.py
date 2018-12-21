@@ -1031,7 +1031,7 @@ class HotelReservation(models.Model):
         return True
 
     @api.multi
-    def unify(self, reserv_ids=None):
+    def unify(self):
         self.ensure_one()
         if not self.splitted:
             raise ValidationError(_("This reservation can't be unified"))
@@ -1090,7 +1090,7 @@ class HotelReservation(models.Model):
 
         master_reservation.write({
             'checkout': last_checkout,
-            'splitted': False,
+            'splitted': master_reservation.get_real_checkin_checkout()[1] != last_checkout,
             'reservation_line_ids': rlines,
             'price_total': tprice,
         })
@@ -1103,7 +1103,7 @@ class HotelReservation(models.Model):
         if not self.parent_reservation:
             raise ValidationError(_("This is the parent reservation"))
         action = self.env.ref('hotel.open_hotel_reservation_form_tree_all').read()[0]
-        action['views'] = [(self.env.ref('hotel.view_hotel_reservation_form').id, 'form')]
+        action['views'] = [(self.env.ref('hotel.hotel_reservation_view_form').id, 'form')]
         action['res_id'] = self.parent_reservation.id
         return action
 
