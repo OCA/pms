@@ -65,7 +65,7 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
   this.options.startDate = this.options.startDate.clone();
   this.options.startDate.subtract('1', 'd');
   this.options.orig_days = this.options.days;
-  this.options.days = this.parseDays(this.options.days);
+  this.options.days = this.parseDays(this.options.days) + 1;
   this.options.rooms = _.map(this.options.rooms, function(item){ return item.clone(); });
 
   // Check correct values
@@ -117,7 +117,7 @@ HotelCalendar.prototype = {
     if (moment.isMoment(date)) {
       this.options.startDate = date;
     } else if (typeof date === 'string'){
-      this.options.startDate = HotelCalendar.toMomentUTC(date);
+      this.options.startDate = HotelCalendar.toMoment(date);
     } else {
       console.warn("[Hotel Calendar][setStartDate] Invalid date format!");
       return;
@@ -126,7 +126,7 @@ HotelCalendar.prototype = {
     this.options.startDate.subtract('1','d');
     if (typeof days !== 'undefined') {
       this.options.orig_days = days;
-      this.options.days = this.parseDays(days);
+      this.options.days = this.parseDays(days) + 1;
     }
     this._endDate = this.options.startDate.clone().add(this.options.days, 'd');
 
@@ -147,7 +147,7 @@ HotelCalendar.prototype = {
     if (days === 'month') {
       return moment().daysInMonth();
     }
-    return days;
+    return +days;
   },
 
   toggleOverbookingsVisibility: function(/*Bool*/show) {
@@ -2907,8 +2907,8 @@ function HReservation(/*Dictionary*/rValues) {
 }
 HReservation.prototype = {
   setRoom: function(/*HRoomObject*/room) { this.room = room; },
-  setStartDate: function(/*String,MomentObject*/date) { this.startDate = HotelCalendar.toMomentUTC(date); },
-  setEndDate: function(/*String,MomentObject*/date) { this.endDate = HotelCalendar.toMomentUTC(date); },
+  setStartDate: function(/*String,MomentObject*/date) { this.startDate = HotelCalendar.toMoment(date); },
+  setEndDate: function(/*String,MomentObject*/date) { this.endDate = HotelCalendar.toMoment(date); },
 
   clearUserData: function() { this._userData = {}; },
   getUserData: function(/*String?*/key) {

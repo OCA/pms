@@ -323,7 +323,6 @@ var PMSCalendarController = AbstractController.extend({
 
       this.renderer.$el.find('#pms-menu #btn_save_calendar_record').on('click', function(ev){
         var active_calendar_record = self._multi_calendar.get_calendar_record(self._multi_calendar.get_active_index());
-        active_calendar_record.name = "LOLO";
 
         var name = self.renderer.$el.find('#pms-menu #calendar_name').val();
         var category = _.map(self.renderer.$el.find('#pms-menu #type_list').val(), function(item){ return +item; });
@@ -350,9 +349,22 @@ var PMSCalendarController = AbstractController.extend({
         });
       });
 
+      this.renderer.$el.find('#pms-menu #btn_reload_calendar_filters').on('click', function(ev){
+          var active_calendar_record = self._multi_calendar.get_calendar_record(self._multi_calendar.get_active_index());
+          self._multi_calendar.update_active_tab_name(active_calendar_record.name);
+          var $calendar_name = this.renderer.$el.find('#pms-menu .menu-filter-box #calendar_name');
+          $calendar_name.val(active_calendar_record.name);
+          self._refresh_filters({
+              'class_id': active_calendar_record['segmentation_ids'],
+              'floor_id': active_calendar_record['location_ids'],
+              'amenities': active_calendar_record['amenity_ids'],
+              'room_type_id': active_calendar_record['room_type_ids'],
+          });
+      });
+
       this._multi_calendar.on('tab_changed', function(ev, active_index){
         if (active_index) {
-          self._refresh_filters(active_index);
+          self._refresh_view_options(active_index);
         }
       });
     },
@@ -800,7 +812,7 @@ var PMSCalendarController = AbstractController.extend({
         }
     },
 
-    _refresh_filters: function(active_index) {
+    _refresh_view_options: function(active_index) {
       var active_calendar = this._multi_calendar.get_calendar(active_index);
 
       /* Dates */
@@ -854,19 +866,22 @@ var PMSCalendarController = AbstractController.extend({
       $calendar_name.val(active_calendar_record['name']);
 
       /* Calendar Filters */
-      var active_filters = this._multi_calendar.get_active_filters();
-      var $segmentation = this.renderer.$el.find('#pms-menu #type_list');
-      var $location = this.renderer.$el.find('#pms-menu #floor_list');
-      var $amenities = this.renderer.$el.find('#pms-menu #amenities_list');
-      var $types = this.renderer.$el.find('#pms-menu #virtual_list');
-      $segmentation.val(active_filters['class_id']);
-      $segmentation.trigger('change');
-      $location.val(active_filters['floor_id']);
-      $location.trigger('change');
-      $amenities.val(active_filters['amenities']);
-      $amenities.trigger('change');
-      $types.val(active_filters['room_type_id']);
-      $types.trigger('change');
+      this._refresh_filters(this._multi_calendar.get_active_filters());
+    },
+
+    _refresh_filters: function(calendar_filters) {
+        var $segmentation = this.renderer.$el.find('#pms-menu #type_list');
+        var $location = this.renderer.$el.find('#pms-menu #floor_list');
+        var $amenities = this.renderer.$el.find('#pms-menu #amenities_list');
+        var $types = this.renderer.$el.find('#pms-menu #virtual_list');
+        $segmentation.val(calendar_filters['class_id']);
+        $segmentation.trigger('change');
+        $location.val(calendar_filters['floor_id']);
+        $location.trigger('change');
+        $amenities.val(calendar_filters['amenities']);
+        $amenities.trigger('change');
+        $types.val(calendar_filters['room_type_id']);
+        $types.trigger('change');
     },
 
     //--------------------------------------------------------------------------
