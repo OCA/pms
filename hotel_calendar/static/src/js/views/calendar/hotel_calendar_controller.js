@@ -388,7 +388,25 @@ var PMSCalendarController = AbstractController.extend({
           }
         });
         this._multi_calendar.on_calendar('hcalOnSplitReservation', function(ev){
-          self.model.split_reservation(ev.detail.obj_id, ev.detail.nights);
+          var qdict = {};
+          var dialog = new Dialog(self, {
+            title: _t("Confirm Split Reservation"),
+            buttons: [
+                {
+                  text: _t("Yes, split it"),
+                  classes: 'btn-primary',
+                  close: true,
+                  click: function () {
+                    self.model.split_reservation(ev.detail.obj_id, ev.detail.nights);
+                  }
+                },
+                {
+                  text: _t("No"),
+                  close: true
+                }
+            ],
+            $content: QWeb.render('HotelCalendar.ConfirmSplitOperation', qdict)
+          }).open();
         });
         this._multi_calendar.on_calendar('hcalOnClickReservation', function(ev){
           //var res_id = ev.detail.reservationObj.getUserData('folio_id');
@@ -401,7 +419,25 @@ var PMSCalendarController = AbstractController.extend({
           });
         });
         this._multi_calendar.on_calendar('hcalOnUnifyReservations', function(ev){
-          self.model.unify_reservations(_.map(ev.detail.toUnify, 'id'));
+          var qdict = {};
+          var dialog = new Dialog(self, {
+            title: _t("Confirm Unify Reservations"),
+            buttons: [
+                {
+                  text: _t("Yes, unify it"),
+                  classes: 'btn-primary',
+                  close: true,
+                  click: function () {
+                    self.model.unify_reservations(_.map(ev.detail.toUnify, 'id'));
+                  }
+                },
+                {
+                  text: _t("No"),
+                  close: true
+                }
+            ],
+            $content: QWeb.render('HotelCalendar.ConfirmUnifyOperation', qdict)
+          }).open();
         });
         this._multi_calendar.on_calendar('hcalOnSwapReservations', function(ev){
           var qdict = {};

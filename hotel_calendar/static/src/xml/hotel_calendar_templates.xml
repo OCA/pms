@@ -68,6 +68,22 @@
 	</div>
 </t>
 
+<t t-name="HotelCalendar.ConfirmSplitOperation">
+	<div class="content">
+		<p>The following changes will be made...</p>
+		<span><strong>Split Reservation</strong></span><br/>
+		<p>Are you sure you want to make this changes?</p>
+	</div>
+</t>
+
+<t t-name="HotelCalendar.ConfirmUnifyOperation">
+	<div class="content">
+		<p>The following changes will be made...</p>
+		<span><strong>Unify Reservations</strong></span><br/>
+		<p>Are you sure you want to make this changes?</p>
+	</div>
+</t>
+
 
 <t t-name="HotelCalendar.TooltipReservation.Channel.ota">
 	<p>WuBook: 1544109684</p>

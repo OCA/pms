@@ -180,6 +180,9 @@ HotelCalendar.prototype = {
         for (var reserv of this._reservations) {
           reserv._html.classList.add('hcal-reservation-to-divide');
         }
+      } else if (this._selectionMode === HotelCalendar.ACTION.UNIFY) {
+        this.reservationAction.action = HotelCalendar.ACTION.UNIFY;
+        this.reservationAction.toUnify = [];
       } else {
         for (var reserv of this._reservations) {
           reserv._html.classList.remove('hcal-reservation-to-divide');
@@ -189,13 +192,9 @@ HotelCalendar.prototype = {
           this._divideDivs[1].remove();
           this._divideDivs = false;
         }
-        this._reset_action_reservation();
-      }
 
-      if (this._selectionMode === HotelCalendar.ACTION.UNIFY) {
-        this.reservationAction.action = HotelCalendar.ACTION.UNIFY;
-        this.reservationAction.toUnify = [];
-      } else {
+
+        this._dispatchUnifyReservations();
         this._reset_action_reservation();
         this._updateHighlightUnifyReservations();
       }
@@ -1894,7 +1893,7 @@ HotelCalendar.prototype = {
   },
 
   _dispatchUnifyReservations: function() {
-    if (this.reservationAction.toUnify.length > 0) {
+    if (this.reservationAction.hasOwnProperty('toUnify') && this.reservationAction.toUnify.length > 1) {
       this._dispatchEvent(
         'hcalOnUnifyReservations',
         {
