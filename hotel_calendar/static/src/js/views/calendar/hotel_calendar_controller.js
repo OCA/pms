@@ -682,12 +682,13 @@ var PMSCalendarController = AbstractController.extend({
     },
 
     _generate_reservation_tooltip_dict: function(tp) {
+      console.log(tp);
       return {
         'folio_name': tp['folio_name'],
         'name': tp['name'],
         'phone': tp['phone'],
         'email': tp['email'],
-        'room_type': tp['room_type'],
+        'room_type_name': tp['room_type_name'],
         'adults': tp['adults'],
         'children': tp['children'],
         'checkin': HotelCalendar.toMomentUTC(tp['checkin'], '').format("DD MMMM"),

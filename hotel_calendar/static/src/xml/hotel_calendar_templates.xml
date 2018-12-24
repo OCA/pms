@@ -174,7 +174,7 @@
 			<div class="col-sm-6 bg-gray-lighter">
 				<i class="fa fa-hotel fa-2x fa-pull-left"/>
 				<h3 class="pull-right mt-3"><t t-esc="amount_total" t-widget="monetary"/>€</h3>
-				<header><t t-esc="room_type"/></header>
+				<header><t t-esc="room_type_name"/></header>
 
 				<p>Board Service Undefined</p>
 				<p>Adults: <t t-esc="adults"/> - Children: <t t-esc="children"/></p>
@@ -197,7 +197,7 @@
 			</div>
 			<div class="col-sm-6 bg-gray-lighter">
 				<i class="fa fa-hotel fa-2x fa-pull-left"/>
-				<header><t t-esc="room_type"/></header>
+				<header><t t-esc="room_type_name"/></header>
 
 				<p>Adults: <t t-esc="adults"/> - Children: <t t-esc="children"/></p>
 			</div>

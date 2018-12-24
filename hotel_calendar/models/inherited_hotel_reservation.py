@@ -113,7 +113,7 @@ class HotelReservation(models.Model):
                     'name': _('Out of service') if reserv.folio_id.reservation_type == 'out' else reserv.folio_id.partner_id.name,
                     'phone': reserv.mobile or reserv.phone or _('Phone not provided'),
                     'email': reserv.email or _('Email not provided'),
-                    'room_type': reserv.room_type_id.name,
+                    'room_type_name': reserv.room_type_id.name,
                     'adults': reserv.adults,
                     'children': reserv.children,
                     'checkin': reserv.checkin,
@@ -127,6 +127,7 @@ class HotelReservation(models.Model):
                     'type': reserv.reservation_type or 'normal',
                     'out_service_description': reserv.out_service_description or
                                                _('No reason given'),
+                    # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
                 }
             })
         return (json_reservations, json_reservation_tooltips)
@@ -363,6 +364,8 @@ class HotelReservation(models.Model):
             'children': self.children,
             'checkin': self.checkin,
             'checkout': self.checkout,
+            'arrival_hour': self.arrival_hour,
+            'departure_hour': self.departure_hour,
             'folio_id': self.folio_id.id,
             'reserve_color': self.reserve_color,
             'reserve_color_text': self.reserve_color_text,
@@ -370,12 +373,16 @@ class HotelReservation(models.Model):
             'parent_reservation': self.parent_reservation and
                                   self.parent_reservation.id or 0,
             'room_name': self.room_id.name,
+            'room_type_name': self.room_type_id.name,
             'partner_phone': self.partner_id.mobile
                              or self.partner_id.phone or _('Undefined'),
+            'partner_email': self.partner_id.email or _('Undefined'),
             'state': self.state,
             'fix_days': self.splitted,
             'overbooking': self.overbooking,
             'amount_total': self.folio_id.amount_total,
+            'pending_amount': self.folio_id.pending_amount,
+            'amount_paid': self.folio_id.amount_total - self.folio_id.pending_amount,
             'reservation_type': self.reservation_type or 'normal',
             'closure_reason_id': self.closure_reason_id,
             'out_service_description': self.out_service_description or _('No reason given'),

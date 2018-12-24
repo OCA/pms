@@ -61,11 +61,20 @@ class BusHotelCalendar(models.TransientModel):
             'tooltip': {
                 'name': vals['partner_name'],
                 'phone': vals['partner_phone'],
+                'email': vals['partner_email'],
+                'room_type_name': vals['room_type_name'],
+                'adults': vals['adults'],
+                'children': vals['children'],
                 'checkin': vals['checkin'],
+                'checkout': vals['checkout'],
+                'arrival_hour': vals['arrival_hour'],
+                'departure_hour': vals['departure_hour'],
                 'num_split': num_split,
                 'amount_total': vals['amount_total'],
-                'type': vals['reservation_type'] if 'reservation_type' in vals else 'normal',
-                'out_service_description': vals['out_service_description'] if 'out_service_description' in vals else _('No reason given'),
+                'pending_amount': vals['pending_amount'],
+                'amount_paid': vals['amount_paid'],
+                'type': vals['reservation_type'],
+                'out_service_description': vals['out_service_description'],
             }
         }
 
