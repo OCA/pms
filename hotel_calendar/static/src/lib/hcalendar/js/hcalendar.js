@@ -2067,6 +2067,25 @@ HotelCalendar.prototype = {
       };
       rdiv.addEventListener('mousedown', _funcEvent, false);
       rdiv.addEventListener('touchstart', _funcEvent, false);
+      rdiv.addEventListener('click', function(ev){
+        $this._dispatchEvent(
+          'hcalOnClickReservation',
+          {
+            'event': ev,
+            'reservationDiv': this,
+            'reservationObj': $this.getReservation(this.dataset.hcalReservationObjId)
+          });
+      }, false);
+      rdiv.addEventListener('dblclick', function(ev){
+        $this._dispatchEvent(
+          'hcalOnDblClickReservation',
+          {
+            'event': ev,
+            'reservationDiv': this,
+            'reservationObj': $this.getReservation(this.dataset.hcalReservationObjId)
+          });
+      }, false);
+      /*
       rdiv.addEventListener('mouseenter', function(ev){
         $this._dispatchEvent(
           'hcalOnMouseEnterReservation',
@@ -2076,6 +2095,7 @@ HotelCalendar.prototype = {
             'reservationObj': $this.getReservation(this.dataset.hcalReservationObjId)
           });
       }, false);
+      */
       rdiv.addEventListener('mouseleave', function(ev){
         $this._dispatchEvent(
           'hcalOnMouseLeaveReservation',
@@ -2704,13 +2724,15 @@ HotelCalendar.prototype = {
             }
             reservDiv.classList.remove('hcal-reservation-invalid');
           } else {
+            /*
             this._dispatchEvent(
-              'hcalOnClickReservation',
+              'hcalOnDblClickReservation',
               {
                 'event': ev,
                 'reservationDiv': reservDiv,
                 'reservationObj': reserv
               });
+              */
           }
 
           this._reset_action_reservation();
