@@ -375,17 +375,17 @@ var PMSCalendarController = AbstractController.extend({
           self.savePricelist(ev.detail.calendar_obj, ev.detail.pricelist_id, ev.detail.pricelist);
         });
         this._multi_calendar.on_calendar('hcalOnClickReservation', function(ev){
-          console.log('hcalOnClickReservation');
           if (ev.detail.reservationObj) {
             var tp = self._multi_calendar._reserv_tooltips[ev.detail.reservationObj.id];
             var qdict = self._generate_reservation_tooltip_dict(tp);
             $(ev.detail.reservationDiv).tooltip('destroy').tooltip({
-              trigger: 'click',
+              trigger: 'manual',
               animation: false,
               html: true,
               placement: 'bottom',
               title: QWeb.render('HotelCalendar.TooltipReservation', qdict)
-            }).tooltip('show');
+            });
+            _.defer(function(){ $(ev.detail.reservationDiv).tooltip('show'); });
           }
         });
         this._multi_calendar.on_calendar('hcalOnSplitReservation', function(ev){
@@ -411,8 +411,7 @@ var PMSCalendarController = AbstractController.extend({
         });
         this._multi_calendar.on_calendar('hcalOnDblClickReservation', function(ev){
           //var res_id = ev.detail.reservationObj.getUserData('folio_id');
-          console.log('hcalOnDblClickReservation');
-          $(ev.detail.reservationDiv).tooltip('hide');
+          $(ev.detail.reservationDiv).tooltip('destroy');
           self.do_action({
             type: 'ir.actions.act_window',
             res_model: 'hotel.reservation',
