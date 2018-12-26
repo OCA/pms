@@ -160,38 +160,26 @@ input#bookings_search {
 }
 
 /** TOOLTIPS **/
-.tooltip {
-    opacity: unset !important;
-}
-
-.tooltip .tooltip-inner {
+.popover-content {
     font-family: Garuda, sans-serif;
-    border: 1px solid #5C5C5C;
-	background-color: white;
-	color: #5C5C5C;
+    font-size: 12px;
+    padding: 9px;
 }
-.tooltip .container {
-	max-width: 500px;
-}
-.tooltip .list-group {
-    margin-bottom: 0px;
-}
-.tooltip .list-group-item {
-    border: none;
-    padding: 2px 5px;
-    margin-bottom: 0px;
-    background-color: unset;
-    word-break: break-word;
-}
-.tooltip h1, .h1, h2, .h2, h3, .h3 {
+.popover h1, .h1, h2, .h2, h3, .h3 {
     margin-top: 2px;
     margin-bottom: 0px;
 }
-.tooltip .container p {
+.popover {
+	max-width: 550px;
+}
+.popover .container {
+	max-width: -webkit-fill-available;
+}
+.popover .container p {
     margin-top: 3px;
     margin-bottom: 0px;
 }
-.tooltip header {
+.popover header {
     font-size: 1.3em;
 }
 
@@ -199,12 +187,12 @@ input#bookings_search {
     padding-top: 3px;
     padding-bottom: 3px;
 }
-.tooltip .fa-border {
+.popover .fa-border {
     padding: .25em;
     border: solid 0.1em #777777;
     border-radius: .2em;
 }
-.tooltip .fa-border > text-primary {
+.popover .fa-border > text-primary {
     padding: .25em;
     border: solid 0.1em #777777;
     border-radius: .2em;

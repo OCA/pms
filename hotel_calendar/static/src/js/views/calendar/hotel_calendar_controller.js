@@ -374,18 +374,22 @@ var PMSCalendarController = AbstractController.extend({
         this._multi_calendar.on_calendar('hcalOnSavePricelist', function(ev){
           self.savePricelist(ev.detail.calendar_obj, ev.detail.pricelist_id, ev.detail.pricelist);
         });
+        $('.hcal-reservation noselect').popover();
         this._multi_calendar.on_calendar('hcalOnClickReservation', function(ev){
           if (ev.detail.reservationObj) {
             var tp = self._multi_calendar._reserv_tooltips[ev.detail.reservationObj.id];
             var qdict = self._generate_reservation_tooltip_dict(tp);
-            $(ev.detail.reservationDiv).tooltip('destroy').tooltip({
+            $(".marked-as-having-a-popover").popover('destroy');
+            $(ev.detail.reservationDiv).addClass('marked-as-having-a-popover');
+            $(ev.detail.reservationDiv).popover({
               trigger: 'manual',
+              container: 'body',
               animation: false,
               html: true,
               placement: 'bottom',
-              title: QWeb.render('HotelCalendar.TooltipReservation', qdict)
-            });
-            _.defer(function(){ $(ev.detail.reservationDiv).tooltip('show'); });
+              /* title: "Come'n popovers!", */
+              content: QWeb.render('HotelCalendar.TooltipReservation', qdict)
+            }).popover('show');
           }
         });
         this._multi_calendar.on_calendar('hcalOnSplitReservation', function(ev){
