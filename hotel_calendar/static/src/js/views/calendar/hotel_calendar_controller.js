@@ -381,8 +381,8 @@ var PMSCalendarController = AbstractController.extend({
             var qdict = self._generate_reservation_tooltip_dict(tp);
             $(".marked-as-having-a-popover").popover('destroy');
             $(ev.detail.reservationDiv).addClass('marked-as-having-a-popover');
-            $(ev.detail.reservationDiv).popover({
-              trigger: 'manual',
+            var $reservationPopover = $(ev.detail.reservationDiv).popover({
+              trigger: 'click focus',
               container: 'body',
               animation: false,
               html: true,
@@ -390,6 +390,30 @@ var PMSCalendarController = AbstractController.extend({
               /* title: "Come'n popovers!", */
               content: QWeb.render('HotelCalendar.TooltipReservation', qdict)
             }).popover('show');
+            /* add actions */
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_folio").on('click',
+                {folio_id: ev.detail.reservationObj._userData.folio_id}, function(ev){
+              $(".marked-as-having-a-popover").popover('destroy');
+              self.do_action({
+                type: 'ir.actions.act_window',
+                res_model: 'hotel.folio',
+                res_id: ev.data.folio_id,
+                views: [[false, 'form']]
+              });
+            });
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_reservation").on('click',
+                {reservation_id: ev.detail.reservationObj.id}, function(ev){
+              $(".marked-as-having-a-popover").popover('destroy');
+              self.do_action({
+                type: 'ir.actions.act_window',
+                res_model: 'hotel.reservation',
+                res_id: ev.data.reservation_id,
+                views: [[false, 'form']]
+              });
+            });
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_close").on('click', function(ev){
+              $(".marked-as-having-a-popover").popover('destroy');
+            });
           }
         });
         this._multi_calendar.on_calendar('hcalOnSplitReservation', function(ev){
@@ -415,7 +439,7 @@ var PMSCalendarController = AbstractController.extend({
         });
         this._multi_calendar.on_calendar('hcalOnDblClickReservation', function(ev){
           //var res_id = ev.detail.reservationObj.getUserData('folio_id');
-          $(ev.detail.reservationDiv).tooltip('destroy');
+          $(ev.detail.reservationDiv).popover('destroy');
           self.do_action({
             type: 'ir.actions.act_window',
             res_model: 'hotel.reservation',

@@ -182,22 +182,20 @@ input#bookings_search {
 .popover header {
     font-size: 1.3em;
 }
-
-.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
-    padding-top: 3px;
-    padding-bottom: 3px;
-}
 .popover .fa-border {
     padding: .25em;
     border: solid 0.1em #777777;
     border-radius: .2em;
 }
-.popover .fa-border > text-primary {
-    padding: .25em;
-    border: solid 0.1em #777777;
-    border-radius: .2em;
-}
 
+.fa-text-inside {
+    font-family: Garuda, sans-serif;
+    font-size: 14px;
+}
+.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
 /* Spacing in Bootstrap v4.0 */
 .mt-3 {
     margin-top: 3px;
