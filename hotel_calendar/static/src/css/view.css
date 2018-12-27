@@ -173,7 +173,7 @@ input#bookings_search {
 	max-width: 550px;
 }
 .popover .container {
-	max-width: -webkit-fill-available;
+	max-width: 100%;
 }
 .popover .container p {
     margin-top: 3px;
