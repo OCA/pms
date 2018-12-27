@@ -1785,14 +1785,15 @@ HotelCalendar.prototype = {
       var etableOffset = this.etable.getBoundingClientRect();
 
       reserv._html.style.top = `${boundsInit.top-etableOffset.top}px`;
-      var divHeight = (boundsEnd.bottom-etableOffset.top)-(boundsInit.top-etableOffset.top);
-      var fontHeight = divHeight/1.2;
-      if (fontHeight > 16) { fontHeight = 16; }
+      var divHeight = (boundsEnd.bottom-etableOffset.top-4)-(boundsInit.top-etableOffset.top);
+      var fontHeight = divHeight/1.1;
+      if (fontHeight > 12) { fontHeight = 12; }
       reserv._html.style.height = `${divHeight}px`;
       reserv._html.style.lineHeight = `${divHeight+fontHeight/2.0}px`;
       reserv._html.style.fontSize = `${fontHeight}px`;
       reserv._html.style.left = `${boundsInit.left-etableOffset.left}px`;
-      reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width}px`;
+      reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-4}px`;
+      reserv._html.style.margin = `${2}px`;
       if (reserv._drawModes[0] === 'soft-start') {
         reserv._html.style.borderLeftWidth = '3px';
         reserv._html.style.borderLeftStyle = 'double';

@@ -47,13 +47,30 @@
 }
 
 #pms-menu {
-	background-color: white;
+	background-color: #f8f8f8;
 	height: 100%;
+    padding: 0 2.5em !important;
 }
 
 #hcal_widget {
   max-height: 100%;
-	background-color: white;
+}
+
+#multicalendar_panels {
+    background-color: white;
+    border-left: 1px solid #ddd;
+}
+
+.nav-tabs > li > a {
+    border-radius: 0;
+}
+
+.nav-tabs {
+    padding-top: 4px;
+}
+
+.navbar-default {
+    border-color: #f8f8f8;
 }
 
 #cal-pag-prev-plus, #cal-pag-prev, #cal-pag-selector, #cal-pag-next, #cal-pag-next-plus {
@@ -85,6 +102,7 @@
 	flex-grow: 2;
   overflow-y: scroll;
 	overflow-x: hidden;
+    font-size: 12px;
   max-height: 20vh;
 }
 .table-calcs input, .table-reservations-header input {
@@ -96,17 +114,13 @@
 	text-align: center;
 }
 
-.hcal-event-day {
-	background-color: #6ebcff !important;
-}
-
 .btn-hcal { }
 .btn-hcal.hcal-cell-current-day {
  	background-color: #7c7bad66;
  	color: #654a37;
 }
 .btn-hcal.hcal-cell-end-week {
-	background-color: #CBE5F8;
+	background-color: #EDEDED83;
 }
 .btn-hcal-3d {
  	border: 1px solid #eaeaea;
@@ -175,7 +189,7 @@
 	height: 100%;
 	border-collapse: collapse !important;
 	border: 0 dotted #eaeaea;
-  border-width: 2px 0;
+  border-width: 1px 0;
 }
 /*.hcal-table-day tr:first-child td{
 	border: 1px solid #727272 !important;
@@ -191,21 +205,21 @@
 }*/
 .hcal-table-day td {
 	padding: 2px;
-	height: 2.3em;
+	height: 3em;
 	font-size: 7px;
 	vertical-align: middle;
 	font-weight: bold;
-	border: 1px solid #eaeaea !important;
+	border: 0.5px solid #eaeaea !important;
 }
 .hcal-table-day td:hover:not(.hcal-cell-highlight):not(.hcal-cell-invalid) {
 	background-color: #FCFEE1 !important;
 }
 
 .hcal-cell-current-day {
-	background-color: #FAFFD9;
+	background-color: #7C7BADA5;
 }
 .hcal-cell-end-week {
-	background-color: #ECF3FF;
+	background-color: #EDEDED83;
 }
 
 .hcal-cell-day-selector {
@@ -233,6 +247,7 @@
 	text-align: center !important;
 	vertical-align: middle;
 	white-space: nowrap;
+    font-size: 12px;
 }
 .hcal-cell-month:nth-child(n+3) {
 	border-left-width: 2px !important;
@@ -304,6 +319,8 @@
 	white-space: nowrap;
 	overflow: hidden;
 	z-index:8;
+    line-height: 17px !important;
+    vertical-align: middle !important;
 }
 .hcal-reservation:hover {
 	background-color: #4e97bf;
@@ -491,6 +508,7 @@ td.hcal-cell-room-type-group-item:last-child {
 td.hcal-cell-header-day {
 	padding: 0;
 	vertical-align: middle;
+    font-size: 10px;
 }
 
 td.hcal-cell-month-day-occupied {
@@ -522,8 +540,7 @@ td.hcal-cell-month-day-occupied {
 }
 
 .hcal-unused-zone {
-	border: 1px solid #444;
-  border-radius: 0px;
+    border-radius: 0px;
 }
 
 .input-price {
