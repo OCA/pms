@@ -2060,7 +2060,7 @@ HotelCalendar.prototype = {
                 }
 
                 $this._lazyModeReservationsSelection = false;
-              }.bind(this, $this), 100);
+              }.bind(this, $this), 175);
             }
           }
         }
