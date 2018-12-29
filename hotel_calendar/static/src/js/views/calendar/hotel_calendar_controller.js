@@ -278,6 +278,7 @@ var PMSCalendarController = AbstractController.extend({
         } else {
           active_calendar.setSwapMode(HotelCalendar.MODE.NONE);
           $("#btn_swap span.ntext").html(_t("Start Swap"));
+          $led.removeClass('led-green');
           $led.removeClass('led-blue');
           $led.addClass('led-disabled');
         }
