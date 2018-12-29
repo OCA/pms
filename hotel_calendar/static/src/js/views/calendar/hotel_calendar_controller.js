@@ -374,6 +374,7 @@ var PMSCalendarController = AbstractController.extend({
         this._multi_calendar.on_calendar('hcalOnSavePricelist', function(ev){
           self.savePricelist(ev.detail.calendar_obj, ev.detail.pricelist_id, ev.detail.pricelist);
         });
+
         $('.hcal-reservation noselect').popover();
         var _destroy_and_clear_popover_mark = function(ev){
           $(".marked-as-having-a-popover").popover('destroy');
@@ -381,6 +382,12 @@ var PMSCalendarController = AbstractController.extend({
         };
 
         this._multi_calendar.on_calendar('hcalOnClickReservation', function(ev){
+          var active_calendar = self._multi_calendar.get_active_calendar();
+          if ( active_calendar.getSelectionMode() !== HotelCalendar.MODE.NONE
+            || active_calendar.getSwapMode() !== HotelCalendar.MODE.NONE )
+          {
+            return;
+          }
           if (ev.detail.reservationObj) {
             var tp = self._multi_calendar._reserv_tooltips[ev.detail.reservationObj.id];
             var qdict = self._generate_reservation_tooltip_dict(tp);
