@@ -17,6 +17,8 @@ class HotelReservationLine(models.Model):
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)
+    invoiced = fields.Boolean('Invoiced')
+    
 
     @api.constrains('date')
     def constrains_duplicated_date(self):

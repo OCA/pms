@@ -8,6 +8,8 @@ from lxml import etree
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import (
     misc,
+    float_is_zero,
+    float_compare,
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, fields, api, _
@@ -75,6 +77,7 @@ class HotelReservation(models.Model):
             return folio.room_lines[0].departure_hour
         else:
             return default_departure_hour
+    
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
@@ -115,6 +118,7 @@ class HotelReservation(models.Model):
                 ).days
 
     name = fields.Text('Reservation Description', required=True)
+    sequence = fields.Integer(string='Sequence', default=10)
 
     room_id = fields.Many2one('hotel.room', string='Room')
 
@@ -230,8 +234,6 @@ class HotelReservation(models.Model):
     # order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
     # product_id = fields.Many2one('product.product', related='order_line.product_id', string='Product')
     # product_uom = fields.Many2one('product.uom', string='Unit of Measure', required=True)
-    # product_uom_qty = fields.Float(string='Quantity', digits=dp.get_precision('Product Unit of Measure'), required=True, default=1.0)
-
     currency_id = fields.Many2one('res.currency',
                                   related='pricelist_id.currency_id',
                                   string='Currency', readonly=True, required=True)
@@ -244,12 +246,13 @@ class HotelReservation(models.Model):
     tax_id = fields.Many2many('account.tax',
                               string='Taxes',
                               domain=['|', ('active', '=', False), ('active', '=', True)])
-    # qty_to_invoice = fields.Float(
-    #     string='To Invoice', store=True, readonly=True,
-    #     digits=dp.get_precision('Product Unit of Measure'))
-    # qty_invoiced = fields.Float(
-    #     compute='_get_invoice_qty', string='Invoiced', store=True, readonly=True,
-    #     digits=dp.get_precision('Product Unit of Measure'))
+    qty_to_invoice = fields.Float(
+        compute='_get_to_invoice_qty', string='To Invoice', store=True, readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'))
+    qty_invoiced = fields.Float(
+        compute='_get_invoice_qty', string='Invoiced', store=True, readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'))
+    invoice_lines = fields.Many2many('account.invoice.line', 'sale_order_line_invoice_rel', 'order_line_id', 'invoice_line_id', string='Invoice Lines', copy=False)
     # qty_delivered = fields.Float(string='Delivered', copy=False, digits=dp.get_precision('Product Unit of Measure'), default=0.0)
     # qty_delivered_updateable = fields.Boolean(compute='_compute_qty_delivered_updateable', string='Can Edit Delivered', readonly=True, default=True)
     price_subtotal = fields.Monetary(string='Subtotal',
@@ -275,7 +278,7 @@ class HotelReservation(models.Model):
     # FIXME discount per night
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
 
-    # analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
 
     @api.model
     def create(self, vals):
@@ -1124,3 +1127,91 @@ class HotelReservation(models.Model):
     @api.multi
     def send_cancel_mail(self):
         return self.folio_id.send_cancel_mail()
+
+    """
+    INVOICING PROCESS
+    """
+    @api.depends('qty_invoiced', 'nights', 'folio_id.state')
+    def _get_to_invoice_qty(self):
+        """
+        Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
+        calculated from the ordered quantity. Otherwise, the quantity delivered is used.
+        """
+        for line in self:
+            if line.folio_id.state in ['confirm', 'done']:
+                if line.room_type_id.product_id.invoice_policy == 'order':
+                    line.qty_to_invoice = line.nights - line.qty_invoiced
+                else:
+                    line.qty_to_invoice = line.qty_delivered - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
+
+    @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
+    def _get_invoice_qty(self):
+        """
+        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. Note
+        that this is the case only if the refund is generated from the SO and that is intentional: if
+        a refund made would automatically decrease the invoiced quantity, then there is a risk of reinvoicing
+        it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
+        """
+        for line in self:
+            qty_invoiced = 0.0
+            for invoice_line in line.invoice_lines:
+                if invoice_line.invoice_id.state != 'cancel':
+                    if invoice_line.invoice_id.type == 'out_invoice':
+                        qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                    elif invoice_line.invoice_id.type == 'out_refund':
+                        qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+            line.qty_invoiced = qty_invoiced
+
+    @api.multi
+    def _prepare_invoice_line(self, qty):
+        """
+        Prepare the dict of values to create the new invoice line for a reservation.
+
+        :param qty: float quantity to invoice
+        """
+        self.ensure_one()
+        res = {}
+        product = self.env['product.product'].browse(self.room_type_id.product_id.id)
+        account = product.property_account_income_id or product.categ_id.property_account_income_categ_id
+        if not account:
+            raise UserError(_('Please define income account for this product: "%s" (id:%d) - or for its category: "%s".') %
+                (product.name, product.id, product.categ_id.name))
+
+        fpos = self.folio_id.fiscal_position_id or self.folio_id.partner_id.property_account_position_id
+        if fpos:
+            account = fpos.map_account(account)
+
+        res = {
+            'name': self.name,
+            'sequence': self.sequence,
+            'origin': self.folio_id.name,
+            'account_id': account.id,
+            'price_unit': self.price_unit,
+            'quantity': qty,
+            'discount': self.discount,
+            'uom_id': self.product_uom.id,
+            'product_id': product.id or False,
+            'invoice_line_tax_ids': [(6, 0, self.tax_id.ids)],
+            'account_analytic_id': self.folio_id.analytic_account_id.id,
+            'analytic_tag_ids': [(6, 0, self.analytic_tag_ids.ids)],
+        }
+        return res
+
+    @api.multi
+    def invoice_line_create(self, invoice_id, qty):
+        """ Create an invoice line. The quantity to invoice can be positive (invoice) or negative (refund).
+            :param invoice_id: integer
+            :param qty: float quantity to invoice
+            :returns recordset of account.invoice.line created
+        """
+        invoice_lines = self.env['account.invoice.line']
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if not float_is_zero(qty, precision_digits=precision):
+                vals = line._prepare_invoice_line(qty=qty)
+                vals.update({'invoice_id': invoice_id, 'reservation_ids': [(6, 0, [line.id])]})
+                invoice_lines |= self.env['account.invoice.line'].create(vals)
+        return invoice_lines
+

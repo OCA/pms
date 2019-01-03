@@ -28,8 +28,23 @@
                         <field name="deposit_taxes_id" class="oe_inline" widget="many2many_tags"
                             domain="[('type_tax_use','=','sale')]"
                             attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}"/>
+                        <field name="view_detail" />
+                    </group>
+                    <group>
+                        <field name="line_ids" attrs="{'invisible': [('view_detail', '=', False)]}">
+                            <tree string="Lines" editable="bottom">
+                                <field name="room_type_id" />
+                                <field name="date_from" />
+                                <field name="date_to" />
+                                <field name="qty" />
+                                <field name="discount" />
+                                <field name="unit_price" />
+                            </tree>
+                        </field>
                     </group>
                     <footer>
+                        <button name="prepare_reservation_invoice_lines" string="Prepare Lines" type="object"
+                            class="btn-primary"/>
                         <button name="create_invoices" string="Create and View Invoices" type="object"
                             context="{'open_invoices': True}" class="btn-primary"/>
                         <button name="create_invoices" string="Create Invoices" type="object"

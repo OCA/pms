@@ -20,9 +20,9 @@
                        attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}" class="oe_highlight"/> -->
                     <!-- <button name="send_exit_mail" type="object" string="Send Exit Email"
                        attrs="{'invisible': [('has_checkout_to_send', '=', False)]}" class="oe_highlight"/> -->
-                    <!-- <button name="%(hotel.action_view_folio_advance_payment_inv)d"
+                    <button name="%(hotel.action_view_folio_advance_payment_inv)d"
                         string="Create Invoice" type="action" class="btn-primary" states="sale"
-                        attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/> -->
+                        attrs="{'invisible': [('state', '!=', 'confirm')]}"/>
                     <!-- <button name="action_cancel_draft" states="cancel,sale" string="Set to Draft"
                         type="object" icon="fa-undo" class="oe_highlight" /> -->
                     <button name="action_cancel" string="Cancel Folio" states="sale"
@@ -132,10 +132,12 @@
                             <field name="email" placeholder="email"/>
                             <field name="mobile" placeholder="mobile"/>
                             <field name="phone" />
+                            <field name="partner_invoice_id" />
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancel'))]}"/>
                         </group>
                         <group>
                             <field name="pricelist_id" domain="[('type','=','sale')]" />
+                            <field name="company_id" />
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>

@@ -11,6 +11,8 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import except_orm, UserError, ValidationError
 from odoo.tools import (
     misc,
+    float_is_zero,
+    float_compare,    
     DEFAULT_SERVER_DATETIME_FORMAT,
     DEFAULT_SERVER_DATE_FORMAT)
 from odoo import models, fields, api, _
@@ -44,9 +46,14 @@ class HotelFolio(models.Model):
     def _amount_all(self):
         pass
 
+    @api.model
+    def _get_default_team(self):
+        return self.env['crm.team']._get_default_team_id()
+
     #Main Fields--------------------------------------------------------
     name = fields.Char('Folio Number', readonly=True, index=True,
                        default=lambda self: _('New'))
+    client_order_ref = fields.Char(string='Customer Reference', copy=False)
     partner_id = fields.Many2one('res.partner',
                                  track_visibility='onchange')
 
@@ -87,6 +94,7 @@ class HotelFolio(models.Model):
         required=True, readonly=True, index=True,
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         copy=False, default=fields.Datetime.now)
+    confirmation_date = fields.Datetime(string='Confirmation Date', readonly=True, index=True, help="Date on which the folio is confirmed.", copy=False)
     state = fields.Selection([
         ('draft', 'Quotation'),
         ('sent', 'Quotation Sent'),
@@ -111,6 +119,7 @@ class HotelFolio(models.Model):
                                   readonly=True)
     return_ids = fields.One2many('payment.return', 'folio_id',
                                  readonly=True)
+    payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms', oldname='payment_term')
 
     #Amount Fields------------------------------------------------------
     pending_amount = fields.Monetary(compute='compute_amount',
@@ -150,12 +159,13 @@ class HotelFolio(models.Model):
                                       string='Invoice Status',
                                       compute='_compute_invoice_status',
                                       store=True, readonly=True, default='no')
-    #~ partner_invoice_id = fields.Many2one('res.partner',
-                                         #~ string='Invoice Address',
-                                         #~ readonly=True, required=True,
-                                         #~ states={'draft': [('readonly', False)],
-                                                 #~ 'sent': [('readonly', False)]},
-                                         #~ help="Invoice address for current sales order.")
+    partner_invoice_id = fields.Many2one('res.partner',
+                                         string='Invoice Address',
+                                         readonly=True, required=True,
+                                         states={'draft': [('readonly', False)],
+                                                 'sent': [('readonly', False)]},
+                                         help="Invoice address for current sales order.")
+    fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')
 
     #WorkFlow Mail Fields-----------------------------------------------
     has_confirmed_reservations_to_send = fields.Boolean(
@@ -179,6 +189,7 @@ class HotelFolio(models.Model):
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
     note = fields.Text('Terms and conditions')
     sequence = fields.Integer(string='Sequence', default=10)
+    team_id = fields.Many2one('crm.team', 'Sales Channel', change_default=True, default=_get_default_team, oldname='section_id')
 
     @api.depends('room_lines.price_total','service_ids.price_total')
     def _amount_all(self):
@@ -356,7 +367,7 @@ class HotelFolio(models.Model):
         if any(f not in vals for f in lfields):
             partner = self.env['res.partner'].browse(vals.get('partner_id'))
             addr = partner.address_get(['delivery', 'invoice'])
-            #~ vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
+            vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
             vals['pricelist_id'] = vals.setdefault(
                 'pricelist_id',
                 partner.property_product_pricelist and partner.property_product_pricelist.id)
@@ -373,11 +384,11 @@ class HotelFolio(models.Model):
         - user_id
         """
         if not self.partner_id:
-            #~ self.update({
-                #~ 'partner_invoice_id': False,
-                #~ 'payment_term_id': False,
-                #~ 'fiscal_position_id': False,
-            #~ })
+            self.update({
+                'partner_invoice_id': False,
+                'payment_term_id': False,
+                'fiscal_position_id': False,
+            })
             return
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
@@ -438,6 +449,102 @@ class HotelFolio(models.Model):
     def advance_invoice(self):
         pass
 
+    @api.multi
+    def _prepare_invoice(self):
+        """
+        Prepare the dict of values to create the new invoice for a sales order. This method may be
+        overridden to implement custom invoice generation (making sure to call super() to establish
+        a clean extension chain).
+        """
+        self.ensure_one()
+        journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
+        if not journal_id:
+            raise UserError(_('Please define an accounting sales journal for this company.'))
+        import wdb; wdb.set_trace()
+        invoice_vals = {
+            'name': self.client_order_ref or '',
+            'origin': self.name,
+            'type': 'out_invoice',
+            'account_id': self.partner_invoice_id.property_account_receivable_id.id,
+            'partner_id': self.partner_invoice_id.id,
+            'partner_shipping_id': self.partner_id.id,
+            'journal_id': journal_id,
+            'currency_id': self.pricelist_id.currency_id.id,
+            'comment': self.note,
+            'payment_term_id': self.payment_term_id.id,
+            'fiscal_position_id': self.fiscal_position_id.id or self.partner_invoice_id.property_account_position_id.id,
+            'company_id': self.company_id.id,
+            'user_id': self.user_id and self.user_id.id,
+            'team_id': self.team_id.id
+        }
+        return invoice_vals
+
+    @api.multi
+    def action_invoice_create(self, grouped=False):
+        """
+        Create the invoice associated to the Folio.
+        :param grouped: if True, invoices are grouped by Folio id. If False, invoices are grouped by
+                        (partner_invoice_id, currency)
+        :returns: list of created invoices
+        """
+        inv_obj = self.env['account.invoice']
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        invoices = {}
+        references = {}
+        invoices_origin = {}
+        invoices_name = {}
+
+        for folio in self:
+            group_key = folio.id if grouped else (folio.partner_invoice_id.id, folio.currency_id.id)
+            for line in folio.room_lines.sorted(key=lambda l: l.qty_to_invoice < 0):
+                if float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                    continue
+                if group_key not in invoices:
+                    inv_data = folio._prepare_invoice()
+                    invoice = inv_obj.create(inv_data)
+                    references[invoice] = folio
+                    invoices[group_key] = invoice
+                    invoices_origin[group_key] = [invoice.origin]
+                    invoices_name[group_key] = [invoice.name]
+                elif group_key in invoices:
+                    if folio.name not in invoices_origin[group_key]:
+                        invoices_origin[group_key].append(folio.name)
+                    if folio.client_order_ref and folio.client_order_ref not in invoices_name[group_key]:
+                        invoices_name[group_key].append(folio.client_order_ref)
+
+                if line.qty_to_invoice > 0:
+                    line.invoice_line_create(invoices[group_key].id, line.nights)
+
+            if references.get(invoices.get(group_key)):
+                if folio not in references[invoices[group_key]]:
+                    references[invoices[group_key]] |= folio
+
+        for group_key in invoices:
+            invoices[group_key].write({'name': ', '.join(invoices_name[group_key]),
+                                       'origin': ', '.join(invoices_origin[group_key])})
+
+        if not invoices:
+            raise UserError(_('There is no invoiceable line.'))
+
+        for invoice in invoices.values():
+            if not invoice.invoice_line_ids:
+                raise UserError(_('There is no invoiceable line.'))
+            # If invoice is negative, do a refund invoice instead
+            if invoice.amount_untaxed < 0:
+                invoice.type = 'out_refund'
+                for line in invoice.invoice_line_ids:
+                    line.quantity = -line.quantity
+            # Use additional field helper function (for account extensions)
+            for line in invoice.invoice_line_ids:
+                line._set_additional_fields(invoice)
+            # Necessary to force computation of taxes. In account_invoice, they are triggered
+            # by onchanges, which are not triggered when doing a create.
+            invoice.compute_taxes()
+            invoice.message_post_with_view('mail.message_origin_link',
+                values={'self': invoice, 'origin': references[invoice]},
+                subtype_id=self.env.ref('mail.mt_note').id)
+        return [inv.id for inv in invoices.values()]
+
     '''
     WORKFLOW STATE
     '''
@@ -483,7 +590,21 @@ class HotelFolio(models.Model):
 
     @api.multi
     def action_confirm(self):
-        _logger.info('action_confirm')
+        for folio in self.filtered(lambda folio: folio.partner_id not in folio.message_partner_ids):
+            folio.message_subscribe([folio.partner_id.id])
+        self.write({
+            'state': 'confirm',
+            'confirmation_date': fields.Datetime.now()
+        })
+        #~ if self.env.context.get('send_email'):
+            #~ self.force_quotation_send()
+
+        # create an analytic account if at least an expense product
+        #~ if any([expense_policy != 'no' for expense_policy in self.order_line.mapped('product_id.expense_policy')]):
+            #~ if not self.analytic_account_id:
+                #~ self._create_analytic_account()
+
+        return True
 
 
     """

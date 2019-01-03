@@ -45,16 +45,17 @@ class AccountInvoice(models.Model):
     @api.multi
     def _compute_dif_customer_payment(self):
         for inv in self:
-            sales = inv.mapped('invoice_line_ids.sale_line_ids.order_id')
-            folios = self.env['hotel.folio'].search([('order_id.id','in',sales.ids)])
-            if folios:
-                inv.from_folio = True
-                inv.folio_ids = [(6, 0, folios.ids)]
-            payments_obj = self.env['account.payment']
-            payments = payments_obj.search([('folio_id','in',folios.ids)])
-            for pay in payments:
-                if pay.partner_id != inv.partner_id:
-                    inv.dif_customer_payment = True
+            return False
+            #~ sales = inv.mapped('invoice_line_ids.sale_line_ids.order_id')
+            #~ folios = self.env['hotel.folio'].search([('order_id.id','in',sales.ids)])
+            #~ if folios:
+                #~ inv.from_folio = True
+                #~ inv.folio_ids = [(6, 0, folios.ids)]
+            #~ payments_obj = self.env['account.payment']
+            #~ payments = payments_obj.search([('folio_id','in',folios.ids)])
+            #~ for pay in payments:
+                #~ if pay.partner_id != inv.partner_id:
+                    #~ inv.dif_customer_payment = True
 
     @api.multi
     def action_invoice_open(self):

@@ -16,14 +16,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     @api.model
     def _get_advance_payment_method(self):
-        if self._count() == 1:
-            sale_obj = self.env['sale.order']
-            folio_obj = self.env['hotel.folio']
-            order = sale_obj.browse(folio_obj.mapped('order_id.id'))
-            if all([line.product_id.invoice_policy == 'order' for line in order.order_line]) \
-                    or order.invoice_count:
-                return 'all'
-        return 'delivered'
+        return 'all'
 
     @api.model
     def _default_product_id(self):
@@ -40,15 +33,22 @@ class FolioAdvancePaymentInv(models.TransientModel):
         return self._default_product_id().taxes_id
 
     advance_payment_method = fields.Selection([
-        ('delivered', 'Invoiceable lines'),
         ('all', 'Invoiceable lines (deduct down payments)'),
         ('percentage', 'Down payment (percentage)'),
         ('fixed', 'Down payment (fixed amount)')
     ], string='What do you want to invoice?', default=_get_advance_payment_method,
                                               required=True)
+    count = fields.Integer(default=_count, string='# of Orders')
+    folio_ids  = fields.Many2many("hotel.folio", string="Folios",
+                                        help="Folios grouped")
+    group_folios = fields.Boolean('Group Folios')
+    line_ids = fields.One2many('line.advance.inv',
+                               'advance_inv_id',
+                               string="Invoice Lines")
+    view_detail = fields.Boolean('View Detail')
+    #Advance Payment
     product_id = fields.Many2one('product.product', string='Down Payment Product',
                                  domain=[('type', '=', 'service')], default=_default_product_id)
-    count = fields.Integer(default=_count, string='# of Orders')
     amount = fields.Float('Down Payment Amount',
                           digits=dp.get_precision('Account'),
                           help="The amount to be invoiced in advance, taxes excluded.")
@@ -139,12 +139,11 @@ class FolioAdvancePaymentInv(models.TransientModel):
     @api.multi
     def create_invoices(self):
         folios = self.env['hotel.folio'].browse(self._context.get('active_ids', []))
-        sale_orders = self.env['sale.order'].browse(folios.mapped('order_id.id'))
 
         if self.advance_payment_method == 'delivered':
-            sale_orders.action_invoice_create()
+            folios.action_invoice_create()
         elif self.advance_payment_method == 'all':
-            sale_orders.action_invoice_create(final=True)
+            folios.action_invoice_create()
         else:
             # Create deposit product if necessary
             if not self.product_id:
@@ -196,3 +195,68 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'property_account_income_id': self.deposit_account_id.id,
             'taxes_id': [(6, 0, self.deposit_taxes_id.ids)],
         }
+
+    @api.onchange('view_detail')
+    def prepare_reservation_invoice_lines(self):
+        vals = []
+        folios = self.env['hotel.folio'].browse(self._context.get('active_ids', []))
+        for folio in folios:
+            folio_name = folio.name
+            for reservation in folio.room_lines:
+                reservation_name = reservation.name
+                unit_price = False
+                discount = False
+                qty = 0
+                for day in reservation.reservation_line_ids.sorted('date'):
+                    if day.price == unit_price and day.discount == discount:
+                        date_to = day.date
+                        qty += 1
+                    else:
+                        if unit_price:
+                            vals.append((0, False, {
+                            'date_from': date_from,
+                            'date_to': date_to,
+                            'room_type_id': reservation.room_type_id,
+                            'product_id': self.env['product.product'].browse(
+                                reservation.room_type_id.product_id.id
+                                ),
+                            'qty': qty,
+                            'discount': discount,
+                            'unit_price': unit_price
+                            }))
+                        qty = 1
+                        unit_price = day.price
+                        date_from = day.date
+                        date_to = day.date
+                vals.append((0, False, {
+                    'date_from': date_from,
+                    'date_to': date_to,
+                    'room_type_id': reservation.room_type_id,
+                    'product_id': self.env['product.product'].browse(
+                        reservation.room_type_id.product_id.id
+                        ),
+                    'qty': qty,
+                    'discount': discount,
+                    'unit_price': unit_price
+                    }))
+        self.line_ids = vals
+
+class LineAdvancePaymentInv(models.TransientModel):
+    _name = "line.advance.inv"
+    _description = "Lines Advance Invoice"
+
+    date_from = fields.Date('From')
+    date_to = fields.Date('To')
+    room_type_id = fields.Many2one('hotel.room.type')
+    product_id = fields.Many2one('product.product', string='Down Payment Product',
+                                 domain=[('type', '=', 'service')])
+    qty = fields.Integer('Quantity')
+    unit_price = fields.Float('Price')
+    advance_inv_id = fields.Many2one('folio.advance.payment.inv')
+    discount = fields.Float(
+        string='Discount (%)',
+        digits=dp.get_precision('Discount'), default=0.0)
+    to_invoice = fields.Boolean('To Invoice')
+                    
+                    
+
