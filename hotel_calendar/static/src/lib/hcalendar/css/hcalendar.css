@@ -319,8 +319,8 @@
 	white-space: nowrap;
 	overflow: hidden;
 	z-index:8;
-    line-height: 17px !important;
-    vertical-align: middle !important;
+    vertical-align: middle;
+    display: table-cell;
 }
 .hcal-reservation:hover {
 	background-color: #4e97bf;

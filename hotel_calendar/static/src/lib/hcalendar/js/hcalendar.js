@@ -1784,28 +1784,49 @@ HotelCalendar.prototype = {
 
       var etableOffset = this.etable.getBoundingClientRect();
 
-      reserv._html.style.top = `${boundsInit.top-etableOffset.top}px`;
+      reserv._html.style.top = `${boundsInit.top-etableOffset.top+2}px`;
       var divHeight = (boundsEnd.bottom-etableOffset.top-4)-(boundsInit.top-etableOffset.top);
-      var fontHeight = divHeight/1.1;
-      if (fontHeight > 12) { fontHeight = 12; }
+      var fontHeight = 12;
+      var has_changed = false;
       reserv._html.style.height = `${divHeight}px`;
-      reserv._html.style.lineHeight = `${divHeight+fontHeight/2.0}px`;
+      reserv._html.style.lineHeight = `${divHeight}px`;
       reserv._html.style.fontSize = `${fontHeight}px`;
-      reserv._html.style.left = `${boundsInit.left-etableOffset.left}px`;
-      reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-4}px`;
-      reserv._html.style.margin = `${2}px`;
+      reserv._html.style.left = `${boundsInit.left-etableOffset.left+2}px`;
+      reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-4}px`;          
       if (reserv._drawModes[0] === 'soft-start') {
+        has_changed = true;
         reserv._html.style.borderLeftWidth = '3px';
         reserv._html.style.borderLeftStyle = 'double';
+        reserv._html.style.left = `${boundsInit.left-etableOffset.left}px`;
+        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
+        console.log("PASA 11");
       } else if (reserv.splitted && reserv.startDate.isSame(reserv.getUserData('realDates')[0], 'day')) {
+        has_changed = true;
         reserv._html.style.borderLeftWidth = '0';
+        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
+        console.log("PASA 12");
+      } else if (reserv.splitted) {
+          has_changed = true;
+          reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
+          reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width+2}px`;
+          console.log("PASA 13");
       }
       if (reserv._drawModes[1] === 'soft-end') {
         reserv._html.style.borderRightWidth = '3px';
         reserv._html.style.borderRightStyle = 'double';
+        console.log("PASA 14");
+        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
       } else if (reserv.splitted && reserv.endDate.isSame(reserv.getUserData('realDates')[1], 'day')) {
         reserv._html.style.borderRightWidth = '0';
+        reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
+        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-1}px`;
+        console.log("PASA 15");
+      } else if (reserv.splitted && !has_changed) {
+          reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
+          reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width+2}px`;
+          console.log("PASA 16");
       }
+      console.log(reserv.startDate.format('DD/MM/YYYY'))
     }
   },
 
