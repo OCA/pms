@@ -960,8 +960,8 @@ class HotelReservation(models.Model):
 
         master_reservation = self.parent_reservation or self
         splitted_reservs = self.env['hotel.reservation'].search([
-            '|',
             ('splitted', '=', True),
+            '|',
             ('id', '=', master_reservation.id), # This here because can create a splitted reserv before set as splitted the parent reservation (master)
             ('folio_id', '=', self.folio_id.id),
             '|',
@@ -1058,19 +1058,24 @@ class HotelReservation(models.Model):
 
     @api.model
     def unify_books(self, splitted_reservs):
-        master_reservation = splitted_reservs[0].parent_reservation or splitted_reservs[0]
+        parent_reservation = splitted_reservs[0].parent_reservation or splitted_reservs[0]
         room_type_ids = splitted_reservs.mapped('room_type_id.id')
         if len(room_type_ids) > 1 or \
                 (len(room_type_ids) == 1
-                 and master_reservation.room_type_id.id != room_type_ids[0]):
+                 and parent_reservation.room_type_id.id != room_type_ids[0]):
             raise ValidationError(_("This reservation can't be unified: They \
                                     all need to be in the same room"))
 
         # Search checkout
         last_checkout = splitted_reservs[0].checkout
+        first_checkin = splitted_reservs[0].checkin
+        master_reservation = splitted_reservs[0]
         for reserv in splitted_reservs:
             if last_checkout < reserv.checkout:
                 last_checkout = reserv.checkout
+            if first_checkin > reserv.checkin:
+                first_checkin = reserv.checkin
+                master_reservation = reserv
 
         # Agrupate reservation lines
         reservation_line_ids = splitted_reservs.mapped('reservation_line_ids')
@@ -1084,13 +1089,16 @@ class HotelReservation(models.Model):
             }))
             tprice += rline.price
 
+        # Real Dates
+        rdate_begin, rdate_end = master_reservation.get_real_checkin_checkout()
+
         # Unify
         osplitted_reservs = splitted_reservs - master_reservation
         osplitted_reservs.sudo().unlink()
 
         master_reservation.write({
             'checkout': last_checkout,
-            'splitted': master_reservation.get_real_checkin_checkout()[1] != last_checkout,
+            'splitted': rdate_begin != first_checkin or rdate_end != last_checkout,
             'reservation_line_ids': rlines,
             'price_total': tprice,
         })
