@@ -1804,7 +1804,7 @@ HotelCalendar.prototype = {
         reserv._html.style.borderLeftWidth = '0';
         reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
       }
-      
+
       if (reserv._drawModes[1] === 'soft-end') {
         has_changed = true;
         reserv._html.style.borderRightWidth = '3px';
@@ -1818,7 +1818,6 @@ HotelCalendar.prototype = {
       }
 
       if (reserv.splitted && !has_changed) {
-        has_changed = true;
         reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
         reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width+2}px`;
       }
