@@ -318,9 +318,7 @@
 	color: white;
 	white-space: nowrap;
 	overflow: hidden;
-	z-index:8;
-    vertical-align: middle;
-    display: table-cell;
+	z-index: 8;
 }
 .hcal-reservation:hover {
 	background-color: #4e97bf;
@@ -424,21 +422,25 @@
 }
 
 .hcal-reservation-divide-l {
-	background-color: transparent !important;
+	background-color: transparent;
 	border: 2px dashed black;
 	cursor: copy;
 	pointer-events: none;
-	border-color: black !important;
-	border-right-style: solid !important;
+	border-color: black;
+	border-right-style: solid;
+	position: absolute;
+	z-index: 9;
 }
 
 .hcal-reservation-divide-r {
-	background-color: transparent !important;
+	background-color: transparent;
 	border: 2px dashed black;
 	cursor: copy;
 	pointer-events: none;
-	border-color: black !important;
-	border-left-style: solid !important;
+	border-color: black;
+	border-left-style: solid;
+	position: absolute;
+	z-index: 9;
 }
 
 .hcal-row-room-type-group-item {

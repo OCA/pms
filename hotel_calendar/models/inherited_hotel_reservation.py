@@ -184,32 +184,29 @@ class HotelReservation(models.Model):
         return json_events
 
     @api.model
-    def get_hcalendar_reservations_data(self, dfrom, dto, rooms):
-        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
-        date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+    def get_hcalendar_reservations_data(self, dfrom_dt, dto_dt, rooms):
+        rdfrom_dt = dfrom_dt + timedelta(days=1)    # Ignore checkout
         reservations_raw = self.env['hotel.reservation'].search(
             [('room_id', 'in', rooms.ids)],
             order="checkin DESC, checkout ASC, adults DESC, children DESC")
         reservations_ll = self.env['hotel.reservation'].search([
-            ('checkin', '<=', dto),
-            ('checkout', '>=', date_start_str)
+            ('checkin', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('checkout', '>=', rdfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         ])
         reservations_lr = self.env['hotel.reservation'].search([
-            ('checkin', '>=', date_start_str),
-            ('checkout', '<=', dto)
+            ('checkin', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('checkout', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         ])
         reservations = (reservations_ll | reservations_lr) & reservations_raw
         return self._hcalendar_reservation_data(reservations)
 
     @api.model
-    def get_hcalendar_pricelist_data(self, dfrom, dto):
+    def get_hcalendar_pricelist_data(self, dfrom_dt, dto_dt):
         pricelist_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
-        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
-        date_end = fields.Date.from_string(dto)
-        date_diff = abs((date_end - date_start).days) + 1
+        date_diff = abs((dfrom_dt - dto_dt).days) + 1
         # Get Prices
         json_rooms_prices = {pricelist_id: []}
         room_typed_ids = self.env['hotel.room.type'].search(
@@ -220,7 +217,7 @@ class HotelReservation(models.Model):
         for room_type_id in room_typed_ids:
             days = {}
             for i in range(0, date_diff):
-                ndate = date_start + timedelta(days=i)
+                ndate = dfrom_dt + timedelta(days=i)
                 ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 prod_price_id = room_pr_cached_obj.search([
                     ('room_id', '=', room_type_id.id),
@@ -242,14 +239,12 @@ class HotelReservation(models.Model):
         return json_rooms_prices
 
     @api.model
-    def get_hcalendar_restrictions_data(self, dfrom, dto):
+    def get_hcalendar_restrictions_data(self, dfrom_dt, dto_dt):
         restriction_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_restriction_id')
         if restriction_id:
             restriction_id = int(restriction_id)
-        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
-        date_end = fields.Date.from_string(dto)
-        date_diff = abs((date_end - date_start).days) + 1
+        date_diff = abs((dto_dt - dfrom_dt).days) + 1
         # Get Prices
         json_rooms_rests = {}
         room_types = self.env['hotel.room.type'].search(
@@ -259,7 +254,7 @@ class HotelReservation(models.Model):
         for room_type in room_types:
             days = {}
             for i in range(0, date_diff):
-                ndate = date_start + timedelta(days=i)
+                ndate = dfrom_dt + timedelta(days=i)
                 ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                 rest_id = room_type_rest_obj.search([
                     ('room_type_id', '=', room_type.id),
@@ -284,9 +279,7 @@ class HotelReservation(models.Model):
         return json_rooms_rests
 
     @api.model
-    def get_hcalendar_events_data(self, dfrom, dto):
-        date_start = fields.Date.from_string(dfrom) - timedelta(days=1)
-        date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+    def get_hcalendar_events_data(self, dfrom_dt, dto_dt):
         user_id = self.env['res.users'].browse(self.env.uid)
         domain = []
         if user_id.pms_allowed_events_tags:
@@ -296,12 +289,12 @@ class HotelReservation(models.Model):
                 ('categ_ids', 'not in', user_id.pms_denied_events_tags))
         events_raw = self.env['calendar.event'].search(domain)
         events_ll = self.env['calendar.event'].search([
-            ('start', '<=', dto),
-            ('stop', '>=', date_start_str)
+            ('start', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('stop', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         ])
         events_lr = self.env['calendar.event'].search([
-            ('start', '>=', date_start_str),
-            ('stop', '<=', dto)
+            ('start', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('stop', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         ])
         events = (events_ll | events_lr) & events_raw
         return self._hcalendar_event_data(events)
@@ -332,18 +325,22 @@ class HotelReservation(models.Model):
         if not dfrom or not dto:
             raise ValidationError(_('Input Error: No dates defined!'))
 
+        dfrom_dt = fields.Date.from_string(dfrom)
+        dto_dt = fields.Date.from_string(dto)
+
         rooms = self.env['hotel.room'].search([], order='hcal_sequence ASC')
         calendars = self.env['hotel.calendar'].search([])
         json_res, json_res_tooltips = self.get_hcalendar_reservations_data(
-            dfrom, dto, rooms)
+            dfrom_dt, dto_dt, rooms)
 
         vals = {
             'rooms': withRooms and self._hcalendar_room_data(rooms) or [],
             'reservations': json_res,
             'tooltips': json_res_tooltips,
-            'pricelist': self.get_hcalendar_pricelist_data(dfrom, dto),
-            'restrictions': self.get_hcalendar_restrictions_data(dfrom, dto),
-            'events': self.get_hcalendar_events_data(dfrom, dto),
+            'pricelist': self.get_hcalendar_pricelist_data(dfrom_dt, dto_dt),
+            'restrictions': self.get_hcalendar_restrictions_data(dfrom_dt,
+                                                                 dto_dt),
+            'events': self.get_hcalendar_events_data(dfrom_dt, dto_dt),
             'calendars': self._hcalendar_calendar_data(calendars)
         }
 

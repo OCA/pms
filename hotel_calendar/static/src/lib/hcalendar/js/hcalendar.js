@@ -511,6 +511,13 @@ HotelCalendar.prototype = {
     } while (notFound && nbed <= reservation.room.capacity);
 
     reservation._limits = limits;
+
+    // Update Beds
+    if (limits.isValid()) {
+      var numBeds = (+limits.right.dataset.hcalBedNum)-(+limits.left.dataset.hcalBedNum);
+      reservation._beds = [];
+      for (var i=0; i<=numBeds; reservation._beds.push(+limits.left.dataset.hcalBedNum+i++));
+    }
   },
 
   //==== CELLS
@@ -1756,41 +1763,21 @@ HotelCalendar.prototype = {
     }
 
     if (!noRefresh) {
-      var numBeds = (+reserv._limits.right.dataset.hcalBedNum)-(+reserv._limits.left.dataset.hcalBedNum);
-      reserv._beds = [];
-      for (var i=0; i<=numBeds; reserv._beds.push(+reserv._limits.left.dataset.hcalBedNum+i++));
+      //reserv._html.removeAttribute('style');
 
       var boundsInit = reserv._limits.left.getBoundingClientRect();
       var boundsEnd = reserv._limits.right.getBoundingClientRect();
-
-      reserv._html.removeAttribute('style');
-
-      if (reserv.splitted) {
-        reserv._html.classList.add('hcal-reservation-splitted');
-        // 1. Use reservation ID as seed
-        // 2. Use sinusiudal function
-        // 3. Only use positive values (This decrease longitude, increase frequency)
-        // 4. Use the first 5 decimals to make the integer value
-        // 5. Get integer value (Bitwise tilde method)
-        // TODO: Improve pseudo-random number generator
-        var magicNumber = ~~(Math.abs(Math.sin((reserv.getUserData('parent_reservation') || reserv.id))) * 100000);
-        var bbColor = this._intToRgb(magicNumber);
-        reserv._html.style.borderColor = `rgb(${bbColor[0]},${bbColor[1]},${bbColor[2]})`;
-      } else {
-        reserv._html.classList.remove('hcal-reservation-splitted');
-      }
-      reserv._html.style.backgroundColor = reserv.color;
-      reserv._html.style.color = reserv.colorText;
-
       var etableOffset = this.etable.getBoundingClientRect();
-
-      reserv._html.style.top = `${boundsInit.top-etableOffset.top+2}px`;
       var divHeight = (boundsEnd.bottom-etableOffset.top-4)-(boundsInit.top-etableOffset.top);
       var fontHeight = 12;
       var has_changed = false;
+
+      reserv._html.style.backgroundColor = reserv.color;
+      reserv._html.style.color = reserv.colorText;
       reserv._html.style.height = `${divHeight}px`;
       reserv._html.style.lineHeight = `${divHeight}px`;
       reserv._html.style.fontSize = `${fontHeight}px`;
+      reserv._html.style.top = `${boundsInit.top-etableOffset.top+2}px`;
       reserv._html.style.left = `${boundsInit.left-etableOffset.left+2}px`;
       reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-4}px`;
       if (reserv._drawModes[0] === 'soft-start') {
@@ -1817,9 +1804,24 @@ HotelCalendar.prototype = {
         reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-1}px`;
       }
 
-      if (reserv.splitted && !has_changed) {
-        reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
-        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width+2}px`;
+      if (reserv.splitted) {
+        reserv._html.classList.add('hcal-reservation-splitted');
+        // 1. Use reservation ID as seed
+        // 2. Use sinusiudal function
+        // 3. Only use positive values (This decrease longitude)
+        // 4. Use the first 5 decimals to make the integer value
+        // 5. Get integer value (Bitwise tilde method)
+        // TODO: Improve pseudo-random number generator
+        var magicNumber = ~~(Math.abs(Math.sin((reserv.getUserData('parent_reservation') || reserv.id))) * 100000);
+        var bbColor = this._intToRgb(magicNumber);
+        reserv._html.style.borderColor = `rgb(${bbColor[0]},${bbColor[1]},${bbColor[2]})`;
+
+        if (!has_changed) {
+          reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
+          reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width+2}px`;
+        }
+      } else {
+        reserv._html.classList.remove('hcal-reservation-splitted');
       }
     }
   },
@@ -2618,25 +2620,37 @@ HotelCalendar.prototype = {
       }
       if (reservs.length) {
         this._splitReservation = reservs[0];
-        this._divideDivs = [$(this._splitReservation._html).clone().text('').appendTo(this.edivr), $(this._splitReservation._html).clone().text('').appendTo(this.edivr)];
+        var defStyle = {
+          top: this._splitReservation._html.style.top,
+          left: this._splitReservation._html.style.left,
+          height: this._splitReservation._html.style.height,
+        };
+        this._divideDivs = [
+            $('<div/>', {class: 'hcal-reservation-divide-l', css: defStyle}).appendTo(this.edivr),
+            $('<div/>', {class: 'hcal-reservation-divide-r', css: defStyle}).appendTo(this.edivr)
+        ];
         var diff = this.getDateDiffDays(this._splitReservation.startDate, date_cell);
-        this._divideDivs[0].addClass('hcal-reservation-divide-l');
-        this._divideDivs[1].addClass('hcal-reservation-divide-r');
-
         var etableOffset = this.etable.getBoundingClientRect();
         var boundsCell = ev.target.getBoundingClientRect();
         var beginCell = this._splitReservation._limits.left.getBoundingClientRect();
         var endCell = this._splitReservation._limits.right.getBoundingClientRect();
-        var splitCell = boundsCell;
-        var splitDate = date_cell.clone();
         this._splitDate = date_cell.clone();
         if (date_cell.isSame(this._splitReservation.endDate.clone().subtract(1, 'd'), 'day')) {
-          splitDate.subtract(1, 'd');
-          splitCell = this.getCell(this._splitDate, this._splitReservation.room, 0);
+          this._splitDate.subtract(1, 'd');
+          var tcell = this.getCell(this._splitDate, this._splitReservation.room, 0);
+          if (tcell) {
+            boundsCell = tcell.getBoundingClientRect();
+          } else {
+            boundsCell = false;
+            this._splitReservation = false;
+            this._splitDate = false;
+          }
         }
-        this._divideDivs[0][0].style.width = `${(splitCell.left-beginCell.left)+splitCell.width}px`;
-        this._divideDivs[1][0].style.left = `${(splitCell.left-etableOffset.left)+splitCell.width}px`;
-        this._divideDivs[1][0].style.width = `${(endCell.left-splitCell.left)}px`;
+        if (boundsCell) {
+          this._divideDivs[0][0].style.width = `${(boundsCell.left-beginCell.left)+boundsCell.width}px`;
+          this._divideDivs[1][0].style.left = `${(boundsCell.left-etableOffset.left)+boundsCell.width}px`;
+          this._divideDivs[1][0].style.width = `${(endCell.left-boundsCell.left)}px`;
+        }
       } else {
         this._splitReservation = false;
         this._splitDate = false;

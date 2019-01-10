@@ -983,8 +983,7 @@ class HotelReservation(models.Model):
             date_start_dt = fields.Date.from_string(record.checkin)
             date_end_dt = fields.Date.from_string(record.checkout)
             date_diff = abs((date_end_dt - date_start_dt).days)
-            new_start_date_dt = date_start_dt + \
-                                timedelta(days=date_diff-nights)
+            new_start_date_dt = date_start_dt + timedelta(days=date_diff-nights)
             if nights >= date_diff or nights < 1:
                 raise ValidationError(_("Invalid Nights! Max is \
                                         '%d'") % (date_diff-1))
