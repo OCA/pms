@@ -10,12 +10,12 @@
                 <xpath expr="//page[@name='personal_information_page']" position='inside'>
                     <group colspan="4">
                         <group>
-                            <field name="documenttype"/>
-                            <field name="poldocument"/>
+                            <field name="document_type"/>
+                            <field name="document_number"/>
                         </group>
                         <group>
                             <field name="code_ine_id" placeholder="Code in INE" options="{'no_create': True,'no_open': True}"/>
-                            <field name="polexpedition"/>
+                            <field name="document_expedition_date"/>
                         </group>
                     </group>
                 </xpath>
