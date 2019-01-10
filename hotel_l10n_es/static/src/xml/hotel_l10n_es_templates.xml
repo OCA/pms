@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hotelname_bootstrap"
+              inherit_id="web.menu_secondary"
+              name="Hotel Name - Web Client"
+              >
+              <xpath expr="//div[@class='o_sub_menu_content']/t" position="after">
+                  <div class="title-hotel-name">
+                      <t t-esc="request.env.user.company_id.property_name"/>
+                  </div>
+              </xpath>
+              </template>
+</odoo>

@@ -1,0 +1,51 @@
+<?xml version="1.0"?> 
+<odoo>      
+
+        <act_window
+            id="action_category_tourism"
+            name="Category Codes"
+            res_model="category"
+            view_mode="tree,form"
+        />
+
+        <menuitem 
+            id="menu_category_tourism"
+            name="Category Codes"
+            parent="hotel.configuration_others"
+            sequence="30"
+            action="action_category"
+        />
+
+        <record id="category_tourism_view_form" model="ir.ui.view">
+            <field name="name">category.tourism.view.form</field>
+            <field name="model">category.tourism</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group name="group_top">
+                            <group name="group_left">
+                                <field name="name"/>
+                            </group>
+                            <group name="group_left">
+                                <field name="display_name"/>
+                            </group>
+                            <group name="group_right">
+                                <field name="category_type"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="category_tourism_view_tree" model="ir.ui.view">
+            <field name="name">category.tourism.view.tree</field>
+            <field name="model">category.tourism</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="display_name"/>
+                </tree>
+            </field>
+        </record>
+        
+</odoo>

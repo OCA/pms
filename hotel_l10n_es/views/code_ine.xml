@@ -1,0 +1,53 @@
+<?xml version="1.0"?> 
+<odoo>      
+
+         
+            <act_window
+                id="action_code_ine"
+                name="action.code.ine"
+                res_model="code.ine"
+                view_mode="tree,form"
+            />
+            
+            <menuitem 
+                id="menu_code_ine"
+                name="menu.code.ine"
+                parent="hotel.configuration_others"
+                sequence="25"
+                action="action_code_ine"
+            />
+
+            <record id="code_ine_view_form" model="ir.ui.view">
+                <field name="name">code.ine.view.form</field>
+                <field name="model">code.ine</field>
+                <field name="arch" type="xml">
+                    <form>
+                        <sheet>
+                            <group name="group_top">
+                                <group name="group_left">
+                                    <field name="name"/>
+                                </group>
+                                <group name="group_left">
+                                    <field name="display_name"/>
+                                </group>
+                                <group name="group_right">
+                                    <field name="code"/>
+                                </group>
+                            </group>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+
+            <record id="code_ine_view_tree" model="ir.ui.view">
+                <field name="name">code.ine.view.tree</field>
+                <field name="model">code.ine</field>
+                <field name="arch" type="xml">
+                    <tree>
+                        <field name="display_name"/>
+                        <field name="code"/>
+                    </tree>
+                </field>
+            </record>
+
+</odoo>

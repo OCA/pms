@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+        <record id="hotel_checkin_partner_view_form" model="ir.ui.view">
+            <field name="name">hotel.checkin.partner.view.form</field>
+            <field name="model">hotel.checkin.partner</field>
+            <field name="inherit_id" ref="hotel.hotel_checkin_partner_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='reservation_id']" position="after">
+                    <button type="action" class="oe_stat_button"
+                        id="cardex_smart_button_2"
+                        icon="fa-file-pdf-o"
+                        name="%(action_report_viajero)d"
+                        context="{'partner_id': partner_id,'enter_date': enter_date,
+                                  'exit_date': exit_date,'reservation_ids': reservation_id,
+                                  'hidden_cardex': True, 'edit_cardex': True }"/>
+                </xpath>
+            </field>
+        </record>
+    
+</odoo>

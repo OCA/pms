@@ -7,11 +7,13 @@
         name="Action checkin"
         res_model='hotel.checkin.partner'
         view_mode="tree,form" />
+
     <act_window
         id="action_checkin_partner_download"
         name="Action checkin download"
         res_model='hotel.checkin.partner'
-        view_mode="form" />         <!-- Menu item to open INE Codes list -->
+        view_mode="form" />
+        
     <menuitem
         id="menu_hotel_checkin_partner"
         name="Checkins"
@@ -49,7 +51,6 @@
                 <field name="enter_date"/>
                 <field name="exit_date"/>
                 <field name="reservation_id"/>
-                <!-- button type="action" class="oe_stat_button" id="checkin_partner_smart_button" icon="fa-bed" /-->
             </tree>
         </field>
     </record>
