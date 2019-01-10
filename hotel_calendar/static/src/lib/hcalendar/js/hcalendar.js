@@ -2718,6 +2718,7 @@ HotelCalendar.prototype = {
               hasInvalidLink = !hasInvalidLink && r._html.classList.contains('hcal-reservation-invalid');
               r._html.classList.remove('hcal-reservation-action');
               r._html.classList.remove('hcal-reservation-invalid');
+              r._html.style.visibility = '';
             }
           }
 
