@@ -33,7 +33,6 @@ class AccountInvoice(models.Model):
             'domain': [('id', 'in', payment_ids)],
         }
 
-    dif_customer_payment = fields.Boolean(compute='_compute_dif_customer_payment')
     from_folio = fields.Boolean(compute='_compute_dif_customer_payment')
     sale_ids = fields.Many2many(
             'sale.order', 'sale_order_invoice_rel', 'invoice_id',
@@ -45,17 +44,11 @@ class AccountInvoice(models.Model):
     @api.multi
     def _compute_dif_customer_payment(self):
         for inv in self:
-            return False
-            #~ sales = inv.mapped('invoice_line_ids.sale_line_ids.order_id')
-            #~ folios = self.env['hotel.folio'].search([('order_id.id','in',sales.ids)])
-            #~ if folios:
-                #~ inv.from_folio = True
-                #~ inv.folio_ids = [(6, 0, folios.ids)]
-            #~ payments_obj = self.env['account.payment']
-            #~ payments = payments_obj.search([('folio_id','in',folios.ids)])
-            #~ for pay in payments:
-                #~ if pay.partner_id != inv.partner_id:
-                    #~ inv.dif_customer_payment = True
+            folios = inv.mapped('invoice_line_ids.reservation_ids.folio_id')
+            folios |= inv.mapped('invoice_line_ids.service_ids.folio_id')
+            if folios:
+                inv.from_folio = True
+                inv.folio_ids = [(6, 0, folios.ids)]
 
     @api.multi
     def action_invoice_open(self):

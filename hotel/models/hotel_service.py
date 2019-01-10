@@ -44,7 +44,73 @@ class HotelService(models.Model):
                 (ids)], limit=1)
         return False
 
-    name = fields.Char('Service description')
+    @api.depends('qty_invoiced', 'product_qty', 'folio_id.state')
+    def _get_to_invoice_qty(self):
+        """
+        Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
+        calculated from the ordered quantity. Otherwise, the quantity delivered is used.
+        """
+        pass
+        #~ for line in self:
+            #~ if line.folio_id.state in ['confirm', 'done']:
+                #~ if line.room_type_id.product_id.invoice_policy == 'order':
+                    #~ line.qty_to_invoice = line.nights - line.qty_invoiced
+                #~ else:
+                    #~ line.qty_to_invoice = line.qty_delivered - line.qty_invoiced
+            #~ else:
+                #~ line.qty_to_invoice = 0
+
+    @api.depends('invoice_line_ids.invoice_id.state', 'invoice_line_ids.quantity')
+    def _get_invoice_qty(self):
+        """
+        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. Note
+        that this is the case only if the refund is generated from the SO and that is intentional: if
+        a refund made would automatically decrease the invoiced quantity, then there is a risk of reinvoicing
+        it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
+        """
+        pass
+        #~ for line in self:
+            #~ qty_invoiced = 0.0
+            #~ for invoice_line in line.invoice_line_ids:
+                #~ if invoice_line.invoice_id.state != 'cancel':
+                    #~ if invoice_line.invoice_id.type == 'out_invoice':
+                        #~ qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                    #~ elif invoice_line.invoice_id.type == 'out_refund':
+                        #~ qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+            #~ line.qty_invoiced = qty_invoiced
+
+    @api.depends('product_qty', 'qty_to_invoice', 'qty_invoiced')
+    def _compute_invoice_status(self):
+        """
+        Compute the invoice status of a SO line. Possible statuses:
+        - no: if the SO is not in status 'sale' or 'done', we consider that there is nothing to
+          invoice. This is also hte default value if the conditions of no other status is met.
+        - to invoice: we refer to the quantity to invoice of the line. Refer to method
+          `_get_to_invoice_qty()` for more information on how this quantity is calculated.
+        - upselling: this is possible only for a product invoiced on ordered quantities for which
+          we delivered more than expected. The could arise if, for example, a project took more
+          time than expected but we decided not to invoice the extra cost to the client. This
+          occurs onyl in state 'sale', so that when a SO is set to done, the upselling opportunity
+          is removed from the list.
+        - invoiced: the quantity invoiced is larger or equal to the quantity ordered.
+        """
+        pass
+        #~ precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        #~ for line in self:
+            #~ if line.state not in ('sale', 'done'):
+                #~ line.invoice_status = 'no'
+            #~ elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                #~ line.invoice_status = 'to invoice'
+            #~ elif line.state == 'sale' and line.product_id.invoice_policy == 'order' and\
+                    #~ float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
+                #~ line.invoice_status = 'upselling'
+            #~ elif float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
+                #~ line.invoice_status = 'invoiced'
+            #~ else:
+                #~ line.invoice_status = 'no'
+
+    name = fields.Char('Service description', required=True)
+    sequence = fields.Integer(string='Sequence', default=10)
     product_id = fields.Many2one('product.product', 'Service', required=True)
     folio_id = fields.Many2one('hotel.folio', 'Folio', ondelete='cascade')
     ser_room_line = fields.Many2one('hotel.reservation', 'Room',
@@ -57,6 +123,12 @@ class HotelService(models.Model):
     # Non-stored related field to allow portal user to see the image of the product he has ordered
     product_image = fields.Binary('Product Image', related="product_id.image", store=False)
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
+    invoice_status = fields.Selection([
+         ('upselling', 'Upselling Opportunity'),
+         ('invoiced', 'Fully Invoiced'),
+         ('to invoice', 'To Invoice'),
+         ('no', 'Nothing to Invoice')
+         ], string='Invoice Status', compute='_compute_invoice_status', store=True, readonly=True, default='no')
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
@@ -67,6 +139,14 @@ class HotelService(models.Model):
     tax_ids = fields.Many2many('account.tax', string='Taxes', domain=['|', ('active', '=', False), ('active', '=', True)])
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
     currency_id = fields.Many2one(related='folio_id.currency_id', store=True, string='Currency', readonly=True)
+    invoice_line_ids = fields.Many2many('account.invoice.line', 'service_line_invoice_rel', 'service_id', 'invoice_line_id', string='Invoice Lines', copy=False)
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
+    qty_to_invoice = fields.Float(
+        compute='_get_to_invoice_qty', string='To Invoice', store=True, readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'))
+    qty_invoiced = fields.Float(
+        compute='_get_invoice_qty', string='Invoiced', store=True, readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'))
     price_subtotal = fields.Monetary(string='Subtotal',
                                      readonly=True,
                                      store=True,
@@ -130,7 +210,7 @@ class HotelService(models.Model):
         if values.get('product_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
-                line.onchange_product_calc_qty()
+                line.onchange_product_id()
             for field in onchange_fields:
                 if field not in values:
                     res[field] = line._fields[field].convert_to_write(line[field], line)
@@ -171,7 +251,7 @@ class HotelService(models.Model):
         return max(base_price, final_price)
 
     @api.onchange('product_id')
-    def onchange_product_calc_qty(self):
+    def onchange_product_id(self):
         """
         Compute the default quantity according to the
         configuration of the selected product, in per_day product configuration,
@@ -194,6 +274,30 @@ class HotelService(models.Model):
                 if record.product_id.daily_limit > 0:
                     for day in record.service_line_ids:
                         day.no_free_resources()
+        """
+        Description and warnings
+        """
+        product = self.product_id.with_context(
+            lang=self.folio_id.partner_id.lang,
+            partner=self.folio_id.partner_id.id
+        )
+        title = False
+        message = False
+        warning = {}
+        if product.sale_line_warn != 'no-message':
+            title = _("Warning for %s") % product.name
+            message = product.sale_line_warn_msg
+            warning['title'] = title
+            warning['message'] = message
+            result = {'warning': warning}
+            if product.sale_line_warn == 'block':
+                self.product_id = False
+                return result
+
+        name = product.name_get()[0][1]
+        if product.description_sale:
+            name += '\n' + product.description_sale
+        vals['name'] = name
         """
         Compute tax and price unit
         """

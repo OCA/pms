@@ -1,9 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import time
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo import api, fields, models, _
 import odoo.addons.decimal_precision as dp
 from odoo.exceptions import UserError
+from datetime import timedelta
 
 
 class FolioAdvancePaymentInv(models.TransientModel):
@@ -20,9 +22,25 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     @api.model
     def _default_product_id(self):
-        product_id = self.env['ir.default'].sudo().get('sale.config.settings',
-                                                       'deposit_product_id_setting')
-        return self.env['product.product'].browse(product_id)
+        product_id = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
+        return self.env['product.product'].browse(int(product_id))
+
+    @api.model
+    def _get_default_folio(self):
+        folios = self.env['hotel.folio'].browse(self._context.get('active_ids', []))
+        return folios
+
+    @api.model
+    def _get_default_reservation(self):
+        folios = self._get_default_folio()
+        reservations = self.env['hotel.reservation']
+        for folio in folios:
+            reservations |= folio.room_lines
+        return reservations
+
+    @api.model
+    def _get_default_partner_invoice(self):
+        return self.env['hotel.folio'].browse(self._context.get('active_id', [])).partner_invoice_id
 
     @api.model
     def _default_deposit_account_id(self):
@@ -40,14 +58,25 @@ class FolioAdvancePaymentInv(models.TransientModel):
                                               required=True)
     count = fields.Integer(default=_count, string='# of Orders')
     folio_ids  = fields.Many2many("hotel.folio", string="Folios",
-                                        help="Folios grouped")
+                                  help="Folios grouped",
+                                  default=_get_default_folio)
+    reservation_ids  = fields.Many2many("hotel.reservation", string="Rooms",
+                                  help="Folios grouped",
+                                  default=_get_default_reservation)
     group_folios = fields.Boolean('Group Folios')
+    partner_invoice_id = fields.Many2one('res.partner',
+                                         string='Invoice Address', required=True,
+                                         default=_get_default_partner_invoice,
+                                         help="Invoice address for current Invoice.")
     line_ids = fields.One2many('line.advance.inv',
                                'advance_inv_id',
                                string="Invoice Lines")
     view_detail = fields.Boolean('View Detail')
+    line_ids = fields.One2many('line.advance.inv',
+                               'advance_inv_id',
+                               string="Lines")
     #Advance Payment
-    product_id = fields.Many2one('product.product', string='Down Payment Product',
+    product_id = fields.Many2one('product.product', string="Product",
                                  domain=[('type', '=', 'service')], default=_default_product_id)
     amount = fields.Float('Down Payment Amount',
                           digits=dp.get_precision('Account'),
@@ -107,7 +136,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'reference': False,
             'account_id': order.partner_id.property_account_receivable_id.id,
             'partner_id': order.partner_invoice_id.id,
-            'partner_shipping_id': order.partner_shipping_id.id,
             'invoice_line_ids': [(0, 0, {
                 'name': name,
                 'origin': order.name,
@@ -119,7 +147,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 'product_id': self.product_id.id,
                 'sale_line_ids': [(6, 0, [so_line.id])],
                 'invoice_line_tax_ids': [(6, 0, tax_ids)],
-                'account_analytic_id': order.project_id.id or False,
+                'account_analytic_id': order.analytic_account_id.id or False,
             })],
             'currency_id': order.pricelist_id.currency_id.id,
             'payment_term_id': order.payment_term_id.id,
@@ -138,26 +166,31 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     @api.multi
     def create_invoices(self):
-        folios = self.env['hotel.folio'].browse(self._context.get('active_ids', []))
+        inv_obj = self.env['account.invoice']
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        folios = self.folio_ids
 
-        if self.advance_payment_method == 'delivered':
-            folios.action_invoice_create()
-        elif self.advance_payment_method == 'all':
-            folios.action_invoice_create()
+        for folio in folios:
+            if folio.partner_invoice_id != self.partner_invoice_id:
+                raise UserError(_('The billing directions must match'))
+                            
+        if self.advance_payment_method == 'all':
+            inv_data = self._prepare_invoice()
+            invoice = inv_obj.create(inv_data)
+            for line in self.line_ids:
+                line.invoice_line_create(invoice.id, line.qty)
         else:
             # Create deposit product if necessary
             if not self.product_id:
                 vals = self._prepare_deposit_product()
                 self.product_id = self.env['product.product'].create(vals)
-                self.env['ir.default'].sudo().set(
-                    'sale.config.settings',
-                    'deposit_product_id_setting',
-                    self.product_id.id)
+                self.env['ir.config_parameter'].sudo().set_param(
+                    'sale.default_deposit_product_id', self.product_id.id)
 
-            sale_line_obj = self.env['sale.order.line']
-            for order in sale_orders:
+            service_obj = self.env['hotel.service']
+            for folio in folios:
                 if self.advance_payment_method == 'percentage':
-                    amount = order.amount_untaxed * self.amount / 100
+                    amount = folio.amount_untaxed * folio.amount_total / 100
                 else:
                     amount = self.amount
                 if self.product_id.invoice_policy != 'order':
@@ -165,26 +198,26 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 if self.product_id.type != 'service':
                     raise UserError(_("The product used to invoice a down payment should be of type 'Service'. Please use another product or update this product."))
                 taxes = self.product_id.taxes_id.filtered(
-                    lambda r: not order.company_id or r.company_id == order.company_id)
-                if order.fiscal_position_id and taxes:
-                    tax_ids = order.fiscal_position_id.map_tax(taxes).ids
+                    lambda r: not folio.company_id or r.company_id == folio.company_id)
+                if folio.fiscal_position_id and taxes:
+                    tax_ids = folio.fiscal_position_id.map_tax(taxes).ids
                 else:
                     tax_ids = taxes.ids
-                context = {'lang': order.partner_id.lang}
-                so_line = sale_line_obj.create({
+                context = {'lang': folio.partner_id.lang}
+                service_line = service_obj.create({
                     'name': _('Advance: %s') % (time.strftime('%m %Y'),),
                     'price_unit': amount,
                     'product_uom_qty': 0.0,
-                    'order_id': order.id,
+                    'folio_id': folio.id,
                     'discount': 0.0,
                     'product_uom': self.product_id.uom_id.id,
                     'product_id': self.product_id.id,
                     'tax_id': [(6, 0, tax_ids)],
                 })
                 del context
-                self._create_invoice(order, so_line, amount)
+                self._create_invoice(folio, service_line, amount)
         if self._context.get('open_invoices', False):
-            return sale_orders.action_view_invoice()
+            return folios.open_invoices_folio()
         return {'type': 'ir.actions.act_window_close'}
 
     def _prepare_deposit_product(self):
@@ -196,67 +229,184 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'taxes_id': [(6, 0, self.deposit_taxes_id.ids)],
         }
 
-    @api.onchange('view_detail')
-    def prepare_reservation_invoice_lines(self):
+    @api.onchange('reservation_ids')
+    def prepare_invoice_lines(self):
         vals = []
-        folios = self.env['hotel.folio'].browse(self._context.get('active_ids', []))
+        folios = self.folio_ids
+        invoice_lines = {}
         for folio in folios:
-            folio_name = folio.name
-            for reservation in folio.room_lines:
-                reservation_name = reservation.name
-                unit_price = False
-                discount = False
-                qty = 0
+            for service in folio.service_ids.filtered(
+                    lambda x: x.is_board_service == False and \
+                    (x.ser_room_line.id in self.reservation_ids.ids or \
+                    x.ser_room_line.id  == False)):
+                invoice_lines[service.id] = {
+                        'description' : service.name,
+                        'product_id': service.product_id.id,
+                        'qty': service.product_qty,
+                        'discount': service.discount,
+                        'price_unit': service.price_unit,
+                        'service_id': service.id,
+                        }               
+            for reservation in folio.room_lines.filtered(
+                    lambda x: x.id in self.reservation_ids.ids):
+                board_service = reservation.board_service_room_id
                 for day in reservation.reservation_line_ids.sorted('date'):
-                    if day.price == unit_price and day.discount == discount:
-                        date_to = day.date
-                        qty += 1
+                    extra_price = 0
+                    if board_service:
+                        services = reservation.service_ids.filtered(
+                            lambda x: x.is_board_service == True)
+                        for service in services:
+                            extra_price += service.price_unit * \
+                                service.service_line_ids.filtered(
+                                    lambda x: x.date == day.date).day_qty                            
+                    group_key = (reservation.id, reservation.room_type_id.id, day.price + extra_price, day.discount)
+                    date = fields.Date.from_string(day.date)
+                    if group_key in invoice_lines:                     
+                        invoice_lines[group_key][('qty')] += 1
+                        if date == fields.Date.from_string(
+                                    invoice_lines[group_key][('date_to')]) + timedelta(days=1):
+                            desc = invoice_lines[group_key][('description')]                        
+                            invoice_lines[group_key][('description')] = \
+                                desc.replace(desc[desc.rfind(" - "):], ' - ' + \
+                                    (date + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT) + ')')
+                        else:
+                            invoice_lines[group_key][('description')] += \
+                                ' (' + date.strftime(DEFAULT_SERVER_DATE_FORMAT) + \
+                                ' - ' + (date + timedelta(days=1)).strftime(
+                                DEFAULT_SERVER_DATE_FORMAT) + \
+                                ')'
+                        invoice_lines[group_key][('date_to')] = day.date
                     else:
-                        if unit_price:
-                            vals.append((0, False, {
-                            'date_from': date_from,
-                            'date_to': date_to,
-                            'room_type_id': reservation.room_type_id,
-                            'product_id': self.env['product.product'].browse(
-                                reservation.room_type_id.product_id.id
-                                ),
-                            'qty': qty,
-                            'discount': discount,
-                            'unit_price': unit_price
-                            }))
-                        qty = 1
-                        unit_price = day.price
-                        date_from = day.date
-                        date_to = day.date
-                vals.append((0, False, {
-                    'date_from': date_from,
-                    'date_to': date_to,
-                    'room_type_id': reservation.room_type_id,
-                    'product_id': self.env['product.product'].browse(
-                        reservation.room_type_id.product_id.id
-                        ),
-                    'qty': qty,
-                    'discount': discount,
-                    'unit_price': unit_price
-                    }))
+                        room_type_description = folio.name + ' ' + reservation.room_type_id.name + ' (' + \
+                            reservation.board_service_room_id.hotel_board_service_id.name + ')' \
+                            if board_service else folio.name + ' ' + reservation.room_type_id.name
+                        description = room_type_description + \
+                            ': (' + date.strftime(DEFAULT_SERVER_DATE_FORMAT) + \
+                            ' - ' + (date + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT) + \
+                            ')'
+                        invoice_lines[group_key] = {
+                        'description' : description,
+                        'reservation_id': reservation.id,
+                        'room_type_id': reservation.room_type_id,
+                        'product_id': self.env['product.product'].browse(
+                            reservation.room_type_id.product_id.id
+                            ),
+                        'qty': 1,
+                        'discount': day.discount,
+                        'price_unit': day.price + extra_price,
+                        'date_to': day.date
+                        }
+        for group_key in invoice_lines:
+            vals.append((0, False, invoice_lines[group_key]))
         self.line_ids = vals
+
+    @api.onchange('view_detail', 'folio_ids')
+    def onchange_folio_ids(self):
+        vals = []
+        folios = self.folio_ids
+        invoice_lines = {}
+        reservations = self.env['hotel.reservation']
+        services = self.env['hotel.service']
+        for folio in folios:
+            folio_reservations = folio.room_lines
+            if folio_reservations:
+                reservations |= folio_reservations
+        self.reservation_ids = reservations
+        self.prepare_invoice_lines()
+
+    @api.model
+    def _prepare_invoice(self):
+        """
+        Prepare the dict of values to create the new invoice for a folio. This method may be
+        overridden to implement custom invoice generation (making sure to call super() to establish
+        a clean extension chain).
+        """
+    
+        journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
+        if not journal_id:
+            raise UserError(_('Please define an accounting sales journal for this company.'))
+        origin = ' '.join(self.folio_ids.mapped('name'))
+        pricelist = self.folio_ids[0].pricelist_id
+        currency = self.folio_ids[0].currency_id
+        payment_term = self.folio_ids[0].payment_term_id
+        fiscal_position = self.folio_ids[0].fiscal_position_id
+        company = self.folio_ids[0].company_id
+        user = self.folio_ids[0].user_id
+        team = self.folio_ids[0].team_id
+        for folio in self.folio_ids:
+            if folio.pricelist_id != pricelist:
+                raise UserError(_('All Folios must hace the same pricelist'))
+        invoice_vals = {
+            'name': self.folio_ids[0].client_order_ref or '',
+            'origin': origin,
+            'type': 'out_invoice',
+            'account_id': self.partner_invoice_id.property_account_receivable_id.id,
+            'partner_id': self.partner_invoice_id.id,
+            'journal_id': journal_id,
+            'currency_id': pricelist.id,
+            'payment_term_id': payment_term.id,
+            'fiscal_position_id': fiscal_position.id or self.partner_invoice_id.property_account_position_id.id,
+            'company_id': company.id,
+            'user_id': user and user.id,
+            'team_id': team.id
+        }
+        return invoice_vals
 
 class LineAdvancePaymentInv(models.TransientModel):
     _name = "line.advance.inv"
     _description = "Lines Advance Invoice"
 
-    date_from = fields.Date('From')
-    date_to = fields.Date('To')
     room_type_id = fields.Many2one('hotel.room.type')
     product_id = fields.Many2one('product.product', string='Down Payment Product',
                                  domain=[('type', '=', 'service')])
     qty = fields.Integer('Quantity')
-    unit_price = fields.Float('Price')
+    price_unit = fields.Float('Price')
     advance_inv_id = fields.Many2one('folio.advance.payment.inv')
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)
     to_invoice = fields.Boolean('To Invoice')
+    description = fields.Text('Description')
+    reservation_id = fields.Many2one('hotel.reservation')
+    service_id = fields.Many2one('hotel.service')
                     
-                    
+    @api.multi
+    def invoice_line_create(self, invoice_id, qty):
+        """ Create an invoice line.
+            :param invoice_id: integer
+            :param qty: float quantity to invoice
+            :returns recordset of account.invoice.line created
+        """
+        invoice_lines = self.env['account.invoice.line']
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            origin = self.reservation_id if self.reservation_id.id else self.service_id
+            res = {}
+            product = line.product_id
+            account = product.property_account_income_id or product.categ_id.property_account_income_categ_id
+            if not account:
+                raise UserError(_('Please define income account for this product: "%s" (id:%d) - or for its category: "%s".') %
+                    (product.name, product.id, product.categ_id.name))
 
+            fpos = origin.folio_id.fiscal_position_id or origin.folio_id.partner_id.property_account_position_id
+            if fpos:
+                account = fpos.map_account(account)
+
+            vals = {
+                'name': line.description,
+                'sequence': origin.sequence,
+                'origin': origin.name,
+                'account_id': account.id,
+                'price_unit': line.price_unit,
+                'quantity': line.qty,
+                'discount': line.discount,
+                'uom_id': product.uom_id.id,
+                'product_id': product.id or False,
+                'invoice_line_tax_ids': [(6, 0, origin.tax_ids.ids)],
+                'account_analytic_id': origin.folio_id.analytic_account_id.id,
+                'analytic_tag_ids': [(6, 0, origin.analytic_tag_ids.ids)],
+            }
+            vals.update({'invoice_id': invoice_id, 'reservation_ids': [(6, 0, [origin.id])]})
+            invoice_lines |= self.env['account.invoice.line'].create(vals)
+                
+        return invoice_lines

@@ -6,6 +6,7 @@
         <field name="res_model">hotel.reservation</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="context">{'from_room': True}</field>
     </record>
 
      <!--=== Hotel Reservation ==== -->
@@ -20,6 +21,7 @@
                     <field name="parent_reservation" invisible="True" />
                     <field name="has_confirmed_reservations_to_send" invisible="1" />
                     <field name="has_cancelled_reservations_to_send" invisible="1" />
+                    <field name="tax_ids" invisible="1"/>
                     <field name="has_checkout_to_send" invisible="1" />
                     <button name="send_reservation_mail" type="object" string="Send Confirmation Email"
                        attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}" class="oe_highlight"/>
@@ -97,16 +99,6 @@
                                 <span class="o_stat_text">Books</span>
                             </div>
                         </button>
-                        <!-- <button type="object" class="oe_stat_button"
-                            id="payment_smart_button"
-                            icon="fa-money"
-                            name="action_recalcule_payment"
-                            attrs="{'invisible': [('fix_folio_pending','=',False)]}"
-                            help="Calcule the total Price">
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_text">Calcule Price</span>
-                            </div>
-                        </button> -->
                         <button type="object" class="oe_stat_button"
                             id="open_master"
                             icon="fa-chain-broken"
@@ -240,55 +232,56 @@
                     </group>
                     <notebook>
                         <page name="days" string="Service and Days">
-                                <group string="Reservation Services" name="reservation_services">
-                                    <field name="service_ids"
-                                        context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id}"
-                                        nolabel="1">
-                                        <tree string="Services" editable="bottom"
-                                        decoration-success="is_board_service == True">
-                                            <button type="object" class="oe_stat_button"
-                                                id="included_in_room" icon="fa fa-1x fa-bed"                                                                                              
-                                                name="open_service_lines"
-                                                attrs="{'invisible':[('is_board_service','=', False)]}" />
-                                            <!-- <field name="sequence" widget="handle"/> -->
-                                            <field name="per_day" invisible="1"/>
-                                            <field name="is_board_service" invisible="1" />
-                                            <field name="folio_id" invisible="1"/>
-                                            <field name="product_id"
-                                                domain="[('sale_ok', '=', True)]"
-                                                options="{'create': False, 'create_edit': False}" />
-                                            <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
-                                            <field name="name"/>
-                                            <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>                                            
-                                            <button type="object" class="oe_stat_button"
-                                                id="go_service_lines" icon="fa fa-2x fa-bars"
-                                                name="open_service_lines"
-                                                attrs="{'invisible': [('per_day','=',False)]}"/>
-                                            <field name="days_qty" invisible="1"/>
-                                            <field name="price_unit" />
-                                            <field name="discount" />
-                                            <field name="tax_ids" widget="many2many_tags"/>
-                                            <field name="price_subtotal" />
-                                            <field name="price_tax" />
-                                            <field name="price_total" />      
-                                            <field name="service_line_ids" invisible="1">
-                                                <tree string="Days" >
-                                                    <field name="date" />
-                                                    <field name="day_qty" />
-                                                </tree>
-                                            </field>
-                                        </tree>
-                                    </field>
-                                </group>
-                                <group string="Days" name="days">
-                                    <field name="reservation_line_ids" nolabel="1">
-                                        <tree create="false" delete="false" editable="bottom">
-                                            <field name="date" />
-                                            <field name="price" />
-                                            <field name="discount" />
-                                        </tree>
-                                    </field>
-                                </group>
+                            <group string="Reservation Services" name="reservation_services">
+                                <field name="service_ids"
+                                       context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id, 'form_view_ref':'hotel.hotel_service_view_form'}"
+                                       nolabel="1">
+                                    <!-- If charge this view with tree_view_ref, its !crash! (field not found) when open reservation form from folio form... ¿?-->
+                                    <tree string="Services" editable="bottom"
+                                            decoration-success="is_board_service == True">
+                                        <field name="is_board_service" invisible="1" />
+                                        <button type="object" class="oe_stat_button"
+                                            id="included_in_room" icon="fa fa-1x fa-bed"                                                                                              
+                                            name="open_service_lines"
+                                            attrs="{'invisible':[('is_board_service','=', False)]}" />
+                                        <field name="per_day" invisible="1"/>
+                                        <field name="folio_id" invisible="1"/>
+                                        <field name="ser_room_line" invisible="context.get('from_room',True)"
+                                            attrs = "{'required': [('per_day','=',True)]}" />
+                                        <field name="product_id"
+                                            domain="[('sale_ok', '=', True)]"
+                                            options="{'create': False, 'create_edit': False}" />                                            
+                                        <field name="name"/>
+                                        <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>                                            
+                                        <button type="object" class="oe_stat_button"
+                                            id="go_service_lines" icon="fa fa-2x fa-bars"
+                                            name="open_service_lines"
+                                            attrs="{'invisible': [('per_day','=',False)]}"/>
+                                        <field name="days_qty" invisible="1"/>
+                                        <field name="price_unit" />
+                                        <field name="discount" />
+                                        <field name="tax_ids" widget="many2many_tags"/>
+                                        <field name="price_subtotal" />
+                                        <field name="price_tax" />
+                                        <field name="price_total" />      
+                                        <field name="service_line_ids" invisible="1">
+                                            <tree string="Days" >
+                                                <field name="date" />
+                                                <field name="day_qty" />
+                                            </tree>
+                                        </field>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Days" name="days">
+                                <field name="reservation_line_ids" nolabel="1">
+                                    <tree create="false" delete="false" editable="bottom">
+                                        <field name="date" />
+                                        <field name="price" />
+                                        <field name="discount" />
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
                         <page name="others" string="Others">
                             <group>
@@ -331,6 +324,7 @@
                 <button icon="fa fa-2x fa-angellist"
                     attrs="{'invisible':['|',('folio_pending_amount','&gt;',0),('state' ,'!=', 'done')]}"
                     type="object"
+                    id="open_folio"
                     name="open_folio" />
                 <field name="state" />
                 <button type="object" class="oe_stat_button"
@@ -345,6 +339,7 @@
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
                     attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}"
                 />
+                <field name="room_id" />
                 <button type="action" class="oe_stat_button"
                     icon="fa fa-2x fa-list-ul"
                     name="%(open_hotel_reservation_form_tree_all)d"
@@ -352,7 +347,6 @@
                 />
                 <field name="partner_id"/>
                 <field name="parent_reservation" invisible="1" />
-                <!-- <field name="room_type_id" string="Reserved Room Type"/> -->
                 <field name="room_type_id" string="Reserved Unit Type" />
                 <field name="nights" />
                 <field name="adults" string="Persons"/>
@@ -363,8 +357,11 @@
                 <field name="last_updated_res" string="Updated on"/>
                 <field name="checkin_partner_ids" invisible ="1"/>
                 <field name="to_assign" invisible="1"/>
-                <!-- checkin_partner_smart_button attrs depends on checkin_partner_pending to be showed -->
                 <field name="checkin_partner_pending_count" invisible="1"/>
+                <field name="discount" />
+                <field name="tax_ids" invisible="1"/>
+                <field name="price_subtotal" invisible="1"/>
+                <field name="price_total" />
                 <field name="folio_pending_amount" string="Folio Pending Amount"/>
                 <button type="object" class="oe_stat_button"
                     icon="fa fa-3x fa-money"
@@ -373,6 +370,46 @@
                 />
                 <field name="create_uid"/>
             </tree>
+        </field>
+    </record>
+
+    <!-- Tree editable BOTTOM view of hotel reservation -->
+    <record model="ir.ui.view" id="hotel_reservation_view_bottom_tree">
+        <field name="name">hotel.reservation.tree</field>
+        <field name="model">hotel.reservation</field>
+        <field name="inherit_id" ref="hotel.hotel_reservation_view_tree" />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <tree position="attributes">
+                <attribute name="editable">bottom</attribute>
+                <attribute name="delete">false</attribute>
+                <attribute name="options">{'no_open': True}</attribute>
+                <attribute name="string">Rooms</attribute>
+            </tree>
+            <xpath expr="//field[@name='folio_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='open_folio'][1]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='open_folio'][2]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='open_folio'][2]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(open_hotel_reservation_form_tree_all)d']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='folio_pending_amount']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+             <xpath expr="//field[@name='create_uid']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>           
         </field>
     </record>
 

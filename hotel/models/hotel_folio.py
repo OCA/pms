@@ -33,9 +33,57 @@ class HotelFolio(models.Model):
     # @api.depends('product_id.invoice_policy', 'order_id.state')
     def _compute_qty_delivered_updateable(self):
         pass
-    # @api.depends('state', 'order_line.invoice_status')
+
+    @api.depends('state', 'room_lines.invoice_status', 'service_ids.invoice_status')
     def _get_invoiced(self):
-        pass
+        """
+        Compute the invoice status of a Folio. Possible statuses:
+        - no: if the Folio is not in status 'sale' or 'done', we consider that there is nothing to
+          invoice. This is also the default value if the conditions of no other status is met.
+        - to invoice: if any Folio line is 'to invoice', the whole Folio is 'to invoice'
+        - invoiced: if all Folio lines are invoiced, the Folio is invoiced.
+        - upselling: if all Folio lines are invoiced or upselling, the status is upselling.
+
+        The invoice_ids are obtained thanks to the invoice lines of the Folio lines, and we also search
+        for possible refunds created directly from existing invoices. This is necessary since such a
+        refund is not directly linked to the Folio.
+        """
+        for folio in self:
+            invoice_ids = folio.room_lines.mapped('invoice_line_ids').mapped('invoice_id').filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
+            invoice_ids |= folio.service_ids.mapped('invoice_line_ids').mapped('invoice_id').filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
+            # Search for invoices which have been 'cancelled' (filter_refund = 'modify' in
+            # 'account.invoice.refund')
+            # use like as origin may contains multiple references (e.g. 'SO01, SO02')
+            refunds = invoice_ids.search([('origin', 'like', folio.name), ('company_id', '=', folio.company_id.id)]).filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
+            invoice_ids |= refunds.filtered(lambda r: folio.id in r.folio_ids.ids)
+            # Search for refunds as well
+            refund_ids = self.env['account.invoice'].browse()
+            if invoice_ids:
+                for inv in invoice_ids:
+                    refund_ids += refund_ids.search([('type', '=', 'out_refund'), ('origin', '=', inv.number), ('origin', '!=', False), ('journal_id', '=', inv.journal_id.id)])
+
+            # Ignore the status of the deposit product
+            deposit_product_id = self.env['sale.advance.payment.inv']._default_product_id()
+            #~ line_invoice_status = [line.invoice_status for line in order.order_line if line.product_id != deposit_product_id]
+
+            #~ TODO: REVIEW INVOICE_STATUS
+            #~ if folio.state not in ('confirm', 'done'):
+                #~ invoice_status = 'no'
+            #~ elif any(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
+                #~ invoice_status = 'to invoice'
+            #~ elif all(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
+                #~ invoice_status = 'invoiced'
+            #~ elif all(invoice_status in ['invoiced', 'upselling'] for invoice_status in line_invoice_status):
+                #~ invoice_status = 'upselling'
+            #~ else:
+                #~ invoice_status = 'no'
+
+            folio.update({
+                'invoice_count': len(set(invoice_ids.ids + refund_ids.ids)),
+                'invoice_ids': invoice_ids.ids + refund_ids.ids,
+                #~ 'invoice_status': invoice_status
+            })
+
     # @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced')
     def _compute_invoice_status(self):
         pass
@@ -68,8 +116,8 @@ class HotelFolio(models.Model):
                                        help="Hotel services detail provide to "
                                        "customer and it will include in "
                                        "main Invoice.")
-    company_id = fields.Many2one('res.company', 'Company')
-
+    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('hotel.folio'))
+    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="The analytic account related to a folio.", copy=False)
     currency_id = fields.Many2one('res.currency', related='pricelist_id.currency_id',
                                   string='Currency', readonly=True, required=True)
 
@@ -148,8 +196,7 @@ class HotelFolio(models.Model):
                                           compute='_compute_checkin_partner_count')
 
     #Invoice Fields-----------------------------------------------------
-    hotel_invoice_id = fields.Many2one('account.invoice', 'Invoice')
-    num_invoices = fields.Integer(compute='_compute_num_invoices')
+    invoice_count = fields.Integer(compute='_get_invoiced')
     invoice_ids = fields.Many2many('account.invoice', string='Invoices',
                                    compute='_get_invoiced', readonly=True, copy=False)
     invoice_status = fields.Selection([('upselling', 'Upselling Opportunity'),
@@ -160,10 +207,8 @@ class HotelFolio(models.Model):
                                       compute='_compute_invoice_status',
                                       store=True, readonly=True, default='no')
     partner_invoice_id = fields.Many2one('res.partner',
-                                         string='Invoice Address',
-                                         readonly=True, required=True,
-                                         states={'draft': [('readonly', False)],
-                                                 'sent': [('readonly', False)]},
+                                         string='Invoice Address', required=True,
+                                         states={'done': [('readonly', True)]},
                                          help="Invoice address for current sales order.")
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')
 
@@ -211,12 +256,6 @@ class HotelFolio(models.Model):
     def _computed_rooms_char(self):
         for record in self:
             record.rooms_char = ', '.join(record.mapped('room_lines.room_id.name'))
-
-    @api.multi
-    def _compute_num_invoices(self):
-        pass
-        # for fol in self:
-        #     fol.num_invoices =  len(self.mapped('invoice_ids.id'))
 
     # @api.depends('order_line.price_total', 'payment_ids', 'return_ids')
     @api.multi
@@ -380,8 +419,9 @@ class HotelFolio(models.Model):
         """
         Update the following fields when the partner is changed:
         - Pricelist
+        - Payment terms
         - Invoice address
-        - user_id
+        - Delivery address
         """
         if not self.partner_id:
             self.update({
@@ -390,13 +430,18 @@ class HotelFolio(models.Model):
                 'fiscal_position_id': False,
             })
             return
+
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
                                  self.partner_id.property_product_pricelist.id or \
                                  self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
-        values = {'user_id': self.partner_id.user_id.id or self.env.uid,
-                  'pricelist_id': pricelist
-                  }
+        values = {
+            'pricelist_id': pricelist,
+            'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
+            'partner_invoice_id': addr['invoice'],
+            'user_id': self.partner_id.user_id.id or self.env.uid
+        }
+
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
             self.env.user.company_id.sale_note:
             values['note'] = self.with_context(
@@ -423,127 +468,6 @@ class HotelFolio(models.Model):
             return 'staff'
         else:
             return 'normal'
-
-    @api.multi
-    def action_invoice_create(self, grouped=False, states=None):
-        '''
-        @param self: object pointer
-        '''
-        pass
-        # if states is None:
-        #     states = ['confirmed', 'done']
-        # order_ids = [folio.order_id.id for folio in self]
-        # sale_obj = self.env['sale.order'].browse(order_ids)
-        # invoice_id = (sale_obj.action_invoice_create(grouped=False,
-        #                                              states=['confirmed',
-        #                                                      'done']))
-        # for line in self:
-        #     values = {'invoiced': True,
-        #               'state': 'progress' if grouped else 'progress',
-        #               'hotel_invoice_id': invoice_id
-        #               }
-        #     line.write(values)
-        # return invoice_id
-
-    @api.multi
-    def advance_invoice(self):
-        pass
-
-    @api.multi
-    def _prepare_invoice(self):
-        """
-        Prepare the dict of values to create the new invoice for a sales order. This method may be
-        overridden to implement custom invoice generation (making sure to call super() to establish
-        a clean extension chain).
-        """
-        self.ensure_one()
-        journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
-        if not journal_id:
-            raise UserError(_('Please define an accounting sales journal for this company.'))
-        import wdb; wdb.set_trace()
-        invoice_vals = {
-            'name': self.client_order_ref or '',
-            'origin': self.name,
-            'type': 'out_invoice',
-            'account_id': self.partner_invoice_id.property_account_receivable_id.id,
-            'partner_id': self.partner_invoice_id.id,
-            'partner_shipping_id': self.partner_id.id,
-            'journal_id': journal_id,
-            'currency_id': self.pricelist_id.currency_id.id,
-            'comment': self.note,
-            'payment_term_id': self.payment_term_id.id,
-            'fiscal_position_id': self.fiscal_position_id.id or self.partner_invoice_id.property_account_position_id.id,
-            'company_id': self.company_id.id,
-            'user_id': self.user_id and self.user_id.id,
-            'team_id': self.team_id.id
-        }
-        return invoice_vals
-
-    @api.multi
-    def action_invoice_create(self, grouped=False):
-        """
-        Create the invoice associated to the Folio.
-        :param grouped: if True, invoices are grouped by Folio id. If False, invoices are grouped by
-                        (partner_invoice_id, currency)
-        :returns: list of created invoices
-        """
-        inv_obj = self.env['account.invoice']
-        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-        invoices = {}
-        references = {}
-        invoices_origin = {}
-        invoices_name = {}
-
-        for folio in self:
-            group_key = folio.id if grouped else (folio.partner_invoice_id.id, folio.currency_id.id)
-            for line in folio.room_lines.sorted(key=lambda l: l.qty_to_invoice < 0):
-                if float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                    continue
-                if group_key not in invoices:
-                    inv_data = folio._prepare_invoice()
-                    invoice = inv_obj.create(inv_data)
-                    references[invoice] = folio
-                    invoices[group_key] = invoice
-                    invoices_origin[group_key] = [invoice.origin]
-                    invoices_name[group_key] = [invoice.name]
-                elif group_key in invoices:
-                    if folio.name not in invoices_origin[group_key]:
-                        invoices_origin[group_key].append(folio.name)
-                    if folio.client_order_ref and folio.client_order_ref not in invoices_name[group_key]:
-                        invoices_name[group_key].append(folio.client_order_ref)
-
-                if line.qty_to_invoice > 0:
-                    line.invoice_line_create(invoices[group_key].id, line.nights)
-
-            if references.get(invoices.get(group_key)):
-                if folio not in references[invoices[group_key]]:
-                    references[invoices[group_key]] |= folio
-
-        for group_key in invoices:
-            invoices[group_key].write({'name': ', '.join(invoices_name[group_key]),
-                                       'origin': ', '.join(invoices_origin[group_key])})
-
-        if not invoices:
-            raise UserError(_('There is no invoiceable line.'))
-
-        for invoice in invoices.values():
-            if not invoice.invoice_line_ids:
-                raise UserError(_('There is no invoiceable line.'))
-            # If invoice is negative, do a refund invoice instead
-            if invoice.amount_untaxed < 0:
-                invoice.type = 'out_refund'
-                for line in invoice.invoice_line_ids:
-                    line.quantity = -line.quantity
-            # Use additional field helper function (for account extensions)
-            for line in invoice.invoice_line_ids:
-                line._set_additional_fields(invoice)
-            # Necessary to force computation of taxes. In account_invoice, they are triggered
-            # by onchanges, which are not triggered when doing a create.
-            invoice.compute_taxes()
-            invoice.message_post_with_view('mail.message_origin_link',
-                values={'self': invoice, 'origin': references[invoice]},
-                subtype_id=self.env.ref('mail.mt_note').id)
-        return [inv.id for inv in invoices.values()]
 
     '''
     WORKFLOW STATE

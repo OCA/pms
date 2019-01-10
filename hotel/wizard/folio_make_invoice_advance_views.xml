@@ -4,47 +4,60 @@
             <field name="name">Invoice Orders</field>
             <field name="model">folio.advance.payment.inv</field>
             <field name="arch" type="xml">
-                <form string="Invoice Sales Order">
-                    <p class="oe_grey">
-                        Invoices will be created in draft so that you can review
-                        them before validation.
-                    </p>
+                <form string="Invoice Folio">
                     <group>
-                        <field name="count" invisible="[('count','=',1)]" readonly="True"/>
-                        <field name="advance_payment_method" class="oe_inline" widget="radio"
-                            attrs="{'invisible': [('count','&gt;',1)]}"/>
-                        <field name="product_id"
-                            context="{'search_default_services': 1, 'default_type': 'service', 'default_invoice_policy': 'order'}" class="oe_inline"
-                            attrs="{'invisible': 1}"/>
-                        <label for="amount" attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}"/>
-                        <div attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}">
-                            <field name="amount"
-                                attrs="{'required': [('advance_payment_method', 'in', ('fixed','percentage'))]}" class="oe_inline" widget="monetary"/>
-                            <label string="%%"
-                                attrs="{'invisible': [('advance_payment_method', '!=', 'percentage')]}" class="oe_inline"/>
-                        </div>
-                        <field name="deposit_account_id" class="oe_inline"
-                            attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}" groups="account.group_account_manager"/>
-                        <field name="deposit_taxes_id" class="oe_inline" widget="many2many_tags"
-                            domain="[('type_tax_use','=','sale')]"
-                            attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}"/>
+                        <group>
+                            <field name="partner_invoice_id" />
+                            <field name="count" invisible="[('count','=',1)]" readonly="True"/>
+                            <field name="advance_payment_method" class="oe_inline" widget="radio"
+                                attrs="{'invisible': [('count','&gt;',1)]}"/>
+                            <field name="product_id" string="Down Payment Product"
+                                context="{'search_default_services': 1, 'default_type': 'service', 'default_invoice_policy': 'order'}" class="oe_inline"
+                                attrs="{'invisible': 1}"/>
+                            <label for="amount" attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}"/>
+                            <div attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}">
+                                <field name="amount"
+                                    attrs="{'required': [('advance_payment_method', 'in', ('fixed','percentage'))]}" class="oe_inline" widget="monetary"/>
+                                <label string="%%"
+                                    attrs="{'invisible': [('advance_payment_method', '!=', 'percentage')]}" class="oe_inline"/>
+                            </div>
+                            <field name="deposit_account_id" class="oe_inline"
+                                attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}" groups="account.group_account_manager"/>
+                            <field name="deposit_taxes_id" class="oe_inline" widget="many2many_tags"
+                                domain="[('type_tax_use','=','sale')]"
+                                attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}"/>
+                        </group>
+                        <field name="folio_ids" attrs="{'invisible': [('group_folios', '=', False)]}">
+                            <tree string="Folios" editable="bottom"
+                                    decoration-danger="partner_invoice_id != parent.partner_invoice_id">
+                                <field name="partner_invoice_id" />
+                                <field name="name" />
+                                <field name="state" />
+                                <field name="pending_amount" />
+                                <field name="amount_total" />                            
+                            </tree>
+                        </field>
+                        <field name="reservation_ids" widget="many2many_tags"
+                            domain="[('folio_id', 'in', folio_ids)]"/>
+                    </group>
+                    <group>
+                        <field name="group_folios" />
                         <field name="view_detail" />
                     </group>
                     <group>
-                        <field name="line_ids" attrs="{'invisible': [('view_detail', '=', False)]}">
+                        <field name="line_ids" attrs="{'invisible': [('view_detail', '=', False)]}"
+                            nolabel="1">
                             <tree string="Lines" editable="bottom">
-                                <field name="room_type_id" />
-                                <field name="date_from" />
-                                <field name="date_to" />
+                                <field name="product_id" invisible="1"/>
+                                <field name="reservation_id" />
+                                <field name="description" />
                                 <field name="qty" />
                                 <field name="discount" />
-                                <field name="unit_price" />
+                                <field name="price_unit" />
                             </tree>
                         </field>
                     </group>
                     <footer>
-                        <button name="prepare_reservation_invoice_lines" string="Prepare Lines" type="object"
-                            class="btn-primary"/>
                         <button name="create_invoices" string="Create and View Invoices" type="object"
                             context="{'open_invoices': True}" class="btn-primary"/>
                         <button name="create_invoices" string="Create Invoices" type="object"

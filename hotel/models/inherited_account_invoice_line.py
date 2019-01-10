@@ -11,3 +11,8 @@ class AccountInvoiceLine(models.Model):
         'reservation_line_invoice_rel',
         'invoice_line_id', 'reservation_id',
         string='Reservations', readonly=True, copy=False)
+    service_ids = fields.Many2many(
+        'hotel.service',
+        'service_line_invoice_rel',
+        'invoice_line_id', 'service_id',
+        string='Services', readonly=True, copy=False)
