@@ -55,7 +55,7 @@ class PoliceWizard(models.TransientModel):
                         and (line.partner_id.firstname is not False)
                         and (line.partner_id.lastname is not False)):
 
-                    if len(line.partner_id.code_ine.code) == 5:
+                    if len(line.partner_id.code_ine_id.code) == 5:
                         content += "2|"+line.partner_id.document_number.upper(
                             ) + "||"
                     else:
@@ -80,10 +80,10 @@ class PoliceWizard(models.TransientModel):
                     content += datetime.datetime.strptime(
                         line.partner_id.birthdate_date,
                         "%Y-%m-%d").date().strftime("%Y%m%d") + "|"
-                    if len(line.partner_id.code_ine.code) == 5:
+                    if len(line.partner_id.code_ine_id.code) == 5:
                         content += u'ESPAÑA|'
                     else:
-                        content += line.partner_id.code_ine.name.upper()[0:21]
+                        content += line.partner_id.code_ine_id.name.upper()[0:21]
                         content += "|"
                     content += datetime.datetime.strptime(
                         line.enter_date,

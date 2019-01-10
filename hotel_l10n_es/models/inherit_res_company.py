@@ -41,6 +41,6 @@ class Inherit_res_company(models.Model):
     police_number = fields.Char('Police number', size=10,
                          help='Used to generate the name of the file that \
                                     will be given to the police. 10 Caracters')
-    ine_category_id = fields.Many2one('category.tourism',
+    ine_category_id = fields.Many2one('tourism.category',
                                   help='Hotel category in the Ministry of \
                                             Tourism. Used for INE statistics.')

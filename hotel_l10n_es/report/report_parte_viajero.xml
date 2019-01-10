@@ -1,18 +1,12 @@
 <?xml version="1.0"?> 
-    <openerp>     
-        <data>
+<odoo>     
+        <report
+            id="action_report_viajero"
+            string="Parte de Viajero"
+            model="checkin.partner"
+            report_type="qweb-pdf"
+            name="report.viajero"
+            file="report.viajero"
+        />
 
-            <report
-                id="action_report_viajero"
-                model="cardex"
-                string="Parte de Viajero"
-                report_type="qweb-pdf"
-                name="report.viajero"
-                file="report.viajero"
-            />
-            <record id="action_report_viajero" model="ir.actions.report.xml">
-                <field name="paperformat_id" ref="report_viajero_paperformat"/>
-            </record>
-
-        </data>
-    </openerp>
+</odoo>

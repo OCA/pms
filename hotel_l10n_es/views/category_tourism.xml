@@ -2,23 +2,23 @@
 <odoo>      
 
         <act_window
-            id="action_category_tourism"
-            name="Category Codes"
-            res_model="category"
+            id="action_tourism_category"
+            name="action.tourism.category"
+            res_model="tourism.category"
             view_mode="tree,form"
         />
 
         <menuitem 
-            id="menu_category_tourism"
-            name="Category Codes"
+            id="menu_tourism_category"
+            name="menu.tourism.category"
             parent="hotel.configuration_others"
             sequence="30"
-            action="action_category"
+            action="action_tourism_category"
         />
 
-        <record id="category_tourism_view_form" model="ir.ui.view">
-            <field name="name">category.tourism.view.form</field>
-            <field name="model">category.tourism</field>
+        <record id="tourism_category_view_form" model="ir.ui.view">
+            <field name="name">tourism.category.view.form</field>
+            <field name="model">tourism.category</field>
             <field name="arch" type="xml">
                 <form>
                     <sheet>
@@ -38,9 +38,9 @@
             </field>
         </record>
 
-        <record id="category_tourism_view_tree" model="ir.ui.view">
-            <field name="name">category.tourism.view.tree</field>
-            <field name="model">category.tourism</field>
+        <record id="tourism_category_view_tree" model="ir.ui.view">
+            <field name="name">tourism.category.view.tree</field>
+            <field name="model">tourism.category</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="display_name"/>

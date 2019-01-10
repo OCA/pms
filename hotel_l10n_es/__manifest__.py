@@ -36,8 +36,8 @@
         'partner_firstname',
     ],
    'data': [
-        'data/code_ine.csv',
-        'data/category_tourism.csv',
+        'data/code.ine.csv',
+        'data/tourism.category.csv',
         'data/report_viajero_paperformat.xml',
         'report/report_parte_viajero.xml',
         'views/report_viajero.xml',

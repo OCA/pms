@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
-<template id="report.viajero">
-    <style type="text/css">
-        .titulo {font-size:0.93em;}
-        .titulo2 {font-size:1.93em;}
-        .page {margin: 0 auto; font-family:kiro, Verdana, Geneva, sans-serif;}
-        img {max-width:100%;}
-        .cabezera{width:100%; margin:0 auto;}
-        .cabezera h3 {font-size:0.93em;}
-        #datos{ text-align: center; padding:0 15px; font-size:0.85em;}
-        .bloque {margin:5px 0;}
-        td {font-size:1.5em;}
-        .fecha {font-weight:bold;font-size:0.85em;}
-        .firma {width: 80%; border:dotted 1px; height: 80px; margin:0 auto;}
-        .legal p {font-size:0.6em;}
-        h3, #pie, .legal, #cabezera {text-align:center;}
-        h3, #cabezera, td {font-family:kiro, Verdana, Geneva, sans-serif;}
-        h3 {font-size:1.15em;}
-        .numerocheck {font-size:0.9em;}
-        .container-fluid, row, col-md-12 {padding-left: 0 !important; padding-right: 0 !important;}
-    </style>
-    <t>
-        .titulo {font-size:0.93em;}
-        .titulo2 {font-size:1.93em;}
-    </t>
-    <t t-call="report.html_container">
-        <t t-foreach="docs" t-as="o">
-            <t t-call="hotel_l10n_es.report_viajero_document" t-lang="o.partner_id.lang"/>
+<odoo>
+    <template id="report_viajero">
+        <style type="text/css">
+            .titulo {font-size:0.93em;}
+            .titulo2 {font-size:1.93em;}
+            .page {margin: 0 auto; font-family:kiro, Verdana, Geneva, sans-serif;}
+            img {max-width:100%;}
+            .cabezera{width:100%; margin:0 auto;}
+            .cabezera h3 {font-size:0.93em;}
+            #datos{ text-align: center; padding:0 15px; font-size:0.85em;}
+            .bloque {margin:5px 0;}
+            td {font-size:1.5em;}
+            .fecha {font-weight:bold;font-size:0.85em;}
+            .firma {width: 80%; border:dotted 1px; height: 80px; margin:0 auto;}
+            .legal p {font-size:0.6em;}
+            h3, #pie, .legal, #cabezera {text-align:center;}
+            h3, #cabezera, td {font-family:kiro, Verdana, Geneva, sans-serif;}
+            h3 {font-size:1.15em;}
+            .numerocheck {font-size:0.9em;}
+            .container-fluid, row, col-md-12 {padding-left: 0 !important; padding-right: 0 !important;}
+        </style>
+        <t>
+            .titulo {font-size:0.93em;}
+            .titulo2 {font-size:1.93em;}
         </t>
-    </t>
-</template>
-</data>
-</openerp>
+        <t t-call="report.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="hotel_l10n_es.report_viajero_document" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

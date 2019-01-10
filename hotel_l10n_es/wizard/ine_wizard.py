@@ -84,7 +84,7 @@ class IneWizard(models.TransientModel):
              ('enter_date', '<=', m_f_d_search),
              ('exit_date', '>=', m_e_d_search)], order="enter_date")
         lines = lines.sorted(
-            key=lambda r: str(r.partner_id.code_ine)+r.enter_date)
+            key=lambda r: str(r.partner_id.code_ine_id)+r.enter_date)
 
         if len(lines) > 0:
 

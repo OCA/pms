@@ -98,7 +98,7 @@ class CheckinWizard(models.TransientModel):
 
     birthdate_date_cardex = fields.Date("Birthdate")
 
-    code_ine_cardex = fields.Many2one('code_ine',
+    code_ine_cardex = fields.Many2one('code.ine',
             help='Country or province of origin. Used for INE statistics.')
 
     # TODO: Add tags in the cardex not in the partner anb move this field to out of localization
