@@ -113,24 +113,26 @@
                     </button>
                 </div>
                 <div class="col-xs-12 col-md-12 nopadding menu-filter-box">
-                    <h4>Filters</h4>
-                    <select class="form-control" id="type_list" placeholder="Select Segmentation..." multiple="multiple"/>
-                    <select class="list form-control" id="floor_list" placeholder="Select Location..." multiple="multiple"/>
-                    <select class="list form-control" id="amenities_list" placeholder="Select Amenities..." multiple="multiple"/>
-                    <select class="list form-control" id="virtual_list" placeholder="Select Type..." multiple="multiple"/>
-                    <div class="filter-record col-xs-12 col-md-12" style="padding:4px">
-                        <div class="col-xs-8 col-md-8 nopadding">
-                            <input type="edit" id="calendar_name" class="form-control" />
-                        </div>
-                        <div class="col-xs-2 col-md-2 nopadding">
-                            <button class="btn btn-primary col-xs-12 col-md-12" id="btn_save_calendar_record">
-                                <i class="fa fa-fw fa-save"> </i>
-                            </button>
-                        </div>
-                        <div class="col-xs-2 col-md-2 nopadding">
-                            <button class="btn btn-primary col-xs-12 col-md-12" id="btn_reload_calendar_filters">
-                                <i class="fa fa-fw fa-refresh"> </i>
-                            </button>
+                    <h4 data-toggle="collapse" data-target="#filters"><i class="fa fa-chevron-circle-right"></i> Filters</h4>
+                    <div id="filters" class="collapse">
+                        <select class="form-control" id="type_list" placeholder="Select Segmentation..." multiple="multiple"/>
+                        <select class="list form-control" id="floor_list" placeholder="Select Location..." multiple="multiple"/>
+                        <select class="list form-control" id="amenities_list" placeholder="Select Amenities..." multiple="multiple"/>
+                        <select class="list form-control" id="virtual_list" placeholder="Select Type..." multiple="multiple"/>
+                        <div class="filter-record col-xs-12 col-md-12" style="padding:4px">
+                            <div class="col-xs-8 col-md-8 nopadding">
+                                <input type="edit" id="calendar_name" class="form-control" />
+                            </div>
+                            <div class="col-xs-2 col-md-2 nopadding">
+                                <button class="btn btn-primary col-xs-12 col-md-12" id="btn_save_calendar_record">
+                                    <i class="fa fa-fw fa-save"> </i>
+                                </button>
+                            </div>
+                            <div class="col-xs-2 col-md-2 nopadding">
+                                <button class="btn btn-primary col-xs-12 col-md-12" id="btn_reload_calendar_filters">
+                                    <i class="fa fa-fw fa-refresh"> </i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

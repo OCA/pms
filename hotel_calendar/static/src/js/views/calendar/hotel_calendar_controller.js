@@ -363,6 +363,12 @@ var PMSCalendarController = AbstractController.extend({
           });
       });
 
+      this.renderer.$el.find('#pms-menu .menu-filter-box #filters').on('show.bs.collapse', function(ev){
+          self.renderer.$el.find('#pms-menu .menu-filter-box h4 i.fa').css({transform: 'rotate(90deg)'});
+      }).on('hide.bs.collapse', function(ev){
+          self.renderer.$el.find('#pms-menu .menu-filter-box h4 i.fa').css({transform: 'rotate(0deg)'});
+      });
+
       this._multi_calendar.on('tab_changed', function(ev, active_index){
         if (active_index) {
           self._refresh_view_options(active_index);

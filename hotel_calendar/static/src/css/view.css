@@ -90,6 +90,13 @@ input#bookings_search {
 	margin-top: 1em;
 }
 
+#pms-menu .menu-filter-box h4 {
+  cursor: pointer;
+}
+#pms-menu .menu-filter-box h4 i {
+  transition: all 0.5s ease;
+}
+
 #pms-menu .button-box {
 	text-align: left;
 	min-height: 3.5em;
