@@ -1733,45 +1733,49 @@ HotelCalendar.prototype = {
     }
 
     if (!noRefresh) {
-      //reserv._html.removeAttribute('style');
-
       var boundsInit = reserv._limits.left.getBoundingClientRect();
       var boundsEnd = reserv._limits.right.getBoundingClientRect();
       var etableOffset = this.etable.getBoundingClientRect();
       var divHeight = (boundsEnd.bottom-etableOffset.top-4)-(boundsInit.top-etableOffset.top);
-      var fontHeight = 12;
       var has_changed = false;
 
-      reserv._html.style.backgroundColor = reserv.color;
-      reserv._html.style.color = reserv.colorText;
-      reserv._html.style.height = `${divHeight}px`;
-      reserv._html.style.lineHeight = `${divHeight}px`;
-      reserv._html.style.fontSize = `${fontHeight}px`;
-      reserv._html.style.top = `${boundsInit.top-etableOffset.top+2}px`;
-      reserv._html.style.left = `${boundsInit.left-etableOffset.left+2}px`;
-      reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-4}px`;
+      var reservStyles = {
+        backgroundColor: reserv.color,
+        color: reserv.colorText,
+        lineHeight: `${divHeight}px`,
+        fontSize: '12px',
+        top: `${boundsInit.top-etableOffset.top+2}px`,
+        left: `${boundsInit.left-etableOffset.left+2}px`,
+        width: `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-4}px`,
+        height: `${divHeight}px`,
+        borderLeftWidth: '',
+        borderLeftStyle: '',
+        borderRightWidth: '',
+        borderRightStyle: '',
+      };
+
       if (reserv._drawModes[0] === 'soft-start') {
         has_changed = true;
-        reserv._html.style.borderLeftWidth = '3px';
-        reserv._html.style.borderLeftStyle = 'double';
-        reserv._html.style.left = `${boundsInit.left-etableOffset.left}px`;
-        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
+        reservStyles.borderLeftWidth = '3px';
+        reservStyles.borderLeftStyle = 'double';
+        reservStyles.left = `${boundsInit.left-etableOffset.left}px`;
+        reservStyles.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
       } else if (reserv.splitted && reserv.startDate.isSame(reserv.getUserData('realDates')[0], 'day')) {
         has_changed = true;
-        reserv._html.style.borderLeftWidth = '0';
-        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
+        reservStyles.borderLeftWidth = '0';
+        reservStyles.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
       }
 
       if (reserv._drawModes[1] === 'soft-end') {
         has_changed = true;
-        reserv._html.style.borderRightWidth = '3px';
-        reserv._html.style.borderRightStyle = 'double';
-        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
+        reservStyles.borderRightWidth = '3px';
+        reservStyles.borderRightStyle = 'double';
+        reservStyles.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-2}px`;
       } else if (reserv.splitted && reserv.endDate.isSame(reserv.getUserData('realDates')[1], 'day')) {
         has_changed = true;
-        reserv._html.style.borderRightWidth = '0';
-        reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
-        reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-1}px`;
+        reservStyles.borderRightWidth = '0';
+        reservStyles.left = `${boundsInit.left-etableOffset.left-1}px`;
+        reservStyles.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width-1}px`;
       }
 
       if (reserv.splitted) {
@@ -1784,15 +1788,17 @@ HotelCalendar.prototype = {
         // TODO: Improve pseudo-random number generator
         var magicNumber = ~~(Math.abs(Math.sin((reserv.getUserData('parent_reservation') || reserv.id))) * 100000);
         var bbColor = this._intToRgb(magicNumber);
-        reserv._html.style.borderColor = `rgb(${bbColor[0]},${bbColor[1]},${bbColor[2]})`;
+        reservStyles.borderColor = `rgb(${bbColor[0]},${bbColor[1]},${bbColor[2]})`;
 
         if (!has_changed) {
-          reserv._html.style.left = `${boundsInit.left-etableOffset.left-1}px`;
-          reserv._html.style.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width+2}px`;
+          reservStyles.left = `${boundsInit.left-etableOffset.left-1}px`;
+          reservStyles.width = `${(boundsEnd.left-boundsInit.left)+boundsEnd.width+2}px`;
         }
       } else {
         reserv._html.classList.remove('hcal-reservation-splitted');
       }
+
+      Object.assign(reserv._html.style, reservStyles);
     }
   },
 
