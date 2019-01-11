@@ -89,6 +89,17 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
   this._domains = {}; // Store domains for filter rooms & reservations
   this._divideDivs = false;
 
+  // Calculate Capacities
+  this._roomCapacityTotal = 0;
+  this._roomCapacities = {};
+  this._roomsMap = _.groupBy(this.options.rooms, 'type');
+  var room_types = this.getRoomTypes();
+  for (var rt of room_types) {
+    this._roomsMap[rt] = _.filter(this._roomsMap[rt], {overbooking: false, cancelled: false});
+    this._roomCapacities[rt] = _.reduce(this._roomsMap[rt], function(memo, tr){ return memo + (tr.shared?tr.capacity:1); }, 0);
+    this._roomCapacityTotal += this._roomCapacities[rt];
+  }
+
   /***/
   this._reset_action_reservation();
   if (!this._create()) {
@@ -396,14 +407,14 @@ HotelCalendar.prototype = {
         return day.isBetween(item.startDate, item.endDate, 'day', inclusivity) &&
                 (typeof nbed === 'undefined' || item._beds.includes(nbed)) &&
                 ((includeUnusedZones && item.unusedZone) || !item.unusedZone) &&
-                item !== ignoreThis;
+                item !== ignoreThis && !item.overbooking && !item.cancelled;
       });
     } else {
       return _.filter(this._reservations, function(item){
         return day.isBetween(item.startDate, item.endDate, 'day', inclusivity) &&
                 (typeof nbed === 'undefined' || item._beds.includes(nbed)) &&
                 ((includeUnusedZones && item.unusedZone) || !item.unusedZone) &&
-                item !== ignoreThis;
+                item !== ignoreThis && !item.overbooking && !item.cancelled;
       });
     }
   },
@@ -583,34 +594,11 @@ HotelCalendar.prototype = {
   },
 
   getDayRoomTypeReservations: function(/*String,MomentObject*/day, /*String*/room_type) {
-    var reservs = this.getReservationsByDay(day, true);
-    return _.filter(reservs, function(item){ return item.room && item.room.type === room_type && !item.unusedZone; });
-  },
-
-  getRoomsByType: function(/*String*/type) {
-    return _.filter(this.options.rooms, function(item){ return item.type === type && !item.overbooking && !item.cancelled; });
-  },
-
-  getRoomsCapacityByType: function(/*String*/type) {
-    var trooms = this.getRoomsByType(type);
-    var num_rooms = 0;
-    for (var tr of trooms) {
-      num_rooms += tr.shared?tr.capacity:1;
-    }
-    return num_rooms;
-  },
-
-  getRoomsCapacityTotal: function() {
-    var num_rooms = 0;
-    var rooms = _.filter(this.options.rooms, function(item){ return !item.overbooking && !item.cancelled; });
-    for (var tr of rooms) {
-      num_rooms += tr.shared?tr.capacity:1;
-    }
-    return num_rooms;
+    return _.filter(this.getReservationsByDay(day, true), function(item){ return item.room && item.room.type === room_type && !item.unusedZone; });
   },
 
   getRoomTypes: function() {
-    return _.uniq(_.pluck(this.options.rooms, 'type'));
+    return _.keys(this._roomsMap);
   },
 
   getRoom: function(/*String,Int*/id, /*Boolean?*/isExtra, /*Int?*/reservId) {
@@ -862,37 +850,19 @@ HotelCalendar.prototype = {
   //==== DETAIL CALCS
   calcDayRoomTypeReservations: function(/*String,MomentObject*/day, /*String*/room_type) {
     var day = HotelCalendar.toMoment(day);
-    if (!day) {
-      return false;
-    }
+    if (!day) { return false; }
 
-    var reservs = this.getDayRoomTypeReservations(day, room_type);
-    var num_rooms = this.getRoomsCapacityByType(room_type);
-    for (var r of reservs) {
-      if (r.unusedZone || r.overbooking || r.cancelled) {
-    	   continue;
-      }
-      num_rooms -= (r.room && r.room.shared)?r.getTotalPersons(false):1;
-    }
-
+    var num_rooms = this._roomCapacities[room_type];
+    num_rooms -= _.reduce(this.getDayRoomTypeReservations(day, room_type), function(memo, r){ return memo + (r.room && r.room.shared)?r.getTotalPersons(false):1; }, 0);
     return num_rooms;
   },
 
   calcDayRoomTotalReservations: function(/*String,MomentObject*/day) {
     var day = HotelCalendar.toMoment(day);
-    if (!day) {
-      return false;
-    }
+    if (!day) { return false; }
 
-    var reservs = this.getReservationsByDay(day, true);
-    var num_rooms = this.getRoomsCapacityTotal();
-    for (var r of reservs) {
-      if (r.unusedZone || r.overbooking || r.cancelled) {
-    	   continue;
-      }
-      num_rooms -= (r.room && r.room.shared)?r.getTotalPersons(false):1;
-    }
-
+    var num_rooms = this._roomCapacityTotal;
+    num_rooms -= _.reduce(this.getReservationsByDay(day, true), function(memo, r){ return memo + (r.room && r.room.shared)?r.getTotalPersons(false):1; }, 0);
     return num_rooms;
   },
 
@@ -2184,21 +2154,19 @@ HotelCalendar.prototype = {
       this.edtable.querySelectorAll('td.hcal-cell-detail-room-perc-occup-group-item-day')
     ];
 
-    var cell;
-    for (var i=0; i<=cells[0].length; ++i) {
+    for (var cell of cells[0]) {
       // Occupation by Type
-      cell = cells[0][i];
       if (cell) {
-        var parentRow = this.$base.querySelector(`#${cell.dataset.hcalParentRow}`);
         var cell_date = cell.dataset.hcalDate;
-        var num_rooms = this.getRoomsCapacityByType(parentRow.dataset.hcalRoomType);
-        var num_free = this.calcDayRoomTypeReservations(cell_date, parentRow.dataset.hcalRoomType);
+        var num_rooms_type = this._roomCapacities[cell.parentNode.dataset.hcalRoomType];
+        var num_free = this.calcDayRoomTypeReservations(cell_date, cell.parentNode.dataset.hcalRoomType);
         cell.innerText = num_free;
-        cell.style.backgroundColor = this._generateColor(num_free, num_rooms, 0.35, true, true);
+        cell.style.backgroundColor = this._generateColor(num_free, num_rooms_type, 0.35, true, true);
       }
     }
 
-    var num_rooms = this.getRoomsCapacityTotal();
+    var cell;
+    var num_rooms = this._roomCapacityTotal;
     for (var i=0; i<=this.options.days; ++i) {
       // Occupation Total
       cell = cells[1][i];
