@@ -107,6 +107,7 @@ var PMSCalendarController = AbstractController.extend({
         hcal_dates[0].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
         hcal_dates[1].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)
       ];
+
       this.model.get_calendar_data(oparams).then(function(results){
         self._multi_calendar._days_tooltips = results['events'];
         self._multi_calendar._reserv_tooltips = results['tooltips'];
