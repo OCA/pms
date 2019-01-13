@@ -181,12 +181,15 @@ class HotelReservation(models.Model):
         rdfrom_dt = dfrom_dt + timedelta(days=1)    # Ignore checkout
         reservations_raw = self.env['hotel.reservation'].search([
             ('room_id', 'in', rooms.ids),
-            '|', '&',
+            '|', '|', '&',
             ('checkin', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('checkout', '>=', rdfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             '&',
+            ('checkin', '<=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('checkout', '>=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            '&',
             ('checkin', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('checkout', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+            ('checkout', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
         ], order="checkin DESC, checkout ASC, adults DESC, children DESC")
         return self._hcalendar_reservation_data(reservations_raw)
 

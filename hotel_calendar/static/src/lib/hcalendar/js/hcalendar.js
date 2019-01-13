@@ -82,7 +82,7 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
   this._reservationsMap = {}; // Store Reservations Mapped by Room for Search Purposes
   this._modeSwap = HotelCalendar.MODE.NONE; // Store Swap Mode
   this._selectionMode = HotelCalendar.MODE.NONE;
-  this._endDate = this.options.startDate.clone().add(this.options.days+1, 'd'); // Store End Calendar Day
+  this._endDate = this.options.startDate.clone().add(this.options.days, 'd'); // Store End Calendar Day
   this._tableCreated = false; // Store Flag to Know Calendar Creation
   this._cellSelection = {start:false, end:false, current:false}; // Store Info About Selected Cells
   this._lazyModeReservationsSelection = false; // Store Info About Timer for Selection Action
@@ -152,7 +152,7 @@ HotelCalendar.prototype = {
       this.options.orig_days = days;
       this.options.days = this.parseDays(days) + 1;
     }
-    this._endDate = this.options.startDate.clone().add(this.options.days+1, 'd');
+    this._endDate = this.options.startDate.clone().add(this.options.days, 'd');
 
     /*this.e.dispatchEvent(new CustomEvent(
             'hcOnChangeDate',
