@@ -43,10 +43,10 @@ class HotelFolio(models.Model):
         info_grouped = []
         for rline in self.room_lines:
             if (import_all or rline.to_send) and not rline.parent_reservation and rline.state == state and ((rline.state == 'cancelled' and not rline.channel_modified) or rline.state != 'cancelled'):
-                dates = rline.get_real_checkin_checkout()
+                dates = (rline.real_checkin, rline.real_checkout)
                 vals = {
                     'num': len(
-                        self.room_lines.filtered(lambda r: r.get_real_checkin_checkout()[0] == dates[0] and r.get_real_checkin_checkout()[1] == dates[1] and r.room_type_id.id == rline.room_type_id.id and (r.to_send or import_all) and not r.parent_reservation and r.state == rline.state and ((r.state == 'cancelled' and not r.channel_modified) or r.state != 'cancelled'))
+                        self.room_lines.filtered(lambda r: r.real_checkin == dates[0] and r.real_checkout == dates[1] and r.room_type_id.id == rline.room_type_id.id and (r.to_send or import_all) and not r.parent_reservation and r.state == rline.state and ((r.state == 'cancelled' and not r.channel_modified) or r.state != 'cancelled'))
                     ),
                     'room_type': {
                         'id': rline.room_type_id.id,

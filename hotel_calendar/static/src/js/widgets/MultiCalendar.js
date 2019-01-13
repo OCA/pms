@@ -97,12 +97,8 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       var active_calendar = this.get_active_calendar();
       if (active_calendar) {
         setTimeout(function(calendar){
-          for (var reserv of calendar._reservations) {
-            var style = window.getComputedStyle(reserv._html, null);
-            if (parseInt(style.width, 10) < 15 || parseInt(style.height, 10) < 15 || parseInt(style.top, 10) === 0) {
-              this.get_active_calendar()._updateReservation(reserv);
-            }
-          }
+          calendar._updateOffsets();
+          calendar._updateReservations(false);
         }.bind(this, active_calendar), 200);
       }
     },

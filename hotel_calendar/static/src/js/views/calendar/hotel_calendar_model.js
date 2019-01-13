@@ -31,7 +31,7 @@ return AbstractModel.extend({
 
     get_calendar_data: function(oparams) {
         var dialog = bootbox.dialog({
-            message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Downloading Calendar Data...</div>',
+            message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Getting Calendar Data From Server...</div>',
             onEscape: false,
             closeButton: false,
             size: 'small',
@@ -43,6 +43,16 @@ return AbstractModel.extend({
             args: oparams,
             context: Session.user_context,
         }, {
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                //Download progress
+                xhr.addEventListener("readystatechange", function() {
+                    if (this.readyState == this.DONE) {
+                        console.log(`[HotelCalendar] Downloaded ${(parseInt(xhr.getResponseHeader("Content-Length"), 10)/1024).toFixed(3)}KiB of data`);
+                    }
+                }, false);
+                return xhr;
+            },
             success: function() {
                 dialog.modal('hide');
             },

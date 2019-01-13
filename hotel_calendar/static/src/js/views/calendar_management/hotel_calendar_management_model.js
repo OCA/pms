@@ -21,12 +21,12 @@ return AbstractModel.extend({
     },
 
     save_changes: function (params) {
-        params.splice(0, 0, false); // FIXME: ID=False because first parameter its an integer
+        //params.splice(0, 0, false); // FIXME: ID=False because first parameter its an integer
         return this._rpc({
             model: this.modelName,
             method: 'save_changes',
             args: params,
-            context: Session.user_context,
+            //context: Session.user_context,
         });
     },
 

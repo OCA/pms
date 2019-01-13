@@ -104,7 +104,7 @@ var PMSCalendarController = AbstractController.extend({
       /** DO MAGIC **/
       var hcal_dates = this.renderer.get_view_filter_dates();
       var oparams = [
-        hcal_dates[0].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        hcal_dates[0].subtract(1, 'd').format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
         hcal_dates[1].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)
       ];
 
@@ -192,7 +192,7 @@ var PMSCalendarController = AbstractController.extend({
           self._view_options['days'] = 7;
         }
 
-        var date_begin = moment().startOf('day');
+        var date_begin = moment().local().startOf('day');
         var days = self._view_options['days'];
         if (self._view_options['days'] === 'month') {
             days = date_begin.daysInMonth();
@@ -206,7 +206,6 @@ var PMSCalendarController = AbstractController.extend({
         $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
         $dateEndDays.val(self._view_options['days']);
 
-        //self.renderer.init_calendar_view();
         self._load_calendars();
         self._assign_view_events();
       });
@@ -214,23 +213,24 @@ var PMSCalendarController = AbstractController.extend({
 
     _reload_active_calendar: function() {
       var self = this;
-      var filterDates = this.renderer.get_view_filter_dates();
       var active_calendar = this._multi_calendar.get_active_calendar();
+      var filterDates = active_calendar.getDates();
       // Clip dates
       var dfrom = filterDates[0].clone(),
         dto = filterDates[1].clone();
 
       if (filterDates[0].isBetween(this._last_dates[0], this._last_dates[1], 'days') && filterDates[1].isAfter(this._last_dates[1], 'day')) {
-        dfrom = this._last_dates[1].clone().local().startOf('day').utc();
+        dfrom = this._last_dates[1].clone();
       } else if (this._last_dates[0].isBetween(filterDates[0], filterDates[1], 'days') && this._last_dates[1].isAfter(filterDates[0], 'day')) {
-        dto = this._last_dates[0].clone().local().endOf('day').utc();
+        dto = this._last_dates[0].clone();
       }
 
       var oparams = [
-        dfrom.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        dfrom.subtract(1, 'd').format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
         dto.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
         false
       ];
+
       this.model.get_calendar_data(oparams).then(function(results){
         var reservs = [];
         for (var r of results['reservations']) {
@@ -750,7 +750,6 @@ var PMSCalendarController = AbstractController.extend({
         'checkout_day_of_week': HotelCalendar.toMomentUTC(tp['checkout'], '').format("dddd"),
         'arrival_hour': tp['arrival_hour'],
         'departure_hour': tp['departure_hour'],
-        'num_split': tp['num_split'],
         'amount_total': Number(tp['amount_total']).toLocaleString(),
         'pending_amount': Number(tp['pending_amount']).toLocaleString(),
         'amount_paid': Number(tp['amount_paid']).toLocaleString(),

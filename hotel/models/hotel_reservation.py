@@ -151,6 +151,10 @@ class HotelReservation(models.Model):
     checkout = fields.Date('Check Out', required=True,
                            default=_get_default_checkout,
                            track_visibility='onchange')
+    real_checkin = fields.Date('Real Check In', required=True,
+                               track_visibility='onchange')
+    real_checkout = fields.Date('Real Check Out', required=True,
+                                track_visibility='onchange')
     arrival_hour = fields.Char('Arrival Hour',
                                default=_get_default_arrival_hour,
                                help="Default Arrival Hour (HH:MM)")
@@ -309,7 +313,11 @@ class HotelReservation(models.Model):
             vals.update(self.prepare_reservation_lines(
                 vals['checkin'],
                 days_diff,
-                vals=vals)) #REVISAR el unlink
+                vals=vals))  # REVISAR el unlink
+        if 'checkin' in vals and 'checkout' in vals \
+                and 'real_checkin' not in vals and 'real_checkout' not in vals:
+            vals['real_checkin'] = vals['checkin']
+            vals['real_checkout'] = vals['checkout']
         record = super(HotelReservation, self).create(vals)
         #~ if (record.state == 'draft' and record.folio_id.state == 'sale') or \
                 #~ record.preconfirm:
@@ -325,6 +333,13 @@ class HotelReservation(models.Model):
         for record in self:
             checkin = vals['checkin'] if 'checkin' in vals else record.checkin
             checkout = vals['checkout'] if 'checkout' in vals else record.checkout
+
+            if not record.splitted and not vals.get('splitted', False):
+                if 'checkin' in vals:
+                    vals['real_checkin'] = vals['checkin']
+                if 'checkout' in vals:
+                    vals['real_checkout'] = vals['checkout']
+
             days_diff = (
                 fields.Date.from_string(checkout) - \
                 fields.Date.from_string(checkin)
@@ -485,6 +500,8 @@ class HotelReservation(models.Model):
             'splitted': self.splitted,
             'room_type_id': self.room_type_id.id,
             'room_id': self.room_id.id,
+            'real_checkin': self.real_checkin,
+            'real_checkout': self.real_checkout,
         }
 
     @api.constrains('adults')
@@ -953,31 +970,6 @@ class HotelReservation(models.Model):
     """
 
     @api.multi
-    def get_real_checkin_checkout(self):
-        self.ensure_one()
-        if not self.splitted:
-            return (self.checkin, self.checkout)
-
-        master_reservation = self.parent_reservation or self
-        splitted_reservs = self.env['hotel.reservation'].search([
-            '|',
-            ('splitted', '=', True),
-            ('id', '=', master_reservation.id), # This here because can create a splitted reserv before set as splitted the parent reservation (master)
-            ('folio_id', '=', self.folio_id.id),
-            '|',
-            ('parent_reservation', '=', master_reservation.id),
-            ('id', '=', master_reservation.id)
-        ])
-        last_checkout = splitted_reservs[0].checkout
-        first_checkin = splitted_reservs[0].checkin
-        for reserv in splitted_reservs:
-            if last_checkout < reserv.checkout:
-                last_checkout = reserv.checkout
-            if first_checkin > reserv.checkin:
-                first_checkin = reserv.checkin
-        return (first_checkin, last_checkout)
-
-    @api.multi
     def split(self, nights):
         for record in self:
             date_start_dt = fields.Date.from_string(record.checkin)
@@ -1088,16 +1080,19 @@ class HotelReservation(models.Model):
             }))
             tprice += rline.price
 
-        # Real Dates
-        rdate_begin, rdate_end = master_reservation.get_real_checkin_checkout()
-
         # Unify
         osplitted_reservs = splitted_reservs - master_reservation
         osplitted_reservs.sudo().unlink()
 
+        _logger.info("========== UNIFY")
+        _logger.info(master_reservation.real_checkin)
+        _logger.info(first_checkin)
+        _logger.info(master_reservation.real_checkout)
+        _logger.info(last_checkout)
+
         master_reservation.write({
             'checkout': last_checkout,
-            'splitted': rdate_begin != first_checkin or rdate_end != last_checkout,
+            'splitted': master_reservation.real_checkin != first_checkin or master_reservation.real_checkout != last_checkout,
             'reservation_line_ids': rlines,
             'price_total': tprice,
         })

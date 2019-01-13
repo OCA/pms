@@ -1,12 +1,11 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-from datetime import datetime, timedelta
+import time
+from datetime import timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from odoo.tools import (
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT)
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 _logger = logging.getLogger(__name__)
 
 
@@ -17,10 +16,6 @@ class HotelReservation(models.Model):
                                 store=True)
     reserve_color_text = fields.Char(compute='_compute_color', string='Color',
                                      store=True)
-
-    """
-    COMPUTE RESERVE COLOR ----------------------------------------------
-    """
 
     @api.multi
     def _generate_color(self):
@@ -81,8 +76,10 @@ class HotelReservation(models.Model):
             json_reservations.append({
                 'room_id': reserv.room_id.id,
                 'id': reserv.id,
-                'name': reserv.folio_id.closure_reason_id.name or _('Out of service') if reserv.folio_id.reservation_type == 'out'
-                        else reserv.folio_id.partner_id.name,
+                'name': reserv.folio_id.closure_reason_id.name
+                or _('Out of service')
+                if reserv.folio_id.reservation_type == 'out'
+                else reserv.folio_id.partner_id.name,
                 'adults': reserv.adults,
                 'childrens': reserv.children,
                 'checkin': reserv.checkin,
@@ -91,27 +88,22 @@ class HotelReservation(models.Model):
                 'bgcolor': reserv.reserve_color,
                 'color': reserv.reserve_color_text,
                 'splitted': reserv.splitted,
-                'parent_reservation': reserv.parent_reservation and reserv.parent_reservation.id or False,
+                'parent_reservation': reserv.parent_reservation
+                and reserv.parent_reservation.id or False,
                 'read_only': False,  # Read-Only
                 'fix_days': reserv.splitted,   # Fix Days
                 'fix_room': False,  # Fix Rooms
                 'overbooking': reserv.overbooking,
                 'state': reserv.state,
-                'real_dates': reserv.get_real_checkin_checkout()})
-            num_split = 0
-            if reserv.splitted:
-                master_reserv = reserv.parent_reservation or reserv
-                num_split = self.search_count([
-                    ('folio_id', '=', reserv.folio_id.id),
-                    '|', ('parent_reservation', '=', master_reserv.id),
-                    ('id', '=', master_reserv.id),
-                    ('splitted', '=', True),
-                ])
+                'real_dates': [reserv.real_checkin, reserv.real_checkout]})
             json_reservation_tooltips.update({
                 reserv.id: {
                     'folio_name': reserv.folio_id.name,
-                    'name': _('Out of service') if reserv.folio_id.reservation_type == 'out' else reserv.folio_id.partner_id.name,
-                    'phone': reserv.mobile or reserv.phone or _('Phone not provided'),
+                    'name': _('Out of service')
+                    if reserv.folio_id.reservation_type == 'out'
+                    else reserv.folio_id.partner_id.name,
+                    'phone': reserv.mobile or reserv.phone
+                    or _('Phone not provided'),
                     'email': reserv.email or _('Email not provided'),
                     'room_type_name': reserv.room_type_id.name,
                     'adults': reserv.adults,
@@ -120,13 +112,12 @@ class HotelReservation(models.Model):
                     'checkout': reserv.checkout,
                     'arrival_hour': reserv.arrival_hour,
                     'departure_hour': reserv.departure_hour,
-                    'num_split': num_split,
                     'amount_total': reserv.folio_id.amount_total,
                     'pending_amount': reserv.folio_id.pending_amount,
                     'amount_paid': reserv.folio_id.amount_total - reserv.folio_id.pending_amount,
                     'type': reserv.reservation_type or 'normal',
-                    'out_service_description': reserv.out_service_description or
-                                               _('No reason given'),
+                    'out_service_description': reserv.out_service_description
+                    or _('No reason given'),
                     # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
                 }
             })
@@ -138,9 +129,8 @@ class HotelReservation(models.Model):
             'res.config.settings', 'default_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
-        json_rooms = []
-        for room in rooms:
-            json_rooms.append({
+        json_rooms = [
+            {
                 'id': room.id,
                 'name': room.name,
                 'capacity': room.capacity,
@@ -148,57 +138,57 @@ class HotelReservation(models.Model):
                 'class_id': room.room_type_id.class_id.id,
                 'shared': room.shared_room,
                 'price': room.room_type_id
-                         and ['pricelist', room.room_type_id.id, pricelist_id,
-                              room.room_type_id.name] or 0,
+                and ['pricelist', room.room_type_id.id, pricelist_id,
+                     room.room_type_id.name] or 0,
                 'room_type_name': room.room_type_id.name,
                 'room_type_id': room.room_type_id.id,
                 'floor_id': room.floor_id.id,
                 'amentity_ids': room.room_type_id.room_amenity_ids.ids,
-            })
+            } for room in rooms]
         return json_rooms
 
     @api.model
     def _hcalendar_calendar_data(self, calendars):
-        json_calendars = []
-        for calendar in calendars:
-            json_calendars.append({
+        return [
+            {
                 'id': calendar.id,
                 'name': calendar.name,
                 'segmentation_ids': calendar.segmentation_ids.ids,
                 'location_ids': calendar.location_ids.ids,
                 'amenity_ids': calendar.amenity_ids.ids,
                 'room_type_ids': calendar.room_type_ids.ids,
-            })
-        return json_calendars
+            } for calendar in calendars]
 
     @api.model
     def _hcalendar_event_data(self, events):
-        json_events = []
-        for event in events:
-            json_events.append({
+        json_events = [
+            {
                 'id': event.id,
                 'name': event.name,
                 'date': event.start,
                 'location': event.location,
-            })
+            } for event in events]
         return json_events
+
+    @api.model
+    def get_hcalendar_calendar_data(self):
+        calendars = self.env['hotel.calendar'].search([])
+        res = self._hcalendar_calendar_data(calendars)
+        return res
 
     @api.model
     def get_hcalendar_reservations_data(self, dfrom_dt, dto_dt, rooms):
         rdfrom_dt = dfrom_dt + timedelta(days=1)    # Ignore checkout
-        reservations_raw = self.env['hotel.reservation'].search(
-            [('room_id', 'in', rooms.ids)],
-            order="checkin DESC, checkout ASC, adults DESC, children DESC")
-        reservations_ll = self.env['hotel.reservation'].search([
+        reservations_raw = self.env['hotel.reservation'].search([
+            ('room_id', 'in', rooms.ids),
+            '|', '&',
             ('checkin', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('checkout', '>=', rdfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        ])
-        reservations_lr = self.env['hotel.reservation'].search([
+            ('checkout', '>=', rdfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            '&',
             ('checkin', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('checkout', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        ])
-        reservations = (reservations_ll | reservations_lr) & reservations_raw
-        return self._hcalendar_reservation_data(reservations)
+        ], order="checkin DESC, checkout ASC, adults DESC, children DESC")
+        return self._hcalendar_reservation_data(reservations_raw)
 
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom_dt, dto_dt):
@@ -206,6 +196,7 @@ class HotelReservation(models.Model):
             'res.config.settings', 'default_pricelist_id')
         if pricelist_id:
             pricelist_id = int(pricelist_id)
+
         date_diff = abs((dfrom_dt - dto_dt).days) + 1
         # Get Prices
         json_rooms_prices = {pricelist_id: []}
@@ -214,22 +205,30 @@ class HotelReservation(models.Model):
             order='hcal_sequence ASC')
         room_pr_cached_obj = self.env['room.pricelist.cached']
 
+        prod_price_ids = room_pr_cached_obj.search([
+            ('room_id', 'in', room_typed_ids.ids),
+            ('date', '>=', dfrom_dt),
+            ('date', '<=', dto_dt)
+        ], order='date ASC')
+
         for room_type_id in room_typed_ids:
             days = {}
-            for i in range(0, date_diff):
-                ndate = dfrom_dt + timedelta(days=i)
-                ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                prod_price_id = room_pr_cached_obj.search([
-                    ('room_id', '=', room_type_id.id),
-                    ('date', '=', ndate_str)
-                ], limit=1)
+            prod_price_room_ids = prod_price_ids.filtered(
+                lambda x: x.room_id == room_type_id)
+            prod_price_ids = prod_price_ids - prod_price_room_ids
+            for offsetDay in range(0, date_diff):
+                ndate = dfrom_dt+timedelta(days=offsetDay)
+                strndate = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
+                prod_price_id = prod_price_room_ids.filtered(
+                    lambda x: x.date == strndate)
+                prod_price_room_ids = prod_price_room_ids - prod_price_id
                 days.update({
-                    ndate.strftime("%d/%m/%Y"): prod_price_id and
-                                                prod_price_id.price or
-                                                room_type_id.product_id.with_context(
-                                                    quantity=1,
-                                                    date=ndate_str,
-                                                    pricelist=pricelist_id).price
+                    ndate.strftime("%d/%m/%Y"): prod_price_id
+                    and prod_price_id.price
+                    or room_type_id.product_id.with_context(
+                        quantity=1,
+                        date=prod_price_id.date,
+                        pricelist=pricelist_id).price
                 })
             json_rooms_prices[pricelist_id].append({
                 'room': room_type_id.id,
@@ -244,60 +243,56 @@ class HotelReservation(models.Model):
             'res.config.settings', 'default_restriction_id')
         if restriction_id:
             restriction_id = int(restriction_id)
-        date_diff = abs((dto_dt - dfrom_dt).days) + 1
-        # Get Prices
+
+        # Get Restrictions
         json_rooms_rests = {}
-        room_types = self.env['hotel.room.type'].search(
+        room_typed_ids = self.env['hotel.room.type'].search(
             [],
             order='hcal_sequence ASC')
         room_type_rest_obj = self.env['hotel.room.type.restriction.item']
-        for room_type in room_types:
+        rtype_rest_ids = room_type_rest_obj.search([
+            ('room_type_id', 'in', room_typed_ids.ids),
+            ('date', '>=', dfrom_dt),
+            ('date', '<=', dto_dt),
+            ('restriction_id', '=', restriction_id)
+        ])
+
+        for room_type in room_typed_ids:
             days = {}
-            for i in range(0, date_diff):
-                ndate = dfrom_dt + timedelta(days=i)
-                ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                rest_id = room_type_rest_obj.search([
-                    ('room_type_id', '=', room_type.id),
-                    ('date', '=', ndate_str),
-                    ('restriction_id', '=', restriction_id)
-                ], limit=1)
-                if rest_id and (rest_id.min_stay or rest_id.min_stay_arrival or
-                                rest_id.max_stay or rest_id.max_stay_arrival or
-                                rest_id.closed or rest_id.closed_arrival or
-                                rest_id.closed_departure):
-                    days.update({
-                        ndate.strftime("%d/%m/%Y"): (
-                            rest_id.min_stay,
-                            rest_id.min_stay_arrival,
-                            rest_id.max_stay,
-                            rest_id.max_stay_arrival,
-                            rest_id.closed,
-                            rest_id.closed_arrival,
-                            rest_id.closed_departure)
-                    })
+            rest_ids = rtype_rest_ids.filtered(
+                lambda x: x.room_type_id == room_type)
+            for rest_id in rest_ids:
+                days.update({
+                    fields.Date.from_string(rest_id.date).strftime("%d/%m/%Y"): (
+                        rest_id.min_stay,
+                        rest_id.min_stay_arrival,
+                        rest_id.max_stay,
+                        rest_id.max_stay_arrival,
+                        rest_id.closed,
+                        rest_id.closed_arrival,
+                        rest_id.closed_departure)
+                })
             json_rooms_rests.update({room_type.id: days})
         return json_rooms_rests
 
     @api.model
     def get_hcalendar_events_data(self, dfrom_dt, dto_dt):
         user_id = self.env['res.users'].browse(self.env.uid)
-        domain = []
+        domain = [
+            '|', '&',
+            ('start', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('stop', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            '&',
+            ('start', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('stop', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+        ]
         if user_id.pms_allowed_events_tags:
             domain.append(('categ_ids', 'in', user_id.pms_allowed_events_tags))
         if user_id.pms_denied_events_tags:
             domain.append(
                 ('categ_ids', 'not in', user_id.pms_denied_events_tags))
         events_raw = self.env['calendar.event'].search(domain)
-        events_ll = self.env['calendar.event'].search([
-            ('start', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('stop', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        ])
-        events_lr = self.env['calendar.event'].search([
-            ('start', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('stop', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
-        ])
-        events = (events_ll | events_lr) & events_raw
-        return self._hcalendar_event_data(events)
+        return self._hcalendar_event_data(events_raw)
 
     @api.model
     def get_hcalendar_settings(self):
@@ -327,9 +322,8 @@ class HotelReservation(models.Model):
 
         dfrom_dt = fields.Date.from_string(dfrom)
         dto_dt = fields.Date.from_string(dto)
-
         rooms = self.env['hotel.room'].search([], order='hcal_sequence ASC')
-        calendars = self.env['hotel.calendar'].search([])
+
         json_res, json_res_tooltips = self.get_hcalendar_reservations_data(
             dfrom_dt, dto_dt, rooms)
 
@@ -341,7 +335,8 @@ class HotelReservation(models.Model):
             'restrictions': self.get_hcalendar_restrictions_data(dfrom_dt,
                                                                  dto_dt),
             'events': self.get_hcalendar_events_data(dfrom_dt, dto_dt),
-            'calendars': self._hcalendar_calendar_data(calendars)
+            'calendars': withRooms and self.get_hcalendar_calendar_data()
+            or []
         }
 
         return vals
@@ -356,7 +351,7 @@ class HotelReservation(models.Model):
             'room_id': self.room_id.id,
             'reserv_id': self.id,
             'partner_name': (self.closure_reason_id.name or _('Out of service'))
-                            if self.reservation_type == 'out' else self.partner_id.name,
+            if self.reservation_type == 'out' else self.partner_id.name,
             'adults': self.adults,
             'children': self.children,
             'checkin': self.checkin,
@@ -367,12 +362,12 @@ class HotelReservation(models.Model):
             'reserve_color': self.reserve_color,
             'reserve_color_text': self.reserve_color_text,
             'splitted': self.splitted,
-            'parent_reservation': self.parent_reservation and
-                                  self.parent_reservation.id or 0,
+            'parent_reservation': self.parent_reservation
+            and self.parent_reservation.id or 0,
             'room_name': self.room_id.name,
             'room_type_name': self.room_type_id.name,
             'partner_phone': self.partner_id.mobile
-                             or self.partner_id.phone or _('Undefined'),
+            or self.partner_id.phone or _('Undefined'),
             'partner_email': self.partner_id.email or _('Undefined'),
             'state': self.state,
             'fix_days': self.splitted,
@@ -382,8 +377,9 @@ class HotelReservation(models.Model):
             'amount_paid': self.folio_id.amount_total - self.folio_id.pending_amount,
             'reservation_type': self.reservation_type or 'normal',
             'closure_reason_id': self.closure_reason_id,
-            'out_service_description': self.out_service_description or _('No reason given'),
-            'real_dates': self.get_real_checkin_checkout(),
+            'out_service_description': self.out_service_description
+            or _('No reason given'),
+            'real_dates': [self.real_checkin, self.real_checkout],
         }
 
     @api.multi
@@ -438,24 +434,24 @@ class HotelReservation(models.Model):
 
     @api.multi
     def write(self, vals):
-        ret = super(HotelReservation, self).write(vals)
         _logger.info("RESERV WRITE")
+        ret = super(HotelReservation, self).write(vals)
+
         if 'partner_id' in vals or 'checkin' in vals or \
                 'checkout' in vals or 'product_id' in vals or \
                 'adults' in vals or 'children' in vals or \
                 'state' in vals or 'splitted' in vals or \
                 'closure_reason_id' in vals or 'out_service_description' in vals or \
                 'reservation_type' in vals or \
-                'reserve_color' in vals or \
-                'reserve_color_text' in vals or 'price_total' in vals or \
+                'price_total' in vals or \
                 'parent_reservation' in vals or 'overbooking' in vals or \
                 'room_type_id' in vals:
             for record in self:
                 record.send_bus_notification(
                     'write',
                     (record.state == 'cancelled') and 'warn' or 'notify',
-                    (record.state == 'cancelled') and
-                    _("Reservation Cancelled") or _("Reservation Changed")
+                    (record.state == 'cancelled')
+                    and _("Reservation Cancelled") or _("Reservation Changed")
                 )
         elif not any(vals) or 'to_read' in vals or 'to_assign' in vals:
             self.send_bus_notification('write', 'noshow')
