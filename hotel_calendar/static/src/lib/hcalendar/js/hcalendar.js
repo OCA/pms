@@ -354,6 +354,9 @@ HotelCalendar.prototype = {
 
       // Create & Render New Reservations
       _.defer(function(reservs){
+        // Update offsets (New Rooms change positions?)
+        this._updateOffsets();
+        
         var unusedZones = this._createUnusedZones(reservs);
         // Add Unused Zones
         this._reservations = this._reservations.concat(unusedZones);
@@ -666,10 +669,21 @@ HotelCalendar.prototype = {
 
     var exRoomRow = this.getExtraRoomRow(ex_reserv);
     if (exRoomRow) {
+      // Update Reservations Position
+      var bounds = this.loopedOffsetOptimized(exRoomRow);
+      var start_index = _.indexOf(this.options.rooms, ex_reserv.room) + 1;
+      for (var i=start_index; i<this.options.rooms.length; i++) {
+        var reservs = this.getReservationsByRoom(this.options.rooms[i], true);
+        for (var reserv of reservs) {
+          if (reserv && reserv._html) {
+            var top = parseInt(reserv._html.style.top, 10);
+            reserv._html.style.top = `${top - bounds.height}px`;
+          }
+        }
+      }
+
       exRoomRow.parentNode.removeChild(exRoomRow);
-      this.options.rooms = _.reject(this.options.rooms, function(item){ return item.id === ex_reserv.room.id; });
-      this._updateOffsets();
-      this._updateReservations(false);
+      this.options.rooms = _.reject(this.options.rooms, {id: ex_reserv.room.id});
     }
   },
 
@@ -776,7 +790,6 @@ HotelCalendar.prototype = {
     }
 
     // Update Reservations Position
-    this._updateOffsets();
     var bounds = this.loopedOffsetOptimized(row);
     var cheight = bounds.height;
     var start_index = _.indexOf(this.options.rooms, ex_room) + 1;

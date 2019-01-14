@@ -288,7 +288,6 @@ var PMSCalendarController = AbstractController.extend({
       this.renderer.$el.find('#pms-menu #btn_action_overbooking button').on('click', function(ev){
         var active_calendar = self._multi_calendar.get_active_calendar();
         active_calendar.toggleOverbookingsVisibility();
-        active_calendar.addReservations(self._multi_calendar._dataset['reservations']);
         if (active_calendar.options.showOverbookings) {
           $(this).find('.led').removeClass('led-disabled');
           $(this).find('.led').addClass('led-enabled');
@@ -296,12 +295,13 @@ var PMSCalendarController = AbstractController.extend({
           $(this).find('.led').addClass('led-disabled');
           $(this).find('.led').removeClass('led-enabled');
         }
+        active_calendar.addReservations(_.reject(self._multi_calendar._dataset['reservations'], {overbooking:false}));
+        _.defer(function(){ active_calendar._updateReservations(false); }); // Fix Possible Rows Displacements
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_cancelled button').on('click', function(ev){
           var active_calendar = self._multi_calendar.get_active_calendar();
           active_calendar.toggleCancelledVisibility();
-          active_calendar.addReservations(self._multi_calendar._dataset['reservations']);
           if (active_calendar.options.showCancelled) {
             $(this).find('.led').removeClass('led-disabled');
             $(this).find('.led').addClass('led-enabled');
@@ -309,6 +309,8 @@ var PMSCalendarController = AbstractController.extend({
             $(this).find('.led').addClass('led-disabled');
             $(this).find('.led').removeClass('led-enabled');
           }
+          active_calendar.addReservations(_.reject(self._multi_calendar._dataset['reservations'], {cancelled:false}));
+          _.defer(function(){ active_calendar._updateReservations(false); }); // Fix Possible Rows Displacements
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_divide button').on('click', function(ev){

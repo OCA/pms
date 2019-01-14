@@ -6,6 +6,7 @@ from datetime import timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo.tools.profiler import profile
 _logger = logging.getLogger(__name__)
 
 
@@ -74,49 +75,47 @@ class HotelReservation(models.Model):
         json_reservation_tooltips = {}
         for reserv in reservations:
             json_reservations.append({
-                'room_id': reserv.room_id.id,
-                'id': reserv.id,
-                'name': reserv.folio_id.closure_reason_id.name
-                or _('Out of service')
-                if reserv.folio_id.reservation_type == 'out'
-                else reserv.folio_id.partner_id.name,
-                'adults': reserv.adults,
-                'childrens': reserv.children,
-                'checkin': reserv.checkin,
-                'checkout': reserv.checkout,
-                'folio_id': reserv.folio_id.id,
-                'bgcolor': reserv.reserve_color,
-                'color': reserv.reserve_color_text,
-                'splitted': reserv.splitted,
-                'parent_reservation': reserv.parent_reservation
-                and reserv.parent_reservation.id or False,
+                'room_id': reserv['room_id'],
+                'id': reserv['id'],
+                'name': reserv['closure_reason'] or _('Out of service')
+                if reserv['reservation_type'] == 'out'
+                else reserv['partner_name'],
+                'adults': reserv['adults'],
+                'childrens': reserv['children'],
+                'checkin': reserv['checkin'],
+                'checkout': reserv['checkout'],
+                'folio_id': reserv['folio_id'],
+                'bgcolor': reserv['reserve_color'],
+                'color': reserv['reserve_color_text'],
+                'splitted': reserv['splitted'],
+                'parent_reservation': reserv['parent_reservation'] or False,
                 'read_only': False,  # Read-Only
-                'fix_days': reserv.splitted,   # Fix Days
+                'fix_days': reserv['splitted'],   # Fix Days
                 'fix_room': False,  # Fix Rooms
-                'overbooking': reserv.overbooking,
-                'state': reserv.state,
-                'real_dates': [reserv.real_checkin, reserv.real_checkout]})
+                'overbooking': reserv['overbooking'],
+                'state': reserv['state'],
+                'real_dates': [reserv['real_checkin'], reserv['real_checkout']]})
             json_reservation_tooltips.update({
-                reserv.id: {
-                    'folio_name': reserv.folio_id.name,
+                reserv['id']: {
+                    'folio_name': reserv['folio_id'],
                     'name': _('Out of service')
-                    if reserv.folio_id.reservation_type == 'out'
-                    else reserv.folio_id.partner_id.name,
-                    'phone': reserv.mobile or reserv.phone
+                    if reserv['reservation_type'] == 'out'
+                    else reserv['partner_name'],
+                    'phone': reserv['mobile'] or reserv['phone']
                     or _('Phone not provided'),
-                    'email': reserv.email or _('Email not provided'),
-                    'room_type_name': reserv.room_type_id.name,
-                    'adults': reserv.adults,
-                    'children': reserv.children,
-                    'checkin': reserv.checkin,
-                    'checkout': reserv.checkout,
-                    'arrival_hour': reserv.arrival_hour,
-                    'departure_hour': reserv.departure_hour,
-                    'amount_total': reserv.folio_id.amount_total,
-                    'pending_amount': reserv.folio_id.pending_amount,
-                    'amount_paid': reserv.folio_id.amount_total - reserv.folio_id.pending_amount,
-                    'type': reserv.reservation_type or 'normal',
-                    'out_service_description': reserv.out_service_description
+                    'email': reserv['email'] or _('Email not provided'),
+                    'room_type_name': reserv['room_type'],
+                    'adults': reserv['adults'],
+                    'children': reserv['children'],
+                    'checkin': reserv['checkin'],
+                    'checkout': reserv['checkout'],
+                    'arrival_hour': reserv['arrival_hour'],
+                    'departure_hour': reserv['departure_hour'],
+                    'amount_total': reserv['amount_total'],
+                    'pending_amount': reserv['pending_amount'],
+                    'amount_paid': reserv['amount_total'] - (reserv['pending_amount'] or 0.0),
+                    'type': reserv['reservation_type'] or 'normal',
+                    'out_service_description': reserv['out_service_description']
                     or _('No reason given'),
                     # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
                 }
@@ -179,19 +178,33 @@ class HotelReservation(models.Model):
     @api.model
     def get_hcalendar_reservations_data(self, dfrom_dt, dto_dt, rooms):
         rdfrom_dt = dfrom_dt + timedelta(days=1)    # Ignore checkout
-        reservations_raw = self.env['hotel.reservation'].search([
-            ('room_id', 'in', rooms.ids),
-            '|', '|', '&',
-            ('checkin', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('checkout', '>=', rdfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            '&',
-            ('checkin', '<=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('checkout', '>=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            '&',
-            ('checkin', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('checkout', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-        ], order="checkin DESC, checkout ASC, adults DESC, children DESC")
-        return self._hcalendar_reservation_data(reservations_raw)
+        rdfrom_str = rdfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        dfrom_str = dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        dto_str = dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        self.env.cr.execute('''
+            SELECT
+              hr.id, hr.room_id, hr.adults, hr.children, hr.checkin, hr.checkout, hr.reserve_color, hr.reserve_color_text,
+              hr.splitted, hr.parent_reservation, hr.overbooking, hr.state, hr.real_checkin, hr.real_checkout,
+              hr.out_service_description, hr.arrival_hour, hr.departure_hour,
+
+              hf.id as folio_id, hf.name as folio_name, hf.reservation_type, hf.amount_total, hf.pending_amount,
+
+              rp.mobile, rp.phone, rp.email, rp.name as partner_name,
+
+              pt.name as room_type,
+
+              rcr.name as closure_reason
+            FROM hotel_reservation AS hr
+            LEFT JOIN hotel_folio AS hf ON hr.folio_id = hf.id
+            LEFT JOIN hotel_room_type AS hrt ON hr.room_type_id = hrt.id
+            LEFT JOIN product_product AS pp ON hrt.product_id = pp.id
+            LEFT JOIN product_template AS pt ON pp.product_tmpl_id = pt.id
+            LEFT JOIN res_partner AS rp ON hf.partner_id = rp.id
+            LEFT JOIN room_closure_reason as rcr ON hf.closure_reason_id = rcr.id
+            WHERE room_id IN %s AND ((checkin <= %s AND checkout >= %s) OR (checkin <= %s AND checkout >= %s) OR (checkin >= %s AND checkout <= %s))
+            ORDER BY checkin DESC, checkout ASC, adults DESC, children DESC
+            ''', (tuple(rooms.ids), dto_str, rdfrom_str, dfrom_str, dto_str, dfrom_str, dto_str))
+        return self._hcalendar_reservation_data(self.env.cr.dictfetchall())
 
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom_dt, dto_dt):
