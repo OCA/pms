@@ -16,7 +16,7 @@ Knowledge Base
 Scenario 1 (TS001)
 ==================
 :Prerequisites: You have a new WuBook account ready to use **without** Rooms,
- neither Rate plans, Pricelists or Restrictions plans.
+ neither Rate plans or Restrictions plans.
 
 Test TC001
 ----------
@@ -32,7 +32,7 @@ Test TC001
 :Result:
  - You can Import OTA's Info.
  - You can Export Availability, Restrictions and Pricelists.
- - You can bind Rooms and Restriction Plans.
+ - You can bind Rooms, Rate Plans and Restriction Plans.
 
 :Remarks: You can not Import Rooms, neither Availability, Restriction Plans and Restriction Values,
  Pricelist Plans and Pricelist Values because it is a new WuBook Account.
@@ -54,8 +54,8 @@ Test TC002
    ``scode``, ``dboard``, ``rtype``.
 
 :Remarks: Creating a Room Type in WuBook will `make available`
- a **default WuBook Restrictions Plan** with ``rpid=0`` and
- a **default WuBook Price Plan** with ``pid=0``.
+ a **default WuBook Restrictions Plan** named **WuBook Restrictions** with ``rpid=0`` and
+ a **default WuBook Rate Plan** named **WuBook Parity** with ``pid=0``.
 
 :Status: Test Passed.
 
@@ -78,6 +78,22 @@ Test TC003
 :Status: Test Passed.
 
 Test TC004
+------------
+
+:Summary: Add **Restrictions**
+
+:Requirement: TC001, TC002, TC003
+
+:Procedure: Add Restriction Items into the Restriction Plan.
+
+:Result:
+ - The Restriction Plan is updated in WuBook.
+
+:Remarks: For this test you need Push Restrictions in the Hotel Channel Backends Export form.
+
+:Status: Test Passed.
+
+Test TC005
 ----------
 
 :Summary: Bind **Product Pricelist** to the Hotel Channel Connector Backend.
@@ -91,28 +107,46 @@ Test TC004
  - You can modify the following fields: ``name``.
 
 :Remarks: Creating a Product Pricelist in WuBook will `create` a
- **new Rate WuBook Price Plan** with ``pid != 0``.
+ **new WuBook Rate Plan** with ``pid!=0``.
 
 :Status: Test Passed.
 
+Test TC006
+------------
 
-Test TC005
-----------
+:Summary: Add Room Type **Price**
 
-:Summary: Bind **Availability** to the Hotel Channel Connector Backend.
+:Requirement: TC001, TC002, TC005
 
-:Requirement: TC001
+:Procedure: Add Room Type Unit Price into the Rate Plan.
 
-:Procedure: Add the Hotel Channel Connector Backend to the Availability.
+:Result:
+ - The Rate Plan is updated in WuBook.
 
-:Result: The Availability is created in WuBook.
+:Remarks: For this test you use the Massive Changes Wizard.
 
 :Status: Test Failed.
 
-:Reason: The availability is not updated in WuBook.
+:Reason: ``File "/opt/odoo/auto/addons/hotel_channel_connector/models/product_pricelist_item/common.py", line 69,
+ in on_record_create for pricelist_bind in record.restriction_id.channel_bind_ids:
+ AttributeError: 'product.pricelist.item' object has no attribute 'restriction_id'``
 
+Test TC007
+----------
 
-Test TC006
+:Summary: Add **Availability** to the Hotel Room Type.
+
+:Requirement: TC001, TC002, T003
+
+:Procedure: Add the availability to the Room Type using a Hotel Channel Connector Backend.
+
+:Result: The Availability is created in WuBook.
+
+:Remarks: The availability is updated in WuBook after Push Availability.
+
+:Status: Test Passed.
+
+Test TC008
 ----------
 
 :Summary: Bind the **Restriction Plan** in Odoo to the Hotel Channel Connector Backend
@@ -124,11 +158,11 @@ Test TC006
 
 :Result:
  - The Odoo Restriction Plan will be in parity with the
-   default WuBook Restrictions Plan with ``rpid=0``.
+   default WuBook Restrictions Plan with ``rpid=0`` named **WuBook Restrictions**.
 
 :Status: Test Passed.
 
-Test TC007
+Test TC009
 ----------
 
 :Summary: Bind the **Product Pricelist** in Odoo to the Hotel Channel Connector Backend
@@ -144,7 +178,7 @@ Test TC007
 
 :Status: Unknown.
 
-Test TC008
+Test TC010
 ----------
 
 :Summary: Update any **binded field** in a Room Type will update the corresponding field in **WuBook**.
@@ -159,7 +193,3 @@ Test TC008
 
 :Reason: The field was not updated in WuBook.
 
-Test for unbind and delete in progress
---------------------------------------
-
-:Summary: Preparing the tests for unbind and delete actions.
