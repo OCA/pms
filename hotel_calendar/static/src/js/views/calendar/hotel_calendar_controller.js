@@ -296,7 +296,6 @@ var PMSCalendarController = AbstractController.extend({
           $(this).find('.led').removeClass('led-enabled');
         }
         active_calendar.addReservations(_.reject(self._multi_calendar._dataset['reservations'], {overbooking:false}));
-        _.defer(function(){ active_calendar._updateReservations(false); }); // Fix Possible Rows Displacements
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_cancelled button').on('click', function(ev){
@@ -310,7 +309,6 @@ var PMSCalendarController = AbstractController.extend({
             $(this).find('.led').removeClass('led-enabled');
           }
           active_calendar.addReservations(_.reject(self._multi_calendar._dataset['reservations'], {cancelled:false}));
-          _.defer(function(){ active_calendar._updateReservations(false); }); // Fix Possible Rows Displacements
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_divide button').on('click', function(ev){

@@ -306,6 +306,7 @@ HotelCalendar.prototype = {
     if (reservations.length > 0 && !(reservations[0] instanceof HReservation)) {
       console.warn("[HotelCalendar][addReservations] Invalid Reservation definition!");
     } else {
+      var isCalendarEmpty = (this._reservations.length>0);
       // Merge
       var addedReservations = [];
       for (var r of reservations) {
@@ -317,6 +318,7 @@ HotelCalendar.prototype = {
           continue;
         }
 
+        var hasCreatedExtraRows = false;
         r = r.clone(); // HOT-FIX: Multi-Calendar Support
         r.room = this.getRoom(r.room_id, r.overbooking || r.cancelled, r.id);
         // need create a overbooking row?
@@ -327,6 +329,7 @@ HotelCalendar.prototype = {
               cancelled: r.cancelled,
             });
             this.createExtraRoomRow(r.room);
+            hasCreatedExtraRows = true;
           } else {
             console.warn(`Can't found the room '${r.room_id}' for the reservation '${r.id}' (${r.title})!`);
             continue;
@@ -356,7 +359,7 @@ HotelCalendar.prototype = {
       _.defer(function(reservs){
         // Update offsets (New Rooms change positions?)
         this._updateOffsets();
-        
+
         var unusedZones = this._createUnusedZones(reservs);
         // Add Unused Zones
         this._reservations = this._reservations.concat(unusedZones);
@@ -928,17 +931,21 @@ HotelCalendar.prototype = {
 
     var scrollThrottle = _.throttle(this._updateOBIndicators.bind(this), 100);
 
+
+    this.edivcontainer = document.createElement("div");
+    this.edivcontainer.classList.add('hcalendar-container');
+
     // Reservations Table
     this.edivrh = document.createElement("div");
     this.edivrh.classList.add('table-reservations-header');
-    this.e.appendChild(this.edivrh);
+    this.edivcontainer.appendChild(this.edivrh);
     this.etableHeader = document.createElement("table");
     this.etableHeader.classList.add('hcal-table');
     this.etableHeader.classList.add('noselect');
     this.edivrh.appendChild(this.etableHeader);
     this.edivr = document.createElement("div");
     this.edivr.classList.add('table-reservations');
-    this.e.appendChild(this.edivr);
+    this.edivcontainer.appendChild(this.edivr);
     this.etable = document.createElement("table");
     this.etable.classList.add('hcal-table');
     this.etable.classList.add('noselect');
@@ -947,14 +954,14 @@ HotelCalendar.prototype = {
     // Detail Calcs Table
     this.edivch = document.createElement("div");
     this.edivch.classList.add('table-calcs-header');
-    this.e.appendChild(this.edivch);
+    this.edivcontainer.appendChild(this.edivch);
     this.edtableHeader = document.createElement("table");
     this.edtableHeader.classList.add('hcal-table');
     this.edtableHeader.classList.add('noselect');
     this.edivch.appendChild(this.edtableHeader);
     this.edivc = document.createElement("div");
     this.edivc.classList.add('table-calcs');
-    this.e.appendChild(this.edivc);
+    this.edivcontainer.appendChild(this.edivc);
     this.edtable = document.createElement("table");
     this.edtable.classList.add('hcal-table');
     this.edtable.classList.add('noselect');
@@ -964,6 +971,8 @@ HotelCalendar.prototype = {
       $this._updateOBIndicators();
     });
     observer.observe(this.edivr, { childList: true });
+
+    this.e.appendChild(this.edivcontainer);
 
     this._updateView();
     //_.defer(function(self){ self._updateView(); }, this);
@@ -1444,7 +1453,7 @@ HotelCalendar.prototype = {
             warnDiv.classList.add('hcal-warn-ob-indicator');
             warnDiv.style.borderTopLeftRadius = warnDiv.style.borderTopRightRadius = "50px";
             warnDiv.dataset.hcalReservationObjId = reserv.id;
-            this.e.appendChild(warnDiv);
+            this.edivcontainer.appendChild(warnDiv);
             var warnComputedStyle = window.getComputedStyle(warnDiv, null);
             warnDiv.style.top = `${mainBounds.height - eOffset.top - parseInt(warnComputedStyle.getPropertyValue("height"), 10)}px`;
             warnDiv.style.left = `${(bounds.left + (bounds.right - bounds.left)/2.0 - parseInt(warnComputedStyle.getPropertyValue("width"), 10)/2.0) - mainBounds.left}px`;
@@ -1458,7 +1467,7 @@ HotelCalendar.prototype = {
             warnDiv.style.borderBottomLeftRadius = warnDiv.style.borderBottomRightRadius = "50px";
             warnDiv.style.top = `${mainBounds.top - eOffset.top}px`;
             warnDiv.dataset.hcalReservationObjId = reserv.id;
-            this.e.appendChild(warnDiv);
+            this.edivcontainer.appendChild(warnDiv);
             var warnComputedStyle = window.getComputedStyle(warnDiv, null);
             warnDiv.style.left = `${(bounds.left + (bounds.right - bounds.left)/2.0 - parseInt(warnComputedStyle.getPropertyValue("width"), 10)/2.0) - mainBounds.left}px`;
           }

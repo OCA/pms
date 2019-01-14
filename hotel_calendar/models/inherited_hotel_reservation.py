@@ -1,12 +1,10 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-import time
 from datetime import timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-from odoo.tools.profiler import profile
 _logger = logging.getLogger(__name__)
 
 
@@ -179,7 +177,6 @@ class HotelReservation(models.Model):
     def get_hcalendar_reservations_data(self, dfrom_dt, dto_dt, rooms):
         rdfrom_dt = dfrom_dt + timedelta(days=1)    # Ignore checkout
         rdfrom_str = rdfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-        dfrom_str = dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
         dto_str = dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
         self.env.cr.execute('''
             SELECT
@@ -201,11 +198,20 @@ class HotelReservation(models.Model):
             LEFT JOIN product_template AS pt ON pp.product_tmpl_id = pt.id
             LEFT JOIN res_partner AS rp ON hf.partner_id = rp.id
             LEFT JOIN room_closure_reason as rcr ON hf.closure_reason_id = rcr.id
-            WHERE room_id IN %s AND ((checkin <= %s AND checkout >= %s) OR (checkin <= %s AND checkout >= %s) OR (checkin >= %s AND checkout <= %s))
+            WHERE room_id IN %s AND (
+              (checkin <= %s AND checkout >= %s AND checkout <= %s)
+              OR (checkin >= %s AND checkout <= %s)
+              OR (checkin >= %s AND checkin <= %s AND checkout >= %s)
+              OR (checkin <= %s AND checkout >= %s))
             ORDER BY checkin DESC, checkout ASC, adults DESC, children DESC
-            ''', (tuple(rooms.ids), dto_str, rdfrom_str, dfrom_str, dto_str, dfrom_str, dto_str))
+            ''', (tuple(rooms.ids),
+                  rdfrom_str, rdfrom_str, dto_str,
+                  rdfrom_str, dto_str,
+                  rdfrom_str, dto_str, dto_str,
+                  rdfrom_str, dto_str))
         return self._hcalendar_reservation_data(self.env.cr.dictfetchall())
 
+    # Expensive if no data in cache model
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom_dt, dto_dt):
         pricelist_id = self.env['ir.default'].sudo().get(

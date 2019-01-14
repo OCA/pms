@@ -41,40 +41,13 @@
 	vertical-align: middle;
 }
 
-#pms-search {
-	position: fixed;
-	z-index: 9;
-}
-
-#pms-menu {
-	background-color: #f8f8f8;
-	height: 100%;
-    padding: 0 2.5em !important;
-}
-
-#hcal_widget {
-  max-height: 100%;
-}
-
-#multicalendar_panels {
-    background-color: white;
-    border-left: 1px solid #ddd;
-}
-
-.nav-tabs > li > a {
-    border-radius: 0;
-}
-
-.nav-tabs {
-    padding-top: 4px;
-}
-
-.navbar-default {
-    border-color: #f8f8f8;
-}
-
 #cal-pag-prev-plus, #cal-pag-prev, #cal-pag-selector, #cal-pag-next, #cal-pag-next-plus {
 	min-height: 0px;
+}
+
+.hcalendar-container {
+	display: flex;
+	flex-flow: column;
 }
 
 .table-reservations-header {
@@ -493,6 +466,7 @@ td.hcal-cell-room-type-group-item {
 	vertical-align: middle;
 	font-size: x-small;
 	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 td.hcal-cell-room-type-group-item:last-child {
 	border-right-width: 2px;

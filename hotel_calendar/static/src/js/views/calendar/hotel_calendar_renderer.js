@@ -53,7 +53,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         if (days === 'month') {
           days = date_begin.daysInMonth();
         }
-        var date_end = date_begin.clone().add(days+1, 'd');
+        var date_end = date_begin.clone().add(days, 'd');
         return [date_begin, date_end];
     },
 
