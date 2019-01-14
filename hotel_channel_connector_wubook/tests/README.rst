@@ -107,18 +107,20 @@ Test TC005
 
 :Result: The Availability is created in WuBook.
 
-:Status: Unknown.
+:Status: Test Failed.
+
+:Reason: The availability is not updated in WuBook.
 
 
 Test TC006
 ----------
 
-:Summary: Bind the **default Restriction Plan** in Odoo to the Hotel Channel Connector Backend
+:Summary: Bind the **Restriction Plan** in Odoo to the Hotel Channel Connector Backend
  using ``ID on Channel=0`` will start its **parity** with the default Restriction Plan **in WuBook**.
 
 :Requirement: TC001
 
-:Procedure: Add the Hotel Channel Connector Backend to the Restriction Plan using ``ID on Channel=0``.
+:Procedure: Add the Hotel Channel Connector Backend to the Restriction Plan using **``ID on Channel=0``**.
 
 :Result:
  - The Odoo Restriction Plan will be in parity with the
@@ -129,12 +131,12 @@ Test TC006
 Test TC007
 ----------
 
-:Summary: Bind the **default Product Pricelist** in Odoo to the Hotel Channel Connector Backend
+:Summary: Bind the **Product Pricelist** in Odoo to the Hotel Channel Connector Backend
  will start its **parity** with the default Price Plan **in WuBook**.
 
 :Requirement: TC001
 
-:Procedure: Not defined yet.
+:Procedure: Add the Hotel Channel Connector Backend to the Product Pricelis using **``ID on Channel=0``**.
 
 :Result:
  - The Product Pricelist created in WuBook is in parity with the
@@ -155,5 +157,9 @@ Test TC008
 
 :Status: Failed.
 
-:Reason: The field was not updated in WuBook
+:Reason: The field was not updated in WuBook.
 
+Test for unbind and delete in progress
+--------------------------------------
+
+:Summary: Preparing the tests for unbind and delete actions.
