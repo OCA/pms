@@ -239,12 +239,14 @@ var PMSCalendarController = AbstractController.extend({
         }
 
         self._multi_calendar._reserv_tooltips = _.extend(this._multi_calendar._reserv_tooltips, results['tooltips']);
-        self._multi_calendar.merge_days_tooltips(results['events']);
-        self._multi_calendar.merge_pricelist(results['pricelist'], active_calendar);
-        self._multi_calendar.merge_restrictions(results['restrictions'], active_calendar);
-        self._multi_calendar.merge_reservations(reservs, active_calendar);
+        _.defer(function(){
+          self._multi_calendar.merge_days_tooltips(results['events']);
+          self._multi_calendar.merge_pricelist(results['pricelist'], active_calendar);
+          self._multi_calendar.merge_restrictions(results['restrictions'], active_calendar);
+          self._multi_calendar.merge_reservations(reservs, active_calendar);
 
-        self._multi_calendar._assign_extra_info(active_calendar);
+          self._multi_calendar._assign_extra_info(active_calendar);
+        });
       }.bind(this)).then(function(){
         self._last_dates = filterDates;
       });
@@ -256,10 +258,10 @@ var PMSCalendarController = AbstractController.extend({
       var $dateEndDays = this.renderer.$el.find('#pms-menu #date_end_days');
       $dateTimePickerBegin.on("dp.change", function (e) {
         $dateTimePickerBegin.data("DateTimePicker").hide();
-        self._on_change_filter_date(true);
+        self._on_change_filter_date();
       });
       $dateEndDays.on("change", function (e) {
-        self._on_change_filter_date(false);
+        self._on_change_filter_date();
       });
 
       this.renderer.$el.find("#btn_swap button").on('click', function(ev){
@@ -872,19 +874,18 @@ var PMSCalendarController = AbstractController.extend({
       this._multi_calendar.get_active_calendar().setDomain(HotelCalendar.DOMAIN.ROOMS, domain);
     },
 
-    _on_change_filter_date: function(isStartDate) {
-        isStartDate = isStartDate || false;
+    _on_change_filter_date: function() {
         var $dateTimePickerBegin = this.renderer.$el.find('#pms-menu #date_begin');
         var $dateEndDays = this.renderer.$el.find('#pms-menu #date_end_days');
 
         // FIXME: Hackish onchange ignore (Used when change dates from code)
         if ($dateTimePickerBegin.data("ignore_onchange") || $dateEndDays.data("ignore_onchange")) {
             $dateTimePickerBegin.data("ignore_onchange", false);
-            $dateEndDays.data("ignore_onchange", false)
+            $dateEndDays.data("ignore_onchange", false);
             return true;
         }
 
-        var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().utc();
+        var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone();
 
         var active_calendar = this._multi_calendar.get_active_calendar();
         if (active_calendar && date_begin) {
@@ -893,7 +894,7 @@ var PMSCalendarController = AbstractController.extend({
                 days = date_begin.daysInMonth();
             }
             var date_end = date_begin.clone().add(days, 'd');
-            if (!date_begin.isSame(this._last_dates[0].clone().utc(), 'd') || !date_end.isSame(this._last_dates[1].clone().utc(), 'd')) {
+            if (!date_begin.isSame(this._last_dates[0].clone(), 'd') || !date_end.isSame(this._last_dates[1].clone(), 'd')) {
                 active_calendar.setStartDate(date_begin, $dateEndDays.val(), false, function(){
                     this._reload_active_calendar();
                 }.bind(this));
