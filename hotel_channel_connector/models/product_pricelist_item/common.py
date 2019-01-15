@@ -66,7 +66,7 @@ class BindingProductPricelistItemListener(Component):
         if not any(record.channel_bind_ids):
             channel_product_pricelist_item_obj = self.env[
                 'channel.product.pricelist.item']
-            for pricelist_bind in record.restriction_id.channel_bind_ids:
+            for pricelist_bind in record.pricelist_id.channel_bind_ids:
                 pricelist_item_bind = channel_product_pricelist_item_obj.search([
                     ('odoo_id', '=', record.id),
                     ('backend_id', '=', pricelist_bind.backend_id.id),
