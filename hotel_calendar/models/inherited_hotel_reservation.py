@@ -197,7 +197,8 @@ class HotelReservation(models.Model):
             LEFT JOIN product_product AS pp ON hrt.product_id = pp.id
             LEFT JOIN product_template AS pt ON pp.product_tmpl_id = pt.id
             LEFT JOIN res_partner AS rp ON hf.partner_id = rp.id
-            LEFT JOIN room_closure_reason as rcr ON hf.closure_reason_id = rcr.id
+            LEFT JOIN room_closure_reason as rcr
+              ON hf.closure_reason_id = rcr.id
             WHERE room_id IN %s AND (
               (checkin <= %s AND checkout >= %s AND checkout <= %s)
               OR (checkin >= %s AND checkout <= %s)
@@ -211,7 +212,6 @@ class HotelReservation(models.Model):
                   rdfrom_str, dto_str))
         return self._hcalendar_reservation_data(self.env.cr.dictfetchall())
 
-    # Expensive if no data in cache model
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom_dt, dto_dt):
         pricelist_id = self.env['ir.default'].sudo().get(
@@ -219,44 +219,49 @@ class HotelReservation(models.Model):
         if pricelist_id:
             pricelist_id = int(pricelist_id)
 
-        date_diff = abs((dfrom_dt - dto_dt).days) + 1
-        # Get Prices
-        json_rooms_prices = {pricelist_id: []}
-        room_typed_ids = self.env['hotel.room.type'].search(
-            [],
-            order='hcal_sequence ASC')
-        room_pr_cached_obj = self.env['room.pricelist.cached']
+        room_types_ids = self.env['hotel.room.type'].search([])
 
-        prod_price_ids = room_pr_cached_obj.search([
-            ('room_id', 'in', room_typed_ids.ids),
-            ('date', '>=', dfrom_dt),
-            ('date', '<=', dto_dt)
-        ], order='date ASC')
+        dfrom_str = dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        dto_str = dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-        for room_type_id in room_typed_ids:
-            days = {}
-            prod_price_room_ids = prod_price_ids.filtered(
-                lambda x: x.room_id == room_type_id)
-            prod_price_ids = prod_price_ids - prod_price_room_ids
-            for offsetDay in range(0, date_diff):
-                ndate = dfrom_dt+timedelta(days=offsetDay)
-                strndate = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                prod_price_id = prod_price_room_ids.filtered(
-                    lambda x: x.date == strndate)
-                prod_price_room_ids = prod_price_room_ids - prod_price_id
-                days.update({
-                    ndate.strftime("%d/%m/%Y"): prod_price_id
-                    and prod_price_id.price
-                    or room_type_id.product_id.with_context(
-                        quantity=1,
-                        date=prod_price_id.date,
-                        pricelist=pricelist_id).price
+        self.env.cr.execute('''
+            WITH RECURSIVE gen_table_days AS (
+              SELECT hrt.id, %s::Date AS date
+              FROM hotel_room_type AS hrt
+                UNION ALL
+              SELECT hrt.id, (td.date + INTERVAL '1 day')::Date
+              FROM gen_table_days as td
+              LEFT JOIN hotel_room_type AS hrt ON hrt.id=td.id
+              WHERE td.date < %s
+            )
+            SELECT
+              TO_CHAR(gtd.date, 'DD/MM/YYYY') AS date, gtd.date AS o_date,
+              gtd.id AS room_type_id, pt.name, rpc.price, pt.list_price
+            FROM gen_table_days AS gtd
+            LEFT JOIN room_pricelist_cached AS rpc
+              ON rpc.date = gtd.date AND rpc.room_id = gtd.id
+            LEFT JOIN hotel_room_type AS hrt ON hrt.id = gtd.id
+            LEFT JOIN product_product AS pp ON pp.id = hrt.product_id
+            LEFT JOIN product_template AS pt ON pt.id = pp.product_tmpl_id
+            WHERE gtd.id IN %s
+            ORDER BY gtd.id ASC, gtd.date ASC
+            ''', (dfrom_str, dto_str, tuple(room_types_ids.ids)))
+        query_results = self.env.cr.dictfetchall()
+
+        json_data = {}
+        for results in query_results:
+            if results['room_type_id'] not in json_data:
+                json_data.setdefault(results['room_type_id'], {}).update({
+                    'title': results['name'],
+                    'room': results['room_type_id'],
                 })
-            json_rooms_prices[pricelist_id].append({
-                'room': room_type_id.id,
-                'days': days,
-                'title': room_type_id.name,
+            json_data[results['room_type_id']].setdefault('days', {}).update({
+                results['date']: results['price'] or results['list_price']
             })
+
+        json_rooms_prices = {}
+        for prices in list(json_data.values()):
+            json_rooms_prices.setdefault(pricelist_id, []).append(prices)
         return json_rooms_prices
 
     @api.model
