@@ -20,28 +20,25 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from datetime import timedelta
 from odoo.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT,
     DEFAULT_SERVER_DATE_FORMAT)
 from odoo.exceptions import AccessError
-from .common import TestChannelConnectorWubook
+from .common import TestHotelWubook
 
 
-class TestChannelRoomType(TestChannelConnectorWubook):
+class TestChannelRoomType(TestHotelWubook):
 
-    def create_room(self, shortcode, name, capacity, price, availability, defboard, rtype):
+    def test_create_room(self):
         return True
 
-    def fetch_rooms(self):
+    def test_fetch_rooms(self):
         return True
 
-    def modify_room(self, channel_room_id, name, capacity, price, availability, scode, defboard, rtype):
-        import wdb; wdb.set_trace()
-        self.hotel_room_type_simple.ota_capacity = 1
+    def test_modify_room(self):
         return True
 
-    def delete_room(self, channel_room_id):
+    def test_delete_room(self):
         return True
 
     # def test_get_capacity(self):
