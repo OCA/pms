@@ -235,14 +235,13 @@ class HotelReservation(models.Model):
               WHERE td.date < %s
             )
             SELECT
-              TO_CHAR(gtd.date, 'DD/MM/YYYY') AS date, gtd.date AS o_date,
-              gtd.id AS room_type_id, pt.name, rpc.price, pt.list_price
+              TO_CHAR(gtd.date, 'DD/MM/YYYY') as date, gtd.id as room_type_id,
+              pt.name, ppi.fixed_price as price, pt.list_price
             FROM gen_table_days AS gtd
-            LEFT JOIN room_pricelist_cached AS rpc
-              ON rpc.date = gtd.date AND rpc.room_id = gtd.id
             LEFT JOIN hotel_room_type AS hrt ON hrt.id = gtd.id
             LEFT JOIN product_product AS pp ON pp.id = hrt.product_id
             LEFT JOIN product_template AS pt ON pt.id = pp.product_tmpl_id
+            LEFT JOIN product_pricelist_item AS ppi ON ppi.date_start = gtd.date AND ppi.date_end = gtd.date AND ppi.product_tmpl_id = pt.id
             WHERE gtd.id IN %s
             ORDER BY gtd.id ASC, gtd.date ASC
             ''', (dfrom_str, dto_str, tuple(room_types_ids.ids)))

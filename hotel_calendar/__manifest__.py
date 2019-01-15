@@ -25,7 +25,6 @@
         'views/inherited_res_users_views.xml',
         'views/inherited_hotel_room_type_views.xml',
         'views/inherited_hotel_room_views.xml',
-        'views/room_pricelist_cached_views.xml',
         'views/hotel_reservation_views.xml',
         'views/hotel_calendar_management_views.xml',
         'views/hotel_calendar_views.xml',
