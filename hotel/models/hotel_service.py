@@ -56,6 +56,7 @@ class HotelService(models.Model):
     is_board_service = fields.Boolean()
     # Non-stored related field to allow portal user to see the image of the product he has ordered
     product_image = fields.Binary('Product Image', related="product_id.image", store=False)
+    company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
