@@ -154,7 +154,7 @@ class HotelService(models.Model):
         for record in self:
             # If company_id is set, always filter taxes by the company
             folio = record.folio_id or self.env.context.get('default_folio_id')
-            record.tax_id = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
+            record.tax_ids = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
 
     @api.multi
     def _get_display_price(self, product):
