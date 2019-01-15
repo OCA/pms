@@ -222,15 +222,64 @@ Scenario 2 (TS002)
 ==================
 :Prerequisites: `Scenario 1 (TS100)`_ Tests passed.
 
+:Summary: This tests review the basic reservation management.
+
 Test TC201
 ----------
 
-:Summary: **Create** a Reservation decreases the Room Type Availability in one in the corresponding Plan in Wubook.
+:Summary: **Create** a Reservation **decreases** the Room Type Availability in one in the corresponding Plan in Wubook.
 
-:Procedure: Create a reservation of any room type binded to the Hotel Channel Connector Backend.
+:Procedure: Create a reservation with a room type binded to the Hotel Channel Connector Backend.
 
 :Result: The availability is decreased by one.
 
 :Status: Test Failed.
 
 :Reason: The availability remains the same.
+
+Test TC202
+----------
+
+:Summary: **Cancel** a Reservation **increases** the Room Type Availability in one in the corresponding Plan in Wubook.
+
+:Procedure: Cancel a reservation with a room type binded to the Hotel Channel Connector Backend.
+
+:Result: The availability is increased by one.
+
+:Status: Not done yet.
+
+Test TC203
+----------
+
+:Summary: **Change** the Room Type in a Reservation **modifies** the Room Type Availability
+ in the corresponding Plan in Wubook.
+
+:Procedure: Change the Room Type in a reservation to any room type binded to the Hotel Channel Connector Backend.
+
+:Result: The availability is modified according to the change done.
+
+:Status: Not done yet.
+
+Test TC204
+----------
+
+:Summary: **Change** Checkin/Checkout dates in a Reservation **modifies** the Room Type Availability
+ in the corresponding Plan in Wubook.
+
+:Procedure: Change the Checkin/Checkout in a reservation with a room type binded to the Hotel Channel Connector Backend.
+
+:Result: The availability is modified according to the change done.
+
+:Status: Not done yet.
+
+Test TC205
+----------
+
+:Summary: **Reselling** state in a Reservation **increases** the Room Type Availability
+ in the corresponding Plan in Wubook.
+
+:Procedure: Mark a reservation as `reselling` with a room type binded to the Hotel Channel Connector Backend.
+
+:Result: The availability is increased by one.
+
+:Status: Not done yet.
