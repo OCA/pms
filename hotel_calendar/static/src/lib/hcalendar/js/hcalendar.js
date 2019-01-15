@@ -88,6 +88,7 @@ function HotelCalendar(/*String*/querySelector, /*Dictionary*/options, /*List*/p
   this._lazyModeReservationsSelection = false; // Store Info About Timer for Selection Action
   this._domains = {}; // Store domains for filter rooms & reservations
   this._divideDivs = false;
+  this._extraRowIndicators = ['EX-', '/#'];
 
   // Support
   var self = this;
@@ -691,13 +692,8 @@ HotelCalendar.prototype = {
   },
 
   getRealExtraRoomInfo: function(/*HRoomObject*/room) {
-    // Obtain real id
-    var isf = room.number.search('EX-');
-    var isfb = room.number.search('/#');
-    var cnumber = room.number;
-    if (isf != -1 && isfb != -1) { cnumber = cnumber.substr(isf+3, isfb-(isf+3)); }
-
     // Obtain the original room row
+    var cnumber = this.getExtraRoomRealNumber(room);
     var mainRoomRowId = this._sanitizeId(`ROW_${cnumber}_${room.type}`);
     var mainRoomRow = this.e.querySelector('#'+mainRoomRowId);
     if (!mainRoomRow) {
@@ -707,12 +703,16 @@ HotelCalendar.prototype = {
     return [this.getRoom(mainRoomRow.dataset.hcalRoomObjId), mainRoomRow];
   },
 
-  getExtraRoomRow: function(/*HReservationObject*/ex_reserv) {
-    // Obtain real id
-    var isf = ex_reserv.room.number.search('EX-');
-    var isfb = ex_reserv.room.number.search('/#');
-    var cnumber = ex_reserv.room.number;
+  getExtraRoomRealNumber: function(/*HRoomObject*/room) {
+    var isf = room.number.search(this._extraRowIndicators[0]);
+    var isfb = room.number.search(this._extraRowIndicators[1]);
+    var cnumber = room.number;
     if (isf != -1 && isfb != -1) { cnumber = cnumber.substr(isf+3, isfb-(isf+3)); }
+    return cnumber;
+  },
+
+  getExtraRoomRow: function(/*HReservationObject*/ex_reserv) {
+    var cnumber = this.getExtraRoomRealNumber(ex_reserv.room);
     return this.e.querySelector(`#${this._sanitizeId(`ROW_${cnumber}_${ex_reserv.room.type}_EXTRA${ex_reserv.id}`)}`);
   },
 
@@ -727,7 +727,7 @@ HotelCalendar.prototype = {
     var exr = this.getExtraRooms(mainRoom.id);
     var ex_room = mainRoom.clone();
     ex_room.id = `${reservId}@${mainRoom.id}`;
-    ex_room.number = `EX-${mainRoom.number}/#${exr.length}`;
+    ex_room.number = `${this._extraRowIndicators[0]}${mainRoom.number}${this._extraRowIndicators[1]}${exr.length}`;
     for (var key in extraData) {
       ex_room[key] = extraData[key];
     }
@@ -1143,10 +1143,7 @@ HotelCalendar.prototype = {
       row.classList.add('hcal-row-room-type-group-item');
       if ((this.options.showOverbookings && itemRoom.overbooking) || (this.options.showCancelled && itemRoom.cancelled)) {
         var reservId = this.parseExtraRoomId(itemRoom.id)[0];
-        var cnumber = itemRoom.number;
-        var isf = cnumber.search('EX-');
-        var isfb = cnumber.search('/#');
-        if (isf != -1 && isfb != -1) { cnumber = cnumber.substr(isf+3, isfb-(isf+3)); }
+        var cnumber = this.getExtraRoomRealNumber(itemRoom);
         row.setAttribute('id', this._sanitizeId(`ROW_${cnumber}_${itemRoom.type}_EXTRA${reservId}`));
         row.classList.add('hcal-row-room-type-group-overbooking-item');
       } else {
@@ -1821,12 +1818,7 @@ HotelCalendar.prototype = {
       refToRoomNewId = `${refFromReservs.id}@${refToRoomNewId}`;
 
       if (refFromRoom.overbooking || refFromRoom.cancelled) {
-        // Obtain real id
-        var isf = refFromReservs.room.number.search('EX-');
-        var isfb = refFromReservs.room.number.search('/#');
-        var cnumber = refFromReservs.room.number;
-        if (isf != -1 && isfb != -1) { cnumber = cnumber.substr(isf+3, isfb-(isf+3)); }
-
+        var cnumber = this.getExtraRoomRealNumber(refFromRoom);
         refFromRoom.id = refFromRoomNewId;
         var newRowId = `${this._sanitizeId(`ROW_${cnumber}_${refToRoom.type}_EXTRA${refToReservs.id}`)}`;
         var elms = fromRoomRow.querySelectorAll(`td[data-hcal-parent-row='${fromRoomRow.id}']`);
@@ -1835,12 +1827,7 @@ HotelCalendar.prototype = {
         fromRoomRow.dataset.hcalRoomObjId = refFromRoom.id;
       }
       if (refToRoom.overbooking || refToRoom.cancelled) {
-        // Obtain real id
-        var isf = refToReservs.room.number.search('EX-');
-        var isfb = refToReservs.room.number.search('/#');
-        var cnumber = refToReservs.room.number;
-        if (isf != -1 && isfb != -1) { cnumber = cnumber.substr(isf+3, isfb-(isf+3)); }
-
+        var cnumber = this.getExtraRoomRealNumber(refToRoom);
         refToRoom.id = refToRoomNewId;
         var newRowId = `${this._sanitizeId(`ROW_${cnumber}_${refFromRoom.type}_EXTRA${refFromReservs.id}`)}`;
         var elms = toRoomRow.querySelectorAll(`td[data-hcal-parent-row='${toRoomRow.id}']`);
