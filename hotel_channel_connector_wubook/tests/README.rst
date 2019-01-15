@@ -138,13 +138,9 @@ Test TC107
 
 :Result: The Rate Plan is updated in WuBook.
 
-:Remarks: For this test you use the Massive Changes Wizard.
+:Remarks: For this test use the Massive Changes Wizard.
 
-:Status: Test Failed.
-
-:Reason: ``File "/opt/odoo/auto/addons/hotel_channel_connector/models/product_pricelist_item/common.py", line 69,
- in on_record_create for pricelist_bind in record.restriction_id.channel_bind_ids:
- AttributeError: 'product.pricelist.item' object has no attribute 'restriction_id'``
+:Status: Test Passed.
 
 Test TC108
 ----------
