@@ -66,7 +66,7 @@
                         </button>
                         <field name="currency_id" invisible="1"/>
 
-                        <!-- <button type="object" class="oe_stat_button"
+                       <button type="object" class="oe_stat_button"
                             id="invoices_smart_button"
                             icon="fa-thumbs-up"
                             name="action_payments"
@@ -78,9 +78,9 @@
                                 </span>
                                 <span class="o_stat_text">Paid out</span>
                             </div>
-                        </button> -->
+                        </button>
 
-                        <!-- <button type="object" class="oe_stat_button"
+                        <button type="object" class="oe_stat_button"
                             id="payment_smart_button"
                             icon="fa-money"
                             name="action_pay"
@@ -92,9 +92,9 @@
                                 </span>
                                 <span class="o_stat_text">Pending Payment</span>
                             </div>
-                        </button> -->
+                        </button> 
 
-                        <!-- <button type="object" class="oe_stat_button"
+                        <button type="object" class="oe_stat_button"
                             id="refunds_smart_button"
                             icon="fa-undo"
                             name="action_return_payments"
@@ -106,7 +106,7 @@
                                 </span>
                                 <span class="o_stat_text">Refunds</span>
                             </div>
-                        </button> -->
+                        </button>
 
                         <button type="object" class="oe_stat_button" id="invoice_button"
                             icon="fa-pencil-square-o" name="open_invoices_folio"

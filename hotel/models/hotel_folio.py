@@ -257,10 +257,32 @@ class HotelFolio(models.Model):
         for record in self:
             record.rooms_char = ', '.join(record.mapped('room_lines.room_id.name'))
 
-    # @api.depends('order_line.price_total', 'payment_ids', 'return_ids')
+    @api.depends('amount_total', 'payment_ids', 'return_ids')
     @api.multi
     def compute_amount(self):
-        _logger.info('compute_amount')
+        acc_pay_obj = self.env['account.payment']
+        for record in self:
+            if record.reservation_type in ('staff', 'out'):
+                vals = {
+                'pending_amount': 0,
+                'invoices_paid': 0,
+                'refund_amount': 0,
+                }
+                record.update(vals)
+            else:
+                total_inv_refund = 0
+                payments = acc_pay_obj.search([
+                    ('folio_id', '=', record.id)
+                ])
+                total_paid = sum(pay.amount for pay in payments)
+                return_lines = self.env['payment.return.line'].search([('move_line_ids','in',payments.mapped('move_line_ids.id')),('return_id.state','=', 'done')])
+                total_inv_refund = sum(pay_return.amount for pay_return in return_lines)
+                vals = {
+                    'pending_amount': record.amount_total - total_paid + total_inv_refund,
+                    'invoices_paid': total_paid,
+                    'refund_amount': total_inv_refund,
+                }
+                record.update(vals)
 
     @api.multi
     def action_pay(self):

@@ -27,20 +27,29 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     @api.model
     def _get_default_folio(self):
-        folios = self.env['hotel.folio'].browse(self._context.get('active_ids', []))
+        if self._context.get('default_reservation_id'):
+            folio_ids = self._context.get('default_folio_id', [])
+        else:
+            folio_ids = self._context.get('active_ids', [])
+        
+        folios = self.env['hotel.folio'].browse(folio_ids)
         return folios
 
     @api.model
     def _get_default_reservation(self):
-        folios = self._get_default_folio()
-        reservations = self.env['hotel.reservation']
-        for folio in folios:
-            reservations |= folio.room_lines
+        if self._context.get('default_reservation_id'):
+            reservations = self.env['hotel.reservation'].browse(self._context.get('active_ids', []))
+        else:
+            folios = self._get_default_folio()
+            reservations = self.env['hotel.reservation']
+            for folio in folios:
+                reservations |= folio.room_lines
         return reservations
 
     @api.model
     def _get_default_partner_invoice(self):
-        return self.env['hotel.folio'].browse(self._context.get('active_id', [])).partner_invoice_id
+        folios = self._get_default_folio()
+        return folios[0].partner_invoice_id
 
     @api.model
     def _default_deposit_account_id(self):
@@ -72,9 +81,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
                                'advance_inv_id',
                                string="Invoice Lines")
     view_detail = fields.Boolean('View Detail')
-    line_ids = fields.One2many('line.advance.inv',
-                               'advance_inv_id',
-                               string="Lines")
     #Advance Payment
     product_id = fields.Many2one('product.product', string="Product",
                                  domain=[('type', '=', 'service')], default=_default_product_id)
@@ -215,7 +221,24 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     'tax_id': [(6, 0, tax_ids)],
                 })
                 del context
-                self._create_invoice(folio, service_line, amount)
+                invoice = self._create_invoice(folio, service_line, amount)
+        invoice.compute_taxes()
+        if not invoice.invoice_line_ids:
+            raise UserError(_('There is no invoiceable line.'))
+        # If invoice is negative, do a refund invoice instead
+        if invoice.amount_total < 0:
+            invoice.type = 'out_refund'
+            for line in invoice.invoice_line_ids:
+                line.quantity = -line.quantity
+        # Use additional field helper function (for account extensions)
+        for line in invoice.invoice_line_ids:
+            line._set_additional_fields(invoice)
+        # Necessary to force computation of taxes. In account_invoice, they are triggered
+        # by onchanges, which are not triggered when doing a create.
+        invoice.compute_taxes()
+        invoice.message_post_with_view('mail.message_origin_link',
+            values={'self': invoice, 'origin': folios},
+            subtype_id=self.env.ref('mail.mt_note').id)
         if self._context.get('open_invoices', False):
             return folios.open_invoices_folio()
         return {'type': 'ir.actions.act_window_close'}
@@ -307,11 +330,12 @@ class FolioAdvancePaymentInv(models.TransientModel):
         invoice_lines = {}
         reservations = self.env['hotel.reservation']
         services = self.env['hotel.service']
-        for folio in folios:
+        old_folio_ids = self.reservation_ids.mapped('folio_id.id')
+        for folio in folios.filtered(lambda r: r.id not in old_folio_ids):
             folio_reservations = folio.room_lines
             if folio_reservations:
                 reservations |= folio_reservations
-        self.reservation_ids = reservations
+        self.reservation_ids |= reservations
         self.prepare_invoice_lines()
 
     @api.model
@@ -369,6 +393,12 @@ class LineAdvancePaymentInv(models.TransientModel):
     description = fields.Text('Description')
     reservation_id = fields.Many2one('hotel.reservation')
     service_id = fields.Many2one('hotel.service')
+    folio_id = fields.Many2one('hotel.folio', compute='_compute_folio_id')
+
+    def _compute_folio_id(self):
+        for record in self:
+            origin = record.reservation_id if record.reservation_id.id else record.service_id
+            record.folio_id = origin.folio_id
                     
     @api.multi
     def invoice_line_create(self, invoice_id, qty):
@@ -380,7 +410,7 @@ class LineAdvancePaymentInv(models.TransientModel):
         invoice_lines = self.env['account.invoice.line']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         for line in self:
-            origin = self.reservation_id if self.reservation_id.id else self.service_id
+            origin = line.reservation_id if line.reservation_id.id else line.service_id
             res = {}
             product = line.product_id
             account = product.property_account_income_id or product.categ_id.property_account_income_categ_id
@@ -388,7 +418,7 @@ class LineAdvancePaymentInv(models.TransientModel):
                 raise UserError(_('Please define income account for this product: "%s" (id:%d) - or for its category: "%s".') %
                     (product.name, product.id, product.categ_id.name))
 
-            fpos = origin.folio_id.fiscal_position_id or origin.folio_id.partner_id.property_account_position_id
+            fpos = line.folio_id.fiscal_position_id or line.folio_id.partner_id.property_account_position_id
             if fpos:
                 account = fpos.map_account(account)
 
@@ -403,10 +433,13 @@ class LineAdvancePaymentInv(models.TransientModel):
                 'uom_id': product.uom_id.id,
                 'product_id': product.id or False,
                 'invoice_line_tax_ids': [(6, 0, origin.tax_ids.ids)],
-                'account_analytic_id': origin.folio_id.analytic_account_id.id,
+                'account_analytic_id': line.folio_id.analytic_account_id.id,
                 'analytic_tag_ids': [(6, 0, origin.analytic_tag_ids.ids)],
             }
-            vals.update({'invoice_id': invoice_id, 'reservation_ids': [(6, 0, [origin.id])]})
+            if line.reservation_id:
+                vals.update({'invoice_id': invoice_id, 'reservation_ids': [(6, 0, [origin.id])]})
+            elif line.service_id:
+                vals.update({'invoice_id': invoice_id, 'service_ids': [(6, 0, [origin.id])]})
             invoice_lines |= self.env['account.invoice.line'].create(vals)
                 
         return invoice_lines

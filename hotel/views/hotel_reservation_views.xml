@@ -18,10 +18,10 @@
             <form string="Reservation" >
                 <header>
                     <field name="splitted" invisible="True" />
+                    <field name="tax_ids" invisible="1"/>
                     <field name="parent_reservation" invisible="True" />
                     <field name="has_confirmed_reservations_to_send" invisible="1" />
                     <field name="has_cancelled_reservations_to_send" invisible="1" />
-                    <field name="tax_ids" invisible="1"/>
                     <field name="has_checkout_to_send" invisible="1" />
                     <button name="send_reservation_mail" type="object" string="Send Confirmation Email"
                        attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}" class="oe_highlight"/>
@@ -99,6 +99,15 @@
                                 <span class="o_stat_text">Books</span>
                             </div>
                         </button>
+                        <button type="object" class="oe_stat_button" id="invoice_button"
+                            icon="fa-pencil-square-o" name="open_invoices_reservation">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="invoice_count"/>
+                                </span>
+                                <span class="o_stat_text">Invoices</span>
+                            </div>
+                         </button>
                         <button type="object" class="oe_stat_button"
                             id="open_master"
                             icon="fa-chain-broken"

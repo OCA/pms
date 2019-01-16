@@ -1,7 +1,6 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import logging
 import time
 from datetime import timedelta
 from lxml import etree
@@ -14,6 +13,7 @@ from odoo.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
+import logging
 _logger = logging.getLogger(__name__)
 
 
@@ -168,6 +168,7 @@ class HotelReservation(models.Model):
                              track_visibility='onchange')
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
+    invoice_count = fields.Integer(related='folio_id.invoice_count')                                    
     board_service_room_id = fields.Many2one('hotel.board.service.room.type',
                                             string='Board Service')
     cancelled_reason = fields.Selection([
@@ -333,11 +334,13 @@ class HotelReservation(models.Model):
                 board_services = []
                 board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
                 for line in board.board_service_line_ids:
-                    board_services.append((0, False, {
+                    res = {
                         'product_id': line.product_id.id,
                         'is_board_service': True,
                         'folio_id': vals.get('folio_id'),
-                        }))
+                        }
+                    res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
+                    board_services.append((0, False, res))
                 vals.update({'service_ids': board_services})
         if self.compute_price_out_vals(vals):
             days_diff = (
@@ -382,18 +385,15 @@ class HotelReservation(models.Model):
                 board_services = []
                 board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
                 for line in board.board_service_line_ids:
-                    board_services.append((0, False, {
+                    res = {
                         'product_id': line.product_id.id,
                         'is_board_service': True,
-                        'folio_id': record.folio_id.id or vals.get('folio_id')
-                        }))
+                        'folio_id': vals.get('folio_id'),
+                        }
+                    res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
+                    board_services.append((0, False, vals))
                 # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
                 record.update({'service_ids':  [(6, 0, record.service_ids.ids)] + board_services})
-                update_services = record.service_ids.filtered(
-                    lambda r: r.is_board_service == True
-                )
-                for service in update_services:
-                    service.onchange_product_calc_qty()
             if record.compute_price_out_vals(vals):
                 record.update(record.prepare_reservation_lines(
                     checkin,
@@ -457,7 +457,7 @@ class HotelReservation(models.Model):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
                 line.onchange_room_id()
-                line.onchange_compute_reservation_description()
+                line.onchange_room_type_id()
                 line.onchange_board_service()
             if 'pricelist_id' not in values:
                 line.onchange_partner_id()
@@ -625,7 +625,10 @@ class HotelReservation(models.Model):
                 update_old_prices=False))
 
     @api.onchange('checkin', 'checkout', 'room_type_id')
-    def onchange_compute_reservation_description(self):
+    def onchange_room_type_id(self):
+        """
+        When change de room_type_id, we calc the line description and tax_ids
+        """
         if self.room_type_id and self.checkin and self.checkout:
             checkin_dt = fields.Date.from_string(self.checkin)
             checkout_dt = fields.Date.from_string(self.checkout)
@@ -633,6 +636,7 @@ class HotelReservation(models.Model):
             checkout_str = checkout_dt.strftime('%d/%m/%Y')
             self.name = self.room_type_id.name + ': ' + checkin_str + ' - '\
                 + checkout_str
+            self._compute_tax_ids()
 
     @api.onchange('checkin', 'checkout')
     def onchange_update_service_per_day(self):
@@ -670,18 +674,20 @@ class HotelReservation(models.Model):
             for line in self.board_service_room_id.board_service_line_ids:
                 product = line.product_id
                 if product.per_day:
-                    vals = {
+                    res = {
                         'product_id': product.id,
                         'is_board_service': True,
                         'folio_id': self.folio_id.id,
                         }
-                    vals.update(self.env['hotel.service'].prepare_service_lines(
+                    line = self.env['hotel.service'].new(res)
+                    res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
+                    res.update(self.env['hotel.service'].prepare_service_lines(
                         dfrom=self.checkin,
                         days=self.nights,
                         per_person=product.per_person,
                         persons=self.adults,
                         old_line_days=False))
-                    board_services.append((0, False, vals))
+                    board_services.append((0, False, res))
             other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
             self.update({'service_ids':  [(6, 0, other_services.ids)] + board_services})
             for service in self.service_ids.filtered(lambda r: r.is_board_service == True):
@@ -1161,6 +1167,29 @@ class HotelReservation(models.Model):
     """
     INVOICING PROCESS
     """
+
+    @api.multi
+    def open_invoices_reservation(self):
+        invoices = self.folio_id.mapped('invoice_ids')
+        action = self.env.ref('account.action_invoice_tree1').read()[0]
+        if len(invoices) > 1:
+            action['domain'] = [('id', 'in', invoices.ids)]
+        elif len(invoices) == 1:
+            action['views'] = [(self.env.ref('account.invoice_form').id, 'form')]
+            action['res_id'] = invoices.ids[0]
+        else:
+            action = self.env.ref('hotel.action_view_folio_advance_payment_inv').read()[0]
+            action['context'] = {'default_reservation_id': self.id,
+                                 'default_folio_id': self.folio_id.id}
+        return action
+
+    @api.multi
+    def _compute_tax_ids(self):
+        for record in self:
+            # If company_id is set, always filter taxes by the company
+            folio = record.folio_id or self.env.context.get('default_folio_id')
+            product = self.env['product.product'].browse(record.room_type_id.product_id.id)
+            record.tax_ids = product.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
 
     @api.depends('qty_invoiced', 'nights', 'folio_id.state')
     def _get_to_invoice_qty(self):
