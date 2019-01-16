@@ -1,6 +1,6 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields, api
+from odoo import models, api
 
 
 class ProductPricelistItem(models.Model):
@@ -33,20 +33,6 @@ class ProductPricelistItem(models.Model):
                 'price': prod_price,
                 'id': self.id,
             })
-
-            room_pr_cached_obj = self.env['room.pricelist.cached']
-            room_pr_cached_id = room_pr_cached_obj.search([
-                ('room_id', '=', room_type.id),
-                ('date', '=', date_start),
-            ], limit=1)
-            if room_pr_cached_id:
-                room_pr_cached_id.write({'price': prod_price})
-            else:
-                room_pr_cached_obj.create({
-                    'room_id': room_type.id,
-                    'date': date_start,
-                    'price': prod_price,
-                })
         return res
 
     @api.multi
@@ -57,7 +43,6 @@ class ProductPricelistItem(models.Model):
             pricelist_default_id = int(pricelist_default_id)
         ret_vals = super(ProductPricelistItem, self).write(vals)
 
-        room_pr_cached_obj = self.env['room.pricelist.cached']
         bus_calendar_obj = self.env['bus.hotel.calendar']
         room_type_obj = self.env['hotel.room.type']
         if vals.get('fixed_price'):
@@ -87,19 +72,6 @@ class ProductPricelistItem(models.Model):
                         'price': prod_price,
                         'id': record.id,
                     })
-
-                    room_pr_cached_id = room_pr_cached_obj.search([
-                        ('room_id', '=', room_type.id),
-                        ('date', '=', date_start),
-                    ], limit=1)
-                    if room_pr_cached_id:
-                        room_pr_cached_id.write({'price': prod_price})
-                    else:
-                        room_pr_cached_obj.create({
-                            'room_id': room_type.id,
-                            'date': date_start,
-                            'price': prod_price,
-                        })
         return ret_vals
 
     @api.multi
@@ -125,7 +97,6 @@ class ProductPricelistItem(models.Model):
         # Do Normal Stuff
         res = super(ProductPricelistItem, self).unlink()
         # Do extra operations
-        room_pr_cached_obj = self.env['room.pricelist.cached']
         bus_calendar_obj = self.env['bus.hotel.calendar']
         for vals in unlink_vals:
             pricelist_id = vals['pricelist_id']
@@ -144,12 +115,4 @@ class ProductPricelistItem(models.Model):
                 'price': prod.price,
                 'id': vals['id'],
             })
-
-            # Remove records from cache model
-            room_pr_cached_id = room_pr_cached_obj.search([
-                ('room_id', '=', room_type.id),
-                ('date', '=', date_start),
-            ], limit=1)
-            if room_pr_cached_id:
-                room_pr_cached_id.unlink()
         return res

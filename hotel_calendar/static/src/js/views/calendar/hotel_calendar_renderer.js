@@ -48,12 +48,12 @@ var HotelCalendarView = AbstractRenderer.extend({
     get_view_filter_dates: function () {
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
         var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
-        var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().utc();
+        var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().clone();
         var days = $dateEndDays.val();
         if (days === 'month') {
           days = date_begin.daysInMonth();
         }
-        var date_end = date_begin.clone().add(days, 'd').set({'hour': 23, 'minute': 59, 'second': 59}).clone().utc();
+        var date_end = date_begin.clone().add(days, 'd');
         return [date_begin, date_end];
     },
 
@@ -112,6 +112,10 @@ var HotelCalendarView = AbstractRenderer.extend({
             //language : moment.locale(),
             locale : moment.locale(),
             format : HotelConstants.L10N_DATE_MOMENT_FORMAT,
+            widgetPositioning:{
+        horizontal: 'auto',
+        vertical: 'bottom'
+    }
         };
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
         var $dateEndDays = this.$el.find('#pms-menu #date_end_days');

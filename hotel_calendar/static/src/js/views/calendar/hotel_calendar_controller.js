@@ -104,9 +104,10 @@ var PMSCalendarController = AbstractController.extend({
       /** DO MAGIC **/
       var hcal_dates = this.renderer.get_view_filter_dates();
       var oparams = [
-        hcal_dates[0].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        hcal_dates[0].subtract(1, 'd').format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
         hcal_dates[1].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)
       ];
+
       this.model.get_calendar_data(oparams).then(function(results){
         self._multi_calendar._days_tooltips = results['events'];
         self._multi_calendar._reserv_tooltips = results['tooltips'];
@@ -191,7 +192,7 @@ var PMSCalendarController = AbstractController.extend({
           self._view_options['days'] = 7;
         }
 
-        var date_begin = moment().startOf('day');
+        var date_begin = moment().local().startOf('day');
         var days = self._view_options['days'];
         if (self._view_options['days'] === 'month') {
             days = date_begin.daysInMonth();
@@ -205,7 +206,6 @@ var PMSCalendarController = AbstractController.extend({
         $dateTimePickerBegin.data("DateTimePicker").date(date_begin);
         $dateEndDays.val(self._view_options['days']);
 
-        //self.renderer.init_calendar_view();
         self._load_calendars();
         self._assign_view_events();
       });
@@ -213,23 +213,24 @@ var PMSCalendarController = AbstractController.extend({
 
     _reload_active_calendar: function() {
       var self = this;
-      var filterDates = this.renderer.get_view_filter_dates();
       var active_calendar = this._multi_calendar.get_active_calendar();
+      var filterDates = active_calendar.getDates();
       // Clip dates
       var dfrom = filterDates[0].clone(),
         dto = filterDates[1].clone();
 
       if (filterDates[0].isBetween(this._last_dates[0], this._last_dates[1], 'days') && filterDates[1].isAfter(this._last_dates[1], 'day')) {
-        dfrom = this._last_dates[1].clone().local().startOf('day').utc();
+        dfrom = this._last_dates[1].clone();
       } else if (this._last_dates[0].isBetween(filterDates[0], filterDates[1], 'days') && this._last_dates[1].isAfter(filterDates[0], 'day')) {
-        dto = this._last_dates[0].clone().local().endOf('day').utc();
+        dto = this._last_dates[0].clone();
       }
 
       var oparams = [
-        dfrom.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
+        dfrom.subtract(1, 'd').format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
         dto.format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
         false
       ];
+
       this.model.get_calendar_data(oparams).then(function(results){
         var reservs = [];
         for (var r of results['reservations']) {
@@ -238,12 +239,14 @@ var PMSCalendarController = AbstractController.extend({
         }
 
         self._multi_calendar._reserv_tooltips = _.extend(this._multi_calendar._reserv_tooltips, results['tooltips']);
-        self._multi_calendar.merge_days_tooltips(results['events']);
-        self._multi_calendar.merge_pricelist(results['pricelist'], active_calendar);
-        self._multi_calendar.merge_restrictions(results['restrictions'], active_calendar);
-        self._multi_calendar.merge_reservations(reservs, active_calendar);
+        _.defer(function(){
+          self._multi_calendar.merge_days_tooltips(results['events']);
+          self._multi_calendar.merge_pricelist(results['pricelist'], active_calendar);
+          self._multi_calendar.merge_restrictions(results['restrictions'], active_calendar);
+          self._multi_calendar.merge_reservations(reservs, active_calendar);
 
-        self._multi_calendar._assign_extra_info(active_calendar);
+          self._multi_calendar._assign_extra_info(active_calendar);
+        });
       }.bind(this)).then(function(){
         self._last_dates = filterDates;
       });
@@ -255,10 +258,10 @@ var PMSCalendarController = AbstractController.extend({
       var $dateEndDays = this.renderer.$el.find('#pms-menu #date_end_days');
       $dateTimePickerBegin.on("dp.change", function (e) {
         $dateTimePickerBegin.data("DateTimePicker").hide();
-        self._on_change_filter_date(true);
+        self._on_change_filter_date();
       });
       $dateEndDays.on("change", function (e) {
-        self._on_change_filter_date(false);
+        self._on_change_filter_date();
       });
 
       this.renderer.$el.find("#btn_swap button").on('click', function(ev){
@@ -278,6 +281,7 @@ var PMSCalendarController = AbstractController.extend({
         } else {
           active_calendar.setSwapMode(HotelCalendar.MODE.NONE);
           $("#btn_swap span.ntext").html(_t("Start Swap"));
+          $led.removeClass('led-green');
           $led.removeClass('led-blue');
           $led.addClass('led-disabled');
         }
@@ -286,7 +290,6 @@ var PMSCalendarController = AbstractController.extend({
       this.renderer.$el.find('#pms-menu #btn_action_overbooking button').on('click', function(ev){
         var active_calendar = self._multi_calendar.get_active_calendar();
         active_calendar.toggleOverbookingsVisibility();
-        active_calendar.addReservations(self._multi_calendar._dataset['reservations']);
         if (active_calendar.options.showOverbookings) {
           $(this).find('.led').removeClass('led-disabled');
           $(this).find('.led').addClass('led-enabled');
@@ -294,12 +297,12 @@ var PMSCalendarController = AbstractController.extend({
           $(this).find('.led').addClass('led-disabled');
           $(this).find('.led').removeClass('led-enabled');
         }
+        active_calendar.addReservations(_.reject(self._multi_calendar._dataset['reservations'], {overbooking:false}));
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_cancelled button').on('click', function(ev){
           var active_calendar = self._multi_calendar.get_active_calendar();
           active_calendar.toggleCancelledVisibility();
-          active_calendar.addReservations(self._multi_calendar._dataset['reservations']);
           if (active_calendar.options.showCancelled) {
             $(this).find('.led').removeClass('led-disabled');
             $(this).find('.led').addClass('led-enabled');
@@ -307,6 +310,7 @@ var PMSCalendarController = AbstractController.extend({
             $(this).find('.led').addClass('led-disabled');
             $(this).find('.led').removeClass('led-enabled');
           }
+          active_calendar.addReservations(_.reject(self._multi_calendar._dataset['reservations'], {cancelled:false}));
       });
 
       this.renderer.$el.find('#pms-menu #btn_action_divide button').on('click', function(ev){
@@ -362,6 +366,12 @@ var PMSCalendarController = AbstractController.extend({
           });
       });
 
+      this.renderer.$el.find('#pms-menu .menu-filter-box #filters').on('show.bs.collapse', function(ev){
+          self.renderer.$el.find('#pms-menu .menu-filter-box h4 i.fa').css({transform: 'rotate(90deg)'});
+      }).on('hide.bs.collapse', function(ev){
+          self.renderer.$el.find('#pms-menu .menu-filter-box h4 i.fa').css({transform: 'rotate(0deg)'});
+      });
+
       this._multi_calendar.on('tab_changed', function(ev, active_index){
         if (active_index) {
           self._refresh_view_options(active_index);
@@ -374,26 +384,43 @@ var PMSCalendarController = AbstractController.extend({
         this._multi_calendar.on_calendar('hcalOnSavePricelist', function(ev){
           self.savePricelist(ev.detail.calendar_obj, ev.detail.pricelist_id, ev.detail.pricelist);
         });
+
         $('.hcal-reservation noselect').popover();
+        var _destroy_and_clear_popover_mark = function(ev){
+          $(".marked-as-having-a-popover").popover('destroy');
+          $('.hcal-reservation').removeClass("marked-as-having-a-popover");
+        };
+
         this._multi_calendar.on_calendar('hcalOnClickReservation', function(ev){
+          var active_calendar = self._multi_calendar.get_active_calendar();
+          if ( active_calendar.getSelectionMode() !== HotelCalendar.MODE.NONE
+            || active_calendar.getSwapMode() !== HotelCalendar.MODE.NONE )
+          {
+            return;
+          }
           if (ev.detail.reservationObj) {
             var tp = self._multi_calendar._reserv_tooltips[ev.detail.reservationObj.id];
             var qdict = self._generate_reservation_tooltip_dict(tp);
             $(".marked-as-having-a-popover").popover('destroy');
             $(ev.detail.reservationDiv).addClass('marked-as-having-a-popover');
             var $reservationPopover = $(ev.detail.reservationDiv).popover({
-              trigger: 'click focus',
+              trigger: 'manual',
               container: 'body',
               animation: false,
               html: true,
               placement: 'bottom',
-              /* title: "Come'n popovers!", */
               content: QWeb.render('HotelCalendar.TooltipReservation', qdict)
             }).popover('show');
+            /* destroy popover if mouse click is done out the popover */
+            $(document).click(function(e){
+                if( $(e.target).closest(".popover-content").length == 0 && $(e.target).hasClass("marked-as-having-a-popover") == false ) {
+                  _destroy_and_clear_popover_mark();
+               }
+            });
             /* add actions */
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_folio").on('click',
                 {folio_id: ev.detail.reservationObj._userData.folio_id}, function(ev){
-              $(".marked-as-having-a-popover").popover('destroy');
+              _destroy_and_clear_popover_mark();
               self.do_action({
                 type: 'ir.actions.act_window',
                 res_model: 'hotel.folio',
@@ -403,7 +430,7 @@ var PMSCalendarController = AbstractController.extend({
             });
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_reservation").on('click',
                 {reservation_id: ev.detail.reservationObj.id}, function(ev){
-              $(".marked-as-having-a-popover").popover('destroy');
+              _destroy_and_clear_popover_mark();
               self.do_action({
                 type: 'ir.actions.act_window',
                 res_model: 'hotel.reservation',
@@ -412,7 +439,7 @@ var PMSCalendarController = AbstractController.extend({
               });
             });
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_close").on('click', function(ev){
-              $(".marked-as-having-a-popover").popover('destroy');
+              _destroy_and_clear_popover_mark();
             });
           }
         });
@@ -725,7 +752,6 @@ var PMSCalendarController = AbstractController.extend({
         'checkout_day_of_week': HotelCalendar.toMomentUTC(tp['checkout'], '').format("dddd"),
         'arrival_hour': tp['arrival_hour'],
         'departure_hour': tp['departure_hour'],
-        'num_split': tp['num_split'],
         'amount_total': Number(tp['amount_total']).toLocaleString(),
         'pending_amount': Number(tp['pending_amount']).toLocaleString(),
         'amount_paid': Number(tp['amount_paid']).toLocaleString(),
@@ -848,19 +874,18 @@ var PMSCalendarController = AbstractController.extend({
       this._multi_calendar.get_active_calendar().setDomain(HotelCalendar.DOMAIN.ROOMS, domain);
     },
 
-    _on_change_filter_date: function(isStartDate) {
-        isStartDate = isStartDate || false;
+    _on_change_filter_date: function() {
         var $dateTimePickerBegin = this.renderer.$el.find('#pms-menu #date_begin');
         var $dateEndDays = this.renderer.$el.find('#pms-menu #date_end_days');
 
         // FIXME: Hackish onchange ignore (Used when change dates from code)
         if ($dateTimePickerBegin.data("ignore_onchange") || $dateEndDays.data("ignore_onchange")) {
             $dateTimePickerBegin.data("ignore_onchange", false);
-            $dateEndDays.data("ignore_onchange", false)
+            $dateEndDays.data("ignore_onchange", false);
             return true;
         }
 
-        var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone().utc();
+        var date_begin = $dateTimePickerBegin.data("DateTimePicker").date().set({'hour': 0, 'minute': 0, 'second': 0}).clone();
 
         var active_calendar = this._multi_calendar.get_active_calendar();
         if (active_calendar && date_begin) {
@@ -869,7 +894,7 @@ var PMSCalendarController = AbstractController.extend({
                 days = date_begin.daysInMonth();
             }
             var date_end = date_begin.clone().add(days, 'd');
-            if (!date_begin.isSame(this._last_dates[0].clone().utc(), 'd') || !date_end.isSame(this._last_dates[1].clone().utc(), 'd')) {
+            if (!date_begin.isSame(this._last_dates[0].clone(), 'd') || !date_end.isSame(this._last_dates[1].clone(), 'd')) {
                 active_calendar.setStartDate(date_begin, $dateEndDays.val(), false, function(){
                     this._reload_active_calendar();
                 }.bind(this));

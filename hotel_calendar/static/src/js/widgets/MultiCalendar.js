@@ -97,12 +97,8 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
       var active_calendar = this.get_active_calendar();
       if (active_calendar) {
         setTimeout(function(calendar){
-          for (var reserv of calendar._reservations) {
-            var style = window.getComputedStyle(reserv._html, null);
-            if (parseInt(style.width, 10) < 15 || parseInt(style.height, 10) < 15 || parseInt(style.top, 10) === 0) {
-              this.get_active_calendar()._updateReservation(reserv);
-            }
-          }
+          calendar._updateOffsets();
+          calendar._updateReservations(false);
         }.bind(this, active_calendar), 200);
       }
     },
@@ -333,28 +329,27 @@ odoo.define('hotel_calendar.MultiCalendar', function(require) {
 
     _assign_extra_info: function(calendar) {
     	var self = this;
-      $(calendar.etable).find('.hcal-cell-room-type-group-item.btn-hcal-3d').on("mouseenter", function(){
-          var $this = $(this);
-          var room = calendar.getRoom($this.parent().data("hcalRoomObjId"));
-          if (room.overbooking) {
-            $this.tooltip({
-                animation: true,
-                html: true,
-                placement: 'right',
-                title: QWeb.render('HotelCalendar.TooltipRoomOverbooking', {'name': room.number})
-            }).tooltip('show');
-          return;
+      $(calendar.etable).find('.hcal-cell-room-type-group-item.btn-hcal-left').on("mouseenter", function(){
+        var $this = $(this);
+        var room = calendar.getRoom($this.parent().data("hcalRoomObjId"));
+        if (room.overbooking) {
+          $this.tooltip({
+            animation: true,
+            html: true,
+            placement: 'right',
+            title: QWeb.render('HotelCalendar.TooltipRoomOverbooking', {'name': room.number})
+          }).tooltip('show');
         } else {
-            var qdict = {
-                'room_type_name': room.getUserData('room_type_name'),
-                'name': room.number
-            };
-            $this.tooltip({
-                animation: true,
-                html: true,
-                placement: 'right',
-                title: QWeb.render('HotelCalendar.TooltipRoom', qdict)
-            }).tooltip('show');
+          var qdict = {
+              'room_type_name': room.getUserData('room_type_name'),
+              'name': room.number
+          };
+          $this.tooltip({
+            animation: true,
+            html: true,
+            placement: 'right',
+            title: QWeb.render('HotelCalendar.TooltipRoom', qdict)
+          }).tooltip('show');
         }
       });
 

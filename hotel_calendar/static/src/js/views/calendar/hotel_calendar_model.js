@@ -20,15 +20,6 @@ return AbstractModel.extend({
         this.modelManagementName = 'hotel.calendar.management'
     },
 
-    save_pricelist: function(params) {
-        return this._rpc({
-            model: this.modelManagementName,
-            method: 'save_changes',
-            args: params,
-            context: Session.user_context,
-        });
-    },
-
     swap_reservations: function(fromIds, toIds) {
         return this._rpc({
             model: this.modelName,
@@ -39,11 +30,33 @@ return AbstractModel.extend({
     },
 
     get_calendar_data: function(oparams) {
+        var dialog = bootbox.dialog({
+            message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Getting Calendar Data From Server...</div>',
+            onEscape: false,
+            closeButton: false,
+            size: 'small',
+            backdrop: false,
+        });
         return this._rpc({
             model: this.modelName,
             method: 'get_hcalendar_all_data',
             args: oparams,
             context: Session.user_context,
+        }, {
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                //Download progress
+                xhr.addEventListener("readystatechange", function() {
+                    if (this.readyState == this.DONE) {
+                        console.log(`[HotelCalendar] Downloaded ${(parseInt(xhr.getResponseHeader("Content-Length"), 10)/1024).toFixed(3)}KiB of data`);
+                    }
+                }, false);
+                return xhr;
+            },
+            success: function() {
+                dialog.modal('hide');
+            },
+            shadow: true,
         });
     },
 
@@ -151,13 +164,15 @@ return AbstractModel.extend({
     },
 
     save_changes: function(params) {
-      params.splice(0, 0, false); // FIXME: ID=False because first parameter its an integer
+      //params.splice(0, 0, false); // FIXME: ID=False because first parameter its an integer
+      //console.log(params);
       return this._rpc({
           model: 'hotel.calendar.management',
           method: 'save_changes',
           args: params,
-          context: Session.user_context,
+          //context: Session.user_context,
       })
     }
 });
+
 });

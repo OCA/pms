@@ -97,7 +97,7 @@ class HotelFolio(models.Model):
         readonly=True, copy=False,
         index=True, track_visibility='onchange',
         default='draft')
-    
+
 
     # Partner fields for being used directly in the Folio views---------
     email = fields.Char('E-mail', related='partner_id.email')
@@ -165,7 +165,7 @@ class HotelFolio(models.Model):
     has_checkout_to_send = fields.Boolean(
         compute='_compute_has_checkout_to_send')
 
-    #Generic Fields-----------------------------------------------------    
+    #Generic Fields-----------------------------------------------------
     internal_comment = fields.Text(string='Internal Folio Notes')
     cancelled_reason = fields.Text('Cause of cancelled')
     closure_reason_id = fields.Many2one('room.closure.reason')
@@ -349,7 +349,7 @@ class HotelFolio(models.Model):
                 ).next_by_code('hotel.folio') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
-        
+
 
         # Makes sure partner_invoice_id' and 'pricelist_id' are defined
         lfields = ('partner_invoice_id', 'partner_shipping_id', 'pricelist_id')
@@ -402,7 +402,7 @@ class HotelFolio(models.Model):
                                        self.pricelist_id.is_staff,
                                        self.reservation_type)}
         self.update(values)
-    
+
 
     @api.model
     def calcule_reservation_type(self, is_staff, current_type):
@@ -753,13 +753,13 @@ class HotelFolio(models.Model):
         info_grouped = []
         for rline in self.room_lines:
             if (import_all or rline.to_send) and \
-                not rline.parent_reservation and rline.state == state:
-                dates = rline.get_real_checkin_checkout()
+                    not rline.parent_reservation and rline.state == state:
+                dates = (rline.real_checkin, rline.real_checkout)
                 vals = {
                     'num': len(
                         self.room_lines.filtered(
-                            lambda r: r.get_real_checkin_checkout()[0] == dates[0] and \
-                            r.get_real_checkin_checkout()[1] == dates[1] and \
+                            lambda r: r.real_checkin == dates[0] and \
+                            r.real_checkout == dates[1] and \
                             r.room_type_id.id == rline.room_type_id.id and \
                             (r.to_send or import_all) and not r.parent_reservation and \
                             r.state == rline.state)
