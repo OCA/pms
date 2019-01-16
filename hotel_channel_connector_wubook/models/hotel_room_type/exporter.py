@@ -23,7 +23,7 @@ class HotelRoomTypeExporter(Component):
                 binding.total_rooms_count,
                 binding.channel_short_code,
                 'nb',
-                binding.class_id and binding.class_id.class_code or False)
+                binding.class_id and binding.class_id.code_class or False)
         except ChannelConnectorError as err:
             self.create_issue(
                 section='room',
@@ -42,7 +42,7 @@ class HotelRoomTypeExporter(Component):
                 binding.list_price,
                 binding.total_rooms_count,
                 'nb',
-                binding.class_id and binding.class_id.class_code or False)
+                binding.class_id and binding.class_id.code_class or False)
         except ChannelConnectorError as err:
             self.create_issue(
                 section='room',

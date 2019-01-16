@@ -56,6 +56,7 @@ class HotelService(models.Model):
     is_board_service = fields.Boolean()
     # Non-stored related field to allow portal user to see the image of the product he has ordered
     product_image = fields.Binary('Product Image', related="product_id.image", store=False)
+    company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
@@ -154,7 +155,7 @@ class HotelService(models.Model):
         for record in self:
             # If company_id is set, always filter taxes by the company
             folio = record.folio_id or self.env.context.get('default_folio_id')
-            record.tax_id = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
+            record.tax_ids = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
 
     @api.multi
     def _get_display_price(self, product):
