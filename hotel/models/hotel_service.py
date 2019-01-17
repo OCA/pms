@@ -42,6 +42,8 @@ class HotelService(models.Model):
             ids = [item[1] for item in self.env.context['room_lines']]
             return self.env['hotel.reservation'].browse([
                 (ids)], limit=1)
+        elif self.env.context.get('default_ser_room_line'):
+            return self.env.context.get('default_ser_room_line')
         return False
 
     @api.depends('qty_invoiced', 'product_qty', 'folio_id.state')
@@ -235,18 +237,22 @@ class HotelService(models.Model):
         for record in self:
             # If company_id is set, always filter taxes by the company
             folio = record.folio_id or self.env.context.get('default_folio_id')
-            record.tax_ids = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
+            reservation = record.ser_room_line or self.env.context.get('ser_room_line')
+            origin = folio if folio else reservation
+            record.tax_ids = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == origin.company_id)
 
     @api.multi
     def _get_display_price(self, product):
         folio = self.folio_id or self.env.context.get('default_folio_id')
-        if folio.pricelist_id.discount_policy == 'with_discount':
-            return product.with_context(pricelist=folio.pricelist_id.id).price
-        product_context = dict(self.env.context, partner_id=folio.partner_id.id, date=folio.date_order, uom=self.product_id.uom_id.id)
-        final_price, rule_id = folio.pricelist_id.with_context(product_context).get_product_price_rule(self.product_id, self.product_qty or 1.0, folio.partner_id)
-        base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.product_qty, product_id.uom_id, folio.pricelist_id.id)
-        if currency_id != folio.pricelist_id.currency_id.id:
-            base_price = self.env['res.currency'].browse(currency_id).with_context(product_context).compute(base_price, folio.pricelist_id.currency_id)
+        reservation = self.ser_room_line or self.env.context.get('ser_room_line')
+        origin = folio if folio else reservation
+        if origin.pricelist_id.discount_policy == 'with_discount':
+            return product.with_context(pricelist=origin.pricelist_id.id).price
+        product_context = dict(self.env.context, partner_id=origin.partner_id.id, date=folio.date_order if folio else fields.Date.today(), uom=self.product_id.uom_id.id)
+        final_price, rule_id = origin.pricelist_id.with_context(product_context).get_product_price_rule(self.product_id, self.product_qty or 1.0, origin.partner_id)
+        base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.product_qty, product_id.uom_id, origin.pricelist_id.id)
+        if currency_id != origin.pricelist_id.currency_id.id:
+            base_price = self.env['res.currency'].browse(currency_id).with_context(product_context).compute(base_price, origin.pricelist_id.currency_id)
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
@@ -310,9 +316,10 @@ class HotelService(models.Model):
         self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')
         reservation = self.ser_room_line or self.env.context.get('ser_room_line')
-        if folio or reservation:
-            partner = folio.partner_id if folio else reservation.partner_id
-            pricelist = folio.pricelist_id if folio else reservation.pricelist_id
+        origin = folio if folio else reservation
+        if origin:
+            partner = origin.partner_id
+            pricelist = origin.pricelist_id
             if reservation and self.is_board_service:
                 board_room_type = reservation.board_service_room_id
                 if board_room_type.price_type == 'fixed':
@@ -328,12 +335,12 @@ class HotelService(models.Model):
                         lang=partner.lang,
                         partner=partner.id,
                         quantity=self.product_qty,
-                        date=folio.date_order or fields.Date.today(),
+                        date=folio.date_order if folio else fields.Date.today(),
                         pricelist=pricelist.id,
                         uom=self.product_id.uom_id.id,
                         fiscal_position=False
                     )
-                return self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_ids, folio.company_id)
+                return self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_ids, origin.company_id)
 
     @api.model
     def prepare_service_lines(self, **kwargs):

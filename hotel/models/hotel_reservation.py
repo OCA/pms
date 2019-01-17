@@ -330,18 +330,6 @@ class HotelReservation(models.Model):
         vals.update({
             'last_updated_res': fields.Datetime.now(),
         })
-        if 'board_service_room_id' in vals:
-                board_services = []
-                board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
-                for line in board.board_service_line_ids:
-                    res = {
-                        'product_id': line.product_id.id,
-                        'is_board_service': True,
-                        'folio_id': vals.get('folio_id'),
-                        }
-                    res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
-                    board_services.append((0, False, res))
-                vals.update({'service_ids': board_services})
         if self.compute_price_out_vals(vals):
             days_diff = (
                 fields.Date.from_string(vals['checkout']) - fields.Date.from_string(vals['checkin'])
@@ -642,7 +630,7 @@ class HotelReservation(models.Model):
     def onchange_update_service_per_day(self):
         services = self.service_ids.filtered(lambda r: r.per_day == True)
         for service in services:
-            service.onchange_product_calc_qty()
+            service.onchange_product_id()
 
     @api.multi
     @api.onchange('checkin', 'checkout', 'room_id')
@@ -689,7 +677,8 @@ class HotelReservation(models.Model):
                         old_line_days=False))
                     board_services.append((0, False, res))
             other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
-            self.update({'service_ids':  [(6, 0, other_services.ids)] + board_services})
+            self.update({'service_ids': board_services})
+            self.service_ids |= other_services
             for service in self.service_ids.filtered(lambda r: r.is_board_service == True):
                 service._compute_tax_ids()
                 service.price_unit = service._compute_price_unit()

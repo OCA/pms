@@ -55,7 +55,7 @@
                     attrs="{'invisible':[('is_board_service','=', False)]}" />
                 <field name="per_day" invisible="1"/>
                 <field name="folio_id" invisible="1"/>
-                <field name="ser_room_line" invisible="context.get('from_room',True)"
+                <field name="ser_room_line"
                     attrs = "{'required': [('per_day','=',True)]}" />
                 <field name="product_id"
                     domain="[('sale_ok', '=', True)]"
