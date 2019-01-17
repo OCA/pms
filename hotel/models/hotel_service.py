@@ -46,6 +46,13 @@ class HotelService(models.Model):
             return self.env.context.get('default_ser_room_line')
         return False
 
+    @api.model
+    def _default_folio_id(self):
+        import wdb; wdb.set_trace()
+        if 'folio_id' in self._context:
+            return self._context['folio_id']
+        return False
+
     @api.depends('qty_invoiced', 'product_qty', 'folio_id.state')
     def _get_to_invoice_qty(self):
         """
@@ -114,7 +121,9 @@ class HotelService(models.Model):
     name = fields.Char('Service description', required=True)
     sequence = fields.Integer(string='Sequence', default=10)
     product_id = fields.Many2one('product.product', 'Service', required=True)
-    folio_id = fields.Many2one('hotel.folio', 'Folio', ondelete='cascade')
+    folio_id = fields.Many2one('hotel.folio', 'Folio',
+                               ondelete='cascade',
+                               default=_default_folio_id)
     ser_room_line = fields.Many2one('hotel.reservation', 'Room',
                                     default=_default_ser_room_line)
     per_day = fields.Boolean(related='product_id.per_day')
@@ -236,7 +245,7 @@ class HotelService(models.Model):
     def _compute_tax_ids(self):
         for record in self:
             # If company_id is set, always filter taxes by the company
-            folio = record.folio_id or self.env.context.get('default_folio_id')
+            folio = record.folio_id or self.env['hotel.folio'].browse(self.env.context.get('default_folio_id'))
             reservation = record.ser_room_line or self.env.context.get('ser_room_line')
             origin = folio if folio else reservation
             record.tax_ids = record.product_id.taxes_id.filtered(lambda r: not record.company_id or r.company_id == origin.company_id)
@@ -374,7 +383,7 @@ class HotelService(models.Model):
         Compute the amounts of the service line.
         """
         for record in self:
-            folio = record.folio_id or self.env.context.get('default_folio_id')
+            folio = record.folio_id or self.env['hotel.folio'].browse(self.env.context.get('default_folio_id'))
             reservation = record.ser_room_line or self.env.context.get('ser_room_line')
             currency = folio.currency_id if folio else reservation.currency_id
             product = record.product_id

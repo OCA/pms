@@ -327,6 +327,9 @@ class HotelReservation(models.Model):
             vals.update({'folio_id': folio.id,
                          'reservation_type': vals.get('reservation_type'),
                          'channel_type': vals.get('channel_type')})
+        if 'service_ids' in vals:
+            for service in vals['service_ids']:
+                service[2]['folio_id'] = folio.id                
         vals.update({
             'last_updated_res': fields.Datetime.now(),
         })
@@ -440,7 +443,7 @@ class HotelReservation(models.Model):
         """ Deduce missing required fields from the onchange """
         res = {}
         onchange_fields = ['room_id', 'reservation_type',
-            'currency_id', 'name', 'board_service_room_id']
+            'currency_id', 'name', 'board_service_room_id','service_ids']
         if values.get('room_type_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
