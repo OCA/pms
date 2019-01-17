@@ -317,8 +317,10 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         'qty': 1,
                         'discount': day.discount,
                         'price_unit': day.price + extra_price,
-                        'date_to': day.date
+                        'date_to': day.date,
+                        'reservation_line_ids': []
                         }
+                    invoice_lines[group_key][('reservation_line_ids')].append((4,day.id))
         for group_key in invoice_lines:
             vals.append((0, False, invoice_lines[group_key]))
         self.line_ids = vals
@@ -394,6 +396,9 @@ class LineAdvancePaymentInv(models.TransientModel):
     reservation_id = fields.Many2one('hotel.reservation')
     service_id = fields.Many2one('hotel.service')
     folio_id = fields.Many2one('hotel.folio', compute='_compute_folio_id')
+    reservation_line_ids = fields.Many2many(
+        'hotel.reservation.line',
+        string='Reservation Lines')
 
     def _compute_folio_id(self):
         for record in self:
@@ -421,7 +426,6 @@ class LineAdvancePaymentInv(models.TransientModel):
             fpos = line.folio_id.fiscal_position_id or line.folio_id.partner_id.property_account_position_id
             if fpos:
                 account = fpos.map_account(account)
-
             vals = {
                 'name': line.description,
                 'sequence': origin.sequence,
@@ -434,12 +438,19 @@ class LineAdvancePaymentInv(models.TransientModel):
                 'product_id': product.id or False,
                 'invoice_line_tax_ids': [(6, 0, origin.tax_ids.ids)],
                 'account_analytic_id': line.folio_id.analytic_account_id.id,
-                'analytic_tag_ids': [(6, 0, origin.analytic_tag_ids.ids)],
+                'analytic_tag_ids': [(6, 0, origin.analytic_tag_ids.ids)]
             }
             if line.reservation_id:
-                vals.update({'invoice_id': invoice_id, 'reservation_ids': [(6, 0, [origin.id])]})
+                vals.update({
+                    'invoice_id': invoice_id,
+                    'reservation_ids': [(6, 0, [origin.id])],
+                    'reservation_line_ids': [(6, 0, line.reservation_line_ids.ids)]
+                })
             elif line.service_id:
-                vals.update({'invoice_id': invoice_id, 'service_ids': [(6, 0, [origin.id])]})
+                vals.update({
+                    'invoice_id': invoice_id,
+                    'service_ids': [(6, 0, [origin.id])]
+                })
             invoice_lines |= self.env['account.invoice.line'].create(vals)
                 
         return invoice_lines

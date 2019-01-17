@@ -49,6 +49,7 @@
                             nolabel="1">
                             <tree string="Lines" editable="bottom">
                                 <field name="product_id" invisible="1"/>
+                                <field name="reservation_line_ids" />
                                 <field name="reservation_id" />
                                 <field name="service_id" />
                                 <field name="description" />

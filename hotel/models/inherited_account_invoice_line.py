@@ -8,7 +8,7 @@ class AccountInvoiceLine(models.Model):
 
     reservation_ids = fields.Many2many(
         'hotel.reservation',
-        'reservation_line_invoice_rel',
+        'reservation_invoice_rel',
         'invoice_line_id', 'reservation_id',
         string='Reservations', readonly=True, copy=False)
     service_ids = fields.Many2many(
@@ -16,3 +16,9 @@ class AccountInvoiceLine(models.Model):
         'service_line_invoice_rel',
         'invoice_line_id', 'service_id',
         string='Services', readonly=True, copy=False)
+    reservation_line_ids = fields.Many2many(
+        'hotel.reservation.line',
+        'reservation_line_invoice_rel',
+        'invoice_line_id', 'reservation_line_id',
+        string='Reservation Lines', readonly=True, copy=False)
+    

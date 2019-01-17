@@ -82,31 +82,22 @@ class HotelReservation(models.Model):
     def _compute_invoice_status(self):
         """
         Compute the invoice status of a Reservation. Possible statuses:
-        - no: if the SO is not in status 'sale' or 'done', we consider that there is nothing to
+        - no: if the Folio is not in status 'sale' or 'done', we consider that there is nothing to
           invoice. This is also hte default value if the conditions of no other status is met.
         - to invoice: we refer to the quantity to invoice of the line. Refer to method
           `_get_to_invoice_qty()` for more information on how this quantity is calculated.
-        - upselling: this is possible only for a product invoiced on ordered quantities for which
-          we delivered more than expected. The could arise if, for example, a project took more
-          time than expected but we decided not to invoice the extra cost to the client. This
-          occurs onyl in state 'sale', so that when a SO is set to done, the upselling opportunity
-          is removed from the list.
         - invoiced: the quantity invoiced is larger or equal to the quantity ordered.
         """
-        pass
-        #~ precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-        #~ for line in self:
-            #~ if line.state not in ('confirm', 'done'):
-                #~ line.invoice_status = 'no'
-            #~ elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                #~ line.invoice_status = 'to invoice'
-            #~ elif line.state == 'sale' and line.product_id.invoice_policy == 'order' and\
-                    #~ float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
-                #~ line.invoice_status = 'upselling'
-            #~ elif float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
-                #~ line.invoice_status = 'invoiced'
-            #~ else:
-                #~ line.invoice_status = 'no'
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if line.state in ('draft'):
+                line.invoice_status = 'no'
+            elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                line.invoice_status = 'to invoice'
+            elif float_compare(line.qty_invoiced, len(line.reservation_line_ids), precision_digits=precision) >= 0:
+                line.invoice_status = 'invoiced'
+            else:
+                line.invoice_status = 'no'
     
 
     @api.model
@@ -269,7 +260,6 @@ class HotelReservation(models.Model):
                                   related='pricelist_id.currency_id',
                                   string='Currency', readonly=True, required=True)
     invoice_status = fields.Selection([
-         ('upselling', 'Upselling Opportunity'),
          ('invoiced', 'Fully Invoiced'),
          ('to invoice', 'To Invoice'),
          ('no', 'Nothing to Invoice')
@@ -283,7 +273,7 @@ class HotelReservation(models.Model):
     qty_invoiced = fields.Float(
         compute='_get_invoice_qty', string='Invoiced', store=True, readonly=True,
         digits=dp.get_precision('Product Unit of Measure'))
-    invoice_line_ids = fields.Many2many('account.invoice.line', 'reservation_line_invoice_rel', 'reservation_id', 'invoice_line_id', string='Invoice Lines', copy=False)
+    invoice_line_ids = fields.Many2many('account.invoice.line', 'reservation_invoice_rel', 'reservation_id', 'invoice_line_id', string='Invoice Lines', copy=False)
     # qty_delivered = fields.Float(string='Delivered', copy=False, digits=dp.get_precision('Product Unit of Measure'), default=0.0)
     # qty_delivered_updateable = fields.Boolean(compute='_compute_qty_delivered_updateable', string='Can Edit Delivered', readonly=True, default=True)
     price_subtotal = fields.Monetary(string='Subtotal',
@@ -327,7 +317,7 @@ class HotelReservation(models.Model):
             vals.update({'folio_id': folio.id,
                          'reservation_type': vals.get('reservation_type'),
                          'channel_type': vals.get('channel_type')})
-        if 'service_ids' in vals:
+        if 'service_ids' in vals and vals['service_ids'][0][2]:
             for service in vals['service_ids']:
                 service[2]['folio_id'] = folio.id                
         vals.update({
@@ -1043,7 +1033,7 @@ class HotelReservation(models.Model):
                 'ignore_avail_restrictions': True}).create(vals)
             if not reservation_copy:
                 raise ValidationError(_("Unexpected error copying record. \
-                                        Can't split reservation!"))
+                                            Can't split reservation!"))
             record.write({
                 'checkout': new_start_date_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 'price_total': tprice[0],
@@ -1189,31 +1179,22 @@ class HotelReservation(models.Model):
         Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
         calculated from the ordered quantity. Otherwise, the quantity delivered is used.
         """
-        pass
-        #~ for line in self:
-            #~ if line.folio_id.state in ['confirm', 'done']:
-                #~ if line.room_type_id.product_id.invoice_policy == 'order':
-                    #~ line.qty_to_invoice = line.nights - line.qty_invoiced
-                #~ else:
-                    #~ line.qty_to_invoice = line.qty_delivered - line.qty_invoiced
-            #~ else:
-                #~ line.qty_to_invoice = 0
+        for line in self:
+            if line.folio_id.state not in ['draft']:
+                line.qty_to_invoice = len(line.reservation_line_ids) - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
 
     @api.depends('invoice_line_ids.invoice_id.state', 'invoice_line_ids.quantity')
     def _get_invoice_qty(self):
         """
-        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. Note
-        that this is the case only if the refund is generated from the SO and that is intentional: if
-        a refund made would automatically decrease the invoiced quantity, then there is a risk of reinvoicing
-        it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
+        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. We
+        must check day per day and sum or decreased on 1 unit per invoice_line
         """
-        pass
-        #~ for line in self:
-            #~ qty_invoiced = 0.0
-            #~ for invoice_line in line.invoice_line_ids:
-                #~ if invoice_line.invoice_id.state != 'cancel':
-                    #~ if invoice_line.invoice_id.type == 'out_invoice':
-                        #~ qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
-                    #~ elif invoice_line.invoice_id.type == 'out_refund':
-                        #~ qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
-            #~ line.qty_invoiced = qty_invoiced
+        for line in self:
+            qty_invoiced = 0.0
+            for day in line.reservation_line_ids:
+                invoice_lines = day.invoice_line_ids.filtered(lambda r: r.invoice_id.state != 'cancel')
+                qty_invoiced += len(invoice_lines.filtered(lambda r: r.invoice_id.type == 'out_invoice')) - \
+                    len(invoice_lines.filtered(lambda r: r.invoice_id.type == 'out_refund'))
+            line.qty_invoiced = qty_invoiced

@@ -9,6 +9,9 @@
                  <field name="folio_ids" widget="many2many_tags"/>
                  <field name="from_folio" invisible="1" />
             </xpath>
+            <xpath expr="//field[@name='product_id']" position="after">
+                 <field name="reservation_line_ids" widget="many2many_tags"/>
+            </xpath>
             <xpath expr="//button[@name='%(account.action_account_invoice_payment)d']" position="attributes">
                 <attribute name="attrs">{'invisible': ['|',('from_folio','=',True)]}</attribute>
             </xpath>

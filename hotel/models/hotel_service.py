@@ -135,7 +135,6 @@ class HotelService(models.Model):
     product_image = fields.Binary('Product Image', related="product_id.image", store=False)
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     invoice_status = fields.Selection([
-         ('upselling', 'Upselling Opportunity'),
          ('invoiced', 'Fully Invoiced'),
          ('to invoice', 'To Invoice'),
          ('no', 'Nothing to Invoice')
