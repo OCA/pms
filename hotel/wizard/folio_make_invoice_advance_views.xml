@@ -27,6 +27,9 @@
                                 domain="[('type_tax_use','=','sale')]"
                                 attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}"/>
                         </group>
+                        <group>
+                            <field name="group_folios" string="Add Folios"/>
+                        </group>
                         <field name="folio_ids" attrs="{'invisible': [('group_folios', '=', False)]}">
                             <tree string="Folios" editable="bottom"
                                     decoration-danger="partner_invoice_id != parent.partner_invoice_id">
@@ -41,18 +44,21 @@
                             domain="[('folio_id', 'in', folio_ids)]"/>
                     </group>
                     <group>
-                        <field name="group_folios" />
-                        <field name="view_detail" />
-                    </group>
-                    <group>
-                        <field name="line_ids" attrs="{'invisible': [('view_detail', '=', False)]}"
-                            nolabel="1">
+                        <field name="line_ids">
                             <tree string="Lines" editable="bottom">
-                                <field name="product_id" invisible="1"/>
-                                <field name="reservation_line_ids" />
-                                <field name="reservation_id" />
-                                <field name="service_id" />
+                                <field name="product_id" invisible="1" />
+                                <field name="price_room" invisible="1" />
+                                <field name="reservation_id"
+                                    options="{'no_create': True,'no_open': True}"/>
+                                <field name="service_id"
+                                    options="{'no_create': True,'no_open': True}"/>
                                 <field name="description" />
+                                <field name="description_dates" readonly="1" />
+                                <field name="reservation_line_ids"
+                                    widget="many2many_tags" string="Nights"
+                                    domain="[('reservation_id','=',reservation_id),
+                                        ('price','=', price_room)]"
+                                    options="{'no_create': True,'no_open': True}"/>
                                 <field name="qty" />
                                 <field name="discount" />
                                 <field name="price_unit" />

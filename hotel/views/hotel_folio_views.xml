@@ -201,6 +201,7 @@
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
                     <field name="message_ids" widget="mail_thread"/>
                 </div>
             </form>
@@ -219,7 +220,7 @@
                 <field name="name"/>
                 <field name="partner_id" select="1"/>
                 <field name="date_order" select="1"/>
-                <field name="rooms_char" string="Rooms"/>
+                <field name="room_lines" widget="many2many_tags" />
                 <field name="amount_total" sum="Total amount"/>
             </tree>
         </field>

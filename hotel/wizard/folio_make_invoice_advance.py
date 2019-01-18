@@ -61,6 +61,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     advance_payment_method = fields.Selection([
         ('all', 'Invoiceable lines (deduct down payments)'),
+        ('one', 'One line (Bill all in one line)'),
         ('percentage', 'Down payment (percentage)'),
         ('fixed', 'Down payment (fixed amount)')
     ], string='What do you want to invoice?', default=_get_advance_payment_method,
@@ -80,7 +81,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
     line_ids = fields.One2many('line.advance.inv',
                                'advance_inv_id',
                                string="Invoice Lines")
-    view_detail = fields.Boolean('View Detail')
     #Advance Payment
     product_id = fields.Many2one('product.product', string="Product",
                                  domain=[('type', '=', 'service')], default=_default_product_id)
@@ -185,6 +185,9 @@ class FolioAdvancePaymentInv(models.TransientModel):
             invoice = inv_obj.create(inv_data)
             for line in self.line_ids:
                 line.invoice_line_create(invoice.id, line.qty)
+        elif self.advance_payment_method == 'all':
+            pass
+            #Group lines by tax_ids
         else:
             # Create deposit product if necessary
             if not self.product_id:
@@ -281,51 +284,30 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         for service in services:
                             extra_price += service.price_unit * \
                                 service.service_line_ids.filtered(
-                                    lambda x: x.date == day.date).day_qty                            
+                                    lambda x: x.date == day.date).day_qty
+                    #group_key: if group by reservation, We no need group by room_type
                     group_key = (reservation.id, reservation.room_type_id.id, day.price + extra_price, day.discount)
                     date = fields.Date.from_string(day.date)
-                    if group_key in invoice_lines:                     
-                        invoice_lines[group_key][('qty')] += 1
-                        if date == fields.Date.from_string(
-                                    invoice_lines[group_key][('date_to')]) + timedelta(days=1):
-                            desc = invoice_lines[group_key][('description')]                        
-                            invoice_lines[group_key][('description')] = \
-                                desc.replace(desc[desc.rfind(" - "):], ' - ' + \
-                                    (date + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT) + ')')
-                        else:
-                            invoice_lines[group_key][('description')] += \
-                                ' (' + date.strftime(DEFAULT_SERVER_DATE_FORMAT) + \
-                                ' - ' + (date + timedelta(days=1)).strftime(
-                                DEFAULT_SERVER_DATE_FORMAT) + \
-                                ')'
-                        invoice_lines[group_key][('date_to')] = day.date
-                    else:
-                        room_type_description = folio.name + ' ' + reservation.room_type_id.name + ' (' + \
-                            reservation.board_service_room_id.hotel_board_service_id.name + ')' \
-                            if board_service else folio.name + ' ' + reservation.room_type_id.name
-                        description = room_type_description + \
-                            ': (' + date.strftime(DEFAULT_SERVER_DATE_FORMAT) + \
-                            ' - ' + (date + timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT) + \
-                            ')'
-                        invoice_lines[group_key] = {
-                        'description' : description,
-                        'reservation_id': reservation.id,
-                        'room_type_id': reservation.room_type_id,
-                        'product_id': self.env['product.product'].browse(
-                            reservation.room_type_id.product_id.id
-                            ),
-                        'qty': 1,
-                        'discount': day.discount,
-                        'price_unit': day.price + extra_price,
-                        'date_to': day.date,
-                        'reservation_line_ids': []
+                    description = folio.name + ' ' + reservation.room_type_id.name + ' (' + \
+                        reservation.board_service_room_id.hotel_board_service_id.name + ')' \
+                        if board_service else folio.name + ' ' + reservation.room_type_id.name
+                    invoice_lines[group_key] = {
+                            'description' : description,
+                            'reservation_id': reservation.id,
+                            'room_type_id': reservation.room_type_id,
+                            'product_id': self.env['product.product'].browse(
+                                reservation.room_type_id.product_id.id),
+                            'discount': day.discount,
+                            'price_unit': day.price + extra_price,
+                            'reservation_line_ids': []
                         }
                     invoice_lines[group_key][('reservation_line_ids')].append((4,day.id))
         for group_key in invoice_lines:
             vals.append((0, False, invoice_lines[group_key]))
         self.line_ids = vals
+        self.line_ids.onchange_reservation_line_ids()
 
-    @api.onchange('view_detail', 'folio_ids')
+    @api.onchange('folio_ids')
     def onchange_folio_ids(self):
         vals = []
         folios = self.folio_ids
@@ -388,11 +370,13 @@ class LineAdvancePaymentInv(models.TransientModel):
     qty = fields.Integer('Quantity')
     price_unit = fields.Float('Price')
     advance_inv_id = fields.Many2one('folio.advance.payment.inv')
+    price_room = fields.Float(compute='_compute_price_room')
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)
     to_invoice = fields.Boolean('To Invoice')
     description = fields.Text('Description')
+    description_dates =  fields.Text('Range')
     reservation_id = fields.Many2one('hotel.reservation')
     service_id = fields.Many2one('hotel.service')
     folio_id = fields.Many2one('hotel.folio', compute='_compute_folio_id')
@@ -400,10 +384,25 @@ class LineAdvancePaymentInv(models.TransientModel):
         'hotel.reservation.line',
         string='Reservation Lines')
 
+    def _compute_price_room(self):
+        for record in self:
+            record.price_room = self.reservation_line_ids[0].price
+        
     def _compute_folio_id(self):
         for record in self:
             origin = record.reservation_id if record.reservation_id.id else record.service_id
             record.folio_id = origin.folio_id
+
+    @api.onchange('reservation_line_ids')
+    def onchange_reservation_line_ids(self):
+        for record in self:
+            if record.reservation_id:
+                if not record.reservation_line_ids:
+                    raise UserError(_('If you want drop the line, use the trash icon'))
+                record.qty = len(record.reservation_line_ids)
+                record.description_dates = record.reservation_line_ids[0].date + ' - ' + \
+                    ((fields.Date.from_string(record.reservation_line_ids[-1].date)) + \
+                        timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
                     
     @api.multi
     def invoice_line_create(self, invoice_id, qty):
@@ -446,6 +445,7 @@ class LineAdvancePaymentInv(models.TransientModel):
                     'reservation_ids': [(6, 0, [origin.id])],
                     'reservation_line_ids': [(6, 0, line.reservation_line_ids.ids)]
                 })
+                import wdb; wdb.set_trace()
             elif line.service_id:
                 vals.update({
                     'invoice_id': invoice_id,

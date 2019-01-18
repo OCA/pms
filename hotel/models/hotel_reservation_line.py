@@ -4,10 +4,20 @@
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
+from datetime import date
 
 class HotelReservationLine(models.Model):
     _name = "hotel.reservation.line"
     _order = "date"
+
+    @api.multi
+    def name_get(self):
+        result = []
+        for res in self:
+            date = fields.Date.from_string(res.date)
+            name = u'%s/%s' % (date.day, date.month)
+            result.append((res.id, name))
+        return result
 
     reservation_id = fields.Many2one('hotel.reservation', string='Reservation',
                                      ondelete='cascade', required=True,
