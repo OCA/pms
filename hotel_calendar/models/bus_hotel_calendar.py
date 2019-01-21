@@ -24,7 +24,7 @@ class BusHotelCalendar(models.TransientModel):
     def _generate_reservation_notif(self, vals):
         user_id = self.env['res.users'].browse(self.env.uid)
         master_reserv = vals['parent_reservation'] or vals['reserv_id']
-        num_split = self.env['hotel.reservation'].search_count([
+        reserv_chunks = self.env['hotel.reservation'].search_count([
             ('folio_id', '=', vals['folio_id']),
             '|', ('parent_reservation', '=', master_reserv),
             ('id', '=', master_reserv),
@@ -69,7 +69,7 @@ class BusHotelCalendar(models.TransientModel):
                 'checkout': vals['checkout'],
                 'arrival_hour': vals['arrival_hour'],
                 'departure_hour': vals['departure_hour'],
-                'num_split': num_split,
+                'reserv_chunks': reserv_chunks,
                 'amount_total': vals['amount_total'],
                 'pending_amount': vals['pending_amount'],
                 'amount_paid': vals['amount_paid'],

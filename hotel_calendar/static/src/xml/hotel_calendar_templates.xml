@@ -121,6 +121,11 @@
 				title="Close" />
 		</div>
 	</div>
+	<div class="row row-eq-height mt-10">
+		<t t-if="reserv_chunks > 1">
+			This reservation has been splitted in <t t-esc="reserv_chunks"/> chunks.
+		</t>
+	</div>
 </t>
 
 <t t-name="HotelCalendar.TooltipReservation.Sale">
@@ -136,7 +141,7 @@
 			<p>Total Paid</p>
 		</div>
 		<div class="col-sm-6 bg-gray-light">
-			<t t-if="channel_type == 'web' or channel_type=='call'">
+			<t t-if="channel_type == 'web' or channel_type =='call'">
 				<t t-call="HotelCalendar.TooltipReservation.Channel.ota"/>
 			</t>
 			<t t-else="reservation_type == 'out'">
