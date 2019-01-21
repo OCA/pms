@@ -5,9 +5,18 @@
 	<t t-esc="message"/>
 </t>
 
-<t t-extend="HotelCalendar.TooltipReservation">
-	<t t-jquery="ul.oe_tooltip_technical li:last-child" t-operation="after">
-		<li t-if="ota_name"><b>OTA:</b> <t t-esc="ota_name"/></li>
+<t t-extend="HotelCalendar.TooltipReservation.Channel.ota">
+	<t t-jquery="#channel_info" t-operation="replace">
+		<div class="row row-eq-height">
+			<div class="col-sm-12 bg-gray-light">
+				WuBook ID: 1544109684
+			</div>
+		</div>
+		<div class="row row-eq-height">
+			<div class="col-sm-12 bg-gray-light">
+				<t t-esc="ota_name"/> ID: 4253096846
+			</div>
+		</div>
 	</t>
 </t>
 

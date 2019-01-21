@@ -126,6 +126,7 @@ class HotelReservation(models.Model):
                     or _('No reason given'),
                     'splitted': reserv['splitted'],
                     'reserv_chunks': reserv_chunks,
+                    'channel_type': reserv['channel_type'],
                     # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
                 }
             })
@@ -194,7 +195,7 @@ class HotelReservation(models.Model):
             SELECT
               hr.id, hr.room_id, hr.adults, hr.children, hr.checkin, hr.checkout, hr.reserve_color, hr.reserve_color_text,
               hr.splitted, hr.parent_reservation, hr.overbooking, hr.state, hr.real_checkin, hr.real_checkout,
-              hr.out_service_description, hr.arrival_hour, hr.departure_hour,
+              hr.out_service_description, hr.arrival_hour, hr.departure_hour, hr.channel_type, hr.channel_type,
 
               hf.id as folio_id, hf.name as folio_name, hf.reservation_type, hf.amount_total, hf.pending_amount,
 
@@ -418,6 +419,7 @@ class HotelReservation(models.Model):
             'out_service_description': self.out_service_description
             or _('No reason given'),
             'real_dates': [self.real_checkin, self.real_checkout],
+            'channel_type': self.channel_type,
         }
 
     @api.multi

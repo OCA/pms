@@ -84,14 +84,23 @@
 	</div>
 </t>
 
-
 <t t-name="HotelCalendar.TooltipReservation.Channel.ota">
-	<p>WuBook: 1544109684</p>
-	<p>Booking: 4253096846</p>
+	<div id="channel_info"></div>
 </t>
 
 <t t-name="HotelCalendar.TooltipReservation.Channel.direct">
-	<h3 class="mt-10"><small class="text-white">Sales Channel</small> Direct</h3>
+	<div class="row row-eq-height">
+		<div class="col-sm-12 bg-gray-light">
+			Sales Channel: <b class="mt-10"><t t-esc="channel_type"/></b>
+		</div>
+	</div>
+	<div class="row row-eq-height">
+		<div class="col-sm-12 bg-gray-light">
+			<t t-if="channel_type =='call'">
+				TODO: add call center information
+			</t>
+		</div>
+	</div>
 </t>
 
 <t t-name="HotelCalendar.TooltipReservation.Footer">
@@ -141,7 +150,7 @@
 			<p>Total Paid</p>
 		</div>
 		<div class="col-sm-6 bg-gray-light">
-			<t t-if="channel_type == 'web' or channel_type =='call'">
+			<t t-if="channel_type == 'web'">
 				<t t-call="HotelCalendar.TooltipReservation.Channel.ota"/>
 			</t>
 			<t t-else="">

@@ -758,6 +758,7 @@ var PMSCalendarController = AbstractController.extend({
         'reservation_type': tp['type'],
         'out_service_description': tp['out_service_description'],
         'reserv_chunks': tp['reserv_chunks'],
+        'channel_type': tp['channel_type'],
       };
     },
 

@@ -75,6 +75,7 @@ class BusHotelCalendar(models.TransientModel):
                 'amount_paid': vals['amount_paid'],
                 'type': vals['reservation_type'],
                 'out_service_description': vals['out_service_description'],
+                'channel_type': vals['channel_type'],
             }
         }
 
