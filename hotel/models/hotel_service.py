@@ -2,7 +2,10 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models, fields, api, _
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo.tools import (
+    float_is_zero,
+    float_compare,
+    DEFAULT_SERVER_DATE_FORMAT)
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
@@ -48,7 +51,6 @@ class HotelService(models.Model):
 
     @api.model
     def _default_folio_id(self):
-        import wdb; wdb.set_trace()
         if 'folio_id' in self._context:
             return self._context['folio_id']
         return False
@@ -59,15 +61,11 @@ class HotelService(models.Model):
         Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
         calculated from the ordered quantity. Otherwise, the quantity delivered is used.
         """
-        pass
-        #~ for line in self:
-            #~ if line.folio_id.state in ['confirm', 'done']:
-                #~ if line.room_type_id.product_id.invoice_policy == 'order':
-                    #~ line.qty_to_invoice = line.nights - line.qty_invoiced
-                #~ else:
-                    #~ line.qty_to_invoice = line.qty_delivered - line.qty_invoiced
-            #~ else:
-                #~ line.qty_to_invoice = 0
+        for line in self:
+            if line.folio_id.state not in ['draft']:
+                    line.qty_to_invoice = line.product_qty - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
 
     @api.depends('invoice_line_ids.invoice_id.state', 'invoice_line_ids.quantity')
     def _get_invoice_qty(self):
@@ -77,16 +75,15 @@ class HotelService(models.Model):
         a refund made would automatically decrease the invoiced quantity, then there is a risk of reinvoicing
         it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
         """
-        pass
-        #~ for line in self:
-            #~ qty_invoiced = 0.0
-            #~ for invoice_line in line.invoice_line_ids:
-                #~ if invoice_line.invoice_id.state != 'cancel':
-                    #~ if invoice_line.invoice_id.type == 'out_invoice':
-                        #~ qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
-                    #~ elif invoice_line.invoice_id.type == 'out_refund':
-                        #~ qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
-            #~ line.qty_invoiced = qty_invoiced
+        for line in self:
+            qty_invoiced = 0.0
+            for invoice_line in line.invoice_line_ids:
+                if invoice_line.invoice_id.state != 'cancel':
+                    if invoice_line.invoice_id.type == 'out_invoice':
+                        qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_id.uom_id)
+                    elif invoice_line.invoice_id.type == 'out_refund':
+                        qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_id.uom_id)
+            line.qty_invoiced = qty_invoiced
 
     @api.depends('product_qty', 'qty_to_invoice', 'qty_invoiced')
     def _compute_invoice_status(self):
@@ -103,20 +100,16 @@ class HotelService(models.Model):
           is removed from the list.
         - invoiced: the quantity invoiced is larger or equal to the quantity ordered.
         """
-        pass
-        #~ precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-        #~ for line in self:
-            #~ if line.state not in ('sale', 'done'):
-                #~ line.invoice_status = 'no'
-            #~ elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                #~ line.invoice_status = 'to invoice'
-            #~ elif line.state == 'sale' and line.product_id.invoice_policy == 'order' and\
-                    #~ float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
-                #~ line.invoice_status = 'upselling'
-            #~ elif float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
-                #~ line.invoice_status = 'invoiced'
-            #~ else:
-                #~ line.invoice_status = 'no'
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if line.folio_id.state in ('draft'):
+                line.invoice_status = 'no'
+            elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                line.invoice_status = 'to invoice'
+            elif float_compare(line.qty_invoiced, line.product_qty, precision_digits=precision) >= 0:
+                line.invoice_status = 'invoiced'
+            else:
+                line.invoice_status = 'no'
 
     name = fields.Char('Service description', required=True)
     sequence = fields.Integer(string='Sequence', default=10)

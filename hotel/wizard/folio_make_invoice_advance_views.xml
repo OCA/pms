@@ -53,15 +53,16 @@
                                 <field name="service_id"
                                     options="{'no_create': True,'no_open': True}"/>
                                 <field name="description" />
-                                <field name="description_dates" readonly="1" />
+                                <field name="description_dates" readonly="1" force_save="1"/>
                                 <field name="reservation_line_ids"
                                     widget="many2many_tags" string="Nights"
                                     domain="[('reservation_id','=',reservation_id),
                                         ('price','=', price_room)]"
                                     options="{'no_create': True,'no_open': True}"/>
                                 <field name="qty" />
-                                <field name="discount" />
                                 <field name="price_unit" />
+                                <field name="discount" />
+                                <field name="price_total" />
                             </tree>
                         </field>
                     </group>

@@ -170,6 +170,26 @@ class FolioAdvancePaymentInv(models.TransientModel):
             subtype_id=self.env.ref('mail.mt_note').id)
         return invoice
 
+    @api.model
+    def _validate_invoices(self, invoice):
+        invoice.action_invoice_open()
+        payment_ids = self.folio_ids.mapped('payment_ids.id')
+        domain = [('account_id', '=', invoice.account_id.id),
+            ('payment_id', 'in', payment_ids), ('reconciled', '=', False),
+            '|', ('amount_residual', '!=', 0.0),
+            ('amount_residual_currency', '!=', 0.0)]
+        if invoice.type in ('out_invoice', 'in_refund'):
+          domain.extend([('credit', '>', 0), ('debit', '=', 0)])
+          type_payment = _('Outstanding credits')
+        else:
+          domain.extend([('credit', '=', 0), ('debit', '>', 0)])
+          type_payment = _('Outstanding debits')
+        info = {'title': '', 'outstanding': True, 'content': [], 'invoice_id': invoice.id}
+        lines = self.env['account.move.line'].search(domain)
+        currency_id = invoice.currency_id
+        for line in lines:
+            invoice.assign_outstanding_credit(line.id)
+
     @api.multi
     def create_invoices(self):
         inv_obj = self.env['account.invoice']
@@ -185,6 +205,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
             invoice = inv_obj.create(inv_data)
             for line in self.line_ids:
                 line.invoice_line_create(invoice.id, line.qty)
+            self._validate_invoices(invoice)
+            
         elif self.advance_payment_method == 'all':
             pass
             #Group lines by tax_ids
@@ -291,17 +313,19 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     description = folio.name + ' ' + reservation.room_type_id.name + ' (' + \
                         reservation.board_service_room_id.hotel_board_service_id.name + ')' \
                         if board_service else folio.name + ' ' + reservation.room_type_id.name
-                    invoice_lines[group_key] = {
-                            'description' : description,
-                            'reservation_id': reservation.id,
-                            'room_type_id': reservation.room_type_id,
-                            'product_id': self.env['product.product'].browse(
-                                reservation.room_type_id.product_id.id),
-                            'discount': day.discount,
-                            'price_unit': day.price + extra_price,
-                            'reservation_line_ids': []
-                        }
-                    invoice_lines[group_key][('reservation_line_ids')].append((4,day.id))
+                    if group_key not in invoice_lines: 
+                        invoice_lines[group_key] = {
+                                'description' : description,
+                                'reservation_id': reservation.id,
+                                'room_type_id': reservation.room_type_id,
+                                'product_id': self.env['product.product'].browse(
+                                    reservation.room_type_id.product_id.id),
+                                'discount': day.discount,
+                                'price_unit': day.price + extra_price,
+                                'reservation_line_ids': [(4, day.id)]
+                            }
+                    else:
+                        invoice_lines[group_key][('reservation_line_ids')].append((4,day.id))
         for group_key in invoice_lines:
             vals.append((0, False, invoice_lines[group_key]))
         self.line_ids = vals
@@ -368,7 +392,12 @@ class LineAdvancePaymentInv(models.TransientModel):
     product_id = fields.Many2one('product.product', string='Down Payment Product',
                                  domain=[('type', '=', 'service')])
     qty = fields.Integer('Quantity')
-    price_unit = fields.Float('Price')
+    price_unit = fields.Float('Price Unit')
+    price_total = fields.Float('Price Total', compute='_compute_price_total')
+    price_tax = fields.Float('Price Tax', compute='_compute_price_total')
+    price_subtotal = fields.Float('Price Subtotal',
+                                  compute='_compute_price_total',
+                                  store=True)
     advance_inv_id = fields.Many2one('folio.advance.payment.inv')
     price_room = fields.Float(compute='_compute_price_room')
     discount = fields.Float(
@@ -384,9 +413,25 @@ class LineAdvancePaymentInv(models.TransientModel):
         'hotel.reservation.line',
         string='Reservation Lines')
 
+    @api.depends('qty', 'price_unit', 'discount')
+    def _compute_price_total(self):
+        for record in self:
+            origin = record.reservation_id if record.reservation_id.id else record.service_id
+            amount_line = record.price_unit * record.qty
+            if amount_line > 0:
+                product = record.product_id
+                price = amount_line * (1 - (record.discount or 0.0) * 0.01)
+                taxes = origin.tax_ids.compute_all(price, origin.currency_id, 1, product=product)
+                record.update({
+                    'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                    'price_total': taxes['total_included'],
+                    'price_subtotal': taxes['total_excluded'],
+                })
+
     def _compute_price_room(self):
         for record in self:
-            record.price_room = self.reservation_line_ids[0].price
+            if record.reservation_id:
+                record.price_room = record.reservation_line_ids[0].price
         
     def _compute_folio_id(self):
         for record in self:
@@ -426,7 +471,6 @@ class LineAdvancePaymentInv(models.TransientModel):
             if fpos:
                 account = fpos.map_account(account)
             vals = {
-                'name': line.description,
                 'sequence': origin.sequence,
                 'origin': origin.name,
                 'account_id': account.id,
@@ -441,13 +485,14 @@ class LineAdvancePaymentInv(models.TransientModel):
             }
             if line.reservation_id:
                 vals.update({
+                    'name': line.description + ' (' + line.description_dates + ')',
                     'invoice_id': invoice_id,
                     'reservation_ids': [(6, 0, [origin.id])],
                     'reservation_line_ids': [(6, 0, line.reservation_line_ids.ids)]
                 })
-                import wdb; wdb.set_trace()
             elif line.service_id:
                 vals.update({
+                    'name': line.description,
                     'invoice_id': invoice_id,
                     'service_ids': [(6, 0, [origin.id])]
                 })
