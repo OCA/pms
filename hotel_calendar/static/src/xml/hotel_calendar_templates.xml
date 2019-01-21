@@ -144,7 +144,7 @@
 			<t t-if="channel_type == 'web' or channel_type =='call'">
 				<t t-call="HotelCalendar.TooltipReservation.Channel.ota"/>
 			</t>
-			<t t-else="reservation_type == 'out'">
+			<t t-else="">
 				<t t-call="HotelCalendar.TooltipReservation.Channel.direct"/>
 			</t>
 		</div>
