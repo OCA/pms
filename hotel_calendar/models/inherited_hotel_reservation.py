@@ -113,6 +113,7 @@ class HotelReservation(models.Model):
                     'pending_amount': reserv['pending_amount'],
                     'amount_paid': reserv['amount_total'] - (reserv['pending_amount'] or 0.0),
                     'type': reserv['reservation_type'] or 'normal',
+                    'closure_reason': reserv['closure_reason'],
                     'out_service_description': reserv['out_service_description']
                     or _('No reason given'),
                     'splitted': reserv['splitted'],

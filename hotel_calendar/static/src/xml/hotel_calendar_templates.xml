@@ -223,17 +223,37 @@
 
 <t t-name="HotelCalendar.TooltipReservation.out">
 	<div class="container">
-		<div class="row">
-			<div class="col-sm-12 bg-gray-dark py-5">
+		<div class="row row-eq-height">
+			<div class="col-sm-6 bg-gray-lighter">
 				<i class="fa fa-ban fa-2x fa-pull-left"/>
-				<h2><t t-esc="name"/> <small class="text-white"><t t-esc="out_service_description"/></small> </h2>
-				<span class="fa fa-external-link fa-2x fa-border fa-pull-right" role="button"
-				title="View Details" />
+				<header><t t-esc="name"/></header>
+				<p><t t-esc="closure_reason"/></p>
+			</div>
+			<div class="col-sm-6 bg-gray-light">
+				<i class="fa fa-hotel fa-2x fa-pull-left"/>
+				<header><t t-esc="room_type_name"/></header>
+
+				<p><t t-esc="out_service_description"/></p>
 			</div>
 		</div>
+		<t t-call="HotelCalendar.TooltipReservation.Dates"/>
+		<div class="row row-eq-height mt-10">
+			<div class="col-sm-2 btn_popover_open_folio">
+				<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"
+				   title="View Folio Details"> <span class="fa-text-inside"><t t-esc="folio_name"/></span></i>
+			</div>
+			<div class="col-sm-2 btn_popover_open_reservation">
+				<span class="fa fa-suitcase fa-2x" role="button"
+					title="View Reservation Details" />
+			</div>
+			<div class="col-sm-2 btn_popover_close">
+				<span class="fa fa-window-close fa-2x" role="button"
+					title="Close" />
+			</div>
+		</div>
+
 	</div>
 </t>
-
 <t t-name="HotelCalendar.TooltipReservation">
 	<t t-call="HotelCalendar.TooltipReservation.#{ reservation_type }"/>
 </t>

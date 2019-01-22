@@ -756,6 +756,7 @@ var PMSCalendarController = AbstractController.extend({
         'pending_amount': Number(tp['pending_amount']).toLocaleString(),
         'amount_paid': Number(tp['amount_paid']).toLocaleString(),
         'reservation_type': tp['type'],
+        'closure_reason': tp['closure_reason'],
         'out_service_description': tp['out_service_description'],
         'splitted': tp['splitted'],
         'channel_type': tp['channel_type'],

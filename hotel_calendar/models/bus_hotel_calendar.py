@@ -67,6 +67,7 @@ class BusHotelCalendar(models.TransientModel):
                 'pending_amount': vals['pending_amount'],
                 'amount_paid': vals['amount_paid'],
                 'type': vals['reservation_type'],
+                'closure_reason': vals['closure_reason'],
                 'out_service_description': vals['out_service_description'],
                 'splitted': vals['splitted'],
                 'real_dates': vals['real_dates'],
