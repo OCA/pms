@@ -52,6 +52,7 @@ class BusHotelCalendar(models.TransientModel):
                 'real_dates': vals['real_dates'],
             },
             'tooltip': {
+                'folio_name': vals['folio_id'],
                 'name': vals['partner_name'],
                 'phone': vals['partner_phone'],
                 'email': vals['partner_email'],
