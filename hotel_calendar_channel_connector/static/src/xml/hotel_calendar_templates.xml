@@ -9,12 +9,12 @@
 	<t t-jquery="#channel_info" t-operation="replace">
 		<div class="row row-eq-height">
 			<div class="col-sm-12 bg-gray-light">
-				WuBook ID: 1544109684
+				WuBook: 1544109684
 			</div>
 		</div>
 		<div class="row row-eq-height">
 			<div class="col-sm-12 bg-gray-light">
-				<t t-esc="ota_name"/> ID: 4253096846
+				<t t-esc="ota_name"/>: 4253096846
 			</div>
 		</div>
 	</t>

@@ -93,15 +93,6 @@ class HotelReservation(models.Model):
                 'overbooking': reserv['overbooking'],
                 'state': reserv['state'],
                 'real_dates': [reserv['real_checkin'], reserv['real_checkout']]})
-            reserv_chunks = 1
-            if reserv['splitted']:
-                master_reserv = reserv['parent_reservation'] or reserv['folio_id']
-                reserv_chunks = self.search_count([
-                    ('folio_id', '=', reserv['folio_id']),
-                    '|', ('parent_reservation', '=', master_reserv),
-                    ('id', '=', master_reserv),
-                    ('splitted', '=', True),
-                ])
             json_reservation_tooltips.update({
                 reserv['id']: {
                     'folio_name': reserv['folio_id'],
@@ -125,7 +116,6 @@ class HotelReservation(models.Model):
                     'out_service_description': reserv['out_service_description']
                     or _('No reason given'),
                     'splitted': reserv['splitted'],
-                    'reserv_chunks': reserv_chunks,
                     'channel_type': reserv['channel_type'],
                     # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
                 }
@@ -195,7 +185,7 @@ class HotelReservation(models.Model):
             SELECT
               hr.id, hr.room_id, hr.adults, hr.children, hr.checkin, hr.checkout, hr.reserve_color, hr.reserve_color_text,
               hr.splitted, hr.parent_reservation, hr.overbooking, hr.state, hr.real_checkin, hr.real_checkout,
-              hr.out_service_description, hr.arrival_hour, hr.departure_hour, hr.channel_type, hr.channel_type,
+              hr.out_service_description, hr.arrival_hour, hr.departure_hour, hr.channel_type, 
 
               hf.id as folio_id, hf.name as folio_name, hf.reservation_type, hf.amount_total, hf.pending_amount,
 

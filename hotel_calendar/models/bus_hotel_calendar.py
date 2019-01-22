@@ -23,13 +23,6 @@ class BusHotelCalendar(models.TransientModel):
     @api.model
     def _generate_reservation_notif(self, vals):
         user_id = self.env['res.users'].browse(self.env.uid)
-        master_reserv = vals['parent_reservation'] or vals['reserv_id']
-        reserv_chunks = self.env['hotel.reservation'].search_count([
-            ('folio_id', '=', vals['folio_id']),
-            '|', ('parent_reservation', '=', master_reserv),
-            ('id', '=', master_reserv),
-            ('splitted', '=', True),
-        ])
         return {
             'type': 'reservation',
             'action': vals['action'],
@@ -69,12 +62,12 @@ class BusHotelCalendar(models.TransientModel):
                 'checkout': vals['checkout'],
                 'arrival_hour': vals['arrival_hour'],
                 'departure_hour': vals['departure_hour'],
-                'reserv_chunks': reserv_chunks,
                 'amount_total': vals['amount_total'],
                 'pending_amount': vals['pending_amount'],
                 'amount_paid': vals['amount_paid'],
                 'type': vals['reservation_type'],
                 'out_service_description': vals['out_service_description'],
+                'splitted': vals['splitted'],
                 'channel_type': vals['channel_type'],
             }
         }

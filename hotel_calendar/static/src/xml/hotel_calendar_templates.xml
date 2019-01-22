@@ -131,8 +131,8 @@
 		</div>
 	</div>
 	<div class="row row-eq-height mt-10">
-		<t t-if="reserv_chunks > 1">
-			This reservation has been splitted in <t t-esc="reserv_chunks"/> chunks.
+		<t t-if="splitted">
+			This reservation is part of splitted reservation. You can check it in the corresponding Folio.
 		</t>
 	</div>
 </t>
