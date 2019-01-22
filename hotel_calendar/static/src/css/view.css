@@ -206,6 +206,7 @@ input#bookings_search {
 }
 .popover {
 	max-width: 550px;
+	border-radius: 0px;
 }
 .popover .container {
 	max-width: 100%;

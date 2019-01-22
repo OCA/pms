@@ -105,28 +105,28 @@
 
 <t t-name="HotelCalendar.TooltipReservation.Footer">
 	<div class="row row-eq-height mt-10">
-		<div class="col-sm-4 btn_popover_open_folio">
-			<i class="fa fa-file-text-o fa-2x fa-pull-left fa-border" role="button"
+		<div class="col-sm-2 btn_popover_open_folio">
+			<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"
 			   title="View Folio Details"> <span class="fa-text-inside"><t t-esc="folio_name"/></span></i>
 		</div>
 		<div class="col-sm-2 btn_popover_open_reservation">
-			<span class="fa fa-suitcase fa-2x fa-border" role="button"
+			<span class="fa fa-suitcase fa-2x" role="button"
 				title="View Reservation Details" />
 		</div>
 		<div class="col-sm-2">
-			<span class="fa fa-user-plus fa-2x fa-border" role="button"
+			<span class="fa fa-user-plus fa-2x" role="button"
 				title="Checkin" />
 		</div>
 		<div class="col-sm-2">
-			<span class="fa fa-envelope fa-2x fa-border" role="button"
+			<span class="fa fa-envelope fa-2x" role="button"
 				title="Send Reservation Email" />
 		</div>
 		<div class="col-sm-2">
-			<span class="fa fa-money fa-2x fa-border" role="button"
+			<span class="fa fa-money fa-2x" role="button"
 				title="Payments" />
 		</div>
 		<div class="col-sm-2 btn_popover_close">
-			<span class="fa fa-window-close fa-2x fa-border" role="button"
+			<span class="fa fa-window-close fa-2x" role="button"
 				title="Close" />
 		</div>
 	</div>
