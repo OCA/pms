@@ -117,6 +117,7 @@ class HotelReservation(models.Model):
                     or _('No reason given'),
                     'splitted': reserv['splitted'],
                     'channel_type': reserv['channel_type'],
+                    'real_dates': [reserv['real_checkin'], reserv['real_checkout']],
                     # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
                 }
             })
