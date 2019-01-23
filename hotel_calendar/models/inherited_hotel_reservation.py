@@ -120,6 +120,7 @@ class HotelReservation(models.Model):
                     'channel_type': reserv['channel_type'],
                     'real_dates': [reserv['real_checkin'], reserv['real_checkout']],
                     # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
+                    'board_service_name': reserv['board_service_name'],
                 }
             })
 
@@ -195,7 +196,9 @@ class HotelReservation(models.Model):
 
               pt.name as room_type,
 
-              rcr.name as closure_reason
+              rcr.name as closure_reason,
+              
+              hbs.name as board_service_name
             FROM hotel_reservation AS hr
             LEFT JOIN hotel_folio AS hf ON hr.folio_id = hf.id
             LEFT JOIN hotel_room_type AS hrt ON hr.room_type_id = hrt.id
@@ -204,6 +207,8 @@ class HotelReservation(models.Model):
             LEFT JOIN res_partner AS rp ON hf.partner_id = rp.id
             LEFT JOIN room_closure_reason as rcr
               ON hf.closure_reason_id = rcr.id
+            LEFT JOIN hotel_board_service_room_type_rel AS hbsrt ON hr.board_service_room_id = hbsrt.id
+            LEFT JOIN hotel_board_service AS hbs ON hbsrt.hotel_board_service_id = hbs.id
             WHERE room_id IN %s AND (
               (checkin <= %s AND checkout >= %s AND checkout <= %s)
               OR (checkin >= %s AND checkout <= %s)
@@ -412,6 +417,7 @@ class HotelReservation(models.Model):
             or _('No reason given'),
             'real_dates': [self.real_checkin, self.real_checkout],
             'channel_type': self.channel_type,
+            'board_service_name': self.board_service_room_id.hotel_board_service_id.name,
         }
 
     @api.multi

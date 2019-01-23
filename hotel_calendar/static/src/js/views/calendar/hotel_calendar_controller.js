@@ -760,6 +760,7 @@ var PMSCalendarController = AbstractController.extend({
         'out_service_description': tp['out_service_description'],
         'splitted': tp['splitted'],
         'channel_type': tp['channel_type'],
+        'board_service_name': tp['board_service_name'],
       };
     },
 
