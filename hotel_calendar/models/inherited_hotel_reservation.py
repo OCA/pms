@@ -412,7 +412,7 @@ class HotelReservation(models.Model):
             'pending_amount': self.folio_id.pending_amount,
             'amount_paid': self.folio_id.amount_total - self.folio_id.pending_amount,
             'reservation_type': self.reservation_type or 'normal',
-            'closure_reason_id': self.closure_reason_id,
+            'closure_reason': self.closure_reason_id.name,
             'out_service_description': self.out_service_description
             or _('No reason given'),
             'real_dates': [self.real_checkin, self.real_checkout],
