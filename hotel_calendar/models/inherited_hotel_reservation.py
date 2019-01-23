@@ -121,6 +121,7 @@ class HotelReservation(models.Model):
                     'real_dates': [reserv['real_checkin'], reserv['real_checkout']],
                     # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
                     'board_service_name': reserv['board_service_name'],
+                    'services': reserv['services'],
                 }
             })
 
@@ -195,6 +196,8 @@ class HotelReservation(models.Model):
               rp.mobile, rp.phone, rp.email, rp.name as partner_name,
 
               pt.name as room_type,
+              
+              array_agg(pt2.name) FILTER (WHERE pt2.is_popoverable = TRUE) as services,
 
               rcr.name as closure_reason,
               
@@ -209,11 +212,15 @@ class HotelReservation(models.Model):
               ON hf.closure_reason_id = rcr.id
             LEFT JOIN hotel_board_service_room_type_rel AS hbsrt ON hr.board_service_room_id = hbsrt.id
             LEFT JOIN hotel_board_service AS hbs ON hbsrt.hotel_board_service_id = hbs.id
+            LEFT JOIN hotel_service AS hs ON hr.id = hs.ser_room_line
+            LEFT JOIN product_product AS pp2 ON hs.product_id = pp2.id
+            LEFT JOIN product_template AS pt2 ON pp2.product_tmpl_id = pt2.id
             WHERE room_id IN %s AND (
               (checkin <= %s AND checkout >= %s AND checkout <= %s)
               OR (checkin >= %s AND checkout <= %s)
               OR (checkin >= %s AND checkin <= %s AND checkout >= %s)
               OR (checkin <= %s AND checkout >= %s))
+            GROUP BY hr.id, hf.id, pt.name, rcr.name, hbs.name, rp.mobile, rp.phone, rp.email, rp.name
             ORDER BY checkin DESC, checkout ASC, adults DESC, children DESC
             ''', (tuple(rooms.ids),
                   rdfrom_str, rdfrom_str, dto_str,
@@ -418,6 +425,8 @@ class HotelReservation(models.Model):
             'real_dates': [self.real_checkin, self.real_checkout],
             'channel_type': self.channel_type,
             'board_service_name': self.board_service_room_id.hotel_board_service_id.name,
+            'services': [service.product_id.name for service in self.service_ids
+                         if service.product_id.is_popoverable],
         }
 
     @api.multi

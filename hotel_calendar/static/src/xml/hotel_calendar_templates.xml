@@ -131,9 +131,14 @@
 		</div>
 	</div>
 	<div class="row row-eq-height mt-10">
-		<t t-if="splitted">
-			This reservation is part of splitted reservation. You can check it in the corresponding Folio.
-		</t>
+		<div class="col-sm-12">
+			<t t-if="services != False">
+				<i class="fa fa-exclamation-circle fa-pull-left"/> This reservation requires: <t t-esc="services"/>
+			</t>
+			<t t-if="splitted">
+				<p>This reservation is part of splitted reservation. You can check it in the corresponding Folio.</p>
+			</t>
+		</div>
 	</div>
 </t>
 
@@ -255,6 +260,7 @@
 
 	</div>
 </t>
+
 <t t-name="HotelCalendar.TooltipReservation">
 	<t t-call="HotelCalendar.TooltipReservation.#{ reservation_type }"/>
 </t>

@@ -193,6 +193,7 @@
             <field name="per_person">False</field>
             <field name="daily_limit">1</field>
             <field name="is_extra_bed">True</field>
+            <field name="is_popoverable">True</field>
         </record>
 
         <record id="hotel_service_3" model="product.product">
