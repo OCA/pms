@@ -132,7 +132,7 @@
 	</div>
 	<div class="row row-eq-height mt-10">
 		<div class="col-sm-12">
-			<t t-if="services != False">
+			<t t-if="services">
 				<i class="fa fa-exclamation-circle fa-pull-left"/> This reservation requires: <t t-esc="services"/>
 			</t>
 			<t t-if="splitted">

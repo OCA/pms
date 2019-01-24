@@ -426,7 +426,7 @@ class HotelReservation(models.Model):
             'channel_type': self.channel_type,
             'board_service_name': self.board_service_room_id.hotel_board_service_id.name,
             'services': [service.product_id.name for service in self.service_ids
-                         if service.product_id.is_popoverable],
+                         if service.product_id.is_popoverable] or False,
         }
 
     @api.multi
