@@ -197,7 +197,7 @@ class HotelReservation(models.Model):
 
               pt.name as room_type,
               
-              array_agg(pt2.name) FILTER (WHERE pt2.is_popoverable = TRUE) as services,
+              array_agg(pt2.name) FILTER (WHERE pt2.show_in_calendar = TRUE) as services,
 
               rcr.name as closure_reason,
               
@@ -426,7 +426,7 @@ class HotelReservation(models.Model):
             'channel_type': self.channel_type,
             'board_service_name': self.board_service_room_id.hotel_board_service_id.name,
             'services': [service.product_id.name for service in self.service_ids
-                         if service.product_id.is_popoverable] or False,
+                         if service.product_id.show_in_calendar] or False,
         }
 
     @api.multi
