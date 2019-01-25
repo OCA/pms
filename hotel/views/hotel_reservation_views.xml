@@ -82,7 +82,6 @@
                 <sheet>
                     <div class="oe_button_box" attrs="{'invisible': [('folio_id','=',False)]}">
                         <button type="object" class="oe_stat_button"
-                            id="folio_smart_button"
                             icon="fa-file"
                             name="open_folio">
                             <div class="o_form_field o_stat_info">
@@ -90,7 +89,6 @@
                             </div>
                         </button>
                         <button type="action" class="oe_stat_button"
-                            id="books"
                             icon="fa-list-ul"
                             attrs="{'invisible': [('partner_id','=',False)]}"
                             name="%(open_hotel_reservation_form_tree_all)d"
@@ -109,7 +107,6 @@
                             </div>
                          </button>
                         <button type="object" class="oe_stat_button"
-                            id="open_master"
                             icon="fa-chain-broken"
                             name="open_master"
                             attrs="{'invisible':[('splitted','=',False)]}">
@@ -120,7 +117,6 @@
                             </div>
                         </button>
                         <button type="action" class="oe_stat_button"
-                            id="pending_checkins_smart_button"
                             icon="fa-user-plus"
                             name="%(launch_checkin_wizard_add)d"
                             context="{'partner_id': partner_id,'enter_date': checkin,
@@ -134,7 +130,6 @@
                             </div>
                         </button>
                         <button type="object" class="oe_stat_button"
-                            id="checkin_smart_button"
                             icon="fa-users"
                             name="action_checks"
                             attrs="{'invisible': ['|', ('checkin_partner_count','&lt;=',0),
@@ -253,7 +248,7 @@
                                             decoration-success="is_board_service == True">
                                         <field name="is_board_service" invisible="1" />
                                         <button type="object" class="oe_stat_button"
-                                            id="included_in_room" icon="fa fa-1x fa-bed"                                                                                              
+                                            icon="fa fa-1x fa-bed"                                                                                              
                                             name="open_service_lines"
                                             attrs="{'invisible':[('is_board_service','=', False)]}" />
                                         <field name="per_day" invisible="1"/>
@@ -266,7 +261,7 @@
                                         <field name="name"/>
                                         <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>                                            
                                         <button type="object" class="oe_stat_button"
-                                            id="go_service_lines" icon="fa fa-2x fa-bars"
+                                            icon="fa fa-2x fa-bars"
                                             name="open_service_lines"
                                             attrs="{'invisible': [('per_day','=',False)]}"/>
                                         <field name="days_qty" invisible="1"/>
@@ -294,6 +289,15 @@
                                     </tree>
                                 </field>
                             </group>
+                        </page>
+                        <page name="persons" string="Persons">
+                            <field name="checkin_partner_ids"
+                                   context="{
+                                    'default_reservation_id': id,
+                                    'reservation_id': id,
+                                    'tree_view_ref':'hotel.hotel_checkin_partner_reservation_view_tree',
+                                    }"
+                            />
                         </page>
                         <page name="others" string="Others">
                             <group>
@@ -337,7 +341,6 @@
                 <button icon="fa fa-2x fa-angellist"
                     attrs="{'invisible':['|',('folio_pending_amount','&gt;',0),('state' ,'!=', 'done')]}"
                     type="object"
-                    id="open_folio"
                     name="open_folio" />
                 <field name="state" />
                 <button type="object" class="oe_stat_button"
@@ -396,7 +399,6 @@
             <tree position="attributes">
                 <attribute name="editable">bottom</attribute>
                 <attribute name="delete">false</attribute>
-                <attribute name="options">{'no_open': True}</attribute>
                 <attribute name="string">Rooms</attribute>
             </tree>
             <xpath expr="//field[@name='folio_id']" position="attributes">

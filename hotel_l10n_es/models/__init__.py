@@ -24,3 +24,4 @@ from . import category_type
 from . import code_ine
 from . import inherit_res_company
 from . import inherit_res_partner
+from . import inherit_hotel_checkin_partner

@@ -188,6 +188,7 @@ class HotelFolio(models.Model):
                                    compute='_amount_all', track_visibility='always')
 
     #Checkin Fields-----------------------------------------------------
+    checkin_partner_ids = fields.One2many('hotel.checkin.partner', 'reservation_id')
     booking_pending = fields.Integer('Booking pending',
                                      compute='_compute_checkin_partner_count')
     checkin_partner_count = fields.Integer('Checkin counter',
@@ -567,7 +568,6 @@ class HotelFolio(models.Model):
 
     @api.multi
     def _compute_checkin_partner_count(self):
-        _logger.info('_compute_checkin_partner_amount')
         for record in self:
             if record.reservation_type == 'normal' and record.room_lines:
                 write_vals = {}

@@ -256,9 +256,8 @@ var HotelCalendarView = AbstractRenderer.extend({
         model = 'hotel.reservation';
         title = _t('Reservations');
       } else if (type === 'checkin') {
-        model = 'hotel.reservation';
+        model = 'hotel.checkin.partner';
         title = _t('Checkins');
-        domain.splice(0, 0, ['checkin', '=', moment().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT)]);
       } else if (type === 'invoice') {
         model = 'sale.order';
         title = _t('Invoices');
