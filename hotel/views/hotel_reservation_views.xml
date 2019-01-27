@@ -97,6 +97,19 @@
                                 <span class="o_stat_text">Books</span>
                             </div>
                         </button>
+                        <button type="object" class="oe_stat_button"
+                            id="payment_smart_button"
+                            icon="fa-money"
+                            name="action_pay_folio"
+                            attrs="{'invisible': ['|',('folio_pending_amount','&lt;=',0)]}">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="folio_pending_amount" nolabel="1"
+                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                </span>
+                                <span class="o_stat_text">Pending Payment</span>
+                            </div>
+                        </button> 
                         <button type="object" class="oe_stat_button" id="invoice_button"
                             icon="fa-pencil-square-o" name="open_invoices_reservation">
                             <div class="o_form_field o_stat_info">

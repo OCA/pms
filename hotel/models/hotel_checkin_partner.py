@@ -20,10 +20,10 @@ class HotelCheckinPartner(models.Model):
     def _default_folio_id(self):
         if 'folio_id' in self.env.context:
             folio = self.env['hotel.folio'].browse([
-                self.env.context['reservation_id']
+                self.env.context['folio_id']
             ])
             return folio
-        raise ValidationError(_('You only can create checkin from reservations or folios'))
+        return False
 
     def _default_enter_date(self):
         if 'reservation_id' in self.env.context:
