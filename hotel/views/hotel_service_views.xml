@@ -41,6 +41,48 @@
         </field>
     </record>
 
+    <!-- Tree view of hotel service -->
+    <record model="ir.ui.view" id="hotel_service_view_tree">
+        <field name="name">.hotel.service.view.tree</field>
+        <field name="model">hotel.service</field>
+        <field name="arch" type="xml">
+           <tree string="Services" editable="bottom"
+            decoration-success="is_board_service == True">
+                <field name="is_board_service" invisible="1" />
+                <button type="object" class="oe_stat_button"
+                    id="included_in_room" icon="fa fa-1x fa-bed"                                                                                              
+                    name="open_service_lines"
+                    attrs="{'invisible':[('is_board_service','=', False)]}" />
+                <field name="per_day" invisible="1"/>
+                <field name="folio_id" invisible="1"/>
+                <field name="ser_room_line"
+                    attrs = "{'required': [('per_day','=',True)]}" />
+                <field name="product_id"
+                    domain="[('sale_ok', '=', True)]"
+                    options="{'create': False, 'create_edit': False}"/>
+                <field name="name"/>
+                <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>                                            
+                <button type="object" class="oe_stat_button"
+                    id="go_service_lines" icon="fa fa-2x fa-bars"
+                    name="open_service_lines"
+                    attrs="{'invisible': [('per_day','=',False)]}"/>
+                <field name="days_qty" invisible="1"/>
+                <field name="price_unit" />
+                <field name="discount" />
+                <field name="tax_ids" widget="many2many_tags"/>
+                <field name="price_subtotal" />
+                <field name="price_tax" />
+                <field name="price_total" />      
+                <field name="service_line_ids" invisible="1">
+                    <tree string="Days" >
+                        <field name="date" />
+                        <field name="day_qty" />
+                    </tree>
+                </field>
+            </tree>
+        </field>
+    </record>
+
     <!-- search view of hotel service -->
     <record model="ir.ui.view" id="hotel_service_view_search">
         <field name="name">hotel.service.search</field>
@@ -57,19 +99,6 @@
                         context="{'group_by':'categ_id'}" /> -->
                 </group>
             </search>
-        </field>
-    </record>
-
-    <!-- Tree view of hotel service -->
-    <record model="ir.ui.view" id="hotel_service_view_tree">
-        <field name="name">hotel.service.tree</field>
-        <field name="model">hotel.service</field>
-        <field name="arch" type="xml">
-            <tree string="Hotel Services">
-                <field name="name" />
-                <field name="product_id" />
-                <field name="product_qty" />
-            </tree>
         </field>
     </record>
 

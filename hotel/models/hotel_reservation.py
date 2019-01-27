@@ -1,17 +1,19 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import logging
 import time
 from datetime import timedelta
 from lxml import etree
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import (
     misc,
+    float_is_zero,
+    float_compare,
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
+import logging
 _logger = logging.getLogger(__name__)
 
 
@@ -76,6 +78,28 @@ class HotelReservation(models.Model):
         else:
             return default_departure_hour
 
+    @api.depends('state', 'qty_to_invoice', 'qty_invoiced')
+    def _compute_invoice_status(self):
+        """
+        Compute the invoice status of a Reservation. Possible statuses:
+        - no: if the Folio is not in status 'sale' or 'done', we consider that there is nothing to
+          invoice. This is also hte default value if the conditions of no other status is met.
+        - to invoice: we refer to the quantity to invoice of the line. Refer to method
+          `_get_to_invoice_qty()` for more information on how this quantity is calculated.
+        - invoiced: the quantity invoiced is larger or equal to the quantity ordered.
+        """
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if line.state in ('draft'):
+                line.invoice_status = 'no'
+            elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                line.invoice_status = 'to invoice'
+            elif float_compare(line.qty_invoiced, len(line.reservation_line_ids), precision_digits=precision) >= 0:
+                line.invoice_status = 'invoiced'
+            else:
+                line.invoice_status = 'no'
+    
+
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         if args is None:
@@ -115,6 +139,7 @@ class HotelReservation(models.Model):
                 ).days
 
     name = fields.Text('Reservation Description', required=True)
+    sequence = fields.Integer(string='Sequence', default=10)
 
     room_id = fields.Many2one('hotel.room', string='Room')
 
@@ -134,6 +159,7 @@ class HotelReservation(models.Model):
                              track_visibility='onchange')
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
+    invoice_count = fields.Integer(related='folio_id.invoice_count')                                    
     board_service_room_id = fields.Many2one('hotel.board.service.room.type',
                                             string='Board Service')
     cancelled_reason = fields.Selection([
@@ -166,7 +192,7 @@ class HotelReservation(models.Model):
 
     partner_id = fields.Many2one(related='folio_id.partner_id')
     closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
-    company_id = fields.Many2one('res.company', 'Company')
+    company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     reservation_line_ids = fields.One2many('hotel.reservation.line',
                                            'reservation_id',
                                            readonly=True, required=True,
@@ -230,26 +256,24 @@ class HotelReservation(models.Model):
     # order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
     # product_id = fields.Many2one('product.product', related='order_line.product_id', string='Product')
     # product_uom = fields.Many2one('product.uom', string='Unit of Measure', required=True)
-    # product_uom_qty = fields.Float(string='Quantity', digits=dp.get_precision('Product Unit of Measure'), required=True, default=1.0)
-
     currency_id = fields.Many2one('res.currency',
                                   related='pricelist_id.currency_id',
                                   string='Currency', readonly=True, required=True)
-    # invoice_status = fields.Selection([
-    #     ('upselling', 'Upselling Opportunity'),
-    #     ('invoiced', 'Fully Invoiced'),
-    #     ('to invoice', 'To Invoice'),
-    #     ('no', 'Nothing to Invoice')
-    #     ], string='Invoice Status', compute='_compute_invoice_status', store=True, readonly=True, default='no')
-    tax_id = fields.Many2many('account.tax',
+    invoice_status = fields.Selection([
+         ('invoiced', 'Fully Invoiced'),
+         ('to invoice', 'To Invoice'),
+         ('no', 'Nothing to Invoice')
+         ], string='Invoice Status', compute='_compute_invoice_status', store=True, readonly=True, default='no')
+    tax_ids = fields.Many2many('account.tax',
                               string='Taxes',
                               domain=['|', ('active', '=', False), ('active', '=', True)])
-    # qty_to_invoice = fields.Float(
-    #     string='To Invoice', store=True, readonly=True,
-    #     digits=dp.get_precision('Product Unit of Measure'))
-    # qty_invoiced = fields.Float(
-    #     compute='_get_invoice_qty', string='Invoiced', store=True, readonly=True,
-    #     digits=dp.get_precision('Product Unit of Measure'))
+    qty_to_invoice = fields.Float(
+        compute='_get_to_invoice_qty', string='To Invoice', store=True, readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'))
+    qty_invoiced = fields.Float(
+        compute='_get_invoice_qty', string='Invoiced', store=True, readonly=True,
+        digits=dp.get_precision('Product Unit of Measure'))
+    invoice_line_ids = fields.Many2many('account.invoice.line', 'reservation_invoice_rel', 'reservation_id', 'invoice_line_id', string='Invoice Lines', copy=False)
     # qty_delivered = fields.Float(string='Delivered', copy=False, digits=dp.get_precision('Product Unit of Measure'), default=0.0)
     # qty_delivered_updateable = fields.Boolean(compute='_compute_qty_delivered_updateable', string='Can Edit Delivered', readonly=True, default=True)
     price_subtotal = fields.Monetary(string='Subtotal',
@@ -275,7 +299,7 @@ class HotelReservation(models.Model):
     # FIXME discount per night
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
 
-    # analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
 
     @api.model
     def create(self, vals):
@@ -293,19 +317,12 @@ class HotelReservation(models.Model):
             vals.update({'folio_id': folio.id,
                          'reservation_type': vals.get('reservation_type'),
                          'channel_type': vals.get('channel_type')})
+        if 'service_ids' in vals and vals['service_ids'][0][2]:
+            for service in vals['service_ids']:
+                service[2]['folio_id'] = folio.id                
         vals.update({
             'last_updated_res': fields.Datetime.now(),
         })
-        if 'board_service_room_id' in vals:
-                board_services = []
-                board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
-                for line in board.board_service_line_ids:
-                    board_services.append((0, False, {
-                        'product_id': line.product_id.id,
-                        'is_board_service': True,
-                        'folio_id': vals.get('folio_id'),
-                        }))
-                vals.update({'service_ids': board_services})
         if self.compute_price_out_vals(vals):
             days_diff = (
                 fields.Date.from_string(vals['checkout']) - fields.Date.from_string(vals['checkin'])
@@ -349,18 +366,15 @@ class HotelReservation(models.Model):
                 board_services = []
                 board = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
                 for line in board.board_service_line_ids:
-                    board_services.append((0, False, {
+                    res = {
                         'product_id': line.product_id.id,
                         'is_board_service': True,
-                        'folio_id': record.folio_id.id or vals.get('folio_id')
-                        }))
+                        'folio_id': vals.get('folio_id'),
+                        }
+                    res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
+                    board_services.append((0, False, vals))
                 # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
                 record.update({'service_ids':  [(6, 0, record.service_ids.ids)] + board_services})
-                update_services = record.service_ids.filtered(
-                    lambda r: r.is_board_service == True
-                )
-                for service in update_services:
-                    service.onchange_product_calc_qty()
             if record.compute_price_out_vals(vals):
                 record.update(record.prepare_reservation_lines(
                     checkin,
@@ -419,12 +433,12 @@ class HotelReservation(models.Model):
         """ Deduce missing required fields from the onchange """
         res = {}
         onchange_fields = ['room_id', 'reservation_type',
-            'currency_id', 'name', 'board_service_room_id']
+            'currency_id', 'name', 'board_service_room_id','service_ids']
         if values.get('room_type_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
                 line.onchange_room_id()
-                line.onchange_compute_reservation_description()
+                line.onchange_room_type_id()
                 line.onchange_board_service()
             if 'pricelist_id' not in values:
                 line.onchange_partner_id()
@@ -592,7 +606,10 @@ class HotelReservation(models.Model):
                 update_old_prices=False))
 
     @api.onchange('checkin', 'checkout', 'room_type_id')
-    def onchange_compute_reservation_description(self):
+    def onchange_room_type_id(self):
+        """
+        When change de room_type_id, we calc the line description and tax_ids
+        """
         if self.room_type_id and self.checkin and self.checkout:
             checkin_dt = fields.Date.from_string(self.checkin)
             checkout_dt = fields.Date.from_string(self.checkout)
@@ -600,12 +617,13 @@ class HotelReservation(models.Model):
             checkout_str = checkout_dt.strftime('%d/%m/%Y')
             self.name = self.room_type_id.name + ': ' + checkin_str + ' - '\
                 + checkout_str
+            self._compute_tax_ids()
 
     @api.onchange('checkin', 'checkout')
     def onchange_update_service_per_day(self):
         services = self.service_ids.filtered(lambda r: r.per_day == True)
         for service in services:
-            service.onchange_product_calc_qty()
+            service.onchange_product_id()
 
     @api.multi
     @api.onchange('checkin', 'checkout', 'room_id')
@@ -637,20 +655,23 @@ class HotelReservation(models.Model):
             for line in self.board_service_room_id.board_service_line_ids:
                 product = line.product_id
                 if product.per_day:
-                    vals = {
+                    res = {
                         'product_id': product.id,
                         'is_board_service': True,
                         'folio_id': self.folio_id.id,
                         }
-                    vals.update(self.env['hotel.service'].prepare_service_lines(
+                    line = self.env['hotel.service'].new(res)
+                    res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
+                    res.update(self.env['hotel.service'].prepare_service_lines(
                         dfrom=self.checkin,
                         days=self.nights,
                         per_person=product.per_person,
                         persons=self.adults,
                         old_line_days=False))
-                    board_services.append((0, False, vals))
+                    board_services.append((0, False, res))
             other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
-            self.update({'service_ids':  [(6, 0, other_services.ids)] + board_services})
+            self.update({'service_ids': board_services})
+            self.service_ids |= other_services
             for service in self.service_ids.filtered(lambda r: r.is_board_service == True):
                 service._compute_tax_ids()
                 service.price_unit = service._compute_price_unit()
@@ -762,7 +783,7 @@ class HotelReservation(models.Model):
             return True
         return False
 
-    @api.depends('reservation_line_ids', 'reservation_line_ids.discount', 'tax_id')
+    @api.depends('reservation_line_ids', 'reservation_line_ids.discount', 'tax_ids')
     def _compute_amount_reservation(self):
         """
         Compute the amounts of the reservation.
@@ -772,7 +793,7 @@ class HotelReservation(models.Model):
             if amount_room > 0:
                 product = record.room_type_id.product_id
                 price = amount_room * (1 - (record.discount or 0.0) * 0.01)
-                taxes = record.tax_id.compute_all(price, record.currency_id, 1, product=product)
+                taxes = record.tax_ids.compute_all(price, record.currency_id, 1, product=product)
                 record.update({
                     'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                     'price_total': taxes['total_included'],
@@ -806,7 +827,7 @@ class HotelReservation(models.Model):
                     pricelist=pricelist_id,
                     uom=product.uom_id.id)
                 line_price = self.env['account.tax']._fix_tax_included_price_company(
-                    product.price, product.taxes_id, self.tax_id, self.company_id)
+                    product.price, product.taxes_id, self.tax_ids, self.company_id)
                 if old_line:
                     cmds.append((1, old_line.id, {
                         'price': line_price
@@ -1012,7 +1033,7 @@ class HotelReservation(models.Model):
                 'ignore_avail_restrictions': True}).create(vals)
             if not reservation_copy:
                 raise ValidationError(_("Unexpected error copying record. \
-                                        Can't split reservation!"))
+                                            Can't split reservation!"))
             record.write({
                 'checkout': new_start_date_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                 'price_total': tprice[0],
@@ -1124,3 +1145,56 @@ class HotelReservation(models.Model):
     @api.multi
     def send_cancel_mail(self):
         return self.folio_id.send_cancel_mail()
+
+    """
+    INVOICING PROCESS
+    """
+
+    @api.multi
+    def open_invoices_reservation(self):
+        invoices = self.folio_id.mapped('invoice_ids')
+        action = self.env.ref('account.action_invoice_tree1').read()[0]
+        if len(invoices) > 1:
+            action['domain'] = [('id', 'in', invoices.ids)]
+        elif len(invoices) == 1:
+            action['views'] = [(self.env.ref('account.invoice_form').id, 'form')]
+            action['res_id'] = invoices.ids[0]
+        else:
+            action = self.env.ref('hotel.action_view_folio_advance_payment_inv').read()[0]
+            action['context'] = {'default_reservation_id': self.id,
+                                 'default_folio_id': self.folio_id.id}
+        return action
+
+    @api.multi
+    def _compute_tax_ids(self):
+        for record in self:
+            # If company_id is set, always filter taxes by the company
+            folio = record.folio_id or self.env.context.get('default_folio_id')
+            product = self.env['product.product'].browse(record.room_type_id.product_id.id)
+            record.tax_ids = product.taxes_id.filtered(lambda r: not record.company_id or r.company_id == folio.company_id)
+
+    @api.depends('qty_invoiced', 'nights', 'folio_id.state')
+    def _get_to_invoice_qty(self):
+        """
+        Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
+        calculated from the ordered quantity. Otherwise, the quantity delivered is used.
+        """
+        for line in self:
+            if line.folio_id.state not in ['draft']:
+                line.qty_to_invoice = len(line.reservation_line_ids) - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
+
+    @api.depends('invoice_line_ids.invoice_id.state', 'invoice_line_ids.quantity')
+    def _get_invoice_qty(self):
+        """
+        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. We
+        must check day per day and sum or decreased on 1 unit per invoice_line
+        """
+        for line in self:
+            qty_invoiced = 0.0
+            for day in line.reservation_line_ids:
+                invoice_lines = day.invoice_line_ids.filtered(lambda r: r.invoice_id.state != 'cancel')
+                qty_invoiced += len(invoice_lines.filtered(lambda r: r.invoice_id.type == 'out_invoice')) - \
+                    len(invoice_lines.filtered(lambda r: r.invoice_id.type == 'out_refund'))
+            line.qty_invoiced = qty_invoiced

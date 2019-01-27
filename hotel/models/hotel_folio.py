@@ -11,6 +11,8 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import except_orm, UserError, ValidationError
 from odoo.tools import (
     misc,
+    float_is_zero,
+    float_compare,    
     DEFAULT_SERVER_DATETIME_FORMAT,
     DEFAULT_SERVER_DATE_FORMAT)
 from odoo import models, fields, api, _
@@ -31,9 +33,57 @@ class HotelFolio(models.Model):
     # @api.depends('product_id.invoice_policy', 'order_id.state')
     def _compute_qty_delivered_updateable(self):
         pass
-    # @api.depends('state', 'order_line.invoice_status')
+
+    @api.depends('state', 'room_lines.invoice_status', 'service_ids.invoice_status')
     def _get_invoiced(self):
-        pass
+        """
+        Compute the invoice status of a Folio. Possible statuses:
+        - no: if the Folio is not in status 'sale' or 'done', we consider that there is nothing to
+          invoice. This is also the default value if the conditions of no other status is met.
+        - to invoice: if any Folio line is 'to invoice', the whole Folio is 'to invoice'
+        - invoiced: if all Folio lines are invoiced, the Folio is invoiced.
+        - upselling: if all Folio lines are invoiced or upselling, the status is upselling.
+
+        The invoice_ids are obtained thanks to the invoice lines of the Folio lines, and we also search
+        for possible refunds created directly from existing invoices. This is necessary since such a
+        refund is not directly linked to the Folio.
+        """
+        for folio in self:
+            invoice_ids = folio.room_lines.mapped('invoice_line_ids').mapped('invoice_id').filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
+            invoice_ids |= folio.service_ids.mapped('invoice_line_ids').mapped('invoice_id').filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
+            # Search for invoices which have been 'cancelled' (filter_refund = 'modify' in
+            # 'account.invoice.refund')
+            # use like as origin may contains multiple references (e.g. 'SO01, SO02')
+            refunds = invoice_ids.search([('origin', 'like', folio.name), ('company_id', '=', folio.company_id.id)]).filtered(lambda r: r.type in ['out_invoice', 'out_refund'])
+            invoice_ids |= refunds.filtered(lambda r: folio.id in r.folio_ids.ids)
+            # Search for refunds as well
+            refund_ids = self.env['account.invoice'].browse()
+            if invoice_ids:
+                for inv in invoice_ids:
+                    refund_ids += refund_ids.search([('type', '=', 'out_refund'), ('origin', '=', inv.number), ('origin', '!=', False), ('journal_id', '=', inv.journal_id.id)])
+
+            # Ignore the status of the deposit product
+            deposit_product_id = self.env['sale.advance.payment.inv']._default_product_id()
+            #~ line_invoice_status = [line.invoice_status for line in order.order_line if line.product_id != deposit_product_id]
+
+            #~ TODO: REVIEW INVOICE_STATUS
+            #~ if folio.state not in ('confirm', 'done'):
+                #~ invoice_status = 'no'
+            #~ elif any(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
+                #~ invoice_status = 'to invoice'
+            #~ elif all(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
+                #~ invoice_status = 'invoiced'
+            #~ elif all(invoice_status in ['invoiced', 'upselling'] for invoice_status in line_invoice_status):
+                #~ invoice_status = 'upselling'
+            #~ else:
+                #~ invoice_status = 'no'
+
+            folio.update({
+                'invoice_count': len(set(invoice_ids.ids + refund_ids.ids)),
+                'invoice_ids': invoice_ids.ids + refund_ids.ids,
+                #~ 'invoice_status': invoice_status
+            })
+
     # @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced')
     def _compute_invoice_status(self):
         pass
@@ -44,9 +94,14 @@ class HotelFolio(models.Model):
     def _amount_all(self):
         pass
 
+    @api.model
+    def _get_default_team(self):
+        return self.env['crm.team']._get_default_team_id()
+
     #Main Fields--------------------------------------------------------
     name = fields.Char('Folio Number', readonly=True, index=True,
                        default=lambda self: _('New'))
+    client_order_ref = fields.Char(string='Customer Reference', copy=False)
     partner_id = fields.Many2one('res.partner',
                                  track_visibility='onchange')
 
@@ -61,8 +116,8 @@ class HotelFolio(models.Model):
                                        help="Hotel services detail provide to "
                                        "customer and it will include in "
                                        "main Invoice.")
-    company_id = fields.Many2one('res.company', 'Company')
-
+    company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('hotel.folio'))
+    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="The analytic account related to a folio.", copy=False)
     currency_id = fields.Many2one('res.currency', related='pricelist_id.currency_id',
                                   string='Currency', readonly=True, required=True)
 
@@ -87,6 +142,7 @@ class HotelFolio(models.Model):
         required=True, readonly=True, index=True,
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         copy=False, default=fields.Datetime.now)
+    confirmation_date = fields.Datetime(string='Confirmation Date', readonly=True, index=True, help="Date on which the folio is confirmed.", copy=False)
     state = fields.Selection([
         ('draft', 'Quotation'),
         ('sent', 'Quotation Sent'),
@@ -111,6 +167,7 @@ class HotelFolio(models.Model):
                                   readonly=True)
     return_ids = fields.One2many('payment.return', 'folio_id',
                                  readonly=True)
+    payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms', oldname='payment_term')
 
     #Amount Fields------------------------------------------------------
     pending_amount = fields.Monetary(compute='compute_amount',
@@ -139,8 +196,7 @@ class HotelFolio(models.Model):
                                           compute='_compute_checkin_partner_count')
 
     #Invoice Fields-----------------------------------------------------
-    hotel_invoice_id = fields.Many2one('account.invoice', 'Invoice')
-    num_invoices = fields.Integer(compute='_compute_num_invoices')
+    invoice_count = fields.Integer(compute='_get_invoiced')
     invoice_ids = fields.Many2many('account.invoice', string='Invoices',
                                    compute='_get_invoiced', readonly=True, copy=False)
     invoice_status = fields.Selection([('upselling', 'Upselling Opportunity'),
@@ -150,12 +206,11 @@ class HotelFolio(models.Model):
                                       string='Invoice Status',
                                       compute='_compute_invoice_status',
                                       store=True, readonly=True, default='no')
-    #~ partner_invoice_id = fields.Many2one('res.partner',
-                                         #~ string='Invoice Address',
-                                         #~ readonly=True, required=True,
-                                         #~ states={'draft': [('readonly', False)],
-                                                 #~ 'sent': [('readonly', False)]},
-                                         #~ help="Invoice address for current sales order.")
+    partner_invoice_id = fields.Many2one('res.partner',
+                                         string='Invoice Address', required=True,
+                                         states={'done': [('readonly', True)]},
+                                         help="Invoice address for current sales order.")
+    fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')
 
     #WorkFlow Mail Fields-----------------------------------------------
     has_confirmed_reservations_to_send = fields.Boolean(
@@ -173,12 +228,12 @@ class HotelFolio(models.Model):
         'Prepaid Warning Days',
         help='Margin in days to create a notice if a payment \
                 advance has not been recorded')
-    rooms_char = fields.Char('Rooms', compute='_computed_rooms_char')
     segmentation_ids = fields.Many2many('res.partner.category',
                                         string='Segmentation')
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
     note = fields.Text('Terms and conditions')
     sequence = fields.Integer(string='Sequence', default=10)
+    team_id = fields.Many2one('crm.team', 'Sales Channel', change_default=True, default=_get_default_team, oldname='section_id')
 
     @api.depends('room_lines.price_total','service_ids.price_total')
     def _amount_all(self):
@@ -197,20 +252,32 @@ class HotelFolio(models.Model):
                 'amount_total': amount_untaxed + amount_tax,
             })
 
-    def _computed_rooms_char(self):
-        for record in self:
-            record.rooms_char = ', '.join(record.mapped('room_lines.room_id.name'))
-
-    @api.multi
-    def _compute_num_invoices(self):
-        pass
-        # for fol in self:
-        #     fol.num_invoices =  len(self.mapped('invoice_ids.id'))
-
-    # @api.depends('order_line.price_total', 'payment_ids', 'return_ids')
+    @api.depends('amount_total', 'payment_ids', 'return_ids')
     @api.multi
     def compute_amount(self):
-        _logger.info('compute_amount')
+        acc_pay_obj = self.env['account.payment']
+        for record in self:
+            if record.reservation_type in ('staff', 'out'):
+                vals = {
+                'pending_amount': 0,
+                'invoices_paid': 0,
+                'refund_amount': 0,
+                }
+                record.update(vals)
+            else:
+                total_inv_refund = 0
+                payments = acc_pay_obj.search([
+                    ('folio_id', '=', record.id)
+                ])
+                total_paid = sum(pay.amount for pay in payments)
+                return_lines = self.env['payment.return.line'].search([('move_line_ids','in',payments.mapped('move_line_ids.id')),('return_id.state','=', 'done')])
+                total_inv_refund = sum(pay_return.amount for pay_return in return_lines)
+                vals = {
+                    'pending_amount': record.amount_total - total_paid + total_inv_refund,
+                    'invoices_paid': total_paid,
+                    'refund_amount': total_inv_refund,
+                }
+                record.update(vals)
 
     @api.multi
     def action_pay(self):
@@ -356,7 +423,7 @@ class HotelFolio(models.Model):
         if any(f not in vals for f in lfields):
             partner = self.env['res.partner'].browse(vals.get('partner_id'))
             addr = partner.address_get(['delivery', 'invoice'])
-            #~ vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
+            vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
             vals['pricelist_id'] = vals.setdefault(
                 'pricelist_id',
                 partner.property_product_pricelist and partner.property_product_pricelist.id)
@@ -369,23 +436,29 @@ class HotelFolio(models.Model):
         """
         Update the following fields when the partner is changed:
         - Pricelist
+        - Payment terms
         - Invoice address
-        - user_id
+        - Delivery address
         """
         if not self.partner_id:
-            #~ self.update({
-                #~ 'partner_invoice_id': False,
-                #~ 'payment_term_id': False,
-                #~ 'fiscal_position_id': False,
-            #~ })
+            self.update({
+                'partner_invoice_id': False,
+                'payment_term_id': False,
+                'fiscal_position_id': False,
+            })
             return
+
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
                                  self.partner_id.property_product_pricelist.id or \
                                  self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
-        values = {'user_id': self.partner_id.user_id.id or self.env.uid,
-                  'pricelist_id': pricelist
-                  }
+        values = {
+            'pricelist_id': pricelist,
+            'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
+            'partner_invoice_id': addr['invoice'],
+            'user_id': self.partner_id.user_id.id or self.env.uid
+        }
+
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
             self.env.user.company_id.sale_note:
             values['note'] = self.with_context(
@@ -412,31 +485,6 @@ class HotelFolio(models.Model):
             return 'staff'
         else:
             return 'normal'
-
-    @api.multi
-    def action_invoice_create(self, grouped=False, states=None):
-        '''
-        @param self: object pointer
-        '''
-        pass
-        # if states is None:
-        #     states = ['confirmed', 'done']
-        # order_ids = [folio.order_id.id for folio in self]
-        # sale_obj = self.env['sale.order'].browse(order_ids)
-        # invoice_id = (sale_obj.action_invoice_create(grouped=False,
-        #                                              states=['confirmed',
-        #                                                      'done']))
-        # for line in self:
-        #     values = {'invoiced': True,
-        #               'state': 'progress' if grouped else 'progress',
-        #               'hotel_invoice_id': invoice_id
-        #               }
-        #     line.write(values)
-        # return invoice_id
-
-    @api.multi
-    def advance_invoice(self):
-        pass
 
     '''
     WORKFLOW STATE
@@ -483,7 +531,21 @@ class HotelFolio(models.Model):
 
     @api.multi
     def action_confirm(self):
-        _logger.info('action_confirm')
+        for folio in self.filtered(lambda folio: folio.partner_id not in folio.message_partner_ids):
+            folio.message_subscribe([folio.partner_id.id])
+        self.write({
+            'state': 'confirm',
+            'confirmation_date': fields.Datetime.now()
+        })
+        #~ if self.env.context.get('send_email'):
+            #~ self.force_quotation_send()
+
+        # create an analytic account if at least an expense product
+        #~ if any([expense_policy != 'no' for expense_policy in self.order_line.mapped('product_id.expense_policy')]):
+            #~ if not self.analytic_account_id:
+                #~ self._create_analytic_account()
+
+        return True
 
 
     """
