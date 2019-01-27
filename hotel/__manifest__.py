@@ -15,6 +15,7 @@
     'depends': [
         'sale_stock',
         'account_payment_return',
+        'partner_firstname',
     ],
     'license': "AGPL-3",
     'demo': ['data/hotel_demo.xml'],

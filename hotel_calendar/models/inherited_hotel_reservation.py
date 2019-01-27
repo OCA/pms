@@ -483,25 +483,7 @@ class HotelReservation(models.Model):
     def write(self, vals):
         _logger.info("RESERV WRITE")
         ret = super(HotelReservation, self).write(vals)
-
-        if 'partner_id' in vals or 'checkin' in vals or \
-                'checkout' in vals or 'product_id' in vals or \
-                'adults' in vals or 'children' in vals or \
-                'state' in vals or 'splitted' in vals or \
-                'closure_reason_id' in vals or 'out_service_description' in vals or \
-                'reservation_type' in vals or \
-                'price_total' in vals or \
-                'parent_reservation' in vals or 'overbooking' in vals or \
-                'room_type_id' in vals:
-            for record in self:
-                record.send_bus_notification(
-                    'write',
-                    (record.state == 'cancelled') and 'warn' or 'notify',
-                    (record.state == 'cancelled')
-                    and _("Reservation Cancelled") or _("Reservation Changed")
-                )
-        elif not any(vals) or 'to_read' in vals or 'to_assign' in vals:
-            self.send_bus_notification('write', 'noshow')
+        self.send_bus_notification('write', 'noshow')
         return ret
 
     @api.multi

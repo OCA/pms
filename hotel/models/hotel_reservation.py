@@ -572,6 +572,13 @@ class HotelReservation(models.Model):
         if self.reservation_type == 'out':
             self.update({'partner_id': self.env.user.company_id.partner_id.id})
 
+    @api.multi
+    @api.onchange('checkin_partner_ids')
+    def onchange_checkin_partner_ids(self):
+        for record in self:
+            if len(record.checkin_partner_ids) > record.adults + record.children:
+                raise models.ValidationError(_('The room already is completed'))
+
     # When we need to overwrite the prices even if they were already established
     @api.onchange('room_type_id', 'pricelist_id', 'reservation_type')
     def onchange_overwrite_price_by_day(self):
@@ -954,6 +961,13 @@ class HotelReservation(models.Model):
     """
 
     @api.multi
+    @api.constrains('checkin_partner_ids')
+    def _max_checkin_partner_ids(self):
+        for record in self:
+            if len(record.checkin_partner_ids) > record.adults + record.children:
+                raise models.ValidationError(_('The room already is completed'))
+
+    @api.multi
     def _compute_checkin_partner_count(self):
         _logger.info('_compute_checkin_partner_count')
         for record in self:
@@ -972,6 +986,7 @@ class HotelReservation(models.Model):
     def action_reservation_checkout(self):
         for record in self:
             record.state = 'done'
+            record.checkin_partner_ids.action_done()
 
     @api.multi
     def action_checks(self):

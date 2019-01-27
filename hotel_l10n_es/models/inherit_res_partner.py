@@ -68,12 +68,12 @@ class ResPartner(models.Model):
 
             query = """SELECT id
                          FROM res_partner
-                      {where} ({poldocument} {operator} {percent})
+                      {where} ({document_number} {operator} {percent})
                      ORDER BY {display_name} {operator} {percent} desc,
                               {display_name}
                     """.format(where=where_str,
                                operator=operator,
-                               poldocument=unaccent('poldocument'),
+                               document_number=unaccent('document_number'),
                                display_name=unaccent('display_name'),
                                percent=unaccent('%s'),)
 
@@ -94,7 +94,7 @@ class ResPartner(models.Model):
 
     #TODO: Review better VAT & DocumentNumber integration
     @api.onchange('document_number')
-    def onchange_poldocument(self):
+    def onchange_document_number(self):
         for partner in self:
             if partner.document_number and partner.document_type == 'D':
-                partner.vat = 'ES' + partner.poldocument
+                partner.vat = 'ES' + partner.document_number

@@ -1,18 +1,11 @@
 <?xml version="1.0"?>
 <odoo>
 
-    <!-- Action to open INE Codes list -->
     <act_window
         id="action_checkin_partner"
         name="Action checkin"
         res_model='hotel.checkin.partner'
         view_mode="tree,form" />
-
-    <act_window
-        id="action_checkin_partner_download"
-        name="Action checkin download"
-        res_model='hotel.checkin.partner'
-        view_mode="form" />
         
     <menuitem
         id="menu_hotel_checkin_partner"
@@ -25,7 +18,7 @@
         <field name="name">Checkin Form</field>
         <field name="model">hotel.checkin.partner</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <sheet>
                     <group name="group_top">
                         <group name="group_left">
@@ -42,16 +35,91 @@
         </field>
     </record>
 
-    <record id="hotel_checkin_partner_view_tree" model="ir.ui.view">
-        <field name="name">Checkin Tree</field>
+    <record id="hotel_checkin_partner_reservation_view_tree" model="ir.ui.view">
+        <field name="name">hotel.checkin.partner.reservation.view.tree</field>
         <field name="model">hotel.checkin.partner</field>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="partner_id" string="Client name"/>
+            <tree editable="bottom"
+                    decoration-danger="state == 'draft'"
+                    decoration-muted="state == 'cancelled' or state =='done'"
+                    decoration-success="state == 'booking'">
+                <button type="object" class="oe_stat_button"
+                    icon="fa fa-2x fa-check-circle"
+                    name="action_on_board"
+                    attrs="{'invisible':[('state','not in', ['draft'])]}"
+                    help="Get in" 
+                />
+                <field name="partner_id" required="True"/>
                 <field name="enter_date"/>
                 <field name="exit_date"/>
                 <field name="reservation_id"/>
+                <field name="state" />
             </tree>
+        </field>
+    </record>
+
+    <record id="hotel_checkin_partner_view_tree" model="ir.ui.view">
+        <field name="name">hotel.checkin.partner.view.tree</field>
+        <field name="model">hotel.checkin.partner</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <tree create="false"
+                    decoration-danger="state == 'draft'"
+                    decoration-muted="state == 'cancelled' or state =='done'"
+                    decoration-success="state == 'booking'">
+                <button type="object" class="oe_stat_button"
+                    icon="fa fa-2x fa-check-circle"
+                    name="action_on_board"
+                    attrs="{'invisible':[('state','not in', ['draft'])]}"
+                    help="Get in" 
+                />
+                <field name="partner_id" required="True"/>
+                <field name="enter_date"/>
+                <field name="exit_date"/>
+                <field name="reservation_id"/>
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hotel_checkin_partner_view_search">
+        <field name="name">hotel.checkin.partner.search</field>
+        <field name="model">hotel.checkin.partner</field>
+        <field name="arch" type="xml">
+            <search string="Checkin Detail">
+                <field name="partner_id" />
+                <field name="reservation_id" />
+                <filter string="On Board"
+                            domain="[('state','in',['booking'])]"
+                            help="Current Booking" />
+                <filter string="To enter"
+                            domain="[('state', '=', 'draft')]"
+                             />
+                <filter string="Out"
+                            domain="[('state', '=', 'done')]"
+                             />
+                <filter string="Checkins Tomorrow" name="enter_tomorrow"
+                        domain="[('enter_date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
+                        ('state', '=', 'draft')]"
+                        help="Show all checkins for enter tomorrow"/>             
+                <filter string="Checkins to 7 days" name="next_res_week"
+                        domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                        ('state', '=', 'draft')]"
+                        help="Show all reservations for which date enter is before than 7 days"/>
+                <filter string="On Board Tomorrow" name="next_res_2week"
+                        domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
+                        ('state', 'in', ['confirm','draft'])]"
+                        help="Show all checkins for Tomorrow"/>
+                <group expand="0" string="Group By">
+                    <filter string="Creation Date" domain="[]"
+                        context="{'group_by':'create_date'}" />
+                    <filter string="Checkin Date" domain="[]"
+                        context="{'group_by':'checkin'}" />
+                    <filter string="Checkout Date" domain="[]"
+                        context="{'group_by':'checkout'}" />
+                </group>
+            </search>
         </field>
     </record>
 

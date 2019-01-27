@@ -17,6 +17,14 @@ class HotelCheckinPartner(models.Model):
             return reservation
         return False
 
+    def _default_folio_id(self):
+        if 'folio_id' in self.env.context:
+            folio = self.env['hotel.folio'].browse([
+                self.env.context['folio_id']
+            ])
+            return folio
+        return False
+
     def _default_enter_date(self):
         if 'reservation_id' in self.env.context:
             reservation = self.env['hotel.reservation'].browse([
@@ -45,10 +53,18 @@ class HotelCheckinPartner(models.Model):
     partner_id = fields.Many2one('res.partner', default=_default_partner_id,
                                  required=True)
     reservation_id = fields.Many2one(
-        'hotel.reservation',
-        default=_default_reservation_id, readonly=True)
+        'hotel.reservation', default=_default_reservation_id)
+    folio_id = fields.Many2one('hotel.reservation',
+        default=_default_folio_id, readonly=True)
     enter_date = fields.Date(default=_default_enter_date, required=True)
     exit_date = fields.Date(default=_default_exit_date, required=True)
+    state = fields.Selection([('draft', 'Pending Entry'),
+                              ('booking', 'On Board'),
+                              ('done', 'Out'),
+                              ('cancelled', 'Cancelled')],
+                             'State', readonly=True,
+                             default=lambda *a: 'draft',
+                             track_visibility='onchange')
 
     # Validation for Departure date is after arrival date.
     @api.multi
@@ -72,3 +88,13 @@ class HotelCheckinPartner(models.Model):
             raise ValidationError(
                 _('Departure date, is prior to arrival. Check it now. %s') %
                 date_out)
+
+    @api.multi
+    def action_on_board(self):
+        for record in self:
+            record.state = 'booking'
+
+    @api.multi
+    def action_done(self):
+        for record in self:
+            record.state = 'done'

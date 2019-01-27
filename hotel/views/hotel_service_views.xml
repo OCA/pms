@@ -50,7 +50,7 @@
             decoration-success="is_board_service == True">
                 <field name="is_board_service" invisible="1" />
                 <button type="object" class="oe_stat_button"
-                    id="included_in_room" icon="fa fa-1x fa-bed"                                                                                              
+                    icon="fa fa-1x fa-bed"                                                                                              
                     name="open_service_lines"
                     attrs="{'invisible':[('is_board_service','=', False)]}" />
                 <field name="per_day" invisible="1"/>
@@ -63,7 +63,7 @@
                 <field name="name"/>
                 <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>                                            
                 <button type="object" class="oe_stat_button"
-                    id="go_service_lines" icon="fa fa-2x fa-bars"
+                    icon="fa fa-2x fa-bars"
                     name="open_service_lines"
                     attrs="{'invisible': [('per_day','=',False)]}"/>
                 <field name="days_qty" invisible="1"/>
@@ -101,6 +101,7 @@
             </search>
         </field>
     </record>
+
 
     <!-- Action for hotel service -->
     <record model="ir.actions.act_window" id="action_hotel_services_form">

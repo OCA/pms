@@ -8,12 +8,55 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='reservation_id']" position="after">
                     <button type="action" class="oe_stat_button"
-                        id="cardex_smart_button_2"
                         icon="fa-file-pdf-o"
                         name="%(action_report_viajero)d"
                         context="{'partner_id': partner_id,'enter_date': enter_date,
                                   'exit_date': exit_date,'reservation_ids': reservation_id,
                                   'hidden_cardex': True, 'edit_cardex': True }"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hotel_checkin_partner_view_tree" model="ir.ui.view">
+            <field name="name">hotel.checkin.partner.view.tree</field>
+            <field name="model">hotel.checkin.partner</field>
+            <field name="inherit_id" ref="hotel.hotel_checkin_partner_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_on_board']" position="before">
+                    <button type="action" class="oe_stat_button"
+                        icon="fa fa-2x fa-file-pdf-o"
+                        name="%(action_report_viajero)d"
+                        context="{'partner_id': partner_id,'enter_date': enter_date,
+                                  'exit_date': exit_date,'reservation_ids': reservation_id,
+                                  'hidden_cardex': True, 'edit_cardex': True }"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="document_type"/>
+                    <field name="document_number"/>
+                    <field name="document_expedition_date"/>
+                    <field name="code_ine_id" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hotel_checkin_partner_reservation_view_tree" model="ir.ui.view">
+            <field name="name">hotel.checkin.partner.view.tree</field>
+            <field name="model">hotel.checkin.partner</field>
+            <field name="inherit_id" ref="hotel.hotel_checkin_partner_reservation_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_on_board']" position="before">
+                    <button type="action" class="oe_stat_button"
+                        icon="fa fa-2x fa-file-pdf-o"
+                        name="%(action_report_viajero)d"
+                        context="{'partner_id': partner_id,'enter_date': enter_date,
+                                  'exit_date': exit_date,'reservation_ids': reservation_id,
+                                  'hidden_cardex': True, 'edit_cardex': True }"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="document_type"/>
+                    <field name="document_number"/>
+                    <field name="document_expedition_date"/>
+                    <field name="code_ine_id" />
                 </xpath>
             </field>
         </record>
