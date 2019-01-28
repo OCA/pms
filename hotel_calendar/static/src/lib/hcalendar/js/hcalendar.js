@@ -2069,7 +2069,6 @@ HotelCalendar.prototype = {
             'reservationObj': $this.getReservation(this.dataset.hcalReservationObjId)
           });
       }, false);
-      */
       rdiv.addEventListener('mouseleave', function(ev){
         $this._dispatchEvent(
           'hcalOnMouseLeaveReservation',
@@ -2079,6 +2078,7 @@ HotelCalendar.prototype = {
             'reservationObj': $this.getReservation(this.dataset.hcalReservationObjId)
           });
       }, false);
+      */
     }
   },
 
@@ -2480,7 +2480,12 @@ HotelCalendar.prototype = {
       };
       this._splitReservation = false;
       this._splitDate = false;
+    } else if ($(".marked-as-having-a-popover").length === 1) {
+      // TODO: better call _destroy_and_clear_popover_mark defined in hotel_calendar_controller.js
+      $(".marked-as-having-a-popover").popover('destroy');
+      $('.hcal-reservation').removeClass("marked-as-having-a-popover");
     } else {
+      // FIXME: Prevent multiple clicks in a row
       this._cellSelection.start = this._cellSelection.current = ev.target;
       this._cellSelection.end = false;
       this._updateCellSelection();

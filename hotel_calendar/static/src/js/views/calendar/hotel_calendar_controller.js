@@ -697,6 +697,10 @@ var PMSCalendarController = AbstractController.extend({
           }).open();
         });
 
+        this._multi_calendar.on_calendar('hcalOnKeyPressed', function(ev){
+            /* add actions */
+        });
+
         this._multi_calendar.on_calendar('hcalOnDateChanged', function(ev){
           var $dateTimePickerBegin = this.renderer.$el.find('#pms-menu #date_begin');
           $dateTimePickerBegin.data("ignore_onchange", true);
