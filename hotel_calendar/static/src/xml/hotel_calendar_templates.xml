@@ -132,14 +132,24 @@
 
 <t t-name="HotelCalendar.TooltipReservation.Sale">
 	<div class="row row-eq-height mt-3">
-		<div class="col-sm-6 bg-gray-light pb-10 pr-0 diagonal">
+		<div class="col-sm-6 bg-gray-light pb-3 pr-0 diagonal">
 			<div class="on-top">
 				<div class="pull-left">
 					<p>Folio Pending</p>
-					<h3><t t-esc="pending_amount" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+					<t t-if="pending_amount.length > '6'">
+						<h3 t-attf-style="font-size:calc(22px - #{pending_amount.length}px)"><t t-esc="pending_amount" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+					</t>
+					<t t-else="">
+						<h3><t t-esc="pending_amount" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+					</t>
 				</div>
 				<div class="pull-right-custom">
-					<h3><t t-esc="invoices_paid" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+					<t t-if="invoices_paid.length > '6'">
+						<h3 t-attf-style="font-size:calc(22px - #{invoices_paid.length}px)"><t t-esc="invoices_paid" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+					</t>
+					<t t-else="">
+						<h3><t t-esc="invoices_paid" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+					</t>
 					<p>Total Paid</p>
 				</div>
 			</div>
