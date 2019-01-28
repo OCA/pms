@@ -109,50 +109,30 @@
 	</div>
 </t>
 
-<t t-name="HotelCalendar.TooltipReservation.Footer">
-	<div class="row row-eq-height mt-10">
-		<div class="col-sm-2 btn_popover_open_folio">
-			<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"
-			   title="View Folio Details"> <span class="fa-text-inside"><t t-esc="folio_name"/></span></i>
+<t t-name="HotelCalendar.TooltipReservation.Customer">
+	<div class="row row-eq-height">
+		<div class="col-sm-6 bg-gray-light">
+			<i class="fa fa-user-circle fa-2x fa-pull-left mt-5"/>
+			<header><t t-esc="name"/></header>
+			<p><t t-esc="phone"/></p>
+			<p class="email"><t t-esc="email"/></p>
 		</div>
-		<div class="col-sm-2 btn_popover_open_reservation">
-			<span class="fa fa-suitcase fa-2x" role="button"
-				title="View Reservation Details" />
-		</div>
-		<div class="col-sm-2">
-			<span class="fa fa-user-plus fa-2x" role="button"
-				title="Checkin" />
-		</div>
-		<div class="col-sm-2">
-			<span class="fa fa-envelope fa-2x" role="button"
-				title="Send Reservation Email" />
-		</div>
-		<div class="col-sm-2">
-			<span class="fa fa-money fa-2x" role="button"
-				title="Payments" />
-		</div>
-		<div class="col-sm-2 btn_popover_close">
-			<span class="fa fa-window-close fa-2x" role="button"
-				title="Close" />
-		</div>
-	</div>
-	<div class="row row-eq-height mt-10">
-		<div class="col-sm-12">
-			<t t-if="services">
-        			<t t-foreach='services' t-as='ps'>
-            			<i class="fa fa-exclamation-circle"/> <t t-esc='ps'/>
-        			</t>
-			</t>
-			<t t-if="splitted">
-				<p>This reservation is part of splitted reservation. You can check it in the corresponding Folio.</p>
-			</t>
+		<div class="col-sm-6 bg-gray-lighter">
+			<i class="fa fa-hotel fa-2_5x fa-pull-left mt-5"/>
+			<header class="mt-5"><t t-esc="room_type_name"/></header>
+
+				<p><t t-esc="board_service_name"/></p>
+
+			<span class="circle pull-left"><t t-esc="amount_total" t-widget="monetary"/>€</span>
+			<p>Adults: <t t-esc="adults"/></p>
+			<p class="children">Children: <t t-esc="children"/></p>
 		</div>
 	</div>
 </t>
 
 <t t-name="HotelCalendar.TooltipReservation.Sale">
 	<div class="row row-eq-height mt-3">
-		<div class="col-sm-3 bg-primary pb-10">
+		<div class="col-sm-3 bg-gray-light pb-10 pr-0">
 			<!-- FIXME: HARD CURRENCY -->
 			<p>Folio Pending</p>
 			<h3><t t-esc="amount_total" t-widget="monetary"/> €</h3>
@@ -175,7 +155,7 @@
 
 <t t-name="HotelCalendar.TooltipReservation.Dates">
 	<div class="row row-eq-height mt-3">
-		<div class="col-sm-6 bg-gray-light py-5">
+		<div class="col-sm-6 bg-primary py-5">
 			<i class="fa fa-sign-in fa-2x fa-pull-left"/>
 			<h3><t t-esc="checkin"/></h3>
 			<p><t t-esc="checkin_day_of_week"/> <t t-esc="arrival_hour"/></p>
@@ -188,24 +168,46 @@
 	</div>
 </t>
 
+<t t-name="HotelCalendar.TooltipReservation.Footer">
+	<div class="row row-eq-height mt-10">
+		<div class="col-sm-4 btn_popover_open_folio">
+			<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"
+			   title="View Folio Details"> <span class="fa-text-inside"><t t-esc="folio_name"/></span></i>
+		</div>
+		<div class="col-sm-2 btn_popover_open_reservation">
+			<span class="fa fa-suitcase fa-2x" role="button"
+				title="View Reservation Details" />
+		</div>
+		<div class="col-sm-2">
+			<span class="fa fa-user-plus fa-2x" role="button"
+				title="Checkin" />
+		</div>
+		<div class="col-sm-2">
+			<span class="fa fa-envelope fa-2x" role="button"
+				title="Send Reservation Email" />
+		</div>
+		<div class="col-sm-2">
+			<span class="fa fa-money fa-2x" role="button"
+				title="Payments" />
+		</div>
+	</div>
+	<div class="row row-eq-height mt-10">
+		<div class="col-sm-12">
+			<t t-if="services">
+        			<t t-foreach='services' t-as='ps'>
+            			<i class="fa fa-exclamation-circle"/> <t t-esc='ps'/>
+        			</t>
+			</t>
+			<t t-if="splitted">
+				<p>This reservation is part of splitted reservation. You can check it in the corresponding Folio.</p>
+			</t>
+		</div>
+	</div>
+</t>
+
 <t t-name="HotelCalendar.TooltipReservation.normal">
 	<div class="container">
-		<div class="row row-eq-height">
-			<div class="col-sm-6 bg-gray-light">
-				<i class="fa fa-user-circle fa-2x fa-pull-left"/>
-				<header><t t-esc="name"/></header>
-				<p><t t-esc="phone"/></p>
-				<p><t t-esc="email"/></p>
-			</div>
-			<div class="col-sm-6 bg-gray-lighter">
-				<i class="fa fa-hotel fa-2x fa-pull-left"/>
-				<h3 class="pull-right mt-3"><t t-esc="amount_total" t-widget="monetary"/>€</h3>
-				<header><t t-esc="room_type_name"/></header>
-
-				<p>Board Service: <t t-esc="board_service_name"/></p>
-				<p>Adults: <t t-esc="adults"/> - Children: <t t-esc="children"/></p>
-			</div>
-		</div>
+		<t t-call="HotelCalendar.TooltipReservation.Customer"/>
 		<t t-call="HotelCalendar.TooltipReservation.Sale"/>
 		<t t-call="HotelCalendar.TooltipReservation.Dates"/>
 		<t t-call="HotelCalendar.TooltipReservation.Footer"/>
@@ -216,20 +218,20 @@
 	<div class="container">
 		<div class="row row-eq-height">
 			<div class="col-sm-6 bg-danger">
-				<i class="fa fa-black-tie fa-2x fa-pull-left"/>
+				<i class="fa fa-black-tie fa-2x fa-pull-left mt-5"/>
 				<header><t t-esc="name"/></header>
 				<p><t t-esc="phone"/></p>
-				<p><t t-esc="email"/></p>
+				<p class="email"><t t-esc="email"/></p>
 			</div>
 			<div class="col-sm-6 bg-gray-lighter">
-				<i class="fa fa-hotel fa-2x fa-pull-left"/>
-				<header><t t-esc="room_type_name"/></header>
+				<i class="fa fa-hotel fa-2_5x fa-pull-left mt-5"/>
+				<header class="mt-5"><t t-esc="room_type_name"/></header>
+				<p><t t-esc="board_service_name"/></p>
 
-				<p>Board Service: <t t-esc="board_service_name"/></p>
-				<p>Adults: <t t-esc="adults"/> - Children: <t t-esc="children"/></p>
+				<p>Adults: <t t-esc="adults"/></p>
+				<p class="children">Children: <t t-esc="children"/></p>
 			</div>
 		</div>
-		<t t-call="HotelCalendar.TooltipReservation.Sale"/>
 		<t t-call="HotelCalendar.TooltipReservation.Dates"/>
 		<t t-call="HotelCalendar.TooltipReservation.Footer"/>
 	</div>

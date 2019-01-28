@@ -95,7 +95,7 @@ class HotelReservation(models.Model):
                 'real_dates': [reserv['real_checkin'], reserv['real_checkout']]})
             json_reservation_tooltips.update({
                 reserv['id']: {
-                    'folio_name': reserv['folio_id'],
+                    'folio_name': reserv['folio_name'],
                     'name': _('Out of service')
                     if reserv['reservation_type'] == 'out'
                     else reserv['partner_name'],
@@ -119,8 +119,7 @@ class HotelReservation(models.Model):
                     'splitted': reserv['splitted'],
                     'channel_type': reserv['channel_type'],
                     'real_dates': [reserv['real_checkin'], reserv['real_checkout']],
-                    # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
-                    'board_service_name': reserv['board_service_name'],
+                    'board_service_name': reserv['board_service_name'] or _('No board services'),
                     'services': reserv['services'],
                 }
             })
@@ -393,6 +392,7 @@ class HotelReservation(models.Model):
             'title': ntitle,
             'room_id': self.room_id.id,
             'reserv_id': self.id,
+            'folio_name': self.folio_id.name,
             'partner_name': (self.closure_reason_id.name or _('Out of service'))
             if self.reservation_type == 'out' else self.partner_id.name,
             'adults': self.adults,
@@ -424,7 +424,7 @@ class HotelReservation(models.Model):
             or _('No reason given'),
             'real_dates': [self.real_checkin, self.real_checkout],
             'channel_type': self.channel_type,
-            'board_service_name': self.board_service_room_id.hotel_board_service_id.name,
+            'board_service_name': self.board_service_room_id.hotel_board_service_id.name or _('No board services'),
             'services': [service.product_id.name for service in self.service_ids
                          if service.product_id.show_in_calendar] or False,
         }
