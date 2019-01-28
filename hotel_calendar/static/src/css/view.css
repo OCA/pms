@@ -194,36 +194,41 @@ input#bookings_search {
 	text-align: left;
 }
 
-/** TOOLTIPS **/
+/** POPOVER **/
 .popover-content {
     font-family: Garuda, sans-serif;
     font-size: 12px;
-    padding: 9px;
+    padding: 0px;
 }
 .popover h1, .h1, h2, .h2, h3, .h3 {
     margin-top: 2px;
     margin-bottom: 0px;
 }
 .popover {
-	max-width: 550px;
+	max-width: 400px;
 	border-radius: 0px;
+	padding: 0px;
 }
 .popover .container {
 	max-width: 100%;
 }
 .popover .container p {
-    margin-top: 3px;
+    margin-top: 2px;
     margin-bottom: 0px;
 }
-.popover header {
-    font-size: 1.3em;
+.popover .container p.email {
+    word-wrap: break-word;
 }
-.popover .fa-border {
-    padding: .25em;
-    border: solid 0.1em #777777;
-    border-radius: .2em;
+.popover .container p.board {
+    margin-top: 0px;
+}
+.popover header {
+    font-size: 1.2em;
 }
 
+.fa-2_5x {
+    font-size: 2.5em;
+}
 .fa-text-inside {
     font-family: Garuda, sans-serif;
     font-size: 14px;
@@ -232,9 +237,28 @@ input#bookings_search {
     padding-top: 3px;
     padding-bottom: 3px;
 }
+/* custom styles for popover info */
+.circle {
+    width:35px;
+    height:35px;
+    border-radius:50px;
+    line-height:35px;
+    text-align:center;
+    color:#fff;
+    background:#777;
+    margin-right: .65em;
+}
+
+.bg-gray-lighter {
+    background-color: #ddd;
+}
+
 /* Spacing in Bootstrap v4.0 */
 .mt-3 {
     margin-top: 3px;
+}
+.mt-5 {
+    margin-top: 5px;
 }
 .mt-10 {
     margin-top: 10px !important;
@@ -255,6 +279,10 @@ input#bookings_search {
 }
 .pb-10 {
     padding-bottom: 10px;
+}
+
+.pr-0 {
+    padding-right: 0px;
 }
 
 /* WARNING: The .row-eq-height class uses CSS3's flexbox layout mode,
