@@ -123,7 +123,7 @@
 
 				<p><t t-esc="board_service_name"/></p>
 
-			<span class="circle pull-left"><t t-esc="amount_total" t-widget="monetary"/>€</span>
+			<span class="circle pull-left"><t t-esc="price_room_services_set" t-widget="monetary"/>€</span>
 			<p>Adults: <t t-esc="adults"/></p>
 			<p class="children">Children: <t t-esc="children"/></p>
 		</div>
@@ -135,11 +135,11 @@
 		<div class="col-sm-3 bg-gray-light pb-10 pr-0">
 			<!-- FIXME: HARD CURRENCY -->
 			<p>Folio Pending</p>
-			<h3><t t-esc="amount_total" t-widget="monetary"/> €</h3>
+			<h3><t t-esc="pending_amount" t-widget="monetary"/> €</h3>
 		</div>
 		<div class="col-sm-3 bg-gray-lighter pb-10">
 			<!-- FIXME: HARD CURRENCY -->
-			<h3><t t-esc="amount_paid" t-widget="monetary"/> €</h3>
+			<h3><t t-esc="invoices_paid" t-widget="monetary"/> €</h3>
 			<p>Total Paid</p>
 		</div>
 		<div class="col-sm-6 bg-gray-light">
