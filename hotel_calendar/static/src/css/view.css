@@ -239,14 +239,15 @@ input#bookings_search {
 }
 /* custom styles for popover info */
 .circle {
-    width:35px;
     height:35px;
-    border-radius:50px;
+    min-width:35px;
     line-height:35px;
+    border-radius:50px;
     text-align:center;
     color:#fff;
     background:#777;
     margin-right: .65em;
+    padding: 0 5px;
 }
 
 .bg-gray-lighter {
@@ -268,6 +269,10 @@ input#bookings_search {
 }
 .mr-5 {
     margin-right: 5px;
+}
+.mx-15 {
+    margin-left: 15px;
+    margin-right: 15px;
 }
 .mx-25 {
     margin-left: 25px;
@@ -295,3 +300,25 @@ input#bookings_search {
 }
 
 /* TODO: Use Odoo Colours based on http://www.odoo.com/openerp_website/static/src/less/variables.less */
+
+div.diagonal {
+  overflow: hidden;
+  background-color: #777;
+}
+.diagonal:before {
+  content: "";
+  border-top: 700px solid #777;
+  border-right: 500px solid #ddd;
+  position: absolute;
+  left: 40%;
+  bottom: 0;
+}
+div.on-top {
+  position: inherit;
+}
+div.pull-right-custom {
+  float: right !important;
+  margin-right: 15px;
+  color: #777;
+  text-align: right;
+}

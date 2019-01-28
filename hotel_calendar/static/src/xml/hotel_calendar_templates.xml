@@ -126,16 +126,19 @@
 
 <t t-name="HotelCalendar.TooltipReservation.Sale">
 	<div class="row row-eq-height mt-3">
-		<div class="col-sm-3 bg-gray-light pb-10 pr-0">
-			<!-- FIXME: HARD CURRENCY -->
-			<p>Folio Pending</p>
-			<h3><t t-esc="pending_amount" t-widget="monetary"/> €</h3>
+		<div class="col-sm-6 bg-gray-light pb-10 pr-0 diagonal">
+			<div class="on-top">
+				<div class="pull-left">
+					<p>Folio Pending</p>
+					<h3><t t-esc="pending_amount" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+				</div>
+				<div class="pull-right-custom">
+					<h3><t t-esc="invoices_paid" t-widget="monetary"/>€</h3> <!-- FIXME: HARD CURRENCY -->
+					<p>Total Paid</p>
+				</div>
+			</div>
 		</div>
-		<div class="col-sm-3 bg-gray-lighter pb-10">
-			<!-- FIXME: HARD CURRENCY -->
-			<h3><t t-esc="invoices_paid" t-widget="monetary"/> €</h3>
-			<p>Total Paid</p>
-		</div>
+
 		<div class="col-sm-6 bg-gray-light">
 			<t t-if="channel_type == 'web'">
 				<t t-call="HotelCalendar.TooltipReservation.Channel.ota"/>
