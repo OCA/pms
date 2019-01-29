@@ -191,6 +191,17 @@ class HotelReservation(models.Model):
                                    required=True, track_visibility='onchange')
 
     partner_id = fields.Many2one(related='folio_id.partner_id')
+    partner_invoice_id =  fields.Many2one(related='folio_id.partner_invoice_id')
+    partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
+    partner_invoice_name = fields.Char(related="partner_invoice_id.name")
+    partner_invoice_street = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_street2 = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_zip = fields.Char(related="partner_invoice_id.zip")
+    partner_invoice_city = fields.Char(related="partner_invoice_id.city")
+    partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
+    partner_invoice_country_id = fields.Many2one(related="partner_invoice_id.country_id")
+    partner_invoice_email = fields.Char(related="partner_invoice_id.email")
+    partner_invoice_lang  = fields.Selection(related="partner_invoice_id.lang")
     closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     reservation_line_ids = fields.One2many('hotel.reservation.line',
@@ -858,7 +869,7 @@ class HotelReservation(models.Model):
     def action_pay_reservation(self):
         self.ensure_one()
         partner = self.partner_id.id
-        amount = min(self.amount_reservation, self.folio_pending_amount)
+        amount = min(self.price_room_services_set, self.folio_pending_amount)
         note = self.folio_id.name + ' (' + self.name + ')'
         view_id = self.env.ref('hotel.account_payment_view_form_folio').id
         return{

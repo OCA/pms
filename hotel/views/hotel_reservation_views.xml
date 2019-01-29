@@ -23,24 +23,27 @@
                     <field name="has_confirmed_reservations_to_send" invisible="1" />
                     <field name="has_cancelled_reservations_to_send" invisible="1" />
                     <field name="has_checkout_to_send" invisible="1" />
+                    <button name="open_invoices_reservation"
+                        string="Create Invoice" type="object" class="btn-primary" states="sale"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <button name="send_reservation_mail" type="object" string="Send Confirmation Email"
-                       attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}" class="oe_highlight"/>
+                       attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}"/>
                     <button name="send_cancel_mail" type="object" string="Send Cancel Email"
-                       attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}" class="oe_highlight"/>
+                       attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}" />
                     <button name="send_exit_mail" type="object" string="Send Exit Email"
-                       attrs="{'invisible': [('has_checkout_to_send', '=', False)]}" class="oe_highlight"/>
+                       attrs="{'invisible': [('has_checkout_to_send', '=', False)]}" />
 
-                    <button name="send_reservation_mail" type="object" string="Send Reservation Email" states="confirm" class="oe_highlight"/>
+                    <button name="send_reservation_mail" type="object" string="Send Reservation Email" states="confirm"/>
                     <button name="confirm" string="Confirm" class="oe_highlight"
                         type="object"
                         attrs="{'invisible':[('state','not in',('draft','cancelled'))]}"
                     />
                     <button name="action_cancel" string="Cancel Reservation"
-                        class="oe_highlight" type="object"
+                        type="object"
                         attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('confirm','booking'))]}"
                     />
                     <button name="action_reservation_checkout" string="Done"
-                        states="booking" class="oe_highlight"
+                        states="booking"
                         type="object"
                     />
                     <button name="draft" string="Set to Draft"
@@ -48,12 +51,12 @@
                         type="object"
                     />
                     <button name="%(action_hotel_split_reservation)d" string="Split"
-                        type="action" class="oe_highlight"
+                        type="action"
                         icon="fa-cut"
                         attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('draft','confirm','booking'))]}"
                     />
                     <button name="unify" string="Unify"
-                        type="object" class="oe_highlight"
+                        type="object"
                         icon="fa-compress"
                         attrs="{'invisible':[('splitted', '=', False)]}"
                     />
@@ -111,7 +114,8 @@
                             </div>
                         </button> 
                         <button type="object" class="oe_stat_button" id="invoice_button"
-                            icon="fa-pencil-square-o" name="open_invoices_reservation">
+                            icon="fa-pencil-square-o" name="open_invoices_reservation"
+                            attrs="{'invisible': [('invoice_count','&lt;=',0)]}">>
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="invoice_count"/>
@@ -222,8 +226,6 @@
 <!--
                                 <label for="amount_discount" />
 -->
-                                <button name="%(action_hotel_massive_price_change_reservation_days)d" string="Massive Day Prices"
-                                    type="action" class="oe_edit_only oe_link" icon="fa-bolt"/>
                             </div>
                             <!-- <field name="amount_discount" nolabel="1" widget='monetary'  class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/> -->
 <!--
@@ -251,7 +253,7 @@
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
                     </group>
                     <notebook>
-                        <page name="days" string="Service and Days">
+                        <page name="services" string="Services">
                             <group string="Reservation Services" name="reservation_services">
                                 <field name="service_ids"
                                        context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id, 'form_view_ref':'hotel.hotel_service_view_form'}"
@@ -293,15 +295,17 @@
                                     </tree>
                                 </field>
                             </group>
-                            <group string="Days" name="days">
-                                <field name="reservation_line_ids" nolabel="1">
-                                    <tree create="false" delete="false" editable="bottom">
-                                        <field name="date" />
-                                        <field name="price" />
-                                        <field name="discount" />
-                                    </tree>
-                                </field>
-                            </group>
+                        </page>
+                        <page name="days" string="Day Pricing">
+                            <button name="%(action_hotel_massive_price_change_reservation_days)d" string="Massive Day Prices"
+                                    type="action" icon="fa-bolt"/>
+                            <field name="reservation_line_ids" nolabel="1">
+                                <tree create="false" delete="false" editable="bottom">
+                                    <field name="date" />
+                                    <field name="price" />
+                                    <field name="discount" />
+                                </tree>
+                            </field>
                         </page>
                         <page name="persons" string="Persons">
                             <group>
@@ -315,6 +319,33 @@
                                     'tree_view_ref':'hotel.hotel_checkin_partner_reservation_view_tree',
                                     }"
                             />
+                        </page>
+                        <page name="invoicing" string="invoicing">
+                            <group>
+                                <group>
+                                    <field name="partner_invoice_id" />
+                                    <field name="partner_invoice_name" />
+                                </group>
+                                <group>
+                                    <field name="partner_invoice_vat" />
+                                    <field name="partner_invoice_email" />
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <label for="partner_invoice_street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="partner_invoice_street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="partner_invoice_street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <field name="partner_invoice_city" placeholder="City" class="o_address_city"/>
+                                        <field name="partner_invoice_state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
+                                        <field name="partner_invoice_zip" placeholder="ZIP" class="o_address_zip"/>
+                                        <field name="partner_invoice_country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                    </div>
+                                </group>
+                                <group>
+                                </group>
+                            </group>                            
                         </page>
                         <page name="others" string="Others">
                             <group>

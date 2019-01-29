@@ -34,6 +34,20 @@ class HotelFolio(models.Model):
     def _compute_qty_delivered_updateable(self):
         pass
 
+    @api.model
+    def _default_diff_invoicing(self):
+        """
+        If the guest has an invoicing address set,
+        this method return diff_invoicing = True, else, return False
+        """
+        if 'folio_id' in self.env.context:
+            folio = self.env['hotel.folio'].browse([
+                self.env.context['folio_id']
+            ])
+        if folio.partner_id.id == folio.partner_invoice_id.id:
+            return False
+        return True
+
     @api.depends('state', 'room_lines.invoice_status', 'service_ids.invoice_status')
     def _get_invoiced(self):
         """
@@ -211,7 +225,20 @@ class HotelFolio(models.Model):
                                          string='Invoice Address', required=True,
                                          states={'done': [('readonly', True)]},
                                          help="Invoice address for current sales order.")
+    partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
+    partner_invoice_name = fields.Char(related="partner_invoice_id.name")
+    partner_invoice_street = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_street2 = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_zip = fields.Char(related="partner_invoice_id.zip")
+    partner_invoice_city = fields.Char(related="partner_invoice_id.city")
+    partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
+    partner_invoice_country_id = fields.Many2one(related="partner_invoice_id.country_id")
+    partner_invoice_email = fields.Char(related="partner_invoice_id.email")
+    partner_invoice_lang  = fields.Selection(related="partner_invoice_id.lang")
+    partner_invoice_type  = fields.Selection(related="partner_invoice_id.type")
+    partner_invoice_parent_id  = fields.Many2one(related="partner_invoice_id.parent_id")
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')
+    partner_diff_invoicing = fields.Boolean('Bill to another Address', default='_default_diff_invoicing')
 
     #WorkFlow Mail Fields-----------------------------------------------
     has_confirmed_reservations_to_send = fields.Boolean(
@@ -446,18 +473,20 @@ class HotelFolio(models.Model):
                 'partner_invoice_id': False,
                 'payment_term_id': False,
                 'fiscal_position_id': False,
+                'partner_diff_invoicing': False,
             })
             return
 
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
                                  self.partner_id.property_product_pricelist.id or \
-                                 self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
+                                 self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')            
         values = {
             'pricelist_id': pricelist,
             'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
             'partner_invoice_id': addr['invoice'],
-            'user_id': self.partner_id.user_id.id or self.env.uid
+            'user_id': self.partner_id.user_id.id or self.env.uid,
+            'partner_diff_invoicing': False if self.partner_id.id == addr['invoice'] else True
         }
 
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
@@ -477,6 +506,20 @@ class HotelFolio(models.Model):
                                        self.reservation_type)}
         self.update(values)
 
+    @api.onchange('partner_diff_invoicing')
+    def onchange_partner_diff_invoicing(self):
+        if self.partner_diff_invoicing == False:
+            self.update({'partner_invoice_id': self.partner_id.id})
+        elif self.partner_id == self.partner_invoice_id:
+            self.update({'partner_invoice_id': self.partner_id.address_get(['invoice'])['invoice'] or None})
+
+    @api.onchange('partner_invoice_id')
+    def onchange_partner_invoice_id(self):
+        if self.partner_invoice_id and not self.partner_invoice_id.parent_id and \
+                self.partner_invoice_id != self.partner_id:
+            self.update({
+                'partner_invoice_parent_id': self.partner_id.id,
+                'partner_invoice_type': 'invoice'})
 
     @api.model
     def calcule_reservation_type(self, is_staff, current_type):
