@@ -109,23 +109,38 @@
                              />
                 <filter string="Checkins Tomorrow" name="enter_tomorrow"
                         domain="[('enter_date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
-                        ('state', '=', 'draft')]"
+                        ('state', '=', 'confirm')]"
                         help="Show all checkins for enter tomorrow"/>             
                 <filter string="Checkins to 7 days" name="next_res_week"
                         domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
-                        ('state', '=', 'draft')]"
+                        ('state', '=', 'confirm')]"
                         help="Show all reservations for which date enter is before than 7 days"/>
                 <filter string="On Board Tomorrow" name="next_res_2week"
                         domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
-                        ('state', 'in', ['confirm','draft'])]"
+                        ('state', 'in', ['confirm','booking'])]"
                         help="Show all checkins for Tomorrow"/>
                 <group expand="0" string="Group By">
-                    <filter string="Creation Date" domain="[]"
-                        context="{'group_by':'create_date'}" />
-                    <filter string="Checkin Date" domain="[]"
-                        context="{'group_by':'checkin'}" />
-                    <filter string="Checkout Date" domain="[]"
-                        context="{'group_by':'checkout'}" />
+                    <filter string="Create by Month" name="create_date_by_month"
+                                context="{'group_by':'create_date', 'default_order': 'create_date asc'}"/>
+                    <filter string="Create by Week" name="create_date_by_week"
+                            context="{'group_by':'create_date:week', 'default_order': 'create_date'}"/>
+                    <filter string="Create by Day" name="create_date_by_week"
+                            context="{'group_by':'create_date:day', 'default_order': 'create_date'}"/>
+                    <separator/>
+                    <filter string="Checkin by Month" name="checkin_by_month"
+                                context="{'group_by':'checkin', 'default_order': 'checkin asc'}"/>
+                    <filter string="Checkin by Week" name="checkin_by_week"
+                            context="{'group_by':'checkin:week', 'default_order': 'checkin'}"/>
+                    <filter string="Checkin by Day" name="checkin_by_week"
+                            context="{'group_by':'checkin:day', 'default_order': 'checkin'}"/>
+                    <separator/>
+                    <filter string="Checkout by Month" name="checkout_by_month"
+                                context="{'group_by':'checkout', 'default_order': 'checkout asc'}"/>
+                    <filter string="Checkout by Week" name="checkout_by_week"
+                            context="{'group_by':'checkout:week', 'default_order': 'checkout'}"/>
+                    <filter string="Checkout by Day" name="checkout_by_week"
+                            context="{'group_by':'checkout:day', 'default_order': 'checkout'}"/>
+                    <separator/>
                 </group>
             </search>
         </field>
