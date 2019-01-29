@@ -991,12 +991,20 @@ class HotelReservation(models.Model):
     @api.multi
     def action_checks(self):
         self.ensure_one()
-        return {
+        partner = self.partner_id.id
+        reservation_id = self.id
+        view_id = self.env.ref('hotel.hotel_checkin_partner_reservation_view_tree').id
+        return{
             'name': _('Checkins'),
             'view_type': 'form',
-            'view_mode': 'tree,form',
+            'view_mode': 'tree',
             'res_model': 'hotel.checkin.partner',
             'type': 'ir.actions.act_window',
+            'view_id': view_id,
+            'context': {
+                'reservation_id': reservation_id,
+            },
+            'flags': {'initial_mode': 'edit'},
             'domain': [('reservation_id', '=', self.id)],
             'target': 'new',
         }

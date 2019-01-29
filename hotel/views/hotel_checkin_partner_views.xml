@@ -40,7 +40,7 @@
         <field name="model">hotel.checkin.partner</field>
         <field name="priority">20</field>
         <field name="arch" type="xml">
-            <tree editable="bottom"
+            <tree editable="bottom" create="1"
                     decoration-danger="state == 'draft'"
                     decoration-muted="state == 'cancelled' or state =='done'"
                     decoration-success="state == 'booking'">
@@ -51,10 +51,14 @@
                     help="Get in" 
                 />
                 <field name="partner_id" required="True"/>
+                <field name="mobile"/>
+                <field name="email"/>
+                <field name="gender"/>
                 <field name="enter_date"/>
                 <field name="exit_date"/>
-                <field name="reservation_id"/>
-                <field name="state" />
+                <field name="reservation_id" invisible="1"/>
+                <field name="folio_id" force_save="1" invisible="1"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -75,10 +79,14 @@
                     help="Get in" 
                 />
                 <field name="partner_id" required="True"/>
+                <field name="mobile"/>
+                <field name="email"/>
+                <field name="gender"/>
                 <field name="enter_date"/>
                 <field name="exit_date"/>
                 <field name="reservation_id"/>
-                <field name="state" />
+                <field name="folio_id" force_save="1" invisible="1"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
