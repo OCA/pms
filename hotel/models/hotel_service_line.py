@@ -8,12 +8,12 @@ class HotelServiceLine(models.Model):
     _name = "hotel.service.line"
     _order = "date"
 
-    service_id = fields.Many2one('hotel.service', string='Service',
+    service_id = fields.Many2one('hotel.service', string='Service Room',
                                  ondelete='cascade', required=True,
                                  copy=False)
     date = fields.Date('Date')
     day_qty = fields.Integer('Units')
-    product_id = fields.Many2one(related='service_id.product_id')
+    product_id = fields.Many2one(related='service_id.product_id', store=True)
 
     @api.constrains('day_qty')
     def no_free_resources(self):
