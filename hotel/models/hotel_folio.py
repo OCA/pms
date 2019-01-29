@@ -280,7 +280,7 @@ class HotelFolio(models.Model):
                 'amount_total': amount_untaxed + amount_tax,
             })
 
-    @api.depends('amount_total', 'payment_ids', 'return_ids')
+    @api.depends('amount_total', 'payment_ids', 'return_ids', 'reservation_type')
     @api.multi
     def compute_amount(self):
         acc_pay_obj = self.env['account.payment']
@@ -630,64 +630,73 @@ class HotelFolio(models.Model):
     @api.depends('room_lines')
     def _compute_has_confirmed_reservations_to_send(self):
         has_to_send = False
-        for rline in self.room_lines:
-            if rline.splitted:
-                master_reservation = rline.parent_reservation or rline
-                has_to_send = self.env['hotel.reservation'].search_count([
-                    ('splitted', '=', True),
-                    ('folio_id', '=', self.id),
-                    ('to_send', '=', True),
-                    ('state', 'in', ('confirm', 'booking')),
-                    '|',
-                    ('parent_reservation', '=', master_reservation.id),
-                    ('id', '=', master_reservation.id),
-                ]) > 0
-            elif rline.to_send and rline.state in ('confirm', 'booking'):
-                has_to_send = True
-                break
-        self.has_confirmed_reservations_to_send = has_to_send
+        if self.reservation_type != 'out':
+            for rline in self.room_lines:
+                if rline.splitted:
+                    master_reservation = rline.parent_reservation or rline
+                    has_to_send = self.env['hotel.reservation'].search_count([
+                        ('splitted', '=', True),
+                        ('folio_id', '=', self.id),
+                        ('to_send', '=', True),
+                        ('state', 'in', ('confirm', 'booking')),
+                        '|',
+                        ('parent_reservation', '=', master_reservation.id),
+                        ('id', '=', master_reservation.id),
+                    ]) > 0
+                elif rline.to_send and rline.state in ('confirm', 'booking'):
+                    has_to_send = True
+                    break
+            self.has_confirmed_reservations_to_send = has_to_send
+        else:
+            self.has_confirmed_reservations_to_send = False
 
     @api.depends('room_lines')
     def _compute_has_cancelled_reservations_to_send(self):
         has_to_send = False
-        for rline in self.room_lines:
-            if rline.splitted:
-                master_reservation = rline.parent_reservation or rline
-                has_to_send = self.env['hotel.reservation'].search_count([
-                    ('splitted', '=', True),
-                    ('folio_id', '=', self.id),
-                    ('to_send', '=', True),
-                    ('state', '=', 'cancelled'),
-                    '|',
-                    ('parent_reservation', '=', master_reservation.id),
-                    ('id', '=', master_reservation.id),
-                ]) > 0
-            elif rline.to_send and rline.state == 'cancelled':
-                has_to_send = True
-                break
-        self.has_cancelled_reservations_to_send = has_to_send
+        if self.reservation_type != 'out':
+            for rline in self.room_lines:
+                if rline.splitted:
+                    master_reservation = rline.parent_reservation or rline
+                    has_to_send = self.env['hotel.reservation'].search_count([
+                        ('splitted', '=', True),
+                        ('folio_id', '=', self.id),
+                        ('to_send', '=', True),
+                        ('state', '=', 'cancelled'),
+                        '|',
+                        ('parent_reservation', '=', master_reservation.id),
+                        ('id', '=', master_reservation.id),
+                    ]) > 0
+                elif rline.to_send and rline.state == 'cancelled':
+                    has_to_send = True
+                    break
+            self.has_cancelled_reservations_to_send = has_to_send
+        else:
+            self.has_cancelled_reservations_to_send = False
 
     @api.depends('room_lines')
     def _compute_has_checkout_to_send(self):
         has_to_send = True
-        for rline in self.room_lines:
-            if rline.splitted:
-                master_reservation = rline.parent_reservation or rline
-                nreservs = self.env['hotel.reservation'].search_count([
-                    ('splitted', '=', True),
-                    ('folio_id', '=', self.id),
-                    ('to_send', '=', True),
-                    ('state', '=', 'done'),
-                    '|',
-                    ('parent_reservation', '=', master_reservation.id),
-                    ('id', '=', master_reservation.id),
-                ])
-                if nreservs != len(self.room_lines):
+        if self.reservation_type != 'out':
+            for rline in self.room_lines:
+                if rline.splitted:
+                    master_reservation = rline.parent_reservation or rline
+                    nreservs = self.env['hotel.reservation'].search_count([
+                        ('splitted', '=', True),
+                        ('folio_id', '=', self.id),
+                        ('to_send', '=', True),
+                        ('state', '=', 'done'),
+                        '|',
+                        ('parent_reservation', '=', master_reservation.id),
+                        ('id', '=', master_reservation.id),
+                    ])
+                    if nreservs != len(self.room_lines):
+                        has_to_send = False
+                elif not rline.to_send or rline.state != 'done':
                     has_to_send = False
-            elif not rline.to_send or rline.state != 'done':
-                has_to_send = False
-                break
-        self.has_checkout_to_send = has_to_send
+                    break
+            self.has_checkout_to_send = has_to_send
+        else:
+            self.has_checkout_to_send = False
 
     @api.multi
     def send_reservation_mail(self):
