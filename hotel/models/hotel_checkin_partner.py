@@ -23,6 +23,11 @@ class HotelCheckinPartner(models.Model):
                 self.env.context['folio_id']
             ])
             return folio
+        if 'reservation_id' in self.env.context:
+            folio = self.env['hotel.reservation'].browse([
+                self.env.context['reservation_id']
+            ]).folio_id
+            return folio
         return False
 
     def _default_enter_date(self):
@@ -46,16 +51,21 @@ class HotelCheckinPartner(models.Model):
             reservation = self.env['hotel.reservation'].browse([
                 self.env.context['reservation_id']
             ])
-            return reservation.partner_id
+            if reservation.partner_id.id not in reservation.mapped(
+                    'checkin_partner_ids.partner_id.id'):
+                return reservation.partner_id
         return False
 
 
     partner_id = fields.Many2one('res.partner', default=_default_partner_id,
                                  required=True)
+    email = fields.Char('E-mail', related='partner_id.email')
+    mobile = fields.Char('Mobile', related='partner_id.mobile')
+    gender = fields.Selection('Gender', related='partner_id.gender')
     reservation_id = fields.Many2one(
         'hotel.reservation', default=_default_reservation_id)
-    folio_id = fields.Many2one('hotel.reservation',
-        default=_default_folio_id, readonly=True)
+    folio_id = fields.Many2one('hotel.folio',
+        default=_default_folio_id, readonly=True, required=True)
     enter_date = fields.Date(default=_default_enter_date, required=True)
     exit_date = fields.Date(default=_default_exit_date, required=True)
     state = fields.Selection([('draft', 'Pending Entry'),
@@ -65,6 +75,7 @@ class HotelCheckinPartner(models.Model):
                              'State', readonly=True,
                              default=lambda *a: 'draft',
                              track_visibility='onchange')
+    
 
     # Validation for Departure date is after arrival date.
     @api.multi
@@ -88,6 +99,30 @@ class HotelCheckinPartner(models.Model):
             raise ValidationError(
                 _('Departure date, is prior to arrival. Check it now. %s') %
                 date_out)
+
+    @api.multi
+    @api.onchange('partner_id')
+    def _check_partner_id(self):
+        for record in self:
+            checkins = self.env['hotel.checkin.partner'].search([
+                            ('id','!=', record.id),
+                            ('reservation_id','=', record.reservation_id.id)   
+                        ])
+            if record.partner_id.id in checkins.mapped('partner_id.id'):
+                raise models.ValidationError(
+                    _('This guest is already registered in the room'))
+
+    @api.multi
+    @api.constrains('partner_id')
+    def _check_partner_id(self):
+        for record in self:
+            checkins = self.env['hotel.checkin.partner'].search([
+                            ('id','!=', record.id),
+                            ('reservation_id','=', record.reservation_id.id)
+                        ])
+            if record.partner_id.id in checkins.mapped('partner_id.id'):
+                raise models.ValidationError(
+                    _('This guest is already registered in the room'))
 
     @api.multi
     def action_on_board(self):

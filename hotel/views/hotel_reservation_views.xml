@@ -304,6 +304,10 @@
                             </group>
                         </page>
                         <page name="persons" string="Persons">
+                            <group>
+                                <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
+                                        options="{'no_create': True,'no_open': True}" />
+                            </group>
                             <field name="checkin_partner_ids"
                                    context="{
                                     'default_reservation_id': id,
@@ -314,8 +318,6 @@
                         </page>
                         <page name="others" string="Others">
                             <group>
-                                <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
-                                    options="{'no_create': True,'no_open': True}" />
                                 <field name="overbooking" />
                             </group>
                             <group>
