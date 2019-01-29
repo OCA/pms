@@ -838,7 +838,7 @@ class HotelReservation(models.Model):
     @api.depends('reservation_line_ids.discount')
     def _compute_discount(self):
         for record in self:
-            record.discount = sum(line.price * (1 - (line.discount or 0.0) * 0.01) \
+            record.discount = sum(line.price * ((line.discount or 0.0) * 0.01) \
                 for line in record.reservation_line_ids)
 
     @api.depends('reservation_line_ids.price', 'discount', 'tax_ids')
@@ -1022,9 +1022,13 @@ class HotelReservation(models.Model):
     def _compute_checkin_partner_count(self):
         _logger.info('_compute_checkin_partner_count')
         for record in self:
-            record.checkin_partner_count = len(record.checkin_partner_ids)
-            record.checkin_partner_pending_count = (record.adults + record.children) \
-                    - len(record.checkin_partner_ids)
+            if record.reservation_type != 'out':
+                record.checkin_partner_count = len(record.checkin_partner_ids)
+                record.checkin_partner_pending_count = (record.adults + record.children) \
+                        - len(record.checkin_partner_ids)
+            else:
+                record.checkin_partner_count = 0
+                record.checkin_partner_pending_count = 0
 
     # https://www.odoo.com/es_ES/forum/ayuda-1/question/calculated-fields-in-search-filter-possible-118501
     @api.multi

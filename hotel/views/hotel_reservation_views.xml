@@ -25,15 +25,13 @@
                     <field name="has_checkout_to_send" invisible="1" />
                     <button name="open_invoices_reservation"
                         string="Create Invoice" type="object" class="btn-primary" states="sale"
-                        attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        attrs="{'invisible': ['|',('state', '=', 'draft'), ('reservation_type','not in',('normal'))]}" />
                     <button name="send_reservation_mail" type="object" string="Send Confirmation Email"
                        attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}"/>
                     <button name="send_cancel_mail" type="object" string="Send Cancel Email"
                        attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}" />
                     <button name="send_exit_mail" type="object" string="Send Exit Email"
                        attrs="{'invisible': [('has_checkout_to_send', '=', False)]}" />
-
-                    <button name="send_reservation_mail" type="object" string="Send Reservation Email" states="confirm"/>
                     <button name="confirm" string="Confirm" class="oe_highlight"
                         type="object"
                         attrs="{'invisible':[('state','not in',('draft','cancelled'))]}"
@@ -93,7 +91,7 @@
                         </button>
                         <button type="action" class="oe_stat_button"
                             icon="fa-list-ul"
-                            attrs="{'invisible': [('partner_id','=',False)]}"
+                            attrs="{'invisible': ['|', ('partner_id','=',False), ('reservation_type','in',('out'))]}"
                             name="%(open_hotel_reservation_form_tree_all)d"
                             context="{'search_default_partner_id': partner_id}">
                             <div class="o_form_field o_stat_info">
@@ -115,7 +113,7 @@
                         </button> 
                         <button type="object" class="oe_stat_button" id="invoice_button"
                             icon="fa-pencil-square-o" name="open_invoices_reservation"
-                            attrs="{'invisible': [('invoice_count','&lt;=',0)]}">>
+                            attrs="{'invisible': [('invoice_count','&lt;=',0)]}">
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="invoice_count"/>
@@ -191,58 +189,52 @@
                         <span class="fa fa-sign-out" style="margin-right: 5px;"/>
                         <field name="checkout" />
                     </h3>
+                     <field name="out_service_description" placeholder="Out service description"
+                        attrs="{'invisible':[('reservation_type','not in',('out'))]}"/>
                     <group col="12">
                         <group colspan="5" string="General Info" name="contact_details" >
-                            <field name="email" placeholder="email" widget="email" />
-                            <field name="mobile" placeholder="mobile" widget="phone" />
-                            <field name="phone" placeholder="phone" widget="phone" />
-                            <field name="pricelist_id"/>
-                            <field name="partner_internal_comment" string="Partner Note"/>
+                            <field name="email" placeholder="email" widget="email"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                            <field name="mobile" placeholder="mobile" widget="phone"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                            <field name="phone" placeholder="phone" widget="phone"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                            <field name="pricelist_id"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                            <field name="partner_internal_comment" string="Partner Note"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
-                        </group>
-                        <group colspan="4" string="Reservation Details" name="reservation_details">
                             <field name="arrival_hour"/>
                             <field name="departure_hour"/>
-                            <field name="nights" invisible="1"/>
+                        </group>
+                        <group colspan="4" string="Reservation Details" name="reservation_details">
+                            <field name="nights"/>
                             <!-- TODO: How to filter to avoid show False (generic) pricelist board when exist a specific pricelist board¿? -->
                             <field name="board_service_room_id" domain="[
                                     ('hotel_room_type_id', '=', room_type_id),
                                     ('pricelist_id', 'in', [pricelist_id, False])]"
-                                    options="{'no_create': True,'no_open': True}" />
+                                    options="{'no_create': True,'no_open': True}"
+                                    attrs="{'invisible': [('reservation_type','in',('out'))]}" />
                             <field name="name"/>
-                            <field name="adults"/>
-                            <field name="children"/>
-                            <field name="qty_invoiced" />
-                            <field name="qty_to_invoice" />
+                            <field name="adults" attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                            <field name="children" attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                            <field name="qty_invoiced" invisible="1"/>
+                            <field name="qty_to_invoice" invisible="1"/>
                             <field name="room_type_id" on_change="1" options="{'no_create': True,'no_open': True}"
                                 attrs="{'readonly':[('state','not in',('draft'))]}"/>
-                            <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
                         </group>
-                        <group class="oe_subtotal_footer" style="margin-right: 20px; !important" colspan="2" name="reservation_total" string="Amounts"  attrs="{'invisible':[('folio_id','=', False)]}">
-<!--
-                             <field name="discount" string="Room Discount" attrs="{'invisible': [('discount_type','=','fixed')]}" />
--->
+                        <group class="oe_subtotal_footer" style="margin-right: 20px; !important" colspan="2" name="reservation_total" string="Amounts">
                             <div class="oe_subtotal_footer_separator oe_inline o_td_label">
-<!--
-                                <label for="amount_discount" />
--->
+                                <label for="price_room_services_set" string="Reservation Total"/>
                             </div>
-                            <!-- <field name="amount_discount" nolabel="1" widget='monetary'  class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/> -->
-<!--
-                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">
-                                <label for="amount_reservation_services" />
-                            </div>
--->
-                            <!-- <field name="amount_reservation_services" nolabel="1" widget='monetary'  class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}"/> -->
-                            <field name="price_total" />
-                            <!-- <field name="qty_delivered_updateable" invisible="1"/> -->
+                             <field name="price_room_services_set" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary"/>
+                            <field name="discount" string="Discount Room" widget="monetary"/>
+                            <field name="price_subtotal" invisible="1"/>
+                            <field name="price_services" string="Only Services" widget="monetary"/>
+                            <field name="price_total" string="Only Room" widget="monetary"/>
                             <field name="state" invisible="1"/>
-                            <!-- <field name="invoice_status" invisible="1"/> -->
-                            <!-- <field name="customer_lead" invisible="1"/> -->
-                             <field name="currency_id" invisible="1"/>
-                            <field name="price_subtotal" widget="monetary"/>
-                            <field name="price_services" widget="monetary"/>
-                            <field name="price_room_services_set" widget="monetary"/>
+                            <field name="invoice_status" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
                     <field name="folio_internal_comment" nolabel="1" placeholder="Reservation Notes"/>
@@ -253,7 +245,8 @@
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
                     </group>
                     <notebook>
-                        <page name="services" string="Services">
+                        <page name="services" string="Services"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
                             <group string="Reservation Services" name="reservation_services">
                                 <field name="service_ids"
                                        context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id, 'form_view_ref':'hotel.hotel_service_view_form'}"
@@ -296,7 +289,8 @@
                                 </field>
                             </group>
                         </page>
-                        <page name="days" string="Day Pricing">
+                        <page name="days" string="Day Pricing"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
                             <button name="%(action_hotel_massive_price_change_reservation_days)d" string="Massive Day Prices"
                                     type="action" icon="fa-bolt"/>
                             <field name="reservation_line_ids" nolabel="1">
@@ -307,7 +301,8 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="persons" string="Persons">
+                        <page name="persons" string="Persons"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
                             <group>
                                 <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
                                         options="{'no_create': True,'no_open': True}" />
@@ -320,7 +315,8 @@
                                     }"
                             />
                         </page>
-                        <page name="invoicing" string="Invoicing">
+                        <page name="invoicing" string="Invoicing"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
                             <group>
                                 <field name="partner_diff_invoicing" string="Bill to another Address"/>
                             </group>
@@ -358,9 +354,8 @@
                                 <field name="overbooking" />
                             </group>
                             <group>
+                                <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
                                 <field name="reservation_type" />
-                                <field name="out_service_description"
-                                       attrs="{'invisible':[('reservation_type','not in',('out'))]}"/>
                             </group>
                         </page>
                     </notebook>
