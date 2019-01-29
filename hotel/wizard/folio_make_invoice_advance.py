@@ -195,10 +195,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
         inv_obj = self.env['account.invoice']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         folios = self.folio_ids
-
-        for folio in folios:
-            if folio.partner_invoice_id != self.partner_invoice_id:
-                raise UserError(_('The billing directions must match'))
                             
         if self.advance_payment_method == 'all':
             inv_data = self._prepare_invoice()

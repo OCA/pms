@@ -132,6 +132,8 @@
                             <field name="email" placeholder="email"/>
                             <field name="mobile" placeholder="mobile"/>
                             <field name="phone" />
+                            <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
+                                options="{'no_create': True,'no_open': True}" />
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancel'))]}"/>
                         </group>
                         <group>
@@ -140,8 +142,6 @@
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>
-                            <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
-                                options="{'no_create': True,'no_open': True}" />
                         </group>
                         <group>
                             <field name="partner_internal_comment"/>
@@ -179,10 +179,6 @@
                                 nolabel="1" />
                         </page>
                         <page name="persons" string="Persons">
-                            <group>
-                                <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
-                                        options="{'no_create': True,'no_open': True}" />
-                            </group>
                             <field name="checkin_partner_ids"
                                    context="{
                                     'default_reservation_id': id,

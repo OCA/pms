@@ -202,7 +202,7 @@ class HotelFolio(models.Model):
                                    compute='_amount_all', track_visibility='always')
 
     #Checkin Fields-----------------------------------------------------
-    checkin_partner_ids = fields.One2many('hotel.checkin.partner', 'reservation_id')
+    checkin_partner_ids = fields.One2many('hotel.checkin.partner', 'folio_id')
     booking_pending = fields.Integer('Booking pending',
                                      compute='_compute_checkin_partner_count')
     checkin_partner_count = fields.Integer('Checkin counter',

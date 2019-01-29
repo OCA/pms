@@ -320,18 +320,24 @@
                                     }"
                             />
                         </page>
-                        <page name="invoicing" string="invoicing">
+                        <page name="invoicing" string="Invoicing">
                             <group>
-                                <group>
-                                    <field name="partner_invoice_id" />
-                                    <field name="partner_invoice_name" />
-                                </group>
+                                <field name="partner_diff_invoicing" string="Bill to another Address"/>
+                            </group>
+                            <group>
+                                <field name="partner_invoice_id"
+                                       string="Contact Invoiced"
+                                       attrs="{'invisible':[('partner_diff_invoicing','=',False)]}"/>
+                            </group>
+                            <group>
                                 <group>
                                     <field name="partner_invoice_vat" />
                                     <field name="partner_invoice_email" />
                                 </group>
-                            </group>
-                            <group>
+                                <group>
+                                    <field name="partner_invoice_parent_id" />
+                                    <field name="partner_invoice_type" />
+                                </group>
                                 <group>
                                     <label for="partner_invoice_street" string="Address"/>
                                     <div class="o_address_format">
@@ -345,7 +351,7 @@
                                 </group>
                                 <group>
                                 </group>
-                            </group>                            
+                            </group>
                         </page>
                         <page name="others" string="Others">
                             <group>
