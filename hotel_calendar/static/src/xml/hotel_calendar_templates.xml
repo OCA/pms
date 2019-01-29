@@ -193,9 +193,9 @@
 			<span class="fa fa-envelope fa-2x" role="button"
 				title="Send Reservation Email" />
 		</div>
-		<div class="col-sm-2">
+		<div class="col-sm-2 btn_popover_open_payment">
 			<span class="fa fa-money fa-2x" role="button"
-				title="Payments" />
+				title="Folio Payments" />
 		</div>
 	</div>
 	<div class="row row-eq-height mt-10">
