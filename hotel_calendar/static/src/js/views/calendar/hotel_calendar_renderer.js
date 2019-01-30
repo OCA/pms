@@ -59,9 +59,16 @@ var HotelCalendarView = AbstractRenderer.extend({
 
     update_buttons_counter: function(ncheckouts, ncheckins, noverbookings, ncancelled) {
         var self = this;
+         // Checkouts Button
+        var $ninfo = self.$el.find('#pms-menu #btn_action_checkout span.ninfo');
+        $ninfo.text(ncheckouts);
+
+        // Checkins Button
+        $ninfo = self.$el.find('#pms-menu #btn_action_checkin span.ninfo');
+        $ninfo.text(ncheckins);
 
         // OverBookings
-        var $ninfo = self.$el.find('#pms-menu #btn_action_overbooking span.ninfo');
+        $ninfo = self.$el.find('#pms-menu #btn_action_overbooking span.ninfo');
         $ninfo.text(noverbookings);
         if (noverbookings) {
             $ninfo.parent().parent().addClass('overbooking-highlight');
@@ -69,14 +76,14 @@ var HotelCalendarView = AbstractRenderer.extend({
             $ninfo.parent().parent().removeClass('overbooking-highlight');
         }
 
-        // // Cancelled
-        // $ninfo = self.$el.find('#pms-menu #btn_action_cancelled span.ninfo');
-        // $ninfo.text(ncancelled);
-        // if (ncancelled) {
-        //     $ninfo.parent().parent().addClass('cancelled-highlight');
-        // } else {
-        //     $ninfo.parent().parent().removeClass('cancelled-highlight');
-        // }
+        // Cancelled
+        $ninfo = self.$el.find('#pms-menu #btn_action_cancelled span.ninfo');
+        $ninfo.text(ncancelled);
+        if (ncancelled) {
+            $ninfo.parent().parent().addClass('cancelled-highlight');
+        } else {
+            $ninfo.parent().parent().removeClass('cancelled-highlight');
+        }
     },
 
     init_calendar_view: function(){
@@ -85,20 +92,20 @@ var HotelCalendarView = AbstractRenderer.extend({
         /** VIEW CONTROLS INITIALIZATION **/
         // DATE TIME PICKERS
         var DTPickerOptions = {
-          viewMode: 'months',
-          icons : {
-            time: 'fa fa-clock-o',
-            date: 'fa fa-calendar',
-            up: 'fa fa-chevron-up',
-            down: 'fa fa-chevron-down'
-          },
-          //language : moment.locale(),
-          locale : moment.locale(),
-          format : HotelConstants.L10N_DATE_MOMENT_FORMAT,
-          widgetPositioning:{
-            horizontal: 'auto',
-            vertical: 'bottom'
-          }
+            viewMode: 'months',
+            icons : {
+                time: 'fa fa-clock-o',
+                date: 'fa fa-calendar',
+                up: 'fa fa-chevron-up',
+                down: 'fa fa-chevron-down'
+               },
+            //language : moment.locale(),
+            locale : moment.locale(),
+            format : HotelConstants.L10N_DATE_MOMENT_FORMAT,
+            widgetPositioning:{
+        horizontal: 'auto',
+        vertical: 'bottom'
+    }
         };
         var $dateTimePickerBegin = this.$el.find('#pms-menu #date_begin');
         var $dateEndDays = this.$el.find('#pms-menu #date_end_days');
@@ -162,6 +169,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         });
 
         return $.when(
+            this.trigger_up('onUpdateButtonsCounter'),
             this.trigger_up('onLoadViewFilters'),
         );
     },

@@ -827,9 +827,9 @@ var PMSCalendarController = AbstractController.extend({
       var active_calendar = this._multi_calendar.get_active_calendar();
 
       var filterDates = active_calendar.getDates();
-      var dfrom_fmt = filterDates[0].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-          dto_fmt = filterDates[1].format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT),
-          now_fmt = moment().format(HotelConstants.ODOO_DATETIME_MOMENT_FORMAT);
+      var dfrom_fmt = filterDates[0].format(HotelConstants.ODOO_DATE_MOMENT_FORMAT),
+          dto_fmt = filterDates[1].format(HotelConstants.ODOO_DATE_MOMENT_FORMAT),
+          now_fmt = moment().format(HotelConstants.ODOO_DATE_MOMENT_FORMAT);
 
       var domain_checkouts = [
           ['checkout', '=', now_fmt],

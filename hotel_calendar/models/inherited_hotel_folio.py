@@ -15,3 +15,11 @@ class HotelFolio(models.Model):
             for record in self:
                 record.room_lines.send_bus_notification('write', 'noshow')
         return ret
+
+    @api.multi
+    def compute_amount(self):
+        ret = super(HotelFolio, self).compute_amount()
+        with self.env.norecompute():
+            for record in self:
+                record.room_lines.send_bus_notification('write', 'noshow')
+        return ret
