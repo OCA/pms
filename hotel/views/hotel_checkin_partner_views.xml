@@ -4,7 +4,7 @@
     <act_window
         id="action_checkin_partner"
         name="Action checkin"
-        res_model='hotel.checkin.partner'
+        res_model="hotel.checkin.partner"
         view_mode="tree,form" />
         
     <menuitem
@@ -40,7 +40,7 @@
         <field name="model">hotel.checkin.partner</field>
         <field name="priority">20</field>
         <field name="arch" type="xml">
-            <tree editable="bottom" create="1"
+            <tree editable="bottom"
                     decoration-danger="state == 'draft'"
                     decoration-muted="state == 'cancelled' or state =='done'"
                     decoration-success="state == 'booking'">

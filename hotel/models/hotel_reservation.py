@@ -1058,8 +1058,9 @@ class HotelReservation(models.Model):
             'view_id': view_id,
             'context': {
                 'reservation_id': reservation_id,
+                'default_reservation_id': reservation_id,
+                'default_folio_id': self.folio_id,
             },
-            'flags': {'initial_mode': 'edit'},
             'domain': [('reservation_id', '=', self.id)],
             'target': 'new',
         }
