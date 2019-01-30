@@ -170,7 +170,7 @@
 	<div class="row row-eq-height mt-3">
 		<div class="col-sm-12 triangle-right">
 			<div class="col-sm-6 px-0">
-				<i class="fa fa-sign-in fa-2x fa-pull-left py-5"/>
+				<i class="fa fa-sign-in fa-2x fa-pull-left pl-5 py-5"/>
 				<h3><t t-esc="checkin"/></h3>
 				<p><t t-esc="checkin_day_of_week"/> <t t-esc="arrival_hour"/></p>
 			</div>
@@ -185,7 +185,7 @@
 
 <t t-name="HotelCalendar.TooltipReservation.Footer">
 	<div class="row row-eq-height mt-10">
-		<div class="col-sm-4 btn_popover_open_folio">
+		<div class="col-sm-4 btn_popover_open_folio pr-0">
 			<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"
 			   title="View Folio Details"> <span class="fa-text-inside"><t t-esc="folio_name"/></span></i>
 		</div>
@@ -205,6 +205,12 @@
 			<span class="fa fa-money fa-2x" role="button"
 				title="Folio Payments" />
 		</div>
+		<t t-if="reservation_type =='normal'">
+			<div class="col-sm-2 btn_popover_open_invoice">
+				<span class="fa fa-pencil-square-o fa-2x" role="button"
+					title="Invoice Folio" />
+			</div>
+		</t>
 	</div>
 	<div class="row row-eq-height mt-10">
 		<div class="col-sm-12">
@@ -268,7 +274,7 @@
 			</div>
 		</div>
 		<t t-call="HotelCalendar.TooltipReservation.Dates"/>
-		<div class="row row-eq-height mt-10">
+		<div class="row row-eq-height my-10">
 			<div class="col-sm-4 btn_popover_open_folio">
 				<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"
 				   title="View Folio Details"> <span class="fa-text-inside"><t t-esc="folio_name"/></span></i>

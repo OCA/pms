@@ -261,7 +261,7 @@ input#bookings_search {
 }
 .fa-text-inside {
   font-family: Garuda, sans-serif;
-  font-size: 14px;
+  font-size: 12px;
 }
 .popover .col-sm-2, .popover .col-sm-4, .popover .col-sm-6, .popover .col-sm-12 {
   padding-top: 3px;
@@ -298,6 +298,10 @@ input#bookings_search {
 }
 .mt-10 {
   margin-top: 10px !important;
+}
+.my-10 {
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
 }
 .mt-25 {
   margin-top: 25px;
@@ -366,7 +370,7 @@ div.triangle-right {
 .triangle-right:before {
   content: "";
   position: absolute;
-  border: 25px solid #ddd;
+  border: 26px solid #ddd;
   height: 0;
   width: 100%;
   left: 47%;
