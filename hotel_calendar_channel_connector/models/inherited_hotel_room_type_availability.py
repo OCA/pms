@@ -1,6 +1,6 @@
-# Copyright 2018 Alexandre Díaz <dev@redneboa.es>
+# Copyright 2018-2019 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields, api
+from odoo import models, api
 
 
 class HotelRoomTypeAvailability(models.Model):
@@ -9,7 +9,9 @@ class HotelRoomTypeAvailability(models.Model):
     def _prepare_notif_values(self, record):
         return {
             'date': record.date,
-            'avail': record.avail,
+            'quota': record.quota,
+            'no_ota': record.no_ota,
+            'max_avail': record.max_avail,
             'room_type_id': record.room_type_id.id,
             'id': record.id,
         }

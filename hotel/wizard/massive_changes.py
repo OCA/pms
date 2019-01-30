@@ -2,9 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
 from openerp import models, fields, api
-from openerp.tools import (
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT)
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class MassiveChangesWizard(models.TransientModel):
@@ -12,10 +10,9 @@ class MassiveChangesWizard(models.TransientModel):
 
     # Common fields
     section = fields.Selection([
-        ('0', 'Availability'),
-        ('1', 'Restrictions'),
-        ('2', 'Pricelist'),
-    ], string='Section', default='0')
+        ('restrictions', 'Restrictions'),
+        ('prices', 'Pricelist'),
+    ], string='Section', default='prices')
     date_start = fields.Date('Start Date', required=True)
     date_end = fields.Date('End Date', required=True)
     dmo = fields.Boolean('Monday', default=True)
@@ -32,10 +29,6 @@ class MassiveChangesWizard(models.TransientModel):
     # room_type_ids = fields.Many2many('hotel.virtual.room',
     #                                     string="Virtual Rooms")
     room_type_ids = fields.Many2many('hotel.room.type', string="Room Types")
-
-    # Availability fields
-    change_avail = fields.Boolean(default=False)
-    avail = fields.Integer('Avail', default=0)
 
     # Restriction fields
     restriction_id = fields.Many2one('hotel.room.type.restriction',
@@ -187,46 +180,6 @@ class MassiveChangesWizard(models.TransientModel):
                 })
                 hotel_room_type_re_it_obj.create(vals)
 
-    @api.model
-    def _get_availability_values(self, ndate, room_type, record):
-        hotel_room_type_obj = self.env['hotel.room.type']
-        vals = {}
-        if record.change_avail:
-            cavail = len(hotel_room_type_obj.check_availability_room_type(
-                ndate.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                ndate.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                room_type_id=room_type.id))
-            vals.update({
-                'avail': min(cavail, room_type.total_rooms_count, record.avail),
-            })
-        return vals
-
-    @api.model
-    def _save_availability(self, ndate, room_types, record):
-        hotel_room_type_avail_obj = self.env['hotel.room.type.availability']
-        domain = [('date', '=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT))]
-
-        for room_type in room_types:
-            vals = self._get_availability_values(ndate, room_type, record)
-            if not any(vals):
-                continue
-
-            room_types_avail = hotel_room_type_avail_obj.search(
-                domain+[('room_type_id', '=', room_type.id)]
-            )
-            if any(room_types_avail):
-                # Mail module want a singleton
-                for vr_avail in room_types_avail:
-                    vr_avail.write(vals)
-            else:
-                vals.update({
-                    'date': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    'room_type_id': room_type.id
-                })
-                hotel_room_type_avail_obj.with_context({
-                    'mail_create_nosubscribe': True,
-                }).create(vals)
-
     @api.multi
     def massive_change_close(self):
         self._do_massive_change()
@@ -238,6 +191,13 @@ class MassiveChangesWizard(models.TransientModel):
         return {
             "type": "ir.actions.do_nothing",
         }
+
+    @api.model
+    def _save(self, ndate, room_types, record):
+        if record.section == 'restrictions':
+            self._save_restrictions(ndate, room_types, record)
+        elif record.section == 'prices':
+            self._save_prices(ndate, room_types, record)
 
     @api.multi
     def _do_massive_change(self):
@@ -256,11 +216,5 @@ class MassiveChangesWizard(models.TransientModel):
                 ndate = date_start_dt + timedelta(days=i)
                 if not wedays[ndate.timetuple()[6]]:
                     continue
-
-                if record.section == '0':
-                    self._save_availability(ndate, room_types, record)
-                elif record.section == '1':
-                    self._save_restrictions(ndate, room_types, record)
-                elif record.section == '2':
-                    self._save_prices(ndate, room_types, record)
+                self._save(ndate, room_types, record)
         return True

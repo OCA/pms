@@ -1,12 +1,12 @@
 /* global odoo, $ */
 // Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarRendererChannelConnector', function (require) {
+odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarRenderer', function (require) {
   'use strict';
 
   var PMSCalendarRenderer = require('hotel_calendar.PMSCalendarRenderer');
 
-  var PMSHotelCalendarRendererChannelConnector = PMSCalendarRenderer.include({
+  var PMSHotelCalendarRenderer = PMSCalendarRenderer.include({
 
     update_buttons_counter_channel_connector: function (nreservations, nissues) {
       // Cloud Reservations
@@ -46,5 +46,5 @@ odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarRendererChannelCon
     }
   });
 
-  return PMSHotelCalendarRendererChannelConnector;
+  return PMSHotelCalendarRenderer;
 });

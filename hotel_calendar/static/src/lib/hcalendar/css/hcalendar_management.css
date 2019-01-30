@@ -5,6 +5,14 @@
  *     Alexandre Díaz <alex@aloxa.eu>
  */
 
+ #pms-search-cal-pag {
+	 text-align: center;
+ }
+
+#mpms-search {
+	padding: 0.5em;
+}
+
 .hcal-management-table, .hcal-management-table-day {
 	border-collapse: collapse !important;
 	table-layout: fixed;
@@ -29,7 +37,7 @@
 	width: 110px !important;
 	vertical-align: center;
 	min-width: 110px;
-	height: 115px;
+	height: 130px;
 	min-height: 100px;
 	white-space: nowrap;
 	/*overflow: hidden;*/
@@ -77,11 +85,11 @@
 }
 
 .hcal-management-low > tbody > tr > td, .hcal-management-low > table > tbody > tr > td {
-	height: 35px !important;
+	height: 58px !important;
 }
 
 .hcal-management-medium > tbody > tr > td, .hcal-management-medium > table > tbody > tr > td {
-	height: 60px !important;
+	height: 80px !important;
 }
 
 .hcal-management-medium tr[name='rest_b'], .hcal-management-medium tr[name='rest_c'],
@@ -92,12 +100,20 @@
 
 .table-room_types {
 	flex: 1 1 auto;
-	margin-top: 1.6em;
+	margin-top: 1.2em;
+}
+
+.table-room_type-data-header {
+	z-index: 1;
+}
+
+.table-room_type-data-header .hcal-management-table tr td {
+	background-color: white;
 }
 
 #hcal_management_widget {
 	overflow: auto;
-	display:flex;
+	display: flex;
 }
 
 #hcal-management-container-dd {
@@ -137,6 +153,11 @@ table.hcal-management-table  input {
 
 .hcal-management-record-options {
 	padding: 0.5em;
+}
+
+.filter-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 button.hcal-management-input {

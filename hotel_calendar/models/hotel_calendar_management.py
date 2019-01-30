@@ -1,7 +1,7 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
@@ -34,23 +34,11 @@ class HotelCalendarManagement(models.TransientModel):
         return vals
 
     @api.model
-    def _get_availability_values(self, avail, room_type):
-        room_type_obj = self.env['hotel.room.type']
-        cavail = len(room_type_obj.check_availability_room_type(
-            avail['date'], avail['date'], room_type_id=room_type.id))
-        ravail = min(cavail, room_type.total_rooms_count, int(avail['avail']))
-        vals = {
-            'avail': ravail,
-        }
-        return vals
-
-    @api.model
     def save_changes(self, pricelist_id, restriction_id, pricelist,
-                     restrictions, availability):
+                     restrictions, availability=False):
         room_type_obj = self.env['hotel.room.type']
         product_pricelist_item_obj = self.env['product.pricelist.item']
         room_type_rest_item_obj = self.env['hotel.room.type.restriction.item']
-        room_type_avail_obj = self.env['hotel.room.type.availability']
 
         # Save Pricelist
         for k_price in pricelist.keys():
@@ -97,26 +85,6 @@ class HotelCalendarManagement(models.TransientModel):
                     res_id = room_type_rest_item_obj.create(vals)
                 else:
                     res_id.write(vals)
-
-        # Save Availability
-        for k_avail in availability.keys():
-            room_type_id = room_type_obj.browse(int(k_avail))
-            for avail in availability[k_avail]:
-                vals = self._get_availability_values(avail, room_type_id)
-                avail_id = room_type_avail_obj.search([
-                    ('date', '=', avail['date']),
-                    ('room_type_id', '=', room_type_id.id),
-                ], limit=1)
-                if not avail_id:
-                    vals.update({
-                        'date': avail['date'],
-                        'room_type_id': room_type_id.id,
-                    })
-                    avail_id = room_type_avail_obj.with_context({
-                        'mail_create_nosubscribe': True,
-                    }).create(vals)
-                else:
-                    avail_id.write(vals)
 
     @api.model
     def _hcalendar_room_json_data(self, rooms):
@@ -165,36 +133,6 @@ class HotelCalendarManagement(models.TransientModel):
                 'closed_departure': rec.closed_departure,
                 'closed_arrival': rec.closed_arrival,
             })
-        return json_data
-
-    @api.model
-    def _generate_avalaibility_data(self, room_type, date, avail):
-        return {
-            'id': avail and avail.id or False,
-            'date': avail and avail.date or date,
-            'avail': avail and avail.avail or room_type.total_rooms_count,
-        }
-
-    @api.model
-    def _hcalendar_availability_json_data(self, dfrom, dto):
-        date_start = fields.Date.from_string(dfrom)
-        date_end = fields.Date.from_string(dto)
-        date_diff = abs((date_end - date_start).days) + 1
-        hotel_room_type_avail_obj = self.env['hotel.room.type.availability']
-        room_types = self.env['hotel.room.type'].search([])
-        json_data = {}
-
-        for room_type in room_types:
-            json_data[room_type.id] = []
-            for i in range(0, date_diff):
-                cur_date = date_start + timedelta(days=i)
-                cur_date_str = cur_date.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                avail = hotel_room_type_avail_obj.search([
-                    ('date', '=', cur_date_str),
-                    ('room_type_id', '=', room_type.id)
-                ])
-                json_data[room_type.id].append(
-                    self._generate_avalaibility_data(room_type, cur_date_str, avail))
         return json_data
 
     @api.model
@@ -286,13 +224,11 @@ class HotelCalendarManagement(models.TransientModel):
 
         json_prices = self._hcalendar_pricelist_json_data(pricelist_item_ids)
         json_rest = self._hcalendar_restriction_json_data(restriction_item_ids)
-        json_avails = self._hcalendar_availability_json_data(dfrom, dto)
         json_rc = self._hcalendar_get_count_reservations_json_data(dfrom, dto)
         json_events = self._hcalendar_events_json_data(dfrom, dto)
         vals.update({
             'prices': json_prices or [],
             'restrictions': json_rest or [],
-            'availability': json_avails or [],
             'count_reservations': json_rc or [],
             'events': json_events or [],
         })

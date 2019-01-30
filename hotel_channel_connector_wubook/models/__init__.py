@@ -12,3 +12,4 @@ from . import hotel_reservation
 from . import inherited_hotel_folio
 from . import inherited_hotel_room_type_class
 from . import channel_ota_info
+from . import inherited_hotel_board_service_room_type

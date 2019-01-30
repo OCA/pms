@@ -24,24 +24,9 @@
 					<field name="dsa" colspan="1" />
 					<field name="dsu" colspan="1" />
 				</group>
-				<!-- Availability Fields -->
-				<group col="3" colspan="3" attrs="{'invisible':[('section', '!=', '0')]}">
-					<table class="oe_form_group">
-						<thead>
-							<th width="12%"></th>
-							<th></th>
-						</thead>
-						<tbody>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_avail" /> <strong> Avail</strong></td>
-								<td class="oe_form_group_cell" colspan="3"><field name="avail" attrs="{'readonly':[('change_avail', '=', False)]}" /></td>
-							</tr>
-						</tbody>
-					</table>
-				</group>
 				<!-- Restricion Fields -->
-				<group col="4" colspan="4" attrs="{'invisible':[('section', '!=', '1')]}">
-					<field name="restriction_id" colspan="4" attrs="{'required':[('section', '=', '1')]}" />
+				<group col="4" colspan="4" attrs="{'invisible':[('section', '!=', 'restrictions')]}">
+					<field name="restriction_id" colspan="4" attrs="{'required':[('section', '=', 'restrictions')]}" />
 					<table class="oe_form_group" colspan="4">
 						<thead>
 							<th width="20%"></th>
@@ -80,9 +65,9 @@
 					</table>
 				</group>
 				<!-- Priclist Fields -->
-				<group attrs="{'invisible':[('section', '!=', '2')]}">
-					<field name="pricelist_id" attrs="{'required':[('section', '=', '2')]}"/>
-					<field name="price" attrs="{'required':[('section', '=', '2')]}"/>
+				<group attrs="{'invisible':[('section', '!=', 'prices')]}">
+					<field name="pricelist_id" attrs="{'required':[('section', '=', 'prices')]}"/>
+					<field name="price" attrs="{'required':[('section', '=', 'prices')]}"/>
 				</group>
 				<footer>
 					<button name="massive_change" string="Massive Change" type="object"

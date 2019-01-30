@@ -11,11 +11,10 @@
                     <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
                 </group>
                 <group>
-                    <field name="no_ota" />
+                    <field name="avail" />
                     <field name="booked" />
                 </group>
                 <group>
-                    <field name="channel_max_avail" />
                     <field name="channel_pushed" />
                 </group>
             </form>
@@ -27,7 +26,8 @@
         <field name="model">channel.hotel.room.type.availability</field>
         <field name="arch" type="xml">
             <tree string="Hotel Channel Room Availability">
-                <field name="backend_id"/>
+                <field name="backend_id" />
+                <field name="avail" />
             </tree>
         </field>
     </record>

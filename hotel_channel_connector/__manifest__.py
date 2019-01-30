@@ -19,9 +19,9 @@
     },
     'data': [
         'views/hotel_channel_connector_issue_views.xml',
+        'views/hotel_room_type_availability_views.xml',
         'views/inherited_hotel_reservation_views.xml',
         'views/inherited_hotel_room_type_views.xml',
-        'views/inherited_hotel_room_type_availability_views.xml',
         'views/inherited_hotel_folio_views.xml',
         'views/inherited_product_pricelist_views.xml',
         'views/inherited_product_pricelist_item_views.xml',

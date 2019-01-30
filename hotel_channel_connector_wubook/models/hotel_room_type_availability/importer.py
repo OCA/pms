@@ -3,11 +3,10 @@
 
 import logging
 from datetime import date, timedelta
-from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo.addons.connector.components.mapper import mapping, only_create
-from odoo import api, _, fields
+from odoo import api, fields, _
 _logger = logging.getLogger(__name__)
 
 
@@ -64,9 +63,19 @@ class HotelRoomTypeAvailabilityImporter(Component):
                             ('date', '=', room['date'])
                         ], limit=1)
                         if room_type_avail_bind:
-                            room_type_avail_bind.with_context({
-                                'connector_no_export': True,
-                            }).write(map_record.values())
+                            if room_type_avail_bind.avail != room['avail']:
+                                room_type_avail_bind.with_context({
+                                    'connector_no_export': True,
+                                }).write({'channel_pushed': False})
+                                self.create_issue(
+                                    section='avail',
+                                    dfrom=room['date'], dto=room['date'],
+                                    internal_message=_(
+                                        "Channel try to change availiability! \
+                                        Updating channel values... \
+                                        (Odoo: %d -- Channel: %d" % (
+                                            room['avail'],
+                                            room_type_avail_bind)))
                         else:
                             room_type_avail_bind = channel_room_type_avail_obj.with_context({
                                 'connector_no_export': True,

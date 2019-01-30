@@ -23,7 +23,7 @@
                             <i class="fa fa-fw o_button_icon fa-sign-out"> </i>
                             <div class="o_button_text">
                                 <span class="ninfo">0</span><br/>
-                                Checkouts
+                                <span class="text-hidden-xs">Checkouts</span>
                             </div>
                         </button>
                     </div>
@@ -32,7 +32,7 @@
                             <i class="fa fa-fw o_button_icon fa-sign-in"> </i>
                             <div class="o_button_text">
                                 <span class="ninfo">0</span><br/>
-                                Checkins
+                                <span class="text-hidden-xs">Checkins</span>
                             </div>
                         </button>
                     </div>
@@ -41,7 +41,7 @@
                             <div class='led led-disabled'></div>
                             <i class="fa fa-fw o_button_icon fa-retweet"> </i>
                             <div class="o_button_text">
-                                <span class="ntext">Start Swap</span>
+                                <span class="text-hidden-xs ntext">Start Swap</span>
                             </div>
                         </button>
                     </div>
@@ -49,7 +49,7 @@
                         <button class="btn btn-default col-xs-12 col-md-12 button-box" data-action="hotel.open_wizard_reservations">
                             <i class="fa fa-fw o_button_icon fa-magic"> </i>
                             <div class="o_button_text">
-                                Wizard
+                                <span class="text-hidden-xs">Wizard</span>
                             </div>
                         </button>
                     </div>
@@ -59,7 +59,7 @@
                             <i class="fa fa-fw o_button_icon fa-clock-o"> </i>
                             <div class="o_button_text">
                                 <span class="ninfo">0</span><br/>
-                                Overbooking
+                                <span class="text-hidden-xs">Overbook.</span>
                             </div>
                         </button>
                     </div>
@@ -69,7 +69,7 @@
                             <i class="fa fa-fw o_button_icon fa-calendar-times-o"> </i>
                             <div class="o_button_text">
                                 <span class="ninfo">0</span><br/>
-                                Cancelled
+                                <span class="text-hidden-xs">Cancelled</span>
                             </div>
                         </button>
                     </div>
@@ -78,7 +78,7 @@
                             <div class='led led-disabled'></div>
                             <i class="fa fa-fw o_button_icon fa-scissors"> </i>
                             <div class="o_button_text">
-                                Divide
+                                <span class="text-hidden-xs">Divide</span>
                             </div>
                         </button>
                     </div>
@@ -87,7 +87,7 @@
                             <div class='led led-disabled'></div>
                             <i class="fa fa-fw o_button_icon fa-compress"> </i>
                             <div class="o_button_text">
-                                Unify
+                                <span class="text-hidden-xs">Unify</span>
                             </div>
                         </button>
                     </div>

@@ -126,20 +126,6 @@ var MPMSCalendarController = AbstractController.extend({
         for (var notif of notifications) {
             if (notif[0][1] === 'hotel.reservation') {
                 switch (notif[1]['type']) {
-                    case 'availability':
-                        var avail = notif[1]['availability'];
-                        var room_type = Object.keys(avail)[0];
-                        var day = Object.keys(avail[room_type])[0];
-                        var dt = HotelCalendarManagement.toMoment(day);
-                        var availability = {};
-                        availability[room_type] = [{
-                            'date': dt.format(HotelConstants.ODOO_DATE_MOMENT_FORMAT),
-                            'avail': avail[room_type][day][0],
-                            'no_ota': avail[room_type][day][1],
-                            'id': avail[room_type][day][2]
-                        }];
-                        this.renderer._hcalendar.addAvailability(availability);
-                        break;
                     case 'pricelist':
                         var prices = notif[1]['price'];
                         var pricelist_id = Object.keys(prices)[0];

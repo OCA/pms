@@ -5,6 +5,10 @@
         <field name="model">hotel.room.type</field>
         <field name="inherit_id" ref="hotel.hotel_room_type_view_form" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='board_service_room_type_ids']/tree" position="inside">
+                <field name="channel_service" />
+            </xpath>
+
             <xpath expr="//sheet" position="inside">
                 <notebook>
                     <page name="connector" string="Channel Connector">

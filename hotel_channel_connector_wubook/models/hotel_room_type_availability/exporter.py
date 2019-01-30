@@ -28,14 +28,10 @@ class HotelRoomTypeAvailabilityExporter(Component):
                     lambda x: x.room_type_id.id == room_type.id)
                 days = []
                 for channel_room_type_avail in channel_room_type_avails:
-                    cavail = channel_room_type_avail.avail
-                    if channel_room_type_avail.channel_max_avail >= 0 and \
-                            cavail > channel_room_type_avail.channel_max_avail:
-                        cavail = channel_room_type_avail.channel_max_avail
                     date_dt = fields.Date.from_string(channel_room_type_avail.date)
                     days.append({
                         'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                        'avail': cavail,
+                        'avail': channel_room_type_avail.avail,
                         'no_ota': channel_room_type_avail.no_ota and 1 or 0,
                         # 'booked': room_type_avail.booked and 1 or 0,
                     })

@@ -6,7 +6,8 @@ from odoo import models, fields
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    pms_divide_rooms_by_capacity = fields.Boolean('Divide rooms by capacity')
+    pms_divide_rooms_by_capacity = fields.Boolean('Divide rooms by capacity',
+                                                  default=True)
     pms_end_day_week = fields.Selection([
         ('1', 'Monday'),
         ('2', 'Tuesday'),

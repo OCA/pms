@@ -1,6 +1,6 @@
 // Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-odoo.define('hotel_calendar.PMSHotelCalendarControllerChannelConnector', function (require) {
+odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarController', function (require) {
 "use strict";
 
 var PMSCalendarController = require('hotel_calendar.PMSCalendarController');
@@ -8,7 +8,7 @@ var Core = require('web.core');
 
 var QWeb = Core.qweb;
 
-var PMSHotelCalendarControllerChannelConnector = PMSCalendarController.include({
+var PMSHotelCalendarController = PMSCalendarController.include({
     _sounds: [],
     SOUNDS: { NONE: 0, BOOK_NEW:1, BOOK_CANCELLED:2 },
 
@@ -88,6 +88,6 @@ var PMSHotelCalendarControllerChannelConnector = PMSCalendarController.include({
 
 });
 
-return PMSHotelCalendarControllerChannelConnector;
+return PMSHotelCalendarController;
 
 });

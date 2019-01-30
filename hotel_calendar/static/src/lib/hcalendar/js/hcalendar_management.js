@@ -201,24 +201,42 @@ HotelCalendarManagement.prototype = {
     row = table.insertRow();
     row.setAttribute('name', 'price');
     cell = row.insertCell();
-    cell.setAttribute('colspan', '3');
+    cell.setAttribute('colspan', '4');
     telm = document.createElement("input");
     telm.setAttribute('id', this._sanitizeId(`PRICE_${roomId}_${dateShortStr}`));
     telm.setAttribute('name', 'price');
     telm.setAttribute('type', 'edit');
     telm.setAttribute('title', this._t('Price'));
     telm.value = room.price;
+    telm.dataset.orgValue = room.price;
+    telm.dataset.hcalParentCell = parentCell.getAttribute('id');
+    telm.classList.add('hcal-management-input');
+    telm.addEventListener('change', function(ev){ $this.onInputChange(ev, this); }, false);
+    cell.appendChild(telm);
+
+    row = table.insertRow();
+    row.setAttribute('name', 'avail');
+    row.style.display = 'none';
+    cell = row.insertCell();
+    cell.setAttribute('colspan', '2');
+    telm = document.createElement("input");
+    telm.setAttribute('id', this._sanitizeId(`QUOTA_${roomId}_${dateShortStr}`));
+    telm.setAttribute('name', 'quota');
+    telm.setAttribute('type', 'edit');
+    telm.setAttribute('title', this._t('Availability Quota'));
+    telm.value = telm.dataset.orgValue = 0;
     telm.dataset.hcalParentCell = parentCell.getAttribute('id');
     telm.classList.add('hcal-management-input');
     telm.addEventListener('change', function(ev){ $this.onInputChange(ev, this); }, false);
     cell.appendChild(telm);
     cell = row.insertCell();
+    cell.setAttribute('colspan', '2');
     telm = document.createElement("input");
-    telm.setAttribute('id', this._sanitizeId(`AVAIL_${roomId}_${dateShortStr}`));
-    telm.setAttribute('name', 'avail');
+    telm.setAttribute('id', this._sanitizeId(`MAX_AVAIL_${roomId}_${dateShortStr}`));
+    telm.setAttribute('name', 'max_avail');
     telm.setAttribute('type', 'edit');
-    telm.setAttribute('title', this._t('Availability'));
-    telm.value = 0;
+    telm.setAttribute('title', this._t('Max. Availability'));
+    telm.value = telm.dataset.orgValue = 0;
     telm.dataset.hcalParentCell = parentCell.getAttribute('id');
     telm.classList.add('hcal-management-input');
     telm.addEventListener('change', function(ev){ $this.onInputChange(ev, this); }, false);
@@ -305,6 +323,7 @@ HotelCalendarManagement.prototype = {
     telm.appendChild(selectOpt);
     cell.appendChild(telm);
     cell = row.insertCell();
+    cell.setAttribute('colspan', '1');
     telm = document.createElement("input");
     telm.setAttribute('id', this._sanitizeId(`FREE_ROOMS_${roomId}_${dateShortStr}`));
     telm.setAttribute('name', 'free_rooms');
@@ -331,7 +350,6 @@ HotelCalendarManagement.prototype = {
     telm.classList.add('hcal-management-input', 'pull-left');
     telm.addEventListener('click', function(ev){ $this.onInputChange(ev, this); }, false);
     cell.appendChild(telm);
-
     telm = document.createElement("span");
     telm.setAttribute('id', this._sanitizeId(`OPTIONS_${roomId}_${dateShortStr}`));
     telm.setAttribute('name', 'options');
@@ -376,13 +394,22 @@ HotelCalendarManagement.prototype = {
       this._updateRestrictions();
     }
     if (typeof avail !== 'undefined' && avail) {
-      this._availability = avail;
-      this._updateAvailability();
+      this.setAvailability(avail);
     }
     if (typeof count_free_rooms !== 'undefined' && count_free_rooms) {
       this._free_rooms = count_free_rooms;
       this._updateNumFreeRooms();
     }
+  },
+
+  setAvailability: function(avails) {
+    this._availability = avails;
+    if (this._availability) {
+      for (var elm of this.etable.querySelectorAll("tr[name=avail]")) {
+        elm.style.display = "";
+      }
+    }
+    this._updateAvailability();
   },
 
   //==== ROOMS
@@ -696,7 +723,8 @@ HotelCalendarManagement.prototype = {
       for (var avail of this._availability[room_typeId]) {
         var dd = HotelCalendarManagement.toMoment(avail.date, this.options.dateFormatShort);
         var inputIds = [
-          `AVAIL_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.avail,
+          `QUOTA_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.quota,
+          `MAX_AVAIL_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.max_avail,
           `NO_OTA_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.no_ota
         ];
 
@@ -731,17 +759,21 @@ HotelCalendarManagement.prototype = {
       for (var i=0; i<=this.options.days; i++) {
         var ndate = this.options.startDate.clone().add(i, 'd');
         var ndateStr = ndate.format(HotelCalendarManagement._DATE_FORMAT_SHORT);
-        var inputAvailId = this._sanitizeId(`AVAIL_${room.id}_${ndateStr}`);
-        var inputAvail = this.etable.querySelector(`#${inputAvailId}`);
+        var inputQuotaId = this._sanitizeId(`QUOTA_${room.id}_${ndateStr}`);
+        var inputQuota = this.etable.querySelector(`#${inputQuotaId}`);
+        var inputMaxAvailId = this._sanitizeId(`MAX_AVAIL_${room.id}_${ndateStr}`);
+        var inputMaxAvail = this.etable.querySelector(`#${inputMaxAvailId}`);
         var inputNoOTAId = this._sanitizeId(`NO_OTA_${room.id}_${ndateStr}`);
         var inputNoOTA = this.etable.querySelector(`#${inputNoOTAId}`);
 
-        if (!onlyNew || (onlyNew && (inputAvail.value !== inputAvail.dataset.orgValue ||
-                                      (inputNoOTA.dataset.state && inputNoOTA.dataset.state !== inputNoOTA.dataset.orgValue)))) {
+        if (!onlyNew || (onlyNew && (inputQuota.value !== inputQuota.dataset.orgValue
+                                      || inputMaxAvail.value !== inputMaxAvail.dataset.orgValue
+                                      || (inputNoOTA.dataset.state && inputNoOTA.dataset.state !== inputNoOTA.dataset.orgValue)))) {
           if (!(room.id in data)) { data[room.id] = []; }
           data[room.id].push({
             'date': ndate.format('YYYY-MM-DD'),
-            'avail': inputAvail.value,
+            'quota': inputQuota.value,
+            'max_avail': inputMaxAvail.value,
             'no_ota': Boolean(inputNoOTA.dataset.state === 'true') || false
           });
         }
@@ -790,7 +822,7 @@ HotelCalendarManagement.prototype = {
       value = elm.checked;
     }
     else if (name === 'min_stay' || name === 'min_stay_arrival' || name === 'max_stay' ||
-              name === 'price' || name === 'avail' || name === 'max_stay_arrival') {
+              name === 'price' || name === 'quota' || name === 'max_avail' || name === 'max_stay_arrival') {
       if (!this._isNumeric(value)) {
         elm.style.backgroundColor = 'red';
       } else if (orgValue !== value) {
@@ -973,9 +1005,9 @@ HotelCalendarManagement.prototype = {
           },
           minDate: $this.options.startDate,
           maxDate: $this.options.startDate.clone().add($this.options.days, 'd'),
-          language : moment.locale(),
+          //language : moment.locale(),
           format : HotelCalendarManagement._DATE_FORMAT_SHORT,
-          disabledHours: true // TODO: Odoo uses old datetimepicker version
+          disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21, 22, 23]
         };
 
         $('table#hcal-management-clone-dates #date_begin').datetimepicker(DTPickerOptions);

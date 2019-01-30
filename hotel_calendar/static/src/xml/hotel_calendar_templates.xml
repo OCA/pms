@@ -17,6 +17,9 @@
 					<t t-if="oroom != nroom">
 						<strong>Room:</strong> <t t-esc="oroom"/><br/>
 					</t>
+					<t t-if="oadults != nadults">
+						<strong>Adults:</strong> <t t-esc="oadults"/><br/>
+					</t>
 <!--
 					<t t-if="oprice != nprice">
 						<strong>Price:</strong> <t t-esc="oprice" widget="monetary"/><br/>
@@ -35,6 +38,9 @@
 					</t>
 					<t t-if="oroom != nroom">
 						<strong>Room:</strong> <t t-esc="nroom"/><br/>
+					</t>
+					<t t-if="oadults != nadults">
+						<strong>Adults:</strong> <t t-esc="nadults"/><br/>
 					</t>
 <!--
 					<t t-if="oprice != nprice">

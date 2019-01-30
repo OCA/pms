@@ -69,19 +69,21 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
     },
 
     /** CUSTOM METHODS **/
-    save_changes: function() {
-        var self = this;
+    get_values_to_save: function() {
         var btn_save = this.$el.find('#btn_save_changes');
         if (!btn_save.hasClass('need-save')) {
-            return;
+            return false;
         }
 
         var pricelist = this._hcalendar.getPricelist(true);
         var restrictions = this._hcalendar.getRestrictions(true);
-        var availability = this._hcalendar.getAvailability(true);
 
         var params = this.generate_params();
-        var oparams = [params['prices'], params['restrictions'], pricelist, restrictions, availability];
+        return [params['prices'], params['restrictions'], pricelist, restrictions];
+    },
+
+    save_changes: function() {
+        var oparams = this.get_values_to_save();
         this.trigger_up('onSaveChanges', oparams);
     },
 
@@ -135,7 +137,7 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
         this.$CalendarHeaderDays = this.$el.find("div.table-room_type-data-header");
 
         // Sticky Header Days
-        this.$ehcal.scroll(this._on_scroll.bind(this));
+        $('.o_content').scroll(this._on_scroll.bind(this));
     },
 
     setCalendarData: function (prices, restrictions, availability, count_reservations) {
@@ -169,10 +171,10 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
     },
 
     _on_scroll: function() {
-        var curScrollPos = this.$ehcal.scrollTop();
+        var curScrollPos = $('.o_content').scrollTop();
         if (curScrollPos > 0) {
             this.$CalendarHeaderDays.css({
-                top: `${curScrollPos}px`,
+                top: `${curScrollPos-this.$ehcal.position().top}px`,
                 position: 'sticky'
             });
         } else {

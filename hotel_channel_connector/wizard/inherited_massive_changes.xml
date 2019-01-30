@@ -5,11 +5,30 @@
 		<field name="model">hotel.wizard.massive.changes</field>
 		<field name="inherit_id" ref="hotel.view_hotel_massive_changes_wizard" />
 		<field name="arch" type="xml">
-			<xpath expr="//table[hasclass('oe_form_group')][1]/tbody" position="inside">
-				<tr class="oe_form_group_row">
-					<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_no_ota" /> <strong> No OTA</strong></td>
-					<td class="oe_form_group_cell"><field name="no_ota" attrs="{'readonly':[('change_no_ota', '=', False)]}" /></td>
-				</tr>
+			<xpath expr="//form/group[last()]" position="after">
+				<!-- Availability Fields -->
+				<group col="3" colspan="3" attrs="{'invisible':[('section', '!=', 'avail')]}">
+					<table class="oe_form_group">
+						<thead>
+							<th width="12%"></th>
+							<th></th>
+						</thead>
+						<tbody>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_max_avail" /> <strong> Max. Avail.</strong></td>
+								<td class="oe_form_group_cell" colspan="3"><field name="max_avail" attrs="{'readonly':[('change_max_avail', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_quota" /> <strong> Quota</strong></td>
+								<td class="oe_form_group_cell" colspan="3"><field name="quota" attrs="{'readonly':[('change_quota', '=', False)]}" /></td>
+							</tr>
+							<tr class="oe_form_group_row">
+								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_no_ota" /> <strong> No OTA</strong></td>
+								<td class="oe_form_group_cell"><field name="no_ota" attrs="{'readonly':[('change_no_ota', '=', False)]}" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</group>
 			</xpath>
 		</field>
 	</record>
