@@ -226,100 +226,112 @@ input#bookings_search {
 
 /** POPOVER **/
 .popover-content {
-    font-family: Garuda, sans-serif;
-    font-size: 12px;
-    padding: 0px;
+  font-family: Garuda, sans-serif;
+  font-size: 12px;
+  padding: 0px;
 }
-.popover h1, .h1, h2, .h2, h3, .h3 {
-    margin-top: 2px;
-    margin-bottom: 0px;
+.popover .h3, .popover h3 {
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 .popover {
-	max-width: 400px;
-	border-radius: 0px;
-	padding: 0px;
+  max-width: 400px;
+  border-radius: 0px;
+  padding: 0px;
 }
 .popover .container {
-	max-width: 100%;
+  max-width: 100%;
 }
 .popover .container p {
-    margin-top: 2px;
-    margin-bottom: 0px;
+  margin-top: 2px;
+  margin-bottom: 0px;
 }
 .popover .container p.email {
-    word-wrap: break-word;
+  word-wrap: break-word;
 }
 .popover .container p.board {
-    margin-top: 0px;
+  margin-top: 0px;
 }
 .popover header {
-    font-size: 1.2em;
+  font-size: 1.2em;
 }
 
 .fa-2_5x {
-    font-size: 2.5em;
+  font-size: 2.5em;
 }
 .fa-text-inside {
-    font-family: Garuda, sans-serif;
-    font-size: 14px;
+  font-family: Garuda, sans-serif;
+  font-size: 14px;
 }
-.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
-    padding-top: 3px;
-    padding-bottom: 3px;
+.popover .col-sm-2, .popover .col-sm-4, .popover .col-sm-6, .popover .col-sm-12 {
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 /* custom styles for popover info */
-.circle {
-    height:35px;
-    min-width:35px;
-    line-height:35px;
-    border-radius:50px;
-    text-align:center;
-    color:#fff;
-    background:#777;
-    margin-right: .65em;
-    padding: 0 5px;
+.popover .circle {
+  height:35px;
+  min-width:35px;
+  line-height:35px;
+  border-radius:50px;
+  text-align:center;
+  color:#fff;
+  background:#777;
+  margin-right: .65em;
+  padding: 0 5px;
 }
 
-.bg-gray-lighter {
-    background-color: #ddd;
+.popover .bg-gray-lighter {
+  background-color: #ddd;
+  color: #777;
 }
+.popover .text-gray-dark {
+  color: #777;
+}
+
 
 /* Spacing in Bootstrap v4.0 */
 .mt-3 {
-    margin-top: 3px;
+  margin-top: 3px;
 }
 .mt-5 {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 .mt-10 {
-    margin-top: 10px !important;
+  margin-top: 10px !important;
 }
 .mt-25 {
-    margin-top: 25px;
+  margin-top: 25px;
 }
 .mr-5 {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 .mx-15 {
-    margin-left: 15px;
-    margin-right: 15px;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 .mx-25 {
-    margin-left: 25px;
-    margin-right: 25px;
+  margin-left: 25px;
+  margin-right: 25px;
+}
+.px-0 {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 .py-5 {
-    padding-top: 5px;
-    padding-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 .pb-3 {
-    padding-bottom: 3px;
+  padding-bottom: 3px;
 }
 .pb-10 {
-    padding-bottom: 10px;
+  padding-bottom: 10px;
+}
+.pl-5 {
+  padding-left: 5px;
 }
 .pr-0 {
-    padding-right: 0px;
+  padding-right: 0px;
 }
 
 /* WARNING: The .row-eq-height class uses CSS3's flexbox layout mode,
@@ -345,6 +357,25 @@ div.diagonal {
   left: 40%;
   bottom: 0;
 }
+
+div.triangle-right {
+  overflow: hidden;
+  color: white;
+  background-color: #7c7bad;
+}
+.triangle-right:before {
+  content: "";
+  position: absolute;
+  border: 25px solid #ddd;
+  height: 0;
+  width: 100%;
+  left: 47%;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border-left-color: transparent;
+}
+
 div.on-top {
   position: inherit;
 }
