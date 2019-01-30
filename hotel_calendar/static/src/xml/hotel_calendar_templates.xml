@@ -191,7 +191,7 @@
 			<span class="fa fa-suitcase fa-2x" role="button"
 				title="View Reservation Details" />
 		</div>
-		<div class="col-sm-2">
+		<div class="col-sm-2 btn_popover_open_checkin">
 			<span class="fa fa-user-plus fa-2x" role="button"
 				title="Checkin" />
 		</div>
@@ -212,7 +212,7 @@
         			</t>
 			</t>
 			<t t-if="splitted">
-				<p>This reservation is part of splitted reservation. You can check it in the corresponding Folio.</p>
+				<p><i class="fa fa-exclamation-circle"/>This reservation is part of splitted reservation.</p>
 			</t>
 		</div>
 	</div>
@@ -267,17 +267,13 @@
 		</div>
 		<t t-call="HotelCalendar.TooltipReservation.Dates"/>
 		<div class="row row-eq-height mt-10">
-			<div class="col-sm-2 btn_popover_open_folio">
+			<div class="col-sm-4 btn_popover_open_folio">
 				<i class="fa fa-file-text-o fa-2x fa-pull-left" role="button"
 				   title="View Folio Details"> <span class="fa-text-inside"><t t-esc="folio_name"/></span></i>
 			</div>
 			<div class="col-sm-2 btn_popover_open_reservation">
 				<span class="fa fa-suitcase fa-2x" role="button"
 					title="View Reservation Details" />
-			</div>
-			<div class="col-sm-2 btn_popover_close">
-				<span class="fa fa-window-close fa-2x" role="button"
-					title="Close" />
 			</div>
 		</div>
 

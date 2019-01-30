@@ -2496,6 +2496,7 @@ HotelCalendar.prototype = {
       $('.hcal-reservation').removeClass("marked-as-having-a-popover");
     } else {
       // FIXME: Prevent multiple clicks in a row
+      debugger;
       this._cellSelection.start = this._cellSelection.current = ev.target;
       this._cellSelection.end = false;
       this._updateCellSelection();

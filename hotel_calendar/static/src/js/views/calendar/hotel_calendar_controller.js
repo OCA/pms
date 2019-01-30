@@ -453,6 +453,26 @@ var PMSCalendarController = AbstractController.extend({
                 });
               });
             });
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_checkin").on('click',
+                {reservation_id: ev.detail.reservationObj.id}, function(ev){
+              _destroy_and_clear_popover_mark();
+              var x = self._rpc({
+                model: 'hotel.reservation',
+                method: 'action_pay_folio',
+                args: [ev.data.reservation_id],
+              }).then(function (result){
+                return self.do_action({
+                  name: result.name,
+                  view_type: result.view_type,
+                  view_mode: result.view_mode,
+                  type: result.type,
+                  res_model: result.res_model,
+                  views: [[result.view_id, 'form']],
+                  context: result.context,
+                  target: result.target,
+                });
+              });
+            });
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_close").on('click', function(ev){
               _destroy_and_clear_popover_mark();
             });
