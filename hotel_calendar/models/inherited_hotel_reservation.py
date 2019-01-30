@@ -434,7 +434,9 @@ class HotelReservation(models.Model):
     def send_bus_notification(self, naction, ntype, ntitle=''):
         hotel_cal_obj = self.env['bus.hotel.calendar']
         for record in self:
-            if not isinstance(record.id, models.NewId):
+            if not isinstance(record.id, models.NewId) \
+                    and not isinstance(record.folio_id.id, models.NewId) \
+                    and not isinstance(record.partner_id.id, models.NewId):
                 hotel_cal_obj.send_reservation_notification(
                     record.generate_bus_values(naction, ntype, ntitle))
 
