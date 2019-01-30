@@ -53,7 +53,6 @@
                 <field name="partner_id" required="True"/>
                 <field name="mobile"/>
                 <field name="email"/>
-                <field name="gender"/>
                 <field name="enter_date"/>
                 <field name="exit_date"/>
                 <field name="reservation_id" invisible="1"/>
@@ -81,7 +80,6 @@
                 <field name="partner_id" required="True"/>
                 <field name="mobile"/>
                 <field name="email"/>
-                <field name="gender"/>
                 <field name="enter_date"/>
                 <field name="exit_date"/>
                 <field name="reservation_id"/>

@@ -61,7 +61,6 @@ class HotelCheckinPartner(models.Model):
                                  required=True)
     email = fields.Char('E-mail', related='partner_id.email')
     mobile = fields.Char('Mobile', related='partner_id.mobile')
-    gender = fields.Selection('Gender', related='partner_id.gender')
     reservation_id = fields.Many2one(
         'hotel.reservation', default=_default_reservation_id)
     folio_id = fields.Many2one('hotel.folio',
@@ -128,6 +127,8 @@ class HotelCheckinPartner(models.Model):
     def action_on_board(self):
         for record in self:
             record.state = 'booking'
+            if record.reservation_id.state == 'confirm':
+                record.reservation_id.state = 'booking'
 
     @api.multi
     def action_done(self):
