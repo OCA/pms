@@ -188,7 +188,7 @@ class HotelReservation(models.Model):
             SELECT
               hr.id, hr.room_id, hr.adults, hr.children, hr.checkin, hr.checkout, hr.reserve_color, hr.reserve_color_text,
               hr.splitted, hr.parent_reservation, hr.overbooking, hr.state, hr.real_checkin, hr.real_checkout,
-              hr.out_service_description, hr.arrival_hour, hr.departure_hour, hr.channel_type, 
+              hr.out_service_description, hr.arrival_hour, hr.departure_hour, hr.channel_type,
               hr.price_room_services_set,
 
               hf.id as folio_id, hf.name as folio_name, hf.reservation_type, hf.invoices_paid, hf.pending_amount,
@@ -196,11 +196,11 @@ class HotelReservation(models.Model):
               rp.mobile, rp.phone, rp.email, rp.name as partner_name,
 
               pt.name as room_type,
-              
+
               array_agg(pt2.name) FILTER (WHERE pt2.show_in_calendar = TRUE) as services,
 
               rcr.name as closure_reason,
-              
+
               hbs.name as board_service_name
             FROM hotel_reservation AS hr
             LEFT JOIN hotel_folio AS hf ON hr.folio_id = hf.id
@@ -434,8 +434,9 @@ class HotelReservation(models.Model):
     def send_bus_notification(self, naction, ntype, ntitle=''):
         hotel_cal_obj = self.env['bus.hotel.calendar']
         for record in self:
-            hotel_cal_obj.send_reservation_notification(
-                record.generate_bus_values(naction, ntype, ntitle))
+            if not isinstance(record.id, models.NewId):
+                hotel_cal_obj.send_reservation_notification(
+                    record.generate_bus_values(naction, ntype, ntitle))
 
     @api.model
     def swap_reservations(self, fromReservsIds, toReservsIds):
