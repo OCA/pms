@@ -464,7 +464,7 @@ td.hcal-cell-room-type-group-day {
 td.hcal-cell-room-type-group-item {
 	text-align: center !important;
 	vertical-align: middle;
-	font-size: x-small;
+	font-size: smaller;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }

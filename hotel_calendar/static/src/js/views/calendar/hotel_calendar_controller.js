@@ -420,7 +420,7 @@ var PMSCalendarController = AbstractController.extend({
                 type: 'ir.actions.act_window',
                 res_model: 'hotel.folio',
                 res_id: ev.data.folio_id,
-                views: [[false, 'form']]
+                views: [[false, 'form']],
               });
             });
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_reservation").on('click',
@@ -431,6 +431,57 @@ var PMSCalendarController = AbstractController.extend({
                 res_model: 'hotel.reservation',
                 res_id: ev.data.reservation_id,
                 views: [[false, 'form']]
+              });
+            });
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_payment").on('click',
+                {reservation_id: ev.detail.reservationObj.id}, function(ev){
+              _destroy_and_clear_popover_mark();
+              var x = self._rpc({
+                model: 'hotel.reservation',
+                method: 'action_pay_folio',
+                args: [ev.data.reservation_id],
+              }).then(function (result){
+                return self.do_action({
+                  name: result.name,
+                  view_type: result.view_type,
+                  view_mode: result.view_mode,
+                  type: result.type,
+                  res_model: result.res_model,
+                  views: [[result.view_id, 'form']],
+                  context: result.context,
+                  target: result.target,
+                });
+              });
+            });
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_checkin").on('click',
+                {reservation_id: ev.detail.reservationObj.id}, function(ev){
+              _destroy_and_clear_popover_mark();
+              var x = self._rpc({
+                model: 'hotel.reservation',
+                method: 'action_checks',
+                args: [ev.data.reservation_id],
+              }).then(function (result){
+                return self.do_action({
+                  name: result.name,
+                  view_type: result.view_type,
+                  view_mode: result.view_mode,
+                  type: result.type,
+                  res_model: result.res_model,
+                  views: [[false, 'form']],
+                  domain: result.domain,
+                  target: result.target,
+                });
+              });
+            });
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_invoice").on('click',
+                {reservation_id: ev.detail.reservationObj.id}, function(ev){
+              _destroy_and_clear_popover_mark();
+              var x = self._rpc({
+                model: 'hotel.reservation',
+                method: 'open_invoices_reservation',
+                args: [ev.data.reservation_id],
+              }).then(function (result){
+                return self.do_action(result);
               });
             });
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_close").on('click', function(ev){
@@ -699,6 +750,10 @@ var PMSCalendarController = AbstractController.extend({
           }).open();
         });
 
+        this._multi_calendar.on_calendar('hcalOnKeyPressed', function(ev){
+            /* add actions */
+        });
+
         this._multi_calendar.on_calendar('hcalOnDateChanged', function(ev){
           var $dateTimePickerBegin = this.renderer.$el.find('#pms-menu #date_begin');
           $dateTimePickerBegin.data("ignore_onchange", true);
@@ -754,9 +809,9 @@ var PMSCalendarController = AbstractController.extend({
         'checkout_day_of_week': HotelCalendar.toMomentUTC(tp['real_dates'][1], '').format("dddd"),
         'arrival_hour': tp['arrival_hour'],
         'departure_hour': tp['departure_hour'],
-        'amount_total': Number(tp['amount_total']).toLocaleString(),
+        'price_room_services_set': Number(tp['price_room_services_set']).toLocaleString(),
+        'invoices_paid': Number(tp['invoices_paid']).toLocaleString(),
         'pending_amount': Number(tp['pending_amount']).toLocaleString(),
-        'amount_paid': Number(tp['amount_paid']).toLocaleString(),
         'reservation_type': tp['type'],
         'closure_reason': tp['closure_reason'],
         'out_service_description': tp['out_service_description'],

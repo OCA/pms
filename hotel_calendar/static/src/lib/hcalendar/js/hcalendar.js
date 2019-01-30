@@ -761,13 +761,14 @@ HotelCalendar.prototype = {
     cell.classList.add('hcal-cell-room-type-group-item');
     cell.classList.add('btn-hcal');
     cell.classList.add('btn-hcal-3d');
-    cell.setAttribute('colspan', '2');
+    cell.setAttribute('colspan', '3');
+    /*
     cell = row.insertCell();
     cell.textContent = ex_room.type;
     cell.classList.add('hcal-cell-room-type-group-item');
     cell.classList.add('btn-hcal');
     cell.classList.add('btn-hcal-flat');
-
+   */
     var now = moment();
     for (var i=0; i<=this.options.days; i++) {
       var dd = this.options.startDate.clone().local().startOf('day').add(i,'d').utc();
@@ -1154,12 +1155,14 @@ HotelCalendar.prototype = {
       cell.classList.add('hcal-cell-room-type-group-item');
       cell.classList.add('btn-hcal');
       cell.classList.add('btn-hcal-left');
-      cell.setAttribute('colspan', '2');
+      cell.setAttribute('colspan', '3');
+      /*
       cell = row.insertCell();
       cell.textContent = itemRoom.type;
       cell.classList.add('hcal-cell-room-type-group-item');
       cell.classList.add('btn-hcal');
       cell.classList.add('btn-hcal-flat');
+      */
       for (var i=0; i<=$this.options.days; i++) {
         var dd = $this.options.startDate.clone().local().startOf('day').add(i,'d').utc();
         var dd_local = dd.clone().local();
@@ -2075,7 +2078,6 @@ HotelCalendar.prototype = {
             'reservationObj': $this.getReservation(this.dataset.hcalReservationObjId)
           });
       }, false);
-      */
       rdiv.addEventListener('mouseleave', function(ev){
         $this._dispatchEvent(
           'hcalOnMouseLeaveReservation',
@@ -2085,6 +2087,7 @@ HotelCalendar.prototype = {
             'reservationObj': $this.getReservation(this.dataset.hcalReservationObjId)
           });
       }, false);
+      */
     }
   },
 
@@ -2487,7 +2490,12 @@ HotelCalendar.prototype = {
       };
       this._splitReservation = false;
       this._splitDate = false;
+    } else if ($(".marked-as-having-a-popover").length === 1) {
+      // TODO: better call _destroy_and_clear_popover_mark defined in hotel_calendar_controller.js
+      $(".marked-as-having-a-popover").popover('destroy');
+      $('.hcal-reservation').removeClass("marked-as-having-a-popover");
     } else {
+      // FIXME: Prevent multiple clicks in a row
       this._cellSelection.start = this._cellSelection.current = ev.target;
       this._cellSelection.end = false;
       this._updateCellSelection();

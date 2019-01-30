@@ -95,7 +95,7 @@ class HotelReservation(models.Model):
                 'real_dates': [reserv['real_checkin'], reserv['real_checkout']]})
             json_reservation_tooltips.update({
                 reserv['id']: {
-                    'folio_name': reserv['folio_id'],
+                    'folio_name': reserv['folio_name'],
                     'name': _('Out of service')
                     if reserv['reservation_type'] == 'out'
                     else reserv['partner_name'],
@@ -109,9 +109,9 @@ class HotelReservation(models.Model):
                     'checkout': reserv['checkout'],
                     'arrival_hour': reserv['arrival_hour'],
                     'departure_hour': reserv['departure_hour'],
-                    'amount_total': reserv['amount_total'],
+                    'price_room_services_set': reserv['price_room_services_set'],
+                    'invoices_paid': reserv['invoices_paid'],
                     'pending_amount': reserv['pending_amount'],
-                    'amount_paid': reserv['amount_total'] - (reserv['pending_amount'] or 0.0),
                     'type': reserv['reservation_type'] or 'normal',
                     'closure_reason': reserv['closure_reason'],
                     'out_service_description': reserv['out_service_description']
@@ -119,8 +119,7 @@ class HotelReservation(models.Model):
                     'splitted': reserv['splitted'],
                     'channel_type': reserv['channel_type'],
                     'real_dates': [reserv['real_checkin'], reserv['real_checkout']],
-                    # TODO: Add Board Services and Extra Service as Cradle, Bed, ...
-                    'board_service_name': reserv['board_service_name'],
+                    'board_service_name': reserv['board_service_name'] or _('No board services'),
                     'services': reserv['services'],
                 }
             })
@@ -190,14 +189,15 @@ class HotelReservation(models.Model):
               hr.id, hr.room_id, hr.adults, hr.children, hr.checkin, hr.checkout, hr.reserve_color, hr.reserve_color_text,
               hr.splitted, hr.parent_reservation, hr.overbooking, hr.state, hr.real_checkin, hr.real_checkout,
               hr.out_service_description, hr.arrival_hour, hr.departure_hour, hr.channel_type, 
+              hr.price_room_services_set,
 
-              hf.id as folio_id, hf.name as folio_name, hf.reservation_type, hf.amount_total, hf.pending_amount,
+              hf.id as folio_id, hf.name as folio_name, hf.reservation_type, hf.invoices_paid, hf.pending_amount,
 
               rp.mobile, rp.phone, rp.email, rp.name as partner_name,
 
               pt.name as room_type,
               
-              array_agg(pt2.name) FILTER (WHERE pt2.is_popoverable = TRUE) as services,
+              array_agg(pt2.name) FILTER (WHERE pt2.show_in_calendar = TRUE) as services,
 
               rcr.name as closure_reason,
               
@@ -393,6 +393,7 @@ class HotelReservation(models.Model):
             'title': ntitle,
             'room_id': self.room_id.id,
             'reserv_id': self.id,
+            'folio_name': self.folio_id.name,
             'partner_name': (self.closure_reason_id.name or _('Out of service'))
             if self.reservation_type == 'out' else self.partner_id.name,
             'adults': self.adults,
@@ -415,18 +416,18 @@ class HotelReservation(models.Model):
             'state': self.state,
             'fix_days': self.splitted,
             'overbooking': self.overbooking,
-            'amount_total': self.folio_id.amount_total,
+            'price_room_services_set': self.price_room_services_set,
+            'invoices_paid': self.folio_id.invoices_paid,
             'pending_amount': self.folio_id.pending_amount,
-            'amount_paid': self.folio_id.amount_total - self.folio_id.pending_amount,
             'reservation_type': self.reservation_type or 'normal',
             'closure_reason': self.closure_reason_id.name,
             'out_service_description': self.out_service_description
             or _('No reason given'),
             'real_dates': [self.real_checkin, self.real_checkout],
             'channel_type': self.channel_type,
-            'board_service_name': self.board_service_room_id.hotel_board_service_id.name,
+            'board_service_name': self.board_service_room_id.hotel_board_service_id.name or _('No board services'),
             'services': [service.product_id.name for service in self.service_ids
-                         if service.product_id.is_popoverable] or False,
+                         if service.product_id.show_in_calendar] or False,
         }
 
     @api.multi

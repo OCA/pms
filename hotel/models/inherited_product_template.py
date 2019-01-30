@@ -11,5 +11,5 @@ class ProductTemplate(models.Model):
     per_person = fields.Boolean('Unit increment per person')
     daily_limit = fields.Integer('Daily limit')
     is_extra_bed = fields.Boolean('Is extra bed', default=False)
-    is_popoverable = fields.Boolean('Show in Popover', default=False,
-                                    help='Specifies if the product is shown in the popover information.')
+    show_in_calendar = fields.Boolean('Show in Calendar', default=False,
+                                    help='Specifies if the product is shown in the calendar information.')
