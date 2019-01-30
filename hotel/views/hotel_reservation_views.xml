@@ -14,6 +14,7 @@
    <record model="ir.ui.view" id="hotel_reservation_view_form">
         <field name="name">hotel.reservation.form</field>
         <field name="model">hotel.reservation</field>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
             <form string="Reservation" >
                 <header>
@@ -23,6 +24,7 @@
                     <field name="has_confirmed_reservations_to_send" invisible="1" />
                     <field name="has_cancelled_reservations_to_send" invisible="1" />
                     <field name="has_checkout_to_send" invisible="1" />
+                    <field name="checkin_partner_count" invisible="1" />
                     <button name="open_invoices_reservation"
                         string="Create Invoice" type="object" class="btn-primary" states="sale"
                         attrs="{'invisible': ['|',('state', '=', 'draft'), ('reservation_type','not in',('normal'))]}" />
@@ -131,28 +133,15 @@
                                 <span class="o_stat_text">Splitted!</span>
                             </div>
                         </button>
-                        <button type="action" class="oe_stat_button"
-                            icon="fa-user-plus"
-                            name="%(launch_checkin_wizard_add)d"
-                            context="{'partner_id': partner_id,'enter_date': checkin,
-                                'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
-                            attrs="{'invisible':['|', '|', ('state','not in',('confirm','booking')),
-                                ('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}">
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value"><field name="checkin_partner_pending_count"
-                                widget="statinfo" nolabel="1"/></span>
-                                <span class="o_stat_text">Pending Checks</span>
-                            </div>
-                        </button>
                         <button type="object" class="oe_stat_button"
                             icon="fa-users"
                             name="action_checks"
-                            attrs="{'invisible': ['|', ('checkin_partner_count','&lt;=',0),
+                            attrs="{'invisible': ['|', ('checkin_partner_pending_count','&lt;=',0),
                                 ('parent_reservation','!=',False)]}">
                             <div class="o_form_field o_stat_info">
-                              <span class="o_stat_value"><field name="checkin_partner_count"
+                              <span class="o_stat_value"><field name="checkin_partner_pending_count"
                                widget="statinfo" nolabel="1"/></span>
-                              <span class="o_stat_text">Checks</span>
+                              <span class="o_stat_text">Pending Checks</span>
                             </div>
                         </button>
                     </div>
@@ -369,6 +358,65 @@
         </field>
     </record>
 
+    <!-- Form view Checkin Partners from hotel reservation -->
+
+   <record model="ir.ui.view" id="hotel_reservation_checkin_view_form">
+        <field name="name">hotel.reservation.checkin.form</field>
+        <field name="model">hotel.reservation</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Reservation" >
+                <field name="reservation_type" invisible="1" />
+                <field name="splitted" invisible="1" />
+                <field name="state" invisible="1"/>
+                <field name="overbooking" invisible="1" />
+                <field name="folio_id" invisible="1" />
+                <field name="adults" invisible="1" />
+                <field name="children" invisible="1" />
+                <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
+                     attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}">
+                         This reservation has other reservantions and/or services in the folio, you can check it in the
+                         <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
+                </div>
+                <field name="shared_folio" invisible="1"/>
+                <sheet>
+                    <span class="label label-danger" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}">Cancelled Reservation!</span>
+                    <span class="label label-warning" attrs="{'invisible': [('overbooking', '=', False)]}">OverBooking!</span>
+                    <h2>
+                        <field name="room_id" readonly="1" nolabel="1"
+                            options="{'no_open': True}" style="margin-right: 30px;" />
+                        <field name="partner_id" readonly="1" options="{'no_open': True}"/>
+                        <span class="fa fa-user" style="margin-left:20px;"
+                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"/>
+                        <span class="fa fa-black-tie" style="margin-left:20px; color: #C67;"
+                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"/>
+                        
+                        <h3>
+                            From <span class="fa fa-sign-in" style="margin: 5px;"/>
+                                <field name="checkin" style="margin-right: 10px;"
+                                    readonly="1" />
+                            to
+                            <span class="fa fa-sign-out" style="margin-right: 5px;"/>
+                            <field name="checkout" readonly="1"  />
+                        </h3>
+                    </h2>                       
+                    <group>
+                        <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
+                                options="{'no_create': True,'no_open': True}" />
+                    </group>
+                    <field name="checkin_partner_ids"
+                           context="{
+                            'default_reservation_id': id,
+                            'reservation_id': id,
+                            'tree_view_ref':'hotel.hotel_checkin_partner_reservation_view_tree',
+                            }"
+                    />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
     <!-- Tree view of hotel reservation -->
     <record model="ir.ui.view" id="hotel_reservation_view_tree">
         <field name="name">hotel.reservation.tree</field>
@@ -395,9 +443,9 @@
                     name="open_folio"
                 />
                 <field name="folio_id"/>
-                <button type="action" class="oe_stat_button"
+                <button type="object" class="oe_stat_button"
                     icon="fa fa-1x fa-user-plus"
-                    name="%(launch_checkin_wizard_add)d"
+                    name="action_checks"
                     context="{'partner_id': partner_id,'enter_date': checkin,
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
                     attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}"

@@ -39,33 +39,6 @@
 
                 <sheet>
                     <div class=" oe_button_box">
-                        <button type="action" class="oe_stat_button"
-                            id="checkin_partner_smart_button"
-                            icon="fa-user-plus"
-                            name="%(launch_checkin_wizard_add)d"
-                            attrs="{'invisible': [('checkin_partner_pending_count','&lt;=',0)]}"
-                            context="{'partner_id': partner_id,'reservation_ids': room_lines,
-                                        'hidden_checkin_partner': True, 'folio': active_id}">
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value"><field name="checkin_partner_pending_count"
-                                widget="statinfo" nolabel="1"/></span>
-                                <span class="o_stat_text">Pending Checks</span>
-                            </div>
-                        </button>
-
-                        <button type="object" class="oe_stat_button"
-                            id="checkin_partner_smart_button"
-                            icon="fa-users"
-                            name="action_checks"
-                            attrs="{'invisible': [('checkin_partner_count','&lt;=',0)]}">
-                            <div class="o_form_field o_stat_info">
-                              <span class="o_stat_value"><field name="checkin_partner_count"
-                               widget="statinfo" nolabel="1"/></span>
-                              <span class="o_stat_text">Checks</span>
-                            </div>
-                        </button>
-                        <field name="currency_id" invisible="1"/>
-
                        <button type="object" class="oe_stat_button"
                             id="invoices_smart_button"
                             icon="fa-thumbs-up"
@@ -166,6 +139,7 @@
                     <group invisible="1">
                         <field name="invoice_ids" invisible="1"/>
                         <field name="invoice_status" invisible="1" />
+                        <field name="currency_id" invisible="1"/>
                     </group>
                     <notebook colspan="4" col="1">
                         <page string="Reservation Rooms">

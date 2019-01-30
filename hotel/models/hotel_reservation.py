@@ -1046,24 +1046,11 @@ class HotelReservation(models.Model):
     @api.multi
     def action_checks(self):
         self.ensure_one()
-        partner = self.partner_id.id
-        reservation_id = self.id
-        view_id = self.env.ref('hotel.hotel_checkin_partner_reservation_view_tree').id
-        return{
-            'name': _('Checkins'),
-            'view_type': 'form',
-            'view_mode': 'tree',
-            'res_model': 'hotel.checkin.partner',
-            'type': 'ir.actions.act_window',
-            'view_id': view_id,
-            'context': {
-                'reservation_id': reservation_id,
-                'default_reservation_id': reservation_id,
-                'default_folio_id': self.folio_id,
-            },
-            'domain': [('reservation_id', '=', self.id)],
-            'target': 'new',
-        }
+        action = self.env.ref('hotel.open_hotel_reservation_form_tree_all').read()[0]
+        action['views'] = [(self.env.ref('hotel.hotel_reservation_checkin_view_form').id, 'form')]
+        action['res_id'] = self.id
+        action['target'] = 'new'
+        return action
 
     """
     RESERVATION SPLITTED -----------------------------------------------
