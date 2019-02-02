@@ -39,33 +39,6 @@
 
                 <sheet>
                     <div class=" oe_button_box">
-                        <button type="action" class="oe_stat_button"
-                            id="checkin_partner_smart_button"
-                            icon="fa-user-plus"
-                            name="%(launch_checkin_wizard_add)d"
-                            attrs="{'invisible': [('checkin_partner_pending_count','&lt;=',0)]}"
-                            context="{'partner_id': partner_id,'reservation_ids': room_lines,
-                                        'hidden_checkin_partner': True, 'folio': active_id}">
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value"><field name="checkin_partner_pending_count"
-                                widget="statinfo" nolabel="1"/></span>
-                                <span class="o_stat_text">Pending Checks</span>
-                            </div>
-                        </button>
-
-                        <button type="object" class="oe_stat_button"
-                            id="checkin_partner_smart_button"
-                            icon="fa-users"
-                            name="action_checks"
-                            attrs="{'invisible': [('checkin_partner_count','&lt;=',0)]}">
-                            <div class="o_form_field o_stat_info">
-                              <span class="o_stat_value"><field name="checkin_partner_count"
-                               widget="statinfo" nolabel="1"/></span>
-                              <span class="o_stat_text">Checks</span>
-                            </div>
-                        </button>
-                        <field name="currency_id" invisible="1"/>
-
                        <button type="object" class="oe_stat_button"
                             id="invoices_smart_button"
                             icon="fa-thumbs-up"
@@ -132,7 +105,8 @@
                             <field name="email" placeholder="email"/>
                             <field name="mobile" placeholder="mobile"/>
                             <field name="phone" />
-                            <field name="partner_invoice_id" />
+                            <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
+                                options="{'no_create': True,'no_open': True}" />
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancel'))]}"/>
                         </group>
                         <group>
@@ -141,8 +115,6 @@
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>
-                            <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
-                                options="{'no_create': True,'no_open': True}" />
                         </group>
                         <group>
                             <field name="partner_internal_comment"/>
@@ -150,31 +122,76 @@
                         <group>
                             <field name="internal_comment"/>
                         </group>
+                        <group colspan="2" class="oe_subtotal_footer oe_right">
+                            <field name="amount_untaxed" sum="Untaxed amount" widget='monetary' />
+                            <field name="amount_tax" widget='monetary' />
+                            <div class="oe_subtotal_footer_separator oe_inline">
+                                <label for="amount_total" />
+                            </div>
+                            <field name="amount_total" nolabel="1" sum="Total amount"
+                               widget='monetary' />
+                        </group>
+                        <div class="oe_clear" />
+                        <group>
+                            <field name="note" />
+                        </group>
                      </group>
                     <group invisible="1">
                         <field name="invoice_ids" invisible="1"/>
                         <field name="invoice_status" invisible="1" />
+                        <field name="currency_id" invisible="1"/>
                     </group>
                     <notebook colspan="4" col="1">
-                        <page string="Lines">
+                        <page string="Reservation Rooms">
                             <field name="room_lines" colspan="4" string="Room Line"
-                                nolabel="1" context="{'from_folio':True,'room_lines':room_lines,'folio_id': id,'tree_view_ref':'hotel.hotel_reservation_view_bottom_tree', 'form_view_ref':'hotel.hotel_reservation_view_form'}"/>       
+                                nolabel="1" context="{'from_folio':True,'room_lines':room_lines,'folio_id': id,'tree_view_ref':'hotel.hotel_reservation_view_bottom_tree', 'form_view_ref':'hotel.hotel_reservation_view_form'}"/>
+                        </page>
+                        <page string="Services">
                             <separator string="Service Lines" colspan="4"/>
                             <field name="service_ids"
                                 context="{'from_room':False,'folio_id': id,'tree_view_ref':'hotel.hotel_service_view_tree', 'form_view_ref':'hotel.hotel_service_view_form'}"
                                 nolabel="1" />
-                            <group colspan="2" class="oe_subtotal_footer oe_right">
-                                <field name="amount_untaxed" sum="Untaxed amount" widget='monetary' />
-                                <field name="amount_tax" widget='monetary' />
-                                <div class="oe_subtotal_footer_separator oe_inline">
-                                    <label for="amount_total" />
-                                </div>
-                                <field name="amount_total" nolabel="1" sum="Total amount"
-                                   widget='monetary' />
-                            </group>
-                            <div class="oe_clear" />
+                        </page>
+                        <page name="persons" string="Persons">
+                            <field name="checkin_partner_ids"
+                                   context="{
+                                    'default_reservation_id': id,
+                                    'reservation_id': id,
+                                    'tree_view_ref':'hotel.hotel_checkin_partner_reservation_view_tree',
+                                    }"
+                            />
+                        </page>
+                        <page name="invoicing" string="Invoicing">
                             <group>
-                                <field name="note" />
+                                <field name="partner_diff_invoicing" string="Bill to another Address"/>
+                            </group>
+                            <group>
+                                <field name="partner_invoice_id"
+                                       string="Contact Invoiced"
+                                       attrs="{'invisible':[('partner_diff_invoicing','=',False)]}"/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="partner_invoice_vat" />
+                                    <field name="partner_invoice_email" />
+                                </group>
+                                <group>
+                                    <field name="partner_invoice_parent_id" />
+                                    <field name="partner_invoice_type" />
+                                </group>
+                                <group>
+                                    <label for="partner_invoice_street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="partner_invoice_street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="partner_invoice_street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <field name="partner_invoice_city" placeholder="City" class="o_address_city"/>
+                                        <field name="partner_invoice_state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
+                                        <field name="partner_invoice_zip" placeholder="ZIP" class="o_address_zip"/>
+                                        <field name="partner_invoice_country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                    </div>
+                                </group>
+                                <group>
+                                </group>
                             </group>
                         </page>
                         <page string="Other data" invisible="1">
@@ -327,9 +344,9 @@
         <field name="view_mode">tree,form,graph</field>
     </record>
 
-    <menuitem id="menu_all_folio" name="Folio"
+    <menuitem id="menu_all_folio" name="Reservations"
         parent="hotel.hotel_management_menu" sequence="4"/>
-    <menuitem name="Generate Folio" id="menu_open_hotel_folio1_form_tree_all"
-        action="open_hotel_folio1_form_tree_all" sequence="5" parent="menu_all_folio" />
+    <menuitem name="Folios" id="menu_open_hotel_folio1_form_tree_all"
+        action="open_hotel_folio1_form_tree_all" sequence="15" parent="menu_all_folio" />
 
 </odoo>

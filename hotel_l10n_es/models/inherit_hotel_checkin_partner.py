@@ -29,7 +29,7 @@ class HotelCheckinPartner(models.Model):
     document_type = fields.Selection(related='partner_id.document_type')
     document_number = fields.Char(related='partner_id.document_number')
     document_expedition_date = fields.Date(related='partner_id.document_expedition_date')
-
+    gender = fields.Selection('Gender', related='partner_id.gender')
     code_ine_id = fields.Many2one(related="partner_id.code_ine_id")
 
     #TMP_FIX VAT Validation

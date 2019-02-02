@@ -31,9 +31,10 @@
                                   'hidden_cardex': True, 'edit_cardex': True }"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="gender"/>
                     <field name="document_type"/>
-                    <field name="document_number"/>
-                    <field name="document_expedition_date"/>
+                    <field name="document_number" string="Doc. Number"/>
+                    <field name="document_expedition_date" string="Exp. Date"/>
                     <field name="code_ine_id" />
                 </xpath>
             </field>
@@ -53,9 +54,10 @@
                                   'hidden_cardex': True, 'edit_cardex': True }"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="gender"/>
                     <field name="document_type"/>
-                    <field name="document_number"/>
-                    <field name="document_expedition_date"/>
+                    <field name="document_number" string="Doc. Number"/>
+                    <field name="document_expedition_date" string="Exp. Date"/>
                     <field name="code_ine_id" />
                 </xpath>
             </field>

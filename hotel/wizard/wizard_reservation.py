@@ -50,9 +50,9 @@ class FolioWizard(models.TransientModel):
             return 'phone'
 
     partner_id = fields.Many2one('res.partner',string="Customer")
-    checkin = fields.Datetime('Check In', required=True,
+    checkin = fields.Date('Check In', required=True,
                               default=_get_default_checkin)
-    checkout = fields.Datetime('Check Out', required=True,
+    checkout = fields.Date('Check Out', required=True,
                                default=_get_default_checkout)
     reservation_wizard_ids = fields.One2many('hotel.reservation.wizard',
                                              'folio_wizard_id',
@@ -69,7 +69,7 @@ class FolioWizard(models.TransientModel):
         ('phone', 'Phone')
     ], string='Sales Channel', default=_get_default_channel_type)
     room_type_wizard_ids = fields.Many2many('hotel.room.type.wizard',
-                                            string="Virtual Rooms")
+                                            string="Room Types")
     call_center = fields.Boolean(default=_get_default_center_user)
 
     def assign_rooms(self):
@@ -148,24 +148,27 @@ class FolioWizard(models.TransientModel):
         @param self: object pointer
         '''
         self.ensure_one()
-        checkin_dt = datetime.now() if not self.checkin else fields.Date.from_string(self.checkin)
-        checkout_dt = datetime.now() if not self.checkout else fields.Date.from_string(self.checkout)
+        tz_hotel = self.env['ir.default'].sudo().get(
+                'res.config.settings', 'tz_hotel')
+        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+        checkin_dt = fields.Date.from_string(today) if not self.checkin else fields.Date.from_string(self.checkin)
+        checkout_dt = ields.Date.from_string(today) if not self.checkout else fields.Date.from_string(self.checkout)
         if checkin_dt >= checkout_dt:
             checkout_dt = checkin_dt + timedelta(days=1)
 
-        chekin_str = checkin_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
-        chekout_str = checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        checkin_str = checkin_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        checkout_str = checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
         room_type_ids = self.env['hotel.room.type'].search([])
         cmds = room_type_ids.mapped(lambda x: (0, False, {
             'room_type_id': x.id,
-            'checkin': chekin_str,
-            'checkout': chekout_str,
             'folio_wizard_id': self.id,
+            'checkin': checkin_str,
+            'checkout': checkout_str,
         }))
-        self.write({
-            'checkin': chekin_str,
-            'checkout': chekout_str,
+        self.update({
+            'checkin': checkin_str,
+            'checkout': checkout_str,
             'room_type_wizard_ids': cmds,
         })
         for room_type in self.room_type_wizard_ids:
@@ -239,6 +242,7 @@ class HotelRoomTypeWizards(models.TransientModel):
 
     @api.multi
     def _get_default_checkin(self):
+        import wdb; wdb.set_trace()
         return self.folio_wizard_id.checkin
 
     @api.model
@@ -246,7 +250,7 @@ class HotelRoomTypeWizards(models.TransientModel):
         return self.folio_wizard_id.checkout
 
     room_type_id = fields.Many2one('hotel.room.type',
-                                   string="Virtual Rooms")
+                                   string="Rooms Type")
     rooms_num = fields.Integer('Number of Rooms')
     max_rooms = fields.Integer('Max', compute="_compute_max")
     price = fields.Float(string='Price by Room')
@@ -255,9 +259,9 @@ class HotelRoomTypeWizards(models.TransientModel):
     amount_reservation = fields.Float(string='Total', readonly=True)
     discount = fields.Float('discount')
     min_stay = fields.Integer('Min. Days', compute="_compute_max")
-    checkin = fields.Datetime('Check In', required=True,
+    checkin = fields.Date('Check In', required=True,
                               default=_get_default_checkin)
-    checkout = fields.Datetime('Check Out', required=True,
+    checkout = fields.Date('Check Out', required=True,
                                default=_get_default_checkout)
     can_confirm = fields.Boolean(compute="_can_confirm")
 
@@ -308,7 +312,7 @@ class HotelRoomTypeWizards(models.TransientModel):
                     avail = real_max
 
 
-            if 100000 < avail > 0:
+            if 100000 > avail > 0:
                 res.max_rooms = avail
             else:
                 res.max_rooms = 0
@@ -320,7 +324,6 @@ class HotelRoomTypeWizards(models.TransientModel):
         for record in self:
             if record.rooms_num > record.max_rooms:
                 raise ValidationError(_("There are not enough rooms!"))
-
             checkin = record.checkin or record.folio_wizard_id.checkin
             checkout = record.checkout or record.folio_wizard_id.checkout
             chkin_utc_dt = fields.Date.from_string(checkin)
@@ -350,7 +353,7 @@ class HotelRoomTypeWizards(models.TransientModel):
 
             price = (res_price * record.discount) * 0.01
             total_price = record.rooms_num * price
-            record.write({
+            record.update({
                 'checkin': checkin,
                 'checkout': checkout,
                 'price': price,
@@ -371,10 +374,10 @@ class ReservationWizard(models.TransientModel):
                             help='List of adults there in guest list. ')
     children = fields.Integer('Children',
                               help='Number of children there in guest list.')
-    checkin = fields.Datetime('Check In', required=True)
-    checkout = fields.Datetime('Check Out', required=True)
+    checkin = fields.Date('Check In', required=True)
+    checkout = fields.Date('Check Out', required=True)
     room_type_id = fields.Many2one('hotel.room.type',
-                                   string='Virtual Room Type',
+                                   string='Room Type',
                                    required=True)
     nights = fields.Integer('Nights', readonly=True)
     price = fields.Float(string='Total')

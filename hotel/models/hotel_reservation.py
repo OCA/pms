@@ -78,6 +78,20 @@ class HotelReservation(models.Model):
         else:
             return default_departure_hour
 
+    @api.model
+    def _default_diff_invoicing(self):
+        """
+        If the guest has an invoicing address set,
+        this method return diff_invoicing = True, else, return False
+        """
+        if 'reservation_id' in self.env.context:
+            reservation = self.env['hotel.reservation'].browse([
+                self.env.context['reservation_id']
+            ])
+        if reservation.partner_id.id == reservation.partner_invoice_id.id:
+            return False
+        return True
+
     @api.depends('state', 'qty_to_invoice', 'qty_invoiced')
     def _compute_invoice_status(self):
         """
@@ -172,14 +186,12 @@ class HotelReservation(models.Model):
                                ondelete='cascade')
 
     checkin = fields.Date('Check In', required=True,
-                          default=_get_default_checkin,
-                          track_visibility='onchange')
+                          default=_get_default_checkin)
     checkout = fields.Date('Check Out', required=True,
-                           default=_get_default_checkout,
-                           track_visibility='onchange')
-    real_checkin = fields.Date('Real Check In', required=True,
+                           default=_get_default_checkout)
+    real_checkin = fields.Date('Arrival', required=True,
                                track_visibility='onchange')
-    real_checkout = fields.Date('Real Check Out', required=True,
+    real_checkout = fields.Date('Departure', required=True,
                                 track_visibility='onchange')
     arrival_hour = fields.Char('Arrival Hour',
                                default=_get_default_arrival_hour,
@@ -191,7 +203,21 @@ class HotelReservation(models.Model):
                                    required=True, track_visibility='onchange')
 
     partner_id = fields.Many2one(related='folio_id.partner_id')
+    partner_invoice_id =  fields.Many2one(related='folio_id.partner_invoice_id')
+    partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
+    partner_invoice_name = fields.Char(related="partner_invoice_id.name")
+    partner_invoice_street = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_street2 = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_zip = fields.Char(related="partner_invoice_id.zip")
+    partner_invoice_city = fields.Char(related="partner_invoice_id.city")
+    partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
+    partner_invoice_country_id = fields.Many2one(related="partner_invoice_id.country_id")
+    partner_invoice_email = fields.Char(related="partner_invoice_id.email")
+    partner_invoice_lang  = fields.Selection(related="partner_invoice_id.lang")
     closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
+    partner_invoice_type  = fields.Selection(related="partner_invoice_id.type")
+    partner_invoice_parent_id  = fields.Many2one(related="partner_invoice_id.parent_id")
+    partner_diff_invoicing = fields.Boolean('Bill to another Address', default='_default_diff_invoicing')
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     reservation_line_ids = fields.One2many('hotel.reservation.line',
                                            'reservation_id',
@@ -296,8 +322,10 @@ class HotelReservation(models.Model):
                                               readonly=True,
                                               store=True,
                                               compute='_compute_amount_set')
-    # FIXME discount per night
-    discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
+    discount = fields.Float(string='Discount (€)',
+                            digits=dp.get_precision('Discount'),
+                            compute='_compute_discount',
+                            store=True)
 
     analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags')
 
@@ -551,11 +579,14 @@ class HotelReservation(models.Model):
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
+        addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
                 self.partner_id.property_product_pricelist.id or \
                 self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
         values = {
             'pricelist_id': pricelist,
+            'partner_invoice_id': addr['invoice'],
+            'partner_diff_invoicing': False if self.partner_id.id == addr['invoice'] else True
         }
         self.update(values)
 
@@ -655,6 +686,21 @@ class HotelReservation(models.Model):
             ]
             return {'domain': {'room_id': domain_rooms}}
 
+    @api.onchange('partner_diff_invoicing')
+    def onchange_partner_diff_invoicing(self):
+        if self.partner_diff_invoicing == False:
+            self.update({'partner_invoice_id': self.partner_id.id})
+        elif self.partner_id == self.partner_invoice_id:
+            self.update({'partner_invoice_id': self.partner_id.address_get(['invoice'])['invoice'] or None})
+
+    @api.onchange('partner_invoice_id')
+    def onchange_partner_invoice_id(self):
+        if self.partner_invoice_id and not self.partner_invoice_id.parent_id and \
+                self.partner_invoice_id != self.partner_id:
+            self.update({
+                'partner_invoice_parent_id': self.partner_id.id,
+                'partner_invoice_type': 'invoice'})
+
     @api.onchange('board_service_room_id')
     def onchange_board_service(self):
         if self.board_service_room_id:
@@ -731,7 +777,6 @@ class HotelReservation(models.Model):
         for record in self:
             record.write({
                 'state': 'cancelled',
-                'discount': 100.0,
             })
             if record.splitted:
                 master_reservation = record.parent_reservation or record
@@ -790,7 +835,13 @@ class HotelReservation(models.Model):
             return True
         return False
 
-    @api.depends('reservation_line_ids', 'reservation_line_ids.discount', 'tax_ids')
+    @api.depends('reservation_line_ids.discount')
+    def _compute_discount(self):
+        for record in self:
+            record.discount = sum(line.price * ((line.discount or 0.0) * 0.01) \
+                for line in record.reservation_line_ids)
+
+    @api.depends('reservation_line_ids.price', 'discount', 'tax_ids')
     def _compute_amount_reservation(self):
         """
         Compute the amounts of the reservation.
@@ -799,7 +850,7 @@ class HotelReservation(models.Model):
             amount_room = sum(record.reservation_line_ids.mapped('price'))
             if amount_room > 0:
                 product = record.room_type_id.product_id
-                price = amount_room * (1 - (record.discount or 0.0) * 0.01)
+                price = amount_room - record.discount
                 taxes = record.tax_ids.compute_all(price, record.currency_id, 1, product=product)
                 record.update({
                     'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
@@ -858,7 +909,7 @@ class HotelReservation(models.Model):
     def action_pay_reservation(self):
         self.ensure_one()
         partner = self.partner_id.id
-        amount = min(self.amount_reservation, self.folio_pending_amount)
+        amount = min(self.price_room_services_set, self.folio_pending_amount)
         note = self.folio_id.name + ' (' + self.name + ')'
         view_id = self.env.ref('hotel.account_payment_view_form_folio').id
         return{
@@ -971,9 +1022,13 @@ class HotelReservation(models.Model):
     def _compute_checkin_partner_count(self):
         _logger.info('_compute_checkin_partner_count')
         for record in self:
-            record.checkin_partner_count = len(record.checkin_partner_ids)
-            record.checkin_partner_pending_count = (record.adults + record.children) \
-                    - len(record.checkin_partner_ids)
+            if record.reservation_type != 'out':
+                record.checkin_partner_count = len(record.checkin_partner_ids)
+                record.checkin_partner_pending_count = (record.adults + record.children) \
+                        - len(record.checkin_partner_ids)
+            else:
+                record.checkin_partner_count = 0
+                record.checkin_partner_pending_count = 0
 
     # https://www.odoo.com/es_ES/forum/ayuda-1/question/calculated-fields-in-search-filter-possible-118501
     @api.multi
@@ -991,15 +1046,11 @@ class HotelReservation(models.Model):
     @api.multi
     def action_checks(self):
         self.ensure_one()
-        return {
-            'name': _('Checkins'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'hotel.checkin.partner',
-            'type': 'ir.actions.act_window',
-            'domain': [('reservation_id', '=', self.id)],
-            'target': 'new',
-        }
+        action = self.env.ref('hotel.open_hotel_reservation_form_tree_all').read()[0]
+        action['views'] = [(self.env.ref('hotel.hotel_reservation_checkin_view_form').id, 'form')]
+        action['res_id'] = self.id
+        action['target'] = 'new'
+        return action
 
     """
     RESERVATION SPLITTED -----------------------------------------------

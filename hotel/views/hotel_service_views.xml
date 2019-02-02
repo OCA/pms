@@ -19,10 +19,12 @@
                         options="{'create': False, 'create_edit': False}"
                         invisible="1" />
                     <!-- <field name="layout_category_id" groups="sale.group_sale_layout"/> -->
-                    <field name="product_qty" invisible="0"
-                        attrs="{'readonly': [('per_day','=',True)]}"
-                        force_save="1"/>
-                    <field name="days_qty" invisible="0"/>
+                    <group>
+                        <field name="product_qty"
+                            attrs="{'readonly': [('per_day','=',True)]}"
+                            force_save="1"/>
+                    </group>
+                    <field name="days_qty" invisible="1"/>
                     <field name="price_unit" invisible="1" />
                     <field name="discount" invisible="1"/>
                     <field name="tax_ids" widget="many2many_tags"

@@ -461,16 +461,7 @@ var PMSCalendarController = AbstractController.extend({
                 method: 'action_checks',
                 args: [ev.data.reservation_id],
               }).then(function (result){
-                return self.do_action({
-                  name: result.name,
-                  view_type: result.view_type,
-                  view_mode: result.view_mode,
-                  type: result.type,
-                  res_model: result.res_model,
-                  views: [[false, 'form']],
-                  domain: result.domain,
-                  target: result.target,
-                });
+                return self.do_action(result);
               });
             });
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_invoice").on('click',
@@ -833,11 +824,13 @@ var PMSCalendarController = AbstractController.extend({
 
       var domain_checkouts = [
           ['checkout', '=', now_fmt],
-          ['state', 'not in', ['cancelled']]
+          ['state', 'in', ['booking']],
+          ['reservation_type', 'not in', ['out']]
       ];
       var domain_checkins = [
           ['checkin', '=', now_fmt],
-          ['state', 'not in', ['cancelled']]
+          ['state', 'in', ['confirm']],
+          ['reservation_type', 'not in', ['out']]
       ];
       var domain_overbookings = [
           ['checkin', '>=', dfrom_fmt],
@@ -852,7 +845,7 @@ var PMSCalendarController = AbstractController.extend({
           ['state', '=', 'cancelled']
       ];
 
-      $.when(
+      $.when(   
         this.model.search_count(domain_checkouts),
         this.model.search_count(domain_checkins),
         this.model.search_count(domain_overbookings),

@@ -75,36 +75,30 @@
 
 .unify-enabled {
 	background-color: #43A200;
-	box-shadow: 0 0 8px 0px #43A200;
 	color: white;
 }
 
 .divide-enabled {
 	background-color: #43A200;
-	box-shadow: 0 0 8px 0px #43A200;
 	color: white;
 }
 
 .overbooking-enabled {
 	background-color: #43A200;
-	box-shadow: 0 0 8px 0px #43A200;
 	color: white;
 }
 
 .cancelled-enabled {
 	background-color: #43A200;
-	box-shadow: 0 0 8px 0px #43A200;
 }
 
 .swap-from {
 	background-color: #E7CF1D;
-	box-shadow: 0 0 8px 0px #E7CF1D;
 	color: #7C7BAD;
 }
 
 .swap-to {
 	background-color: #43A200;
-	box-shadow: 0 0 8px 0px #43A200;
 	color: white;
 }
 
@@ -156,12 +150,7 @@ input#bookings_search {
 	background-color: #FFA500;
 }
 
-.cancelled-highlight {
-	color: white;
-	background-color: #FFA500;
-}
-
-.overbooking-highlight i, .cancelled-highlight i {
+.overbooking-highlight i {
   color: white;
 }
 
