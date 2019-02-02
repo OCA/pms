@@ -114,10 +114,8 @@ class ResPartner(models.Model):
                 record.update({'unconfirmed': False})
                 if len(partners) > 0:
                     with self.env.norecompute():
-                        import wdb; wdb.set_trace()
                         record._merge(partners._ids)
-                
-        
+
     @api.model
     def _get_fields_domain_partner(self):
         self.ensure_one()
@@ -125,7 +123,7 @@ class ResPartner(models.Model):
         if self.vat:
             domain.append(('vat', '=', self.vat))
         return  domain
-        
+
     def _merge(self, partner_ids, dst_partner=None):
         """ private implementation of merge partner
             :param partner_ids : ids of partner to merge
