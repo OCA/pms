@@ -27,7 +27,6 @@
         'views/inherited_product_pricelist_item_views.xml',
         'views/inherited_hotel_room_type_restriction_views.xml',
         'views/inherited_hotel_room_type_restriction_item_views.xml',
-        'views/inherited_res_partner_views.xml',
         'views/channel_hotel_reservation_views.xml',
         'views/channel_hotel_room_type_views.xml',
         'views/channel_hotel_room_type_availability_views.xml',

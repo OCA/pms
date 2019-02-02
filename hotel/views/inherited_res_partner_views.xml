@@ -32,6 +32,9 @@
                     <field string="Folios" name="folios_count" widget="statinfo"/>
                 </button>
             </xpath>
+            <xpath expr='//field[@name="vat"]' position='after'>
+                <field name="unconfirmed" />
+            </xpath>
             
         </field>
     </record>
