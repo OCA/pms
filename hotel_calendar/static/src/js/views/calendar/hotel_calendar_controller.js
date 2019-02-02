@@ -824,11 +824,13 @@ var PMSCalendarController = AbstractController.extend({
 
       var domain_checkouts = [
           ['checkout', '=', now_fmt],
-          ['state', 'not in', ['cancelled']]
+          ['state', 'in', ['booking']],
+          ['reservation_type', 'not in', ['out']]
       ];
       var domain_checkins = [
           ['checkin', '=', now_fmt],
-          ['state', 'not in', ['cancelled']]
+          ['state', 'in', ['confirm']],
+          ['reservation_type', 'not in', ['out']]
       ];
       var domain_overbookings = [
           ['checkin', '>=', dfrom_fmt],
@@ -843,7 +845,7 @@ var PMSCalendarController = AbstractController.extend({
           ['state', '=', 'cancelled']
       ];
 
-      $.when(
+      $.when(   
         this.model.search_count(domain_checkouts),
         this.model.search_count(domain_checkins),
         this.model.search_count(domain_overbookings),
