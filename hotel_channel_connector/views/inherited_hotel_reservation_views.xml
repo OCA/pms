@@ -13,7 +13,6 @@
                     <field name="is_from_ota" readonly="True" invisible="True"/>
                 </group>
             </xpath>
-
             <xpath expr="//field[@name='partner_internal_comment']" position="after">
                 <field name="able_to_modify_channel" invisible="True"/>
                 <!-- <field name="customer_notes" readonly="1"
@@ -21,7 +20,6 @@
                     nolabel="1" colspan="2"
                 /> -->
             </xpath>
-
             <xpath expr="//page[@name='days']" position="after">
                 <page name="connector" string="Channel Connector">
                     <group string="Hotel Channel Bindings">
@@ -33,13 +31,11 @@
                     </group>
                 </page>
             </xpath>
-
             <!-- ALLOW ONLY-READ -->
             <xpath expr="//field[@name='adults']" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='room_type_id']" position="attributes">
-                <!-- attribute name="attrs">{'readonly': [('channel_reservation_id','!=',False),('able_to_modify_channel','=',False)]}</attribute-->
                 <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='children']" position="attributes">
@@ -65,6 +61,15 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='checkout']" position="after">
                 <!-- field name="origin_sale"/-->
+            </xpath>
+            <xpath expr="//field[@name='checkout']" position="after">
+                <field name="is_from_ota" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='checkout']" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_from_ota', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='checkin']" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_from_ota', '!=', False)]}</attribute>
             </xpath>
         </field>
     </record>
