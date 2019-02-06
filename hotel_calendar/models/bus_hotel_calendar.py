@@ -49,6 +49,8 @@ class BusHotelCalendar(models.TransientModel):
                 'fix_days': vals['fix_days'],
                 'fix_room': False,
                 'overbooking': vals['overbooking'],
+                'price_room_services_set': vals['price_room_services_set'],
+                'amount_total': vals['pending_amount'] + vals['invoices_paid'],
                 'real_dates': vals['real_dates'],
             },
             'tooltip': {

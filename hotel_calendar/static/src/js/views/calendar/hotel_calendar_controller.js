@@ -386,6 +386,16 @@ var PMSCalendarController = AbstractController.extend({
           $('.hcal-reservation').removeClass("marked-as-having-a-popover");
         };
 
+       /* destroy popover if mouse click is done out the popover */
+       /* except if you click in the payment button */
+       /* TODO: Review because this event is trigger anywhere, even if you click in other buttons! */
+        $('html').on('click', function(e) {
+          if (!$(e.target).hasClass("marked-as-having-a-popover") &&
+              !$(e.target).parents().is('.popover.in') &&
+              (e.target.id !== 'payment_folio')) {
+                _destroy_and_clear_popover_mark();
+          }
+        });
         this._multi_calendar.on_calendar('hcalOnClickReservation', function(ev){
           var active_calendar = self._multi_calendar.get_active_calendar();
           if ( active_calendar.getSelectionMode() !== HotelCalendar.MODE.NONE
@@ -403,15 +413,9 @@ var PMSCalendarController = AbstractController.extend({
               container: 'body',
               animation: false,
               html: true,
-              placement: 'bottom',
+              placement: 'auto bottom',
               content: QWeb.render('HotelCalendar.TooltipReservation', qdict)
             }).popover('show');
-            /* destroy popover if mouse click is done out the popover */
-            $(document).click(function(e){
-                if( $(e.target).closest(".popover-content").length == 0 && $(e.target).hasClass("marked-as-having-a-popover") == false ) {
-                  _destroy_and_clear_popover_mark();
-               }
-            });
             /* add actions */
             $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_folio").on('click',
                 {folio_id: ev.detail.reservationObj._userData.folio_id}, function(ev){
@@ -433,12 +437,39 @@ var PMSCalendarController = AbstractController.extend({
                 views: [[false, 'form']]
               });
             });
-            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_payment").on('click',
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_payment_folio").on('click',
+                {reservation: ev.detail.reservationObj}, function(ev){
+              if (ev.data.reservation.total_folio <= ev.data.reservation.total_reservation ||
+                  $('#payment_reservation').hasClass('in')) {
+                _destroy_and_clear_popover_mark();
+                var x = self._rpc({
+                  model: 'hotel.reservation',
+                  method: 'action_pay_folio',
+                  args: [ev.data.reservation.id],
+                }).then(function (result){
+                  return self.do_action({
+                    name: result.name,
+                    view_type: result.view_type,
+                    view_mode: result.view_mode,
+                    type: result.type,
+                    res_model: result.res_model,
+                    views: [[result.view_id, 'form']],
+                    context: result.context,
+                    target: result.target,
+                  });
+                });
+              } else {
+                $('#payment_folio').css('color', '#A24689');
+                $('#folio_pending_amount').css('animation', 'blinker 1s linear');
+                $('#price_room').css('animation', 'blinker 1s linear');
+              }
+            });
+            $reservationPopover.data('bs.popover').tip().find(".btn_popover_open_payment_reservation").on('click',
                 {reservation_id: ev.detail.reservationObj.id}, function(ev){
               _destroy_and_clear_popover_mark();
               var x = self._rpc({
                 model: 'hotel.reservation',
-                method: 'action_pay_folio',
+                method: 'action_pay_reservation',
                 args: [ev.data.reservation_id],
               }).then(function (result){
                 return self.do_action({
@@ -771,7 +802,9 @@ var PMSCalendarController = AbstractController.extend({
         'unusedZone': false,
         'linkedId': false,
         'overbooking': json_reserv['overbooking'],
-        'cancelled': json_reserv['state'] === 'cancelled'
+        'cancelled': json_reserv['state'] === 'cancelled',
+        'total_reservation': json_reserv['price_room_services_set'],
+        'total_folio': json_reserv['amount_total'],
       });
       nreserv.addUserData({
         'folio_id': json_reserv['folio_id'],

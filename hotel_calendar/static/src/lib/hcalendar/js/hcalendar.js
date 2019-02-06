@@ -2992,6 +2992,8 @@ function HReservation(/*Dictionary*/rValues) {
   this.overbooking = rValues.overbooking || false;
   this.cancelled = rValues.cancelled || false;
   this.room = rValues.room || null;
+  this.total_reservation = rValues.total_reservation || 0;
+  this.total_folio = rValues.total_folio || 0;
 
   this._drawModes = ['hard-start', 'hard-end'];
   this._html = false;
@@ -3046,6 +3048,8 @@ HReservation.prototype = {
       'overbooking': this.overbooking,
       'cancelled': this.cancelled,
       'room_id': this.room_id,
+      'total_reservation': this.total_reservation,
+      'total_folio': this.total_folio,
     });
     nreserv._beds = _.clone(this._beds);
     nreserv._html = this._html;

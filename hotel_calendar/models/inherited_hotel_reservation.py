@@ -92,6 +92,8 @@ class HotelReservation(models.Model):
                 'fix_room': False,  # Fix Rooms
                 'overbooking': reserv['overbooking'],
                 'state': reserv['state'],
+                'price_room_services_set': reserv['price_room_services_set'],
+                'amount_total': reserv['amount_total'],
                 'real_dates': [reserv['real_checkin'], reserv['real_checkout']]})
             json_reservation_tooltips.update({
                 reserv['id']: {
@@ -192,6 +194,7 @@ class HotelReservation(models.Model):
               hr.price_room_services_set,
 
               hf.id as folio_id, hf.name as folio_name, hf.reservation_type, hf.invoices_paid, hf.pending_amount,
+              hf.amount_total,
 
               rp.mobile, rp.phone, rp.email, rp.name as partner_name,
 

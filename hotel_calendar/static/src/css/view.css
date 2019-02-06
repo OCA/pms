@@ -350,6 +350,12 @@ div.diagonal {
   left: 40%;
   bottom: 0;
 }
+div.diagonal_pending_amount {
+  background-color: #A24689;
+}
+.diagonal_pending_amount::before {
+    border-top-color: #A24689;
+}
 
 div.triangle-right {
   overflow: hidden;
@@ -377,4 +383,8 @@ div.pull-right-custom {
   margin-right: 15px;
   color: #777;
   text-align: right;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
 }
