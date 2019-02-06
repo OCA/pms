@@ -75,7 +75,7 @@ class HotelReservationImporter(Component):
                                split_booking, dates_checkin, dates_checkout, book):
         is_cancellation = book['status'] in WUBOOK_STATUS_BAD
         tax_inclusive = True
-        persons = room_type_bind.channel_capacity
+        persons = room_type_bind.ota_capacity
         # Dates
         checkin_str = dates_checkin[0].strftime(
             DEFAULT_SERVER_DATETIME_FORMAT)
