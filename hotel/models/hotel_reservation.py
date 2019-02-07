@@ -112,7 +112,7 @@ class HotelReservation(models.Model):
                 line.invoice_status = 'invoiced'
             else:
                 line.invoice_status = 'no'
-    
+
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
@@ -173,7 +173,7 @@ class HotelReservation(models.Model):
                              track_visibility='onchange')
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
-    invoice_count = fields.Integer(related='folio_id.invoice_count')                                    
+    invoice_count = fields.Integer(related='folio_id.invoice_count')
     board_service_room_id = fields.Many2one('hotel.board.service.room.type',
                                             string='Board Service')
     cancelled_reason = fields.Selection([
@@ -305,10 +305,12 @@ class HotelReservation(models.Model):
     price_subtotal = fields.Monetary(string='Subtotal',
                                      readonly=True,
                                      store=True,
+                                     digits=dp.get_precision('Product Price'),
                                      compute='_compute_amount_reservation')
     price_total = fields.Monetary(string='Total',
                                   readonly=True,
                                   store=True,
+                                  digits=dp.get_precision('Product Price'),
                                   compute='_compute_amount_reservation')
     price_tax = fields.Float(string='Taxes',
                              readonly=True,
@@ -317,10 +319,12 @@ class HotelReservation(models.Model):
     price_services = fields.Monetary(string='Services Total',
                                      readonly=True,
                                      store=True,
+                                     digits=dp.get_precision('Product Price').
                                      compute='_compute_amount_room_services')
     price_room_services_set = fields.Monetary(string='Room Services Total',
                                               readonly=True,
                                               store=True,
+                                              digits=dp.get_precision('Product Price'),
                                               compute='_compute_amount_set')
     discount = fields.Float(string='Discount (€)',
                             digits=dp.get_precision('Discount'),
@@ -347,7 +351,7 @@ class HotelReservation(models.Model):
                          'channel_type': vals.get('channel_type')})
         if 'service_ids' in vals and vals['service_ids'][0][2]:
             for service in vals['service_ids']:
-                service[2]['folio_id'] = folio.id                
+                service[2]['folio_id'] = folio.id
         vals.update({
             'last_updated_res': fields.Datetime.now(),
         })

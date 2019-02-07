@@ -23,7 +23,9 @@ class HotelReservationLine(models.Model):
                                      ondelete='cascade', required=True,
                                      copy=False)
     date = fields.Date('Date')
-    price = fields.Float('Price')
+    price = fields.Float(
+        string='Price',
+        digits=dp.get_precision('Product Price'))
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)

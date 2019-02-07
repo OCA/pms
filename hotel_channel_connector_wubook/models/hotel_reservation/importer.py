@@ -97,8 +97,12 @@ class HotelReservationImporter(Component):
                 DEFAULT_WUBOOK_DATE_FORMAT
             ).replace(tzinfo=tz.gettz('UTC'))
             if dates_checkin[0] >= wndate <= (dates_checkout[0] - timedelta(days=1)):
-                # HOT-FIX: Hard-Coded Tax 10%
-                room_day_price = round(brday['price'] * 1.1, 2) if not tax_inclusive else brday['price']
+                amount_day_tax = 0
+                if not tax_inclusive:
+                    price_subtotal = book['amount'] - broom['ancillary']['taxes']
+                    day_tax_weigh = brday['price'] * 100 / price_subtotal
+                    amount_day_tax = broom['ancillary']['taxes'] * day_tax_weigh / 100
+                room_day_price = brday['price'] + amount_day_tax
                 reservation_lines.append((0, False, {
                     'date': wndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'price': room_day_price,
@@ -114,6 +118,7 @@ class HotelReservationImporter(Component):
             'external_id': rcode,
             'ota_id': ota_id and ota_id.id,
             'ota_reservation_id': crcode,
+            'channel_status': str(book['status']),
             'channel_raw_data': json.dumps(book),
             'channel_modified': book['was_modified'],
         }
@@ -122,7 +127,7 @@ class HotelReservationImporter(Component):
             'checkout': checkout_str,
             'adults': persons,
             'children': book['children'],
-            'reservation_lines': reservation_lines,
+            'reservation_line_ids': reservation_lines,
             'price_unit': tprice,
             'to_assign': True,
             'to_read': True,
@@ -130,9 +135,8 @@ class HotelReservationImporter(Component):
             'room_type_id': room_type_bind.odoo_id.id,
             'splitted': split_booking,
             'name': room_type_bind and room_type_bind.name,
-            'channel_bind_ids': [(0, False, binding_vals)]
+            'channel_bind_ids': [(0, False, binding_vals)],
         }
-
         return vals
 
     @api.model
@@ -447,7 +451,7 @@ class HotelReservationImporter(Component):
                 rlines = sorted_rlines = folio_id.room_lines
                 for rline in rlines:
                     for rline_bind in rline.channel_bind_ids:
-                        self.binder(rline_bind.external_id, rline_bind)
+                        self.binder.bind(rline_bind.external_id, rline_bind)
 
                 processed_rids.append(rcode)
         return (processed_rids, any(failed_reservations),
