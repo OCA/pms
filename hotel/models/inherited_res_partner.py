@@ -1,15 +1,13 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from ast import literal_eval
 import functools
 import itertools
 import logging
 import psycopg2
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.osv.expression import get_unaccent_wrapper
-from odoo import SUPERUSER_ID, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import mute_logger
 _logger = logging.getLogger(__name__)
@@ -32,7 +30,8 @@ class ResPartner(models.Model):
                 ('partner_id.id', '=', record.id)
             ])
 
-    reservations_count = fields.Integer('Reservations', compute='_compute_reservations_count')
+    reservations_count = fields.Integer('Reservations',
+                                        compute='_compute_reservations_count')
     folios_count = fields.Integer('Folios', compute='_compute_folios_count')
     unconfirmed = fields.Boolean('Unconfirmed', default=True)
 
@@ -58,6 +57,15 @@ class ResPartner(models.Model):
         """
         self._cr.execute(query, (table,))
         return self._cr.fetchall()
+
+    @api.multi
+    def write(self, vals):
+        for i, record in enumerate(self):
+            if record.unconfirmed is True:
+                partner_dst = self.env['res.partner']._check_duplicated_partner(record)
+                return
+        res = super(ResPartner, self).write(vals)
+        return res
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
@@ -105,32 +113,33 @@ class ResPartner(models.Model):
                 result += self.browse(partner_ids).name_get()
         return result
 
-    @api.constrains('vat')
-    def _constrain_duplicated_partner(self):
-        for record in self:
-            domain = record._get_fields_domain_partner()
-            if record.unconfirmed == True and len(domain) > 0:
-                partners = self.env['res.partner'].search(domain)
-                record.update({'unconfirmed': False})
-                if len(partners) > 0:
-                    with self.env.norecompute():
-                        record._merge(partners._ids)
+    @api.model
+    def _check_duplicated_partner(self, partner):
+        duplicated_ids = self.env['res.partner']._get_duplicated_ids(partner)
+        if len(duplicated_ids) > 1:
+            partners = self.env['res.partner'].browse(duplicated_ids)
+            return partner._merge(partners._ids)
+        return partner
+
+    def _merge_fields(self):
+        duplicated_fields = ['vat']
+        return duplicated_fields
 
     @api.model
-    def _get_fields_domain_partner(self):
-        self.ensure_one()
-        domain = []
-        if self.vat:
-            domain.append(('vat', '=', self.vat))
-        return  domain
+    def _get_duplicated_ids(self, partner):
+        partner_ids = []
+        for field in self.env['res.partner']._merge_fields():
+            if partner[field]:
+                partner_ids += self.env['res.partner'].search([(field, '=', partner[field])]).ids
+        return partner_ids
 
     def _merge(self, partner_ids, dst_partner=None):
         """ private implementation of merge partner
             :param partner_ids : ids of partner to merge
             :param dst_partner : record of destination res.partner
         """
-        Partner = self.env['res.partner']
-        partner_ids = Partner.browse(partner_ids).exists()
+        partner = self.env['res.partner']
+        partner_ids = partner.browse(partner_ids).exists()
         if len(partner_ids) < 2:
             return
 
@@ -140,7 +149,7 @@ class ResPartner(models.Model):
         # check if the list of partners to merge contains child/parent relation
         child_ids = self.env['res.partner']
         for partner_id in partner_ids:
-            child_ids |= Partner.search([('id', 'child_of', [partner_id.id])]) - partner_id
+            child_ids |= partner.search([('id', 'child_of', [partner_id.id])]) - partner_id
         if partner_ids & child_ids:
             raise UserError(_("You cannot merge a contact with one of his parent."))
 
@@ -162,7 +171,9 @@ class ResPartner(models.Model):
         dst_partner.message_post(body='%s %s' % (_("Merged with the following partners:"), ", ".join('%s <%s> (ID %s)' % (p.name, p.email or 'n/a', p.id) for p in src_partners)))
 
         # delete source partner, since they are merged
-        src_partners.update({'active':False})
+        #~ src_partners.update({'active':False})
+        src_partners.unlink()
+        return dst_partner
 
     @api.model
     def _update_foreign_keys(self, src_partners, dst_partner):
@@ -173,7 +184,7 @@ class ResPartner(models.Model):
         _logger.debug('_update_foreign_keys for dst_partner: %s for src_partners: %s', dst_partner.id, str(src_partners.ids))
 
         # find the many2one relation to a partner
-        Partner = self.env['res.partner']
+        partner = self.env['res.partner']
         relations = self._get_fk_on('res_partner')
 
         for table, column in relations:
@@ -214,7 +225,7 @@ class ResPartner(models.Model):
                         self._cr.execute(query, (dst_partner.id, tuple(src_partners.ids),))
 
                         # handle the recursivity with parent relation
-                        if column == Partner._parent_name and table == 'res_partner':
+                        if column == partner._parent_name and table == 'res_partner':
                             query = """
                                 WITH RECURSIVE cycle(id, parent_id) AS (
                                         SELECT id, parent_id FROM res_partner
