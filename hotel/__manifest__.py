@@ -51,7 +51,6 @@
         'views/hotel_service_line_views.xml',
         'views/hotel_board_service_views.xml',
         'views/hotel_checkin_partner_views.xml',
-        'views/hotel_room_type_availability_views.xml',
         'views/hotel_board_service_room_type_views.xml',
         'data/cron_jobs.xml',
         'data/records.xml',

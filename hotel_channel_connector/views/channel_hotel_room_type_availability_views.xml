@@ -11,7 +11,7 @@
                     <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
                 </group>
                 <group>
-                    <field name="avail" />
+                    <field name="quota" />
                     <field name="booked" />
                 </group>
                 <group>
@@ -27,7 +27,7 @@
         <field name="arch" type="xml">
             <tree string="Hotel Channel Room Availability">
                 <field name="backend_id" />
-                <field name="avail" />
+                <field name="quota" />
             </tree>
         </field>
     </record>
