@@ -109,9 +109,15 @@ class HotelReservationImporter(Component):
             ('backend_id', '=', self.backend_record.id),
             ('ota_id', '=', str(book['id_channel'])),
         ], limit=1)
-
-        vals = {
+        binding_vals = {
             'backend_id': self.backend_record.id,
+            'external_id': rcode,
+            'ota_id': ota_id and ota_id.id,
+            'ota_reservation_id': crcode,
+            'channel_raw_data': json.dumps(book),
+            'channel_modified': book['was_modified'],
+        }
+        vals = {
             'checkin': checkin_str,
             'checkout': checkout_str,
             'adults': persons,
@@ -119,19 +125,14 @@ class HotelReservationImporter(Component):
             'reservation_lines': reservation_lines,
             'price_unit': tprice,
             'to_assign': True,
-            'external_id': rcode,
-            'ota_id': ota_id and ota_id.id,
-            'ota_reservation_id': crcode,
-            'channel_status': str(book['status']),
             'to_read': True,
             'state': is_cancellation and 'cancelled' or 'draft',
             'room_type_id': room_type_bind.odoo_id.id,
             'splitted': split_booking,
-            'channel_raw_data': json.dumps(book),
-            'channel_modified': book['was_modified'],
-            'product_id': room_type_bind and room_type_bind.product_id.id,
             'name': room_type_bind and room_type_bind.name,
+            'channel_bind_ids': [(0, False, binding_vals)]
         }
+
         return vals
 
     @api.model

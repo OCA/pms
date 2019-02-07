@@ -68,7 +68,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     _inherits = {'hotel.room.type.availability': 'odoo_id'}
     _description = 'Channel Availability'
 
-    avail = fields.Integer("Avail", default=0, readonly=True)
+    # avail = fields.Integer("Avail", default=0, readonly=True)
     odoo_id = fields.Many2one(comodel_name='hotel.room.type.availability',
                               string='Pricelist',
                               required=True,
