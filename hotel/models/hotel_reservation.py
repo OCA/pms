@@ -319,7 +319,7 @@ class HotelReservation(models.Model):
     price_services = fields.Monetary(string='Services Total',
                                      readonly=True,
                                      store=True,
-                                     digits=dp.get_precision('Product Price').
+                                     digits=dp.get_precision('Product Price'),
                                      compute='_compute_amount_room_services')
     price_room_services_set = fields.Monetary(string='Room Services Total',
                                               readonly=True,
