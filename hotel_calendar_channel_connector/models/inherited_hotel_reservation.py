@@ -11,6 +11,7 @@ class HotelReservation(models.Model):
     @api.multi
     def _hcalendar_reservation_data(self, reservations):
         vals = super(HotelReservation, self)._hcalendar_reservation_data(reservations)
+        # TODO: Improve performance by doing a SQL as in get_hcalendar_reservations_data()
         hotel_reservation_obj = self.env['hotel.reservation']
         for v_rval in vals[0]:
             reserv = hotel_reservation_obj.browse(v_rval['id'])
@@ -18,9 +19,12 @@ class HotelReservation(models.Model):
                 'fix_days': reserv.splitted or reserv.is_from_ota,
             })
             # Update tooltips
-            vals[1][reserv.id].update({
-                'ota_name': reserv.channel_bind_ids[0].ota_id.name if any(reserv.channel_bind_ids) else False
-            })
+            if any(reserv.channel_bind_ids):
+                vals[1][reserv.id].update({
+                    'ota_name': reserv.channel_bind_ids[0].ota_id.name,
+                    'ota_reservation_id': reserv.channel_bind_ids[0].ota_reservation_id,
+                    'external_id': reserv.channel_bind_ids[0].external_id,
+                })
         return vals
 
     @api.multi

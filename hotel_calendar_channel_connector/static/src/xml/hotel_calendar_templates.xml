@@ -9,14 +9,16 @@
 	<t t-jquery="#channel_info" t-operation="replace">
 		<div class="row row-eq-height">
 			<div class="col-sm-12 bg-gray-light">
-				WuBook: 1544109684
+				WuBook: <t t-esc="external_id"/>
 			</div>
 		</div>
-		<div class="row row-eq-height">
-			<div class="col-sm-12 bg-gray-light">
-				<t t-esc="ota_name"/>: 4253096846
+		<t t-if="ota_name">
+			<div class="row row-eq-height">
+				<div class="col-sm-12 bg-gray-light">
+					<t t-esc="ota_name"/>: <t t-esc="ota_reservation_id"/>
+				</div>
 			</div>
-		</div>
+		</t>
 	</t>
 </t>
 

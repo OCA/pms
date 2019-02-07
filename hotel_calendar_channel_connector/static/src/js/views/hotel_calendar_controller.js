@@ -34,6 +34,8 @@ var PMSHotelCalendarController = PMSCalendarController.include({
     _generate_reservation_tooltip_dict: function(tp) {
       var qdict = this._super(tp);
       qdict['ota_name'] = tp['ota_name'];
+      qdict['ota_reservation_id'] = tp['ota_reservation_id'];
+      qdict['external_id'] = tp['external_id'];
       return qdict;
     },
 
