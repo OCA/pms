@@ -95,8 +95,8 @@ class HotelReservationImporter(Component):
             wndate = datetime.strptime(
                 brday['day'],
                 DEFAULT_WUBOOK_DATE_FORMAT
-            ).replace(tzinfo=tz.gettz('UTC'))
-            if dates_checkin[0] >= wndate <= (dates_checkout[0] - timedelta(days=1)):
+            ).replace(tzinfo=tz.gettz('UTC')).date()
+            if dates_checkin[0].date() <= wndate < dates_checkout[0].date():
                 amount_day_tax = 0
                 if not tax_inclusive:
                     price_subtotal = book['amount'] - broom['ancillary']['taxes']
