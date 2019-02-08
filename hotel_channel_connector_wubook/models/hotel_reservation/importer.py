@@ -357,6 +357,8 @@ class HotelReservationImporter(Component):
                                 splitted_map.setdefault(
                                     split_booking_parent,
                                     []).append(len(reservations))
+                                # sql_constraint 'unique(backend_id, external_id)'
+                                del reservations[-1][2]['channel_bind_ids']
                         dates_checkin = [dates_checkin[1], False]
                         dates_checkout = [dates_checkout[1], False]
                     else:
@@ -446,7 +448,6 @@ class HotelReservationImporter(Component):
                     for pid in v_pid:
                         creserv = sorted_rlines[pid-1]
                         creserv.parent_reservation = preserv.id
-
                 # Bind reservations
                 rlines = sorted_rlines = folio_id.room_lines
                 for rline in rlines:
