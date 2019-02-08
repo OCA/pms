@@ -72,11 +72,15 @@ class HotelReservationImporter(Component):
 
     @api.model
     def _generate_booking_vals(self, broom, crcode, rcode, room_type_bind,
-                               split_booking, dates_checkin, dates_checkout, book):
+                               split_booking, dates_checkin, dates_checkout, real_checkin, real_checkout, book):
         is_cancellation = book['status'] in WUBOOK_STATUS_BAD
         tax_inclusive = True
         persons = room_type_bind.ota_capacity
         # Dates
+        real_checkin_str = real_checkin.strftime(
+            DEFAULT_SERVER_DATETIME_FORMAT)
+        real_checkout_str = real_checkout.strftime(
+            DEFAULT_SERVER_DATETIME_FORMAT)
         checkin_str = dates_checkin[0].strftime(
             DEFAULT_SERVER_DATETIME_FORMAT)
         checkout_str = dates_checkout[0].strftime(
@@ -123,6 +127,8 @@ class HotelReservationImporter(Component):
             'channel_modified': book['was_modified'],
         }
         vals = {
+            'real_checkin': real_checkin_str,
+            'real_checkout': real_checkout_str,
             'checkin': checkin_str,
             'checkout': checkout_str,
             'adults': persons,
@@ -329,6 +335,8 @@ class HotelReservationImporter(Component):
                         split_booking,
                         dates_checkin,
                         dates_checkout,
+                        checkin_utc_dt,
+                        checkout_utc_dt,
                         book,
                     )
                     if vals['price_unit'] != book['amount']:
@@ -383,6 +391,8 @@ class HotelReservationImporter(Component):
                                 False,
                                 (checkin_utc_dt, False),
                                 (checkout_utc_dt, False),
+                                checkin_utc_dt,
+                                checkout_utc_dt,
                                 book,
                             )
                             vals.update({
