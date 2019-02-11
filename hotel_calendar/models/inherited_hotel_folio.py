@@ -1,6 +1,6 @@
 # Copyright 2018-2019 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, api
+from odoo import models, api, _
 
 
 class HotelFolio(models.Model):
@@ -15,6 +15,14 @@ class HotelFolio(models.Model):
             for record in self:
                 record.room_lines.send_bus_notification('write', 'noshow')
         return ret
+
+    @api.multi
+    def unlink(self):
+        for record in self:
+            record.room_lines.send_bus_notification('unlink',
+                                   'warn',
+                                   _("Reservation Deleted"))
+        return super(HotelFolio, self).unlink()
 
     @api.multi
     def compute_amount(self):
