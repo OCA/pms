@@ -214,9 +214,9 @@ class HotelReservation(models.Model):
     partner_invoice_country_id = fields.Many2one(related="partner_invoice_id.country_id")
     partner_invoice_email = fields.Char(related="partner_invoice_id.email")
     partner_invoice_lang  = fields.Selection(related="partner_invoice_id.lang")
-    closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
     partner_invoice_type  = fields.Selection(related="partner_invoice_id.type")
     partner_invoice_parent_id  = fields.Many2one(related="partner_invoice_id.parent_id")
+    closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
     partner_diff_invoicing = fields.Boolean('Bill to another Address', default='_default_diff_invoicing')
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     reservation_line_ids = fields.One2many('hotel.reservation.line',
