@@ -28,7 +28,6 @@ import xml.etree.cElementTree as ET
 from openerp.exceptions import UserError
 
 
-
 def get_years():
     year_list = []
     for i in range(2017, get_year()+1):
@@ -120,7 +119,7 @@ class IneWizard(models.TransientModel):
                 [('capacity', '>', 0)])
             ET.SubElement(cabezera, "HABITACIONES").text = str(active_room)
             ET.SubElement(cabezera, "PLAZAS_DISPONIBLES_SIN_SUPLETORIAS"
-                          ).text = str(company.seats)
+                          ).text = str(company.ine_seats)
             ET.SubElement(cabezera, "URL").text = company.website
             alojamiento = ET.SubElement(encuesta, "ALOJAMIENTO")
             # Bucle de RESIDENCIA
@@ -140,8 +139,6 @@ class IneWizard(models.TransientModel):
             code_control = lines[0].partner_id.code_ine_id.code
 
             if code_control is False:
-                _logger.error('Usuario sin codigo de INE: ' +
-                              lines[0].partner_id.name)
                 raise UserError(_('ERROR: Usuario sin codigo de INE: '
                                   + lines[0].partner_id.name))
 
@@ -232,12 +229,10 @@ class IneWizard(models.TransientModel):
                  ('checkin', '<=', str(m_f_d_search)),
                  ('checkout', '>=', str(m_e_d_search))], order="checkin")
             for line_res in lines_res:
-                room = self.env['hotel.room'].search([(
-                    'product_id', '=', line_res.product_id.id)])
+                room = line_res.room_id
                 # No es Staff o Out y esta booking
                 if (line_res.reservation_type == 'normal') and (
-                    (line_res.state == 'booking') or (
-                        line_res.state == 'done')):
+                (line_res.state == 'booking') or (line_res.state == 'done')):
 
                     # calculamos capacidad de habitacion
                     # !!!!! ATENCION !!!!
@@ -250,8 +245,8 @@ class IneWizard(models.TransientModel):
                     capacidad = room.capacity + suple_room
 
                     # Cuadramos adultos con los checkin realizados.
-                    if line_res.adults > line_res.cardex_count:
-                        adultos = line_res.cardex_count
+                    if line_res.adults > line_res.checkin_partner_count:
+                        adultos = line_res.checkin_partner_count
                     else:
                         adultos = line_res.adults
 
@@ -259,7 +254,6 @@ class IneWizard(models.TransientModel):
                     f_salida = line_res.checkout.split('-')
                     f_entrada[2] = f_entrada[2].split()[0]
                     f_salida[2] = f_salida[2].split()[0]
-
                     # Ha entrado este mes
                     if int(f_entrada[1]) == self.ine_month:
                         ine_entrada[int(f_entrada[2])] += 1
@@ -306,7 +300,7 @@ class IneWizard(models.TransientModel):
                                 # Otras Habitaciones
                                 movimientos[dia_x-1][3] += 1
                         else:
-                            _logger.info(str(dia_x) +
+                            raise UserError(str(dia_x) +
                                          'Exceso de habitaciones ' +
                                          str(line_res) + ' ' + line_res.name +
                                          ' ' + line_res.partner_id.name +
@@ -355,13 +349,10 @@ class IneWizard(models.TransientModel):
                                                "HABITACIONES_MOVIMIENTO")
                 ET.SubElement(habitaciones_m,
                               "HABITACIONES_N_DIA").text = "%02d" % (dia_x)
-                if ine_pernoct_total[dia_x] > company.seats:
+                if ine_pernoct_total[dia_x] > company.ine_seats:
                     # Añadimos Supletorias por si excedemos plazas
                     movimientos[dia_x][0] = (ine_pernoct_total[dia_x]
-                                             - company.seats)
-                    _logger.info(' Dia: ' + str(dia_x) +
-                                 ' [ADD] Supletorias a : ' +
-                                 str(movimientos[dia_x][0]))
+                                             - company.ine_seats)
                 ET.SubElement(habitaciones_m,
                               "PLAZAS_SUPLETORIAS").text = str(
                                   movimientos[dia_x][0])
@@ -448,4 +439,3 @@ class IneWizard(models.TransientModel):
             return self.write({
                  'rev_screen': _('No data in this month')
                  })
-
