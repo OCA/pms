@@ -169,7 +169,7 @@ class HotelService(models.Model):
         if self.compute_lines_out_vals(vals):
             reservation = self.env['hotel.reservation'].browse(vals['ser_room_line'])
             product = self.env['product.product'].browse(vals['product_id'])
-            
+
             vals.update(self.prepare_service_lines(
                 dfrom=reservation.checkin,
                 days=reservation.nights,
@@ -251,7 +251,7 @@ class HotelService(models.Model):
             return product.with_context(pricelist=origin.pricelist_id.id).price
         product_context = dict(self.env.context, partner_id=origin.partner_id.id, date=folio.date_order if folio else fields.Date.today(), uom=self.product_id.uom_id.id)
         final_price, rule_id = origin.pricelist_id.with_context(product_context).get_product_price_rule(self.product_id, self.product_qty or 1.0, origin.partner_id)
-        base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.product_qty, product_id.uom_id, origin.pricelist_id.id)
+        base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.product_qty, self.product_id.uom_id, origin.pricelist_id.id)
         if currency_id != origin.pricelist_id.currency_id.id:
             base_price = self.env['res.currency'].browse(currency_id).with_context(product_context).compute(base_price, origin.pricelist_id.currency_id)
         # negative discounts (= surcharge) are included in the display price
@@ -326,11 +326,11 @@ class HotelService(models.Model):
                 if board_room_type.price_type == 'fixed':
                     return self.env['hotel.board.service.room.type.line'].search([
                         ('hotel_board_service_room_type_id', '=', board_room_type.id),
-                        ('product_id','=',self.product_id.id)]).amount
+                        ('product_id', '=', self.product_id.id)]).amount
                 else:
                     return (reservation.price_total * self.env['hotel.board.service.room.type.line'].search([
                         ('hotel_board_service_room_type_id', '=', board_room_type.id),
-                        ('product_id','=',self.product_id.id)]).amount) / 100
+                        ('product_id', '=', self.product_id.id)]).amount) / 100
             else:
                 product = self.product_id.with_context(
                         lang=partner.lang,
@@ -408,7 +408,7 @@ class HotelService(models.Model):
         action['res_id'] = self.id
         action['target'] = 'new'
         return action
-    
+
     #~ @api.constrains('product_qty')
     #~ def constrains_qty_per_day(self):
         #~ for record in self:
