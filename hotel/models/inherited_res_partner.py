@@ -63,7 +63,6 @@ class ResPartner(models.Model):
         for i, record in enumerate(self):
             if record.unconfirmed is True:
                 partner_dst = self.env['res.partner']._check_duplicated_partner(record)
-                return
         res = super(ResPartner, self).write(vals)
         return res
 

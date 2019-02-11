@@ -41,9 +41,9 @@ class PoliceWizard(models.TransientModel):
     def generate_file(self):
         company = self.env.user.company_id
         if company.police_number is not False and company.property_name is not False:
-            lines = self.env['cardex'].search([('enter_date', '=',
+            lines = self.env['hotel.checkin.partner'].search([('enter_date', '=',
                                                 self.download_date)])
-            content = "1|"+company.police_number+"|"+compa.property_name.upper()[0:40]
+            content = "1|"+company.police_number+"|"+company.property_name.upper()[0:40]
             content += "|"
             content += datetime.datetime.now().strftime("%Y%m%d|%H%M")
             content += "|"+str(len(lines)) + """

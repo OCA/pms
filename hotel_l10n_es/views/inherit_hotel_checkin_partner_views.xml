@@ -35,6 +35,7 @@
                     <field name="document_type"/>
                     <field name="document_number" string="Doc. Number"/>
                     <field name="document_expedition_date" string="Exp. Date"/>
+                    <field name="birthdate_date" string="Birthdate" />
                     <field name="code_ine_id" />
                 </xpath>
             </field>
@@ -58,6 +59,7 @@
                     <field name="document_type"/>
                     <field name="document_number" string="Doc. Number"/>
                     <field name="document_expedition_date" string="Exp. Date"/>
+                    <field name="birthdate_date" string="Birthdate" />
                     <field name="code_ine_id" />
                 </xpath>
             </field>
