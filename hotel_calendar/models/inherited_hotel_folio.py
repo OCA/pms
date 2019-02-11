@@ -21,7 +21,7 @@ class HotelFolio(models.Model):
         for record in self:
             record.room_lines.send_bus_notification('unlink',
                                    'warn',
-                                   _("Reservation Deleted"))
+                                   _("Folio Deleted"))
         return super(HotelFolio, self).unlink()
 
     @api.multi

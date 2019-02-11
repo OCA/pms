@@ -123,7 +123,14 @@
 
 				<p><t t-esc="board_service_name"/></p>
 
-			<span class="circle pull-left" id="price_room"><t t-esc="price_room_services_set" t-widget="monetary"/>€</span>
+			<span class="circle pull-left" id="price_room">
+				<t t-if="!splitted">
+					<t t-esc="price_room_services_set" t-widget="monetary"/>€
+				</t>
+				<t t-else="">
+					<i class="fa fa-chain-broken fa-2x py-5"/>
+				</t>
+			</span>
 			<p>Adults: <t t-esc="adults"/></p>
 			<p class="children">Children: <t t-esc="children"/></p>
 		</div>
@@ -223,7 +230,7 @@
         			</t>
 			</t>
 			<t t-if="splitted">
-				<p><i class="fa fa-exclamation-circle"/>This reservation is part of splitted reservation.</p>
+				<p><i class="fa fa-exclamation-circle"/> This reservation is part of splitted reservation.</p>
 			</t>
 		</div>
 	</div>
