@@ -22,7 +22,6 @@
 #
 ##############################################################################
 from . import folio_make_invoice_advance
-from . import checkinwizard
 from . import massive_changes
 from . import split_reservation
 from . import duplicate_reservation

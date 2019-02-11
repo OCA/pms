@@ -29,7 +29,6 @@
         'data/menus.xml',
         'views/inherited_account_payment_views.xml',
         'views/inherited_account_invoice_views.xml',
-        'wizard/checkinwizard.xml',
         'wizard/massive_price_reservation_days.xml',
         'wizard/folio_make_invoice_advance_views.xml',
         'data/hotel_sequence.xml',

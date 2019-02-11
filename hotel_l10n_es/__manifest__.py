@@ -43,7 +43,6 @@
         'views/report_viajero.xml',
         'wizard/police_wizard.xml',
         'wizard/ine_wizard.xml',
-        'wizard/inherit_checkin_wizard.xml',
         'views/category_tourism.xml',
         'views/code_ine.xml',
         'views/inherit_res_company.xml',

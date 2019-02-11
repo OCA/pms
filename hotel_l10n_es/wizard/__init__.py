@@ -21,5 +21,4 @@
 ##############################################################################
 
 from . import police_wizard
-from . import inherit_checkin_wizard
 from . import ine_wizard
