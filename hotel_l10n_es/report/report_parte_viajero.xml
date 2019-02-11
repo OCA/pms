@@ -1,12 +1,12 @@
-<?xml version="1.0"?> 
-<odoo>     
+<?xml version="1.0"?>
+<odoo>
         <report
             id="action_report_viajero"
             string="Parte de Viajero"
-            model="checkin.partner"
+            model="hotel.checkin.partner"
             report_type="qweb-pdf"
-            name="report.viajero"
-            file="report.viajero"
+            name="hotel_l10n_es.report_viajero"
+            file="hotel_l10n_es.report_viajero"
         />
 
 </odoo>

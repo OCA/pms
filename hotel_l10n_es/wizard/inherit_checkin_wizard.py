@@ -107,7 +107,7 @@ class CheckinWizard(models.TransientModel):
     @api.multi
     def pdf_viajero(self, cardex_id):
         cardex = self.env['cardex'].search([('id', '=', cardex_id)])
-        return self.env['report'].get_action(cardex, 'report.viajero')
+        return self.env['report'].get_action(cardex, 'action.report.viajero')
 
     @api.multi
     def action_save_check(self):

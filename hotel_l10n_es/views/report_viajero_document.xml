@@ -11,8 +11,8 @@
                             style="width:100%; max-heigth:50px; margin:0 0 1em 0;"/>
                             <p style="font-size:1.16em;">PART OF TRAVELERS ENTRY</p>
                             <p class="numerocheck">Document number: <strong><span t-field="o.id"/></strong>/
-                            <span t-if="o.reservation_id.product_id.description_sale"><span t-field="o.reservation_id.folio_id"/> ( <span t-field="o.reservation_id.product_id.description_sale"/>)</span>
-                            <span t-if="not o.reservation_id.product_id.description_sale"><span t-field="o.reservation_id"/></span>
+                            <span t-if="o.reservation_id.room_id.description_sale"><span t-field="o.reservation_id.folio_id"/> ( <span t-field="o.reservation_id.room_id.description_sale"/>)</span>
+                            <span t-if="not o.reservation_id.room_id.description_sale"><span t-field="o.reservation_id"/></span>
                             </p>
                             <p style="font-size:0.65em;"> Total amount (Reservation Card): <strong><span t-field="o.reservation_id.folio_id.amount_total"/></strong></p>
                             <p><strong>CIF: <span t-field="company.vat"/></strong><br/>
@@ -30,21 +30,21 @@
                                 <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                     Document number</td>
                                 <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
-                                    <strong> <span t-field="o.partner_id.poldocument"/></strong></td>
+                                    <strong> <span t-field="o.document_number"/></strong></td>
                               </tr>
                               <tr>
                                 <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                     Type</td>
                                 <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
                                     <strong>
-                                        <t t-esc="dict(o.partner_id.fields_get(allfields=['documenttype'])['documenttype']['selection'])[o.partner_id.documenttype]"/>
+                                        <t t-esc="dict(o.partner_id.fields_get(allfields=['document_type'])['document_type']['selection'])[o.partner_id.document_type]"/>
                                     </strong></td>
                               </tr>
                               <tr>
                                 <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                     Expedition date</td>
                                 <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
-                                    <strong> <span t-field="o.partner_id.polexpedition" t-options='{"format": "d MMMM y"}'/></strong></td>
+                                    <strong> <span t-field="o.partner_id.document_expedition_date" t-options='{"format": "d MMMM y"}'/></strong></td>
                               </tr>
                             </table><br/>
                         </div>
@@ -86,7 +86,7 @@
                                 <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                     Origin</td>
                                 <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
-                                    <strong> <span t-field="o.partner_id.code_ine"/></strong></td>
+                                    <strong> <span t-field="o.partner_id.code_ine_id"/></strong></td>
                               </tr>
                             </table><br/>
                         </div>
@@ -148,21 +148,21 @@
                                             <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                                 Document number</td>
                                             <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
-                                                <strong> <span t-field="o.partner_id.poldocument"/></strong></td>
+                                                <strong> <span t-field="o.partner_id.document_number"/></strong></td>
                                           </tr>
                                           <tr>
                                             <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                                 Type</td>
                                             <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
                                                 <strong>
-                                                    <t t-esc="dict(o.partner_id.fields_get(allfields=['documenttype'])['documenttype']['selection'])[o.partner_id.documenttype]"/>
+                                                    <t t-esc="dict(o.partner_id.fields_get(allfields=['document_type'])['document_type']['selection'])[o.partner_id.document_type]"/>
                                                 </strong></td>
                                           </tr>
                                           <tr>
                                             <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                                 Expedition date</td>
                                             <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
-                                                <strong> <span t-field="o.partner_id.polexpedition" t-options='{"format": "d MMMM y"}'/></strong></td>
+                                                <strong> <span t-field="o.partner_id.document_expedition_date" t-options='{"format": "d MMMM y"}'/></strong></td>
                                           </tr>
                                         </table><br/>
                                     </div>
@@ -204,7 +204,7 @@
                                             <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
                                                 Origin</td>
                                             <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
-                                                <strong> <span t-field="o.partner_id.code_ine"/></strong></td>
+                                                <strong> <span t-field="o.partner_id.code_ine_id"/></strong></td>
                                           </tr>
                                         </table><br/>
                                     </div>
