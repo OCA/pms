@@ -25,14 +25,29 @@ class HotelReservation(models.Model):
                     'ota_reservation_id': reserv.channel_bind_ids[0].ota_reservation_id,
                     'external_id': reserv.channel_bind_ids[0].external_id,
                 })
+            elif reserv.splitted and reserv.parent_reservation.channel_bind_ids:
+                # chunks in splitted reservation has not channel_bind_ids
+                vals[1][reserv.id].update({
+                    'ota_name': reserv.parent_reservation.channel_bind_ids[0].ota_id.name,
+                    'ota_reservation_id': reserv.parent_reservation.channel_bind_ids[0].ota_reservation_id,
+                    'external_id': reserv.parent_reservation.channel_bind_ids[0].external_id,
+                })
+            # REVIEW: What happens if the reservation is splitted and no parent with channel_bind_ids ¿?
         return vals
 
     @api.multi
     def generate_bus_values(self, naction, ntype, ntitle=''):
+        self.ensure_one()
         vals = super(HotelReservation, self).generate_bus_values(naction, ntype, ntitle)
         vals.update({
             'fix_days': self.splitted or self.is_from_ota,
         })
+        if any(self.channel_bind_ids):
+            vals.update({
+                'ota_name': self.channel_bind_ids[0].ota_id.name,
+                'ota_reservation_id': self.channel_bind_ids[0].ota_reservation_id,
+                'external_id': self.channel_bind_ids[0].external_id,
+            })
         return vals
 
     @api.multi
