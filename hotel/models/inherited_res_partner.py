@@ -60,10 +60,10 @@ class ResPartner(models.Model):
 
     @api.multi
     def write(self, vals):
+        res = super(ResPartner, self).write(vals)
         for i, record in enumerate(self):
             if record.unconfirmed is True:
-                partner_dst = self.env['res.partner']._check_duplicated_partner(record)
-        res = super(ResPartner, self).write(vals)
+                res = self.env['res.partner']._check_duplicated_partner(record)
         return res
 
     @api.model
@@ -117,7 +117,16 @@ class ResPartner(models.Model):
         duplicated_ids = self.env['res.partner']._get_duplicated_ids(partner)
         if len(duplicated_ids) > 1:
             partners = self.env['res.partner'].browse(duplicated_ids)
-            return partner._merge(partners._ids)
+            action = self.env.ref('crm.action_partner_deduplicate').read()[0]
+            if partners:
+                action['context'] = {
+                    'default_partner_ids': partners.ids,
+                    'default_dst_partner_id': partner.id,
+                    }
+            else:
+                action = {'type': 'ir.actions.act_window_close'}
+            return action
+            # return partner._merge(partners._ids)
         return partner
 
     def _merge_fields(self):
