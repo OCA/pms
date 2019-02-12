@@ -8,7 +8,6 @@ access_hotel_reservation_line,access_hotel_reservation_line,model_hotel_reservat
 access_room_closure_reason,access_room_closure_reason,model_room_closure_reason,base.group_user,1,0,0,0
 access_hotel_service_line,access_hotel_service_line,model_hotel_service_line,base.group_user,1,0,0,0
 access_hotel_board_service,access_hotel_board_service,model_hotel_board_service,base.group_user,1,0,0,0
-access_hotel_room_type_availability,access_hotel_room_type_availability,model_hotel_room_type_availability,base.group_user,1,0,0,0
 access_hotel_checkin_partner,access_hotel_checkin_partner,model_hotel_checkin_partner,base.group_user,1,0,0,0
 access_hotel_room_type_class,access_hotel_room_type_class,model_hotel_room_type_class,base.group_user,1,0,0,0
 access_hotel_room,access_hotel_room,model_hotel_room,base.group_user,1,0,0,0
