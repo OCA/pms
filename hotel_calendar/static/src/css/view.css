@@ -245,6 +245,9 @@ input#bookings_search {
   font-size: 1.2em;
 }
 
+.fa-1_5x {
+  font-size: 1.5em;
+}
 .fa-2_5x {
   font-size: 2.5em;
 }
@@ -313,6 +316,9 @@ input#bookings_search {
 .py-5 {
   padding-top: 5px;
   padding-bottom: 5px;
+}
+.pt-9 {
+  padding-top: 9px;
 }
 .pb-3 {
   padding-bottom: 3px;

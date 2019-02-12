@@ -128,7 +128,7 @@
 					<t t-esc="price_room_services_set" t-widget="monetary"/>€
 				</t>
 				<t t-else="">
-					<i class="fa fa-chain-broken fa-2x py-5"/>
+					<i class="fa fa-chain-broken fa-1_5x pt-9"/>
 				</t>
 			</span>
 			<p>Adults: <t t-esc="adults"/></p>
