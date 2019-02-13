@@ -6,13 +6,22 @@
             <field name="model">hotel.checkin.partner</field>
             <field name="inherit_id" ref="hotel.hotel_checkin_partner_view_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='exit_date']" position="after">
+                    <field name="document_type"/>
+                    <field name="document_number"/>
+                    <field name="document_expedition_date"/>
+                </xpath>
                 <xpath expr="//field[@name='reservation_id']" position="after">
+                    <field name="gender"/>
+                    <field name="birthdate_date"/>
+                    <field name="code_ine_id" />
                     <button type="action" class="oe_stat_button"
                         icon="fa-file-pdf-o"
                         name="%(action_report_viajero)d"
                         context="{'partner_id': partner_id,'enter_date': enter_date,
                                   'exit_date': exit_date,'reservation_ids': reservation_id,
-                                  'hidden_cardex': True, 'edit_cardex': True }"/>
+                                  'hidden_cardex': True, 'edit_cardex': True }"
+                        string="Print in PDF" />
                 </xpath>
             </field>
         </record>
@@ -28,7 +37,8 @@
                         name="%(action_report_viajero)d"
                         context="{'partner_id': partner_id,'enter_date': enter_date,
                                   'exit_date': exit_date,'reservation_ids': reservation_id,
-                                  'hidden_cardex': True, 'edit_cardex': True }"/>
+                                  'hidden_cardex': True, 'edit_cardex': True }"
+                        string="Print in PDF" />
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="gender"/>

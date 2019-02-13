@@ -24,7 +24,7 @@
             .titulo {font-size:0.93em;}
             .titulo2 {font-size:1.93em;}
         </t>
-        <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
             <t t-foreach="docs" t-as="o">
                 <t t-call="hotel_l10n_es.report_viajero_document" t-lang="o.partner_id.lang"/>
             </t>
