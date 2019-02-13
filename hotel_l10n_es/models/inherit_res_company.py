@@ -19,7 +19,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp import models, fields, api
+import base64
+from odoo import models, fields
+from odoo import modules
+
+
+def get_default_img():
+    with open(modules.get_module_resource('hotel_l10n_es', 'static/src/img',
+                                          'logo_bn.png'),
+              'rb') as f:
+        return base64.b64encode(f.read())
 
 
 class Inherit_res_company(models.Model):
@@ -28,19 +37,21 @@ class Inherit_res_company(models.Model):
     property_name = fields.Char('Property name',
                                 help='Name of the Hotel/Property.')
     ine_tourism = fields.Char('Tourism number',
-                          help='Registration number in the Ministry of \
+                              help='Registration number in the Ministry of \
                                             Tourism. Used for INE statistics.')
     ine_rooms = fields.Integer('Rooms Available', default=0,
-                           help='Used for INE statistics.')
+                               help='Used for INE statistics.')
     ine_seats = fields.Integer('Beds available', default=0,
-                           help='Used for INE statistics.')
+                               help='Used for INE statistics.')
     ine_permanent_staff = fields.Integer('Permanent Staff', default=0,
-                                    help='Used for INE statistics.')
+                                         help='Used for INE statistics.')
     ine_eventual_staff = fields.Integer('Eventual Staff', default=0,
-                                   help='Used for INE statistics.')
+                                        help='Used for INE statistics.')
     police_number = fields.Char('Police number', size=10,
-                         help='Used to generate the name of the file that \
-                                    will be given to the police. 10 Caracters')
+                                help='Used to generate the name of the file that \
+                                will be given to the police. 10 Caracters')
     ine_category_id = fields.Many2one('tourism.category',
-                                  help='Hotel category in the Ministry of \
+                                      help='Hotel category in the Ministry of \
                                             Tourism. Used for INE statistics.')
+    checkin_img = fields.Binary(string="Image in checkin",
+                                default=get_default_img())
