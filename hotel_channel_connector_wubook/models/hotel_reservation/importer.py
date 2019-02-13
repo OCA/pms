@@ -141,6 +141,8 @@ class HotelReservationImporter(Component):
             'room_type_id': room_type_bind.odoo_id.id,
             'splitted': split_booking,
             'name': room_type_bind and room_type_bind.name,
+            'board_service_room_id': room_type_bind.board_service_room_type_ids.filtered(
+                lambda r: r.channel_service == book['boards'][room_type_bind.external_id]).id or None,
             'channel_bind_ids': [(0, False, binding_vals)],
         }
         return vals
