@@ -3,6 +3,7 @@
 
 from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError
+from odoo.addons import decimal_precision as dp
 from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
@@ -18,8 +19,12 @@ class ChannelHotelRoomType(models.Model):
                               string='Room Type',
                               required=True,
                               ondelete='cascade')
-    channel_short_code = fields.Char("Channel Short Code", readonly=True, old_name='wscode')
+    channel_short_code = fields.Char("Channel Short Code", old_name='wscode')
     ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity')
+    min_price = fields.Float('Min. Price', default=5.0, digits=dp.get_precision('Product Price'),
+                             help="Setup the min price to prevent incidents while editing your prices.")
+    max_price = fields.Float('Max. Price', default=200.0, digits=dp.get_precision('Product Price'),
+                             help="Setup the max price to prevent incidents while editing your prices.")
 
     @api.onchange('room_ids')
     def _get_capacity(self):

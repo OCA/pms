@@ -16,9 +16,11 @@ class HotelRoomTypeAdapter(Component):
     def fetch_rooms(self):
         return super(HotelRoomTypeAdapter, self).fetch_rooms()
 
-    def modify_room(self, channel_room_id, name, capacity, price, availability, scode, defboard, rtype):
+    def modify_room(self, channel_room_id, name, capacity, price, availability, scode, defboard,
+                    names, descriptions, boards, min_price, max_price, rtype):
         return super(HotelRoomTypeAdapter, self).modify_room(
-            channel_room_id, name, capacity, price, availability, scode, defboard, rtype)
+            channel_room_id, name, capacity, price, availability, scode, defboard,
+            names, descriptions, boards, min_price, max_price, rtype)
 
     def delete_room(self, channel_room_id):
         return super(HotelRoomTypeAdapter, self).delete_room(channel_room_id)
