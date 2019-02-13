@@ -15,6 +15,14 @@ class HotelRoomTypeExporter(Component):
             binding.with_context({
                 'connector_no_export': True,
             }).write({'sync_date': fields.Datetime.now()})
+            # TODO: do not write if backend_adapter.modify_room through an error
+            boards = {}
+            for board in binding.board_service_room_type_ids:
+                boards.update(
+                    {board.channel_service: {
+                        'dtype': 2 if board.price_type == 'fixed' else 1,
+                        'value': board.amount}}
+                )
             return self.backend_adapter.modify_room(
                 binding.external_id,
                 binding.name,
@@ -23,7 +31,13 @@ class HotelRoomTypeExporter(Component):
                 binding.total_rooms_count,
                 binding.channel_short_code,
                 'nb',
-                binding.class_id and binding.class_id.code_class or False)
+                {},
+                {},
+                boards,
+                binding.min_price,
+                binding.max_price,
+                binding.class_id and binding.class_id.code_class or False,
+            )
         except ChannelConnectorError as err:
             self.create_issue(
                 section='room',

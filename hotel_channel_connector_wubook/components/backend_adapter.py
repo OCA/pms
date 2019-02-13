@@ -122,6 +122,8 @@ class WuBookAdapter(AbstractComponent):
 
     # === ROOMS
     def create_room(self, shortcode, name, capacity, price, availability, defboard, rtype):
+        import wdb;
+        wdb.set_trace()
         rcode, results = self._server.new_room(
             self._session_info[0],
             self._session_info[1],
@@ -140,7 +142,8 @@ class WuBookAdapter(AbstractComponent):
             })
         return results
 
-    def modify_room(self, channel_room_id, name, capacity, price, availability, scode, defboard, rtype):
+    def modify_room(self, channel_room_id, name, capacity, price, availability, scode, defboard,
+                    names, descriptions, boards, min_price, max_price, rtype):
         rcode, results = self._server.mod_room(
             self._session_info[0],
             self._session_info[1],
@@ -151,7 +154,13 @@ class WuBookAdapter(AbstractComponent):
             availability,
             scode,
             defboard,
-            rtype
+            names,
+            descriptions,
+            boards,
+            min_price,
+            max_price,
+            int(rtype),
+            False,
         )
         if rcode != 0:
             raise ChannelConnectorError(_("Can't modify room in WuBook"), {

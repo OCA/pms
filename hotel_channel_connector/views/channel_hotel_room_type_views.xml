@@ -15,6 +15,10 @@
                     <field name="channel_short_code" />
                     <field name="ota_capacity" />
                 </group>
+                <group>
+                    <field name="min_price" class="oe_inline"/>
+                    <field name="max_price" class="oe_inline"/>
+                </group>
             </form>
         </field>
     </record>
