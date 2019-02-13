@@ -7,8 +7,7 @@
                 <div class="container-fluid" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
                     <div class="row cabezera" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
                         <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
-                            <img src='/hotel_l10n_es/static/src/img/logo_alda_bn.png'
-                            style="width:100%; max-heigth:50px; margin:0 0 1em 0;"/>
+                            <img t-attf-src="data:image/*;base64,{{company.checkin_img}}" t-att-alt="company.name" />
                             <p style="font-size:1.16em;">PART OF TRAVELERS ENTRY</p>
                             <p class="numerocheck">Document number: <strong><span t-field="o.id"/></strong>/
                             <span t-if="o.reservation_id.room_id.description_sale"><span t-field="o.reservation_id.folio_id"/> ( <span t-field="o.reservation_id.room_id.description_sale"/>)</span>
