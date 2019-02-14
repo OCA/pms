@@ -8,9 +8,10 @@
             <form string="Hotel Channel Virtual Room">
                 <group>
                     <field name="id" invisible="1" />
-                    <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                    <field name="backend_id"  attrs="{'visible': [('id','=', False)], 'readonly': [('id','!=', False)]}" />
                 </group>
                 <group>
+                    <field name="name"/>
                     <field name="external_id" />
                     <field name="channel_short_code" />
                     <field name="ota_capacity" />
@@ -33,4 +34,12 @@
         </field>
     </record>
 
+    <record id="channel_hotel_room_type_action" model="ir.actions.act_window">
+        <field name="name">Hotel Channel Connector Bindings</field>
+        <field name="res_model">channel.hotel.room.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="domain">[]</field>
+    </record>
 </odoo>

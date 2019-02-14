@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, fields, _
+from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
 from odoo.addons.queue_job.job import job
@@ -110,6 +111,27 @@ class HotelRoomType(models.Model):
             ('restriction_id', '=', restriction_plan_id)
         ], limit=1)
         return restriction
+
+    @api.multi
+    def open_channel_bind_ids(self):
+        channel_bind_ids = self.mapped('channel_bind_ids')
+        action = self.env.ref('hotel_channel_connector.channel_hotel_room_type_action').read()[0]
+        action['views'] = [(self.env.ref('hotel_channel_connector.channel_hotel_room_type_view_form').id, 'form')]
+        if len(channel_bind_ids) == 1:
+            action['res_id'] = channel_bind_ids.ids[0]
+        elif len(channel_bind_ids) > 1:
+            # WARNING: more than one binding is currently not expected
+            action['domain'] = [('id', 'in', channel_bind_ids.ids)]
+        else:
+            action['target'] = 'new'
+        return action
+
+    @api.multi
+    def sync_from_channel(self):
+        channel_bind_ids = self.mapped('channel_bind_ids')
+        msg = _("Synchronize room types from the channel manager is not yet implementet.")
+        raise UserError(msg)
+
 
 class BindingHotelRoomTypeListener(Component):
     _name = 'binding.hotel.room.type.listener'

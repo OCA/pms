@@ -5,23 +5,16 @@
         <field name="model">hotel.room.type</field>
         <field name="inherit_id" ref="hotel.hotel_room_type_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='board_service_room_type_ids']/tree" position="inside">
-                <field name="channel_service" />
+            <xpath expr="//button[@name='toggle_active']" position="before">
+                <button name="open_channel_bind_ids" type="object"
+                        class="oe_stat_button" icon="fa-cloud-upload" string="Export to Channel"/>
+                <button name="sync_from_channel" type="object"
+                        class="oe_stat_button" icon="fa-cloud-download" string="Import from Channel"
+                        confirm="Synchronizing a room type automatically updates its values in Odoo. Do you want to proceed?"/>
             </xpath>
 
-            <xpath expr="//sheet" position="inside">
-                <notebook>
-                    <page name="connector" string="Channel Connector">
-                        <group string="Hotel Channel Bindings">
-                            <field name="capacity" invisible="1" />
-                            <field name="channel_bind_ids" context="{'default_ota_capacity': capacity}" nolabel="1">
-                                <tree>
-                                    <field name="backend_id" />
-                                </tree>
-                            </field>
-                        </group>
-                    </page>
-                </notebook>
+            <xpath expr="//field[@name='board_service_room_type_ids']/tree" position="inside">
+                <field name="channel_service" />
             </xpath>
         </field>
     </record>
