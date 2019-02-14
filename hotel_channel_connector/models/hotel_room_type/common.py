@@ -53,7 +53,7 @@ class ChannelHotelRoomType(models.Model):
     @api.constrains('channel_short_code')
     def _check_channel_short_code(self):
         for record in self:
-            if len(record.channel_short_code) > 4:  # Wubook scode max. length
+            if self.channel_short_code and len(record.channel_short_code) > 4:  # Wubook scode max. length
                 raise ValidationError(_("Chanel short code can't be longer than 4 characters"))
 
     @job(default_channel='root.channel')
@@ -123,6 +123,10 @@ class HotelRoomType(models.Model):
             # WARNING: more than one binding is currently not expected
             action['domain'] = [('id', 'in', channel_bind_ids.ids)]
         else:
+            action['context'] = {'default_odoo_id': self.id,
+                                 'default_name': self.name,
+                                 'default_ota_capacity': self.capacity,
+                                 'default_list_price': self.list_price}
             action['target'] = 'new'
         return action
 

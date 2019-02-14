@@ -9,9 +9,11 @@ class HotelRoomTypeAdapter(Component):
     _inherit = 'wubook.adapter'
     _apply_on = 'channel.hotel.room.type'
 
-    def create_room(self, shortcode, name, capacity, price, availability, defboard, rtype):
+    def create_room(self, shortcode, name, capacity, price, availability, defboard,
+                    names, descriptions, boards, min_price, max_price, rtype):
         return super(HotelRoomTypeAdapter, self).create_room(
-            shortcode, name, capacity, price, availability, defboard, rtype)
+            shortcode, name, capacity, price, availability, defboard,
+            names, descriptions, boards, min_price, max_price, rtype)
 
     def fetch_rooms(self):
         return super(HotelRoomTypeAdapter, self).fetch_rooms()

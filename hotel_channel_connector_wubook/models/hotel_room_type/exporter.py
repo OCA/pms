@@ -49,6 +49,13 @@ class HotelRoomTypeExporter(Component):
         seq_obj = self.env['ir.sequence']
         short_code = seq_obj.next_by_code('hotel.room.type')[:4]
         try:
+            boards = {}
+            for board in binding.board_service_room_type_ids:
+                boards.update(
+                    {board.channel_service: {
+                        'dtype': 2 if board.price_type == 'fixed' else 1,
+                        'value': board.amount}}
+                )
             external_id = self.backend_adapter.create_room(
                 short_code,
                 binding.name,
@@ -56,7 +63,13 @@ class HotelRoomTypeExporter(Component):
                 binding.list_price,
                 binding.total_rooms_count,
                 'nb',
-                binding.class_id and binding.class_id.code_class or False)
+                {},
+                {},
+                boards,
+                binding.min_price,
+                binding.max_price,
+                binding.class_id and binding.class_id.code_class or False,
+            )
         except ChannelConnectorError as err:
             self.create_issue(
                 section='room',

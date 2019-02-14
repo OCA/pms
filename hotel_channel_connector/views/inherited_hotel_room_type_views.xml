@@ -17,6 +17,8 @@
                 <field name="channel_service" />
             </xpath>
         </field>
+
+
     </record>
 
 </odoo>
