@@ -24,7 +24,7 @@ from odoo import models, fields, api
 import base64
 import datetime
 from odoo.tools.translate import _
-
+import unidecode
 
 
 class PoliceWizard(models.TransientModel):
@@ -41,8 +41,10 @@ class PoliceWizard(models.TransientModel):
     def generate_file(self):
         company = self.env.user.company_id
         if company.police_number is not False and company.property_name is not False:
-            lines = self.env['hotel.checkin.partner'].search([('enter_date', '=',
-                                                self.download_date)])
+            lines = self.env['hotel.checkin.partner'].search(
+                [('enter_date',
+                  '=',
+                  self.download_date)])
             content = "1|"+company.police_number+"|"+company.property_name.upper()[0:40]
             content += "|"
             content += datetime.datetime.now().strftime("%Y%m%d|%H%M")
@@ -65,7 +67,13 @@ class PoliceWizard(models.TransientModel):
                     content += datetime.datetime.strptime(
                         line.partner_id.document_expedition_date,
                         "%Y-%m-%d").date().strftime("%Y%m%d") + "|"
+                    firstname = line.partner_id.firstname
+                    if 'ñ' not in firstname and 'Ñ' not in firstname:
+                        firstname = unidecode.unidecode(firstname)
                     lastname = line.partner_id.lastname.split()
+                    for i, string in enumerate(lastname):
+                        if 'ñ' not in string and 'Ñ' not in string:
+                            lastname[i] = unidecode.unidecode(string)
                     if len(lastname) >= 2:
                         content += lastname[0].upper() + "|"
                         lastname.pop(0)
@@ -75,7 +83,7 @@ class PoliceWizard(models.TransientModel):
                     else:
                         content += lastname[0].upper() + "|"
                     content += "|"
-                    content += line.partner_id.firstname.upper() + "|"
+                    content += firstname.upper() + "|"
                     content += line.partner_id.gender.upper()[0] + "|"
                     content += datetime.datetime.strptime(
                         line.partner_id.birthdate_date,
@@ -96,7 +104,6 @@ class PoliceWizard(models.TransientModel):
                                          Checkin without data, \
                                          or incorrect data: - ' +
                                          line.partner_id.name)})
-
             return self.write({
                 'txt_filename': company.police_number + '.' + self.download_num,
                 'txt_message': _(
