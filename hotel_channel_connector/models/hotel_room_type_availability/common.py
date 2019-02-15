@@ -203,8 +203,8 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
                         'backend_id': backend.id,
                     })
                 avail_bind.refresh_availability(
-                    record.checkin,
-                    record.checkout,
+                    record.date,
+                    record.date,
                     backend.id,
                     room_type_id=record.room_type_id.id)
 
