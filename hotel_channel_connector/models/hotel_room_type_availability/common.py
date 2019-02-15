@@ -76,7 +76,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     channel_pushed = fields.Boolean("Channel Pushed", readonly=True,
                                     default=False)
 
-    @api.constrains('avail')
+    @api.constrains('max_avail')
     def _check_avail(self):
         room_type_obj = self.env['hotel.room.type']
         issue_obj = self.env['hotel.channel.connector.issue']
@@ -216,7 +216,7 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        fields_to_check = ('avail', 'date')
+        fields_to_check = ('max_avail', 'date')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
         if any(fields_checked):
             record.channel_pushed = False
