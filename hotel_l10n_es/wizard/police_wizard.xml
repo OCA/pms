@@ -23,9 +23,10 @@
                                     <field name="txt_filename" invisible="1"/>
                                     <field name="txt_binary" filename="txt_filename" readonly="1" style="margin-left: 20px;"/>
                                 </div>
-                            <group>
+                            <group colspan="1">
                                 <div>
-                                    <field name="txt_message" readonly="1"/>
+                                    <p><field name="log_police" readonly="1"/></p>
+                                    <p><field name="txt_message" readonly="1"/></p>
                                 </div>
                             </group>
                             <group>

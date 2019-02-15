@@ -36,6 +36,7 @@ class PoliceWizard(models.TransientModel):
     txt_filename = fields.Char()
     txt_binary = fields.Binary()
     txt_message = fields.Char()
+    log_police = fields.Char()
 
     @api.one
     def generate_file(self):
@@ -50,13 +51,14 @@ class PoliceWizard(models.TransientModel):
             content += datetime.datetime.now().strftime("%Y%m%d|%H%M")
             content += "|"+str(len(lines)) + """
 """
-
+            log_police = 0
             for line in lines:
                 if ((line.partner_id.document_type is not False)
                         and (line.partner_id.document_number is not False)
                         and (line.partner_id.firstname is not False)
                         and (line.partner_id.lastname is not False)):
 
+                    log_police += 1
                     if len(line.partner_id.code_ine_id.code) == 5:
                         content += "2|"+line.partner_id.document_number.upper(
                             ) + "||"
@@ -104,8 +106,11 @@ class PoliceWizard(models.TransientModel):
                                          Checkin without data, \
                                          or incorrect data: - ' +
                                          line.partner_id.name)})
+            log_police = str(log_police) + _(' records added from ')
+            log_police += str(len(lines)) + _(' records processed.')
             return self.write({
                 'txt_filename': company.police_number + '.' + self.download_num,
+                'log_police': log_police,
                 'txt_message': _(
                     'Generated file. Download it and give it to the police.'),
                 'txt_binary': base64.encodestring(content.encode("iso-8859-1"))
