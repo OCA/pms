@@ -308,7 +308,7 @@ class IneWizard(models.TransientModel):
                                          str(ine_pernoct_total[dia_x-1]))
 
                     # ADR y RevPar
-                    for xx_lines in line_res.reservation_lines:
+                    for xx_lines in line_res.reservation_line_ids:
                         # ADR calculo
                         xx_dia = xx_lines.date.split('-')
                         if int(xx_dia[1]) == self.ine_month:
@@ -317,7 +317,7 @@ class IneWizard(models.TransientModel):
 
                 else:
                     # Staff o Out
-                    for xx_lines in line_res.reservation_lines:
+                    for xx_lines in line_res.reservation_line_ids:
                         xx_dia = xx_lines.date.split('-')
                         if int(xx_dia[1]) == self.ine_month:
                             # Restamos una Habitacion no valida para RevPar
