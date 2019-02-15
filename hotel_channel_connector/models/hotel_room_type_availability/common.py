@@ -180,8 +180,8 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
         if any(fields_checked) and any(record.channel_bind_ids):
             for binding in record.channel_bind_ids:
                 binding.refresh_availability(
-                    record.checkin,
-                    record.checkout,
+                    record.date,
+                    record.date,
                     binding.backend_id.id,
                     room_type_id=record.room_type_id.id)
 
