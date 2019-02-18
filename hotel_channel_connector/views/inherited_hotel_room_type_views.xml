@@ -13,12 +13,15 @@
                         confirm="Synchronizing a room type automatically updates its values in Odoo. Do you want to proceed?"/>
             </xpath>
 
+            <xpath expr="//field[@name='room_ids']" position="inside">
+                <field name="capacity" />
+            </xpath>
+
             <xpath expr="//field[@name='board_service_room_type_ids']/tree" position="inside">
                 <field name="channel_service" />
             </xpath>
+
         </field>
-
-
     </record>
 
 </odoo>
