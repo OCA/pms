@@ -31,7 +31,7 @@ class HotelRoomTypeAvailabilityExporter(Component):
                     date_dt = fields.Date.from_string(channel_room_type_avail.date)
                     days.append({
                         'date': date_dt.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-                        'avail': channel_room_type_avail.max_avail, # TODO max_avail __or__ quota ¿?
+                        'avail': channel_room_type_avail.quota, # FIXME max_avail __or__ quota ¿?
                         'no_ota': channel_room_type_avail.no_ota and 1 or 0,
                         # 'booked': room_type_avail.booked and 1 or 0,
                     })

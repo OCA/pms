@@ -54,10 +54,14 @@
 
   <!-- Action of reservation restriction -->
   <record model="ir.actions.act_window" id="hotel_room_type_availability_action">
-    <field name="name">Virtual Room Availability</field>
+    <field name="name">Room Type Availability</field>
     <field name="res_model">hotel.room.type.availability</field>
     <field name="view_type">form</field>
     <field name="view_mode">tree,form</field>
   </record>
+
+  <menuitem name="Availability" id="availability_menu"
+        action="hotel_room_type_availability_action" sequence="21"
+        parent="hotel.configuration_others" />
 
  </odoo>
