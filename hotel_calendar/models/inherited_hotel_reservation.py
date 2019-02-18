@@ -294,7 +294,7 @@ class HotelReservation(models.Model):
         json_rooms_rests = {}
         room_typed_ids = self.env['hotel.room.type'].search(
             [],
-            order='hcal_sequence ASC')
+            order='sequence ASC')
         room_type_rest_obj = self.env['hotel.room.type.restriction.item']
         rtype_rest_ids = room_type_rest_obj.search([
             ('room_type_id', 'in', room_typed_ids.ids),
@@ -368,7 +368,7 @@ class HotelReservation(models.Model):
 
         dfrom_dt = fields.Date.from_string(dfrom)
         dto_dt = fields.Date.from_string(dto)
-        rooms = self.env['hotel.room'].search([], order='hcal_sequence ASC')
+        rooms = self.env['hotel.room'].search([], order='sequence ASC')
 
         json_res, json_res_tooltips = self.get_hcalendar_reservations_data(
             dfrom_dt, dto_dt, rooms)
