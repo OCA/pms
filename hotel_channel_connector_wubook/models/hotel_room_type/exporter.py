@@ -47,7 +47,8 @@ class HotelRoomTypeExporter(Component):
     @api.model
     def create_room(self, binding):
         seq_obj = self.env['ir.sequence']
-        short_code = seq_obj.next_by_code('hotel.room.type')[:4]
+        short_code = binding.channel_short_code or \
+                     seq_obj.next_by_code('hotel.room.type')[:4]
         try:
             boards = {}
             for board in binding.board_service_room_type_ids:
