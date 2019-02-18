@@ -19,23 +19,19 @@
                       <group>
                         <field name="name" />
                         <field name="code_type" />
-                        <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                        <field name="class_id" />
                       </group>
                       <group>
-                        <field name="class_id" />
-                        <field name="total_rooms_count"/>
+                          <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                       </group>
                     </group>
                     <group colspan="2">
                         <group>
-                            <field name="room_ids" widget="many2many"/>
+                            <field name="total_rooms_count"/>
+                            <field name="room_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Room Amenities">
-                            <separator string=" Room Amenities" />
-                            <field name="room_amenity_ids" colspan="4" nolabel="1" />
-                        </page>
                         <page string="Board Services">
                             <separator string="Board Services" />
                             <field name="board_service_room_type_ids" colspan="4" nolabel="1"
@@ -51,6 +47,10 @@
                                         name="open_board_lines_form"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Room Amenities">
+                            <separator string="Room Amenities" />
+                            <field name="room_amenity_ids" colspan="4" nolabel="1" />
                         </page>
                     </notebook>
                 </sheet>
