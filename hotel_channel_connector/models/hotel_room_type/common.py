@@ -164,7 +164,10 @@ class ChannelBindingRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
-        record.create_room()
+        if not record.external_id:
+            record.create_room()
+        else:
+            record.modify_room()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):
