@@ -6,4 +6,4 @@ from odoo import models, fields
 class HotelRoom(models.Model):
     _inherit = 'hotel.room'
 
-    hcal_sequence = fields.Integer('Calendar Sequence', default=0)
+    # hcal_sequence = fields.Integer('Calendar Sequence', default=0)
