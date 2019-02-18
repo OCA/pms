@@ -137,8 +137,8 @@ class WuBookAdapter(AbstractComponent):
             descriptions,
             boards,
             int(rtype),
-            # min_price, # Issue limit for min_price and max_price is they have to be higher than 5
-            # max_price,
+            min_price, # Issue limit for min_price and max_price is they have to be higher than 5
+            max_price,
         )
         if rcode != 0:
             raise ChannelConnectorError(_("Can't create room in WuBook"), {
