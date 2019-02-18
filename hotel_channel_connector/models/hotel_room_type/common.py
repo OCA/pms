@@ -117,6 +117,7 @@ class HotelRoomType(models.Model):
         channel_bind_ids = self.mapped('channel_bind_ids')
         action = self.env.ref('hotel_channel_connector.channel_hotel_room_type_action').read()[0]
         action['views'] = [(self.env.ref('hotel_channel_connector.channel_hotel_room_type_view_form').id, 'form')]
+        action['target'] = 'new'
         if len(channel_bind_ids) == 1:
             action['res_id'] = channel_bind_ids.ids[0]
         elif len(channel_bind_ids) > 1:
@@ -127,7 +128,6 @@ class HotelRoomType(models.Model):
                                  'default_name': self.name,
                                  'default_ota_capacity': self.capacity,
                                  'default_list_price': self.list_price}
-            action['target'] = 'new'
         return action
 
     @api.multi
@@ -144,7 +144,9 @@ class BindingHotelRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        if 'name' in fields or 'list_price' in fields or 'room_ids' in fields:
+        fields_to_check = ('name', 'list_price', 'total_rooms_count')
+        fields_checked = [elm for elm in fields_to_check if elm in fields]
+        if any(fields_checked):
             for binding in record.channel_bind_ids:
                 binding.modify_room()
 
@@ -167,7 +169,9 @@ class ChannelBindingRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        fields_to_check = ('name', 'ota_capacity', 'list_price', 'total_rooms_count')
+        # only fields from channel.hotel.room.type should be listener
+        # fields_to_check = ('name', 'ota_capacity', 'list_price', 'total_rooms_count')
+        fields_to_check = ('ota_capacity')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
         if any(fields_checked):
             record.modify_room()
