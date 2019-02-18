@@ -21,7 +21,10 @@ class ChannelHotelRoomType(models.Model):
                               required=True,
                               ondelete='cascade')
     channel_short_code = fields.Char("Channel Short Code", old_name='wscode')
-    ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity')
+    ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity',
+                                  help="The capacity of the room for OTAs.")
+    default_availability = fields.Integer(default=0,
+                                          help="Default availability for OTAs.")
     min_price = fields.Float('Min. Price', default=5.0, digits=dp.get_precision('Product Price'),
                              help="Setup the min price to prevent incidents while editing your prices.")
     max_price = fields.Float('Max. Price', default=200.0, digits=dp.get_precision('Product Price'),
@@ -170,8 +173,8 @@ class ChannelBindingRoomTypeListener(Component):
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
         # only fields from channel.hotel.room.type should be listener
-        # fields_to_check = ('name', 'ota_capacity', 'list_price', 'total_rooms_count')
-        fields_to_check = ('ota_capacity')
+        fields_to_check = ('ota_capacity', 'channel_short_code',
+                           'min_price', 'max_price', 'default_availability')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
         if any(fields_checked):
             record.modify_room()
