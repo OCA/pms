@@ -15,6 +15,7 @@
                     <field name="external_id" />
                     <field name="channel_short_code" />
                     <field name="ota_capacity" />
+                    <field name="default_availability" />
                 </group>
                 <group>
                     <field name="min_price" class="oe_inline"/>
