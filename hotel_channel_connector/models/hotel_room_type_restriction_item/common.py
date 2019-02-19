@@ -55,7 +55,7 @@ class BindingHotelRoomTypeRestrictionItemListener(Component):
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
         fields_to_check = ('min_stay', 'min_stay_arrival', 'max_stay', 'max_stay_arrival',
-                           'max_stay_arrival', 'closed', 'closed_departure', 'closed_arrival',
+                           'closed', 'closed_departure', 'closed_arrival',
                            'date')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
         if any(fields_checked):
@@ -87,7 +87,7 @@ class ChannelBindingHotelRoomTypeRestrictionItemListener(Component):
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
         fields_to_check = ('min_stay', 'min_stay_arrival', 'max_stay', 'max_stay_arrival',
-                           'max_stay_arrival', 'closed', 'closed_departure', 'closed_arrival',
+                           'closed', 'closed_departure', 'closed_arrival',
                            'date')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
         if any(fields_checked):
