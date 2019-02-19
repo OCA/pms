@@ -1,7 +1,8 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, models, fields
+from odoo import api, models, fields, _
+from odoo.exceptions import ValidationError
 from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
@@ -48,6 +49,17 @@ class ProductPricelistItem(models.Model):
         comodel_name='channel.product.pricelist.item',
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
+
+    @api.constrains('fixed_price')
+    def _check_fixed_price(self):
+        for record in self:
+            channel_room_type = self.env['channel.hotel.room.type'].search(
+                [('product_tmpl_id', '=', record.product_tmpl_id.id)])
+            if record.fixed_price < channel_room_type.min_price or \
+                    record.fixed_price > channel_room_type.max_price:
+                msg = _("The room type '%s' limits the price between '%s' and '%s'.") \
+                      % (record.name, channel_room_type.min_price, channel_room_type.max_price)
+                raise ValidationError(msg)
 
 class BindingProductPricelistItemListener(Component):
     _name = 'binding.product.pricelist.item.listener'
