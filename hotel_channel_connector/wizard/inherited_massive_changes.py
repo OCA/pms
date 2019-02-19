@@ -69,6 +69,12 @@ class MassiveChangesWizard(models.TransientModel):
         self.env['channel.backend'].cron_push_changes()
         return res
 
+    @api.multi
+    def massive_change_close(self):
+        res = super(MassiveChangesWizard, self).massive_change_close()
+        self.env['channel.backend'].cron_push_changes()
+        return res
+
     @api.model
     def _save(self, ndate, room_types, record):
         super(MassiveChangesWizard, self)._save(ndate, room_types, record)
