@@ -20,6 +20,7 @@
                 <group>
                     <field name="min_price" class="oe_inline"/>
                     <field name="max_price" class="oe_inline"/>
+                    <field name="sync_date" readonly="1"/>
                 </group>
             </form>
         </field>
@@ -29,7 +30,7 @@
         <field name="name">channel.hotel.room.type.tree</field>
         <field name="model">channel.hotel.room.type</field>
         <field name="arch" type="xml">
-            <tree string="Hotel Channel Virtual Room">
+            <tree string="Hotel Channel Room Type">
                 <field name="backend_id"/>
             </tree>
         </field>

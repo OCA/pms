@@ -26,9 +26,9 @@
                       </group>
                     </group>
                     <group colspan="2">
-                        <group>
-                            <field name="total_rooms_count"/>
+                        <group name="room_ids_group">
                             <field name="room_ids" widget="many2many_tags"/>
+                            <field name="total_rooms_count"/>
                         </group>
                     </group>
                     <notebook>
