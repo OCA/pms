@@ -30,7 +30,7 @@ class HotelRoomTypeAdapter(Component):
 
 
 class ChannelHotelRoomType(models.Model):
-    _inherit = 'hotel.room.type'
+    _inherit = 'channel.hotel.room.type'
 
     @api.constrains('min_price', 'max_price')
     def _check_min_max_price(self):
