@@ -211,7 +211,7 @@ class HotelReservationImporter(Component):
                 self._generate_partner_vals(book)
             )
         if is_cancellation:
-            binding.with_context({
+            binding.odoo_id.with_context({
                 'connector_no_export': True}).action_cancel()
         elif binding.state == 'cancelled':
             binding.with_context({
