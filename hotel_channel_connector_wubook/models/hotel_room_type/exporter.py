@@ -18,11 +18,12 @@ class HotelRoomTypeExporter(Component):
             # TODO: do not write if backend_adapter.modify_room through an error
             boards = {}
             for board in binding.board_service_room_type_ids:
-                boards.update(
-                    {board.channel_service: {
-                        'dtype': 2 if board.price_type == 'fixed' else 1,
-                        'value': board.amount}}
-                )
+                if board.channel_service:
+                    boards.update(
+                        {board.channel_service: {
+                            'dtype': 2 if board.price_type == 'fixed' else 1,
+                            'value': board.amount}}
+                    ) and board.channel_service
             return self.backend_adapter.modify_room(
                 binding.external_id,
                 binding.name,
@@ -52,11 +53,12 @@ class HotelRoomTypeExporter(Component):
         try:
             boards = {}
             for board in binding.board_service_room_type_ids:
-                boards.update(
-                    {board.channel_service: {
-                        'dtype': 2 if board.price_type == 'fixed' else 1,
-                        'value': board.amount}}
-                )
+                if board.channel_service:
+                    boards.update(
+                        {board.channel_service: {
+                            'dtype': 2 if board.price_type == 'fixed' else 1,
+                            'value': board.amount}}
+                    ) and board.channel_service
             external_id = self.backend_adapter.create_room(
                 short_code,
                 binding.name,
