@@ -63,6 +63,38 @@
       </field>
     </record>
 
+    <!-- Kanban view of hotel room -->
+    <record model="ir.ui.view" id="hotel_room_view_kanban">
+        <field name="name">hotel.room.kanban</field>
+        <field name="model">hotel.room</field>
+        <field name="type">kanban</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" >
+                <attribute name="group_create">false</attribute>
+                <field name="id"/>
+                <field name="name"/>
+                <field name="extra_beds_allowed"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <ul>
+                                    <li class="mb4">
+                                        <strong><field name="name"/></strong>
+                                    </li>
+                                    <li class="mb4">Room Type: <field name="room_type_id"/></li>
+                                    <li class="badge mb4">
+                                        <strong>Capacity <field name="capacity"/></strong>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <!-- Search view of hotel room -->
     <record model="ir.ui.view" id="hotel_room_view_search">
         <field name="name">hotel.room.search</field>
