@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_viajero_data">
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                <table width="100%" border="1" style="border-style: double;">
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Document number</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.document_number"/></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Type</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <t t-esc="dict(o.partner_id.fields_get(allfields=['document_type'])['document_type']['selection'])[o.partner_id.document_type]"/>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Expedition date</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.partner_id.document_expedition_date" t-options='{"format": "d MMMM y"}'/></strong>
+                        </td>
+                    </tr>
+                </table><br/>
+            </div>
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                <table width="100%" border="1" style="border-style: double;">
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Name</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.partner_id.firstname"/></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Surnames</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.partner_id.lastname"/></strong>
+                        </td>
+                    </tr>
+                </table><br/>
+            </div>
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                <table width="100%" border="1" style="border-style: double;">
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Gender</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.partner_id.gender"/></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Birthdate</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.partner_id.birthdate_date" t-options='{"format": "d MMMM y"}'/></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Origin</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.partner_id.code_ine_id"/></strong>
+                        </td>
+                    </tr>
+                </table><br/>
+            </div>
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                <table width="100%" border="1" style="border-style: double;">
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Entry date</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong>
+                                <span t-field="o.enter_date" t-options='{"format": "d MMMM y"}'/></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                            Exit date</td>
+                        <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                            <strong><span t-field="o.exit_date" t-options='{"format": "d MMMM y"}'/></strong>
+                        </td>
+                    </tr>
+                </table><br/>
+            </div>
+        </template>
+    </data>
+</odoo>

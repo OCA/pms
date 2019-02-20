@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="report_viajero_document">
+            <t t-set="company" t-value="res_company"></t>
+
+            <div class="row">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img t-attf-src="data:image/*;base64,{{company.checkin_img}}" t-att-alt="company.name"/>
+                        <p style="font-size:1.16em;">PART OF TRAVELERS ENTRY</p>
+                        <p class="numerocheck">Document number:
+                            <strong><span t-field="o.id"/></strong>/
+                            <span t-if="o.reservation_id.room_id.description_sale"><span t-field="o.reservation_id.folio_id"/>
+                                (
+                                <span t-field="o.reservation_id.room_id.description_sale"/>)</span>
+                            <span t-if="not o.reservation_id.room_id.description_sale"><span t-field="o.reservation_id"/></span>
+                        </p>
+                        <p style="font-size:0.65em;">
+                            Total amount (Reservation Card):
+                            <strong><span t-field="o.reservation_id.folio_id.amount_total"/></strong>
+                        </p>
+                        <p>
+                            <strong>CIF:
+                                <span t-field="company.vat"/></strong><br/>
+                            <strong><span t-field="company.display_name"/></strong><br/>
+                            <strong><span t-field="company.street"/>
+                                <span t-field="company.street2"/></strong><br/>
+                            <strong><span t-field="company.zip"/>
+                                <span t-field="company.city"/></strong><br/></p>
+                        <p class="titulo">TRAVELER'S DOCUMENT</p>
+                    </div>
+                </div>
+                <div class="row marco">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4 marco" style="padding-left:3px;border:double; border-width: 1px">
+                                Document number
+                            </div>
+                            <div class="col-md-8 marco">
+                                <strong>
+                                    <span t-field="o.document_number"/></strong>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row marco">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row marco">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row marco">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </data>
+</openerp>
