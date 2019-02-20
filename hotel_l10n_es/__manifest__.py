@@ -35,7 +35,7 @@
         'partner_contact_birthdate',
         'partner_firstname',
     ],
-   'data': [
+    'data': [
         'data/code.ine.csv',
         'data/tourism.category.csv',
         'data/report_viajero_paperformat.xml',
@@ -50,6 +50,8 @@
         'security/ir.model.access.csv',
         'views/inherit_res_partner.xml',
         'views/report_viajero_document.xml',
+        'views/report_viajero_head.xml',
+        'views/report_viajero_data.xml',
         'views/report_viajero.xml',
         'static/src/xml/hotel_l10n_es_templates.xml'
     ],
