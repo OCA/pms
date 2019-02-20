@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <menuitem
+          id="menu_hotel_kellys_report"
+          name="Listado limpieza habitaciones"
+          parent="hotel.hotel_reports_menu"
+          action="report_kellys_act"
+          groups="hotel.group_hotel_user,hotel.group_hotel_manager"
+          sequence="25"
+          />
+  </data>
+</odoo>
