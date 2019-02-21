@@ -942,10 +942,9 @@ class HotelReservation(models.Model):
     @api.model
     def get_reservations(self, dfrom, dto):
         """
-        @param self: The object pointer
         @param dfrom: range date from
         @param dto: range date to
-        @return: array with the reservations _confirmed_ between dfrom and dto
+        @return: array with the reservations _confirmed_ between both dates `dfrom` and `dto`
         """
         domain = self._get_domain_reservations_occupation(dfrom, dto)
         return self.env['hotel.reservation'].search(domain)
@@ -953,7 +952,7 @@ class HotelReservation(models.Model):
     @api.model
     def _get_domain_reservations_occupation(self, dfrom, dto):
         domain = [('reservation_line_ids.date', '>=', dfrom),
-                  ('reservation_line_ids.date', '<', dto),
+                  ('reservation_line_ids.date', '<=', dto),
                   ('state', '!=', 'cancelled'),
                   ('overbooking', '=', False),
                   ('reselling', '=', False),]
