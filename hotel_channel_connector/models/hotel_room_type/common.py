@@ -94,6 +94,7 @@ class HotelRoomType(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
+    default_quota = fields.Integer("Default Quota", compute="_compute_capacity")
     capacity = fields.Integer("Capacity", compute="_compute_capacity")
 
     @api.multi
