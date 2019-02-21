@@ -38,6 +38,7 @@ class HotelCalendarManagement(models.TransientModel):
             'no_ota': avail and avail.no_ota or False,
             'quota': avail and avail.quota or -1,
             'max_avail': avail and avail.max_avail or -1,
+            'channel_avail': avail and avail.channel_bind_ids.channel_avail or room_type.channel_bind_ids.default_availability
         }
 
     @api.model

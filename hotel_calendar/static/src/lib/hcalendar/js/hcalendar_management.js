@@ -217,6 +217,7 @@ HotelCalendarManagement.prototype = {
     row = table.insertRow();
     row.setAttribute('name', 'avail');
     row.style.display = 'none';
+
     cell = row.insertCell();
     cell.setAttribute('colspan', '2');
     telm = document.createElement("input");
@@ -229,8 +230,9 @@ HotelCalendarManagement.prototype = {
     telm.classList.add('hcal-management-input');
     telm.addEventListener('change', function(ev){ $this.onInputChange(ev, this); }, false);
     cell.appendChild(telm);
+
     cell = row.insertCell();
-    cell.setAttribute('colspan', '2');
+    cell.setAttribute('colspan', '1');
     telm = document.createElement("input");
     telm.setAttribute('id', this._sanitizeId(`MAX_AVAIL_${roomId}_${dateShortStr}`));
     telm.setAttribute('name', 'max_avail');
@@ -240,6 +242,21 @@ HotelCalendarManagement.prototype = {
     telm.dataset.hcalParentCell = parentCell.getAttribute('id');
     telm.classList.add('hcal-management-input');
     telm.addEventListener('change', function(ev){ $this.onInputChange(ev, this); }, false);
+    cell.appendChild(telm);
+
+    cell = row.insertCell();
+    cell.setAttribute('colspan', '1');
+    telm = document.createElement("input");
+    telm.setAttribute('id', this._sanitizeId(`CHANNEL_AVAIL_${roomId}_${dateShortStr}`));
+    telm.setAttribute('name', 'channel_avail');
+    telm.setAttribute('type', 'edit');
+    telm.setAttribute('title', this._t('Channel Availability'));
+    telm.setAttribute('readonly', 'readonly');
+    telm.setAttribute('disabled', 'disabled');
+    telm.style.backgroundColor = 'lightgray';
+    telm.value = telm.dataset.orgValue = 0;
+    telm.dataset.hcalParentCell = parentCell.getAttribute('id');
+    telm.classList.add('hcal-management-input');
     cell.appendChild(telm);
 
     row = table.insertRow();
@@ -725,6 +742,7 @@ HotelCalendarManagement.prototype = {
         var inputIds = [
           `QUOTA_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.quota,
           `MAX_AVAIL_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.max_avail,
+          `CHANNEL_AVAIL_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.channel_avail,
           `NO_OTA_${room_typeId}_${dd.format(HotelCalendarManagement._DATE_FORMAT_SHORT)}`, avail.no_ota
         ];
 
