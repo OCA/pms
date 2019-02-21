@@ -958,6 +958,7 @@ class HotelReservation(models.Model):
                   ('reselling', '=', False),]
         return domain
 
+    # INFO: This function is not in use and should include `dto` in the search
     @api.model
     def get_reservations_dates(self, dfrom, dto, room_type=False):
         """
