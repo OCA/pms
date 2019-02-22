@@ -42,6 +42,7 @@ class BusHotelCalendar(models.TransientModel):
                         'max_avail': vals['max_avail'],
                         'id': vals['id'],
                         'no_ota': vals['no_ota'],
+                        'channel_avail': vals['channel_avail'],
                     },
                 },
             },

@@ -783,6 +783,8 @@ HotelCalendarManagement.prototype = {
         var inputMaxAvail = this.etable.querySelector(`#${inputMaxAvailId}`);
         var inputNoOTAId = this._sanitizeId(`NO_OTA_${room.id}_${ndateStr}`);
         var inputNoOTA = this.etable.querySelector(`#${inputNoOTAId}`);
+        var inputChannelAvailId = this._sanitizeId(`CHANNEL_AVAIL_${room.id}_${ndateStr}`);
+        var inputChannelAvail = this.etable.querySelector(`#${inputChannelAvailId}`);
 
         if (!onlyNew || (onlyNew && (inputQuota.value !== inputQuota.dataset.orgValue
                                       || inputMaxAvail.value !== inputMaxAvail.dataset.orgValue
@@ -792,7 +794,8 @@ HotelCalendarManagement.prototype = {
             'date': ndate.format('YYYY-MM-DD'),
             'quota': inputQuota.value,
             'max_avail': inputMaxAvail.value,
-            'no_ota': Boolean(inputNoOTA.dataset.state === 'true') || false
+            'no_ota': Boolean(inputNoOTA.dataset.state === 'true') || false,
+            'channel_avail': inputChannelAvail.value,
           });
         }
       }

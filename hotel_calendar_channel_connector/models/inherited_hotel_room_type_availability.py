@@ -14,6 +14,7 @@ class HotelRoomTypeAvailability(models.Model):
             'max_avail': record.max_avail,
             'room_type_id': record.room_type_id.id,
             'id': record.id,
+            'channel_avail': record.channel_bind_ids.channel_avail,
         }
 
     @api.model

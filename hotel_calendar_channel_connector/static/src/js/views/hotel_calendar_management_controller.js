@@ -30,7 +30,8 @@ var MPMSCalendarController = MPMSCalendarController.include({
                             'quota': avail[room_type][day]['quota'],
                             'max_avail': avail[room_type][day]['max_avail'],
                             'no_ota': avail[room_type][day]['no_ota'],
-                            'id': avail[room_type][day]['id']
+                            'id': avail[room_type][day]['id'],
+                            'channel_avail': avail[room_type][day]['channel_avail']
                         }];
                         this.renderer._hcalendar.addAvailability(availability);
                         break;
