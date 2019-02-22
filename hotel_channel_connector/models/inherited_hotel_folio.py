@@ -19,6 +19,7 @@ class HotelFolio(models.Model):
     has_channel_reservations = fields.Boolean(compute=_has_channel_reservations,
                                               store=False,
                                               old_name='whas_wubook_reservations')
+    unconfirmed_channel_price = fields.Boolean(default=False)
 
     @job(default_channel='root.channel')
     @api.model

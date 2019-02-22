@@ -133,6 +133,8 @@ class ChannelHotelReservation(models.Model):
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
+    unconfirmed_channel_price = fields.Boolean(related='folio_id.unconfirmed_channel_price')
+
     @api.multi
     def _set_access_for_channel_fields(self):
         for record in self:
