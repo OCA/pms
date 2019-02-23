@@ -598,6 +598,8 @@ HotelCalendar.prototype = {
 
   //==== ROOMS
   _filterRooms: function() {
+    // Two-Step filter: Scrollbar mistake
+    // 1. Filter rooms
     for (var r of this.options.rooms) {
       r._active = this._in_domain(r, this._domains[HotelCalendar.DOMAIN.ROOMS]);
       if (r._active) {
@@ -605,14 +607,21 @@ HotelCalendar.prototype = {
       } else {
         r._html.classList.add('hcal-hidden');
       }
-      if (r.id in this._reservationsMap) {
-        for (var reserv of this._reservationsMap[r.id]) {
-          this._updateReservation(reserv, !r._active);
-        }
-      }
     }
 
     this._calcViewHeight();
+
+    // 2. Update Reservations
+    _.defer(function(self){
+      for (var r of self.options.rooms) {
+        var isHidden = r._html.classList.contains('hcal-hidden');
+        if (r.id in self._reservationsMap) {
+          for (var reserv of self._reservationsMap[r.id]) {
+            self._updateReservation(reserv, isHidden);
+          }
+        }
+      }
+    }, this);
     //_.defer(function(){ this._updateReservationOccupation() }.bind(this));
   },
 
