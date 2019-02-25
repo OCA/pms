@@ -38,7 +38,9 @@
                             <field name="total_rooms_count" />
                             <field name="default_availability" />
                         </group>
-                        <label colspan="2" class="fa fa-info-circle"> Use `-1` for managing no Quota or Maximum simultaneous availability.</label>
+                        <label colspan="2" class="fa fa-info-circle"
+                               string="Use `-1` for managing no Quota or Maximum simultaneous availability.">
+                        </label>
                     </group>
                 </group>
                 <group>
