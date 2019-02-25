@@ -135,6 +135,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
             domain = [('backend_id', '=', backend_id)]
             if room_id:
                 domain.append(('room_ids', 'in', [room_id]))
+                # WARNING: more than one binding is currently not expected
             room_type_bind = channel_room_type_obj.search(domain, limit=1)
         if room_type_bind and room_type_bind.external_id:
             _logger.info("==[ODOO->CHANNEL]==== REFRESH AVAILABILITY ==")
