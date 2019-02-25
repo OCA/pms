@@ -12,14 +12,36 @@
                 </group>
                 <group>
                     <field name="name"/>
-                    <field name="external_id" />
-                    <field name="channel_short_code" />
-                    <field name="ota_capacity" />
-                    <field name="default_availability" />
                 </group>
                 <group>
-                    <field name="min_price" class="oe_inline"/>
-                    <field name="max_price" class="oe_inline"/>
+                    <group>
+                        <field name="external_id" />
+                        <field name="channel_short_code" />
+                    </group>
+                    <group>
+                        <field name="capacity" />
+                        <field name="ota_capacity" />
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="list_price" class="oe_inline"/>
+                        <field name="min_price" class="oe_inline"/>
+                        <field name="max_price" class="oe_inline"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="default_quota"/>
+                            <field name="default_max_avail"/>
+                        </group>
+                        <group>
+                            <field name="total_rooms_count" />
+                            <field name="default_availability" />
+                        </group>
+                        <label colspan="2" class="fa fa-info-circle"> Use `-1` for managing no Quota or Maximum simultaneous availability.</label>
+                    </group>
+                </group>
+                <group>
                     <field name="sync_date" readonly="1"/>
                 </group>
             </form>

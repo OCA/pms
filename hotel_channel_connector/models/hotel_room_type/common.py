@@ -17,12 +17,15 @@ class ChannelHotelRoomType(models.Model):
     _description = 'Channel Hotel Room'
 
     @api.model
+    def _default_max_avail(self):
+        return self.env['hotel.room.type'].browse(
+            self._context.get('default_odoo_id')
+        ).total_rooms_count or -1
+
+    @api.model
     def _default_availability(self):
-        room_type_id = self._context.get('room_type_id')
-        if room_type_id:
-            room_type_id = self.env['hotel.room_type'].browse(room_type_id)
-            return room_type_id.default_quota if room_type_id else -1
-        return -1
+        return max(min(self.default_quota, self.default_max_avail), 0)
+
 
     odoo_id = fields.Many2one(comodel_name='hotel.room.type',
                               string='Room Type',
@@ -32,17 +35,47 @@ class ChannelHotelRoomType(models.Model):
     ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity',
                                   help="The capacity of the room for OTAs.")
 
-    default_quota = fields.Integer("Default Quota", default=-1,
-                                   help="Quota assigned to the channel given no availability rules.")
-    default_max_avail = fields.Integer("Max. Availability", default=-1,
-                               help="Maximum simultaneous availability given no quota.")
-    default_availability = fields.Integer(readonly=True, default=_default_availability,
-                                          help="Default availability for OTAs.")
+    default_quota = fields.Integer("Default Quota",
+                                   help="Quota assigned to the channel given no availability rules. "
+                                        "Use `-1` for managing no quota.")
+    default_max_avail = fields.Integer("Max. Availability", default=_default_max_avail,
+                                       help="Maximum simultaneous availability given no availability rules. "
+                                            "Use `-1` for using maximum simultaneous availability.")
+    default_availability = fields.Integer(default=_default_availability, readonly = True,
+                                          help="Default availability for OTAs. "
+                                               "The availability is calculated based on the quota, "
+                                               "the maximum simultaneous availability and "
+                                               "the total room count for the given room type.")
 
     min_price = fields.Float('Min. Price', default=5.0, digits=dp.get_precision('Product Price'),
                              help="Setup the min price to prevent incidents while editing your prices.")
     max_price = fields.Float('Max. Price', default=200.0, digits=dp.get_precision('Product Price'),
                              help="Setup the max price to prevent incidents while editing your prices.")
+
+    @api.constrains('default_max_avail', 'default_quota', 'default_availability')
+    def _check_availability(self):
+        for record in self:
+            if record.quota > record.room_type_id.total_rooms_count:
+                raise ValidationError(_("The quota assigned to the channel manager can't be greater "
+                                        "than the total rooms count!"))
+            if (record.max_avail > record.quota) and (record.quota >= 0):
+                raise ValidationError(_("The maximum simultaneous availability can't be greater "
+                                        "than a given quota."))
+            if record.max_avail > record.room_type_id.total_rooms_count:
+                raise ValidationError(_("The maximum simultaneous availability can't be greater "
+                                        "than the total rooms count!"))
+
+    @api.onchange('default_quota', 'default_max_avail')
+    def _onchange_availability(self):
+        for rec in self:
+            to_eval = []
+            to_eval.append(rec.total_rooms_count)
+            if rec.default_quota >= 0:
+                to_eval.append(rec.default_quota)
+            if rec.default_max_avail >= 0:
+                to_eval.append(rec.default_max_avail)
+
+            rec.default_availability = min(to_eval)
 
     @api.onchange('room_ids')
     def _get_capacity(self):
@@ -141,16 +174,19 @@ class HotelRoomType(models.Model):
             # WARNING: more than one binding is currently not expected
             action['domain'] = [('id', 'in', channel_bind_ids.ids)]
         else:
-            action['context'] = {'default_odoo_id': self.id,
-                                 'default_name': self.name,
-                                 'default_ota_capacity': self.capacity,
-                                 'default_list_price': self.list_price}
+            action['context'] = {
+                'default_odoo_id': self.id,
+                'default_name': self.name,
+                'default_ota_capacity': self.capacity,
+                'default_list_price': self.list_price,
+                'default_total_rooms_count': self.total_rooms_count}
         return action
 
     @api.multi
-    def sync_from_channel(self):
+    def disconnect_channel_bind_ids(self):
         channel_bind_ids = self.mapped('channel_bind_ids')
-        msg = _("Synchronize room types from the channel manager is not yet implementet.")
+        msg = _("This function is not yet implemented.")
+        msg += _(" The room type [%s] should be delete from the channel manager.") % channel_bind_ids.get_external_id
         raise UserError(msg)
 
 
