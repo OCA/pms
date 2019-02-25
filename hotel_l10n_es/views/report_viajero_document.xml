@@ -3,59 +3,231 @@
     <data>
         <template id="report_viajero_document">
             <t t-set="company" t-value="res_company"></t>
+            <div class="page" style="font-size:xx-small; padding-left: 0 !important; padding-right: 0 !important;">
+                <div class="container-fluid" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                    <div class="row cabezera" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                        <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                            <img src='/hotel_l10n_es/static/src/img/logo_alda_bn.png'
+                            style="width:100%; max-heigth:50px; margin:0 0 1em 0;"/>
+                            <p style="font-size:1.16em;">PART OF TRAVELERS ENTRY</p>
+                            <p class="numerocheck">Document number: <strong><span t-field="o.id"/></strong>/
+                            <span t-if="o.reservation_id.room_id.description_sale"><span t-field="o.reservation_id.folio_id"/> ( <span t-field="o.reservation_id.room_id.description_sale"/>)</span>
+                            <span t-if="not o.reservation_id.room_id.description_sale"><span t-field="o.reservation_id"/></span>
+                            </p>
+                            <p style="font-size:0.65em;"> Total amount (Reservation Card): <strong><span t-field="o.reservation_id.folio_id.amount_total"/></strong></p>
+                            <p><strong>CIF: <span t-field="company.vat"/></strong><br/>
+                            <strong><span t-field="company.display_name"/></strong><br/>
+                            <strong><span t-field="company.street"/> <span t-field="company.street2"/></strong><br/>
+                            <strong><span t-field="company.zip"/> <span t-field="company.city"/></strong><br/></p>
+                            <p class="titulo">TRAVELER'S DOCUMENT</p>
+                        </div>
+                    </div>
 
-            <div class="page">
-                <div class="row cabezera" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
-                    <t t-call="hotel_l10n_es.report_viajero_head" t-lang="o.partner_id.lang"/>
-                </div>
-                <div class="row cuerpo" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
-                    <t t-call="hotel_l10n_es.report_viajero_data" t-lang="o.partner_id.lang"/>
-                </div>
-                <div class="row pie" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
-                    <p class="text-center">
-                        <span t-field="company.city"/>, at
-                        <span t-esc="time.strftime('%Y-%m-%d')" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
-                    </p>
-                    <div class="firma" style="width: 85%; border:dotted 1px; height: 60px; margin:0 auto;"></div><br/>
-                    <p class="text-center">Traveler's signature</p>
-                    <p class="text-center" style="font-size:0.8em;"><span t-field="company.cardex_warning"/></p>
-                    <p class="text-justify" style="font-size:0.7em;">En nombre de la empresa
-                        <strong>GRUPO ALDA HOTELS</strong>
-                        compuesto por Alda Rías Baixas SL, Alda Compostela SL, Alda Castilla SL, Hoteles Rías Altas SL, Comphostel Gestión Patrimonial SL y Consultores Hoteleros Integrales SL, tratamos la información que nos facilita, con el fin de prestarle el servicio
-                        solicitado y realizar la facturación del mismo. Se conservarán mientras se mantenga la relación comercial o durante los años necesarios para cumplir con las obligaciones legales. No se cederán a terceros salvo en los casos en que exista una
-                        obligación legal. Usted tiene derecho a obtener información sobre el tratamiento de sus datos personales, acceder, rectificar los inexactos o solicitar su supresión cuando ya no sean necesarios, en la dirección
-                        <strong>protecciondatos@aldahotels.com</strong>
-                        Asimismo solicito confirme esta autorización para ofrecerle nuestros servicios y poder fidelizarle como cliente.<br/>Si ___ No ___</p>
+                    <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                        <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                            <table width="100%" border="1" style="border-style: double;">
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Document number</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.document_number"/></strong></td>
+                              </tr>
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Type</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong>
+                                        <t t-esc="dict(o.partner_id.fields_get(allfields=['document_type'])['document_type']['selection'])[o.partner_id.document_type]"/>
+                                    </strong></td>
+                              </tr>
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Expedition date</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.partner_id.document_expedition_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                              </tr>
+                            </table><br/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                        <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                            <table width="100%" border="1" style="border-style: double;">
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Name</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.partner_id.firstname"/></strong></td>
+                              </tr>
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Surnames</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.partner_id.lastname"/></strong></td>
+                              </tr>
+                            </table><br/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                        <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                            <table width="100%" border="1" style="border-style: double;">
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Gender</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.partner_id.gender"/></strong></td>
+                              </tr>
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Birthdate</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.partner_id.birthdate_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                              </tr>
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Origin</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.partner_id.code_ine_id"/></strong></td>
+                              </tr>
+                            </table><br/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                        <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                            <table width="100%">
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Entry date</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong> <span t-field="o.enter_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                              </tr>
+                              <tr>
+                                <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                    Exit date</td>
+                                <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                    <strong><span t-field="o.exit_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                              </tr>
+                            </table><br/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                        <div class="col-md-12" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                            <p class="text-center">
+                                <span t-field="company.city"/>, at <span t-esc="time.strftime('%Y-%m-%d')" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                            </p>
+                            <div class="firma" style="width: 85%; border:dotted 1px; height: 60px; margin:0 auto;">
+                            </div><br/>
+                            <p class="text-center">Traveler's signature</p>
+                            <p class="text-center" style="font-size:0.8em;"><span t-field="company.cardex_warning"/></p>
+                            <p class="text-justify" style="font-size:0.7em;">En nombre de la empresa <strong>GRUPO ALDA HOTELS</strong> compuesto por Alda Rías Baixas SL, Alda Compostela SL, Alda Castilla SL, Hoteles Rías Altas SL,  Comphostel Gestión Patrimonial SL y Consultores Hoteleros Integrales SL, tratamos la información que nos facilita, con el fin de prestarle el servicio solicitado y realizar la facturación del mismo. Se conservarán mientras se mantenga la relación comercial o durante los años necesarios para cumplir con las obligaciones legales. No se cederán a terceros salvo en los casos en que exista una obligación legal. Usted tiene derecho a obtener información sobre el tratamiento de sus datos personales, acceder, rectificar los inexactos o solicitar su supresión cuando ya no sean necesarios, en la dirección <strong>protecciondatos@aldahotels.com</strong> Asimismo solicito confirme esta autorización para ofrecerle nuestros servicios y poder fidelizarle como cliente.<br/>Si ___     No ___</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <p style="page-break-after:always;"/>
 
-            <div class="page">
-                <div class="row cabezera" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
-                    <t t-call="hotel_l10n_es.report_viajero_head" t-lang="o.partner_id.lang"/>
-                </div>
-                <div class="row cuerpo" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
-                    <t t-call="hotel_l10n_es.report_viajero_data" t-lang="o.partner_id.lang"/>
-                </div>
-                <div class="row pie" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
-                    <p class="text-center">
-                        <span t-field="company.city"/>, at
-                        <span t-esc="time.strftime('%Y-%m-%d')" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
-                    </p><br/>
-                    <p class="text-center">
-                        <strong>COPY TO THE USER</strong>
-                    </p>
-                    <p class="text-center" style="font-size:0.8em;"><span t-field="company.cardex_warning"/></p>
-                    <p class="text-justify" style="font-size:0.7em;">En nombre de la empresa
-                        <strong>GRUPO ALDA HOTELS</strong>
-                        compuesto por Alda Rías Baixas SL, Alda Compostela SL, Alda Castilla SL, Hoteles Rías Altas SL, Comphostel Gestión Patrimonial SL y Consultores Hoteleros Integrales SL, tratamos la información que nos facilita, con el fin de prestarle el servicio
-                        solicitado y realizar la facturación del mismo. Se conservarán mientras se mantenga la relación comercial o durante los años necesarios para cumplir con las obligaciones legales. No se cederán a terceros salvo en los casos en que exista una
-                        obligación legal. Usted tiene derecho a obtener información sobre el tratamiento de sus datos personales, acceder, rectificar los inexactos o solicitar su supresión cuando ya no sean necesarios, en la dirección
-                        <strong>protecciondatos@aldahotels.com</strong>
-                        Asimismo hemos solicitado que confirme esta autorización para ofrecerle nuestros servicios y poder fidelizarle como cliente.</p>
-                </div>
-            </div>
-        </template>
-    </data>
-</odoo>
+                                <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                    <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                        <table width="100%" border="1" style="border-style: double;">
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Document number</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.partner_id.document_number"/></strong></td>
+                                          </tr>
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Type</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong>
+                                                    <t t-esc="dict(o.partner_id.fields_get(allfields=['document_type'])['document_type']['selection'])[o.partner_id.document_type]"/>
+                                                </strong></td>
+                                          </tr>
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Expedition date</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.partner_id.document_expedition_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                                          </tr>
+                                        </table><br/>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                    <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                        <table width="100%" border="1" style="border-style: double;">
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Name</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.partner_id.firstname"/></strong></td>
+                                          </tr>
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Surnames</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.partner_id.lastname"/></strong></td>
+                                          </tr>
+                                        </table><br/>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                    <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                        <table width="100%" border="1" style="border-style: double;">
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Gender</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.partner_id.gender"/></strong></td>
+                                          </tr>
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Birthdate</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.partner_id.birthdate_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                                          </tr>
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Origin</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.partner_id.code_ine_id"/></strong></td>
+                                          </tr>
+                                        </table><br/>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                    <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                        <table width="100%">
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Entry date</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong> <span t-field="o.enter_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                                          </tr>
+                                          <tr>
+                                            <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
+                                                Exit date</td>
+                                            <td width="100%" style="padding-left:3px;border:double; border-width: 1px">
+                                                <strong><span t-field="o.exit_date" t-options='{"format": "d MMMM y"}'/></strong></td>
+                                          </tr>
+                                        </table><br/>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                    <div class="col-md-12" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+                                        <p class="text-center">
+                                            <span t-field="company.city"/>, at <span t-esc="time.strftime('%Y-%m-%d')" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                        </p><br/>
+                                        <!-- <t t-esc="company.city"/>, <span t-esc="time.strftime('%A, %d de %B de %Y')"/> -->
+                                        <p class="text-center">
+                                            <strong>COPY TO THE USER</strong></p>
+                                        <p class="text-center" style="font-size:0.8em;"><span t-field="company.cardex_warning"/></p>
+                                        <p class="text-justify" style="font-size:0.7em;">En nombre de la empresa <strong>GRUPO ALDA HOTELS</strong> compuesto por Alda Rías Baixas SL, Alda Compostela SL, Alda Castilla SL, Hoteles Rías Altas SL,  Comphostel Gestión Patrimonial SL y Consultores Hoteleros Integrales SL, tratamos la información que nos facilita, con el fin de prestarle el servicio solicitado y realizar la facturación del mismo. Se conservarán mientras se mantenga la relación comercial o durante los años necesarios para cumplir con las obligaciones legales. No se cederán a terceros salvo en los casos en que exista una obligación legal. Usted tiene derecho a obtener información sobre el tratamiento de sus datos personales, acceder, rectificar los inexactos o solicitar su supresión cuando ya no sean necesarios, en la dirección <strong>protecciondatos@aldahotels.com</strong> Asimismo hemos solicitado que confirme esta autorización para ofrecerle nuestros servicios y poder fidelizarle como cliente.</p>
+                                    </div>
+                                </div>
+                                <div class='final'>
+                                </div>
+                            </div>
+                        </div>
+                </template>
+            </data>
+            </openerp>

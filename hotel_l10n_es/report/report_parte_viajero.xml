@@ -7,7 +7,6 @@
             report_type="qweb-pdf"
             name="hotel_l10n_es.report_viajero"
             file="hotel_l10n_es.report_viajero"
-            paperformat="report_viajero_paperformat"
         />
 
 </odoo>
