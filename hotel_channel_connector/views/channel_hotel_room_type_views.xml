@@ -5,7 +5,7 @@
         <field name="name">channel.hotel.room.type.form</field>
         <field name="model">channel.hotel.room.type</field>
         <field name="arch" type="xml">
-            <form string="Hotel Channel Virtual Room">
+            <form string="Hotel Channel Room Type">
                 <group>
                     <field name="id" invisible="1" />
                     <field name="backend_id"  attrs="{'visible': [('id','=', False)], 'readonly': [('id','!=', False)]}" />

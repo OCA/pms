@@ -27,4 +27,13 @@
         </field>
     </record>
 
+    <record id="channel_hotel_room_type_restriction_action" model="ir.actions.act_window">
+        <field name="name">Hotel Channel Connector Bindings</field>
+        <field name="res_model">channel.hotel.room.type.restriction</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="domain">[]</field>
+    </record>
+
 </odoo>

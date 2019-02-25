@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="channel_hotel_room_type_restriction_view_form" model="ir.ui.view">
+        <field name="model">channel.hotel.room.type.restriction</field>
+        <field name="inherit_id" ref="hotel_channel_connector.channel_hotel_room_type_restriction_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='external_id']" position="attributes">
+                <attribute name="placeholder">Use restriction plan ID = 0 for the Channel default Restriction Plan.
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

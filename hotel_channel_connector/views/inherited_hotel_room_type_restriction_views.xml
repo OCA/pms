@@ -5,19 +5,22 @@
         <field name="model">hotel.room.type.restriction</field>
         <field name="inherit_id" ref="hotel.room_type_restriction_view_form" />
         <field name="arch" type="xml">
-          <xpath expr="//sheet" position="inside">
-              <notebook>
-                  <page name="connector" string="Channel Connector">
-                      <group string="Hotel Channel Bindings">
-                          <field name="channel_bind_ids" nolabel="1">
-                              <tree>
-                                  <field name="backend_id"/>
-                              </tree>
-                          </field>
-                      </group>
-                  </page>
-              </notebook>
-          </xpath>
+            <xpath expr="//button[@name='toggle_active']" position="before">
+                <field name="channel_bind_ids" invisible="1" />
+                <button name="open_channel_bind_ids" type="object"
+                        class="oe_stat_button" icon="fa-toggle-off" string="Connect to Channel"
+                        attrs="{'invisible': [('channel_bind_ids','!=', [])]}"
+                />
+                <button name="open_channel_bind_ids" type="object"
+                        class="oe_stat_button" icon="fa-cloud-upload" string="Synchronize to Channel"
+                        attrs="{'invisible': [('channel_bind_ids','=', [])]}"
+                />
+                <button name="disconnect_channel_bind_ids" type="object"
+                        class="oe_stat_button" icon="fa-toggle-on" string="Disconnect from Channel"
+                        attrs="{'invisible': [('channel_bind_ids','=', [])]}"
+                        confirm="Disconnecting will automatically delete the room type in the Channel. Do you want to proceed?"
+                />
+            </xpath>
         </field>
     </record>
 
