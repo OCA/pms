@@ -362,6 +362,7 @@ class HotelReservation(models.Model):
             vals.update(self.prepare_reservation_lines(
                 vals['checkin'],
                 days_diff,
+                vals['pricelist_id'],
                 vals=vals))  # REVISAR el unlink
         if 'checkin' in vals and 'checkout' in vals \
                 and 'real_checkin' not in vals and 'real_checkout' not in vals:
@@ -408,9 +409,11 @@ class HotelReservation(models.Model):
                 # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
                 record.update({'service_ids':  [(6, 0, record.service_ids.ids)] + board_services})
             if record.compute_price_out_vals(vals):
+                pricelist_id = vals['pricelist_id'] if 'pricelist_id' in vals else record.pricelist_id.id
                 record.update(record.prepare_reservation_lines(
                     checkin,
                     days_diff,
+                    pricelist_id,
                     vals=vals)) #REVISAR el unlink
             if record.compute_qty_service_day(vals):
                 for service in record.service_ids:
@@ -624,6 +627,7 @@ class HotelReservation(models.Model):
             self.update(self.prepare_reservation_lines(
                 self.checkin,
                 days_diff,
+                self.pricelist_id.id,
                 update_old_prices=True))
 
     # When we need to update prices respecting those that were already established
@@ -645,6 +649,7 @@ class HotelReservation(models.Model):
             self.update(self.prepare_reservation_lines(
                 self.checkin,
                 days_diff,
+                self.pricelist_id.id,
                 update_old_prices=False))
 
     @api.onchange('checkin', 'checkout', 'room_type_id')
@@ -863,24 +868,19 @@ class HotelReservation(models.Model):
                 })
 
     @api.model
-    def prepare_reservation_lines(self, dfrom, days, vals=False, update_old_prices=False):
+    def prepare_reservation_lines(self, dfrom, days, pricelist_id, vals=False, update_old_prices=False):
         total_price = 0.0
         cmds = [(5, 0, 0)]
         if not vals:
             vals = {}
-        pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_pricelist_id')
-        #~ pricelist_id = vals.get('pricelist_id') or self.pricelist_id.id
         room_type_id = vals.get('room_type_id') or self.room_type_id.id
         product = self.env['hotel.room.type'].browse(room_type_id).product_id
-        old_lines_days = self.mapped('reservation_line_ids.date') #TODO: This is a
-        # PROBLEM when self is multirecord and the records has different old lines
         partner = self.env['res.partner'].browse(vals.get('partner_id') or self.partner_id.id)
         for i in range(0, days):
             idate = (fields.Date.from_string(dfrom) + timedelta(days=i)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
             old_line = self.reservation_line_ids.filtered(lambda r: r.date == idate)
-            if update_old_prices or (idate not in old_lines_days):
+            if update_old_prices or not old_line:
                 product = product.with_context(
                     lang=partner.lang,
                     partner=partner.id,
@@ -890,7 +890,7 @@ class HotelReservation(models.Model):
                     uom=product.uom_id.id)
                 line_price = self.env['account.tax']._fix_tax_included_price_company(
                     product.price, product.taxes_id, self.tax_ids, self.company_id)
-                if old_line:
+                if old_line and old_line.id:
                     cmds.append((1, old_line.id, {
                         'price': line_price
                     }))
