@@ -18,7 +18,7 @@
                 <button name="disconnect_channel_bind_ids" type="object"
                         class="oe_stat_button" icon="fa-toggle-on" string="Disconnect from Channel"
                         attrs="{'invisible': [('channel_bind_ids','=', [])]}"
-                        confirm="Disconnecting will automatically delete the room type in the Channel. Do you want to proceed?"
+                        confirm="Disconnecting will automatically delete the restriction plan in the Channel. Do you want to proceed?"
                 />
             </xpath>
         </field>

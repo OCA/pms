@@ -28,4 +28,13 @@
         </field>
     </record>
 
+    <record id="channel_product_pricelist_action" model="ir.actions.act_window">
+        <field name="name">Hotel Channel Connector Bindings</field>
+        <field name="res_model">channel.product.pricelist</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="domain">[]</field>
+    </record>
+
 </odoo>

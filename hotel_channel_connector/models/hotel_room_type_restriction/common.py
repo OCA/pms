@@ -101,7 +101,7 @@ class HotelRoomTypeRestriction(models.Model):
     def disconnect_channel_bind_ids(self):
         channel_bind_ids = self.mapped('channel_bind_ids')
         msg = _("This function is not yet implemented.")
-        msg += _(" The room type [%s] should be delete from the channel manager.") % channel_bind_ids.get_external_id
+        msg += _(" The restriction plan [%s] should be delete from the channel manager.") % channel_bind_ids.get_external_id
         raise UserError(msg)
 
 class BindingHotelRoomTypeListener(Component):
