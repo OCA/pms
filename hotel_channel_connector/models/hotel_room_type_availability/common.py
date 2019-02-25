@@ -135,7 +135,6 @@ class ChannelHotelRoomTypeAvailability(models.Model):
             domain = [('backend_id', '=', backend_id)]
             if room_id:
                 domain.append(('room_ids', 'in', [room_id]))
-                # WARNING: more than one binding is currently not expected
             room_type_bind = channel_room_type_obj.search(domain, limit=1)
         if room_type_bind and room_type_bind.external_id:
             _logger.info("==[ODOO->CHANNEL]==== REFRESH AVAILABILITY ==")
@@ -166,7 +165,6 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                 else:
                     # default availability for OTAs if not record given
                     # This should happens only when refreshing availability from hotel.reservation
-                    import wdb; wdb.set_trace()
                     to_eval.append(room_type_bind.default_availability)
 
                 avail = max(min(to_eval), 0)
@@ -187,11 +185,12 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                         room_type_avail_id.write({'channel_avail': avail})
                 else:
                     # This should happens only when refreshing availability from hotel.reservation
-                    import wdb; wdb.set_trace()
                     channel_room_type_avail_obj.create({
-                        'room_type_id': room_type_bind.odoo_id.id,
+                        'odoo_id': room_type_bind.odoo_id.id,
+                        'backend_id': backend_id,
                         'date': ndate_str,
                         'channel_avail': avail,
+                        'channel_pushed': False,
                     })
 
     @job(default_channel='root.channel')
@@ -276,7 +275,9 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
         _logger.info(fields)
 
         if any(fields_checked):
+            # self.env['channel.backend'].cron_push_changes()
             record.channel_pushed = False
+            record.push_availability(record.backend_id)
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_fix_channel_availability(self, record, fields=None):

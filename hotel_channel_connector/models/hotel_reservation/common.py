@@ -97,10 +97,12 @@ class ChannelHotelReservation(models.Model):
 
             channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
             for k_i, v_i in enumerate(older_vals):
+                # FIX: 3rd parameters is backend_id, use room_id=v_i['room_id'] instead
                 channel_room_type_avail_obj.refresh_availability(
                     v_i['checkin'],
                     v_i['checkout'],
                     v_i['room_id'])
+                # FIX: 3rd parameters is backend_id, use room_id=new_vals[k_i]['room_id'] instead
                 channel_room_type_avail_obj.refresh_availability(
                     new_vals[k_i]['checkin'],
                     new_vals[k_i]['checkout'],
@@ -124,6 +126,7 @@ class ChannelHotelReservation(models.Model):
         if self._context.get('connector_no_export', True):
             channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
             for record in vals:
+                # FIX: 3rd parameters is backend_id, use room_id=record['room_id'] instead
                 channel_room_type_avail_obj.refresh_availability(
                     record['checkin'],
                     record['checkout'],
@@ -180,7 +183,20 @@ class HotelReservation(models.Model):
         user = self.env['res.users'].browse(self.env.uid)
         if user.has_group('hotel.group_hotel_call'):
             vals.update({'to_read': True})
-        return super(HotelReservation, self).create(vals)
+
+        reservation_id = super(HotelReservation, self).create(vals)
+        # restar quota si en viene de wubook y es mayor que cero
+        backend_id = self.env['channel.hotel.room.type'].search([
+            ('odoo_id', '=', vals['room_type_id'])
+        ]).backend_id
+        # WARNING: more than one backend_id is currently not expected
+        self.env['channel.hotel.room.type.availability'].refresh_availability(
+            vals['real_checkin'],
+            vals['real_checkout'],
+            backend_id.id,
+            room_id=vals['room_type_id'])
+
+        return reservation_id
 
     @api.multi
     def generate_copy_values(self, checkin=False, checkout=False):

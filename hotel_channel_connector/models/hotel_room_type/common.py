@@ -16,6 +16,14 @@ class ChannelHotelRoomType(models.Model):
     _inherits = {'hotel.room.type': 'odoo_id'}
     _description = 'Channel Hotel Room'
 
+    @api.model
+    def _default_availability(self):
+        room_type_id = self._context.get('room_type_id')
+        if room_type_id:
+            room_type_id = self.env['hotel.room_type'].browse(room_type_id)
+            return room_type_id.default_quota if room_type_id else -1
+        return -1
+
     odoo_id = fields.Many2one(comodel_name='hotel.room.type',
                               string='Room Type',
                               required=True,
@@ -23,8 +31,14 @@ class ChannelHotelRoomType(models.Model):
     channel_short_code = fields.Char("Channel Short Code", old_name='wscode')
     ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity',
                                   help="The capacity of the room for OTAs.")
-    default_availability = fields.Integer(default=0,
+
+    default_quota = fields.Integer("Default Quota", default=-1,
+                                   help="Quota assigned to the channel given no availability rules.")
+    default_max_avail = fields.Integer("Max. Availability", default=-1,
+                               help="Maximum simultaneous availability given no quota.")
+    default_availability = fields.Integer(readonly=True, default=_default_availability,
                                           help="Default availability for OTAs.")
+
     min_price = fields.Float('Min. Price', default=5.0, digits=dp.get_precision('Product Price'),
                              help="Setup the min price to prevent incidents while editing your prices.")
     max_price = fields.Float('Max. Price', default=200.0, digits=dp.get_precision('Product Price'),
@@ -94,7 +108,6 @@ class HotelRoomType(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
-    default_quota = fields.Integer("Default Quota", compute="_compute_capacity")
     capacity = fields.Integer("Capacity", compute="_compute_capacity")
 
     @api.multi
