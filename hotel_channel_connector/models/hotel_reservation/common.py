@@ -185,6 +185,7 @@ class HotelReservation(models.Model):
             vals.update({'to_read': True})
 
         reservation_id = super(HotelReservation, self).create(vals)
+        import wdb; wdb.set_trace()
         # restar quota si en viene de wubook y es mayor que cero
         backend_id = self.env['channel.hotel.room.type'].search([
             ('odoo_id', '=', vals['room_type_id'])

@@ -165,7 +165,8 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                         to_eval.append(room_type_bind.default_availability)
                 else:
                     # default availability for OTAs if not record given
-                    # This should happens only when refreshing availability from hotel.reservation
+                    # This should never happens because the channel.hotel.room.type.availability
+                    # should be created and the quota update (if needed) __before__ refreshing_availability()
                     to_eval.append(room_type_bind.default_availability)
 
                 avail = max(min(to_eval), 0)
@@ -185,7 +186,8 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                     if room_type_avail_id.channel_avail != avail:
                         room_type_avail_id.write({'channel_avail': avail})
                 else:
-                    # This should happens only when refreshing availability from hotel.reservation
+                    # This should never happens because the channel.hotel.room.type.availability
+                    # should be created and the quota update (if needed) __before__ refreshing_availability()
                     channel_room_type_avail_obj.create({
                         'odoo_id': room_type_bind.odoo_id.id,
                         'backend_id': backend_id,

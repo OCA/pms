@@ -41,7 +41,7 @@ class ChannelHotelRoomType(models.Model):
     default_max_avail = fields.Integer("Max. Availability", default=_default_max_avail,
                                        help="Maximum simultaneous availability given no availability rules. "
                                             "Use `-1` for using maximum simultaneous availability.")
-    default_availability = fields.Integer(default=_default_availability, readonly = True,
+    default_availability = fields.Integer(default=_default_availability, readonly=True,
                                           help="Default availability for OTAs. "
                                                "The availability is calculated based on the quota, "
                                                "the maximum simultaneous availability and "
@@ -52,16 +52,16 @@ class ChannelHotelRoomType(models.Model):
     max_price = fields.Float('Max. Price', default=200.0, digits=dp.get_precision('Product Price'),
                              help="Setup the max price to prevent incidents while editing your prices.")
 
-    @api.constrains('default_max_avail', 'default_quota', 'default_availability')
+    @api.constrains('default_max_avail', 'default_quota')
     def _check_availability(self):
         for record in self:
-            if record.quota > record.room_type_id.total_rooms_count:
+            if record.default_quota > record.total_rooms_count:
                 raise ValidationError(_("The quota assigned to the channel manager can't be greater "
                                         "than the total rooms count!"))
-            if (record.max_avail > record.quota) and (record.quota >= 0):
-                raise ValidationError(_("The maximum simultaneous availability can't be greater "
-                                        "than a given quota."))
-            if record.max_avail > record.room_type_id.total_rooms_count:
+            # if (record.default_max_avail > record.default_quota) and (record.default_quota >= 0):
+            #     raise ValidationError(_("The maximum simultaneous availability can't be greater "
+            #                             "than a given quota."))
+            if record.default_max_avail > record.total_rooms_count:
                 raise ValidationError(_("The maximum simultaneous availability can't be greater "
                                         "than the total rooms count!"))
 
@@ -178,6 +178,7 @@ class HotelRoomType(models.Model):
                 'default_odoo_id': self.id,
                 'default_name': self.name,
                 'default_ota_capacity': self.capacity,
+                'default_capacity': self.capacity,
                 'default_list_price': self.list_price,
                 'default_total_rooms_count': self.total_rooms_count}
         return action
