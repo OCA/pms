@@ -84,7 +84,6 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     _description = 'Channel Availability'
 
     odoo_id = fields.Many2one(comodel_name='hotel.room.type.availability',
-                              string='Pricelist',
                               required=True,
                               ondelete='cascade')
     channel_avail = fields.Integer("Availability", readonly=True,
@@ -98,7 +97,6 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     def _check_avail(self):
         room_type_obj = self.env['hotel.room.type']
         issue_obj = self.env['hotel.channel.connector.issue']
-        import wdb; wdb.set_trace()
         for record in self:
             cavail = len(room_type_obj.check_availability_room_type(
                 record.date,
@@ -120,7 +118,8 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                 self._event('on_fix_channel_availability').notify(record)
 
     @api.model
-    def refresh_availability(self, checkin, checkout, backend_id, room_id=False, room_type_id=False):
+    def refresh_availability(self, checkin, checkout, backend_id, room_id=False,
+                             room_type_id=False, from_channel=True):
         date_start = fields.Date.from_string(checkin)
         date_end = fields.Date.from_string(checkout)
         # Not count end day of the reservation
@@ -153,21 +152,21 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                 room_type_avail_id = channel_room_type_avail_obj.search([
                     ('room_type_id', '=', room_type_bind.odoo_id.id),
                     ('date', '=', ndate_str)], limit=1)
-                # quota and max availability set by revenue ?
                 if room_type_avail_id:
                     if room_type_avail_id.quota >= 0:
-                        to_eval.append(room_type_avail_id.quota)
+                        if from_channel:
+                            room_type_avail_id.update({
+                                'quota': room_type_avail_id.quota - 1,
+                            })
+                        quota = room_type_avail_id.quota
                     if room_type_avail_id.max_avail >= 0:
                         to_eval.append(room_type_avail_id.max_avail)
-                    if room_type_avail_id.quota < 0 and room_type_avail_id.max_avail < 0:
-                        # add default availability for OTAs because
-                        # on creation triggered by `no_ota` no rules are given
-                        to_eval.append(room_type_bind.default_availability)
                 else:
-                    # default availability for OTAs if not record given
-                    # This should never happens because the channel.hotel.room.type.availability
-                    # should be created and the quota update (if needed) __before__ refreshing_availability()
-                    to_eval.append(room_type_bind.default_availability)
+                    if room_type_bind.default_quota >= 0:
+                        quota = room_type_bind.default_quota
+                    if room_type_bind.default_max_avail >= 0:
+                        to_eval.append(room_type_bind.default_max_avail)
+                to_eval.append(quota)
 
                 avail = max(min(to_eval), 0)
                 _logger.info({
@@ -186,14 +185,18 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                     if room_type_avail_id.channel_avail != avail:
                         room_type_avail_id.write({'channel_avail': avail})
                 else:
-                    # This should never happens because the channel.hotel.room.type.availability
-                    # should be created and the quota update (if needed) __before__ refreshing_availability()
-                    channel_room_type_avail_obj.create({
-                        'odoo_id': room_type_bind.odoo_id.id,
-                        'backend_id': backend_id,
+                    quota = room_type_bind.default_quota
+                    if from_channel and quota > 0:
+                        quota -= 1
+                    self.env['hotel.room.type.availability'].create({
+                        'room_type_id': room_type_bind.odoo_id.id,
                         'date': ndate_str,
-                        'channel_avail': avail,
-                        'channel_pushed': False,
+                        'channel_bind_ids': [(0, False, {
+                                                    'channel_avail': avail,
+                                                    'channel_pushed': False,
+                                                    'backend_id': backend_id,
+                                                    'quota': quota,
+                                                    })]
                     })
 
     @job(default_channel='root.channel')
@@ -285,8 +288,6 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_fix_channel_availability(self, record, fields=None):
         if any(record.channel_bind_ids):
-            import wdb;
-            wdb.set_trace()
             for binding in record.channel_bind_ids:
                 record.refresh_availability(
                     record.checkin,

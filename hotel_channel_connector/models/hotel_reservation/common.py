@@ -167,35 +167,34 @@ class HotelReservation(models.Model):
     # origin_sale = fields.Char('Origin', compute=_get_origin_sale,
     #                           store=True)
     is_from_ota = fields.Boolean('Is From OTA',
-                                 readonly=True,
-                                 old_name='wis_from_channel')
+                                 readonly=True)
     able_to_modify_channel = fields.Boolean(compute=_set_access_for_channel_fields,
-                                            string='Is user able to modify channel fields?',
-                                            old_name='able_to_modify_wubook')
+                                            string='Is user able to modify channel fields?')
     to_read = fields.Boolean('To Read', default=False)
-    customer_notes = fields.Text(related='folio_id.customer_notes',
-                                 old_name='wcustomer_notes')
+    customer_notes = fields.Text(related='folio_id.customer_notes')
 
     @api.model
     def create(self, vals):
-        if vals.get('external_id') is not None:
+        from_channel = False
+        if 'channel_bind_ids' in vals and \
+                vals.get('channel_bind_ids')[0][2].get('external_id') is not None:
             vals.update({'preconfirm': False})
+            from_channel = True
         user = self.env['res.users'].browse(self.env.uid)
         if user.has_group('hotel.group_hotel_call'):
             vals.update({'to_read': True})
 
         reservation_id = super(HotelReservation, self).create(vals)
-        import wdb; wdb.set_trace()
-        # restar quota si en viene de wubook y es mayor que cero
         backend_id = self.env['channel.hotel.room.type'].search([
             ('odoo_id', '=', vals['room_type_id'])
         ]).backend_id
         # WARNING: more than one backend_id is currently not expected
         self.env['channel.hotel.room.type.availability'].refresh_availability(
-            vals['real_checkin'],
-            vals['real_checkout'],
-            backend_id.id,
-            room_id=vals['room_type_id'])
+            checkin=vals['real_checkin'],
+            checkout=vals['real_checkout'],
+            backend_id=backend_id.id,
+            room_type_id=vals['room_type_id'],
+            from_channel=from_channel,)
 
         return reservation_id
 
