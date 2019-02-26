@@ -119,7 +119,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
 
     @api.model
     def refresh_availability(self, checkin, checkout, backend_id, room_id=False,
-                             room_type_id=False, from_channel=True):
+                             room_type_id=False, from_channel=False):
         date_start = fields.Date.from_string(checkin)
         date_end = fields.Date.from_string(checkout)
         # Not count end day of the reservation
@@ -152,9 +152,10 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                 room_type_avail_id = channel_room_type_avail_obj.search([
                     ('room_type_id', '=', room_type_bind.odoo_id.id),
                     ('date', '=', ndate_str)], limit=1)
+                quota = room_type_bind.default_quota
                 if room_type_avail_id:
                     if room_type_avail_id.quota >= 0:
-                        if from_channel:
+                        if from_channel and room_type_avail_id.quota > 0:
                             room_type_avail_id.update({
                                 'quota': room_type_avail_id.quota - 1,
                             })
@@ -162,10 +163,10 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                     if room_type_avail_id.max_avail >= 0:
                         to_eval.append(room_type_avail_id.max_avail)
                 else:
-                    if room_type_bind.default_quota >= 0:
-                        quota = room_type_bind.default_quota
                     if room_type_bind.default_max_avail >= 0:
                         to_eval.append(room_type_bind.default_max_avail)
+                    if from_channel and quota > 0:
+                        quota -= 1
                 to_eval.append(quota)
 
                 avail = max(min(to_eval), 0)
