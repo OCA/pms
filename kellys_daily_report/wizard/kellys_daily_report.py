@@ -22,7 +22,7 @@ import datetime
 from datetime import datetime, date, time
 from odoo import api, fields, models, _
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
-
+# from odoo.tools import report
 
 class KellysWizard(models.TransientModel):
     _name = 'kellys'
@@ -63,12 +63,7 @@ class KellysWizard(models.TransientModel):
                  ('state', '<>', 'cancelled'),
                  ('room_id', '=', x.id)
                  ], order='checkin ASC')
-            # rooms = self.env['hotel.reservation'].search(
-            #     ['&', '&', ('checkin', '<=', dates),
-            #      ('checkout', '>=', dates),
-            #      ('state', '<>', 'cancelled'),
-            #      ('product_id', '=', x.product_id.id)
-            #      ], order='checkin ASC')
+
             tipos = False
             if len(rooms) != 0:
                 if len(rooms) == 2:
@@ -122,19 +117,6 @@ class KellysWizard(models.TransientModel):
         rooms = self.env['kellysrooms'].search([('id', 'in',
                                                  self.habitaciones.ids)],
                                                order=self.order)
-        return self.env['report'].get_action(rooms, 'report.kellys')
-
-
-class KellysRooms(models.TransientModel):
-    _name = 'kellysrooms'
-
-    habitacion = fields.Char('Habitacion')
-    habitacionid = fields.Integer('Habitacion ID')
-    tipo = fields.Selection([(1, 'Salida'), (2, 'Cliente'), (3, 'Revisar'),
-                             (4, 'Staff'), (5, 'Averia')],
-                            string='Limpiar como')
-    notas = fields.Char('Notas limpieza')
-    checkin = fields.Char('Entrada')
-    checkout = fields.Char('Salida')
-    kelly = fields.Many2one('kellysnames', string='Asignado a:')
-    clean_date = fields.Date('Clean Date')
+        # return self.env['report'].get_action(rooms, 'action_report_kellys')
+        # return self.env['report'].get_action(rooms, 'report_action_kellysrooms')
+        return self.env.ref('kellys_daily_report.report_action_kellysrooms').report_action(self, data=rooms)

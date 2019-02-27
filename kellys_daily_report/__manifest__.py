@@ -32,15 +32,16 @@
     ],
     'data': [
         'data/report_kellys_paperformat.xml',
-        'views/kellys.xml',
+        'wizard/kellys_daily_rooms.xml',
         'wizard/kellys_daily_report.xml',
+        'views/kellys.xml',
         'data/menus.xml',
         'security/ir.model.access.csv',
     ],
     'qweb': [],
     'test': [
     ],
-    'css': ['static/src/css/kellys_daily_report.css'],
+    # 'css': ['static/src/css/kellys_daily_report.css'],
 
     'installable': True,
     'auto_install': False,

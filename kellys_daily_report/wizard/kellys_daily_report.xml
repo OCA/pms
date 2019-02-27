@@ -1,236 +1,51 @@
 <?xml version="1.0" ?>
 <odoo>
     <data>
-        <record id="tree_kellysrooms" model="ir.ui.view">
-            <field name="model">kellysrooms</field>
-            <field name="name">kellysrooms.tree.view</field>
-            <field name="arch" type="xml">
-                <tree options='{"bg_color": "black: tipo == 5; orange: tipo == 4; blue: tipo == 3; green: tipo == 2; red: tipo == 1"}' editable="top" create="false">
-                    <!-- <tree colors="black: tipo == 5; orange: tipo == 4; blue: tipo == 3; green: tipo == 2; red: tipo == 1" editable="top" create="false"> -->
-                    <field name="habitacion" readonly="1"/>
-                    <field name="tipo"/>
-                    <field name="notas"/>
-                    <field name="checkin" readonly="1"/>
-                    <field name="checkout" readonly="1"/>
-                    <field name="kelly"/>
-                </tree>
-            </field>
-        </record>
-        <!--Import assets-->
-        <!-- <template id="assets_backend" name="custom assets" inherit_id="web.assets_backend">
-            <xpath expr="." position="inside">
-                <link rel="stylesheet" href="/kellys_daily_report/static/src/css/kellys_daily_report.css"/>
-            </xpath>
-        </template> -->
-        <!-- <record model="ir.ui.view" id="kellys_report_view">
-            <field name="name">kellys.daily.report.view</field>
-            <field name="model">kellys</field>
-            <field name="arch" type="xml">
-                <form string="kellys Daily Report">
-                    <sheet>
-                        <group string="Generar PDF de limpieza a fecha:" col="1" colspan="1">
-                            <field name="date_start"/>
-                            <button name="calculate_report" string="Recalcular" type="object" class="oe_highlight"/>
-                        </group>
-                        <group colspan="4">
-                            <field name="habitaciones"/>
-                        </group>
-                        <group colspan="2">
-                            <field name="order"/>
-                        </group>
-                        <footer>
-                            <button name="check_report" string="Imprimir" type="object" class="oe_highlight"/>
-                        </footer>
-                    </sheet>
-                </form>
-            </field>
-        </record> -->
-        <act_window id="report_kellys_act" name="Kellys Daily Report Wizard" res_model="kellys" view_mode="form"/>
-        <!-- <report id="action_report_kellys" model="kellysrooms" string="Parte de kellys" report_type="qweb-pdf" name="report.kellys" file="report.kellys"/> -->
-        <!-- <template id="report.kellys">
-            <div class="page">
-                <style>
-                    .titulo {
-                        font-size: 4.2em;
-                        text-align: center;
-                    }
-                    .marco {
-                        border-radius: 47px 10px 10px 10px;
-                        -moz-border-radius: 47px 10px 10px 10px;
-                        -webkit-border-radius: 47px 10px 10px 10px;
-                        border: 3px solid #000000;
-                        padding: 10px 3px;
-                        margin: 3px 0;
-                        width: 100%;
-                        text-align: center;
-                    }
-                    .client {
-                        border-radius: 10px;
-                        -moz-border-radius: 10px;
-                        -webkit-border-radius: 10px;
-                        border: 1px solid #000000;
-                        color: #000000;
-                        background-color: #FFFFFF;
-                    }
-                    .exit {
-                        border-radius: 20px 47px 47px 10px;
-                        -moz-border-radius: 20px 47px 47px 10px;
-                        -webkit-border-radius: 20px 47px 47px 10px;
-                        border: 2px solid #000000;
-                        padding: 20px 0;
-                        color: #000000;
-                        background-color: #FFFFFF;
-                    }
-                    .revise {
-                        padding: 20px 0;
-                        color: #000000;
-                        background-color: #FFFFFF;
-                    }
-                    .pie {
-                        font-size: 0.65em;
-                        margin: 0 0 4em;
-                    }
-                    .tipo {
-                        font-size: 3.2em;
-                        font-weight: bold;
-                    }
-                    .notas {
-                        width: 90% !important;
-                        margin: 3px 4px;
-                        color: #000000;
-                        text-align: left;
-                        font-size: 2em;
-                    }
-                    .habitacion {
-                        font-size: 3.2em;
-                        padding: 0 0 0 3px;
-                    }
-                    .datos {
-                        font-size: 2.4em;
-                    }
-                    .section {
-                        clear: both;
-                        padding: 0;
-                        margin: 3px 0;
-                    }
-                    /*  COLUMN SETUP  */
-                    .col {
-                        display: block;
-                        float: left;
-                        margin: 1% 0 1% 1.6%;
-                    }
-                    .col:first-child {
-                        margin-left: 0;
-                    }
-                    /*  GROUPING  */
-                    .group:after,
-                    .group:before {
-                        content: "";
-                        display: table;
-                    }
-                    .group:after {
-                        clear: both;
-                    }
-                    .group {
-                        zoom: 1;
-                        /* For IE 6/7 */
-                    }
-                    /*  GRID OF TWO  */
-                    .span_2_of_2 {
-                        width: 100%;
-                    }
-                    .span_1_of_2 {
-                        width: 49.2%;
-                    }
-                </style>
-                <t t-set="actualkelly" t-value="False"/>
-                <t t-set="espie" t-value="False"/>
-                <t t-set="totalkelly" t-value="0"/>
-                <t t-foreach="docs" t-as="o">
-                    <t t-if="actualkelly != o.kelly">
-                        <t t-if="o_index != 0">
-                            <t t-set="espie" t-value="True"/>
-                        </t>
-                        <t t-set="actualkelly" t-value="o.kelly"/>
-                        <t t-if="espie == True">
-                            <t t-set="espie" t-value="False"/>
-                            <div class="pie">Impreso el
-                                <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/>
-                                Habitaciones:
-                                <t t-esc="totalkelly"/></div>
-                            <t t-set="totalkelly" t-value="0"/>
-                            <p style="page-break-before:always;"></p>
-                        </t>
-                        <div class="marco" align="center">
-                            <div class="titulo" align="center"><span t-field="o.kelly"/><br/>
-                                Habitaciones<br/>
-                                <span t-field="o.clean_date" t-field-options='{"format": "d MMMM Y"}'/>
-                            </div>
-                        </div>
-                    </t>
-                    <t t-set="totalkelly" t-value="totalkelly + 1"/>
-                    <div t-if="o.tipo == 1" class="exit section group">
-                        <div class="habitacion col span_1_of_2">
-                            <span t-field="o.habitacion"/>
-                        </div>
-                        <div class="tipo col span_1_of_2">SALIDA</div>
-                        <t t-if="o.checkin != ''">
-                            <div class="datos col span_2_of_2">Entrada
-                                <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/></div>
-                        </t>
-                        <div class="notas col span_2_of_2" align="left">
-                            <span t-field="o.notas"/>
-                        </div>
-                    </div>
-                    <div t-if="o.tipo == 2" class="client section group">
-                        <div class="habitacion col span_1_of_2">
-                            <span t-field="o.habitacion"/>
-                        </div>
-                        <div class="tipo col span_1_of_2">CLIENTE</div>
-                        <div class="datos col span_2_of_2">Del
-                            <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                            al
-                            <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
-                        <div class="notas col span_2_of_2" align="left">
-                            <span t-field="o.notas"/>
-                        </div>
-                    </div>
-                    <div t-if="o.tipo == 3" class="revise section group">
-                        <div class="habitacion col span_1_of_2">
-                            <span t-field="o.habitacion"/>
-                        </div>
-                        <div class="tipo col span_1_of_2">REVISAR</div>
-                        <div class="datos col span_2_of_2">Entrada
-                            <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                            al
-                            <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
-                        <div class="notas col span_2_of_2" align="left">
-                            <span t-field="o.notas"/>
-                        </div>
-                    </div>
-                    <div t-if="o.tipo == 4" class="client section group">
-                        <div class="habitacion col span_1_of_2">
-                            <span t-field="o.habitacion"/>
-                        </div>
-                        <div class="tipo col span_1_of_2">STAFF</div>
-                        <div class="datos col span_2_of_2">Del
-                            <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                            al
-                            <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
-                        <div class="notas col span_2_of_2" align="left">
-                            <span t-field="o.notas"/>
-                        </div>
-                    </div>
-                </t>
-                <div class="pie">Impreso el
-                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/>
-                    Habitaciones:
-                    <t t-esc="totalkelly"/></div>
+    <act_window id="report_kellys_act" name="Kellys Daily Report Wizard" res_model="kellys" view_mode="form"/>
 
-            </div>
-        </template> -->
-        <!-- <record id="action_report_kellys" model="ir.actions.report.xml">
-            <field name="paperformat_id" ref="report_kellys_paperformat"/>
-        </record> -->
-    </data>
+    <record model="ir.ui.view" id="kellys_report_view">
+        <field name="name">kellys_daily_report_view</field>
+        <field name="model">kellys</field>
+        <field name="arch" type="xml">
+            <form string="kellys Daily Report">
+                <sheet>
+                    <group string="Generar PDF de limpieza a fecha:">
+                        <!-- <group string="Generar PDF de limpieza a fecha:" col="1" colspan="1"> -->
+                        <field name="date_start"/>
+                        <button name="calculate_report" string="Recalcular" type="object" class="oe_highlight"/>
+                    </group>
+                    <group colspan="4">
+                        <field name="habitaciones"/>
+                    </group>
+                    <group colspan="2">
+                        <field name="order"/>
+                    </group>
+                    <footer>
+                        <button name="check_report" string="Imprimir" type="object" class="oe_highlight"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <report
+        id="report_action_kellysrooms"
+        model="kellysrooms"
+        string="Listado de Limpieza"
+        report_type="qweb-pdf"
+        name="kellys_daily_report.report_kellysrooms"
+        file="kellys_daily_report.report_kellysrooms"
+    />
+    <template id="report_kellysrooms">
+            <t t-foreach="docs" t-as="o">
+                <div class="page">
+                    <h2>Report title</h2>
+                    <p>This object's name is
+                        <span t-field="o.name"/></p>
+                </div>
+            </t>
+    </template>
+
+
+</data>
 </odoo>

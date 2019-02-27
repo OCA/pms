@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2018 Alexandre Díaz <dev@redneboa.es>
+#    Odoo, Open Source Management Solution
+#    Copyright (C) 2019 Jose Luis Algara Toledo <osotranquilo@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,5 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import kellys_daily_rooms
-from . import kellys_daily_report
+from odoo import fields, models
+
+
+class KellysRooms(models.TransientModel):
+    _name = 'kellysrooms'
+
+    habitacion = fields.Char('Habitacion')
+    habitacionid = fields.Integer('Habitacion ID')
+    tipo = fields.Selection([(1, 'Salida'), (2, 'Cliente'), (3, 'Revisar'),
+                            (4, 'Staff'), (5, 'Averia')],
+                            string='Limpiar como')
+    notas = fields.Char('Notas limpieza')
+    checkin = fields.Char('Entrada')
+    checkout = fields.Char('Salida')
+    kelly = fields.Many2one('kellysnames', string='Asignado a:')
+    clean_date = fields.Date('Clean Date')
