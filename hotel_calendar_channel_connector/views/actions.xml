@@ -7,7 +7,7 @@
              <field name="res_model">hotel.reservation</field>
              <field name="view_mode">tree,form</field>
              <field name="view_id" ref="hotel_toassign_reservation_view_tree" />
-             <field name="domain">[('to_assign','=',True),('to_read','=',True)]</field>
+             <field name="domain">[('to_read','=',True)]</field>
         </record>
 
 

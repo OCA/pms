@@ -35,9 +35,18 @@
     }
 }
 
-#pms-menu #btn_channel_manager_request.incoming i {
+#pms-menu #btn_channel_manager_request .incoming i {
 	animation-name: channel-manager-changes;
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-direction: alternate;
+}
+
+#pms-menu #btn_channel_manager_request .button-highlight {
+  color: white;
+  background-color: #FFA500;
+}
+
+#pms-menu #btn_channel_manager_request .button-highlight i {
+  color: white;
 }

@@ -87,6 +87,12 @@ var PMSHotelCalendarController = PMSCalendarController.include({
         this._super(notifications);
     },
 
+    _refresh_view_options: function(active_index) {
+      /* btn_channel_manager_request */
+      this._super(active_index);
+
+    },
+
 });
 
 return PMSHotelCalendarController;

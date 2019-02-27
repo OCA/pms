@@ -6,9 +6,9 @@
         <field name="res_model">hotel.reservation</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('checkin','=', datetime.datetime.now().strftime('%Y-%m-%d'),
-                              ('state', 'in', ('confirm')),
-                              ('reservation_type', 'not in', ('out')))]</field>
+        <field name="domain">[('real_checkin','=', datetime.datetime.now().strftime('%Y-%m-%d')),
+                              ('state', 'in', ['confirm']),
+                              ('reservation_type', 'not in', ['out'])]</field>
     </record>
 
     <record model="ir.actions.act_window" id="hotel_reservation_action_checkout">
@@ -16,9 +16,9 @@
         <field name="res_model">hotel.reservation</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('checkout','=', datetime.datetime.now().strftime('%Y-%m-%d'),
-                              ('state', 'in', ('booking')),
-                              ('reservation_type', 'not in', ('out')))]</field>
+        <field name="domain">[('real_checkout','=', datetime.datetime.now().strftime('%Y-%m-%d')),
+                              ('state', 'in', ['booking']),
+                              ('reservation_type', 'not in', ['out'])]</field>
     </record>
 
     <record model="ir.actions.act_window" id="hotel_calendar_action_form_tree">
