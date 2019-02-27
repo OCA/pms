@@ -230,19 +230,10 @@ var HotelCalendarView = AbstractRenderer.extend({
       return domain;
     },
 
-    _open_search_tree: function(type) {
-      var $elm = this.$el.find('#pms-menu #bookings_search');
-      var searchQuery = $elm.val();
-      var domain = false;
-      if (searchQuery) {
-        domain = this._generate_search_domain(searchQuery);
-      } else {
-        domain = [];
-      }
-
+    _generate_search_res_model: function(type) {
       var model = '';
       var title = '';
-      if (type === 'book' || type === 'book') {
+      if (type === 'book') {
         model = 'hotel.reservation';
         title = _t('Reservations');
       } else if (type === 'checkin') {
@@ -255,6 +246,20 @@ var HotelCalendarView = AbstractRenderer.extend({
         model = 'hotel.folio'
         title = _t('Folios');
       }
+      return [model, title];
+    },
+
+    _open_search_tree: function(type) {
+      var $elm = this.$el.find('#pms-menu #bookings_search');
+      var searchQuery = $elm.val();
+      var domain = false;
+      if (searchQuery) {
+        domain = this._generate_search_domain(searchQuery);
+      } else {
+        domain = [];
+      }
+
+      var [model, title] = this._generate_search_res_model(type);
 
       this.do_action({
         type: 'ir.actions.act_window',
