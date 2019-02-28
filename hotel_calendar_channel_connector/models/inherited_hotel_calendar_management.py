@@ -36,8 +36,8 @@ class HotelCalendarManagement(models.TransientModel):
             'id': False,
             'date': date,
             'no_ota': False,
-            'quota': -1, # FIXED: `avail and avail.max_quota or -1` returns -1 if quota = 0
-            'max_avail': -1,
+            'quota': room_type.channel_bind_ids.default_quota,
+            'max_avail': room_type.channel_bind_ids.default_max_avail,
             'channel_avail': room_type.channel_bind_ids.default_availability
         }
         if avail:
