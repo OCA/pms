@@ -82,54 +82,6 @@ class ChannelHotelReservation(models.Model):
             return exporter.mark_booking(self)
 
     @api.multi
-    def write(self, vals):
-        if self._context.get('connector_no_export', True) and \
-                (vals.get('checkin') or vals.get('checkout') or
-                 vals.get('room_id') or vals.get('state')):
-            older_vals = []
-            new_vals = []
-            for record in self:
-                backend_id = self.env['channel.hotel.room.type'].search([
-                    ('odoo_id', '=', record.room_id.room_type_id.id)
-                ]).backend_id.id
-                older_vals.append({
-                    'checkin': record.checkin,
-                    'checkout': record.checkout,
-                    'backend_id': backend_id,
-                    'room_id': record.room_id.id,
-                })
-                new_backend_id = self.env['channel.hotel.room.type'].search([
-                    ('odoo_id', '=', self.env['hotel.room'].
-                        browse(vals.get('room_id', record.room_id.id)).
-                        room_type_id.id)]).backend_id.id
-                new_vals.append({
-                    'checkin': vals.get('checkin', record.checkin),
-                    'checkout': vals.get('checkout', record.checkout),
-                    'backend_id': new_backend_id,
-                    'room_id': vals.get('room_id', record.room_id.id),
-                })
-
-            res = super(ChannelHotelReservation, self).write(vals)
-
-            channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
-            for k_i, v_i in enumerate(older_vals):
-                # FIX: 3rd parameters is backend_id, use room_id=v_i['room_id'] instead
-                channel_room_type_avail_obj.refresh_availability(
-                    checkin=v_i['checkin'],
-                    checkout=v_i['checkout'],
-                    backend_id=v_i['backend_id'],
-                    room_id=v_i['room_id'])
-                # FIX: 3rd parameters is backend_id, use room_id=new_vals[k_i]['room_id'] instead
-                channel_room_type_avail_obj.refresh_availability(
-                    checkin=new_vals[k_i]['checkin'],
-                    checkout=new_vals[k_i]['checkout'],
-                    backend_id=new_vals[k_i]['backend_id'],
-                    room_id=new_vals[k_i]['room_id'])
-        else:
-            res = super(ChannelHotelReservation, self).write(vals)
-        return res
-
-    @api.multi
     def unlink(self):
         vals = []
         for record in self:
@@ -213,7 +165,10 @@ class HotelReservation(models.Model):
             ('odoo_id', '=', vals['room_type_id'])
         ]).backend_id
         # WARNING: more than one backend_id is currently not expected
-        self.env['channel.hotel.room.type.availability'].refresh_availability(
+        self.env['channel.hotel.room.type.availability'].with_context(
+            # export the availability as it is created
+            {'connector_no_export': False}
+        ).refresh_availability(
             checkin=vals['real_checkin'],
             checkout=vals['real_checkout'],
             backend_id=backend_id.id,
@@ -221,6 +176,58 @@ class HotelReservation(models.Model):
             from_channel=from_channel,)
 
         return reservation_id
+
+    @api.multi
+    def write(self, vals):
+        if self._context.get('connector_no_export', True) and \
+                (vals.get('checkin') or vals.get('checkout') or
+                 vals.get('room_id') or vals.get('state')):
+            old_vals = []
+            new_vals = []
+            for record in self:
+                backend_id = self.env['channel.hotel.room.type'].search([
+                    ('odoo_id', '=', record.room_id.room_type_id.id)
+                ]).backend_id.id
+                old_vals.append({
+                    'checkin': record.checkin,
+                    'checkout': record.checkout,
+                    'backend_id': backend_id,
+                    'room_id': record.room_id.id,
+                })
+                # check if the reservation if moved into a new room type
+                new_room_type_id = self.env['channel.hotel.room.type'].search([
+                    ('room_ids', 'in', vals.get('room_id'))
+                ])
+                new_backend_id = backend_id
+                if new_room_type_id.odoo_id != record.room_id.room_type_id:
+                    new_backend_id = new_room_type_id.backend_id.id or None
+                new_vals.append({
+                    'checkin': vals.get('checkin', record.checkin),
+                    'checkout': vals.get('checkout', record.checkout),
+                    'backend_id': new_backend_id,
+                    'room_id': vals.get('room_id', record.room_id.id),
+                })
+
+            res = super().write(vals)
+
+            channel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
+            for k_i, v_i in enumerate(old_vals):
+                channel_room_type_avail_obj.refresh_availability(
+                    checkin=v_i['checkin'],
+                    checkout=v_i['checkout'],
+                    backend_id=v_i['backend_id'],
+                    room_id=v_i['room_id'])
+                # NOTE: A reservation can be moved into a room type not connected to any channel
+                if new_backend_id:
+                    channel_room_type_avail_obj.refresh_availability(
+                        checkin=new_vals[k_i]['checkin'],
+                        checkout=new_vals[k_i]['checkout'],
+                        backend_id=new_vals[k_i]['backend_id'],
+                        room_id=new_vals[k_i]['room_id'])
+        else:
+            res = super().write(vals)
+        return res
+
 
     @api.multi
     def generate_copy_values(self, checkin=False, checkout=False):

@@ -45,7 +45,7 @@ class HotelRoomTypeAvailability(models.Model):
     quota = fields.Integer("Quota", default=_default_quota,
                            help="Quota assigned to the channel.")
     max_avail = fields.Integer("Max. Availability", default=-1, readonly=True,
-                               help="Maximum simultaneous availability given no quota.")
+                               help="Maximum simultaneous availability.")
 
     no_ota = fields.Boolean('No OTA', default=False,
                             help="Set zero availability to the connected OTAs "
@@ -178,15 +178,25 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                     if vals_avail:
                         room_type_avail_id.write(vals_avail)
                 else:
+                    # self.env['hotel.room.type.availability'].create({
+                    #     'room_type_id': room_type_bind.odoo_id.id,
+                    #     'date': ndate_str,
+                    #     'channel_bind_ids': [(0, False, {
+                    #                                 'channel_avail': avail,
+                    #                                 'channel_pushed': False,
+                    #                                 'backend_id': backend_id,
+                    #                                 'quota': quota,
+                    #                                 })]
+                    # })
                     self.env['hotel.room.type.availability'].create({
                         'room_type_id': room_type_bind.odoo_id.id,
                         'date': ndate_str,
+                        'quota': quota,
                         'channel_bind_ids': [(0, False, {
-                                                    'channel_avail': avail,
-                                                    'channel_pushed': False,
-                                                    'backend_id': backend_id,
-                                                    'quota': quota,
-                                                    })]
+                            'channel_avail': avail,
+                            'channel_pushed': False,
+                            'backend_id': backend_id,
+                        })]
                     })
 
     @job(default_channel='root.channel')
@@ -287,6 +297,9 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
                     record.date,
                     binding.backend_id.id,
                     room_type_id=record.room_type_id.id)
+                _logger.info("==[on_record_create] :: channel.hotel.room.type.availability==")
+                _logger.info(fields)
+                record.push_availability(record.backend_id)
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_fix_channel_availability(self, record, fields=None):
