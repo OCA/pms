@@ -112,8 +112,6 @@ class ChannelHotelReservation(models.Model):
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
-    unconfirmed_channel_price = fields.Boolean(related='folio_id.unconfirmed_channel_price')
-
     @api.multi
     def _set_access_for_channel_fields(self):
         for record in self:
@@ -148,6 +146,14 @@ class HotelReservation(models.Model):
                                             string='Is user able to modify channel fields?')
     to_read = fields.Boolean('To Read', default=False)
     customer_notes = fields.Text(related='folio_id.customer_notes')
+
+    unconfirmed_channel_price = fields.Boolean(related='folio_id.unconfirmed_channel_price')
+
+    @api.onchange('checkin', 'checkout')
+    def onchange_dates(self):
+        if not self.is_from_ota:
+            return super().onchange_dates()
+
 
     @api.model
     def create(self, vals):
@@ -228,7 +234,6 @@ class HotelReservation(models.Model):
             res = super().write(vals)
         return res
 
-
     @api.multi
     def generate_copy_values(self, checkin=False, checkout=False):
         self.ensure_one()
@@ -265,10 +270,6 @@ class HotelReservation(models.Model):
     def mark_as_readed(self):
         self.write({'to_read': False, 'to_assign': False})
 
-    @api.onchange('checkin', 'checkout')
-    def onchange_dates(self):
-        if not self.is_from_ota:
-            return super().onchange_dates()
 
 class ChannelBindingHotelReservationListener(Component):
     _name = 'channel.binding.hotel.reservation.listener'
