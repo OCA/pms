@@ -171,10 +171,7 @@ class HotelReservation(models.Model):
             ('odoo_id', '=', vals['room_type_id'])
         ]).backend_id
         # WARNING: more than one backend_id is currently not expected
-        self.env['channel.hotel.room.type.availability'].with_context(
-            # export the availability as it is created
-            {'connector_no_export': False}
-        ).refresh_availability(
+        self.env['channel.hotel.room.type.availability'].refresh_availability(
             checkin=vals['real_checkin'],
             checkout=vals['real_checkout'],
             backend_id=backend_id.id,
@@ -187,7 +184,8 @@ class HotelReservation(models.Model):
     def write(self, vals):
         if self._context.get('connector_no_export', True) and \
                 (vals.get('checkin') or vals.get('checkout') or
-                 vals.get('room_id') or vals.get('state')):
+                 vals.get('room_id') or vals.get('state') or
+                 vals.get('overbooking')):
             old_vals = []
             new_vals = []
             for record in self:
