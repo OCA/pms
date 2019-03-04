@@ -10,7 +10,7 @@ class HotelReservationExporter(Component):
 
     @api.model
     def cancel_reservation(self, binding):
-        user = self.env['res.user'].browse(self.env.uid)
+        user = self.env['res.users'].browse(self.env.uid)
         try:
             binding.with_context({
                 'connector_no_export': True,

@@ -46,8 +46,8 @@ class HotelReservation(models.Model):
             # Only can cancel reservations created directly in wubook
             for binding in record.channel_bind_ids:
                 if binding.external_id and not binding.ota_id and \
-                        binding.channel_status in WUBOOK_STATUS_GOOD:
-                    self._event('on_record_cancel').notify(binding)
+                        int(binding.channel_status) in WUBOOK_STATUS_GOOD:
+                    self.env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
         return res
 
     @api.multi
