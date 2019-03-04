@@ -364,7 +364,7 @@ class HotelReservationImporter(Component):
                         notthis=used_rooms)
                     if any(free_rooms):
                         vals.update({
-                            'product_id': room_type_bind.product_id.id,
+                            'room_type_id': room_type_bind.odoo_id.id,
                             'name': free_rooms[0].name,
                         })
                         reservations.append((0, False, vals))
@@ -408,7 +408,7 @@ class HotelReservationImporter(Component):
                                 book,
                             )
                             vals.update({
-                                'product_id': room_type_bind.product_id.id,
+                                'room_type_id': room_type_bind.odoo_id.id,
                                 'name': room_type_bind.name,
                                 'overbooking': True,
                             })

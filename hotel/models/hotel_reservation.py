@@ -487,10 +487,13 @@ class HotelReservation(models.Model):
         res = {}
         checkin = values.get('checkin')
         checkout = values.get('checkout')
-        room_type = values.get('room_type_id')
-        if checkin and checkout and room_type:
-            room_chosen = self.env['hotel.room.type'].check_availability_room_type(checkin, checkout, room_type)[0]
-            # Check room_chosen exist
+        room_type_id = values.get('room_type_id')
+        if checkin and checkout and room_type_id:
+            if 'overbooking' not in values:
+                room_chosen = self.env['hotel.room.type'].check_availability_room_type(checkin, checkout, room_type_id)[0]
+                # Check room_chosen exist
+            else:
+                room_chosen = self.env['hotel.room.type'].browse(room_type_id).room_ids[0]
             res.update({
                 'room_id': room_chosen.id
             })
