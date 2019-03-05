@@ -30,6 +30,15 @@ class ChannelProductPricelist(models.Model):
 
     @job(default_channel='root.channel')
     @api.multi
+    def create_vplan(self):
+        self.ensure_one()
+        if not self.external_id:
+            with self.backend_id.work_on(self._name) as work:
+                exporter = work.component(usage='product.pricelist.exporter')
+                exporter.create_vplan(self)
+
+    @job(default_channel='root.channel')
+    @api.multi
     def update_plan_name(self):
         self.ensure_one()
         if self.external_id:
@@ -62,7 +71,7 @@ class ProductPricelist(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
-    is_virtual_plan = fields.Boolean("Is a Virtual Pricing Plan", compute='_compute_virtual_plan', readonly="True",
+    is_virtual_plan = fields.Boolean("Is a Virtual Pricing Plan", compute='_compute_virtual_plan',
                                      help="A virtual plan is based on another Pricelist "
                                           "with a fixed or percentage variation.")
 
@@ -149,7 +158,10 @@ class ChannelBindingProductPricelistListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
-        record.create_plan()
+        if record.is_virtual_plan:
+            record.create_vplan()
+        else:
+            record.create_plan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):

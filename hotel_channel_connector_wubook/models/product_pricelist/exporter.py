@@ -36,3 +36,22 @@ class ProductPricelistExporter(Component):
         else:
             binding.external_id = external_id
             self.binder.bind(external_id, binding)
+
+    @api.model
+    def create_vplan(self, binding):
+        try:
+            import wdb; wdb.set_trace()
+            external_id = self.backend_adapter.create_vplan(
+                binding.name,
+                binding.pid,
+                binding.dtype,
+                binding.value,
+            )
+        except ChannelConnectorError as err:
+            self.create_issue(
+                section='pricelist',
+                internal_message=str(err),
+                channel_message=err.data['message'])
+        else:
+            binding.external_id = external_id
+            self.binder.bind(external_id, binding)

@@ -322,6 +322,21 @@ class WuBookAdapter(AbstractComponent):
             })
         return results
 
+    def create_vplan(self, name, pid, dtype, value):
+        rcode, results = self._server.add_vplan(
+            self._session_info[0],
+            self._session_info[1],
+            name,
+            pid,
+            dtype,
+            value,
+        )
+        if rcode != 0:
+            raise ChannelConnectorError(_("Can't add virtual pricing plan to wubook"), {
+                'message': results,
+            })
+        return results
+
     def delete_plan(self, channel_plan_id):
         rcode, results = self._server.del_plan(
             self._session_info[0],
