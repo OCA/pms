@@ -77,3 +77,4 @@ class BusHotelCalendar(models.TransientModel):
         self.env['bus.bus'].sendone(
             (self._cr.dbname, 'hotel.reservation',
              HOTEL_BUS_CHANNEL_ID), notif)
+

@@ -11,7 +11,7 @@
                     <field name="ota_reservation_id" />
                     <field name="channel_status" />
                     <field name="channel_status_reason" />
-                    <field name="to_read" />
+                    <field name="to_assign" />
                 </group>
             </form>
         </field>

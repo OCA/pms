@@ -32,7 +32,6 @@ class HotelFolio(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.room_lines.write({
-                'to_read': False,
                 'to_assign': False,
             })
         return super().action_confirm()

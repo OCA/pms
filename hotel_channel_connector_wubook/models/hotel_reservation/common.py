@@ -39,7 +39,7 @@ class HotelReservation(models.Model):
                 raise ValidationError(_("Can't cancel reservations from OTA's"))
         user = self.env['res.users'].browse(self.env.uid)
         if user.has_group('hotel.group_hotel_call'):
-            self.write({'to_read': True, 'to_assign': True})
+            self.write({'to_assign': True})
 
         res = super(HotelReservation, self).action_cancel()
         for record in self:
