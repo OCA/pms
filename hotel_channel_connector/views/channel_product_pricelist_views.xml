@@ -9,6 +9,7 @@
                 <group>
                     <field name="id" invisible="1" />
                     <field name="backend_id"  attrs="{'visible': [('id','=', False)]}" />
+                    <field name="odoo_id" invisible="1" />
                 </group>
                 <group>
                     <field name="external_id" />
