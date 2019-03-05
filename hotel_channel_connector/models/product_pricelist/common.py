@@ -18,7 +18,6 @@ class ChannelProductPricelist(models.Model):
                               string='Pricelist',
                               required=True,
                               ondelete='cascade')
-    is_daily_plan = fields.Boolean("Channel Daily Plan", default=True, old_name='wdaily_plan')
 
     @job(default_channel='root.channel')
     @api.multi
@@ -54,6 +53,7 @@ class ChannelProductPricelist(models.Model):
             importer = work.component(usage='product.pricelist.importer')
             return importer.import_pricing_plans()
 
+
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
@@ -61,6 +61,28 @@ class ProductPricelist(models.Model):
         comodel_name='channel.product.pricelist',
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
+
+    is_virtual_plan = fields.Boolean("Is a Virtual Pricing Plan", compute='_compute_virtual_plan', readonly="True",
+                                     help="A virtual plan is based on another Pricelist "
+                                          "with a fixed or percentage variation.")
+
+    @api.depends('item_ids')
+    def _compute_virtual_plan(self):
+        for record in self:
+            record.is_virtual_plan = True
+            if any(item.applied_on != '3_global'
+                   or (item.date_start or item.date_end)
+                   or item.compute_price != 'formula'
+                   or item.base != 'pricelist'
+                   or not item.base_pricelist_id.is_daily_plan
+                   or (item.price_discount != 0 and item.price_surcharge != 0)
+                   or item.min_quantity != 0
+                   or item.price_round != 0
+                   or item.price_min_margin != 0
+                   or item.price_max_margin != 0
+                   for item in record.item_ids):
+                record.is_virtual_plan = False
+
 
     @api.multi
     @api.depends('name')
@@ -95,6 +117,8 @@ class ProductPricelist(models.Model):
             action['context'] = {
                 'default_odoo_id': self.id,
                 'default_name': self.name,
+                'default_is_daily_plan': self.is_daily_plan,
+                'default_is_virtual_plan': self.is_virtual_plan,
             }
         return action
 
@@ -104,6 +128,7 @@ class ProductPricelist(models.Model):
         msg = _("This function is not yet implemented.")
         msg += _(" The pricelist [%s] should be delete from the channel manager.") % channel_bind_ids.get_external_id
         raise UserError(msg)
+
 
 class BindingProductPricelistListener(Component):
     _name = 'binding.product.pricelist.listener'
@@ -115,6 +140,7 @@ class BindingProductPricelistListener(Component):
         if 'name' in fields:
             for binding in record.channel_bind_ids:
                 binding.update_plan_name()
+
 
 class ChannelBindingProductPricelistListener(Component):
     _name = 'channel.binding.product.pricelist.listener'

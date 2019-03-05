@@ -2,11 +2,16 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models, fields, api
 
+
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
     is_staff = fields.Boolean('Is Staff')
 
+    is_daily_plan = fields.Boolean('Daily Pricing Plan', default=True,
+                                   help = "Check if the pricing plan is daily. "
+                                          "Note that only daily plans can be edited on "
+                                          "the Hotel Calendar Management.")
     @api.multi
     @api.depends('name')
     def name_get(self):
