@@ -144,7 +144,6 @@ class HotelReservation(models.Model):
                                  readonly=True)
     able_to_modify_channel = fields.Boolean(compute=_set_access_for_channel_fields,
                                             string='Is user able to modify channel fields?')
-    to_read = fields.Boolean('To Read', default=False)
     customer_notes = fields.Text(related='folio_id.customer_notes')
 
     unconfirmed_channel_price = fields.Boolean(related='folio_id.unconfirmed_channel_price')
@@ -164,7 +163,7 @@ class HotelReservation(models.Model):
             from_channel = True
         user = self.env['res.users'].browse(self.env.uid)
         if user.has_group('hotel.group_hotel_call'):
-            vals.update({'to_read': True})
+            vals.update({'to_assign': True})
 
         reservation_id = super(HotelReservation, self).create(vals)
         backend_id = self.env['channel.hotel.room.type'].search([
@@ -243,7 +242,7 @@ class HotelReservation(models.Model):
             'channel_bind_ids': commands,
             'customer_notes': self.customer_notes,
             'is_from_ota': self.is_from_ota,
-            'to_read': self.to_read,
+            'to_assign': self.to_assign,
         })
         return res
 
@@ -266,7 +265,7 @@ class HotelReservation(models.Model):
 
     @api.multi
     def mark_as_readed(self):
-        self.write({'to_read': False, 'to_assign': False})
+        self.write({'to_assign': False})
 
 
 class ChannelBindingHotelReservationListener(Component):

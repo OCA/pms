@@ -10,12 +10,14 @@ odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarRenderer', functio
 
     update_buttons_counter_channel_connector: function (nreservations, nissues) {
       // Cloud Reservations
+      debugger;
       var $text = this.$el.find('#btn_channel_manager_request .cloud-text');
+      $text.text(nreservations);
       if (nreservations > 0) {
           $text.parent().parent().addClass('button-highlight');
           $text.parent().addClass('incoming');
-          $text.text(nreservations);
       } else {
+          $text.parent().parent().removeClass('button-highlight');
           $text.parent().removeClass('incoming');
       }
 

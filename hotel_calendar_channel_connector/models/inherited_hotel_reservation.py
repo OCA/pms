@@ -54,5 +54,5 @@ class HotelReservation(models.Model):
     def confirm(self):
         for record in self:
             if record.to_assign:
-                record.write({'to_read': False, 'to_assign': False})
+                record.write({'to_assign': False})
         return super(HotelReservation, self).confirm()

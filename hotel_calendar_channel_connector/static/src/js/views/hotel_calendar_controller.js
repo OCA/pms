@@ -45,8 +45,8 @@ var PMSHotelCalendarController = PMSCalendarController.include({
     _update_buttons_counter: function (ev) {
         this._super(ev);
         var self = this;
-        var domain_reservations = [['to_read', '=', true]];
-        var domain_issues = [['to_read', '=', true]];
+        var domain_reservations = [['to_assign', '=', true]];
+        var domain_issues = [['to_assign', '=', true]];
         $.when(
             this.model.search_count(domain_reservations),
             this.model.search_count(domain_issues),

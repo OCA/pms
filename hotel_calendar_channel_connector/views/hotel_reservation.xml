@@ -9,7 +9,7 @@
             <field name="inherit_id" ref="hotel.hotel_reservation_view_tree" />
             <field name="arch" type="xml">
                 <field name="room_type_id" position="after">
-                    <field name="to_read" invisible="1"/>
+                    <field name="to_assign" invisible="1"/>
                 </field>
             </field>
         </record>
@@ -19,11 +19,11 @@
         <field name="inherit_id" ref="hotel.hotel_reservation_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//button[@name='unify']" position="after">
-                <field name="to_read" invisible="1"/>
+                <field name="to_assign" invisible="1"/>
                 <button name="mark_as_readed" string="Mark as Read"
                     type="object" class="oe_highlight"
                     icon="fa-1x fa-thumb-tack"
-                    attrs="{'invisible':[('to_read','=', False)]}" />
+                    attrs="{'invisible':[('to_assign','=', False)]}" />
             </xpath>
         </field>
     </record>
