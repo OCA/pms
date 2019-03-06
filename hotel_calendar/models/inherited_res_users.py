@@ -82,7 +82,7 @@ class ResUsers(models.Model):
         'calendar.event.type',
         string="Deny Calander Event Tags")
 
-    color_pre_reservation = fields.Char('Pre-reservation', default='#A09FC9')
+    color_pre_reservation = fields.Char('Pre-reservation', default='#A24680')
     color_reservation = fields.Char('Confirmed Reservation ', default='#7C7BAD')
     color_reservation_pay = fields.Char('Paid Reservation', default='#7C7BAD')
     color_stay = fields.Char('Checkin', default='#FF4040')
