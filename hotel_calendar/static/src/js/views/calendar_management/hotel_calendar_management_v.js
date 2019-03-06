@@ -196,7 +196,7 @@ var HotelCalendarManagementView = View.extend({
 
     generate_hotel_calendar: function(){
         var self = this;
-
+        debugger;
         /** DO MAGIC **/
         var params = this.generate_params();
         var oparams = [params['dates'][0], params['dates'][1], false, false, true];
