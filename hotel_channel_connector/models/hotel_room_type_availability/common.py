@@ -191,7 +191,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                             'backend_id': backend_id,
                         })]
                     })
-        self.push_availability(self.env['channel.backend'].browse(backend_id))
+            self.push_availability(self.env['channel.backend'].browse(backend_id))
 
     @job(default_channel='root.channel')
     @api.model
