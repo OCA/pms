@@ -326,8 +326,7 @@
 
         <record id="hotel_room_closure_reason_0" model="room.closure.reason">
             <field name="name">Maintenance</field>
-            <field name="description">Used for closing of rooms which require a maintenance.
-                You can specify the reason in the own reservation.</field>
+            <field name="description">Used for closing of rooms which require a maintenance. You can specify the reason in the own reservation.</field>
         </record>
 
         <record id="hotel_room_closure_reason_1" model="room.closure.reason">
@@ -342,6 +341,7 @@
             <field name="partner_id" ref="base.res_partner_address_27"/>
             <field name="room_lines"
                    eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
                     'room_type_id': ref('hotel_room_type_0'),
                     'checkin': DateTime.today().strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
@@ -355,6 +355,7 @@
             <field name="partner_id" ref="base.res_partner_12"/>
             <field name="room_lines"
                    eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
                     'room_type_id': ref('hotel_room_type_3'),
                     'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
@@ -367,19 +368,24 @@
             <field name="partner_id" ref="base.res_partner_address_10"/>
             <field name="room_lines"
                    eval="[(5, 0),
-                    (0, 0, {'room_type_id': ref('hotel_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-                    'adults': 1,
-                    'state': 'confirm',
-                    }),
-                    (0, 0, {'room_type_id': ref('hotel_room_type_1'),
+                    (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('hotel_room_type_1'),
                     'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 1,
                     'state': 'confirm',
                     }),
                     (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('hotel_room_type_1'),
+                    'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
+                    'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
+                    'adults': 1,
+                    'state': 'confirm',
+                    }),
+                    (0, 0, {
+                    'pricelist_id': 1,
                     'room_type_id': ref('hotel_room_type_1'),
                     'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
@@ -391,7 +397,9 @@
         <record id="hotel_folio_3" model="hotel.folio">
             <field name="partner_id" ref="base.res_partner_12"/>
             <field name="room_lines"
-                   eval="[(5, 0), (0, 0, {'room_type_id': ref('hotel_room_type_4'),
+                   eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('hotel_room_type_4'),
                     'checkin': (DateTime.today() + timedelta(days=3)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 1,
@@ -405,7 +413,9 @@
             <field name="reservation_type">out</field>
             <field name="closure_reason_id" ref="hotel_room_closure_reason_0"/>
             <field name="room_lines"
-                   eval="[(5, 0), (0, 0, {'room_type_id': ref('hotel_room_type_1'),
+                   eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('hotel_room_type_1'),
                     'checkin': DateTime.today().strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'state': 'confirm',
