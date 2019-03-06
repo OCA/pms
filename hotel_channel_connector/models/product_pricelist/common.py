@@ -6,6 +6,8 @@ from odoo.exceptions import UserError
 from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class ChannelProductPricelist(models.Model):
@@ -36,6 +38,15 @@ class ChannelProductPricelist(models.Model):
             with self.backend_id.work_on(self._name) as work:
                 exporter = work.component(usage='product.pricelist.exporter')
                 exporter.create_vplan(self)
+
+    @job(default_channel='root.channel')
+    @api.multi
+    def modify_vplan(self):
+        self.ensure_one()
+        if self.external_id:
+            with self.backend_id.work_on(self._name) as work:
+                exporter = work.component(usage='product.pricelist.exporter')
+                exporter.modify_vplan(self)
 
     @job(default_channel='root.channel')
     @api.multi
@@ -149,6 +160,9 @@ class BindingProductPricelistListener(Component):
         if 'name' in fields:
             for binding in record.channel_bind_ids:
                 binding.update_plan_name()
+        if 'item_ids' in fields and record.is_virtual_plan:
+            for binding in record.channel_bind_ids:
+                binding.modify_vplan()
 
 
 class ChannelBindingProductPricelistListener(Component):
