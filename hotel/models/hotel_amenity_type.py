@@ -8,7 +8,7 @@ class HotelRoomAmenitieType(models.Model):
     _name = 'hotel.amenity.type'
     _description = 'Amenities Type'
 
-    name = fields.Char('Amenity Name', required=True)
+    name = fields.Char('Amenity Name', translate=True, required=True)
     active = fields.Boolean('Active', default=True)
     room_amenity_ids = fields.One2many('hotel.amenity',
                                          'room_amenity_type_id',

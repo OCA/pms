@@ -8,7 +8,7 @@ class HotelBoardService(models.Model):
     _name = "hotel.board.service"
     _description = "Board Services"
 
-    name = fields.Char('Board Name', size=64, required=True, index=True)
+    name = fields.Char('Board Name', translate=True, size=64, required=True, index=True)
     board_service_line_ids = fields.One2many('hotel.board.service.line',
                                              'hotel_board_service_id')
     price_type = fields.Selection([
@@ -28,4 +28,3 @@ class HotelBoardService(models.Model):
             for service in record.board_service_line_ids:
                 total += service.amount
             record.update({'amount': total})
-    

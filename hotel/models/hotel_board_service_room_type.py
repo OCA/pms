@@ -30,14 +30,14 @@ class HotelBoardServiceRoomType(models.Model):
     pricelist_id = fields.Many2one(
         'product.pricelist', 'Pricelist', required=False)
     price_type = fields.Selection([
-        ('fixed','Fixed'),
-        ('percent','Percent')], string='Type', default='fixed', required=True)
+        ('fixed', 'Fixed'),
+        ('percent', 'Percent')], string='Type', default='fixed', required=True)
     amount = fields.Float('Amount',
                           digits=dp.get_precision('Product Price'),
                           compute='_compute_board_amount',
                           store=True)
     board_service_line_ids = fields.One2many('hotel.board.service.room.type.line', 'hotel_board_service_room_type_id')
-    
+
     @api.model_cr
     def init(self):
         self._cr.execute('SELECT indexname FROM pg_indexes WHERE indexname = %s', ('hotel_board_service_id_hotel_room_type_id_pricelist_id',))
@@ -113,5 +113,3 @@ class HotelBoardServiceRoomType(models.Model):
                 if board_pricelist:
                     raise UserError(
                         _("This Board Service in this Room can't repeat without pricelist"))
-                
-                    

@@ -6,5 +6,5 @@ class RoomClosureReason(models.Model):
     _name = "room.closure.reason"
     _description = "Cause of out of service"
 
-    name = fields.Char('Name', required=True)
-    description = fields.Text('Description')
+    name = fields.Char('Name', translate=True, required=True)
+    description = fields.Text('Description', translate=True)

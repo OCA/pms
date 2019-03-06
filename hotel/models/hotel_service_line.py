@@ -29,6 +29,3 @@ class HotelServiceLine(models.Model):
                     raise ValidationError(
                     _("%s limit exceeded for %s")% (record.service_id.product_id.name,
                                                     record.date))
-
-                
-        
