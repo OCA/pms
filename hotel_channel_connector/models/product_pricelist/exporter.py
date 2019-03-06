@@ -22,3 +22,7 @@ class ProductPricelistExporter(Component):
     @api.model
     def create_vplan(self, binding):
         raise NotImplementedError
+
+    @api.model
+    def modify_vplan(self, binding):
+        raise NotImplementedError

@@ -18,6 +18,9 @@ class ProductPricelistAdapter(Component):
     def create_vplan(self, name, pid, dtype, value):
         return super(ProductPricelistAdapter, self).create_vplan(name, pid, dtype, value)
 
+    def modify_vplan(self, pid, dtype, value):
+        return super(ProductPricelistAdapter, self).modify_vplan(pid, dtype, value)
+
     def delete_plan(self, external_id):
         return super(ProductPricelistAdapter, self).delete_plan(external_id)
 

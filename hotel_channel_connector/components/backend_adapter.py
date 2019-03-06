@@ -56,6 +56,9 @@ class HotelChannelInterfaceAdapter(AbstractComponent):
     def create_vplan(self, name, pid, dtype, value):
         raise NotImplementedError
 
+    def modify_vplan(self, pid, dtype, value):
+        raise NotImplementedError
+
     def delete_plan(self, channel_plan_id):
         raise NotImplementedError
 
