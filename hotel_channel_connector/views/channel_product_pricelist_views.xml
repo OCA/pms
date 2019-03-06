@@ -13,8 +13,7 @@
                 </group>
                 <group>
                     <field name="external_id" />
-                    <field name="is_daily_plan" />
-                    <field name="is_virtual_plan"/>
+                    <field name="pricelist_type" />
                 </group>
             </form>
         </field>

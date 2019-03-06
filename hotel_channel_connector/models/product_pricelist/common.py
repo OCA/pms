@@ -82,9 +82,10 @@ class ProductPricelist(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
-    is_virtual_plan = fields.Boolean("Is a Virtual Pricing Plan", compute='_compute_virtual_plan',
-                                     help="A virtual plan is based on another Pricelist "
-                                          "with a fixed or percentage variation.")
+
+    pricelist_type = fields.Selection(selection_add=[
+        ('virtual', 'Virtual Plan'),
+    ])
 
     @api.depends('item_ids')
     def _compute_virtual_plan(self):
@@ -137,8 +138,7 @@ class ProductPricelist(models.Model):
             action['context'] = {
                 'default_odoo_id': self.id,
                 'default_name': self.name,
-                'default_is_daily_plan': self.is_daily_plan,
-                'default_is_virtual_plan': self.is_virtual_plan,
+                'default_pricelist_plan': self.pricelist_type,
             }
         return action
 
@@ -160,7 +160,7 @@ class BindingProductPricelistListener(Component):
         if 'name' in fields:
             for binding in record.channel_bind_ids:
                 binding.update_plan_name()
-        if 'item_ids' in fields and record.is_virtual_plan:
+        if 'item_ids' in fields and record.pricelist_type == 'virtual':
             for binding in record.channel_bind_ids:
                 binding.modify_vplan()
 
@@ -172,10 +172,10 @@ class ChannelBindingProductPricelistListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
-        if record.is_virtual_plan:
-            record.create_vplan()
-        else:
+        if record.pricelist_type == 'daily':
             record.create_plan()
+        elif record.pricelist_type == 'virtual':
+            record.create_vplan()
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_unlink(self, record, fields=None):

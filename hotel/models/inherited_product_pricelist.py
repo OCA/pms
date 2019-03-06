@@ -8,10 +8,10 @@ class ProductPricelist(models.Model):
 
     is_staff = fields.Boolean('Is Staff')
 
-    is_daily_plan = fields.Boolean('Daily Pricing Plan', default=True,
-                                   help = "Check if the pricing plan is daily. "
-                                          "Note that only daily plans can be edited on "
-                                          "the Hotel Calendar Management.")
+    pricelist_type = fields.Selection([
+        ('daily', 'Daily Plan'),
+    ], string='Pricelist Type', default='daily')
+
     @api.multi
     @api.depends('name')
     def name_get(self):

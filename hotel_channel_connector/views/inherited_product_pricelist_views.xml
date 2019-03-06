@@ -23,8 +23,7 @@
             </xpath>
 
             <xpath expr="//field[@name='country_group_ids']" position="before">
-                <field name="is_daily_plan" />
-                <field name="is_virtual_plan" />
+                <field name="pricelist_type" />
             </xpath>
         </field>
     </record>
