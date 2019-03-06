@@ -27,6 +27,7 @@ class HotelRoomTypeRestrictionImporter(Component):
             model_name='channel.hotel.room.type.restriction.item')
         _logger.info("==[CHANNEL->ODOO]==== RESTRICTIONS ==")
         _logger.info(plan_restrictions)
+        import wdb; wdb.set_trace()
         count = 0
         for k_rpid, v_rpid in plan_restrictions.items():
             channel_restriction_id = channel_reserv_restriction_obj.search([

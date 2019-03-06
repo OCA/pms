@@ -4,7 +4,7 @@
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api
+from odoo import api, _
 
 
 class ProductPricelistImporter(Component):
@@ -40,7 +40,7 @@ class ProductPricelistImporter(Component):
                     plan_bind.with_context({
                         'connector_no_export': True,
                     }).write(plan_record.values())
-                self.binder(str(plan['id']), plan_bind)
+                self.binder.bind(str(plan['id']), plan_bind)
                 count = count + 1
         return count
 
@@ -53,9 +53,19 @@ class ProductPricelistImportMapper(Component):
     direct = [
         ('id', 'external_id'),
         ('name', 'name'),
-        ('daily', 'is_daily_plan'),
     ]
 
     @mapping
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
+
+    @mapping
+    def pricelist_type(self, record):
+        if record['daily'] == 1:
+            return {'pricelist_type': 'daily'}
+        else:
+            # TODO: manage not daily plans in Hootel
+            raise ChannelConnectorError(_("Can't map a pricing plan from wubook"), {
+                'message': '',
+            })
+

@@ -38,7 +38,7 @@ class HotelRoomTypeRestrictionImporter(Component):
                 else:
                     plan_bind.with_context({'connector_no_export':True}).write(
                         plan_record.values())
-                self.binder(str(plan['id']), plan_bind)
+                self.binder.bind(str(plan['id']), plan_bind)
                 count = count + 1
         return count
 
