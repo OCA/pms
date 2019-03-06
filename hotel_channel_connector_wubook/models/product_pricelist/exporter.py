@@ -94,7 +94,7 @@ class ProductPricelistExporter(Component):
                 'connector_no_export': True,
             }).write({'sync_date': fields.Datetime.now()})
             return self.backend_adapter.modify_vplan(
-                base_pricelist.channel_bind_ids.external_id,
+                binding.external_id,
                 dtype,
                 value)
         except ChannelConnectorError as err:
