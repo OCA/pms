@@ -40,10 +40,12 @@ return AbstractModel.extend({
     },
 
     get_pricelists: function () {
+        var domain = [];
+        domain.push(['pricelist_type', '=', 'daily']);
         return this._rpc({
             model: 'product.pricelist',
             method: 'search_read',
-            args: [false, ['id','name']],
+            args: [domain, ['id','name']],
             context: Session.user_context,
         });
     },
