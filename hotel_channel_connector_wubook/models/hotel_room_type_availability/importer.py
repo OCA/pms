@@ -63,7 +63,7 @@ class HotelRoomTypeAvailabilityImporter(Component):
                             ('date', '=', room['date'])
                         ], limit=1)
                         if room_type_avail_bind:
-                            if room_type_avail_bind.avail != room['avail']:
+                            if room_type_avail_bind.channel_avail != room['avail']:
                                 room_type_avail_bind.with_context({
                                     'connector_no_export': True,
                                 }).write({'channel_pushed': False})
