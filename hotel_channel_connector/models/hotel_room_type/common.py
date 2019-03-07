@@ -95,6 +95,9 @@ class ChannelHotelRoomType(models.Model):
         for record in self:
             if record.ota_capacity < 1:
                 raise ValidationError(_("OTA's capacity can't be less than one"))
+            if record.ota_capacity > record.capacity:
+                raise ValidationError(_("OTA's capacity can't be greater than room type capacity"))
+
 
     @api.multi
     @api.constrains('channel_short_code')
@@ -138,16 +141,12 @@ class HotelRoomType(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
-    capacity = fields.Integer("Capacity", compute="_compute_capacity")
+    capacity = fields.Integer("Capacity", compute="_compute_capacity", store=True)
 
-    @api.multi
+    @api.depends('room_ids')
     def _compute_capacity(self):
         for record in self:
             record.capacity = record.get_capacity()
-
-    @api.onchange('room_ids')
-    def _onchange_room_ids(self):
-        self._compute_capacity()
 
     @api.multi
     def get_restrictions(self, date, restriction_plan_id):
@@ -201,9 +200,6 @@ class BindingHotelRoomTypeListener(Component):
             for binding in record.channel_bind_ids:
                 binding.modify_room()
 
-    # @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    # def on_record_create(self, record, fields=None):
-    #     record.create_bindings()
 
 class ChannelBindingRoomTypeListener(Component):
     _name = 'channel.binding.room.type.listener'
