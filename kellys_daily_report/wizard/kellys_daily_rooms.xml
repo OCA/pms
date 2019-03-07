@@ -16,11 +16,5 @@
             </field>
         </record>
 
-        <template id="report_kellys">
-            <div class="page">
-                Hola Mundo
-            </div>
-        </template>
-
     </data>
 </odoo>

@@ -25,7 +25,7 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 # from odoo.tools import report
 
 class KellysWizard(models.TransientModel):
-    _name = 'kellys'
+    _name = 'kellysreport'
 
     @api.model
     def _get_default_habitaciones(self):
@@ -112,11 +112,40 @@ class KellysWizard(models.TransientModel):
                      }).id)
         return self.env['kellysrooms'].search([('id', 'in', listid)])
 
+
+
+
+# class ParticularReport(models.AbstractModel):
+#     _name = 'report.module.report_name'
+#     @api.model
+#     def render_html(self, docids, data=None):
+#         report_obj = self.env['report']
+#         report = report_obj._get_report_from_name('module.report_name')
+#         docargs = {
+#             'doc_ids': docids,
+#             'doc_model': report.model,
+#             'docs': self,
+#         }
+#         return report_obj.render('module.report_name', docargs)
+
     @api.multi
-    def check_report(self):
+    def print_rooms_report(self):
         rooms = self.env['kellysrooms'].search([('id', 'in',
                                                  self.habitaciones.ids)],
                                                order=self.order)
+        docargs = {
+            'doc_ids': rooms.ids,
+            'doc_model': 'kellysrooms',
+            'docs': self,
+        }
+        # Debug Stop -------------------
+        #import wdb; wdb.set_trace()
+        # Debug Stop -------------------
+
         # return self.env['report'].get_action(rooms, 'action_report_kellys')
         # return self.env['report'].get_action(rooms, 'report_action_kellysrooms')
-        return self.env.ref('kellys_daily_report.report_action_kellysrooms').report_action(self, data=rooms)
+        # return self.env.ref('kellys_daily_report.report_kellysrooms').report_action(self, rooms)
+        # return self.env.ref('kellys_daily_report.report_kellysrooms').report_action(self, docargs)
+        # return self.env.ref('kellys_daily_report.report_kellysrooms').report_action(rooms, docargs)
+        return self.env.ref('kellys_daily_report.report_kellysrooms').report_action(rooms)
+        # return {'type': 'ir.actions.report','report_kellysrooms': 'kellys_daily_report.template_kellysrooms','report_type':"qweb-pdf",'data': rooms,}

@@ -18,5 +18,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import kellys_daily_pdf
 from . import kellys_daily_rooms
-from . import kellys_daily_report
