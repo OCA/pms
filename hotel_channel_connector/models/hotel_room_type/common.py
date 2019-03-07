@@ -58,9 +58,6 @@ class ChannelHotelRoomType(models.Model):
             if record.default_quota > record.total_rooms_count:
                 raise ValidationError(_("The quota assigned to the channel manager can't be greater "
                                         "than the total rooms count!"))
-            # if (record.default_max_avail > record.default_quota) and (record.default_quota >= 0):
-            #     raise ValidationError(_("The maximum simultaneous availability can't be greater "
-            #                             "than a given quota."))
             if record.default_max_avail > record.total_rooms_count:
                 raise ValidationError(_("The maximum simultaneous availability can't be greater "
                                         "than the total rooms count!"))
@@ -198,7 +195,7 @@ class BindingHotelRoomTypeListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        fields_to_check = ('name', 'list_price', 'total_rooms_count')
+        fields_to_check = ('name', 'list_price', 'total_rooms_count', 'board_service_room_type_ids')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
         if any(fields_checked):
             for binding in record.channel_bind_ids:
