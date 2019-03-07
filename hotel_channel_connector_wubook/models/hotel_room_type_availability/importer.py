@@ -94,7 +94,8 @@ class HotelRoomTypeAvailabilityImportMapper(Component):
     direct = [
         ('no_ota', 'no_ota'),
         ('booked', 'booked'),
-        ('avail', 'avail'),
+        ('avail', 'channel_avail'),
+        ('avail', 'quota'),
         ('date', 'date'),
     ]
 
