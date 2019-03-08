@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
+from odoo.addons import decimal_precision as dp
 
 
 class ChannelHotelReservation(models.Model):
@@ -34,6 +35,9 @@ class ChannelHotelReservation(models.Model):
                                         old_name='wstatus_reason')
     channel_modified = fields.Boolean("Channel Modified", readonly=True,
                                       default=False, old_name='wmodified')
+
+    channel_total_amount = fields.Monetary(string='Channel Total Amount',
+                                           readonly=True, digits=dp.get_precision('Product Price'))
 
     # Inherit binding constrain becouse two reservations can have
     # the same external_id
