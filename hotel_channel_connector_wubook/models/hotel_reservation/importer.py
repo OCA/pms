@@ -125,6 +125,7 @@ class HotelReservationImporter(Component):
             'channel_status': str(book['status']),
             'channel_raw_data': json.dumps(book),
             'channel_modified': book['was_modified'],
+            'channel_total_amount': book['amount'],
         }
         vals = {
             'real_checkin': real_checkin_str,
@@ -134,7 +135,6 @@ class HotelReservationImporter(Component):
             'adults': persons,
             'children': book['children'],
             'reservation_line_ids': reservation_lines,
-            'price_unit': tprice,
             'to_assign': True,
             'state': is_cancellation and 'cancelled' or 'confirm',
             'room_type_id': room_type_bind.odoo_id.id,
@@ -201,8 +201,8 @@ class HotelReservationImporter(Component):
             'channel_status': str(book['status']),
             'channel_status_reason': book.get('status_reason', ''),
             'to_assign': True,
-            'price_unit': book['amount'],
             'customer_notes': book['customer_notes'],
+            'channel_total_amount': book['amount'],
         })
         if binding.partner_id.unconfirmed:
             binding.partner_id.write(
@@ -340,19 +340,19 @@ class HotelReservationImporter(Component):
                         book,
                     )
                     #
-                    if vals['price_unit'] != book['amount']:
-                        bs = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
-                        price_room_services_set = vals['price_unit'] + (bs.amount * len(broom['roomdays']))
-                        vals.update({'unconfirmed_channel_price': True})
-                        # check if difference is owing to misconfigured board services
-                        if price_room_services_set != book['amount']:
-                            internal_reason = 'Please, review the board services included in the reservation.'
-                            self.create_issue(
-                                section='reservation',
-                                internal_message="Invalid reservation total price! %.2f (calculated) != %.2f (wubook) %s" % (
-                                    vals['price_unit'], book['amount'], internal_reason),
-                                channel_object_id=book['reservation_code'])
-                        # TODO: Add other reasons in case of need
+                    # if vals['price_unit'] != book['amount']:
+                    #     bs = self.env['hotel.board.service.room.type'].browse(vals['board_service_room_id'])
+                    #     price_room_services_set = vals['price_unit'] + (bs.amount * len(broom['roomdays']))
+                    #     vals.update({'unconfirmed_channel_price': True})
+                    #     # check if difference is owing to misconfigured board services
+                    #     if price_room_services_set != book['amount']:
+                    #         internal_reason = 'Please, review the board services included in the reservation.'
+                    #         self.create_issue(
+                    #             section='reservation',
+                    #             internal_message="Invalid reservation total price! %.2f (calculated) != %.2f (wubook) %s" % (
+                    #                 vals['price_unit'], book['amount'], internal_reason),
+                    #             channel_object_id=book['reservation_code'])
+                    #     # TODO: Add other reasons in case of need
 
 
                     free_rooms = room_type_bind.odoo_id.check_availability_room_type(
