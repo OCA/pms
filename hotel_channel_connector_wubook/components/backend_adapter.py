@@ -1,6 +1,7 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import timedelta
 import xmlrpc.client
 from urllib.parse import urljoin
 from odoo.addons.component.core import AbstractComponent
@@ -444,13 +445,32 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def wired_rplan_get_rplan_values(self, date_from, date_to, channel_restriction_plan_id):
-        rcode, results = self._server.wired_rplan_get_rplan_values(
-            self._session_info[0],
-            self._session_info[1],
-            '1.1',
-            fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            int(channel_restriction_plan_id))
+        # fetch_rooms_values returns a KV structure for each room and for each day
+        # corresponding to the default WuBook restriction plan with rpid=0.
+        if int(channel_restriction_plan_id) == 0:
+            rcode, results = self._server.fetch_rooms_values(
+                self._session_info[0],
+                self._session_info[1],
+                fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+                fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT))
+            # prepare KV structure as expeced by _generate_restriction_items
+            for room_type in results:
+                restrictions = results[room_type]
+                date = fields.Date.from_string(date_from)
+                for daily_restriction in restrictions:
+                    daily_restriction.update({'date': date.strftime(DEFAULT_WUBOOK_DATE_FORMAT)})
+                    date = date + timedelta(days=1)
+            results = {'0': results}
+        else:
+            # WuBook Knowledge Base: restriction plan besides the wubook restrictions
+            # are not returned by wired_rplan_get_rplan_values
+            rcode, results = self._server.wired_rplan_get_rplan_values(
+                self._session_info[0],
+                self._session_info[1],
+                '1.1',
+                fields.Date.from_string(date_from).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+                fields.Date.from_string(date_to).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
+                int(channel_restriction_plan_id))
         if rcode != 0:
             raise ChannelConnectorError(_("Can't fetch restriction plans from wubook"), {
                 'message': results,
