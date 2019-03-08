@@ -36,10 +36,10 @@ class ChannelHotelReservation(models.Model):
             self.env['hotel.channel.connector.issue'].create({
                 'backend_id': record.backend_id.id,
                 'section': 'reservation',
-                'internal_message': "Disagreement in reservation price. Odoo marked %.2f whereas the channel sent %.2f. %s" % (
+                'internal_message': "Disagreement in reservation price. Odoo marked %.2f whereas the channel sent %.2f." % (
                     record.odoo_id.price_room_services_set,
-                    record.channel_total_amount,
-                    'Please, review the board services included in the reservation.'),
+                    record.channel_total_amount),
+                'channel_message': 'Please, review the board services included in the reservation.',
                 'channel_object_id': record.external_id
             })
 
