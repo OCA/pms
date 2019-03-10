@@ -12,7 +12,7 @@ from odoo.exceptions import except_orm, UserError, ValidationError
 from odoo.tools import (
     misc,
     float_is_zero,
-    float_compare,    
+    float_compare,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DEFAULT_SERVER_DATE_FORMAT)
 from odoo import models, fields, api, _
@@ -480,7 +480,7 @@ class HotelFolio(models.Model):
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
                                  self.partner_id.property_product_pricelist.id or \
-                                 self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')            
+                                 self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
         values = {
             'pricelist_id': pricelist,
             'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
@@ -854,7 +854,7 @@ class HotelFolio(models.Model):
             'mail_template_reservation_reminder_24hrs')[1]
         template_rec = self.env['mail.template'].browse(template_id)
         for reserv_rec in self.search([]):
-            checkin_date = datetime.strptime(reserv_rec.checkin, dt)
+            checkin_date = datetime.strptime(reserv_rec.checkin, DEFAULT_SERVER_DATETIME_FORMAT)
             difference = relativedelta(now_date, checkin_date)
             if(difference.days == -1 and reserv_rec.partner_id.email and
                reserv_rec.state == 'confirm'):
