@@ -8,15 +8,15 @@
 			<form string="Reservation Wizard" >
 				<sheet>
 					<group>
-                        <group>
-                            <field name="checkin" required="1" colspan="1"/>
-                            <field name="checkout" required="1" colspan="1"/>
-                        </group>
-                        <group>
-                            <field name="call_center" invisible="1" />
-                            <field name="channel_type" required="1" attrs="{'readonly':[('call_center','=',True)]}"/>
-                            <field name="partner_id"/>
-                        </group>
+              <group>
+                  <field name="checkin" required="1" />
+                  <field name="checkout" required="1" />
+              </group>
+              <group>
+                  <field name="call_center" invisible="1" />
+                  <field name="channel_type" required="1" attrs="{'readonly':[('call_center','=',True)]}"/>
+                  <field name="partner_id"/>
+              </group>
 					</group>
                     <group>
                         <field name="room_type_wizard_ids" nolabel="1"
@@ -49,7 +49,7 @@
 						<field name="reservation_wizard_ids" colspan="4" string="Room Lines"
 							nolabel="1" attrs="{'invisible': [('autoassign','=',True)]}">
 							<tree string="Room Line" delete="false" editable="buttom">
-								<field name="product_id" string="Room No" options="{'no_create': True}"/>
+								<field name="room_id" string="Room No" options="{'no_create': True}"/>
 								<field name="room_type_id" options="{'no_create': True}" />
 								<field name="checkin" />
 								<field name="checkout" />
@@ -61,8 +61,8 @@
 								<field name="price" invisible = "1"/>
 								<field name="partner_id" invisible = "1" />
 								<field name="folio_wizard_id" invisible = "1" />
-                                <field name="to_read" invisible="1" />
-                                <field name="to_assign" invisible="1" />
+                <field name="to_read" invisible="1" />
+                <field name="to_assign" invisible="1" />
 							</tree>
 						</field>
 					</group>
@@ -71,10 +71,13 @@
 							nolabel="1" >
 							<tree string="Services" editable="buttom">
 								<field name="product_id" string="Service" options="{'no_create': True}"
-                                    domain="[('isservice','=',True)]"/>
+                                    domain="[('sale_ok', '=', True)]"/>
+								<field name="folio_wizard_id" invisible = "1" />
 								<field name="product_uom_qty" />
 								<field name="price_unit" />
 								<field name="discount" />
+								<field name="reservation_wizard_ids" widget="many2many_tags"
+										domain="[('folio_wizard_id', '=', folio_wizard_id)]"/>
 								<field name="price_total" />
 							</tree>
 						</field>

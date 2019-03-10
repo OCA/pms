@@ -157,7 +157,7 @@ class HotelReservation(models.Model):
     @api.model
     def create(self, vals):
         from_channel = False
-        if 'channel_bind_ids' in vals and \
+        if 'channel_bind_ids' in vals and vals.get('channel_bind_ids') and \
                 vals.get('channel_bind_ids')[0][2].get('external_id') is not None:
             vals.update({'preconfirm': False})
             from_channel = True

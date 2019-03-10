@@ -477,6 +477,7 @@ class HotelReservation(models.Model):
                 line.onchange_board_service()
             if 'pricelist_id' not in values:
                 line.onchange_partner_id()
+                onchange_fields.append('pricelist_id')
             for field in onchange_fields:
                 if field not in values:
                     res[field] = line._fields[field].convert_to_write(line[field], line)
@@ -684,9 +685,8 @@ class HotelReservation(models.Model):
                 return
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
-                fields.Date.from_string(self.checkout).strftime(
-                    DEFAULT_SERVER_DATE_FORMAT)).filtered(
-                        lambda r: r.id != self._origin.id)
+                (fields.Date.from_string(self.checkout) - timedelta(days=1)).
+                strftime(DEFAULT_SERVER_DATE_FORMAT))
             rooms_occupied = occupied.mapped('room_id.id')
             if self.room_id and self.room_id.id in rooms_occupied:
                 warning_msg = _('You tried to change \
@@ -946,7 +946,7 @@ class HotelReservation(models.Model):
     def get_reservations(self, dfrom, dto):
         """
         @param dfrom: range date from
-        @param dto: range date to
+        @param dto: range date to (NO CHECKOUT, only night)
         @return: array with the reservations _confirmed_ between both dates `dfrom` and `dto`
         """
         domain = self._get_domain_reservations_occupation(dfrom, dto)
@@ -958,7 +958,7 @@ class HotelReservation(models.Model):
                   ('reservation_line_ids.date', '<=', dto),
                   ('state', '!=', 'cancelled'),
                   ('overbooking', '=', False),
-                  ('reselling', '=', False),]
+                  ('reselling', '=', False)]
         return domain
 
     # INFO: This function is not in use and should include `dto` in the search
@@ -1003,7 +1003,8 @@ class HotelReservation(models.Model):
         if not self.overbooking and not self._context.get("ignore_avail_restrictions", False):
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
-                self.checkout)
+                (fields.Date.from_string(self.checkout) - timedelta(days=1)).
+                strftime(DEFAULT_SERVER_DATE_FORMAT))
             occupied = occupied.filtered(
                 lambda r: r.room_id.id == self.room_id.id
                 and r.id != self.id)
