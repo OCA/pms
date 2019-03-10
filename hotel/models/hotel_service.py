@@ -7,7 +7,6 @@ from odoo.tools import (
     float_compare,
     DEFAULT_SERVER_DATE_FORMAT)
 from datetime import timedelta
-from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
@@ -37,7 +36,6 @@ class HotelService(models.Model):
             name = u'%s (%s)' % (res.name, res.ser_room_line.name)
             result.append((res.id, name))
         return result
-
 
     @api.model
     def _default_ser_room_line(self):
