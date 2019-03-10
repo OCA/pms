@@ -31,7 +31,7 @@
                         invisible="1"/>
                     <field name="price_subtotal" invisible="1"/>
                     <field name="price_tax" invisible="1"/>
-                    <field name="price_total" invisible="1"/>      
+                    <field name="price_total" invisible="1"/>
                     <field name="service_line_ids" nolabel="1">
                         <tree string="Days" editable="bottom" >
                             <field name="date" />
@@ -52,10 +52,10 @@
             decoration-success="is_board_service == True">
                 <field name="is_board_service" invisible="1" />
                 <button type="object" class="oe_stat_button"
-                    icon="fa fa-1x fa-bed"                                                                                              
+                    icon="fa fa-1x fa-bed"
                     name="open_service_lines"
                     attrs="{'invisible':[('is_board_service','=', False)]}" />
-                <field name="per_day" invisible="1"/>
+                <field name="per_day" invisible="1" readonly="1"/>
                 <field name="folio_id" invisible="1"/>
                 <field name="ser_room_line"
                     attrs = "{'required': [('per_day','=',True)]}" />
@@ -63,7 +63,7 @@
                     domain="[('sale_ok', '=', True)]"
                     options="{'create': False, 'create_edit': False}"/>
                 <field name="name"/>
-                <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>                                            
+                <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
                 <button type="object" class="oe_stat_button"
                     icon="fa fa-2x fa-bars"
                     name="open_service_lines"
@@ -74,7 +74,7 @@
                 <field name="tax_ids" widget="many2many_tags"/>
                 <field name="price_subtotal" />
                 <field name="price_tax" />
-                <field name="price_total" />      
+                <field name="price_total" />
                 <field name="service_line_ids" invisible="1">
                     <tree string="Days" >
                         <field name="date" />
