@@ -133,6 +133,7 @@ class ChannelHotelRoomType(models.Model):
                 deleter = work.component(usage='hotel.room.type.deleter')
                 deleter.delete_room(self)
 
+
 class HotelRoomType(models.Model):
     _inherit = 'hotel.room.type'
 
