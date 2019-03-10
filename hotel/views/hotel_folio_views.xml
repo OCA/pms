@@ -65,7 +65,7 @@
                                 </span>
                                 <span class="o_stat_text">Pending Payment</span>
                             </div>
-                        </button> 
+                        </button>
 
                         <button type="object" class="oe_stat_button"
                             id="refunds_smart_button"
