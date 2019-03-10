@@ -7,6 +7,7 @@ from odoo.tools import (
     float_compare,
     DEFAULT_SERVER_DATE_FORMAT)
 from datetime import timedelta
+from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ class HotelService(models.Model):
             name = u'%s (%s)' % (res.name, res.ser_room_line.name)
             result.append((res.id, name))
         return result
+
 
     @api.model
     def _default_ser_room_line(self):
@@ -117,13 +119,13 @@ class HotelService(models.Model):
                                default=_default_folio_id)
     ser_room_line = fields.Many2one('hotel.reservation', 'Room',
                                     default=_default_ser_room_line)
-    per_day = fields.Boolean(related='product_id.per_day')
+    per_day = fields.Boolean(related='product_id.per_day', related_sudo=True)
     service_line_ids = fields.One2many('hotel.service.line', 'service_id')
     product_qty = fields.Integer('Quantity')
     days_qty = fields.Integer(compute="_compute_days_qty", store=True)
     is_board_service = fields.Boolean()
     # Non-stored related field to allow portal user to see the image of the product he has ordered
-    product_image = fields.Binary('Product Image', related="product_id.image", store=False)
+    product_image = fields.Binary('Product Image', related="product_id.image", store=False, related_sudo=True)
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     invoice_status = fields.Selection([
          ('invoiced', 'Fully Invoiced'),
