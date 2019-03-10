@@ -8,7 +8,7 @@
             <xpath expr="//field[@name='channel_type']" position="after">
                 <!-- field name="channel_reservation_id" attrs='{"readonly": [("able_to_modify_channel","=",False)], "invisible":[("channel_type","!=", "web")]}' string="OTA"/-->
             </xpath>
-            <xpath expr="//field[@name='checkin_partner_pending_count']" position="before">
+            <xpath expr="//field[@name='shared_folio']" position="before">
                 <group colspan="6" col="6">
                     <field name="is_from_ota" readonly="True" invisible="True"/>
                 </group>
