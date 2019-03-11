@@ -110,7 +110,7 @@
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancel'))]}"/>
                         </group>
                         <group>
-                            <field name="pricelist_id" domain="[('type','=','sale')]" />
+                            <field name="pricelist_id" />
                             <field name="company_id" />
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
