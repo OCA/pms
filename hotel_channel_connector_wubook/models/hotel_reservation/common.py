@@ -60,8 +60,7 @@ class HotelReservation(models.Model):
         if user.has_group('hotel.group_hotel_call'):
             self.write({'to_assign': True})
 
-        return = super(HotelReservation, self).action_cancel()
-        return res
+        return super(HotelReservation, self).action_cancel()
 
     @api.multi
     def confirm(self):
