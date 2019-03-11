@@ -181,6 +181,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
 
                     # Auto-Fix channel quota and max availability
                     vals_avail = {}
+                    # TODO: reduce quota by one instead of adjust to current channel availability
                     if room_type_avail_id.quota > avail:
                         vals_avail.update({'quota': avail})
                         _logger.info(vals_avail)
