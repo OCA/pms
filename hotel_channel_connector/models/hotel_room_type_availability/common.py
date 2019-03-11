@@ -177,11 +177,23 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                     if room_type_avail_id.channel_avail != avail:
                         vals_avail.update({'channel_avail': avail})
                     if vals_avail:
-                        room_type_avail_id.sudo().write(vals_avail)
+                        room_type_avail_id.write(vals_avail)
+
+                    # Auto-Fix channel quota and max availability
+                    vals_avail = {}
+                    if room_type_avail_id.quota > avail:
+                        vals_avail.update({'quota': avail})
+                        _logger.info(vals_avail)
+                    if room_type_avail_id.max_avail > avail:
+                        vals_avail.update({'max_avail': avail})
+                    if vals_avail:
+                        room_type_avail_id.with_context(
+                        {'connector_no_export': True}
+                    ).write(vals_avail)
                 else:
                     self.env['hotel.room.type.availability'].with_context(
                         {'connector_no_export': True}
-                    ).sudo().create({
+                    ).create({
                         'room_type_id': room_type_bind.odoo_id.id,
                         'date': ndate_str,
                         'quota': quota,
@@ -191,7 +203,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                             'backend_id': backend_id,
                         })]
                     })
-            self.sudo().push_availability(self.env['channel.backend'].browse(backend_id))
+            self.push_availability(self.env['channel.backend'].browse(backend_id))
 
     @job(default_channel='root.channel')
     @api.model
