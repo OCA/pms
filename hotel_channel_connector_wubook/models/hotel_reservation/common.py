@@ -4,6 +4,7 @@
 from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError
 from odoo.addons.component.core import Component
+from odoo.addons.component_event import skip_if
 from odoo.addons.hotel_channel_connector_wubook.components.backend_adapter import (
     WUBOOK_STATUS_CONFIRMED,
     WUBOOK_STATUS_WAITING,
@@ -59,14 +60,7 @@ class HotelReservation(models.Model):
         if user.has_group('hotel.group_hotel_call'):
             self.write({'to_assign': True})
 
-        res = super(HotelReservation, self).action_cancel()
-        for record in self:
-            # Only can cancel reservations created directly in wubook
-            for binding in record.channel_bind_ids:
-                if binding.external_id and not binding.ota_id and \
-                        int(binding.channel_status) in WUBOOK_STATUS_GOOD:
-                    self.sudo().env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
-        return res
+        return super(HotelReservation, self).action_cancel()
 
     @api.multi
     def confirm(self):
@@ -77,6 +71,26 @@ class HotelReservation(models.Model):
                             and self._context.get('ota_limits', True):
                         raise ValidationError(_("Can't confirm OTA's cancelled reservations"))
         return super(HotelReservation, self).confirm()
+
+
+class BindingHotelReservationListener(Component):
+    _name = 'binding.hotel.reservation.listener'
+    _inherit = 'base.connector.listener'
+    _apply_on = ['hotel.reservation']
+
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_write(self, record, fields=None):
+
+        fields_to_check = ('state', )
+        fields_checked = [elm for elm in fields_to_check if elm in fields]
+        if any(fields_checked):
+            for record in self:
+                # Only can cancel reservations created directly in wubook
+                for binding in record.channel_bind_ids:
+                    if binding.external_id and not binding.ota_id and \
+                            int(binding.channel_status) in WUBOOK_STATUS_GOOD:
+                        binding.sudo().cancel_reservation()
+                        # self.env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
 
 
 class HotelReservationAdapter(Component):
@@ -90,6 +104,9 @@ class HotelReservationAdapter(Component):
 
     def fetch_new_bookings(self):
         return super(HotelReservationAdapter, self).fetch_new_bookings()
+
+    def fetch_bookings(self, dfrom, dto):
+        return super(HotelReservationAdapter, self).fetch_bookings(dfrom, dto)
 
     def fetch_booking(self, channel_reservation_id):
         return super(HotelReservationAdapter, self).fetch_booking(
