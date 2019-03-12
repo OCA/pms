@@ -39,20 +39,6 @@
 
                 <sheet>
                     <div class=" oe_button_box">
-                       <button type="object" class="oe_stat_button"
-                            id="invoices_smart_button"
-                            icon="fa-thumbs-up"
-                            name="action_payments"
-                            attrs="{'invisible': [('invoices_paid','&lt;=',0)]}">
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value">
-                                    <field name="invoices_paid" nolabel="1"
-                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                </span>
-                                <span class="o_stat_text">Paid out</span>
-                            </div>
-                        </button>
-
                         <button type="object" class="oe_stat_button"
                             id="payment_smart_button"
                             icon="fa-money"
@@ -64,20 +50,6 @@
                                     widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 </span>
                                 <span class="o_stat_text">Pending Payment</span>
-                            </div>
-                        </button>
-
-                        <button type="object" class="oe_stat_button"
-                            id="refunds_smart_button"
-                            icon="fa-undo"
-                            name="action_return_payments"
-                            attrs="{'invisible': [('refund_amount','&lt;=',0)]}">
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value">
-                                    <field name="refund_amount" nolabel="1"
-                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                </span>
-                                <span class="o_stat_text">Refunds</span>
                             </div>
                         </button>
 
@@ -140,6 +112,8 @@
                         <field name="invoice_ids" invisible="1"/>
                         <field name="invoice_status" invisible="1" />
                         <field name="currency_id" invisible="1"/>
+                        <field name="refund_amount" invisible="1" />
+                        <field name="invoices_paid" invisible="1" />
                     </group>
                     <notebook colspan="4" col="1">
                         <page string="Reservation Rooms">
@@ -193,6 +167,14 @@
                                 <group>
                                 </group>
                             </group>
+                        </page>
+                        <page name="payments" string="Payments" attrs="{'invisible': [('invoices_paid','&lt;=',0)]}">
+                            <field name="payment_ids"
+                                    options="{'no_create': True,'no_edit': True}" />
+                        </page>
+                        <page name="returns" string="Retun Payments" attrs="{'invisible': [('refund_amount','&lt;=',0)]}">
+                            <field name="return_ids"
+                                    options="{'no_create': True,'no_edit': True}" />
                         </page>
                         <page string="Other data" invisible="1">
                             <group>
