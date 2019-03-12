@@ -75,14 +75,14 @@ class HotelRoomType(models.Model):
         @param dfrom: Range date from
         @param dto: Range date to
         @param room_type_id: Room Type
-        @param notthis: Array excluding Room Types
+        @param notthis: Array excluding Rooms
         @return: A recordset of free rooms ?
         """
         reservations = self.env['hotel.reservation'].get_reservations(dfrom, dto)
         reservations_rooms = reservations.mapped('room_id.id')
         free_rooms = self.env['hotel.room'].search([
             ('id', 'not in', reservations_rooms),
-            ('room_type_id.id', 'not in', notthis)
+            ('id', 'not in', notthis)
         ])
         if room_type_id:
             rooms_linked = self.env['hotel.room.type'].search([
