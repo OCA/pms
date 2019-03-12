@@ -293,7 +293,8 @@ class WuBookAdapter(AbstractComponent):
             self._session_info[1],
             fields.Date.from_string(dfrom).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
             fields.Date.from_string(dto).strftime(DEFAULT_WUBOOK_DATE_FORMAT),
-            0) # When oncreated is 0, the filter is applied against the arrival date
+            0, # When oncreated is 0, the filter is applied against the arrival date
+            1)
         if rcode != 0:
             raise ChannelConnectorError(_("Can't process reservations from wubook"), {
                 'message': results,
@@ -304,7 +305,8 @@ class WuBookAdapter(AbstractComponent):
         rcode, results = self._server.fetch_booking(
             self._session_info[0],
             self._session_info[1],
-            channel_reservation_id)
+            channel_reservation_id,
+            1)
         if rcode != 0:
             raise ChannelConnectorError(_("Can't process reservations from wubook"), {
                 'message': results,
