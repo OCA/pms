@@ -32,9 +32,7 @@ class HotelRoom(models.Model):
                     old_channel_room_type._onchange_availability()
                     channel_availability = self.env['channel.hotel.room.type.availability'].search([
                         ('room_type_id', '=', item['old_room_type_id']),
-                        '|',
-                        ('quota', '>', old_channel_room_type.total_rooms_count),
-                        ('max_avail', '>', old_channel_room_type.total_rooms_count),
+                        ('channel_avail', '>', old_channel_room_type.total_rooms_count)
                     ], order='date asc') or False
                     if channel_availability:
                         date_range = channel_availability.mapped('date')
@@ -44,7 +42,7 @@ class HotelRoom(models.Model):
                         self.env['channel.hotel.room.type.availability'].refresh_availability(
                             checkin=dfrom,
                             checkout=dto,
-                            backend_id=1,
+                            backend_id=old_channel_room_type.backend_id.id,
                             room_type_id=item['old_room_type_id'],)
 
                     new_channel_room_type = self.env['channel.hotel.room.type'].search([
@@ -53,9 +51,7 @@ class HotelRoom(models.Model):
                     new_channel_room_type._onchange_availability()
                     channel_availability = self.env['channel.hotel.room.type.availability'].search([
                         ('room_type_id', '=', item['new_room_type_id']),
-                        '|',
-                        ('quota', '>', new_channel_room_type.total_rooms_count),
-                        ('max_avail', '>', new_channel_room_type.total_rooms_count),
+                        ('channel_avail', '>', new_channel_room_type.total_rooms_count)
                     ], order='date asc') or False
                     if channel_availability:
                         date_range = channel_availability.mapped('date')
@@ -65,7 +61,7 @@ class HotelRoom(models.Model):
                         self.env['channel.hotel.room.type.availability'].refresh_availability(
                             checkin=dfrom,
                             checkout=dto,
-                            backend_id=1,
+                            backend_id=new_channel_room_type.backend_id.id,
                             room_type_id=item['new_room_type_id'], )
         else:
             res = super().write(vals)
