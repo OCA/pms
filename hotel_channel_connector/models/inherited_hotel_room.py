@@ -27,14 +27,28 @@ class HotelRoom(models.Model):
             for item in room_type_ids:
                 if item['new_room_type_id'] != item['old_room_type_id']:
 
+                    issue_backend_id = False
+                    issue_internal_message = False
+                    issue_channel_object_id = False
+
                     tz_hotel = self.env['ir.default'].sudo().get(
                         'res.config.settings', 'tz_hotel')
                     _today = fields.Date.context_today(self.with_context(tz=tz_hotel))
 
+                    # update old room type values
                     old_channel_room_type = self.env['channel.hotel.room.type'].search([
                         ('odoo_id', '=', item['old_room_type_id'])
                     ])
+
                     old_channel_room_type._onchange_availability()
+                    if old_channel_room_type.ota_capacity > old_channel_room_type.capacity:
+                        old_channel_room_type._get_capacity()
+                        issue_backend_id = old_channel_room_type.backend_id.id
+                        issue_internal_message = "OTA capacity updated to %d for Room Type %s." % (
+                                old_channel_room_type.ota_capacity,
+                                old_channel_room_type.name)
+                        issue_channel_object_id = old_channel_room_type.external_id
+
                     channel_availability = self.env['channel.hotel.room.type.availability'].search([
                         ('room_type_id', '=', item['old_room_type_id']),
                         ('channel_avail', '>=', old_channel_room_type.total_rooms_count),
@@ -54,7 +68,17 @@ class HotelRoom(models.Model):
                     new_channel_room_type = self.env['channel.hotel.room.type'].search([
                         ('odoo_id', '=', item['new_room_type_id'])
                     ])
+
+                    # updates new room type values
                     new_channel_room_type._onchange_availability()
+                    if new_channel_room_type.ota_capacity > new_channel_room_type.capacity:
+                        new_channel_room_type._get_capacity()
+                        issue_backend_id = new_channel_room_type.backend_id.id
+                        issue_internal_message = "OTA capacity updated to %d for Room Type %s." % (
+                                new_channel_room_type.ota_capacity,
+                                new_channel_room_type.name)
+                        issue_channel_object_id = old_channel_room_type.external_id
+
                     channel_availability = self.env['channel.hotel.room.type.availability'].search([
                         ('room_type_id', '=', item['new_room_type_id']),
                         ('channel_avail', '>', old_channel_room_type.total_rooms_count),
@@ -70,6 +94,15 @@ class HotelRoom(models.Model):
                             checkout=dto,
                             backend_id=new_channel_room_type.backend_id.id,
                             room_type_id=item['new_room_type_id'], )
+
+                    if issue_backend_id:
+                        self.env['hotel.channel.connector.issue'].create({
+                            'backend_id': issue_backend_id,
+                            'section': 'room',
+                            'internal_message': issue_internal_message,
+                            'channel_object_id': issue_channel_object_id,
+                        })
+
         else:
             res = super().write(vals)
         return res
