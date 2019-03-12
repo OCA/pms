@@ -70,6 +70,30 @@ class HotelReservationImporter(Component):
                         checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
             return count
 
+    def fetch_bookings(self, dfrom, dto):
+        count = 0
+        try:
+            results = self.backend_adapter.fetch_bookings(dfrom, dto)
+        except ChannelConnectorError as err:
+            self.create_issue(
+                section='reservation',
+                internal_message=str(err),
+                channel_message=err.data['message'])
+        else:
+            if any(results):
+                processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
+                    self._generate_reservations(results)
+                if any(processed_rids):
+                    uniq_rids = list(set(processed_rids))
+                    count = len(uniq_rids)
+                # Update Odoo availability (don't wait for wubook)
+                # FIXME: This cause abuse service in first import!!
+                if checkin_utc_dt and checkout_utc_dt:
+                    self.backend_adapter.fetch_rooms_values(
+                        checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                        checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
+            return count
+
     @api.model
     def _generate_booking_vals(self, broom, crcode, rcode, room_type_bind,
                                split_booking, dates_checkin, dates_checkout, real_checkin, real_checkout, book):

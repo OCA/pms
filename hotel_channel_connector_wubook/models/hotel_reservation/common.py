@@ -105,6 +105,9 @@ class HotelReservationAdapter(Component):
     def fetch_new_bookings(self):
         return super(HotelReservationAdapter, self).fetch_new_bookings()
 
+    def fetch_bookings(self, dfrom, dto):
+        return super(HotelReservationAdapter, self).fetch_bookings(dfrom, dto)
+
     def fetch_booking(self, channel_reservation_id):
         return super(HotelReservationAdapter, self).fetch_booking(
             channel_reservation_id)
