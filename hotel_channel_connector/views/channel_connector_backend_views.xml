@@ -49,6 +49,17 @@
                                 </div>
                             </group>
                             <group>
+                                <label string="Import Reservations in a Range" class="oe_inline"/>
+                                <div>
+                                    <field name="reservation_from" class="oe_inline" nolabel="1"/>
+                                    <field name="reservation_to" class="oe_inline" nolabel="1"/>
+                                    <button name="import_reservations_range"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in background"/>
+                                </div>
+                            </group>
+                            <group>
                                 <label string="Import Reservation" class="oe_inline"/>
                                 <div>
                                     <field name="reservation_id_str" class="oe_inline" nolabel="1"/>

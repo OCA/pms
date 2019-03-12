@@ -27,6 +27,8 @@ class ChannelBackend(models.Model):
     server = fields.Char('Channel Service Server')
     security_token = fields.Char('Channel Service Security Token')
 
+    reservation_from = fields.Date('Reservation From')
+    reservation_to = fields.Date('Reservation To')
     reservation_id_str = fields.Char('Channel Reservation ID')
 
     avail_from = fields.Date('Availability From')
@@ -67,6 +69,23 @@ class ChannelBackend(models.Model):
         channel_hotel_reservation_obj = self.env['channel.hotel.reservation']
         for backend in self:
             count = channel_hotel_reservation_obj.import_reservations(backend)
+            if self.env.context.get('show_notify', True):
+                if count == 0:
+                    self.env.user.notify_info("No reservations to import. All done :)",
+                                              title="Import Reservations")
+                else:
+                    self.env.user.notify_info("%d reservations successfully imported" % count,
+                                              title="Import Reservations")
+        return True
+
+    @api.multi
+    def import_reservations_range(self):
+        channel_hotel_reservation_obj = self.env['channel.hotel.reservation']
+        for backend in self:
+            count = channel_hotel_reservation_obj.import_reservations_range(
+                backend,
+                backend.reservation_from,
+                backend.reservation_to)
             if self.env.context.get('show_notify', True):
                 if count == 0:
                     self.env.user.notify_info("No reservations to import. All done :)",

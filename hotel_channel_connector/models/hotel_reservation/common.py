@@ -72,6 +72,13 @@ class ChannelHotelReservation(models.Model):
             return importer.fetch_new_bookings()
 
     @job(default_channel='root.channel')
+    @api.model
+    def import_reservations_range(self, backend, dfrom, dto):
+        with backend.work_on(self._name) as work:
+            importer = work.component(usage='hotel.reservation.importer')
+            return importer.fetch_bookings(dfrom, dto)
+
+    @job(default_channel='root.channel')
     @api.multi
     def cancel_reservation(self):
         with self.backend_id.work_on(self._name) as work:

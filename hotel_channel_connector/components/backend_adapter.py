@@ -44,6 +44,9 @@ class HotelChannelInterfaceAdapter(AbstractComponent):
     def fetch_new_bookings(self):
         raise NotImplementedError
 
+    def fetch_bookings(self, dfrom, dto):
+        raise NotImplementedError
+
     def fetch_booking(self, channel_reservation_id):
         raise NotImplementedError
 
