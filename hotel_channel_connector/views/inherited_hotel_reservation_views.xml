@@ -21,7 +21,7 @@
                 /> -->
             </xpath>
             <xpath expr="//page[@name='days']" position="after">
-                <page name="connector" string="Channel Connector">
+                <page name="connector" string="Channel Connector" groups="connector.group_connector_manager">
                     <group string="Hotel Channel Bindings">
                         <field name="channel_bind_ids" nolabel="1">
                             <tree>
