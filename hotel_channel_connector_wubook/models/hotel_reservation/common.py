@@ -60,7 +60,18 @@ class HotelReservation(models.Model):
         if user.has_group('hotel.group_hotel_call'):
             self.write({'to_assign': True})
 
+<<<<<<< b9c294db6ea8fe0ebb7998209a7a905c3c240082
         return super(HotelReservation, self).action_cancel()
+=======
+        res = super(HotelReservation, self).action_cancel()
+        for record in self:
+            # Only can cancel reservations created directly in wubook
+            for binding in record.channel_bind_ids:
+                if binding.external_id and not binding.ota_id and \
+                        int(binding.channel_status) in WUBOOK_STATUS_GOOD:
+                    self.sudo().env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
+        return res
+>>>>>>> [WIP] Payments Notifications
 
     @api.multi
     def confirm(self):
