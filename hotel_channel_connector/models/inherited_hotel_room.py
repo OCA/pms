@@ -26,13 +26,19 @@ class HotelRoom(models.Model):
 
             for item in room_type_ids:
                 if item['new_room_type_id'] != item['old_room_type_id']:
+
+                    tz_hotel = self.env['ir.default'].sudo().get(
+                        'res.config.settings', 'tz_hotel')
+                    _today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+
                     old_channel_room_type = self.env['channel.hotel.room.type'].search([
                         ('odoo_id', '=', item['old_room_type_id'])
                     ])
                     old_channel_room_type._onchange_availability()
                     channel_availability = self.env['channel.hotel.room.type.availability'].search([
                         ('room_type_id', '=', item['old_room_type_id']),
-                        ('channel_avail', '>', old_channel_room_type.total_rooms_count)
+                        ('channel_avail', '>=', old_channel_room_type.total_rooms_count),
+                        ('date', '>=', _today)
                     ], order='date asc') or False
                     if channel_availability:
                         date_range = channel_availability.mapped('date')
@@ -51,7 +57,8 @@ class HotelRoom(models.Model):
                     new_channel_room_type._onchange_availability()
                     channel_availability = self.env['channel.hotel.room.type.availability'].search([
                         ('room_type_id', '=', item['new_room_type_id']),
-                        ('channel_avail', '>', new_channel_room_type.total_rooms_count)
+                        ('channel_avail', '>', old_channel_room_type.total_rooms_count),
+                        ('date', '>=', _today)
                     ], order='date asc') or False
                     if channel_availability:
                         date_range = channel_availability.mapped('date')
