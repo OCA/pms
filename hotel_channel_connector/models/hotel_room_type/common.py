@@ -52,16 +52,6 @@ class ChannelHotelRoomType(models.Model):
     max_price = fields.Float('Max. Price', default=200.0, digits=dp.get_precision('Product Price'),
                              help="Setup the max price to prevent incidents while editing your prices.")
 
-    @api.constrains('default_max_avail', 'default_quota')
-    def _check_availability(self):
-        for record in self:
-            if record.default_quota > record.total_rooms_count:
-                raise ValidationError(_("The quota assigned to the channel manager can't be greater "
-                                        "than the total rooms count!"))
-            if record.default_max_avail > record.total_rooms_count:
-                raise ValidationError(_("The maximum simultaneous availability can't be greater "
-                                        "than the total rooms count!"))
-
     @api.onchange('default_quota', 'default_max_avail')
     def _onchange_availability(self):
         for rec in self:
