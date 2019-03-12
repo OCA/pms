@@ -72,10 +72,11 @@ class HotelRoomTypeAvailabilityImporter(Component):
                                     dfrom=room['date'], dto=room['date'],
                                     internal_message=_(
                                         "Channel try to change availiability! \
-                                        Updating channel values... \
-                                        (Odoo: %d -- Channel: %d" % (
+                                        Updating channel values for Room Type %s... \
+                                        (Odoo: %d -- Channel: %d)" % (
+                                            room_type_avail_bind.room_type_id.name,
                                             room['avail'],
-                                            room_type_avail_bind)))
+                                            room_type_avail_bind.channel_avail)))
                         else:
                             room_type_avail_bind = channel_room_type_avail_obj.with_context({
                                 'connector_no_export': True,
