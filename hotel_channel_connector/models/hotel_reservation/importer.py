@@ -17,3 +17,6 @@ class HotelReservationImporter(Component):
 
     def fetch_new_bookings(self):
         raise NotImplementedError
+
+    def fetch_bookings(self, dfrom, dto):
+        raise NotImplementedError
