@@ -13,10 +13,14 @@ class PaymentReturn(models.Model):
         pay = super(PaymentReturn,self).action_confirm()
         if pay:
             folio_ids = []
+            folios = self.env['hotel.folio'].browse(folio_ids)
             for line in self.line_ids:
                 payments = self.env['account.payment'].search([
                     ('move_line_ids', 'in', line.move_line_ids.ids)
                 ])
-                folio_ids += payments.mapped('folio_id.id')
-            folios = self.env['hotel.folio'].browse(folio_ids)
+                folios_line = self.env['hotel.folio'].browse(payments.mapped('folio_id.id'))
+                for folio in folios_line:
+                    msg = _("Return of %s registered") % (line.amount)
+                    folio.message_post(subject=_('Payment Return'), body=msg)
+                folios += folios_line
             folios.compute_amount()

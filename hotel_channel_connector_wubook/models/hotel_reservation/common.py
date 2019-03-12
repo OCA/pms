@@ -65,7 +65,7 @@ class HotelReservation(models.Model):
             for binding in record.channel_bind_ids:
                 if binding.external_id and not binding.ota_id and \
                         int(binding.channel_status) in WUBOOK_STATUS_GOOD:
-                    self.env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
+                    self.sudo().env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
         return res
 
     @api.multi

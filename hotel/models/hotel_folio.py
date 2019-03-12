@@ -101,12 +101,6 @@ class HotelFolio(models.Model):
     # @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced')
     def _compute_invoice_status(self):
         pass
-    # @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
-    def _compute_amount(self):
-        pass
-    # @api.depends('order_line.price_total')
-    def _amount_all(self):
-        pass
 
     @api.model
     def _get_default_team(self):
@@ -336,13 +330,17 @@ class HotelFolio(models.Model):
         self.ensure_one()
         payments_obj = self.env['account.payment']
         payments = payments_obj.search([('folio_id', '=', self.id)])
-        #invoices = self.mapped('invoice_ids.id')
+        view_form_id = self.env.ref('hotel.account_payment_view_form_folio').id
+        view_tree_id = self.env.ref('account.view_account_payment_tree').id
+        # invoices = self.mapped('invoice_ids.id')
         return{
             'name': _('Payments'),
             'view_type': 'form',
+            'views': [(view_tree_id, 'tree'),(view_form_id, 'form')],
             'view_mode': 'tree,form',
             'res_model': 'account.payment',
             'target': 'new',
+            'init_mode': 'edit',
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', payments.ids)],
         }
@@ -854,7 +852,7 @@ class HotelFolio(models.Model):
             'mail_template_reservation_reminder_24hrs')[1]
         template_rec = self.env['mail.template'].browse(template_id)
         for reserv_rec in self.search([]):
-            checkin_date = datetime.strptime(reserv_rec.checkin, DEFAULT_SERVER_DATETIME_FORMAT)
+            checkin_date = datetime.strptime(reserv_rec.checkin, dt)
             difference = relativedelta(now_date, checkin_date)
             if(difference.days == -1 and reserv_rec.partner_id.email and
                reserv_rec.state == 'confirm'):

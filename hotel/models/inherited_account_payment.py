@@ -11,6 +11,16 @@ class AccountPayment(models.Model):
         compute="_compute_folio_amount", store=True,
         string="Total amount in folio",
     )
+    save_amount = fields.Monetary(string='onchange_amount')
+    save_date = fields.Date()
+    save_journal_id = fields.Integer()
+
+    @api.onchange('amount','payment_date','journal_id')
+    def onchange_amount(self):
+        if self._origin:
+            self.save_amount = self._origin.amount
+            self.save_journal_id = self._origin.journal_id.id
+            self.save_date = self._origin.payment_date
 
     """WIP"""
     @api.multi
@@ -32,6 +42,12 @@ class AccountPayment(models.Model):
             'line_ids': [(0, 0, return_line_vals)],
             }
         return_pay = self.env['payment.return'].create(return_vals)
+        if self.save_amount:
+            self.amount = self.save_amount
+        if self.save_date:
+            self.payment_date = self.save_date
+        if self.save_journal_id:
+            self.journal_id = self.env['account.journal'].browse(self.save_journal_id)
         return {
             'name': 'Folio Payment Return',
             'view_type': 'form',
@@ -40,6 +56,7 @@ class AccountPayment(models.Model):
             'type': 'ir.actions.act_window',
             'res_id': return_pay.id,
         }
+
     @api.multi
     def modify(self):
         self.cancel()
@@ -49,15 +66,29 @@ class AccountPayment(models.Model):
             'amount': self.amount,
             'payment_date': self.payment_date,
             'communication': self.communication,
-            'folio_id': self.folio_id}
+            'state': 'draft'}
         self.update(vals)
-        self.post()
+        self.with_context({'ignore_notification_post': True}).post()
+        if self.folio_id:
+            msg = _("Payment %s modified: \n") % (self.communication)
+            if self.save_amount and self.save_amount != self.amount:
+                msg += _("Amount from %s to %s %s \n") % (self.save_amount, self.amount, self.currency_id.symbol)
+            if self.save_date and self.save_date != self.payment_date:
+                msg += _("Date from %s to %s \n") % (self.save_date, self.payment_date)
+            if self.save_journal_id and self.save_journal_id != self.journal_id.id:
+                msg += _("Journal from %s to %s") % (self.env['account.journal'].browse(self.save_journal_id).name, self.journal_id.name)
+            self.folio_id.message_post(subject=_('Payment'), body=msg)
 
     @api.multi
     def delete(self):
+        msg = False
+        if self.folio_id:
+            msg = _("Deleted payment: %s %s ") % (self.amount, self.currency_id.symbol)
         self.cancel()
         self.move_name = ''
         self.unlink()
+        if msg:
+            self.folio_id.message_post(subject=_('Payment Deleted'), body=msg)
 
     @api.multi
     @api.depends('state')
@@ -66,8 +97,6 @@ class AccountPayment(models.Model):
         res = []
         fol = ()
         for payment in self:
-            amount_pending = 0
-            total_amount = 0
             if payment.folio_id:
                 fol = payment.env['hotel.folio'].search([
                     ('id', '=', payment.folio_id.id)
@@ -82,3 +111,12 @@ class AccountPayment(models.Model):
             else:
                 fol.compute_amount()
             return res
+
+    @api.multi
+    def post(self):
+        rec = super(AccountPayment,self).post()
+        if rec and not self._context.get("ignore_notification_post", False):
+            for pay in self:
+                if pay.folio_id:
+                    msg = _("Payment of %s %s registered from %s using %s payment method") % (pay.amount, pay.currency_id.symbol, pay.communication, pay.journal_id.name)
+                    pay.folio_id.message_post(subject=_('Payment'), body=msg)

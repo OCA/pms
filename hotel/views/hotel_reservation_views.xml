@@ -428,7 +428,7 @@
                decoration-success="folio_pending_amount == 0 and checkout &lt;= current_date and not overbooking"
                decoration-warning="overbooking">
                 <field name="splitted" invisible="1" />
-                 <field name="pricelist_id" invisible="1" />
+                <field name="pricelist_id" invisible="1" />
                 <button icon="fa fa-1x fa-chain-broken"
                     type="object"
                     class="oe_stat_button"
