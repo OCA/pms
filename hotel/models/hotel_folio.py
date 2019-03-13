@@ -176,6 +176,7 @@ class HotelFolio(models.Model):
     return_ids = fields.One2many('payment.return', 'folio_id',
                                  readonly=True)
     payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms', oldname='payment_term')
+    credit_card_details = fields.Text('Credit Card Details')
 
     #Amount Fields------------------------------------------------------
     pending_amount = fields.Monetary(compute='compute_amount',

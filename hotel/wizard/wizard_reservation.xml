@@ -12,11 +12,13 @@
                   <field name="checkin" required="1" />
                   <field name="checkout" required="1" />
 									<field name="partner_id"/>
+									<field name="credit_card_details" />
               </group>
               <group>
                   <field name="call_center" invisible="1" />
                   <field name="channel_type" required="1" force_save="1" attrs="{'readonly':[('call_center','=',True)]}"/>
                   <field name="pricelist_id"/>
+									<field name="internal_comment"/>
               </group>
 					</group>
                     <group>

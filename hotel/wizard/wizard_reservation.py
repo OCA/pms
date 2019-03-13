@@ -64,6 +64,8 @@ class FolioWizard(models.TransientModel):
                               default=_get_default_checkin)
     checkout = fields.Date('Check Out', required=True,
                                default=_get_default_checkout)
+    credit_card_details = fields.Text('Credit Card Details')
+    internal_comment = fields.Text(string='Internal Folio Notes')
     reservation_wizard_ids = fields.One2many('hotel.reservation.wizard',
                                              'folio_wizard_id',
                                              string="Resevations")
@@ -220,7 +222,6 @@ class FolioWizard(models.TransientModel):
         services = [(5, False, False)]
         if self.autoassign:
             self.create_reservations()
-        import wdb; wdb.set_trace()
         for line in self.reservation_wizard_ids:
             reservations.append((0, False, {
                 'room_id': line.room_id.id,
@@ -247,6 +248,8 @@ class FolioWizard(models.TransientModel):
             'channel_type': self.channel_type,
             'room_lines': reservations,
             'service_lines': services,
+            'internal_comment': self.internal_comment,
+            'credit_card_details': self.credit_card_details,
         }
         newfol = self.env['hotel.folio'].create(vals)
         if self.confirm:
@@ -304,9 +307,6 @@ class HotelRoomTypeWizards(models.TransientModel):
             minstay_restrictions = self.env['hotel.room.type.restriction.item'].search([
                 ('room_type_id', '=', res.room_type_id.id),
             ])
-            avail_restrictions = self.env['hotel.room.type.availability'].search([
-                ('room_type_id', '=', res.room_type_id.id)
-            ])
             real_max = len(res.room_type_id.check_availability_room_type(
                 res.checkin,
                 res.checkout,
@@ -325,7 +325,6 @@ class HotelRoomTypeWizards(models.TransientModel):
                         min_stay = date_min_days
                 else:
                     avail = real_max
-
 
             if 100000 > avail > 0:
                 res.max_rooms = avail

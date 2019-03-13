@@ -445,7 +445,7 @@
                 />
                 <field name="folio_id"/>
                 <button type="object" class="oe_stat_button"
-                    icon="fa fa-1x fa-user-plus"
+                    icon="fa fa-2x fa-user-plus"
                     name="action_checks"
                     context="{'partner_id': partner_id,'enter_date': checkin,
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
@@ -497,13 +497,15 @@
                 <attribute name="delete">false</attribute>
                 <attribute name="string">Rooms</attribute>
             </tree>
+            <xpath expr="//field[@name='state']" position="before">
+               <button type="object" class="oe_stat_button"
+                  icon="fa fa-2x fa-suitcase"
+                  name="open_reservation_form"/>
+            </xpath>
             <xpath expr="//field[@name='folio_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//button[@name='open_folio'][1]" position="attributes">
-                <attribute name="invisible">True</attribute>
-            </xpath>
-            <xpath expr="//button[@name='open_folio'][2]" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//button[@name='open_folio'][2]" position="attributes">
@@ -521,6 +523,12 @@
              <xpath expr="//field[@name='create_uid']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
+            <xpath expr="//field[@name='create_date']" position="attributes">
+               <attribute name="invisible">True</attribute>
+           </xpath>
+           <xpath expr="//field[@name='last_updated_res']" position="attributes">
+             <attribute name="invisible">True</attribute>
+          </xpath>
         </field>
     </record>
 
