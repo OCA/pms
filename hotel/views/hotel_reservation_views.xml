@@ -60,13 +60,6 @@
                         icon="fa-compress"
                         attrs="{'invisible':[('splitted', '=', False)]}"
                     />
-                    <label for="preconfirm"
-                        string="Autoconfirm"
-                        attrs="{'invisible':[('folio_id', '!=', False)]}"
-                    />
-                    <span name="preconfirm" attrs="{'invisible':[('folio_id', '!=', False)]}">
-                        <field name="preconfirm" />
-                    </span>
                     <button name="open_master" string="Open Master" type="object" class="oe_highlight" icon="fa-file" attrs="{'invisible':['|',['parent_reservation', '=', False]]}" />
                     <field name="state" widget="statusbar"/>
 
@@ -148,10 +141,13 @@
                     <span class="label label-danger" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}">Cancelled Reservation!</span>
                     <span class="label label-warning" attrs="{'invisible': [('overbooking', '=', False)]}">OverBooking!</span>
                     <h1>
-                        <!-- <field name="edit_room" nolabel="1" class="fa fa-bed" /> -->
-                        <!-- <field name="room_id" select="1" domain="[('isroom','=',True)]"
-                            nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
-                            style="margin-right: 30px;"/> -->
+                          <label for="preconfirm"
+                             string="Autoconfirm"
+                             attrs="{'invisible':[('folio_id', '!=', False)]}"
+                         />
+                         <span name="preconfirm" attrs="{'invisible':[('folio_id', '!=', False)]}">
+                             <field name="preconfirm" />
+                         </span>
                         <field name="room_id" select="1"
                           nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
                           style="margin-right: 30px;" required='1'/>
@@ -187,7 +183,10 @@
                             <field name="mobile" placeholder="mobile" widget="phone"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
                             <field name="phone" placeholder="phone" widget="phone"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                                attrs="{'invisible': [('reservation_type','in',('out'))],
+                                 'required': [('channel_type','in',('door','mail','phone')),
+                                              ('mobile','=','')]}"
+                                />
                             <field name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
                             <field name="partner_internal_comment" string="Partner Note"
@@ -445,7 +444,7 @@
                 />
                 <field name="folio_id"/>
                 <button type="object" class="oe_stat_button"
-                    icon="fa fa-1x fa-user-plus"
+                    icon="fa fa-2x fa-user-plus"
                     name="action_checks"
                     context="{'partner_id': partner_id,'enter_date': checkin,
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
@@ -497,13 +496,16 @@
                 <attribute name="delete">false</attribute>
                 <attribute name="string">Rooms</attribute>
             </tree>
+            <xpath expr="//field[@name='state']" position="before">
+               <button type="object" class="oe_stat_button"
+                  icon="fa fa-2x fa-suitcase"
+                  name="open_reservation_form"
+                  help="Open Reservation Room Detail"/>
+            </xpath>
             <xpath expr="//field[@name='folio_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//button[@name='open_folio'][1]" position="attributes">
-                <attribute name="invisible">True</attribute>
-            </xpath>
-            <xpath expr="//button[@name='open_folio'][2]" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//button[@name='open_folio'][2]" position="attributes">
@@ -521,6 +523,12 @@
              <xpath expr="//field[@name='create_uid']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
+            <xpath expr="//field[@name='create_date']" position="attributes">
+               <attribute name="invisible">True</attribute>
+           </xpath>
+           <xpath expr="//field[@name='last_updated_res']" position="attributes">
+             <attribute name="invisible">True</attribute>
+          </xpath>
         </field>
     </record>
 

@@ -8,7 +8,7 @@
                 <xpath expr="//field[@name='communication']" position="after">
                     <field name="folio_id"/>
                     <field name="save_amount" invisible="1"/>
-                    <field name="save_journal" invisible="1"/>
+                    <field name="save_journal_id" invisible="1"/>
                     <field name="save_date" invisible="1"/>
                 </xpath>
             </field>

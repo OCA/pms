@@ -369,9 +369,8 @@ class HotelReservation(models.Model):
             vals['real_checkin'] = vals['checkin']
             vals['real_checkout'] = vals['checkout']
         record = super(HotelReservation, self).create(vals)
-        #~ if (record.state == 'draft' and record.folio_id.state == 'sale') or \
-                #~ record.preconfirm:
-            #~ record.confirm()
+        if record.preconfirm:
+            record.confirm()
         return record
 
     @api.multi
@@ -688,11 +687,16 @@ class HotelReservation(models.Model):
                 (fields.Date.from_string(self.checkout) - timedelta(days=1)).
                 strftime(DEFAULT_SERVER_DATE_FORMAT))
             rooms_occupied = occupied.mapped('room_id.id')
-            if self.room_id and self.room_id.id in rooms_occupied:
-                warning_msg = _('You tried to change \
+            if self.room_id:
+                occupied = occupied.filtered(
+                    lambda r: r.room_id.id == self.room_id.id
+                    and r.id != self._origin.id)
+                if occupied:
+                    occupied_name = ', '.join(str(x.folio_id.name) for x in occupied)
+                    warning_msg = _('You tried to change/confirm \
                        reservation with room those already reserved in this \
-                       reservation period')
-                raise ValidationError(warning_msg)
+                       reservation period: %s ') % occupied_name
+                    raise ValidationError(warning_msg)
             domain_rooms = [
                 ('id', 'not in', rooms_occupied)
             ]
@@ -700,7 +704,7 @@ class HotelReservation(models.Model):
 
     @api.onchange('partner_diff_invoicing')
     def onchange_partner_diff_invoicing(self):
-        if self.partner_diff_invoicing == False:
+        if self.partner_diff_invoicing is False:
             self.update({'partner_invoice_id': self.partner_id.id})
         elif self.partner_id == self.partner_invoice_id:
             self.update({'partner_invoice_id': self.partner_id.address_get(['invoice'])['invoice'] or None})
@@ -873,12 +877,15 @@ class HotelReservation(models.Model):
     @api.model
     def prepare_reservation_lines(self, dfrom, days, pricelist_id, vals=False, update_old_prices=False):
         total_price = 0.0
+        discount = 0
         cmds = [(5, 0, 0)]
         if not vals:
             vals = {}
         room_type_id = vals.get('room_type_id') or self.room_type_id.id
         product = self.env['hotel.room.type'].browse(room_type_id).product_id
         partner = self.env['res.partner'].browse(vals.get('partner_id') or self.partner_id.id)
+        if 'discount' in vals and vals.get('discount') > 0:
+            discount = vals.get('discount')
         for i in range(0, days):
             idate = (fields.Date.from_string(dfrom) + timedelta(days=i)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
@@ -891,16 +898,18 @@ class HotelReservation(models.Model):
                     date=idate,
                     pricelist=pricelist_id,
                     uom=product.uom_id.id)
-                line_price = self.env['account.tax']._fix_tax_included_price_company(
-                    product.price, product.taxes_id, self.tax_ids, self.company_id)
+                # REVIEW this forces to have configured the taxes included in the price
+                line_price = product.price
                 if old_line and old_line.id:
                     cmds.append((1, old_line.id, {
-                        'price': line_price
+                        'price': line_price,
+                        'discount': discount
                     }))
                 else:
                     cmds.append((0, False, {
                         'date': idate,
-                        'price': line_price
+                        'price': line_price,
+                        'discount': discount
                     }))
             else:
                 line_price = old_line.price
@@ -1008,7 +1017,7 @@ class HotelReservation(models.Model):
             occupied = occupied.filtered(
                 lambda r: r.room_id.id == self.room_id.id
                 and r.id != self.id)
-            occupied_name = ','.join(str(x.room_id.name) for x in occupied)
+            occupied_name = ', '.join(str(x.folio_id.name) for x in occupied)
             if occupied:
                 warning_msg = _('You tried to change/confirm \
                    reservation with room those already reserved in this \

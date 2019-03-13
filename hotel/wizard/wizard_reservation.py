@@ -49,11 +49,26 @@ class FolioWizard(models.TransientModel):
         if user.has_group('hotel.group_hotel_call'):
             return 'phone'
 
-    partner_id = fields.Many2one('res.partner',string="Customer")
+    @api.model
+    def _get_default_pricelist(self):
+        return self.env['ir.default'].sudo().get(
+                'res.config.settings', 'default_pricelist_id')
+
+    partner_id = fields.Many2one('res.partner', required=True, string="Customer")
+    email = fields.Char('E-mail')
+    mobile = fields.Char('Mobile')
+
+    pricelist_id = fields.Many2one('product.pricelist',
+                                   string='Pricelist',
+                                   required=True,
+                                   default=_get_default_pricelist,
+                                   help="Pricelist for current folio.")
     checkin = fields.Date('Check In', required=True,
                               default=_get_default_checkin)
     checkout = fields.Date('Check Out', required=True,
                                default=_get_default_checkout)
+    credit_card_details = fields.Text('Credit Card Details')
+    internal_comment = fields.Text(string='Internal Folio Notes')
     reservation_wizard_ids = fields.One2many('hotel.reservation.wizard',
                                              'folio_wizard_id',
                                              string="Resevations")
@@ -68,12 +83,27 @@ class FolioWizard(models.TransientModel):
         ('mail', 'Mail'),
         ('phone', 'Phone')
     ], string='Sales Channel', default=_get_default_channel_type)
-    room_type_wizard_ids = fields.Many2many('hotel.room.type.wizard',
-                                            string="Room Types")
+    room_type_wizard_ids = fields.One2many('hotel.room.type.wizard',
+                                           'folio_wizard_id',
+                                           string="Room Types")
     call_center = fields.Boolean(default=_get_default_center_user)
 
     def assign_rooms(self):
         self.assign = True
+
+    @api.onchange('pricelist_id')
+    def onchange_pricelist_id(self):
+        if self.pricelist_id:
+            self.onchange_checks()
+
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        if self.partner_id:
+            pricelist = self.partner_id.property_product_pricelist and \
+                        self.partner_id.property_product_pricelist.id or \
+                        self.env['ir.default'].sudo().get(
+                            'res.config.settings', 'default_pricelist_id')
+            self.pricelist_id = pricelist
 
     @api.onchange('autoassign')
     def create_reservations(self):
@@ -103,10 +133,7 @@ class FolioWizard(models.TransientModel):
                 checkout_dt = fields.Date.from_string(line.checkout)
                 nights = abs((checkout_dt - checkin_dt).days)
                 for room in room_list:
-                    pricelist_id = self.env['ir.default'].sudo().get(
-                        'res.config.settings', 'default_pricelist_id')
-                    if pricelist_id:
-                        pricelist_id = int(pricelist_id)
+                    pricelist_id = self.pricelist_id.id
                     res_price = 0
                     for i in range(0, nights):
                         ndate = checkin_dt + timedelta(days=i)
@@ -224,6 +251,10 @@ class FolioWizard(models.TransientModel):
             'channel_type': self.channel_type,
             'room_lines': reservations,
             'service_lines': services,
+            'internal_comment': self.internal_comment,
+            'credit_card_details': self.credit_card_details,
+            'email': self.email,
+            'mobile': self.mobile,
         }
         newfol = self.env['hotel.folio'].create(vals)
         if self.confirm:
@@ -263,6 +294,22 @@ class HotelRoomTypeWizards(models.TransientModel):
     checkout = fields.Date('Check Out', required=True,
                                default=_get_default_checkout)
     can_confirm = fields.Boolean(compute="_can_confirm")
+    board_service_room_id = fields.Many2one('hotel.board.service.room.type',
+                                            string="Board Service")
+
+    @api.multi
+    @api.onchange('rooms_num')
+    def domain_board_service(self):
+        for line in self:
+            board_service_room_ids = []
+            if line.room_type_id:
+                pricelist_id = self.folio_wizard_id.pricelist_id.id
+                board_services_room_type = self.env['hotel.board.service.room.type'].\
+                    search([('hotel_room_type_id', '=', self.room_type_id.id),
+                            ('pricelist_id', 'in', (pricelist_id, False))])
+                board_service_room_ids = board_services_room_type.ids
+            domain_boardservice = [('id', 'in', board_service_room_ids)]
+            return {'domain': {'board_service_room_id': domain_boardservice}}
 
     @api.multi
     def _can_confirm(self):
@@ -281,9 +328,6 @@ class HotelRoomTypeWizards(models.TransientModel):
             minstay_restrictions = self.env['hotel.room.type.restriction.item'].search([
                 ('room_type_id', '=', res.room_type_id.id),
             ])
-            avail_restrictions = self.env['hotel.room.type.availability'].search([
-                ('room_type_id', '=', res.room_type_id.id)
-            ])
             real_max = len(res.room_type_id.check_availability_room_type(
                 res.checkin,
                 res.checkout,
@@ -297,19 +341,11 @@ class HotelRoomTypeWizards(models.TransientModel):
                 dates.append(ndate_str)
                 if minstay_restrictions:
                     date_min_days = minstay_restrictions.filtered(
-                        lambda r: r.date_start <= ndate_str and \
-                            r.date_end >= ndate_str).min_stay
+                        lambda r: r.date == ndate_str).min_stay
                     if date_min_days > min_stay:
                         min_stay = date_min_days
-                if user.has_group('hotel.group_hotel_call'):
-                    if avail_restrictions:
-                        max_avail = avail_restrictions.filtered(
-                            lambda r: r.date == ndate_str).wmax_avail
-                        if max_avail < avail:
-                            avail = min(max_avail, real_max)
                 else:
                     avail = real_max
-
 
             if 100000 > avail > 0:
                 res.max_rooms = avail
@@ -330,12 +366,7 @@ class HotelRoomTypeWizards(models.TransientModel):
             if chkin_utc_dt >= chkout_utc_dt:
                 chkout_utc_dt = chkin_utc_dt + timedelta(days=1)
             nights = abs((chkout_utc_dt - chkin_utc_dt).days)
-
-            pricelist_id = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_pricelist_id')
-            if pricelist_id:
-                pricelist_id = int(pricelist_id)
-
+            pricelist_id = self.folio_wizard_id.pricelist_id.id
             res_price = 0
             for i in range(0, nights):
                 ndate = chkin_utc_dt + timedelta(days=i)
@@ -347,8 +378,7 @@ class HotelRoomTypeWizards(models.TransientModel):
                     date=ndate_str,
                     pricelist=pricelist_id,
                     uom=record.room_type_id.product_id.uom_id.id)
-                res_price += self.env['account.tax']._fix_tax_included_price_company(
-                    product.price, product.taxes_id, product.taxes_id, self.env.user.company_id)
+                res_price += product.price
 
             price = res_price - ((res_price * record.discount) * 0.01)
             total_price = record.rooms_num * price
@@ -427,10 +457,7 @@ class ReservationWizard(models.TransientModel):
             end_date_utc_dt = fields.Date.from_string(line.checkout)
 
             if line.room_type_id:
-                pricelist_id = self.env['ir.default'].sudo().get(
-                    'res.config.settings', 'default_pricelist_id')
-                if pricelist_id:
-                    pricelist_id = int(pricelist_id)
+                pricelist_id = self.folio_wizard_id.pricelist_id.id
                 nights = abs((end_date_utc_dt - start_date_utc_dt).days)
                 res_price = 0
                 for i in range(0, nights):
@@ -443,8 +470,7 @@ class ReservationWizard(models.TransientModel):
                         date=ndate_str,
                         pricelist=pricelist_id,
                         uom=line.room_type_id.product_id.uom_id.id)
-                    res_price += self.env['account.tax']._fix_tax_included_price_company(
-                        product.price, product.taxes_id, product.taxes_id, self.env.user.company_id)
+                    res_price += product.price
                 res_price = res_price - (res_price * self.discount) * 0.01
                 line.amount_reservation = res_price
                 line.price = res_price
@@ -469,79 +495,24 @@ class ServiceWizard(models.TransientModel):
                               default=0.0)
     price_total = fields.Float(compute='_compute_amount', string='Subtotal',
                                readonly=True, store=True)
-    reservation_wizard_ids = fields.Many2many('hotel.reservation.wizard', 'Rooms')
     product_uom_qty = fields.Float(string='Quantity',
                                    digits=dp.get_precision('Product Unit of Measure'),
                                    required=True,
                                    default=1.0)
 
-    @api.onchange('product_id', 'reservation_wizard_ids')
+    @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
-            vals = {}
-            qty = 0
-            vals['product_uom_qty'] = 1.0
-            service_obj = self.env['hotel.service']
-            if self.product_id.per_day:
-                product = self.product_id
-                for room in self.reservation_wizard_ids:
-                    lines = {}
-                    lines.update(service_obj.prepare_service_lines(
-                            dfrom=room.checkin,
-                            days=room.nights,
-                            per_person=product.per_person,
-                            persons=room.adults))
-                    qty += lines.get('service_line_ids')[1][2]['day_qty']
-                    if self.product_id.daily_limit > 0:
-                        limit = self.product_id.daily_limit
-                        for day in self.service_line_ids:
-                            out_qty = sum(self.env['hotel.service.line'].search([
-                                ('product_id', '=', self.product_id.id),
-                                ('date', '=', self.date),
-                                ('service_id', '!=', self.product_id.id)
-                                ]).mapped('day_qty'))
-                            if limit < out_qty + self.day_qty:
-                                raise ValidationError(
-                                _("%s limit exceeded for %s")% (self.service_id.product_id.name,
-                                                                self.date))
-                    vals['product_uom_qty'] = qty
-            """
-            Description and warnings
-            """
-            product = self.product_id.with_context(
-                lang=self.folio_wizard_id.partner_id.lang,
-                partner=self.folio_wizard_id.partner_id.id
-            )
-            title = False
-            message = False
-            warning = {}
-            if product.sale_line_warn != 'no-message':
-                title = _("Warning for %s") % product.name
-                message = product.sale_line_warn_msg
-                warning['title'] = title
-                warning['message'] = message
-                result = {'warning': warning}
-                if product.sale_line_warn == 'block':
-                    self.product_id = False
-                    return result
-            """
-            Compute tax and price unit
-            """
-            #REVIEW: self._compute_tax_ids()
             # TODO change pricelist for partner
-            pricelist_id = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_pricelist_id')
-            product = self.product_id.with_context(
-                lang=self.folio_wizard_id.partner_id.lang,
-                partner=self.folio_wizard_id.partner_id.id,
-                quantity=1,
-                date=fields.Datetime.now(),
-                pricelist=pricelist_id,
-                uom=product.uom_id.id)
-            vals['price_unit'] = self.env['account.tax']._fix_tax_included_price_company(
-                product.price, product.taxes_id, product.taxes_id, self.env.user.company_id)
-            import wdb; wdb.set_trace()
-            self.update(vals)
+            pricelist_id = self.folio_wizard_id.pricelist_id.id
+            prod = self.product_id.with_context(
+                            lang=self.folio_wizard_id.partner_id.lang,
+                            partner=self.folio_wizard_id.partner_id.id,
+                            quantity=1,
+                            date=fields.Datetime.now(),
+                            pricelist=pricelist_id,
+                            uom=self.product_id.uom_id.id)
+            self.price_unit = prod.price
 
     @api.depends('price_unit', 'product_uom_qty', 'discount')
     def _compute_amount(self):

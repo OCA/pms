@@ -1,111 +1,88 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* hotel_calendar_wubook
+# 	* hotel_calendar_channel_connector
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 06:41+0000\n"
-"PO-Revision-Date: 2018-05-22 06:41+0000\n"
+"POT-Creation-Date: 2019-03-13 21:59+0000\n"
+"PO-Revision-Date: 2019-03-13 23:01+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: es\n"
+"X-Generator: Poedit 1.8.7.1\n"
 
-#. module: hotel_calendar_wubook
+#. module: hotel_calendar_channel_connector
+#: model:ir.actions.act_window,name:hotel_calendar_channel_connector.calendar_channel_connector_issues_action
+msgid "Channel Connector Issues"
+msgstr "Aviso de Conexión"
+
+#. module: hotel_calendar_channel_connector
 #. openerp-web
-#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_templates.xml:10
-#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_view.xml:24
+#: code:addons/hotel_calendar_channel_connector/static/src/xml/hotel_calendar_view.xml:30
 #, python-format
 msgid "Channel:"
 msgstr "Canal:"
 
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
-msgid "Final Price"
-msgstr "Precio Final"
-
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
-msgid "Folio Pending Amount"
-msgstr "Pendiente en Ficha"
-
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+#. module: hotel_calendar_channel_connector
+#: model:ir.model,name:hotel_calendar_channel_connector.model_hotel_reservation
 msgid "Hotel Reservation"
-msgstr "Reserva"
+msgstr "Reserva del hotel"
 
-#. module: hotel_calendar_wubook
+#. module: hotel_calendar_channel_connector
 #. openerp-web
-#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_view.xml:15
+#: code:addons/hotel_calendar_channel_connector/static/src/xml/hotel_calendar_view.xml:11
 #, python-format
-msgid "ISSUES"
-msgstr "AVISOS"
+msgid "Issues"
+msgstr "Avisos"
 
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.hotel_reservation_view_form
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
+#. module: hotel_calendar_channel_connector
+#: model:ir.ui.view,arch_db:hotel_calendar_channel_connector.hotel_reservation_view_form
 msgid "Mark as Read"
-msgstr "Marcar como leídp"
+msgstr "Marcar como leído"
 
-#. module: hotel_calendar_wubook
-#: code:addons/hotel_calendar_wubook/models/inherited_wubook_issue.py:33
-#, python-format
-msgid "Oops! Issue Reported!!"
-msgstr "Oops! ¡Aviso generado!"
+#. module: hotel_calendar_channel_connector
+#: model:ir.actions.act_window,name:hotel_calendar_channel_connector.hotel_reservation_action_manager_request
+msgid "Reservations to Assign from Channel"
+msgstr "Reservas por asignar"
 
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
-msgid "Persons"
-msgstr "Personas"
-
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
-msgid "Reservation Price"
-msgstr "Precio de Reserva"
-
-#. module: hotel_calendar_wubook
-#: model:ir.actions.act_window,name:hotel_calendar_wubook.hotel_reservation_action_manager_request
-msgid "Reservations to Assign from WuBook"
-msgstr "Reservas por Asignar desde WuBook"
-
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
-msgid "Reserved Room Type"
-msgstr "Tipo Habitación Reservada"
-
-#. module: hotel_calendar_wubook
-#: model:ir.ui.view,arch_db:hotel_calendar_wubook.view_hotel_toassign_reservation_tree
-msgid "Room"
-msgstr "Habitación"
-
-#. module: hotel_calendar_wubook
+#. module: hotel_calendar_channel_connector
 #. openerp-web
-#: code:addons/hotel_calendar_wubook/static/src/xml/hotel_calendar_templates.xml:4
+#: code:addons/hotel_calendar_channel_connector/static/src/xml/hotel_calendar_templates.xml:4
 #, python-format
 msgid "Section:"
-msgstr "Sección"
+msgstr "Sección:"
 
-#. module: hotel_calendar_wubook
-#: model:ir.actions.act_window,name:hotel_calendar_wubook.calendar_wubook_issues_action
-msgid "WuBook Issues"
-msgstr "Problemas de WuBook"
+#. module: hotel_calendar_channel_connector
+#. openerp-web
+#: code:addons/hotel_calendar_channel_connector/static/src/xml/hotel_calendar_view.xml:20
+#, python-format
+msgid "To Assign"
+msgstr "Por Asignar"
 
-#. module: hotel_calendar_wubook
-#: model:ir.model,name:hotel_calendar_wubook.model_bus_hotel_calendar
+#. module: hotel_calendar_channel_connector
+#. openerp-web
+#: code:addons/hotel_calendar_channel_connector/static/src/xml/hotel_calendar_templates.xml:11
+#, python-format
+msgid "WuBook:"
+msgstr "WuBook:"
+
+#. module: hotel_calendar_channel_connector
+#: model:ir.model,name:hotel_calendar_channel_connector.model_bus_hotel_calendar
 msgid "bus.hotel.calendar"
 msgstr "bus.hotel.calendar"
 
-#. module: hotel_calendar_wubook
-#: model:ir.model,name:hotel_calendar_wubook.model_hotel_reservation
-msgid "hotel reservation"
-msgstr "Reserva"
+#. module: hotel_calendar_channel_connector
+#: model:ir.model,name:hotel_calendar_channel_connector.model_hotel_calendar_management
+msgid "hotel.calendar.management"
+msgstr "hotel.calendar.management"
 
-#. module: hotel_calendar_wubook
-#: model:ir.model,name:hotel_calendar_wubook.model_wubook_issue
-msgid "wubook.issue"
-msgstr "wubook.issue"
-
+#. module: hotel_calendar_channel_connector
+#: model:ir.model,name:hotel_calendar_channel_connector.model_hotel_room_type_availability
+msgid "hotel.room.type.availability"
+msgstr "hotel.room.type.availability"

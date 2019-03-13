@@ -21,4 +21,3 @@ class AccountInvoiceLine(models.Model):
         'reservation_line_invoice_rel',
         'invoice_line_id', 'reservation_line_id',
         string='Reservation Lines', readonly=True, copy=False)
-    

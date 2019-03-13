@@ -6,7 +6,7 @@
         name="Action checkin"
         res_model="hotel.checkin.partner"
         view_mode="tree,form" />
-        
+
     <menuitem
         id="menu_hotel_checkin_partner"
         name="Checkins"
@@ -47,9 +47,12 @@
                 <button type="object" class="oe_stat_button"
                     icon="fa fa-2x fa-check-circle"
                     name="action_on_board"
-                    attrs="{'invisible':[('state','not in', ['draft'])]}"
-                    help="Get in" 
+                    attrs="{'invisible':['|',
+                      ('state','not in', ['draft']),
+                      ('id','=',False)]}"
+                    help="Get in"
                 />
+                <field name="auto_booking" attrs="{'invisible':[('id','!=',False)]}" />
                 <field name="partner_id" required="True"/>
                 <field name="mobile"/>
                 <field name="email"/>
@@ -75,7 +78,7 @@
                     icon="fa fa-2x fa-check-circle"
                     name="action_on_board"
                     attrs="{'invisible':[('state','not in', ['draft'])]}"
-                    help="Get in" 
+                    help="Get in"
                 />
                 <field name="partner_id" required="True"/>
                 <field name="mobile"/>
@@ -108,7 +111,7 @@
                 <filter string="Checkins Tomorrow" name="enter_tomorrow"
                         domain="[('enter_date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
-                        help="Show all checkins for enter tomorrow"/>             
+                        help="Show all checkins for enter tomorrow"/>
                 <filter string="Checkins to 7 days" name="next_res_week"
                         domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
