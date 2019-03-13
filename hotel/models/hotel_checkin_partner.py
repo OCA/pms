@@ -4,6 +4,8 @@
 import datetime
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from odoo.tools import (
+    DEFAULT_SERVER_DATE_FORMAT)
 
 
 class HotelCheckinPartner(models.Model):
@@ -56,6 +58,15 @@ class HotelCheckinPartner(models.Model):
                 return reservation.partner_id
         return False
 
+    def _default_to_enter(self):
+        tz_hotel = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'tz_hotel')
+        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+        today_str = fields.Date.from_string(today).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
+        if self._default_enter_date() == today_str:
+            return True
+        return False
 
     partner_id = fields.Many2one('res.partner', default=_default_partner_id,
                                  required=True)
@@ -64,9 +75,11 @@ class HotelCheckinPartner(models.Model):
     reservation_id = fields.Many2one(
         'hotel.reservation', default=_default_reservation_id)
     folio_id = fields.Many2one('hotel.folio',
-        default=_default_folio_id, readonly=True, required=True)
+                               default=_default_folio_id,
+                               readonly=True, required=True)
     enter_date = fields.Date(default=_default_enter_date, required=True)
     exit_date = fields.Date(default=_default_exit_date, required=True)
+    auto_booking = fields.Boolean('Get in Now', default=_default_to_enter)
     state = fields.Selection([('draft', 'Pending Entry'),
                               ('booking', 'On Board'),
                               ('done', 'Out'),
@@ -74,11 +87,17 @@ class HotelCheckinPartner(models.Model):
                              'State', readonly=True,
                              default=lambda *a: 'draft',
                              track_visibility='onchange')
-    
+
+    @api.model
+    def create(self, vals):
+        record = super(HotelCheckinPartner, self).create(vals)
+        if vals.get('auto_booking', False):
+            record.action_on_board()
+        return record
 
     # Validation for Departure date is after arrival date.
     @api.multi
-    @api.constrains('exit_date','enter_date')
+    @api.constrains('exit_date', 'enter_date')
     def _check_exit_date(self):
         for record in self:
             date_in = fields.Date.from_string(record.enter_date)
@@ -104,8 +123,8 @@ class HotelCheckinPartner(models.Model):
     def _check_partner_id(self):
         for record in self:
             checkins = self.env['hotel.checkin.partner'].search([
-                            ('id','!=', record.id),
-                            ('reservation_id','=', record.reservation_id.id)   
+                            ('id', '!=', record.id),
+                            ('reservation_id', '=', record.reservation_id.id)
                         ])
             if record.partner_id.id in checkins.mapped('partner_id.id'):
                 raise models.ValidationError(
@@ -116,8 +135,8 @@ class HotelCheckinPartner(models.Model):
     def _check_partner_id(self):
         for record in self:
             checkins = self.env['hotel.checkin.partner'].search([
-                            ('id','!=', record.id),
-                            ('reservation_id','=', record.reservation_id.id)
+                            ('id', '!=', record.id),
+                            ('reservation_id', '=', record.reservation_id.id)
                         ])
             if record.partner_id.id in checkins.mapped('partner_id.id'):
                 raise models.ValidationError(
