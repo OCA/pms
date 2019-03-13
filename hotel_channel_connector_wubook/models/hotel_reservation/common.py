@@ -60,6 +60,7 @@ class HotelReservation(models.Model):
         if user.has_group('hotel.group_hotel_call'):
             self.write({'to_assign': True})
 
+<<<<<<< HEAD
 <<<<<<< 2076e6f9957b19690791d7ef40bbd5b5c59c96dd
         return super(HotelReservation, self).action_cancel()
 
@@ -73,6 +74,10 @@ class HotelReservation(models.Model):
                     self.sudo().env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
         return res
 >>>>>>> [WIP] Payments Notifications
+=======
+        return super(HotelReservation, self).action_cancel()
+
+>>>>>>> 11.0
 
     @api.multi
     def confirm(self):
@@ -127,3 +132,5 @@ class HotelReservationAdapter(Component):
     def cancel_reservation(self, channel_reservation_id, message):
         return super(HotelReservationAdapter, self).cancel_reservation(
             channel_reservation_id, message)
+
+
