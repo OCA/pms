@@ -1,1121 +1,341 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* hotel_wubook_proto
+# 	* hotel_channel_connector_wubook
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-19 14:22+0000\n"
-"PO-Revision-Date: 2018-05-19 16:28+0200\n"
+"POT-Creation-Date: 2019-03-13 22:37+0000\n"
+"PO-Revision-Date: 2019-03-13 23:50+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: es\n"
 "X-Generator: Poedit 1.8.7.1\n"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_config_settings
-msgid "<span class=\"o_stat_text\">ReSync</span>"
-msgstr "<span class=\"o_stat_text\">Sincronizar</span>"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_hotel_board_service_room_type
+msgid "Board Service included in Room"
+msgstr "Servicios incluidos en la habitación"
 
-#. module: hotel_wubook_proto
-#: selection:hotel.reservation,wstatus:0
-msgid "Accepted"
-msgstr "Aceptada"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_activate_push
-msgid "Active Push Notifications"
-msgstr "Activar notificaciones Push"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_config_settings
-msgid "Apply"
-msgstr "Aplicar"
-
-#. module: hotel_wubook_proto
-#: selection:wubook.issue,section:0
-msgid "Availability"
-msgstr "Disponibilidad"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:149
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:109
 #, python-format
-msgid "Availability successfully pushed"
-msgstr "Disponibilidad actualizada con éxito"
+msgid "Can't activate push reservations"
+msgstr "No se puede activar la exportación Reservas"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_reservation.py:190
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:118
 #, python-format
-msgid "Can't cancel reservation                                                                 on WuBook"
-msgstr "No se pueden cancelar reservas                                                              de Wubook"
+msgid "Can't activate push rooms"
+msgstr "No se puede activar la exportaciónd e habitaciones"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_reservation.py:174
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:321
 #, python-format
-msgid "Can't cancel reservations                                             from OTA's"
-msgstr "No se pueden cancelar reservas                                             de OTA"
+msgid "Can't add pricing plan to wubook"
+msgstr "No se puede añadir la tarifa a Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/inherited_massive_price_reservation_days.py:39
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:336
 #, python-format
-msgid "Can't change prices of reservations from OTA's"
-msgstr "No se pueden modificar lor precios de reserva de OTA"
+msgid "Can't add virtual pricing plan to wubook"
+msgstr "No se puede añadir la tarifa Virtual a Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_reservation.py:202
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:228
 #, python-format
-msgid "Can't confirm cancelled reservations"
-msgstr "No se pueden confirmar cancelaciones de OTA"
+msgid "Can't call 'corporate_fetch' from WuBook"
+msgstr "No se puede llamar 'corporate_fetch' desde Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/wubook_installer.py:85
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:272
 #, python-format
-msgid "Can't create base wubook restrictions"
-msgstr "No se puede crear el plan de restricciones base de Wubook"
+msgid "Can't cancel reservation in WuBook"
+msgstr "No se puede cancelar la reserva en Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_product_pricelist.py:105
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/hotel_reservation/common.py:57
 #, python-format
-msgid "Can't create plan on WuBook"
-msgstr "No se puede crear el plan en WuBook"
+msgid "Can't cancel reservations from OTA's"
+msgstr "No se puede cancelar reservas de OTAa"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_reservation_restriction.py:74
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/hotel_reservation/common.py:78
 #, python-format
-msgid "Can't create restriction plan on                                 WuBook"
-msgstr "No se puede crear el plan de restricción en WuBook"
+msgid "Can't confirm OTA's cancelled reservations"
+msgstr "No se puede confirmar reservas canceladas de OTAa"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_virtual_room.py:90
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:80
 #, python-format
-msgid "Can't create room on WuBook"
-msgstr "No se puede crear la habitación en WuBook"
+msgid "Can't connect with channel!"
+msgstr "No se puede conectar con el Channel!"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_product_pricelist.py:134
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:505
 #, python-format
-msgid "Can't delete plan on WuBook"
-msgstr "No se puede crear el plan en WuBook"
+msgid "Can't create plan restriction in wubook"
+msgstr "No se puede crear el plan de restricciones en Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_reservation_restriction.py:124
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:258
 #, python-format
-msgid "Can't delete restriction plan                         on WuBook"
-msgstr "No se puede crear el plan de restricción en WuBook"
+msgid "Can't create reservations in wubook"
+msgstr "No se puede crear las reservas en Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_virtual_room.py:123
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:145
 #, python-format
-msgid "Can't delete room on WuBook"
-msgstr "No se puede eliminar habitación en WuBook"
+msgid "Can't create room in WuBook"
+msgstr "No se puede crear la habitación en Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/inherited_duplicate_reservation.py:34
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/inherited_hotel_room_type_class.py:24
 #, python-format
-msgid "Can't duplicate a reservation from channel"
-msgstr "No se puede duplicar una reserva de OTA"
+msgid "Can't delete channel room type class"
+msgstr "No se puede eliminar la categoría de habitación"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/wubook_import_availability.py:44
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:529
 #, python-format
-msgid "Can't fetch availability from WuBook"
-msgstr "No se puede obtener la disponibilidad de WuBook"
+msgid "Can't delete plan restriction on wubook"
+msgstr "No se puede eliminar el plan de restricciones en Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/wubook_import_plan_prices.py:47
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:362
 #, python-format
-msgid "Can't fetch plan prices                                                                 from WuBook"
-msgstr "No se puede obtener los precios del plan de WuBook"
+msgid "Can't delete pricing plan from wubook"
+msgstr "No se puede eliminar la tarifa desde Wubook\t"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/wubook_import_plan_restrictions.py:52
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:183
 #, python-format
-msgid "Can't fetch restrictions                                                                 from WuBook"
-msgstr "No se puede obtener las restricciones de WuBook"
+msgid "Can't delete room in WuBook"
+msgstr "No se puede eliminar la habitación en Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/wubook_issue.py:65
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:442
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:475
 #, python-format
-msgid "Can't mark reservation as readed in WuBook!"
-msgstr "¡No se puede marcar la reserva como leída en WuBook!"
+msgid "Can't fetch restriction plans from wubook"
+msgstr "No se puede importar el plan de restricciones desde Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_virtual_room.py:112
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:195
 #, python-format
-msgid "Can't modify room on WuBook"
-msgstr "No se puede modificar la habitación en WuBook"
+msgid "Can't fetch room values from WuBook"
+msgstr "No se puede importar las habitaciones desde Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_reservation_restriction.py:111
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:209
 #, python-format
-msgid "Can't rename restriction plan                         on WuBook"
-msgstr "No se puede renombrar el plan de restricción en WuBook"
+msgid "Can't fetch rooms values from WuBook"
+msgstr "No se puede importar las habitaciones desde Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_product_pricelist.py:121
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/controllers/main.py:36
+#: code:addons/hotel_channel_connector_wubook/controllers/main.py:61
 #, python-format
-msgid "Can't update plan name                                                                     on WuBook"
-msgstr "No se puede modificar el nombre del plan en WuBook"
+msgid "Can't found a backend!"
+msgstr "No se puede encontrar el backend!"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_config_settings
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_availability_wizard
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_prics_wizard
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_restrictions_wizard
-msgid "Cancel"
-msgstr "Cancelar"
-
-#. module: hotel_wubook_proto
-#: selection:hotel.reservation,wstatus:0
-msgid "Cancelled"
-msgstr "Cancelado"
-
-#. module: hotel_wubook_proto
-#: selection:hotel.reservation,wstatus:0
-msgid "Cancelled with penalty"
-msgstr "Cancelada con penalización"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_name
-msgid "Channel Name"
-msgstr "Nombre de canal"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.menu,name:hotel_wubook_proto.wubook_channels_info_menu
-msgid "Channels Info"
-msgstr "Informacion del Canal"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:97
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:414
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:428
 #, python-format
-msgid "Channels Info successfully imported"
-msgstr "Información de canales importada con éxito"
+msgid "Can't get pricing plans from wubook"
+msgstr "No se puede importar las tarifas desde Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/wubook_installer.py:95
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:538
 #, python-format
-msgid "Configure Hotel Default"
-msgstr "Configurar paridad del hotel"
+msgid "Can't import channels info from wubook"
+msgstr "No se puede importar la informacion de Canales desde Wubook"
 
-#. module: hotel_wubook_proto
-#: model:ir.actions.act_window,name:hotel_wubook_proto.action_wubook_config
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_config_settings
-msgid "Configure WuBook"
-msgstr "Configurar WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.actions.act_window,name:hotel_wubook_proto.action_wubook_configuration_installer
-msgid "Configure WuBook Data"
-msgstr "Configurar Datos de WuBook "
-
-#. module: hotel_wubook_proto
-#: selection:hotel.reservation,wstatus:0
-msgid "Confirmed"
-msgstr "Confirmado"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer
-msgid "Continue"
-msgstr "Continuar"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_create_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_create_uid
-msgid "Created by"
-msgstr "Creado por"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_create_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_create_date
-msgid "Created on"
-msgstr "Creado en"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_date_end
-msgid "Date End"
-msgstr "Fecha finalización"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_date_start
-msgid "Date Start"
-msgstr "Fecha de inicio"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_display_name
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_display_name
-msgid "Display Name"
-msgstr "Mostrar Nombre"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_date_end
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_date_end
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_date_end
-msgid "End Date"
-msgstr "Fecha finalización"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/controllers/main.py:59
-#: code:addons/hotel_wubook_proto/controllers/main.py:93
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/product_pricelist/importer.py:68
 #, python-format
-msgid "Error! lcode doesn't match!"
-msgstr "¡Error! 'lcode' no coincide"
+msgid "Can't map a pricing plan from wubook"
+msgstr "No se puede conectar la tarifa con Wubook"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/wizard/wubook_installer.py:153
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:307
 #, python-format
-msgid "Errors importing data from WuBook"
-msgstr "Errores al importar datos de WuBook"
+msgid "Can't mark as readed a reservation in wubook"
+msgstr "No se puede marcar como leída la reserva en Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:93
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/inherited_hotel_room_type_class.py:17
 #, python-format
-msgid "Errors while importing channels info from WuBook. See issues log."
-msgstr "Errores al importar información de canales de WuBook. Ver el registro de problemas"
+msgid "Can't modify channel room type class"
+msgstr "No se puede modificar la categoría de habitación"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:61
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:171
 #, python-format
-msgid "Errors while importing price plans from WuBook. See issues log."
-msgstr "Errores al importar planes de precios de WuBook. Ver el registro de problemas"
+msgid "Can't modify room in WuBook"
+msgstr "No se puede modificar la habitación en Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:41
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:351
 #, python-format
-msgid "Errors while importing reservations. See issues registry."
-msgstr "Errores al importar reservas. Ver el registro de problemas."
+msgid "Can't modify virtual pricing plan in wubook"
+msgstr "No se puede modificar la tarifa en Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:113
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:296
 #, python-format
-msgid "Errors while importing restriction plans from WuBook. See issues log."
-msgstr "Errores al importar planes de restricción de WuBook. Ver el registro de problemas"
+msgid "Can't process reservation from wubook"
+msgstr "No se puede procesar la reserva desde Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:20
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:285
 #, python-format
-msgid "Errors while importing rooms. See issues registry."
-msgstr "Errores al importar habitaciones. Ver el registro de problemas."
+msgid "Can't process reservations from wubook"
+msgstr "No se puede procesar las reservas desde Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:151
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:517
 #, python-format
-msgid "Errors while pushing availability to WuBook. See issues log."
-msgstr "Errores al subir la disponibilidad a WuBook. Ver el registro de problemas"
+msgid "Can't rename plan restriction in wubook"
+msgstr "No se puede renombrar el plan de restricciones en Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:83
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:491
 #, python-format
-msgid "Errors while pushing price plans to WuBook. See issues log."
-msgstr "Errores al subir el plan de precios a WuBook. Ver el registro de problemas"
+msgid "Can't update plan restrictions on wubook"
+msgstr "No se puede actualizar el plan de restricciones en Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:134
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:389
 #, python-format
-msgid "Errors while pushing restrictions to WuBook. See issues log."
-msgstr "Errores al subir restricciones a WuBook. Ver el registro de problemas"
+msgid "Can't update pricing plan in wubook"
+msgstr "No se puede actualizar la tarifa en Wubook"
 
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:162
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:165
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:168
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:173
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:176
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:181
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:375
 #, python-format
-msgid "Fetch from WuBook"
-msgstr "Recuperar de WuBook"
+msgid "Can't update pricing plan name in wubook"
+msgstr "No se puede actualizar el nombre de la tarifa en Wubook"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_default
-msgid "Finish Installation"
-msgstr "Finalizar instalación"
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:403
+#, python-format
+msgid "Can't update pricing plan period in wubook"
+msgstr "No se puede actualizar el periodo de la tarifa en Wubook"
 
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_date_start
-msgid "From"
-msgstr "De"
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:220
+#, python-format
+msgid "Can't update rooms availability in WuBook"
+msgstr "No se puede actualizar la disponibilidad en Wubook"
 
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_id
-msgid "ID"
-msgstr "ID"
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/hotel_reservation/exporter.py:20
+#, python-format
+msgid "Cancelled by %s"
+msgstr "Cancelada por %s"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_availability_wizard
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_prics_wizard
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_restrictions_wizard
-msgid "Import"
-msgstr "Importar"
+#. module: hotel_channel_connector_wubook
+#: model:ir.actions.server,name:hotel_channel_connector_wubook.channel_connector_fetch_new_bookings_ir_actions_server
+#: model:ir.cron,cron_name:hotel_channel_connector_wubook.channel_connector_fetch_new_bookings
+#: model:ir.cron,name:hotel_channel_connector_wubook.channel_connector_fetch_new_bookings
+msgid "Channel Connector Fetch New Bookings"
+msgstr "Importar Reservas Nuevas desde el Channel"
 
-#. module: hotel_wubook_proto
-#: model:ir.actions.act_window,name:hotel_wubook_proto.action_wubook_import_availability
-msgid "Import Availability"
-msgstr "Importar Disponibilidad"
+#. module: hotel_channel_connector_wubook
+#: model:ir.actions.server,name:hotel_channel_connector_wubook.channel_connector_push_changes_ir_actions_server
+#: model:ir.cron,cron_name:hotel_channel_connector_wubook.channel_connector_push_changes
+#: model:ir.cron,name:hotel_channel_connector_wubook.channel_connector_push_changes
+msgid "Channel Connector Push Changes"
+msgstr "Exportar Cambios al Channel"
 
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_import_data
-msgid "Import Data From WuBook"
-msgstr "Importar datos de WuBook"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_channel_hotel_reservation
+msgid "Channel Hotel Reservation"
+msgstr "Resercas del Channel"
 
-#. module: hotel_wubook_proto
-#: model:ir.actions.act_window,name:hotel_wubook_proto.action_wubook_import_plan_prices
-msgid "Import Plan Prices"
-msgstr "Importar plan de precios"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_channel_hotel_room_type
+msgid "Channel Hotel Room"
+msgstr "Habitaciones del Channel"
 
-#. module: hotel_wubook_proto
-#: model:ir.actions.act_window,name:hotel_wubook_proto.action_wubook_import_plan_restrictions
-msgid "Import Plan Restrictions"
-msgstr "Importar Plan Restrictiones"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_channel_ota_info
+msgid "Channel OTA Info"
+msgstr "Información de OTAs en el Channel"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.product_pricelist_view
-msgid "Import Prices From WuBook"
-msgstr "Importar Precios de WuBook"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model.fields,field_description:hotel_channel_connector_wubook.field_channel_backend_pkey
+msgid "Channel Service PKey"
+msgstr "Channel Service PKey"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.reservation_restriction_view
-msgid "Import Restrictions From WuBook"
-msgstr "Importar Restrictiones de WuBook"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model.fields,field_description:hotel_channel_connector_wubook.field_channel_backend_lcode
+msgid "Channel Service lcode"
+msgstr "Channel lcode"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_availability_wizard
-msgid "Import WuBook Availability"
-msgstr "Importar disponibilidad de WuBook"
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/hotel_room_type_availability/importer.py:76
+#, python-format
+msgid "Channel try to change availiability!                                         Updating channel values...                                         (Odoo: %d -- Channel: %d"
+msgstr "El Channel está intentando modificar la disponibilidad!                                        Actualizando valores del Channel...                                         (Odoo: %d -- Channel: %d"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_prics_wizard
-msgid "Import WuBook Plan Prices"
-msgstr "Importar plan de precios de WuBook"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_channel_backend
+msgid "Hotel Channel Backend"
+msgstr "Hotel Channel Backend"
 
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_restrictions_wizard
-msgid "Import WuBook Plan Restrictions"
-msgstr "Importar plan de restrictiones de WuBook"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_hotel_folio
+msgid "Hotel Folio"
+msgstr "Ficha de reservas"
 
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_message
-msgid "Internal Message"
-msgstr "Mensaje interno"
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_hotel_reservation
+msgid "Hotel Reservation"
+msgstr "Reserva del hotel"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/controllers/main.py:48
-#: code:addons/hotel_wubook_proto/controllers/main.py:87
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/components/backend_adapter.py:66
+#, python-format
+msgid "Invalid Channel Parameters!"
+msgstr "Parámetros del Channel incorrectos!"
+
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/controllers/main.py:24
+#: code:addons/hotel_channel_connector_wubook/controllers/main.py:53
 #, python-format
 msgid "Invalid Input Parameters!"
-msgstr "Parámetros de entrada inválidos!"
+msgstr "Parametros Incorrectos!"
 
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/controllers/main.py:41
-#: code:addons/hotel_wubook_proto/controllers/main.py:79
+#. module: hotel_channel_connector_wubook
+#: model:ir.model,name:hotel_channel_connector_wubook.model_hotel_room_type_class
+msgid "Room Type Class"
+msgstr "Categoría de Habitación"
+
+#. module: hotel_channel_connector_wubook
+#: code:addons/hotel_channel_connector_wubook/models/hotel_room_type/common.py:39
 #, python-format
-msgid "Invalid Security Token!"
-msgstr "¡Token de seguridad inválido!"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_able_to_modify_wubook
-msgid "Is user able to modify wubook fields?"
-msgstr "Is user able to modify wubook fields?"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.menu,name:hotel_wubook_proto.wubook_issues_menu
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_issue_form_search
-msgid "Issues"
-msgstr "Avisos"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_wubook_lcode
-msgid "LCode"
-msgstr "LCode"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices___last_update
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions___last_update
-msgid "Last Modified on"
-msgstr "Última modificación en"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_write_uid
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_write_uid
-msgid "Last Updated by"
-msgstr "Última actualización por"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_write_date
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_write_date
-msgid "Last Updated on"
-msgstr "Última actualización en"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.wubook_issue_view_form
-msgid "Mark as Readed"
-msgstr "Marcar como leído"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_availability_wmax_avail
-msgid "Max. Wubook Avail"
-msgstr "Disp. Max. Wubook"
-
-#. module: hotel_wubook_proto
-#: selection:hotel.reservation,wstatus:0
-msgid "No WuBook"
-msgstr "No WuBook"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:99
-#, python-format
-msgid "No new channels info found. Everything is done."
-msgstr "No se encontro nueva información en el channel. Todo hecho."
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:67
-#, python-format
-msgid "No new price plans found. Everything is done."
-msgstr "No se encontro nuevo plan de precios. Todo hecho."
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:47
-#, python-format
-msgid "No new reservations found. Everything is done."
-msgstr "No se encontraron nuevas reservas. Todo hecho."
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:119
-#, python-format
-msgid "No new restriction plans found. Everything is done."
-msgstr "No se encontro nuevo plan de restricciones. Todo hecho."
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:26
-#, python-format
-msgid "No new rooms found. Everything is done."
-msgstr "No se encontraron nuevas habitaciones. Todo hecho."
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.hotel_reservation_view_form
-msgid "OTA"
-msgstr "OTA"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:20
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:41
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:61
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:83
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:93
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:113
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:134
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:151
-#, python-format
-msgid "Operation Errors"
-msgstr "Errores de operación"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:24
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:26
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:45
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:47
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:65
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:67
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:81
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:97
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:99
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:117
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:119
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:132
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:149
-#, python-format
-msgid "Operation Success"
-msgstr "Operación exitosa"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_origin_sale
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_hotel_reservation_search
-msgid "Origin"
-msgstr "Procedencia"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_wubook_pkey
-msgid "PKey"
-msgstr "PKey"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_res_partner
-msgid "Partner"
-msgstr "Empresa"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_wubook_passwd
-msgid "Password"
-msgstr "Contraseña"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_restriction_wdaily
-msgid "Plan Daily"
-msgstr "Plan diario"
-
-#. module: hotel_wubook_proto
-#: selection:wubook.issue,section:0
-msgid "Price Plan"
-msgstr "Plan de precios"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:65
-#, python-format
-msgid "Price Plans successfully imported"
-msgstr "Planes de precios importados con éxito"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:81
-#, python-format
-msgid "Price Plans successfully pushed"
-msgstr "Planes de precios exportados con éxito"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_product_pricelist_item.py:39
-#, python-format
-msgid "Price need be greater than zero"
-msgstr "El precio debe ser mayor que cero"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_product_pricelist
-msgid "Pricelist"
-msgstr "Tarifas"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_product_pricelist_item
-msgid "Pricelist item"
-msgstr "Elemento Tarifa"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_default_pricelist_id
-msgid "Product Pricelist"
-msgstr "Lista de precios del producto"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:170
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:178
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:183
-#, python-format
-msgid "Push to WuBook"
-msgstr "exportar a WuBook"
-
-#. module: hotel_wubook_proto
-#: selection:hotel.reservation,wstatus:0
-msgid "Refused"
-msgstr "Rechazada"
-
-#. module: hotel_wubook_proto
-#: selection:wubook.issue,section:0
-msgid "Reservation"
-msgstr "Reserva"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:45
-#, python-format
-msgid "Reservations successfully imported"
-msgstr "Reserva importada correctamente"
-
-#. module: hotel_wubook_proto
-#: selection:wubook.issue,section:0
-msgid "Restriction Plan"
-msgstr "Plan de Restricciones"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:117
-#, python-format
-msgid "Restriction Plans successfully imported"
-msgstr "Planes de precios importados con éxito"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_default_default_restriction_id
-msgid "Restrictions"
-msgstr "Restricciones"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:132
-#, python-format
-msgid "Restrictions successfully pushed"
-msgstr "Restricciones actualizadas con éxito"
-
-#. module: hotel_wubook_proto
-#: selection:wubook.issue,section:0
-msgid "Room"
-msgstr "Habitación"
-
-#. module: hotel_wubook_proto
-#. openerp-web
-#: code:addons/hotel_wubook_proto/static/src/js/wubook_listview_import_buttons.js:24
-#, python-format
-msgid "Rooms successfully imported"
-msgstr "Habitaciones importadas con éxito"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_virtual_room.py:49
-#, python-format
-msgid "SCODE Can't be longer than 4 characters"
-msgstr "SCODE no puede tener más de 4 caracteres"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_section
-msgid "Section"
-msgstr "Sección"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_wubook_server
-msgid "Server"
-msgstr "Servidor"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_set_wmax_avail
-msgid "Set wmax_avail?"
-msgstr "Establecer wmax_avail?"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.menu,name:hotel_wubook_proto.wubook_config_menu
-msgid "Settings"
-msgstr "Configuración"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_availability_date_start
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_prices_date_start
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_wizard_plan_restrictions_date_start
-msgid "Start Date"
-msgstr "Fecha de inicio"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_virtual_room_availability.py:55
-#, python-format
-msgid ""
-"The new availability can't be greater than                     the actual availability                     \n"
-"[%s]\n"
-"Input: %d\\Limit: %d"
-msgstr ""
-"La nueva disponibilidad no puede ser mayor que la disponibilidad real\n"
-"[%s]\n"
-"Entrada: %d\\Límite: %d"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_default
-msgid "These models are used as masters"
-msgstr "Estos modelos se usan como maestros"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_date_end
-msgid "To"
-msgstr "Para"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_to_read
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_to_read
-msgid "To Read"
-msgstr "No leído"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_res_partner_unconfirmed
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_res_users_unconfirmed
-msgid "Unconfirmed"
-msgstr "Sin confirmar"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_reservation.py:268
-#, python-format
-msgid "Undefined"
-msgstr "Indefinido"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_installer_wubook_user
-msgid "User"
-msgstr "Usuario"
-
-#. module: hotel_wubook_proto
-#: selection:hotel.reservation,wstatus:0
-msgid "Waiting"
-msgstr "Esperando"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_folio_whas_wubook_reservations
-msgid "Whas wubook reservations"
-msgstr "Que reservas en wubook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_wis_from_channel
-msgid "WuBooK Is From Channel"
-msgstr "WuBooK es del canal"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.menu,name:hotel_wubook_proto.wubook_menu
-#: selection:wubook.issue,section:0
-msgid "WuBook"
-msgstr "WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer
-msgid "WuBook API Configuration. This wizard will activate push request and synchronize rooms &amp; reservations with Odoo."
-msgstr "Configuración de API de WuBook. Este asistente activará la solicitud de inserción y sincronizará las habitaciones y reservas con Odoo."
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_wcapacity
-msgid "WuBook Capacity"
-msgstr "Capacidad WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_wchannel_id
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_wid
-msgid "WuBook Channel ID"
-msgstr "OTA ID"
-
-#. module: hotel_wubook_proto
-#: model:ir.actions.act_window,name:hotel_wubook_proto.open_wubook_channel_info_tree_all
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_channel_info_tree
-msgid "WuBook Channel Info"
-msgstr "Info de OTA"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_wchannel_reservation_code
-msgid "WuBook Channel Reservation Code"
-msgstr "Código de Reserva del Wubook Channerl"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer
-msgid "WuBook Configuration"
-msgstr "WuBook Configuración"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_configuration_installer_default
-msgid "WuBook Configuration Default"
-msgstr "Paridad de configuración de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_folio_wcustomer_notes
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_wcustomer_notes
-msgid "WuBook Customer Notes"
-msgstr "Notas del cliente Wubook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_product_pricelist_item_wdaily
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_product_pricelist_wdaily
-msgid "WuBook Daily Plan"
-msgstr "Plan diario WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_config_settings
-msgid "WuBook Details"
-msgstr "WuBook Detalles"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_wid
-msgid "WuBook ID"
-msgstr "WuBook ID"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.wubook_issue_view_form
-msgid "WuBook Issue"
-msgstr "Aviso WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.actions.act_window,name:hotel_wubook_proto.open_wubook_issues_tree_all
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.wubook_issue_view_tree
-msgid "WuBook Issues"
-msgstr "Avisos Wubook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_issue_wmessage
-msgid "WuBook Message"
-msgstr "Mensaje de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_wubook_pkey
-msgid "WuBook PKey"
-msgstr "WuBook PKey"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_wubook_passwd
-msgid "WuBook Password"
-msgstr "Contraseña de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_product_pricelist_wpid
-msgid "WuBook Plan ID"
-msgstr "ID Plan de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_wubook_push_security_token
-msgid "WuBook Push Notification                                                             Security Token"
-msgstr "Token de seguridad de notificación push WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_availability_wpushed
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_restriction_item_wpushed
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_product_pricelist_item_wpushed
-msgid "WuBook Pushed"
-msgstr "WuBook actualizado"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_wrid
-msgid "WuBook Reservation ID"
-msgstr "WuBook ID reserva"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_restriction_wpid
-msgid "WuBook Restriction Plan ID"
-msgstr "ID Plan de restricciones WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_wrid
-msgid "WuBook Room ID"
-msgstr "WuBook ID de habitación"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_wubook_server
-msgid "WuBook Server"
-msgstr "WuBook Servidor"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_folio_wseed
-msgid "WuBook Session Seed"
-msgstr "Semilla de sesión WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_virtual_room_wscode
-msgid "WuBook Short Code"
-msgstr "Código corto de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_wstatus
-msgid "WuBook Status"
-msgstr "Estado de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_hotel_reservation_wstatus_reason
-msgid "WuBook Status Reason"
-msgstr "Razón del estado de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_wubook_user
-msgid "WuBook User"
-msgstr "Usuario de WuBook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_config_settings_wubook_lcode
-msgid "WuBook lcode"
-msgstr "WuBook lcode"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.hotel_reservation_view_form
-msgid "Wubook"
-msgstr "Wubook"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_channel_info_form
-msgid "Wubook Channel Info"
-msgstr "Informacion de Channel Wubook"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/controllers/main.py:61
-#, python-format
-msgid "[WUBOOK] Importing Reservations..."
-msgstr "[WUBOOK] Importando reservas ..."
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/controllers/main.py:95
-#, python-format
-msgid "[WUBOOK] Updating values..."
-msgstr "[WUBOOK] Actualizando valores ..."
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_bus_hotel_calendar
-msgid "bus.hotel.calendar"
-msgstr "bus.hotel.calendar"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_folio
-msgid "hotel folio new"
-msgstr "nueva ficha de reserva"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_reservation
-msgid "hotel reservation"
-msgstr "Reserva"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_calendar_management
-msgid "hotel.calendar.management"
-msgstr "hotel.calendar.management"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_virtual_room
-msgid "hotel.virtual.room"
-msgstr "hotel.virtual.room"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_virtual_room_availability
-msgid "hotel.room.type.availability"
-msgstr "hotel.room.type.availability"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_virtual_room_restriction
-msgid "hotel.room.type.restriction"
-msgstr "hotel.room.type.restriction"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_virtual_room_restriction_item
-msgid "hotel.room.type.restriction.item"
-msgstr "hotel.room.type.restriction.item"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_wizard_duplicate_reservation
-msgid "hotel.wizard.duplicate.reservation"
-msgstr "hotel.wizard.duplicate.reservation"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_wizard_massive_changes
-msgid "hotel.wizard.massive.changes"
-msgstr "hotel.wizard.massive.changes"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_hotel_wizard_massive_price_reservation_days
-msgid "hotel.wizard.massive.price.reservation.days"
-msgstr "hotel.wizard.massive.price.reservation.days"
-
-#. module: hotel_wubook_proto
-#: model:ir.model.fields,field_description:hotel_wubook_proto.field_wubook_channel_info_ical
+msgid "The channel manager limits the minimum value of min price and max price to 5."
+msgstr "El Channel Manager limita los valores mín y máx del precio a 5."
+
+#. module: hotel_channel_connector_wubook
+#: model:ir.ui.view,arch_db:hotel_channel_connector_wubook.channel_hotel_room_type_restriction_view_form
+msgid "Use restriction plan ID = 0 for the Channel default Restriction Plan."
+msgstr "Usa el ID = 0  en el plan de restruccuibes para el plan de restricciones por defecto del Channel"
+
+#. module: hotel_channel_connector_wubook
+#: model:ir.model.fields,field_description:hotel_channel_connector_wubook.field_hotel_folio_wseed
+msgid "Wubook Session Seed"
+msgstr "Wubook Session Seed"
+
+#. module: hotel_channel_connector_wubook
+#: model:ir.model.fields,field_description:hotel_channel_connector_wubook.field_channel_ota_info_ical
 msgid "ical"
 msgstr "ical"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_virtual_room_availability.py:78
-#, python-format
-msgid "max avail for wubook can't be high                 than toal rooms                 count: %d"
-msgstr "La disponibilidad máxima para Wubook no puede ser más alta que el total de las habitaciones : %d"
-
-#. module: hotel_wubook_proto
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_availability_wizard
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_prics_wizard
-#: model:ir.ui.view,arch_db:hotel_wubook_proto.view_wubook_import_plan_restrictions_wizard
-msgid "or"
-msgstr "o"
-
-#. module: hotel_wubook_proto
-#: code:addons/hotel_wubook_proto/models/inherited_hotel_virtual_room.py:43
-#, python-format
-msgid "wcapacity can't be less than one"
-msgstr "wcapacity no puede ser menos de uno"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook
-msgid "wubook"
-msgstr "wubook"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_channel_info
-msgid "wubook.channel.info"
-msgstr "wubook.channel.info"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_config_settings
-msgid "wubook.config.settings"
-msgstr "wubook.config.settings"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_installer
-msgid "wubook.installer"
-msgstr "wubook.installer"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_installer_default
-msgid "wubook.installer.default"
-msgstr "wubook.installer.default"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_issue
-msgid "wubook.issue"
-msgstr "wubook.issue"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_wizard_availability
-msgid "wubook.wizard.availability"
-msgstr "wubook.wizard.availability"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_wizard_plan_prices
-msgid "wubook.wizard.plan.prices"
-msgstr "wubook.wizard.plan.prices"
-
-#. module: hotel_wubook_proto
-#: model:ir.model,name:hotel_wubook_proto.model_wubook_wizard_plan_restrictions
-msgid "wubook.wizard.plan.restrictions"
-msgstr "wubook.wizard.plan.restrictions"
