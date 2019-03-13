@@ -369,9 +369,8 @@ class HotelReservation(models.Model):
             vals['real_checkin'] = vals['checkin']
             vals['real_checkout'] = vals['checkout']
         record = super(HotelReservation, self).create(vals)
-        #~ if (record.state == 'draft' and record.folio_id.state == 'sale') or \
-                #~ record.preconfirm:
-            #~ record.confirm()
+        if record.preconfirm:
+            record.confirm()
         return record
 
     @api.multi

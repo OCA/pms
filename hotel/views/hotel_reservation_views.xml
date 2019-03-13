@@ -60,13 +60,6 @@
                         icon="fa-compress"
                         attrs="{'invisible':[('splitted', '=', False)]}"
                     />
-                    <label for="preconfirm"
-                        string="Autoconfirm"
-                        attrs="{'invisible':[('folio_id', '!=', False)]}"
-                    />
-                    <span name="preconfirm" attrs="{'invisible':[('folio_id', '!=', False)]}">
-                        <field name="preconfirm" />
-                    </span>
                     <button name="open_master" string="Open Master" type="object" class="oe_highlight" icon="fa-file" attrs="{'invisible':['|',['parent_reservation', '=', False]]}" />
                     <field name="state" widget="statusbar"/>
 
@@ -148,10 +141,13 @@
                     <span class="label label-danger" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}">Cancelled Reservation!</span>
                     <span class="label label-warning" attrs="{'invisible': [('overbooking', '=', False)]}">OverBooking!</span>
                     <h1>
-                        <!-- <field name="edit_room" nolabel="1" class="fa fa-bed" /> -->
-                        <!-- <field name="room_id" select="1" domain="[('isroom','=',True)]"
-                            nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
-                            style="margin-right: 30px;"/> -->
+                          <label for="preconfirm"
+                             string="Autoconfirm"
+                             attrs="{'invisible':[('folio_id', '!=', False)]}"
+                         />
+                         <span name="preconfirm" attrs="{'invisible':[('folio_id', '!=', False)]}">
+                             <field name="preconfirm" />
+                         </span>
                         <field name="room_id" select="1"
                           nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
                           style="margin-right: 30px;" required='1'/>
