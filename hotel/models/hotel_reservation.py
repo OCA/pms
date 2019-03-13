@@ -891,8 +891,8 @@ class HotelReservation(models.Model):
                     date=idate,
                     pricelist=pricelist_id,
                     uom=product.uom_id.id)
-                line_price = self.env['account.tax']._fix_tax_included_price_company(
-                    product.price, product.taxes_id, self.tax_ids, self.company_id)
+                # REVIEW this forces to have configured the taxes included in the price
+                line_price = product.price
                 if old_line and old_line.id:
                     cmds.append((1, old_line.id, {
                         'price': line_price
