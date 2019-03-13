@@ -14,3 +14,7 @@ class HotelRoomTypeRestrictionItemExporter(Component):
     @api.model
     def push_restriction(self):
         raise NotImplementedError
+
+    @api.model
+    def close_online_sales(self):
+        raise NotImplementedError

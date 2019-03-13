@@ -231,6 +231,16 @@ class ChannelBackend(models.Model):
                                              title="Export Pricelists")
         return True
 
+    @api.multi
+    def close_online_sales(self):
+        channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
+        for backend in self:
+            res = channel_hotel_restr_item_obj.close_online_sales(backend)
+            if not res and self.env.context.get('show_notify', True):
+                self.env.user.notify_warning("Error closing online sales",
+                                             title="Export Restrictions")
+        return True
+
     @api.model
     def cron_push_changes(self):
         backends = self.env[self._name].search([])
@@ -241,3 +251,9 @@ class ChannelBackend(models.Model):
     @api.model
     def cron_import_reservations(self):
         self.env[self._name].search([]).import_reservations()
+
+
+    @api.model
+    def cron_close_online_sales(self, status=True):
+        backends = self.env[self._name].search([])
+        backends.close_online_sales()
