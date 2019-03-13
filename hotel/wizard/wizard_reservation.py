@@ -55,6 +55,9 @@ class FolioWizard(models.TransientModel):
                 'res.config.settings', 'default_pricelist_id')
 
     partner_id = fields.Many2one('res.partner', required=True, string="Customer")
+    email = fields.Char('E-mail')
+    mobile = fields.Char('Mobile')
+
     pricelist_id = fields.Many2one('product.pricelist',
                                    string='Pricelist',
                                    required=True,
@@ -250,6 +253,8 @@ class FolioWizard(models.TransientModel):
             'service_lines': services,
             'internal_comment': self.internal_comment,
             'credit_card_details': self.credit_card_details,
+            'email': self.email,
+            'mobile': self.mobile,
         }
         newfol = self.env['hotel.folio'].create(vals)
         if self.confirm:
@@ -289,6 +294,22 @@ class HotelRoomTypeWizards(models.TransientModel):
     checkout = fields.Date('Check Out', required=True,
                                default=_get_default_checkout)
     can_confirm = fields.Boolean(compute="_can_confirm")
+    board_service_room_id = fields.Many2one('hotel.board.service.room.type',
+                                            string="Board Service")
+
+    @api.multi
+    @api.onchange('rooms_num')
+    def domain_board_service(self):
+        for line in self:
+            board_service_room_ids = []
+            if line.room_type_id:
+                pricelist_id = self.folio_wizard_id.pricelist_id.id
+                board_services_room_type = self.env['hotel.board.service.room.type'].\
+                    search([('hotel_room_type_id', '=', self.room_type_id.id),
+                            ('pricelist_id', 'in', (pricelist_id, False))])
+                board_service_room_ids = board_services_room_type.ids
+            domain_boardservice = [('id', 'in', board_service_room_ids)]
+            return {'domain': {'board_service_room_id': domain_boardservice}}
 
     @api.multi
     def _can_confirm(self):
@@ -479,7 +500,7 @@ class ServiceWizard(models.TransientModel):
                                    required=True,
                                    default=1.0)
 
-    @api.onchange('product_id', 'reservation_wizard_ids')
+    @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
             # TODO change pricelist for partner

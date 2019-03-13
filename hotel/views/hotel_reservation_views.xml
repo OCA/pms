@@ -187,7 +187,10 @@
                             <field name="mobile" placeholder="mobile" widget="phone"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
                             <field name="phone" placeholder="phone" widget="phone"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
+                                attrs="{'invisible': [('reservation_type','in',('out'))],
+                                 'required': [('channel_type','in',('door','mail','phone')),
+                                              ('mobile','=','')]}"
+                                />
                             <field name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
                             <field name="partner_internal_comment" string="Partner Note"
@@ -500,7 +503,8 @@
             <xpath expr="//field[@name='state']" position="before">
                <button type="object" class="oe_stat_button"
                   icon="fa fa-2x fa-suitcase"
-                  name="open_reservation_form"/>
+                  name="open_reservation_form"
+                  help="Open Reservation Room Detail"/>
             </xpath>
             <xpath expr="//field[@name='folio_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
