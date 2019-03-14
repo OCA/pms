@@ -92,30 +92,6 @@ class ChannelHotelRoomTypeAvailability(models.Model):
     channel_pushed = fields.Boolean("Channel Pushed", readonly=True,
                                     default=False)
 
-    @api.constrains('max_avail')
-    def _check_avail(self):
-        room_type_obj = self.env['hotel.room.type']
-        issue_obj = self.env['hotel.channel.connector.issue']
-        for record in self:
-            cavail = len(room_type_obj.check_availability_room_type(
-                record.date,
-                record.date,
-                room_type_id=record.room_type_id.id))
-            max_avail = min(cavail, record.room_type_id.total_rooms_count)
-            if record.avail > max_avail:
-                issue_obj.sudo().create({
-                    'section': 'avail',
-                    'internal_message': _(r"The new availability can't be \
-                        greater than the max. availability \
-                        (%s) [Input: %d\Max: %d]") % (record.room_type_id.name,
-                                                      record.avail,
-                                                      max_avail),
-                    'date_start': record.date,
-                    'date_end': record.date,
-                })
-                # Auto-Fix channel availability
-                self._event('on_fix_channel_availability').notify(record)
-
     @api.model
     def refresh_availability(self, checkin, checkout, backend_id, room_id=False,
                              room_type_id=False, from_channel=False):
@@ -180,17 +156,17 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                         room_type_avail_id.write(vals_avail)
 
                     # Auto-Fix channel quota and max availability
-                    vals_avail = {}
-                    # TODO: reduce quota by one instead of adjust to current channel availability
-                    if room_type_avail_id.quota > avail:
-                        vals_avail.update({'quota': avail})
-                        _logger.info(vals_avail)
-                    if room_type_avail_id.max_avail > avail:
-                        vals_avail.update({'max_avail': avail})
-                    if vals_avail:
-                        room_type_avail_id.with_context(
-                        {'connector_no_export': True}
-                    ).write(vals_avail)
+                    # vals_avail = {}
+                    # # TODO: reduce quota by one instead of adjust to current channel availability
+                    # if room_type_avail_id.quota > avail:
+                    #     vals_avail.update({'quota': avail})
+                    #     _logger.info(vals_avail)
+                    # if room_type_avail_id.max_avail > avail:
+                    #     vals_avail.update({'max_avail': avail})
+                    # if vals_avail:
+                    #     room_type_avail_id.with_context(
+                    #     {'connector_no_export': True}
+                    # ).write(vals_avail)
                 else:
                     self.env['hotel.room.type.availability'].with_context(
                         {'connector_no_export': True}
@@ -246,36 +222,36 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
                     binding.backend_id.id,
                     room_type_id=record.room_type_id.id)
 
-    # @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
-    # def on_record_create(self, record, fields=None):
-    #     if not any(record.channel_bind_ids):
-    #         channel_room_type_avail_obj = self.env[
-    #             'channel.hotel.room.type.availability']
-    #         backends = self.env['channel.backend'].search([])
-    #         for backend in backends:
-    #             # REVIEW :: If you create directly channel_binding, this search
-    #             # return empty
-    #             avail_bind = channel_room_type_avail_obj.search([
-    #                 ('odoo_id', '=', record.id),
-    #                 ('backend_id', '=', backend.id),
-    #             ])
-    #             if not avail_bind:
-    #                 # REVIEW :: WARNING :: This create triggers on_record_write above
-    #                 avail_bind = channel_room_type_avail_obj.create({
-    #                     'odoo_id': record.id,
-    #                     'channel_pushed': False,
-    #                     'backend_id': backend.id,
-    #                 })
-    #                 _logger.info("==[on_record_create] :: hotel.room.type.availability==")
-    #                 _logger.info(avail_bind)
-    #             else:
-    #                 avail_bind.refresh_availability(
-    #                     record.date,
-    #                     (datetime.strptime(record.date, DEFAULT_SERVER_DATE_FORMAT).date() +
-    #                      timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT),
-    #                     backend.id,
-    #                     # room_type_id=record.room_type_id.channel_bind_ids.id,
-    #                     room_type_id=record.room_type_id.id)
+    @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
+    def on_record_create(self, record, fields=None):
+        if not any(record.channel_bind_ids):
+            channel_room_type_avail_obj = self.env[
+                'channel.hotel.room.type.availability']
+            backends = self.env['channel.backend'].search([])
+            for backend in backends:
+                # REVIEW :: If you create directly channel_binding, this search
+                # return empty
+                avail_bind = channel_room_type_avail_obj.search([
+                    ('odoo_id', '=', record.id),
+                    ('backend_id', '=', backend.id),
+                ])
+                if not avail_bind:
+                    # REVIEW :: WARNING :: This create triggers on_record_write above
+                    avail_bind = channel_room_type_avail_obj.create({
+                        'odoo_id': record.id,
+                        'channel_pushed': False,
+                        'backend_id': backend.id,
+                    })
+                    _logger.info("==[on_record_create] :: hotel.room.type.availability==")
+                    _logger.info(avail_bind)
+                else:
+                    avail_bind.refresh_availability(
+                        record.date,
+                        (datetime.strptime(record.date, DEFAULT_SERVER_DATE_FORMAT).date() +
+                         timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT),
+                        backend.id,
+                        # room_type_id=record.room_type_id.channel_bind_ids.id,
+                        room_type_id=record.room_type_id.id)
 
 
 class ChannelBindingHotelRoomTypeAvailabilityListener(Component):

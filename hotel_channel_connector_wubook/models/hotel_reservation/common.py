@@ -84,12 +84,13 @@ class BindingHotelReservationListener(Component):
         fields_to_check = ('state', )
         fields_checked = [elm for elm in fields_to_check if elm in fields]
         if any(fields_checked):
-            for record in self:
+            if any(record.channel_bind_ids):
                 # Only can cancel reservations created directly in wubook
                 for binding in record.channel_bind_ids:
                     if binding.external_id and not binding.ota_id and \
                             int(binding.channel_status) in WUBOOK_STATUS_GOOD:
-                        binding.sudo().cancel_reservation()
+                        if record.state in ('cancelled'):
+                            binding.sudo().cancel_reservation()
                         # self.env['channel.hotel.reservation']._event('on_record_cancel').notify(binding)
 
 
