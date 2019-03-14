@@ -219,7 +219,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         }.bind(this));
     },
 
-    _generate_search_domain: function(tsearch) {
+    _generate_search_domain: function(tsearch, type) {
       var domain = [];
       domain.push('|', '|', '|', '|',
                   ['partner_id.name', 'ilike', tsearch],
@@ -254,7 +254,7 @@ var HotelCalendarView = AbstractRenderer.extend({
       var searchQuery = $elm.val();
       var domain = false;
       if (searchQuery) {
-        domain = this._generate_search_domain(searchQuery);
+        domain = this._generate_search_domain(searchQuery, type);
       } else {
         domain = [];
       }

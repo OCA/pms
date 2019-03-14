@@ -39,12 +39,15 @@ odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarRenderer', functio
       });
     },
 
-    _generate_search_domain: function(tsearch) {
+    _generate_search_domain: function(tsearch, type) {
       var domain = this._super(tsearch);
-      domain.splice(0, 0, '|');
-      domain.push('|',
+
+      if (type === 'book') {
+        domain.splice(0, 0, '|');
+        domain.push('|',
                   ['channel_bind_ids.external_id', 'ilike', tsearch],
                   ['channel_bind_ids.ota_reservation_id', 'ilike', tsearch]);
+      }
 
       return domain;
     },
