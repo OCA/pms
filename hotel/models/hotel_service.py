@@ -209,7 +209,7 @@ class HotelService(models.Model):
     def _prepare_add_missing_fields(self, values):
         """ Deduce missing required fields from the onchange """
         res = {}
-        onchange_fields = ['price_unit','tax_ids','name']
+        onchange_fields = ['price_unit', 'tax_ids', 'name']
         if values.get('product_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
@@ -317,7 +317,7 @@ class HotelService(models.Model):
         self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')
         reservation = self.ser_room_line or self.env.context.get('ser_room_line')
-        origin = folio if folio else reservation
+        origin = reservation if reservation else folio
         if origin:
             partner = origin.partner_id
             pricelist = origin.pricelist_id

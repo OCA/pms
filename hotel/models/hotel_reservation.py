@@ -342,7 +342,7 @@ class HotelReservation(models.Model):
             folio = self.env["hotel.folio"].browse(vals['folio_id'])
             vals.update({'channel_type': folio.channel_type})
         elif 'partner_id' in vals:
-            folio_vals = {'partner_id':int(vals.get('partner_id')),
+            folio_vals = {'partner_id': int(vals.get('partner_id')),
                           'channel_type': vals.get('channel_type')}
             # Create the folio in case of need (To allow to create reservations direct)
             folio = self.env["hotel.folio"].create(folio_vals)
@@ -441,8 +441,8 @@ class HotelReservation(models.Model):
             if 'service_ids' in vals:
                 for service in vals['service_ids']:
                     if 'is_board_service' in service[2] and \
-                        service[2]['is_board_service'] == True:
-                            return False
+                            service[2]['is_board_service'] is True:
+                        return False
             return True
         return False
 
@@ -728,6 +728,7 @@ class HotelReservation(models.Model):
                         'product_id': product.id,
                         'is_board_service': True,
                         'folio_id': self.folio_id.id,
+                        'ser_room_line': self.id,
                         }
                     line = self.env['hotel.service'].new(res)
                     res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
@@ -738,10 +739,10 @@ class HotelReservation(models.Model):
                         persons=self.adults,
                         old_line_days=False))
                     board_services.append((0, False, res))
-            other_services = self.service_ids.filtered(lambda r: r.is_board_service == False)
+            other_services = self.service_ids.filtered(lambda r: not r.is_board_service)
             self.update({'service_ids': board_services})
             self.service_ids |= other_services
-            for service in self.service_ids.filtered(lambda r: r.is_board_service == True):
+            for service in self.service_ids.filtered(lambda r: r.is_board_service):
                 service._compute_tax_ids()
                 service.price_unit = service._compute_price_unit()
 

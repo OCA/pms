@@ -76,8 +76,12 @@ class FolioWizard(models.TransientModel):
                                          'folio_wizard_id',
                                          string='Services')
     total = fields.Float('Total', compute='_computed_total')
+    date_order = fields.Date('Date Order', default=fields.Datetime.now)
     confirm = fields.Boolean('Confirm Reservations', default="1")
     autoassign = fields.Boolean('Autoassign', default="1")
+    company_id = fields.Many2one('res.company',
+                                 'Company',
+                                 default=lambda self: self.env['res.company']._company_default_get('hotel.folio.wizard'))
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
@@ -99,16 +103,21 @@ class FolioWizard(models.TransientModel):
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         if self.partner_id:
+            vals = {}
             pricelist = self.partner_id.property_product_pricelist and \
                         self.partner_id.property_product_pricelist.id or \
                         self.env['ir.default'].sudo().get(
                             'res.config.settings', 'default_pricelist_id')
-            self.pricelist_id = pricelist
+            vals.update({
+                'pricelist_id': pricelist,
+                'email': self.partner_id.email,
+                'mobile': self.partner_id.mobile
+                })
+            self.update(vals)
 
     @api.onchange('autoassign')
     def create_reservations(self):
         self.ensure_one()
-        total = 0
         cmds = []
         for line in self.room_type_wizard_ids:
             if line.rooms_num == 0:
@@ -133,24 +142,9 @@ class FolioWizard(models.TransientModel):
                 checkout_dt = fields.Date.from_string(line.checkout)
                 nights = abs((checkout_dt - checkin_dt).days)
                 for room in room_list:
-                    pricelist_id = self.pricelist_id.id
-                    res_price = 0
-                    for i in range(0, nights):
-                        ndate = checkin_dt + timedelta(days=i)
-                        ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                        prod = line.room_type_id.product_id.with_context(
-                            lang=self.partner_id.lang,
-                            partner=self.partner_id.id,
-                            quantity=1,
-                            date=ndate_str,
-                            pricelist=pricelist_id,
-                            uom=room.room_type_id.product_id.uom_id.id)
-                        res_price += prod.price
                     adults = self.env['hotel.room'].search([
                         ('id', '=', room.id)
                     ]).capacity
-                    res_price = res_price - (res_price * line.discount)/100
-                    total += res_price
                     cmds.append((0, False, {
                         'checkin': line.checkin,
                         'checkout': line.checkout,
@@ -158,13 +152,12 @@ class FolioWizard(models.TransientModel):
                         'room_id': room.id,
                         'nights': nights,
                         'adults': adults,
+                        'board_service_room_id': line.board_service_room_id,
                         'children': 0,
                         'room_type_id': line.room_type_id,
-                        'price': res_price,
-                        'amount_reservation': res_price
+                        'price': line.price,
                     }))
         self.reservation_wizard_ids = cmds
-        self.total = total
 
     @api.multi
     @api.onchange('checkin', 'checkout')
@@ -202,19 +195,22 @@ class FolioWizard(models.TransientModel):
         for room_type in self.room_type_wizard_ids:
             room_type.update_price()
 
-    @api.depends('room_type_wizard_ids', 'reservation_wizard_ids', 'service_wizard_ids')
+    @api.depends('room_type_wizard_ids.total_price',
+                 'reservation_wizard_ids.price',
+                 'reservation_wizard_ids',
+                 'service_wizard_ids.price_total')
     def _computed_total(self):
         total = 0
         for line in self.service_wizard_ids:
             total += line.price_total
+
         if not self.reservation_wizard_ids:
             for line in self.room_type_wizard_ids:
                 total += line.total_price
-            self.total = total
         else:
             for line in self.reservation_wizard_ids:
                 total += line.price
-            self.total = total
+        self.total = total
 
     @api.multi
     def create_folio(self):
@@ -222,7 +218,7 @@ class FolioWizard(models.TransientModel):
         if not self.partner_id:
             raise ValidationError(_("We need know the customer!"))
         reservations = [(5, False, False)]
-        services = [(5, False, False)]
+        services = []
         if self.autoassign:
             self.create_reservations()
         for line in self.reservation_wizard_ids:
@@ -234,7 +230,7 @@ class FolioWizard(models.TransientModel):
                 'checkout': line.checkout,
                 'discount': line.discount,
                 'room_type_id': line.room_type_id.id,
-                'to_read': line.to_read,
+                'board_service_room_id': line.board_service_room_id.id,
                 'to_assign': line.to_assign,
             }))
         for line in self.service_wizard_ids:
@@ -242,7 +238,7 @@ class FolioWizard(models.TransientModel):
                 'product_id': line.product_id.id,
                 'discount': line.discount,
                 'price_unit': line.price_unit,
-                'product_uom_qty': line.product_uom_qty,
+                'product_qty': line.product_uom_qty,
             }))
         if not self.reservation_wizard_ids:
             raise ValidationError(_('We cant create avoid folio'))
@@ -250,7 +246,8 @@ class FolioWizard(models.TransientModel):
             'partner_id': self.partner_id.id,
             'channel_type': self.channel_type,
             'room_lines': reservations,
-            'service_lines': services,
+            'service_ids': services,
+            'pricelist_id': self.pricelist_id.id,
             'internal_comment': self.internal_comment,
             'credit_card_details': self.credit_card_details,
             'email': self.email,
@@ -284,9 +281,10 @@ class HotelRoomTypeWizards(models.TransientModel):
     rooms_num = fields.Integer('Number of Rooms')
     max_rooms = fields.Integer('Max', compute="_compute_max")
     price = fields.Float(string='Price by Room')
-    total_price = fields.Float(string='Total Price')
+    total_price = fields.Float(string='Total Price',
+                               compute="_compute_total",
+                               store="True")
     folio_wizard_id = fields.Many2one('hotel.folio.wizard')
-    amount_reservation = fields.Float(string='Total', readonly=True)
     discount = fields.Float('discount')
     min_stay = fields.Integer('Min. Days', compute="_compute_max")
     checkin = fields.Date('Check In', required=True,
@@ -354,7 +352,13 @@ class HotelRoomTypeWizards(models.TransientModel):
             if min_stay > 0:
                 res.min_stay = min_stay
 
-    @api.onchange('rooms_num', 'discount', 'price', 'room_type_id', 'checkin', 'checkout')
+    @api.depends('rooms_num', 'price')
+    def _compute_total(self):
+        for res in self:
+            res.total_price = res.price * res.rooms_num
+
+    @api.onchange('rooms_num', 'discount', 'price', 'board_service_room_id',
+                  'room_type_id', 'checkin', 'checkout')
     def update_price(self):
         for record in self:
             if record.rooms_num > record.max_rooms:
@@ -380,18 +384,20 @@ class HotelRoomTypeWizards(models.TransientModel):
                     uom=record.room_type_id.product_id.uom_id.id)
                 res_price += product.price
 
+            board_service = record.board_service_room_id
+            if board_service:
+                if board_service.price_type == 'fixed':
+                    board_price = board_service.amount *\
+                        record.room_type_id.capacity * nights
+                    res_price += board_price
+                else:
+                    res_price += ((res_price * board_service.amount) * 0.01)
             price = res_price - ((res_price * record.discount) * 0.01)
-            total_price = record.rooms_num * price
             vals = {
                 'checkin': checkin,
                 'checkout': checkout,
                 'price': price,
-                'total_price': total_price,
-                'amount_reservation': total_price,
             }
-            _logger.info("NEW VUELTA ________________")
-            _logger.info(record.room_type_id.name)
-            _logger.info(vals)
             record.update(vals)
 
 
@@ -413,18 +419,18 @@ class ReservationWizard(models.TransientModel):
                                    required=True)
     nights = fields.Integer('Nights', readonly=True)
     price = fields.Float(string='Total')
-    amount_reservation = fields.Float(string='Total', readonly=True)
     partner_id = fields.Many2one(related='folio_wizard_id.partner_id')
     discount = fields.Float('discount')
-    to_read = fields.Boolean(compute="_compute_to_read_assign")
-    to_assign = fields.Boolean(compute="_compute_to_read_assign")
+    to_assign = fields.Boolean(compute="_compute_assign")
+    board_service_room_id = fields.Many2one('hotel.board.service.room.type',
+                                            string="Board Service")
 
     @api.multi
-    def _compute_to_read_assign(self):
+    def _compute_assign(self):
         for rec in self:
             user = self.env['res.users'].browse(self.env.uid)
             if user.has_group('hotel.group_hotel_call'):
-                rec.to_read = rec.to_assign = True
+                rec.to_assign = True
 
     @api.multi
     @api.onchange('room_id')
@@ -445,7 +451,8 @@ class ReservationWizard(models.TransientModel):
                         choice other room or change the reservation date"))
 
     @api.multi
-    @api.onchange('checkin', 'checkout', 'room_type_id', 'discount')
+    @api.onchange('checkin', 'checkout', 'room_type_id',
+                  'discount', 'board_service_room_id')
     def onchange_dates(self):
         for line in self:
             if not self.checkin:
@@ -471,8 +478,15 @@ class ReservationWizard(models.TransientModel):
                         pricelist=pricelist_id,
                         uom=line.room_type_id.product_id.uom_id.id)
                     res_price += product.price
+                board_service = line.board_service_room_id
+                if board_service:
+                    if board_service.price_type == 'fixed':
+                        board_price = board_service.amount *\
+                            line.adults * nights
+                        res_price += board_price
+                    else:
+                        res_price += ((res_price * board_service.amount) * 0.01)
                 res_price = res_price - (res_price * self.discount) * 0.01
-                line.amount_reservation = res_price
                 line.price = res_price
             end_date_utc_dt -= timedelta(days=1)
             occupied = self.env['hotel.reservation'].get_reservations(
@@ -488,13 +502,17 @@ class ServiceWizard(models.TransientModel):
 
     product_id = fields.Many2one('product.product',
                                  string="Service")
+    name = fields.Char('Description')
     folio_wizard_id = fields.Many2one('hotel.folio.wizard')
     discount = fields.Float('discount')
     price_unit = fields.Float('Unit Price', required=True,
                               digits=dp.get_precision('Product Price'),
                               default=0.0)
-    price_total = fields.Float(compute='_compute_amount', string='Subtotal',
+    price_total = fields.Float(compute='_compute_amount', string='Total',
                                readonly=True, store=True)
+    tax_ids = fields.Many2many('account.tax', string='Taxes',
+                               domain=['|', ('active', '=', False),
+                                       ('active', '=', True)])
     product_uom_qty = fields.Float(string='Quantity',
                                    digits=dp.get_precision('Product Unit of Measure'),
                                    required=True,
@@ -503,19 +521,36 @@ class ServiceWizard(models.TransientModel):
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
-            # TODO change pricelist for partner
             pricelist_id = self.folio_wizard_id.pricelist_id.id
             prod = self.product_id.with_context(
-                            lang=self.folio_wizard_id.partner_id.lang,
-                            partner=self.folio_wizard_id.partner_id.id,
-                            quantity=1,
-                            date=fields.Datetime.now(),
-                            pricelist=pricelist_id,
-                            uom=self.product_id.uom_id.id)
-            self.price_unit = prod.price
+                lang=self.folio_wizard_id.partner_id.lang,
+                partner=self.folio_wizard_id.partner_id.id,
+                quantity=1,
+                date=fields.Datetime.now(),
+                pricelist=pricelist_id,
+                uom=self.product_id.uom_id.id)
+            # TODO change pricelist for partner
+            values = {'pricelist_id': pricelist_id, 'product_id': prod.id}
+            line = self.env['hotel.service'].new(values)
+            vals = line.with_context({
+                    'default_folio_id': self.folio_wizard_id
+                    })._prepare_add_missing_fields(values)
+            self.update(vals)
 
-    @api.depends('price_unit', 'product_uom_qty', 'discount')
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_ids')
     def _compute_amount(self):
-        for ser in self:
-            total = (ser.price_unit * ser.product_uom_qty)
-            ser.price_total = total - (total * ser.discount) * 0.01
+        """
+        Compute the amounts of the service line.
+        """
+        for record in self:
+            pricelist = record.folio_wizard_id.pricelist_id
+            currency = pricelist.currency_id
+            product = record.product_id
+            price = record.price_unit * (1 - (record.discount or 0.0) * 0.01)
+            taxes = record.tax_ids.compute_all(price,
+                                               currency,
+                                               record.product_uom_qty,
+                                               product=product)
+            record.update({
+                'price_total': taxes['total_included'],
+            })
