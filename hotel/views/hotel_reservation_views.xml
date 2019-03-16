@@ -202,7 +202,7 @@
                                     ('hotel_room_type_id', '=', room_type_id),
                                     ('pricelist_id', 'in', [pricelist_id, False])]"
                                     options="{'no_create': True,'no_open': True}"
-                                    attrs="{'invisible': [('reservation_type','in',('out'))]}" />
+                                    attrs="{'invisible': ['|',('reservation_type','in',('out')),('parent_reservation','!=',False)]}" />
                             <field name="name"/>
                             <field name="adults" attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
                             <field name="children" attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
@@ -234,7 +234,8 @@
                     </group>
                     <notebook>
                         <page name="services" string="Services"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
+                                attrs="{'invisible': ['|',('reservation_type','in',('out')),
+                                                      ('parent_reservation','!=',False)]}">
                             <group string="Reservation Services" name="reservation_services">
                                 <field name="service_ids"
                                        context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id, 'form_view_ref':'hotel.hotel_service_view_form'}"
@@ -290,7 +291,8 @@
                             </field>
                         </page>
                         <page name="persons" string="Persons"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
+                              attrs="{'invisible': ['|',('reservation_type','in',('out')),
+                                                    ('parent_reservation','!=',False)]}">
                             <group>
                                 <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
                                         options="{'no_create': True,'no_open': True}" />
@@ -304,7 +306,8 @@
                             />
                         </page>
                         <page name="invoicing" string="Invoicing"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
+                              attrs="{'invisible': ['|',('reservation_type','in',('out')),
+                                                    ('parent_reservation','!=',False)]}">
                             <group>
                                 <field name="partner_diff_invoicing" string="Bill to another Address"/>
                             </group>

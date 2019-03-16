@@ -169,10 +169,12 @@ class HotelService(models.Model):
         if self.compute_lines_out_vals(vals):
             reservation = self.env['hotel.reservation'].browse(vals['ser_room_line'])
             product = self.env['product.product'].browse(vals['product_id'])
-
+            checkin_dt = fields.Date.from_string(reservation.real_checkin)
+            checkout_dt = fields.Date.from_string(reservation.real_checkout)
+            nights = abs((checkout_dt - checkin_dt).days)
             vals.update(self.prepare_service_lines(
-                dfrom=reservation.checkin,
-                days=reservation.nights,
+                dfrom=reservation.real_checkin,
+                days=nights,
                 per_person=product.per_person,
                 persons=reservation.adults,
                 old_day_lines=False,
@@ -195,9 +197,12 @@ class HotelService(models.Model):
                     reservations = self.env['hotel.reservation']
                     reservation = reservations.browse(vals['ser_room_line']) \
                         if 'ser_room_line' in vals else record.ser_room_line
+                    checkin_dt = fields.Date.from_string(reservation.real_checkin)
+                    checkout_dt = fields.Date.from_string(reservation.real_checkout)
+                    nights = abs((checkout_dt - checkin_dt).days)
                     record.update(record.prepare_service_lines(
-                        dfrom=reservation.checkin,
-                        days=reservation.nights,
+                        dfrom=reservation.real_checkin,
+                        days=nights,
                         per_person=product.per_person,
                         persons=reservation.adults,
                         old_line_days=self.service_line_ids
@@ -272,9 +277,12 @@ class HotelService(models.Model):
             if record.per_day and record.ser_room_line:
                 product = record.product_id
                 reservation = record.ser_room_line
+                checkin_dt = fields.Date.from_string(reservation.real_checkin)
+                checkout_dt = fields.Date.from_string(reservation.real_checkout)
+                nights = abs((checkout_dt - checkin_dt).days)
                 vals.update(record.prepare_service_lines(
-                        dfrom=reservation.checkin,
-                        days=reservation.nights,
+                        dfrom=reservation.real_checkin,
+                        days=nights,
                         per_person=product.per_person,
                         persons=reservation.adults,
                         old_line_days=record.service_line_ids))

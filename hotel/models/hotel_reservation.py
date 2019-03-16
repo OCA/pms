@@ -389,9 +389,12 @@ class HotelReservation(models.Model):
                 if 'checkout' in vals:
                     vals['real_checkout'] = vals['checkout']
 
+            real_checkin = vals['real_checkin'] if 'real_checkin' in vals else record.real_checkin
+            real_checkout = vals['real_checkout'] if 'real_checkout' in vals else record.real_checkout
+
             days_diff = (
-                fields.Date.from_string(checkout) - \
-                fields.Date.from_string(checkin)
+                fields.Date.from_string(real_checkout) - \
+                fields.Date.from_string(real_checkin)
             ).days
             if self.compute_board_services(vals):
                 record.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
@@ -410,7 +413,7 @@ class HotelReservation(models.Model):
             if record.compute_price_out_vals(vals):
                 pricelist_id = vals['pricelist_id'] if 'pricelist_id' in vals else record.pricelist_id.id
                 record.update(record.prepare_reservation_lines(
-                    checkin,
+                    real_checkin,
                     days_diff,
                     pricelist_id,
                     vals=vals)) #REVISAR el unlink
@@ -418,7 +421,7 @@ class HotelReservation(models.Model):
                 for service in record.service_ids:
                     if service.product_id.per_day:
                         service.update(service.prepare_service_lines(
-                            dfrom=checkin,
+                            dfrom=real_checkin,
                             days=days_diff,
                             per_person=service.product_id.per_person,
                             persons=service.ser_room_line.adults,
@@ -756,7 +759,6 @@ class HotelReservation(models.Model):
         @param self: object pointer
         '''
         _logger.info('confirm')
-        hotel_folio_obj = self.env['hotel.folio']
         hotel_reserv_obj = self.env['hotel.reservation']
         for record in self:
             vals = {}
@@ -775,8 +777,10 @@ class HotelReservation(models.Model):
                     ('id', '=', master_reservation.id),
                     ('folio_id', '=', record.folio_id.id),
                     ('id', '!=', record.id),
-                    ('state', '!=', 'confirm')
+                    ('state', 'not in', ('confirm', 'booking'))
                 ])
+                if master_reservation.checkin_partner_ids:
+                    record.update({'state': 'booking'})
                 splitted_reservs.confirm()
         return True
 
@@ -1111,7 +1115,9 @@ class HotelReservation(models.Model):
                 'parent_reservation': parent_res.id,
                 'room_type_id': parent_res.room_type_id.id,
                 'discount': parent_res.discount,
+                'state': parent_res.state,
                 'reservation_line_ids': reservation_lines[1],
+                'preconfirm': False,
             })
             reservation_copy = self.env['hotel.reservation'].with_context({
                 'ignore_avail_restrictions': True}).create(vals)
