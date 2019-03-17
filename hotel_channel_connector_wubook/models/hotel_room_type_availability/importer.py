@@ -75,8 +75,8 @@ class HotelRoomTypeAvailabilityImporter(Component):
                                         Updating channel values for Room Type %s... \
                                         (Odoo: %d -- Channel: %d)" % (
                                             room_type_avail_bind.room_type_id.name,
-                                            room['avail'],
-                                            room_type_avail_bind.channel_avail)))
+                                            room_type_avail_bind.channel_avail,
+                                            room['avail'])))
                         else:
                             room_type_avail_bind = channel_room_type_avail_obj.with_context({
                                 'connector_no_export': True,
