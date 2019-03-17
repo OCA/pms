@@ -854,7 +854,7 @@ class HotelFolio(models.Model):
             'mail_template_reservation_reminder_24hrs')[1]
         template_rec = self.env['mail.template'].browse(template_id)
         for reserv_rec in self.search([]):
-            checkin_date = datetime.strptime(reserv_rec.checkin, dt)
+            checkin_date = datetime.strptime(reserv_rec.checkin, DEFAULT_SERVER_DATETIME_FORMAT)
             difference = relativedelta(now_date, checkin_date)
             if(difference.days == -1 and reserv_rec.partner_id.email and
                reserv_rec.state == 'confirm'):

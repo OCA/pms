@@ -519,7 +519,7 @@ class ServiceWizard(models.TransientModel):
                                    required=True,
                                    default=1.0)
 
-    @api.onchange('product_id')
+    @api.onchange('product_id', 'reservation_wizard_ids')
     def onchange_product_id(self):
         if self.product_id:
             pricelist_id = self.folio_wizard_id.pricelist_id.id

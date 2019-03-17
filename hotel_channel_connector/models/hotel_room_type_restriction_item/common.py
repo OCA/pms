@@ -37,6 +37,14 @@ class ChannelHotelRoomTypeRestrictionItem(models.Model):
             exporter = work.component(usage='hotel.room.type.restriction.item.exporter')
             return exporter.push_restriction()
 
+    @job(default_channel='root.channel')
+    @api.model
+    def close_online_sales(self, backend):
+        with backend.work_on(self._name) as work:
+            exporter = work.component(usage='hotel.room.type.restriction.item.exporter')
+            return exporter.close_online_sales()
+
+
 
 class HotelRoomTypeRestrictionItem(models.Model):
     _inherit = 'hotel.room.type.restriction.item'

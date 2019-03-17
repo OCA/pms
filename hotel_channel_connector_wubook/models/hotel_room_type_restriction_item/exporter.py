@@ -88,3 +88,42 @@ class HotelRoomTypeRestrictionItemExporter(Component):
                     'sync_date': fields.Datetime.now(),
                 })
         return True
+
+    @api.model
+    def close_online_sales(self):
+        channel_rest_plan = self.env['channel.hotel.room.type.restriction'].search([
+            ('backend_id', '=', self.backend_record.id),
+        ])
+        channel_rest_item = self.env['channel.hotel.room.type.restriction.item']
+        channel_room_types = self.env['channel.hotel.room.type'].search([
+            ('external_id', '!=', ''),
+        ])
+        for channel_room_type in channel_room_types:
+            today_restrictions = channel_rest_item.search([
+                ('backend_id', '=', self.backend_record.id),
+                ('room_type_id', '=', channel_room_type.odoo_id.id),
+                ('date', '=', fields.Date.today())
+            ])
+            if today_restrictions:
+                today_restrictions.closed = True
+            else:
+                self.env['hotel.room.type.restriction.item'].with_context(
+                        {'connector_no_export': True}
+                    ).create({
+                        'restriction_id': channel_rest_plan.odoo_id.id,
+                        'room_type_id': channel_room_type.odoo_id.id,
+                        'date': fields.Date.today(),
+                        'closed_departure': 0,
+                        'max_stay_arrival': 0,
+                        'min_stay': 0,
+                        'max_stay': 0,
+                        'min_stay_arrival': 0,
+                        'closed_arrival': 0,
+                        'closed': True,
+                        'channel_bind_ids': [(0, False, {
+                            'channel_pushed': False,
+                            'backend_id': self.backend_record.id,
+                        })]
+                    })
+
+        return self.push_restriction()
