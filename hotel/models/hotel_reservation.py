@@ -78,6 +78,11 @@ class HotelReservation(models.Model):
         else:
             return default_departure_hour
 
+    @api.multi
+    def set_call_center_user(self):
+        user = self.env['res.users'].browse(self.env.uid)
+        return user.has_group('hotel.group_hotel_call')
+
     @api.model
     def _default_diff_invoicing(self):
         """
@@ -270,6 +275,7 @@ class HotelReservation(models.Model):
                                          related='folio_id.internal_comment')
     preconfirm = fields.Boolean('Auto confirm to Save', default=True)
     to_send = fields.Boolean('To Send', default=True)
+    call_center = fields.Boolean(default='set_call_center_user')
     has_confirmed_reservations_to_send = fields.Boolean(
         related='folio_id.has_confirmed_reservations_to_send',
         readonly=True)
@@ -352,6 +358,12 @@ class HotelReservation(models.Model):
         if 'service_ids' in vals and vals['service_ids'][0][2]:
             for service in vals['service_ids']:
                 service[2]['folio_id'] = folio.id
+        user = self.env['res.users'].browse(self.env.uid)
+        if user.has_group('hotel.group_hotel_call'):
+            vals.update({
+                'to_assign': True,
+                'channel_type': 'call'
+                })
         vals.update({
             'last_updated_res': fields.Datetime.now(),
         })
@@ -427,10 +439,15 @@ class HotelReservation(models.Model):
                             persons=service.ser_room_line.adults,
                             old_line_days=service.service_line_ids
                             ))
-            if ('checkin' in vals and record.checkin != vals['checkin']) or \
-                ('checkout' in vals and record.checkout != vals['checkout']) or \
-                ('state' in vals and record.state != vals['state']):
+            if ('checkin' in vals and record.checkin != vals['checkin']) or\
+               ('checkout' in vals and record.checkout != vals['checkout']) or\
+               ('state' in vals and record.state != vals['state']):
                     record.update({'to_send': True})
+            user = self.env['res.users'].browse(self.env.uid)
+            if user.has_group('hotel.group_hotel_call'):
+                vals.update({
+                    'to_assign': True,
+                })
         res = super(HotelReservation, self).write(vals)
         return res
 
@@ -760,8 +777,11 @@ class HotelReservation(models.Model):
         '''
         _logger.info('confirm')
         hotel_reserv_obj = self.env['hotel.reservation']
+        user = self.env['res.users'].browse(self.env.uid)
         for record in self:
             vals = {}
+            if user.has_group('hotel.group_hotel_call'):
+                vals.update({'channel_type': 'call'})
             if record.checkin_partner_ids:
                 vals.update({'state': 'booking'})
             else:

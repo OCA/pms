@@ -14,6 +14,26 @@ class HotelServiceLine(models.Model):
     date = fields.Date('Date')
     day_qty = fields.Integer('Units')
     product_id = fields.Many2one(related='service_id.product_id', store=True)
+    price_total = fields.Float('Price Total',
+                               compute='_compute_price_total',
+                               store=True)
+    price_unit = fields.Float('Unit Price',
+                              related="service_id.price_unit",
+                              readonly=True,
+                              store=True)
+    discount = fields.Float('Discount',
+                            related="service_id.discount",
+                            readonly=True,
+                            store=True)
+    tax_ids = fields.Many2many('account.tax',
+                               string='Taxes',
+                               related="service_id.tax_ids",
+                               readonly="True")
+
+    @api.depends('day_qty', 'service_id.price_total')
+    def _compute_price_total(self):
+        for record in self:
+            record.price_total = (record.service_id.price_total * record.day_qty) / record.service_id.product_qty
 
     @api.constrains('day_qty')
     def no_free_resources(self):

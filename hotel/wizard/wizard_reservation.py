@@ -85,7 +85,8 @@ class FolioWizard(models.TransientModel):
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
-        ('phone', 'Phone')
+        ('phone', 'Phone'),
+        ('call', 'Call')
     ], string='Sales Channel', default=_get_default_channel_type)
     room_type_wizard_ids = fields.One2many('hotel.room.type.wizard',
                                            'folio_wizard_id',

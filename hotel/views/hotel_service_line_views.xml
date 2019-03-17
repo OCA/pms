@@ -13,6 +13,7 @@
                     <field name="product_id" />
                     <field name="day_qty"/>
                     <field name="date" />
+                    <field name="price_unit" />
                 </group>
             </form>
         </field>
@@ -37,9 +38,13 @@
         <field name="arch" type="xml">
             <tree string="Service By Day">
                 <field name="product_id" />
-                <field name="day_qty"/>
                 <field name="date" />
+                <field name="day_qty"/>
+                <field name="price_unit" />
                 <field name="service_id" />
+                <field name="tax_ids" widget="many2many_tags"/>
+                <field name="discount" />
+                <field name="price_total" />
             </tree>
         </field>
     </record>
@@ -96,7 +101,7 @@
         res_model="hotel.service.line"
         view_mode="tree,form"
         view_id = "hotel.hotel_service_line_report_view_tree" />
-        
+
     <menuitem
         id="menu_hotel_service_line"
         name="Services by Day"

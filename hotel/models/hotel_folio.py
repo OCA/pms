@@ -142,6 +142,7 @@ class HotelFolio(models.Model):
     channel_type = fields.Selection([('door', 'Door'),
                                      ('mail', 'Mail'),
                                      ('phone', 'Phone'),
+                                     ('call', 'Call Center'),
                                      ('web', 'Web')], 'Sales Channel', default='door')
     user_id = fields.Many2one('res.users', string='Salesperson', index=True,
                               track_visibility='onchange', default=lambda self: self.env.user)
