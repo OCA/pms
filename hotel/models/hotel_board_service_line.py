@@ -12,18 +12,20 @@ class HotelBoardServiceLine(models.Model):
     def _get_default_price(self):
         if self.product_id:
             return self.product_id.list_price
-            
+
     hotel_board_service_id = fields.Many2one(
-        'hotel.board.service', 'Board Service', ondelete='cascade', required=True)
+        'hotel.board.service',
+        'Board Service',
+        ondelete='cascade',
+        required=True)
     product_id = fields.Many2one(
         'product.product', 'Product', required=True)
-    amount = fields.Float('Amount',
-        digits=dp.get_precision('Product Price'), default=_get_default_price)
+    amount = fields.Float(
+        'Amount',
+        digits=dp.get_precision('Product Price'),
+        default=_get_default_price)
 
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
             self.update({'amount': self.product_id.list_price})
-    
-                
-                    

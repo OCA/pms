@@ -1,1 +1,7 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hotel_l10n_es.model_category_user","hotell10n.category_ine.user","hotel_l10n_es.model_tourism_category","hotel.group_hotel_user",1,0,0,0
+"access_hotel_l10n_es.code_ine_user","hotell10n.code_ine.user","hotel_l10n_es.model_code_ine","hotel.group_hotel_user",1,0,0,0
+"access_hotel_l10n_es.model_category_manager","hotell10n.category_ine.manager","hotel_l10n_es.model_tourism_category","hotel.group_hotel_manager",1,1,1,1
+"access_hotel_l10n_es.code_ine_manager","hotell10n.code_ine.manager","hotel_l10n_es.model_code_ine","hotel.group_hotel_manager",1,1,1,1
+"access_hotel_l10n_es.model_category_call","hotell10n.category_ine.call","hotel_l10n_es.model_tourism_category","hotel.group_hotel_call",1,0,0,0
+"access_hotel_l10n_es.code_ine_call","hotell10n.code_ine.call","hotel_l10n_es.model_code_ine","hotel.group_hotel_call",1,0,0,0

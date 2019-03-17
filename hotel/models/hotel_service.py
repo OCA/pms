@@ -169,11 +169,17 @@ class HotelService(models.Model):
         if self.compute_lines_out_vals(vals):
             reservation = self.env['hotel.reservation'].browse(vals['ser_room_line'])
             product = self.env['product.product'].browse(vals['product_id'])
-            checkin_dt = fields.Date.from_string(reservation.real_checkin)
-            checkout_dt = fields.Date.from_string(reservation.real_checkout)
+            if reservation.splitted:
+                checkin = reservation.real_checkin
+                checkout = reservation.real_checkout
+            else:
+                checkin = reservation.checkin
+                checkout = reservation.checkout
+            checkin_dt = fields.Date.from_string(checkin)
+            checkout_dt = fields.Date.from_string(checkout)
             nights = abs((checkout_dt - checkin_dt).days)
             vals.update(self.prepare_service_lines(
-                dfrom=reservation.real_checkin,
+                dfrom=checkin,
                 days=nights,
                 per_person=product.per_person,
                 persons=reservation.adults,
@@ -190,18 +196,24 @@ class HotelService(models.Model):
             product = self.env['product.product'].browse(vals.get('product_id'))
             if not product.per_day:
                 vals.update({
-                    'service_line_ids' : [(5, 0, 0)]
+                    'service_line_ids': [(5, 0, 0)]
                     })
             else:
                 for record in self:
                     reservations = self.env['hotel.reservation']
                     reservation = reservations.browse(vals['ser_room_line']) \
                         if 'ser_room_line' in vals else record.ser_room_line
-                    checkin_dt = fields.Date.from_string(reservation.real_checkin)
-                    checkout_dt = fields.Date.from_string(reservation.real_checkout)
+                    if reservation.splitted:
+                        checkin = reservation.real_checkin
+                        checkout = reservation.real_checkout
+                    else:
+                        checkin = reservation.checkin
+                        checkout = reservation.checkout
+                    checkin_dt = fields.Date.from_string(checkin)
+                    checkout_dt = fields.Date.from_string(checkout)
                     nights = abs((checkout_dt - checkin_dt).days)
                     record.update(record.prepare_service_lines(
-                        dfrom=reservation.real_checkin,
+                        dfrom=checkin,
                         days=nights,
                         per_person=product.per_person,
                         persons=reservation.adults,
@@ -277,11 +289,17 @@ class HotelService(models.Model):
             if record.per_day and record.ser_room_line:
                 product = record.product_id
                 reservation = record.ser_room_line
-                checkin_dt = fields.Date.from_string(reservation.real_checkin)
-                checkout_dt = fields.Date.from_string(reservation.real_checkout)
+                if reservation.splitted:
+                    checkin = reservation.real_checkin
+                    checkout = reservation.real_checkout
+                else:
+                    checkin = reservation.checkin
+                    checkout = reservation.checkout
+                checkin_dt = fields.Date.from_string(checkin)
+                checkout_dt = fields.Date.from_string(checkout)
                 nights = abs((checkout_dt - checkin_dt).days)
                 vals.update(record.prepare_service_lines(
-                        dfrom=reservation.real_checkin,
+                        dfrom=checkin,
                         days=nights,
                         per_person=product.per_person,
                         persons=reservation.adults,
