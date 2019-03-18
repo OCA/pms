@@ -28,23 +28,23 @@ class ChannelHotelReservation(models.Model):
         (str(WUBOOK_STATUS_CANCELLED_PENALTY), 'Cancelled with penalty'),
     ])
 
-    @api.model
-    def create(self, vals):
-        # TODO FIX: RuntimeError: RuntimeError('super(): no arguments',) ¿?
-        record = super(ChannelHotelReservation, self).create(vals)
-        if record.channel_total_amount != record.odoo_id.price_room_services_set:
-            record.odoo_id.unconfirmed_channel_price = True
-            self.env['hotel.channel.connector.issue'].create({
-                'backend_id': record.backend_id.id,
-                'section': 'reservation',
-                'internal_message': "Disagreement in reservation price. Odoo marked %.2f whereas the channel sent %.2f." % (
-                    record.odoo_id.price_room_services_set,
-                    record.channel_total_amount),
-                'channel_message': 'Please, review the board services included in the reservation.',
-                'channel_object_id': record.external_id
-            })
-
-        return record
+    # TODO: Review where to check the total room amount
+    # @api.model
+    # def create(self, vals):
+    #     record = super(ChannelHotelReservation, self).create(vals)
+    #     if record.channel_total_amount != record.odoo_id.price_room_services_set:
+    #         record.odoo_id.unconfirmed_channel_price = True
+    #         self.env['hotel.channel.connector.issue'].create({
+    #             'backend_id': record.backend_id.id,
+    #             'section': 'reservation',
+    #             'internal_message': "Disagreement in reservation price. Odoo marked %.2f whereas the channel sent %.2f." % (
+    #                 record.odoo_id.price_room_services_set,
+    #                 record.channel_total_amount),
+    #             'channel_message': 'Please, review the board services included in the reservation.',
+    #             'channel_object_id': record.external_id
+    #         })
+    #
+    #     return record
 
 
 class HotelReservation(models.Model):
