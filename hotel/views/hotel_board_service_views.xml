@@ -9,6 +9,7 @@
         <field name="arch" type="xml">
             <form string="Board Service Line">
                 <group>
+                   <field name="name" />
                     <field name="amount"/>
                     <field name="board_service_line_ids">
                         <tree editable="bottom">
