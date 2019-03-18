@@ -153,6 +153,7 @@ class FolioWizard(models.TransientModel):
                         'room_id': room.id,
                         'nights': nights,
                         'adults': adults,
+                        'folio_wizard_id': self.id,
                         'board_service_room_id': line.board_service_room_id,
                         'children': 0,
                         'room_type_id': line.room_type_id,
@@ -223,6 +224,11 @@ class FolioWizard(models.TransientModel):
         if self.autoassign:
             self.create_reservations()
         for line in self.reservation_wizard_ids:
+            services_room = []
+            for product in line.product_ids:
+                services_room.append((0, False, {
+                    'product_id': product.id
+                }))
             reservations.append((0, False, {
                 'room_id': line.room_id.id,
                 'adults': line.adults,
@@ -233,6 +239,7 @@ class FolioWizard(models.TransientModel):
                 'room_type_id': line.room_type_id.id,
                 'board_service_room_id': line.board_service_room_id.id,
                 'to_assign': line.to_assign,
+                'service_ids': services_room,
             }))
         for line in self.service_wizard_ids:
             services.append((0, False, {
@@ -423,6 +430,8 @@ class ReservationWizard(models.TransientModel):
     partner_id = fields.Many2one(related='folio_wizard_id.partner_id')
     discount = fields.Float('discount')
     to_assign = fields.Boolean(compute="_compute_assign")
+    product_ids = fields.Many2many('product.product',
+                                   string="Products")
     board_service_room_id = fields.Many2one('hotel.board.service.room.type',
                                             string="Board Service")
 
@@ -453,33 +462,35 @@ class ReservationWizard(models.TransientModel):
 
     @api.multi
     @api.onchange('checkin', 'checkout', 'room_type_id',
-                  'discount', 'board_service_room_id')
+                  'discount', 'board_service_room_id', 'product_ids')
     def onchange_dates(self):
         for line in self:
-            if not self.checkin:
-                self.checkin = self.folio_wizard_id.checkin
-            if not self.checkout:
-                self.checkout = self.folio_wizard_id.checkout
+            if not line.checkin:
+                line.checkin = line.folio_wizard_id.checkin
+            if not line.checkout:
+                line.checkout = line.folio_wizard_id.checkout
 
             start_date_utc_dt = fields.Date.from_string(line.checkin)
             end_date_utc_dt = fields.Date.from_string(line.checkout)
 
             if line.room_type_id:
-                pricelist_id = self.folio_wizard_id.pricelist_id.id
+                #First, compute room price
+                pricelist_id = line.folio_wizard_id.pricelist_id.id
                 nights = abs((end_date_utc_dt - start_date_utc_dt).days)
                 res_price = 0
                 for i in range(0, nights):
                     ndate = start_date_utc_dt + timedelta(days=i)
                     ndate_str = ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)
                     product = line.room_type_id.product_id.with_context(
-                        lang=self.partner_id.lang,
-                        partner=self.partner_id.id,
+                        lang=line.partner_id.lang,
+                        partner=line.partner_id.id,
                         quantity=1,
                         date=ndate_str,
                         pricelist=pricelist_id,
                         uom=line.room_type_id.product_id.uom_id.id)
                     res_price += product.price
                 board_service = line.board_service_room_id
+                #Second, compute BoardService price
                 if board_service:
                     if board_service.price_type == 'fixed':
                         board_price = board_service.amount *\
@@ -487,7 +498,46 @@ class ReservationWizard(models.TransientModel):
                         res_price += board_price
                     else:
                         res_price += ((res_price * board_service.amount) * 0.01)
-                res_price = res_price - (res_price * self.discount) * 0.01
+                res_price = res_price - (res_price * line.discount) * 0.01
+                #And compute products Room price
+                for product in line.product_ids:
+                    pricelist_id = line.folio_wizard_id.pricelist_id.id
+                    product = product.with_context(
+                        lang=line.folio_wizard_id.partner_id.lang,
+                        partner=line.folio_wizard_id.partner_id.id,
+                        quantity=1,
+                        date=fields.Datetime.now(),
+                        pricelist=pricelist_id,
+                        uom=product.uom_id.id)
+                    values = {'pricelist_id': pricelist_id,
+                              'product_id': product.id,
+                              'product_qty': 1}
+                    service_line = self.env['hotel.service'].new(values)
+                    vals = service_line.with_context({
+                            'default_folio_id': line.folio_wizard_id
+                            })._prepare_add_missing_fields(values)
+                    if product.per_day or product.per_person:
+                        checkin_dt = fields.Date.from_string(line.checkin)
+                        checkout_dt = fields.Date.from_string(line.checkout)
+                        nights = abs((checkout_dt - checkin_dt).days)
+                        vals.update(service_line.prepare_service_lines(
+                                dfrom=line.checkin,
+                                days=nights,
+                                per_person=product.per_person,
+                                persons=line.adults,
+                                old_line_days=False))
+                    service_line.update(vals)
+                    price_product = service_line.price_unit * (1 - (line.discount or 0.0) * 0.01)
+                    pricelist = line.folio_wizard_id.pricelist_id
+                    currency = pricelist.currency_id
+                    taxes = service_line.tax_ids.compute_all(
+                        price_product,
+                        currency,
+                        service_line.product_qty,
+                        product=product
+                        )
+                    # TODO Daily Limits
+                    res_price += taxes['total_included']
                 line.price = res_price
             end_date_utc_dt -= timedelta(days=1)
             occupied = self.env['hotel.reservation'].get_reservations(
@@ -519,7 +569,7 @@ class ServiceWizard(models.TransientModel):
                                    required=True,
                                    default=1.0)
 
-    @api.onchange('product_id', 'reservation_wizard_ids')
+    @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
             pricelist_id = self.folio_wizard_id.pricelist_id.id

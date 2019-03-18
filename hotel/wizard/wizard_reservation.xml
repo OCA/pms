@@ -61,6 +61,7 @@
 							<tree string="Room Line" delete="false" editable="buttom">
 								<field name="room_id" string="Room No" options="{'no_create': True}"/>
 								<field name="room_type_id" options="{'no_create': True}" />
+								<field name="folio_wizard_id" invisible = "1" />
 								<field name="checkin" />
 								<field name="checkout" />
 								<field name="nights" />
@@ -69,15 +70,18 @@
 								<field name="board_service_room_id" domain="[
 												('hotel_room_type_id', '=', room_type_id)
 												]" />
+								<field name="product_ids" widget="many2many_tags"  domain="[
+												('sale_ok', '=', True)
+												]"
+												options="{'no_create': True}" />
                 <field name="discount" />
 								<field name="price" />
 								<field name="partner_id" invisible = "1" />
-								<field name="folio_wizard_id" invisible = "1" />
                 <field name="to_assign" invisible="1" />
 							</tree>
 						</field>
 					</group>
-                    <group>
+          <group string="Articles" name="articles">
 						<field name="service_wizard_ids" colspan="4" string="Services"
 							nolabel="1" >
 							<tree string="Services" editable="buttom">
@@ -85,7 +89,7 @@
                                     domain="[('sale_ok', '=', True),
 																						 ('per_day', '=', False),
 																						 ('per_person', '=', False)]"/>
-								<field name="folio_wizard_id" invisible = "1" />
+								<field name="folio_wizard_id" invisible = "0" />
 								<field name="product_uom_qty" />
 								<field name="price_unit" />
 								<field name="discount" />
@@ -94,10 +98,10 @@
 							</tree>
 						</field>
 					</group>
-                    <footer>
-                        <button name="create_folio" string="Create Reservations" type="object"
-							class="oe_highlight" />
-                    </footer>
+              <footer>
+                  <button name="create_folio" string="Create Reservations" type="object"
+													class="oe_highlight" />
+              </footer>
 				</sheet>
 			</form>
 		</field>

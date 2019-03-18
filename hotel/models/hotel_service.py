@@ -121,7 +121,7 @@ class HotelService(models.Model):
                                     default=_default_ser_room_line)
     per_day = fields.Boolean(related='product_id.per_day', related_sudo=True)
     service_line_ids = fields.One2many('hotel.service.line', 'service_id')
-    product_qty = fields.Integer('Quantity')
+    product_qty = fields.Integer('Quantity', default=1)
     days_qty = fields.Integer(compute="_compute_days_qty", store=True)
     is_board_service = fields.Boolean()
     # Non-stored related field to allow portal user to see the image of the product he has ordered
@@ -305,6 +305,9 @@ class HotelService(models.Model):
                         persons=reservation.adults,
                         old_line_days=record.service_line_ids))
                 if record.product_id.daily_limit > 0:
+                    for i in range(0, nights):
+                        idate = (fields.Date.from_string(checkin) + timedelta(days=i)).strftime(
+                            DEFAULT_SERVER_DATE_FORMAT)
                     for day in record.service_line_ids:
                         day.no_free_resources()
         """
