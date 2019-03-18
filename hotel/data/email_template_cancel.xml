@@ -279,8 +279,8 @@
                                                                                                 <br />
                                                                                             </strong>
                                                                                             <br>
-                                                                                            <strong style="margin-left:2em">Entrada</strong>: ${format_tz(rline['checkin'], format="%d de %B de %Y")}<br>
-                                                                                            <strong style="margin-left:2em">Salida</strong>: ${format_tz(rline['checkout'], format="%d de %B de %Y")}<br>
+                                                                                            <strong style="margin-left:2em">Entrada</strong>: ${format_tz(rline['checkin']+ ' 00:00:00', format="%d de %B de %Y")}<br>
+                                                                                            <strong style="margin-left:2em">Salida</strong>: ${format_tz(rline['checkout']+ ' 00:00:00', format="%d de %B de %Y")}<br>
                                                                                             <strong style="margin-left:2em" 2="">Nº de noches</strong>: ${rline['nights']}<br><br>
                                                                                             % endfor
                                                                                         </td>
