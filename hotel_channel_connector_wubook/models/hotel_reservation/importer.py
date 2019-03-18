@@ -99,8 +99,12 @@ class HotelReservationImporter(Component):
                                split_booking, dates_checkin, dates_checkout, real_checkin, real_checkout, book):
         is_cancellation = book['status'] in WUBOOK_STATUS_BAD
         tax_inclusive = True
-        # men = Number of adults (when not defined, equal to -1)
-        persons = book.get('men', -1) > -1 and book.get('men') or room_type_bind.ota_capacity
+        persons = room_type_bind.ota_capacity
+        # Info about the occupancy of each booked room (it can be empty)
+        # BUG: occupancy includes children... Review adults by OTA
+        # occupancy = next((item for item in book['rooms_occupancies'] if item["id"] == broom['room_id']), False)
+        # if occupancy:
+        #     persons = occupancy['occupancy']
         # Dates
         real_checkin_str = real_checkin.strftime(
             DEFAULT_SERVER_DATETIME_FORMAT)
