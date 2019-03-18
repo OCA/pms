@@ -100,6 +100,10 @@ class HotelReservationImporter(Component):
         is_cancellation = book['status'] in WUBOOK_STATUS_BAD
         tax_inclusive = True
         persons = room_type_bind.ota_capacity
+        # Info about the occupancy of each booked room (it can be empty)
+        occupancy = next((item for item in book['rooms_occupancies'] if item["id"] == broom['room_id']), False)
+        if occupancy:
+            persons = occupancy['occupancy']
         # Dates
         real_checkin_str = real_checkin.strftime(
             DEFAULT_SERVER_DATETIME_FORMAT)
