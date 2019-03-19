@@ -355,9 +355,10 @@ class HotelReservation(models.Model):
             vals.update({'folio_id': folio.id,
                          'reservation_type': vals.get('reservation_type'),
                          'channel_type': vals.get('channel_type')})
-        if 'service_ids' in vals and vals['service_ids'][0][2]:
+        if vals.get('service_ids'):
             for service in vals['service_ids']:
-                service[2]['folio_id'] = folio.id
+                if service[2]:
+                    service[2]['folio_id'] = folio.id
         user = self.env['res.users'].browse(self.env.uid)
         if user.has_group('hotel.group_hotel_call'):
             vals.update({
@@ -417,9 +418,10 @@ class HotelReservation(models.Model):
                         'product_id': line.product_id.id,
                         'is_board_service': True,
                         'folio_id': vals.get('folio_id'),
+                        'reservation_id': self.id,
                         }
                     res.update(self.env['hotel.service']._prepare_add_missing_fields(res))
-                    board_services.append((0, False, vals))
+                    board_services.append((0, False, res))
                 # NEED REVIEW: Why I need add manually the old IDs if board service is (0,0,(-)) ¿?¿?¿
                 record.update({'service_ids':  [(6, 0, record.service_ids.ids)] + board_services})
             if record.compute_price_out_vals(vals):
@@ -448,8 +450,8 @@ class HotelReservation(models.Model):
                 vals.update({
                     'to_assign': True,
                 })
-        res = super(HotelReservation, self).write(vals)
-        return res
+        record = super(HotelReservation, self).write(vals)
+        return record
 
     @api.multi
     def compute_board_services(self, vals):
@@ -487,17 +489,20 @@ class HotelReservation(models.Model):
         """ Deduce missing required fields from the onchange """
         res = {}
         onchange_fields = ['room_id', 'reservation_type',
-            'currency_id', 'name', 'board_service_room_id','service_ids']
+                           'currency_id', 'name', 'service_ids']
         if values.get('room_type_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
                 line.onchange_room_id()
                 line.onchange_room_type_id()
-                line.onchange_board_service()
             if 'pricelist_id' not in values:
                 line.onchange_partner_id()
                 onchange_fields.append('pricelist_id')
             for field in onchange_fields:
+                if field == 'service_ids':
+                    if self.compute_board_services(values):
+                        line.onchange_board_service()
+                        res[field] = line._fields[field].convert_to_write(line[field], line)
                 if field not in values:
                     res[field] = line._fields[field].convert_to_write(line[field], line)
         return res
@@ -596,7 +601,7 @@ class HotelReservation(models.Model):
         if self.room_id:
             write_vals = {}
             extra_bed = self.service_ids.filtered(
-                        lambda r: r.product_id.is_extra_bed == True)
+                        lambda r: r.product_id.is_extra_bed is True)
             if self.room_id.get_capacity(len(extra_bed)) < self.adults:
                 raise UserError(
                     _('%s people do not fit in this room! ;)') % (self.adults))
@@ -691,7 +696,7 @@ class HotelReservation(models.Model):
 
     @api.onchange('checkin', 'checkout')
     def onchange_update_service_per_day(self):
-        services = self.service_ids.filtered(lambda r: r.per_day == True)
+        services = self.service_ids.filtered(lambda r: r.per_day is True)
         for service in services:
             service.onchange_product_id()
 
