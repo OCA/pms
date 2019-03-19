@@ -334,10 +334,14 @@ class HotelRoomTypeWizards(models.TransientModel):
             minstay_restrictions = self.env['hotel.room.type.restriction.item'].search([
                 ('room_type_id', '=', res.room_type_id.id),
             ])
+            avail_restrictions = self.env['hotel.room.type.availability'].search([
+                ('room_type_id', '=', res.room_type_id.id)
+            ])
             real_max = len(res.room_type_id.check_availability_room_type(
-                res.checkin,
-                res.checkout,
-                res.room_type_id.id))
+                        res.checkin,
+                        res.checkout,
+                        res.room_type_id.id))
+            res.real_avail = real_max
             avail = 100000
             min_stay = 0
             dates = []
@@ -347,13 +351,20 @@ class HotelRoomTypeWizards(models.TransientModel):
                 dates.append(ndate_str)
                 if minstay_restrictions:
                     date_min_days = minstay_restrictions.filtered(
-                        lambda r: r.date == ndate_str).min_stay
+                                lambda r: r.date_start <= ndate_str and \
+                                r.date_end >= ndate_str).min_stay
                     if date_min_days > min_stay:
                         min_stay = date_min_days
+                if user.has_group('hotel.group_hotel_call'):
+                    if avail_restrictions:
+                        max_avail = avail_restrictions.filtered(
+                                    lambda r: r.date == ndate_str).channel_avail
+                        if max_avail < avail:
+                            avail = min(max_avail, real_max)
                 else:
                     avail = real_max
 
-            if 100000 > avail > 0:
+            if avail < 100000 and avail > 0:
                 res.max_rooms = avail
             else:
                 res.max_rooms = 0
