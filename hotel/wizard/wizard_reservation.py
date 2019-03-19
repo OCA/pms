@@ -351,8 +351,7 @@ class HotelRoomTypeWizards(models.TransientModel):
                 dates.append(ndate_str)
                 if minstay_restrictions:
                     date_min_days = minstay_restrictions.filtered(
-                                lambda r: r.date <= ndate_str and \
-                                r.date_end >= ndate_str).min_stay
+                                lambda r: r.date == ndate_str).min_stay
                     if date_min_days > min_stay:
                         min_stay = date_min_days
                 if user.has_group('hotel.group_hotel_call'):
