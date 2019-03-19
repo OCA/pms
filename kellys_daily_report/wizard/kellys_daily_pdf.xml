@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <act_window id="report_kellys_act" name="Kellys Daily Report Wizard" res_model="kellysreport" view_mode="form"/>
+
+        <record model="ir.ui.view" id="kellys_report_view">
+            <field name="name">kellys_daily_report_view</field>
+            <field name="model">kellysreport</field>
+            <field name="arch" type="xml">
+                <form string="kellys Daily Report">
+                    <sheet>
+                        <group string="Generar PDF de limpieza a fecha:">
+                            <field name="date_start"/>
+                            <button name="calculate_report" string="Recalcular" type="object" class="oe_highlight"/>
+                        </group>
+                        <group colspan="4">
+                            <field name="habitaciones"/>
+                        </group>
+                        <group colspan="2">
+                            <field name="order"/>
+                        </group>
+                        <footer>
+                            <button type="object" class="oe_highlight" icon="fa-file-pdf-o" name="print_rooms_report" string="Print in PDF"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

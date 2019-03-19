@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kellys.model_category_manager,access_kellys.manager,kellys_daily_report.model_kellysnames,hotel.group_hotel_manager,1,1,1,1
+access_kellys.model_category_call,access_kellys.call,kellys_daily_report.model_kellysnames,hotel.group_hotel_call,0,0,0,0
+access_kellys.model_category_user,access_kellys.user,kellys_daily_report.model_kellysnames,hotel.group_hotel_user,1,1,1,1
