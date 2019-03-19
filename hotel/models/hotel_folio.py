@@ -328,26 +328,6 @@ class HotelFolio(models.Model):
         }
 
     @api.multi
-    def action_payments(self):
-        self.ensure_one()
-        payments_obj = self.env['account.payment']
-        payments = payments_obj.search([('folio_id', '=', self.id)])
-        view_form_id = self.env.ref('hotel.account_payment_view_form_folio').id
-        view_tree_id = self.env.ref('account.view_account_payment_tree').id
-        # invoices = self.mapped('invoice_ids.id')
-        return{
-            'name': _('Payments'),
-            'view_type': 'form',
-            'views': [(view_tree_id, 'tree'),(view_form_id, 'form')],
-            'view_mode': 'tree,form',
-            'res_model': 'account.payment',
-            'target': 'new',
-            'init_mode': 'edit',
-            'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', payments.ids)],
-        }
-
-    @api.multi
     def open_invoices_folio(self):
         invoices = self.mapped('invoice_ids')
         action = self.env.ref('account.action_invoice_tree1').read()[0]

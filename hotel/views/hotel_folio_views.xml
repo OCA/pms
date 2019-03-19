@@ -171,11 +171,12 @@
                         </page>
                         <page name="payments" string="Payments" attrs="{'invisible': [('invoices_paid','&lt;=',0)]}">
                             <field name="payment_ids"
-                                    options="{'no_create': True,'no_edit': True}" />
+                                   context="{'tree_view_ref':'hotel.account_payment_view_tree_folio', 'form_view_ref':'hotel.account_payment_view_form_folio'}"
+                                   options="{'no_create': True}" />
                         </page>
                         <page name="returns" string="Retun Payments" attrs="{'invisible': [('refund_amount','&lt;=',0)]}">
                             <field name="return_ids"
-                                    options="{'no_create': True,'no_edit': True}" />
+                                    options="{'no_create': True}" />
                         </page>
                         <page string="Other data" invisible="1">
                             <group>

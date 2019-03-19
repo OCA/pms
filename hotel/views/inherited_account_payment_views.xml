@@ -17,20 +17,20 @@
     <record id="account_payment_view_form_folio" model="ir.ui.view">
         <field name="name">account.payment.folio.form</field>
         <field name="model">account.payment</field>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
             <form string="Register Payment" version="7">
                 <header>
-                    <button name="post" class="oe_highlight" states="draft" string="Confirm" type="object"/>
                     <button name="action_draft" class="oe_highlight" states="cancelled" string="Set To Draft" type="object"/>
                     <button string="Validate" name="post" type="object" class="btn-primary"
                         attrs="{'invisible': [('state','!=','draft')]}"/>
-                    <button string="Modify" name="modify" type="object" class="btn-primary"
+                    <button string="Modify" name="modify" type="object" class="oe_edit_only btn-primary"
                         attrs="{'invisible': [('state','=','draft')]}"/>
-                    <button string="Return" name="return_payment_folio" type="object" class="btn-primary"
+                    <button string="Return" name="return_payment_folio" type="object" class="oe_edit_only btn-primary"
                         attrs="{'invisible': [('state','=','draft')]}"/>
-                    <button string="Delete" name="delete" type="object" class="btn-primary"
+                    <button string="Delete" name="delete" type="object" class="oe_read_only btn-primary"
                         attrs="{'invisible': [('state','=','draft')]}"/>
-                    <button string="Cancel" class="btn-default" special="cancel"/>
+                    <button string="Cancel" class="oe_read_only btn-default" special="cancel"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,posted,reconciled,cancelled"/>
                 </header>
                 <sheet>
@@ -87,6 +87,29 @@
                   <field name="message_ids" widget="mail_thread"/>
               </div>
             </form>
+        </field>
+    </record>
+
+    <record id="account_payment_view_tree_folio" model="ir.ui.view">
+        <field name="name">account.payment.folio.tree</field>
+        <field name="model">account.payment</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'draft'" decoration-muted="state in ['reconciled', 'cancelled']" edit="false">
+                <field name="payment_date" />
+                <field name="name" />
+                <field name="journal_id" />
+                <field name="payment_method_id" />
+                <field name="partner_id" string="Customer" />
+                <field name="amount" sum="Amount" />
+                <field name="state" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="currency_id" invisible="1" />
+                <field name="partner_type" invisible="1" />
+                <button type="object" class="oe_stat_button"
+                  icon="fa fa-2x fa-pencil"
+                  name="modify_payment" />
+            </tree>
         </field>
     </record>
 

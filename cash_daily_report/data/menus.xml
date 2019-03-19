@@ -4,6 +4,5 @@
         <menuitem id="cash_daily_report_wizard" name="Cash Daily Report Wizard"
             parent="hotel.hotel_reports_menu"
             action="action_open_cash_daily_report_wizard" sequence="45" />
-
     </data>
 </odoo>

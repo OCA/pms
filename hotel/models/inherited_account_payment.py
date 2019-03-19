@@ -48,14 +48,7 @@ class AccountPayment(models.Model):
             self.payment_date = self.save_date
         if self.save_journal_id:
             self.journal_id = self.env['account.journal'].browse(self.save_journal_id)
-        return {
-            'name': 'Folio Payment Return',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'payment.return',
-            'type': 'ir.actions.act_window',
-            'res_id': return_pay.id,
-        }
+        return_pay.action_confirm()
 
     @api.multi
     def modify(self):
@@ -114,9 +107,26 @@ class AccountPayment(models.Model):
 
     @api.multi
     def post(self):
-        rec = super(AccountPayment,self).post()
+        rec = super(AccountPayment, self).post()
         if rec and not self._context.get("ignore_notification_post", False):
             for pay in self:
                 if pay.folio_id:
                     msg = _("Payment of %s %s registered from %s using %s payment method") % (pay.amount, pay.currency_id.symbol, pay.communication, pay.journal_id.name)
                     pay.folio_id.message_post(subject=_('Payment'), body=msg)
+
+    @api.multi
+    def modify_payment(self):
+        self.ensure_one()
+        view_form_id = self.env.ref('hotel.account_payment_view_form_folio').id
+        # invoices = self.mapped('invoice_ids.id')
+        return{
+            'name': _('Payment'),
+            'view_type': 'form',
+            'views': [(view_form_id, 'form')],
+            'view_mode': 'tree,form',
+            'res_model': 'account.payment',
+            'target': 'new',
+            'init_mode': 'edit',
+            'type': 'ir.actions.act_window',
+            'res_id': self.id,
+        }
