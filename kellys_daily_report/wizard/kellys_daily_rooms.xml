@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="tree_kellysrooms">
+            <field name="name">kellysrooms.tree.view</field>
+            <field name="model">kellysrooms</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="tipo == 1" decoration-success="tipo == 2" decoration-info="tipo == 3" decoration-warning="tipo == 4" decoration-muted="tipo == 5" editable="top" create="false" string="Kellys Rooms">
+                    <field name="habitacion" readonly="1"/>
+                    <field name="tipo"/>
+                    <field name="notas"/>
+                    <field name="checkin" readonly="1"/>
+                    <field name="checkout" readonly="1"/>
+                    <field name="kelly"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

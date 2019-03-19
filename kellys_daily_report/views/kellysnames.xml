@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="tree_kellysnames" model="ir.ui.view">
+            <field name="model">kellysnames</field>
+            <field name="name">kellysnames.tree.view</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <act_window id="names_kellys_act" name="Kellys Names" res_model="kellysnames" view_mode="tree,form"/>
+        <menuitem id="menu_hotel_kellys_names" name="Personal de limieza" parent="hotel.menu_hotel_room" action="names_kellys_act" groups="hotel.group_hotel_user,hotel.group_hotel_manager" sequence="45"/>
+    </data>
+</odoo>
