@@ -53,7 +53,7 @@ class KellysWizard(models.TransientModel):
     @api.multi
     def calculalimpiar(self, fechalimpieza=datetime.now()):
         dates = datetime.strftime(fechalimpieza, "%Y-%m-%d")
-        grids = self.env['hotel.room'].search([], order='hcal_sequence ASC')
+        grids = self.env['hotel.room'].search([], order='sequence ASC')
         grids2 = self.env['kellysrooms']
         listid = []
         for x in grids:
