@@ -339,7 +339,10 @@ class HotelRoomTypeWizards(models.TransientModel):
             ])
             real_max = len(res.room_type_id.check_availability_room_type(
                         res.checkin,
-                        res.checkout,
+                        (fields.Date.from_string(res.checkout) -
+                            timedelta(days=1)).strftime(
+                                DEFAULT_SERVER_DATE_FORMAT
+                                ),
                         res.room_type_id.id))
             res.real_avail = real_max
             avail = 100000

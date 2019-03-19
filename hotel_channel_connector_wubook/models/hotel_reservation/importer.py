@@ -388,7 +388,10 @@ class HotelReservationImporter(Component):
 
                     free_rooms = room_type_bind.odoo_id.check_availability_room_type(
                         vals['checkin'],
-                        vals['checkout'],
+                        (fields.Date.from_string(vals['checkout']) -
+                            timedelta(days=1)).strftime(
+                                DEFAULT_SERVER_DATE_FORMAT
+                                ),
                         room_type_id=room_type_bind.odoo_id.id,
                         notthis=used_rooms)
                     if any(free_rooms):

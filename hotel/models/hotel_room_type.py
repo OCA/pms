@@ -68,7 +68,7 @@ class HotelRoomType(models.Model):
 
     @api.model
     def check_availability_room_type(self, dfrom, dto,
-                                        room_type_id=False, notthis=[]):
+                                     room_type_id=False, notthis=[]):
         """
         Check the avalability for an specific type of room
         @param self: The object pointer
@@ -78,7 +78,8 @@ class HotelRoomType(models.Model):
         @param notthis: Array excluding Rooms
         @return: A recordset of free rooms ?
         """
-        reservations = self.env['hotel.reservation'].get_reservations(dfrom, dto)
+        reservations = self.env['hotel.reservation'].get_reservations(dfrom,
+                                                                      dto)
         reservations_rooms = reservations.mapped('room_id.id')
         free_rooms = self.env['hotel.room'].search([
             ('id', 'not in', reservations_rooms),

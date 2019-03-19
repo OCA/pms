@@ -2,7 +2,9 @@
 # Copyright 2018  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from openerp.exceptions import ValidationError
+from datetime import timedelta
 from openerp import models, fields, api, _
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class DuplicateReservationWizard(models.TransientModel):
@@ -34,7 +36,10 @@ class DuplicateReservationWizard(models.TransientModel):
         # Check Input
         avails = hotel_room_type_obj.check_availability_room_type(
             reservation_id.checkin,
-            reservation_id.checkout,
+            (fields.Date.from_string(reservation_id.checkout) -
+                timedelta(days=1)).strftime(
+                    DEFAULT_SERVER_DATE_FORMAT
+                    ),
             room_type_id=reservation_id.room_type_id.id)
         total_free_rooms = len(avails)
 
@@ -45,7 +50,10 @@ class DuplicateReservationWizard(models.TransientModel):
         for i in range(0, self.num):
             free_rooms = hotel_room_type_obj.check_availability_room_type(
                 reservation_id.checkin,
-                reservation_id.checkout,
+                (fields.Date.from_string(reservation_id.checkout) -
+                    timedelta(days=1)).strftime(
+                        DEFAULT_SERVER_DATE_FORMAT
+                        ),
                 room_type_id=reservation_id.room_type_id.id)
             if any(free_rooms):
                 new_reservation_id = hotel_reservation_obj.create({
