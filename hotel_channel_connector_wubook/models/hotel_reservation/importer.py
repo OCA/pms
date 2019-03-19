@@ -169,10 +169,13 @@ class HotelReservationImporter(Component):
             'room_type_id': room_type_bind.odoo_id.id,
             'splitted': split_booking,
             'name': room_type_bind and room_type_bind.name,
-            'board_service_room_id': room_type_bind.board_service_room_type_ids.filtered(
-                lambda r: r.channel_service == book['boards'][room_type_bind.external_id]).id or None,
             'channel_bind_ids': [(0, False, binding_vals)],
         }
+        if book['id_channel'] == 0:
+            # Information about boards: only for wubook reservations
+            vals.update({'board_service_room_id': room_type_bind.board_service_room_type_ids.filtered(
+                lambda r: r.channel_service == book['boards'][room_type_bind.external_id]).id or None})
+
         return vals
 
     @api.model
@@ -254,7 +257,6 @@ class HotelReservationImporter(Component):
     def _generate_reservations(self, bookings):
         _logger.info("==[CHANNEL->ODOO]==== READING BOOKING ==")
         _logger.info(bookings)
-
         # Get user timezone
         res_partner_obj = self.env['res.partner']
         channel_reserv_obj = self.env['channel.hotel.reservation']
