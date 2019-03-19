@@ -531,6 +531,22 @@ class HotelReservation(models.Model):
             })
         return res
 
+    @api.model
+    def autocheckout(self):
+        reservations = self.env['hotel.reservation'].search([
+            ('state', 'not in', ('done', 'cancelled')),
+            ('checkout', '<', fields.Date.today())
+        ])
+        for res in reservations:
+            res.action_reservation_checkout()
+        res_without_checkin = reservations.filtered(
+            lambda r: r.state != 'booking')
+        for res in res_without_checkin:
+            msg = _("No checkin was made for this reservation")
+            res.message_post(subject=_('No Checkins!'),
+                             subtype='mt_comment', body=msg)
+        return True
+
     @api.multi
     def notify_update(self, vals):
         if 'checkin' in vals or \
@@ -1095,7 +1111,9 @@ class HotelReservation(models.Model):
     def action_reservation_checkout(self):
         for record in self:
             record.state = 'done'
-            record.checkin_partner_ids.action_done()
+            if record.checkin_partner_ids:
+                record.checkin_partner_ids.action_done()
+        return True
 
     @api.multi
     def action_checks(self):

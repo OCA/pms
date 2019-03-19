@@ -368,23 +368,6 @@ class HotelFolio(models.Model):
         }
 
     @api.multi
-    def action_folios_amount(self):
-        reservations = self.env['hotel.reservation'].search([
-            ('checkout', '<=', fields.Date.today())
-        ])
-        folio_ids = reservations.mapped('folio_id.id')
-        folios = self.env['hotel.folio'].search([('id', 'in', folio_ids)])
-        folios = folios.filtered(lambda r: r.pending_amount > 0)
-        return {
-            'name': _('Pending'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'hotel.folio',
-            'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', folios.ids)]
-        }
-
-    @api.multi
     def go_to_currency_exchange(self):
         '''
          when Money Exchange button is clicked then this method is called.
