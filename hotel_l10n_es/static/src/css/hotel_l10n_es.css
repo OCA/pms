@@ -1,0 +1,5 @@
+#odooAppDrawer{background: #FFFFFF url(../img/watermark.jpg) no-repeat fixed center}
+tbody tr td div.o_datepicker.o_form_field_date.o_form_field.o_form_required{max-width: 9.5em}
+.title-hotel-name{font-size: 20px;position: absolute;text-align: center;width: 100%;color: #45c2b1;font-weight: bold;z-index: -1;}
+.title-hotel-name2{font-size: 20px;position: absolute;text-align: center;width: 100%;color: #45c2b1;font-weight: bold;z-index: -1;}
+body {background-color: blue;}
