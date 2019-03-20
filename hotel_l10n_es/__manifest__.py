@@ -34,6 +34,7 @@
         'partner_contact_gender',
         'partner_contact_birthdate',
         'partner_firstname',
+        'web_responsive'
     ],
     'data': [
         'data/code.ine.csv',
@@ -53,7 +54,7 @@
         'views/report_viajero_head.xml',
         'views/report_viajero_data.xml',
         'views/report_viajero.xml',
-        'static/src/xml/hotel_l10n_es_templates.xml'
+        'views/hotel_l10n_es_hotel_name.xml'
     ],
     'test': [
     ],
