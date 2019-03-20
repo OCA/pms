@@ -56,6 +56,8 @@
                         Asimismo hemos solicitado que confirme esta autorización para ofrecerle nuestros servicios y poder fidelizarle como cliente.</p>
                 </div>
             </div>
+            <div class="final">
+            </div>
         </template>
     </data>
 </odoo>
