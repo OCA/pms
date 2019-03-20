@@ -69,10 +69,6 @@ class ResPartner(models.Model):
             street_2 += ', ' + customer['IdentityDocument'][0]['Address'][0]['Flat']
             street_2 += ', ' + customer['IdentityDocument'][0]['Address'][0]['Number']
 
-            # Debug Stop -------------------
-            #import wdb; wdb.set_trace()
-            # Debug Stop -------
-
             # Check birthdate_date
             # Here need to convert birthdate_date to '%d%m%Y' fomat
 
