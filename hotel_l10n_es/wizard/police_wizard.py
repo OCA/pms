@@ -37,6 +37,7 @@ class PoliceWizard(models.TransientModel):
     txt_binary = fields.Binary()
     txt_message = fields.Char()
     log_police = fields.Char()
+    error_partner = fields.Many2one('res.partner')
 
     @api.one
     def generate_file(self):
@@ -56,6 +57,7 @@ class PoliceWizard(models.TransientModel):
                 if ((line.partner_id.document_type is not False)
                         and (line.partner_id.document_number is not False)
                         and (line.partner_id.firstname is not False)
+                        and (line.partner_id.gender is not False)
                         and (line.partner_id.lastname is not False)):
 
                     log_police += 1
@@ -101,11 +103,13 @@ class PoliceWizard(models.TransientModel):
                     content += """
 """
                 else:
+                    self.error_partner = line.partner_id
+
                     return self.write({
+                        'error_partner': line.partner_id.id,
                         'txt_message': _('Problem generating the file. \
                                          Checkin without data, \
-                                         or incorrect data: - ' +
-                                         line.partner_id.name)})
+                                         or incorrect data: ')})
             log_police = str(log_police) + _(' records added from ')
             log_police += str(len(lines)) + _(' records processed.')
             return self.write({
