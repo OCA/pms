@@ -22,9 +22,13 @@ class HotelReservationLine(models.Model):
                                      ondelete='cascade', required=True,
                                      copy=False)
     date = fields.Date('Date')
+    state = fields.Selection(related='reservation_id.state')
     price = fields.Float(
         string='Price',
         digits=dp.get_precision('Product Price'))
+    cancel_discount = fields.Float(
+        string='Cancel Discount (%)',
+        digits=dp.get_precision('Discount'), default=0.0)
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)

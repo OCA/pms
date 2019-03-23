@@ -34,7 +34,7 @@
                         <!-- states="sale" attrs="{'invisible': [('invoice_status', '!=', 'invoiced')]}" -->
                     <!-- <button name="print_quotation" string="Print" type="object" states="sent,sale"/> -->
                     <field name="state" select="2" widget="statusbar"
-                        statusbar_visible="draft,sent,sale,done" invisible="1"/>
+                        statusbar_visible="draft,sent,sale,done" />
                 </header>
 
                 <sheet>

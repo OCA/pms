@@ -21,10 +21,6 @@
                         confirm="Disconnecting will automatically delete the pricelist in the Channel. Do you want to proceed?"
                 />
             </xpath>
-
-            <xpath expr="//field[@name='country_group_ids']" position="before">
-                <field name="pricelist_type" />
-            </xpath>
         </field>
     </record>
 
