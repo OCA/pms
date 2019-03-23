@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Hotel Settings -->
+  <data>
+    <!--  Inherit Company view to add 'door_code' -->
+    <record id="door_code_view_company_form" model="ir.ui.view">
+      <field name="name">door_code.config.view_company_form</field>
+      <field name="model">res.company</field>
+      <field name="inherit_id" ref="base.view_company_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='cardex_warning']" position="after">
+          <field name="precode" />
+          <field name="postcode" />
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

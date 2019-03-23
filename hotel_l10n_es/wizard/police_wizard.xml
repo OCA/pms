@@ -26,7 +26,7 @@
                             <group colspan="1">
                                 <div>
                                     <p><field name="log_police" readonly="1"/></p>
-                                    <p><field name="txt_message" readonly="1"/></p>
+                                    <p><field name="txt_message" readonly="1"/><strong><field name="error_partner" readonly="1"/></strong></p>
                                 </div>
                             </group>
                             <group>

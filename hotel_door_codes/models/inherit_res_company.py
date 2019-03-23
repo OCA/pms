@@ -2,8 +2,8 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Alda Hotels <informatica@aldahotels.com>
-#                       Jose Luis Algara <osotranquilo@gmail.com>
+#    Copyright (C) 2018-2019  Alda Hotels <informatica@aldahotels.com>
+#                             Jose Luis Algara <osotranquilo@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,23 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 from openerp import models, fields, api
 
 
-class CodeIne(models.Model):
-    _name = 'code.ine'
+class Inherit_res_company(models.Model):
+    _inherit = 'res.company'
 
-    name = fields.Char('Place', required=True)
-    code = fields.Char('Code', required=True)
-
-    @api.multi
-    def name_get(self):
-        data = []
-        for record in self:
-            subcode = record.code
-            if len(record.code) > 3:
-                subcode = 'ESP'
-            display_value = record.name + " (" + subcode + ")"
-            data.append((record.id, display_value))
-        return data
+    precode = fields.Char('Characters before the door code', default='')
+    postcode = fields.Char('Characters after the code', default='')

@@ -16,10 +16,10 @@
                         <span t-field="company.city"/>, at
                         <span t-esc="time.strftime('%Y-%m-%d')" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
                     </p>
-                    <div class="firma" style="width: 85%; border:dotted 1px; height: 60px; margin:0 auto;"></div><br/>
+                    <div class="firma" style="width: 85%; border:dotted 1px; height: 80px; margin:0 auto;"></div><br/>
                     <p class="text-center">Traveler's signature</p>
-                    <p class="text-center" style="font-size:0.8em;"><span t-field="company.cardex_warning"/></p>
-                    <p class="text-justify" style="font-size:0.7em;">En nombre de la empresa
+                    <p class="text-center" style="font-size:1.3em;"><span t-field="company.cardex_warning"/></p>
+                    <p class="text-justify" style="font-size:1.1em;">En nombre de la empresa
                         <strong>GRUPO ALDA HOTELS</strong>
                         compuesto por Alda Rías Baixas SL, Alda Compostela SL, Alda Castilla SL, Hoteles Rías Altas SL, Comphostel Gestión Patrimonial SL y Consultores Hoteleros Integrales SL, tratamos la información que nos facilita, con el fin de prestarle el servicio
                         solicitado y realizar la facturación del mismo. Se conservarán mientras se mantenga la relación comercial o durante los años necesarios para cumplir con las obligaciones legales. No se cederán a terceros salvo en los casos en que exista una
@@ -46,8 +46,8 @@
                     <p class="text-center">
                         <strong>COPY TO THE USER</strong>
                     </p>
-                    <p class="text-center" style="font-size:0.8em;"><span t-field="company.cardex_warning"/></p>
-                    <p class="text-justify" style="font-size:0.7em;">En nombre de la empresa
+                    <p class="text-center" style="font-size:1.3em;"><span t-field="company.cardex_warning"/></p>
+                    <p class="text-justify" style="font-size:1.1em;">En nombre de la empresa
                         <strong>GRUPO ALDA HOTELS</strong>
                         compuesto por Alda Rías Baixas SL, Alda Compostela SL, Alda Castilla SL, Hoteles Rías Altas SL, Comphostel Gestión Patrimonial SL y Consultores Hoteleros Integrales SL, tratamos la información que nos facilita, con el fin de prestarle el servicio
                         solicitado y realizar la facturación del mismo. Se conservarán mientras se mantenga la relación comercial o durante los años necesarios para cumplir con las obligaciones legales. No se cederán a terceros salvo en los casos en que exista una
@@ -55,6 +55,8 @@
                         <strong>protecciondatos@aldahotels.com</strong>
                         Asimismo hemos solicitado que confirme esta autorización para ofrecerle nuestros servicios y poder fidelizarle como cliente.</p>
                 </div>
+            </div>
+            <div class="final">
             </div>
         </template>
     </data>

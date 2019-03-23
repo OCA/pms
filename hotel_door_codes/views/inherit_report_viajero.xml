@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Hotel Settings -->
+  <data>
+    <!--  Inherit viajero repdort to add 'door_code' -->
+    <template id="door_code_view_report" inherit_id="hotel_l10n_es.report_viajero_document">
+      <xpath expr="//div[@class='final']" position="replace">
+        <div class ="doorcodes" style="font-size:1.8em;">
+          <span t-field="o.reservation_id.door_codes"/>
+        </div>
+      </xpath>
+    </template>
+  </data>
+</odoo>

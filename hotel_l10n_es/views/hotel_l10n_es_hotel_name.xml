@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hotelname_bootstrap" inherit_id="web.menu_secondary" name="Hotel Name - Web Client">
+        <!-- <templateid="hotelname_bootstrap" inherit_id="web.menu_secondary" name="Hotel Name - Web Client"> -->
+        <xpath expr="//div[hasclass('o_sub_menu_content')]/t" position="after">
+            <!-- <xpath expr="//div[@class='o_sub_menu_content']/t" position="after"> -->
+            <link href="/hotel_l10n_es/static/src/css/hotel_l10n_es.css" rel="stylesheet" type="text/css"/>
+            <div class="title-hotel-name">
+                <t t-esc="request.env.user.company_id.property_name"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
