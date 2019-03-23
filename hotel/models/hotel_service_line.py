@@ -4,6 +4,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class HotelServiceLine(models.Model):
     _name = "hotel.service.line"
     _order = "date"
@@ -11,6 +12,7 @@ class HotelServiceLine(models.Model):
     service_id = fields.Many2one('hotel.service', string='Service Room',
                                  ondelete='cascade', required=True,
                                  copy=False)
+    active = fields.Boolean('Active', compute="_compute_active")
     date = fields.Date('Date')
     day_qty = fields.Integer('Units')
     product_id = fields.Many2one(related='service_id.product_id', store=True)

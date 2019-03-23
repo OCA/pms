@@ -21,17 +21,15 @@
                     <!-- <button name="send_exit_mail" type="object" string="Send Exit Email"
                        attrs="{'invisible': [('has_checkout_to_send', '=', False)]}" class="oe_highlight"/> -->
                     <button name="%(hotel.action_view_folio_advance_payment_inv)d"
-                        string="Create Invoice" type="action" class="btn-primary" states="sale"
+                        string="Create Invoice" type="action" class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'confirm')]}"/>
                     <!-- <button name="action_cancel_draft" states="cancel,sale" string="Set to Draft"
                         type="object" icon="fa-undo" class="oe_highlight" /> -->
-                    <button name="action_cancel" string="Cancel Folio" states="sale"
-                        type="object" icon="fa-minus-square" class="oe_highlight" />
-                    <button name="action_cancel" string="Cancel Folio" states="draft"
-                        icon="fa-minus-square" type="object" class="oe_highlight" />
+                    <button name="action_cancel" string="Cancel Folio"
+                        attrs="{'invisible': [('state', 'not in', ('confirm','draft'))]}"
+                        type="object" />
                     <button name="action_done" type="object" string="Set to Done"
-                        help="If a Hotel Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice or deliver. This is used to freeze the Hotel Folio." />
-                        <!-- states="sale" attrs="{'invisible': [('invoice_status', '!=', 'invoiced')]}" -->
+                        help="If a Hotel Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice. This is used to freeze the Hotel Folio." />
                     <!-- <button name="print_quotation" string="Print" type="object" states="sent,sale"/> -->
                     <field name="state" select="2" widget="statusbar"
                         statusbar_visible="draft,sent,sale,done" />
@@ -66,7 +64,6 @@
                          </button>
 
                     </div>
-                    <!-- <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;, &quot;size&quot;: [90, 90]}"/> -->
                     <h2><field name="name"/></h2>
                     <h1>
                         <field name="partner_id" default_focus="1" placeholder="Guest" attrs="{'invisible':[('reservation_type','in',('out'))]}"/>
