@@ -8,17 +8,20 @@
 			<xpath expr="//form/group[last()]" position="after">
 				<!-- Availability Fields -->
 				<group col="8" colspan="8" attrs="{'invisible':[('section', '!=', 'avail')]}">
-						<field name="change_max_avail" string=""/>
+						<field name="change_max_avail"/>
 						<field name="max_avail"
-							   attrs="{'readonly':[('change_max_avail', '=', False)]}" />
+							   attrs="{'readonly':[('change_max_avail', '=', False)],
+							   'invisible':[('change_max_avail', '=', False)]}"/>
 
-						<field name="change_quota" string=""/>
+						<field name="change_quota"/>
 						<field name="quota"
-							   attrs="{'readonly':[('change_quota', '=', False)]}" />
+							   attrs="{'readonly':[('change_quota', '=', False)],
+							   'invisible':[('change_quota', '=', False)]}"/>
 
-						<field name="change_no_ota" string=""/>
+						<field name="change_no_ota"/>
 						<field name="no_ota"
-							   attrs="{'readonly':[('change_no_ota', '=', False)]}" />
+							   attrs="{'readonly':[('change_no_ota', '=', False)],
+							   'invisible':[('change_no_ota', '=', False)]}"/>
 				</group>
 			</xpath>
 		</field>
