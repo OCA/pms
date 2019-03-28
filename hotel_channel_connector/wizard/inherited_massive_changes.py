@@ -13,15 +13,26 @@ class MassiveChangesWizard(models.TransientModel):
 
     # Availability fields
     change_quota = fields.Boolean(default=False)
-    quota = fields.Integer('Quota', default=-1)
+    quota = fields.Integer('Quota', default=0)
     change_max_avail = fields.Boolean(default=False)
-    max_avail = fields.Integer('Max. Avail.', default=-1)
+    max_avail = fields.Integer('Max. Avail.', default=0)
     change_no_ota = fields.Boolean(default=False)
     no_ota = fields.Boolean('No OTA', default=False)
 
     @api.model
     def _get_availability_values(self, ndate, room_type, record):
-        vals = {}
+        room_type_avail = self.env['hotel.room.type.availability'].search([
+            ('date', '=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('room_type_id', '=', room_type.id)
+        ])
+        channel_room_type = self.env['channel.hotel.room.type'].search([
+                ('odoo_id', '=', room_type.id)
+            ]) or None
+        vals = {
+            'quota': room_type_avail.quota or channel_room_type.default_quota,
+            'max_avail': room_type_avail.max_avail or channel_room_type.default_max_avail,
+            'no_ota': room_type_avail.no_ota or channel_room_type.default_max_avail,
+        }
         if record.change_quota:
             vals.update({
                 'quota': record.quota,
