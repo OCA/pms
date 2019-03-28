@@ -222,6 +222,9 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
                     binding.backend_id.id,
                     room_type_id=record.room_type_id.id)
 
+                if 'no_ota' in fields_checked:
+                    binding.write({'channel_pushed': False})
+
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
         if not any(record.channel_bind_ids):
@@ -261,7 +264,7 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        fields_to_check = ('date', 'channel_avail') # no_ota ¿?
+        fields_to_check = ('date', 'channel_avail')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
 
         _logger.info("==[on_record_write] :: channel.hotel.room.type.availability==")
