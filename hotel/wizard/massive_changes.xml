@@ -16,13 +16,13 @@
 				<group colspan="8" col="8">
 					<field name="date_start" required="1"  colspan="4"/>
 					<field name="date_end" required="1" colspan="4" />
-					<field name="dmo" colspan="1" />
-					<field name="dtu" colspan="1" />
-					<field name="dwe" colspan="1" />
-					<field name="dth" colspan="1" />
-					<field name="dfr" colspan="1" />
-					<field name="dsa" colspan="1" />
-					<field name="dsu" colspan="1" />
+					<field name="dmo" colspan="2" />
+					<field name="dtu" colspan="2" />
+					<field name="dwe" colspan="2" />
+					<field name="dth" colspan="2" />
+					<field name="dfr" colspan="2" />
+					<field name="dsa" colspan="2" />
+					<field name="dsu" colspan="2" />
 				</group>
 				<!-- Restricion Fields -->
 				<group col="4" colspan="4" attrs="{'invisible':[('section', '!=', 'restrictions')]}">
