@@ -1,8 +1,8 @@
 # Copyright 2017  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
-from openerp import models, fields, api
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo import models, fields, api
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class MassiveChangesWizard(models.TransientModel):
