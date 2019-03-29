@@ -21,18 +21,7 @@ class MassiveChangesWizard(models.TransientModel):
 
     @api.model
     def _get_availability_values(self, ndate, room_type, record):
-        room_type_avail = self.env['hotel.room.type.availability'].search([
-            ('date', '=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('room_type_id', '=', room_type.id)
-        ])
-        channel_room_type = self.env['channel.hotel.room.type'].search([
-                ('odoo_id', '=', room_type.id)
-            ]) or None
-        vals = {
-            'quota': room_type_avail.quota or channel_room_type.default_quota,
-            'max_avail': room_type_avail.max_avail or channel_room_type.default_max_avail,
-            'no_ota': room_type_avail.no_ota or channel_room_type.default_max_avail,
-        }
+        vals = {}
         if record.change_quota:
             vals.update({
                 'quota': record.quota,
