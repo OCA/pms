@@ -313,9 +313,9 @@ class CallCenterReportWizard(models.TransientModel):
             worksheet.write(k_res+offset, 10, v_res.create_uid.name)
             worksheet.write(k_res+offset, 11, v_res.price_total,
                             xls_cell_format_money)
-            worksheet.write(k_res+offset, 12, v_res.amount_room,
+            worksheet.write(k_res+offset, 12, v_res.price_total - v_res.discount,
                             xls_cell_format_money)
-            total_reservation_amount += v_res.amount_room
+            total_reservation_amount += v_res.price_total
 
         offset += len(reservations)
 
