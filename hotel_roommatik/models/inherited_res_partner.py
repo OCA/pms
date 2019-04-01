@@ -12,11 +12,13 @@ class ResPartner(models.Model):
 
     @api.model
     def rm_add_customer(self, customer):
-        # CREACIÓN DE CLIENTE
-        partnername = customer['LastName1'] + ' ' + customer['LastName2'] + ' ' + customer['FirstName']
+        # RoomMatik API CREACIÓN DE CLIENTE
+        partnername = customer['LastName1'] + ' ' + customer[
+            'LastName2'] + ' ' + customer['FirstName']
         partner_res = self.env['res.partner'].search(
             [('name', '=', partnername)])
-        # Need a smart search function here (Check name, document, mail) return unique or null customer.
+        # Need a smart search function here (Check name, document, mail) return
+        # unique or null customer.
 
         json_response = dict()
         if any(partner_res):
@@ -62,12 +64,16 @@ class ResPartner(models.Model):
             # Check state_id
             city_srch = self.env['res.country.state'].search([
                 ('name', 'ilike',
-                    customer['IdentityDocument'][0]['Address'][0]['Province'])])
+                    customer['IdentityDocument'][0][
+                        'Address'][0]['Province'])])
 
             # Create Street2
-            street_2 = 'Nº ' + customer['IdentityDocument'][0]['Address'][0]['House']
-            street_2 += ', ' + customer['IdentityDocument'][0]['Address'][0]['Flat']
-            street_2 += ', ' + customer['IdentityDocument'][0]['Address'][0]['Number']
+            street_2 = 'Nº ' + customer['IdentityDocument'][0][
+                'Address'][0]['House']
+            street_2 += ', ' + customer['IdentityDocument'][0][
+                'Address'][0]['Flat']
+            street_2 += ', ' + customer['IdentityDocument'][0][
+                'Address'][0]['Number']
 
             # Check birthdate_date
             # Here need to convert birthdate_date to '%d%m%Y' fomat
@@ -79,9 +85,12 @@ class ResPartner(models.Model):
                 'birthdate_date': datetime.strptime(
                     customer['Birthday'], '%d%m%Y'),
                 'gender': customer['Sex'],
-                'zip': customer['IdentityDocument'][0]['Address'][0]['ZipCode'],
-                'city': customer['IdentityDocument'][0]['Address'][0]['City'],
-                'street': customer['IdentityDocument'][0]['Address'][0]['Street'],
+                'zip': customer['IdentityDocument'][0][
+                    'Address'][0]['ZipCode'],
+                'city': customer['IdentityDocument'][0][
+                    'Address'][0]['City'],
+                'street': customer['IdentityDocument'][0][
+                    'Address'][0]['Street'],
                 'street2': street_2,
                 'state_id': city_srch.id,
                 'phone': customer['Contact'][0]['Telephone'],
@@ -89,10 +98,9 @@ class ResPartner(models.Model):
                 'email': customer['Contact'][0]['Email'],
                 })
 
-
             json_response = {'Id': write_custumer.id}
 
-        # Id: será 0 en la solicitud y será diferente de 0 si el cliente se ha creado
+        # Id: será 0 en solicitud y diferente de 0 si el cliente se ha creado
         # correctamente en el PMS.
         # FirstName: nombre.
         # LastName1: primer apellido.

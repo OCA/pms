@@ -11,10 +11,9 @@ class RoomMatik(models.Model):
 
     @api.model
     def rm_get_date(self):
-        # FECHA/HORA
-        # TODO Need know UTC in the machine/hotel
+        # RoomMatik API FECHA/HORA
         utc_s = '+01:00'
-        json_response = dict()
+        # TODO Need know UTC in the machine/hotel
         json_response = {
             'dateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f") + utc_s
             }
@@ -23,8 +22,15 @@ class RoomMatik(models.Model):
 
     @api.model
     def rm_add_customer(self, customer):
+        # RoomMatik API CREACIÓN DE CLIENTE
         apidata = self.env['res.partner']
         return apidata.rm_add_customer(customer)
+
+    @api.model
+    def rm_checkin_partner(self, stay):
+        # RoomMatik API CHECK-IN
+        apidata = self.env['hotel.folio']
+        return apidata.rm_checkin_partner(stay)
 
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()
