@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="call_center_report_wizard" name="Call Center Report"
+            parent="hotel.hotel_management_menu"
+            groups="hotel.group_hotel_call,hotel.group_hotel_manager"
+            action="action_open_call_center_report_wizard" sequence="1000" />
+
+    </data>
+</odoo>

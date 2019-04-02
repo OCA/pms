@@ -117,6 +117,7 @@ class HotelService(models.Model):
     folio_id = fields.Many2one('hotel.folio', 'Folio',
                                ondelete='cascade',
                                default=_default_folio_id)
+    state = fields.Selection(related='folio_id.state')
     ser_room_line = fields.Many2one('hotel.reservation', 'Room',
                                     default=_default_ser_room_line)
     per_day = fields.Boolean(related='product_id.per_day', related_sudo=True)

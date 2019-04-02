@@ -170,12 +170,15 @@ class HotelReservation(models.Model):
                               track_visibility='onchange',
                               help='Number of children there in guest list.')
     to_assign = fields.Boolean('To Assign', track_visibility='onchange')
-    state = fields.Selection([('draft', 'Pre-reservation'), ('confirm', 'Pending Entry'),
-                              ('booking', 'On Board'), ('done', 'Out'),
-                              ('cancelled', 'Cancelled')],
-                             'State', readonly=True,
-                             default=lambda *a: 'draft',
-                             track_visibility='onchange')
+    state = fields.Selection([
+        ('draft', 'Pre-reservation'),
+        ('confirm', 'Pending Entry'),
+        ('booking', 'On Board'),
+        ('done', 'Out'),
+        ('cancelled', 'Cancelled')
+        ], string='State', readonly=True,
+        default=lambda *a: 'draft', copy=False,
+        track_visibility='onchange')
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
     invoice_count = fields.Integer(related='folio_id.invoice_count')
@@ -488,7 +491,7 @@ class HotelReservation(models.Model):
     def _prepare_add_missing_fields(self, values):
         """ Deduce missing required fields from the onchange """
         res = {}
-        onchange_fields = ['room_id', 'reservation_type',
+        onchange_fields = ['room_id', 'reservation_type', 'tax_ids',
                            'currency_id', 'name', 'service_ids']
         if values.get('room_type_id'):
             line = self.new(values)
@@ -634,6 +637,11 @@ class HotelReservation(models.Model):
             if not self.room_type_id:
                 write_vals.update({'room_type_id': self.room_id.room_type_id.id})
             self.update(write_vals)
+
+    @api.onchange('cancelled_reason')
+    def onchange_cancelled_reason(self):
+        for record in self:
+            record._compute_cancelled_discount()
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -815,6 +823,9 @@ class HotelReservation(models.Model):
             else:
                 vals.update({'state': 'confirm'})
             record.write(vals)
+            record.reservation_line_ids.update({
+                'cancel_discount': 0
+            })
 
             if record.splitted:
                 master_reservation = record.parent_reservation or record
@@ -846,7 +857,9 @@ class HotelReservation(models.Model):
         for record in self:
             record.write({
                 'state': 'cancelled',
+                'cancelled_reason': record.compute_cancelation_reason()
             })
+            record._compute_cancelled_discount()
             if record.splitted:
                 master_reservation = record.parent_reservation or record
                 splitted_reservs = self.env['hotel.reservation'].search([
@@ -860,6 +873,25 @@ class HotelReservation(models.Model):
                 ])
                 splitted_reservs.action_cancel()
             record.folio_id.compute_amount()
+
+    @api.multi
+    def compute_cancelation_reason(self):
+        self.ensure_one()
+        pricelist = self.pricelist_id
+        if pricelist and pricelist.cancelation_rule_id:
+            tz_hotel = self.env['ir.default'].sudo().get(
+                'res.config.settings', 'tz_hotel')
+            today = fields.Date.context_today(self.with_context(
+                tz=tz_hotel))
+            days_diff = (fields.Date.from_string(self.real_checkin) -
+                         fields.Date.from_string(today)).days
+            if days_diff < 0:
+                return 'noshow'
+            elif days_diff < pricelist.cancelation_rule_id.days_intime:
+                return 'late'
+            else:
+                return 'intime'
+        return False
 
     @api.multi
     def draft(self):
@@ -904,11 +936,17 @@ class HotelReservation(models.Model):
             return True
         return False
 
-    @api.depends('reservation_line_ids.discount')
+    @api.depends('reservation_line_ids.discount',
+                 'reservation_line_ids.cancel_discount')
     def _compute_discount(self):
         for record in self:
-            record.discount = sum(line.price * ((line.discount or 0.0) * 0.01) \
-                for line in record.reservation_line_ids)
+            discount = 0
+            for line in record.reservation_line_ids:
+                first_discount = line.price * ((line.discount or 0.0) * 0.01)
+                price = line.price - first_discount
+                cancel_discount = price * ((line.cancel_discount or 0.0) * 0.01)
+                discount += first_discount + cancel_discount
+            record.discount = discount
 
     @api.depends('reservation_line_ids.price', 'discount', 'tax_ids')
     def _compute_amount_reservation(self):
@@ -925,6 +963,51 @@ class HotelReservation(models.Model):
                     'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                     'price_total': taxes['total_included'],
                     'price_subtotal': taxes['total_excluded'],
+                })
+
+    @api.multi
+    def _compute_cancelled_discount(self):
+        self.ensure_one()
+        pricelist = self.pricelist_id
+        if self.state == 'cancelled':
+            if self.cancelled_reason and pricelist and pricelist.cancelation_rule_id:
+                date_start_dt = fields.Date.from_string(self.real_checkin or self.checkin)
+                date_end_dt = fields.Date.from_string(self.real_checkout or self.checkout)
+                days = abs((date_end_dt - date_start_dt).days)
+                rule = pricelist.cancelation_rule_id
+                if self.cancelled_reason == 'late':
+                    discount = 100 - rule.penalty_late
+                    if rule.apply_on_late == 'first':
+                        days = 1
+                    elif rule.apply_on_late == 'days':
+                        days = rule.days_late
+                elif self.cancelled_reason == 'noshow':
+                    discount = 100 - rule.penalty_noshow
+                    if rule.apply_on_noshow == 'first':
+                        days = 1
+                    elif rule.apply_on_noshow == 'days':
+                        days = rule.days_late - 1
+                elif self.cancelled_reason == 'intime':
+                    discount = 100
+
+                checkin = self.real_checkin or self.checkin
+                dates = []
+                for i in range(0, days):
+                    dates.append((fields.Date.from_string(checkin) + timedelta(days=i)).strftime(
+                            DEFAULT_SERVER_DATE_FORMAT))
+                self.reservation_line_ids.filtered(lambda r: r.date in dates).update({
+                    'cancel_discount': discount
+                    })
+                self.reservation_line_ids.filtered(lambda r: r.date not in dates).update({
+                    'cancel_discount': 100
+                    })
+            else:
+                self.reservation_line_ids.update({
+                    'cancel_discount': 0
+                    })
+        else:
+            self.reservation_line_ids.update({
+                'cancel_discount': 0
                 })
 
     @api.model
@@ -1164,7 +1247,6 @@ class HotelReservation(models.Model):
                 'price_total': tprice[1],
                 'parent_reservation': parent_res.id,
                 'room_type_id': parent_res.room_type_id.id,
-                'discount': parent_res.discount,
                 'state': parent_res.state,
                 'reservation_line_ids': reservation_lines[1],
                 'preconfirm': False,

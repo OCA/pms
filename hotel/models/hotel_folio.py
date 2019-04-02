@@ -276,16 +276,17 @@ class HotelFolio(models.Model):
                 'amount_total': amount_untaxed + amount_tax,
             })
 
-    @api.depends('amount_total', 'payment_ids', 'return_ids', 'reservation_type')
+    @api.depends('amount_total', 'payment_ids', 'return_ids',
+                 'reservation_type', 'state')
     @api.multi
     def compute_amount(self):
         acc_pay_obj = self.env['account.payment']
         for record in self:
             if record.reservation_type in ('staff', 'out'):
                 vals = {
-                'pending_amount': 0,
-                'invoices_paid': 0,
-                'refund_amount': 0,
+                    'pending_amount': 0,
+                    'invoices_paid': 0,
+                    'refund_amount': 0,
                 }
                 record.update(vals)
             else:
@@ -294,10 +295,17 @@ class HotelFolio(models.Model):
                     ('folio_id', '=', record.id)
                 ])
                 total_paid = sum(pay.amount for pay in payments)
-                return_lines = self.env['payment.return.line'].search([('move_line_ids','in',payments.mapped('move_line_ids.id')),('return_id.state','=', 'done')])
+                return_lines = self.env['payment.return.line'].search([
+                    ('move_line_ids', 'in', payments.mapped('move_line_ids.id')),
+                    ('return_id.state', '=', 'done')
+                    ])
                 total_inv_refund = sum(pay_return.amount for pay_return in return_lines)
+                total = record.amount_total
+                # REVIEW: Must We ignored services in cancelled folios pending amount?
+                if record.state == 'cancelled':
+                    total = total - sum(record.service_ids.mapped('price_total'))
                 vals = {
-                    'pending_amount': record.amount_total - total_paid + total_inv_refund,
+                    'pending_amount': total - total_paid + total_inv_refund,
                     'invoices_paid': total_paid,
                     'refund_amount': total_inv_refund,
                 }
@@ -408,7 +416,6 @@ class HotelFolio(models.Model):
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
 
-
         # Makes sure partner_invoice_id' and 'pricelist_id' are defined
         lfields = ('partner_invoice_id', 'partner_shipping_id', 'pricelist_id')
         if any(f not in vals for f in lfields):
@@ -471,7 +478,7 @@ class HotelFolio(models.Model):
 
     @api.onchange('partner_diff_invoicing')
     def onchange_partner_diff_invoicing(self):
-        if self.partner_diff_invoicing == False:
+        if self.partner_diff_invoicing is False:
             self.update({'partner_invoice_id': self.partner_id.id})
         elif self.partner_id == self.partner_invoice_id:
             self.update({'partner_invoice_id': self.partner_id.address_get(['invoice'])['invoice'] or None})
@@ -515,17 +522,14 @@ class HotelFolio(models.Model):
 
     @api.multi
     def action_cancel(self):
-        '''
-        @param self: object pointer
-        '''
-        pass
-        # for sale in self:
-        #     if not sale.order_id:
-        #         raise ValidationError(_('Order id is not available'))
-        #     for invoice in sale.invoice_ids:
-        #         invoice.state = 'cancel'
-        #     sale.room_lines.action_cancel()
-        #     sale.order_id.action_cancel()
+        for folio in self:
+            for reservation in folio.room_lines.filtered(lambda res:
+                                                         res.state != 'cancelled'):
+                reservation.action_cancel()
+            self.write({
+                'state': 'cancel',
+            })
+        return True
 
     @api.multi
     def print_quotation(self):
@@ -544,13 +548,14 @@ class HotelFolio(models.Model):
             'state': 'confirm',
             'confirmation_date': fields.Datetime.now()
         })
-        #~ if self.env.context.get('send_email'):
-            #~ self.force_quotation_send()
+
+        # if self.env.context.get('send_email'):
+            # self.force_quotation_send()
 
         # create an analytic account if at least an expense product
-        #~ if any([expense_policy != 'no' for expense_policy in self.order_line.mapped('product_id.expense_policy')]):
-            #~ if not self.analytic_account_id:
-                #~ self._create_analytic_account()
+        # if any([expense_policy != 'no' for expense_policy in self.order_line.mapped('product_id.expense_policy')]):
+            # if not self.analytic_account_id:
+                # self._create_analytic_account()
 
         return True
 

@@ -11,6 +11,9 @@ class ProductPricelist(models.Model):
     pricelist_type = fields.Selection([
         ('daily', 'Daily Plan'),
     ], string='Pricelist Type', default='daily')
+    cancelation_rule_id = fields.Many2one(
+        'hotel.cancelation.rule',
+        string="Cancelation Policy")
 
     @api.multi
     @api.depends('name')
