@@ -4,7 +4,8 @@
 import json
 from datetime import datetime
 from odoo import api, models
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class RoomMatik(models.Model):
     _name = 'roommatik.api'
@@ -23,12 +24,14 @@ class RoomMatik(models.Model):
     @api.model
     def rm_add_customer(self, customer):
         # RoomMatik API CREACIÓN DE CLIENTE
+        _logger.info('ROOMMATIK Customer Creation')
         apidata = self.env['res.partner']
         return apidata.rm_add_customer(customer)
 
     @api.model
     def rm_checkin_partner(self, stay):
         # RoomMatik API CHECK-IN
+        _logger.info('ROOMMATIK Check-IN')
         apidata = self.env['hotel.folio']
         return apidata.rm_checkin_partner(stay)
 

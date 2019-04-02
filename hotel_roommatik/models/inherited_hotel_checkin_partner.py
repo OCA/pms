@@ -20,42 +20,44 @@ class HotelFolio(models.Model):
         json_response = dict()
 
         # Need checkin?
-        if reservation_rm.checkin_partner_pending_count > 0:
-            checkin_partner_val = {
-                'folio_id': reservation_rm.folio_id.id,
-                'reservation_id': reservation_rm.id,
-                'enter_date': datetime.strptime(stay["Arrival"], "%d%m%Y").date(),
-                'exit_date': datetime.strptime(stay["Departure"], "%d%m%Y").date(),
-                'partner_id': stay["Customers"]["Customer"]["Id"],
-                'email': stay["Customers"]["Customer"]["Contact"]["Email"],
-                'mobile': stay["Customers"]["Customer"]["Contact"]["Mobile"],
-                'document_type': stay["Customers"]["Customer"]["IdentityDocument"]["Type"],
-                'document_number': stay["Customers"]["Customer"]["IdentityDocument"]["Number"],
-                'document_expedition_date': datetime.strptime(stay["Customers"]["Customer"]["IdentityDocument"]["ExpiryDate"], "%d%m%Y").date(),
-                'gender': stay["Customers"]["Customer"]["Sex"],
-                'birthdate_date': datetime.strptime(stay["Customers"]["Customer"]["Birthday"], "%d%m%Y").date(),
-                'code_ine_id': stay["Customers"]["Customer"]["Address"]["Province"],
-                'state': 'booking',
-                }
-            try:
-                # Debug Stop -------------------
-                #import wdb; wdb.set_trace()
-                # Debug Stop ------------------
-                _logger.info('ROOMMATIK check-in Document: %s in (%s reservation_id).',
-                             checkin_partner_val['document_number'],
-                             checkin_partner_val['reservation_id'])
-                json_response = {'Estate': 'O.K.'}
-                record = self.env['hotel.checkin.partner'].create(checkin_partner_val)
-            except:
-                json_response = {'Estate': 'Error not create Checkin'}
-                _logger.error('ROOMMATIK writing %s in (%s reservation_id).',
-                              checkin_partner_val['document_number'],
-                              checkin_partner_val['reservation_id'])
+        if reservation_rm.checkin_partner_pending_count > 0 and len(stay["Customers"]) < reservation_rm.checkin_partner_pending_count:
+            # Debug Stop -------------------
+            # import wdb; wdb.set_trace()
+            # Debug Stop ------------------
+            for room_partner in stay["Customers"]:
+                checkin_partner_val = {
+                    'folio_id': reservation_rm.folio_id.id,
+                    'reservation_id': reservation_rm.id,
+                    'enter_date': datetime.strptime(stay["Arrival"], "%d%m%Y").date(),
+                    'exit_date': datetime.strptime(stay["Departure"], "%d%m%Y").date(),
+                    'partner_id': room_partner["Customer"]["Id"],
+                    'email': room_partner["Customer"]["Contact"]["Email"],
+                    'mobile': room_partner["Customer"]["Contact"]["Mobile"],
+                    'document_type': room_partner["Customer"]["IdentityDocument"]["Type"],
+                    'document_number': room_partner["Customer"]["IdentityDocument"]["Number"],
+                    'document_expedition_date': datetime.strptime(room_partner["Customer"]["IdentityDocument"]["ExpiryDate"], "%d%m%Y").date(),
+                    'gender': room_partner["Customer"]["Sex"],
+                    'birthdate_date': datetime.strptime(room_partner["Customer"]["Birthday"], "%d%m%Y").date(),
+                    'code_ine_id': room_partner["Customer"]["Address"]["Province"],
+                    'state': 'booking',
+                    }
+                try:
+                    _logger.info('ROOMMATIK check-in Document: %s in (%s reservation_id).',
+                                 checkin_partner_val['document_number'],
+                                 checkin_partner_val['reservation_id'])
+                    json_response = {'Estate': 'O.K.'}
+                    record = self.env['hotel.checkin.partner'].create(checkin_partner_val)
+                except:
+                    json_response = {'Estate': 'Error not create Checkin'}
+                    _logger.error('ROOMMATIK writing %s in (%s reservation_id).',
+                                  checkin_partner_val['document_number'],
+                                  checkin_partner_val['reservation_id'])
+                    return json_response
 
-                # ATENCION SI LO CREA, AUNQUE DA ERROR CUANDO ES LA MISMA PERSONA.
+                    # ATENCION SI LO CREA, AUNQUE DA ERROR CUANDO ES LA MISMA PERSONA.
         else:
-            json_response = {'Estate': 'Error not create Checkin NO checkin_partner_pending_count'}
-            _logger.error('ROOMMATIK NO checkin pending count in Reservation ID %s.', reservation_rm.id)
+            json_response = {'Estate': 'Error checkin_partner_pending_count values do not match.'}
+            _logger.error('ROOMMATIK checkin pending count do not match for Reservation ID %s.', reservation_rm.id)
         # stay1 = {
         #
         #     "Id": 123,
