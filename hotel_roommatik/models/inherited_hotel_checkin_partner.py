@@ -3,7 +3,7 @@
 
 import json
 from odoo import api, models
-from datetime import date, datetime
+from datetime import datetime
 import logging
 
 class HotelFolio(models.Model):
@@ -20,11 +20,16 @@ class HotelFolio(models.Model):
         json_response = dict()
 
         # Need checkin?
-        if reservation_rm.checkin_partner_pending_count > 0 and len(stay["Customers"]) < reservation_rm.checkin_partner_pending_count:
-            # Debug Stop -------------------
-            # import wdb; wdb.set_trace()
-            # Debug Stop ------------------
+        total_chekins = reservation_rm.checkin_partner_pending_count
+        if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
+            _logger.info('ROOMMATIK checkin %s customer in %s Reservation.', total_chekins, reservation_rm.id)
             for room_partner in stay["Customers"]:
+                # ADD costumer ?
+                # costumer = self.env['res.partner'].rm_add_customer(room_partner["Customer"])
+
+                # Debug Stop -------------------
+                # import wdb; wdb.set_trace()
+                # Debug Stop ------------------
                 checkin_partner_val = {
                     'folio_id': reservation_rm.folio_id.id,
                     'reservation_id': reservation_rm.id,
@@ -42,11 +47,13 @@ class HotelFolio(models.Model):
                     'state': 'booking',
                     }
                 try:
-                    _logger.info('ROOMMATIK check-in Document: %s in (%s reservation_id).',
-                                 checkin_partner_val['document_number'],
-                                 checkin_partner_val['reservation_id'])
-                    json_response = {'Estate': 'O.K.'}
                     record = self.env['hotel.checkin.partner'].create(checkin_partner_val)
+                    _logger.info('ROOMMATIK check-in Document: %s in (%s Reservation) ID:%s.',
+                                 checkin_partner_val['document_number'],
+                                 checkin_partner_val['reservation_id'],
+                                 record.id)
+                    stay['Id'] = record.id
+                    json_response = stay
                 except:
                     json_response = {'Estate': 'Error not create Checkin'}
                     _logger.error('ROOMMATIK writing %s in (%s reservation_id).',

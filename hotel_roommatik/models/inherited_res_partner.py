@@ -18,7 +18,7 @@ class ResPartner(models.Model):
 
         partner_res = self.env['res.partner'].search([(
             'document_number', '=',
-            customer['IdentityDocument'][0]['Number'])])
+            customer['IdentityDocument']['Number'])])
 
         json_response = {'Id': 0}
         if any(partner_res):
@@ -57,25 +57,21 @@ class ResPartner(models.Model):
                             'ZipCode': write_custumer.zip,
                             'City': write_custumer.city,
                             'Street': write_custumer.street,
-                            'House': customer['IdentityDocument'][0][
-                                 'Address'][0]['House'],
-                            'Flat': customer['IdentityDocument'][0][
-                                 'Address'][0]['Flat'],
-                            'Number': customer['IdentityDocument'][0][
-                                 'Address'][0]['Number'],
-                            'Province': customer['IdentityDocument'][0][
-                                 'Address'][0]['Province'],
+                            'House': customer['Address']['House'],
+                            'Flat': customer['Address']['Flat'],
+                            'Number': customer['Address']['Number'],
+                            'Province': customer['Address']['Province'],
                          },
                          'IdentityDocument': {
                             'Number': write_custumer.document_number,
                             'Type': write_custumer.document_type,
                             'ExpiryDate': customer[
-                                 'IdentityDocument'][0]['ExpiryDate'],
+                                 'IdentityDocument']['ExpiryDate'],
                             'ExpeditionDate': write_custumer.document_expedition_date,
                          },
                          'Contact': {
                             'Telephone': write_custumer.phone,
-                            'Fax': customer['Contact'][0]['Fax'],
+                            'Fax': customer['Contact']['Fax'],
                             'Mobile': write_custumer.mobile,
                             'Email': write_custumer.email,
                          }
@@ -90,15 +86,11 @@ class ResPartner(models.Model):
             customer['Sex'] = ''
         # Check state_id
         city_srch = self.env['res.country.state'].search([
-            ('name', 'ilike', customer['IdentityDocument'][0][
-                'Address'][0]['Province'])])
+            ('name', 'ilike', customer['Address']['Province'])])
         # Create Street2
-        street_2 = 'Nº ' + customer['IdentityDocument'][0][
-            'Address'][0]['House']
-        street_2 += ', ' + customer['IdentityDocument'][0][
-            'Address'][0]['Flat']
-        street_2 += ', ' + customer['IdentityDocument'][0][
-            'Address'][0]['Number']
+        street_2 = 'Nº ' + customer['Address']['House']
+        street_2 += ', ' + customer['Address']['Flat']
+        street_2 += ', ' + customer['Address']['Number']
         return {
             'firstname': customer['FirstName'],
             'lastname': customer['LastName1'],
@@ -106,20 +98,17 @@ class ResPartner(models.Model):
             'birthdate_date': datetime.strptime(customer['Birthday'],
                                                 "%d%m%Y").date(),
             'gender': customer['Sex'],
-            'zip': customer['IdentityDocument'][0][
-                'Address'][0]['ZipCode'],
-            'city': customer['IdentityDocument'][0][
-                'Address'][0]['City'],
-            'street': customer['IdentityDocument'][0][
-                'Address'][0]['Street'],
+            'zip': customer['Address']['ZipCode'],
+            'city': customer['Address']['City'],
+            'street': customer['Address']['Street'],
             'street2': street_2,
             'state_id': city_srch.id,
-            'phone': customer['Contact'][0]['Telephone'],
-            'mobile': customer['Contact'][0]['Mobile'],
-            'email': customer['Contact'][0]['Email'],
-            'document_number': customer['IdentityDocument'][0]['Number'],
-            'document_type': customer['IdentityDocument'][0]['Type'],
+            'phone': customer['Contact']['Telephone'],
+            'mobile': customer['Contact']['Mobile'],
+            'email': customer['Contact']['Email'],
+            'document_number': customer['IdentityDocument']['Number'],
+            'document_type': customer['IdentityDocument']['Type'],
             'document_expedition_date': datetime.strptime(customer[
-                'IdentityDocument'][0]['ExpeditionDate'],
+                'IdentityDocument']['ExpeditionDate'],
                 "%d%m%Y").date(),
             }
