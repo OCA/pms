@@ -3,6 +3,8 @@
 
 import json
 from odoo import api, models
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class HotelFolio(models.Model):
@@ -13,8 +15,8 @@ class HotelFolio(models.Model):
     def rm_get_reservation(self, Code):
         # BÚSQUEDA DE RESERVA POR LOCALIZADOR
         folio_res = self.env['hotel.folio'].search([('id', '=', Code)])
-        json_response = dict()
         if any(folio_res):
+            _logger.info('ROOMMATIK serving  Folio: %s', folio_res.id)
             folio_lin = folio_res.room_lines
             json_response = {
                 'Id': folio_res.id,
@@ -33,6 +35,9 @@ class HotelFolio(models.Model):
                     'RoomTypeName': line.room_type_id.name,
                     'RoomName': line.room_id.name,
                 })
+        else:
+            _logger.info('ROOMMATIK Not Found Folio search  %s', Code)
+            json_response = {'Error': 'Not Found ' + str(Code)}
         json_response = json.dumps(json_response)
 
         return json_response

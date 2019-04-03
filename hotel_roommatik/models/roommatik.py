@@ -7,12 +7,13 @@ from odoo import api, models
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class RoomMatik(models.Model):
     _name = 'roommatik.api'
 
     @api.model
     def rm_get_date(self):
-        # RoomMatik API FECHA/HORA
+        # RoomMatik API Gets the current business date/time. (MANDATORY)
         utc_s = '+01:00'
         # TODO Need know UTC in the machine/hotel
         json_response = {
@@ -22,15 +23,24 @@ class RoomMatik(models.Model):
         return json_response
 
     @api.model
+    def rm_get_reservation(self, reservation_code):
+        # RoomMatik Gets a reservation ready for check-in
+        # through the provided code. (MANDATORY)
+        apidata = self.env['hotel.folio']
+        return apidata.rm_get_reservation(reservation_code)
+
+    @api.model
     def rm_add_customer(self, customer):
-        # RoomMatik API CREACIÓN DE CLIENTE
+        # RoomMatik API Adds a new PMS customer through the provided parameters
+        # Addition will be ok if the returned customer has ID. (MANDATORY)
         _logger.info('ROOMMATIK Customer Creation')
         apidata = self.env['res.partner']
         return apidata.rm_add_customer(customer)
 
     @api.model
     def rm_checkin_partner(self, stay):
-        # RoomMatik API CHECK-IN
+        # RoomMatik API Check-in a stay.
+        # Addition will be ok if the returned stay has ID. (MANDATORY)
         _logger.info('ROOMMATIK Check-IN')
         apidata = self.env['hotel.folio']
         return apidata.rm_checkin_partner(stay)
