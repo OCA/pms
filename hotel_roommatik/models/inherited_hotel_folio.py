@@ -36,7 +36,7 @@ class HotelFolio(models.Model):
                     'RoomName': line.room_id.name,
                 })
         else:
-            _logger.info('ROOMMATIK Not Found Folio search  %s', Code)
+            _logger.warning('ROOMMATIK Not Found Folio search  %s', Code)
             json_response = {'Error': 'Not Found ' + str(Code)}
         json_response = json.dumps(json_response)
 

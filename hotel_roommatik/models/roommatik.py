@@ -42,9 +42,16 @@ class RoomMatik(models.Model):
         # RoomMatik API Check-in a stay.
         # Addition will be ok if the returned stay has ID. (MANDATORY)
         _logger.info('ROOMMATIK Check-IN')
-        apidata = self.env['hotel.folio']
+        apidata = self.env['hotel.checkin.partner']
         return apidata.rm_checkin_partner(stay)
 
+    @api.model
+    def rm_get_stay(self, check_in_code):
+        # RoomMatik API  Gets stay information through check-in code
+        # (if code is related to a current stay)
+        # (MANDATORY for check-out kiosk)
+        apidata = self.env['hotel.checkin.partner']
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()
         # Debug Stop -------------------
+        return apidata.rm_get_stay(check_in_code)

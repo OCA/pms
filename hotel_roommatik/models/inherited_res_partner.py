@@ -88,9 +88,9 @@ class ResPartner(models.Model):
         city_srch = self.env['res.country.state'].search([
             ('name', 'ilike', customer['Address']['Province'])])
         # Create Street2
-        street_2 = 'Nº ' + customer['Address']['House']
-        street_2 += ', ' + customer['Address']['Flat']
-        street_2 += ', ' + customer['Address']['Number']
+        street_2 = customer['Address']['House']
+        street_2 += ' ' + customer['Address']['Flat']
+        street_2 += ' ' + customer['Address']['Number']
         return {
             'firstname': customer['FirstName'],
             'lastname': customer['LastName1'],
