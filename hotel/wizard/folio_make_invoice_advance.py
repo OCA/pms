@@ -31,7 +31,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             folio_ids = self._context.get('default_folio_id', [])
         else:
             folio_ids = self._context.get('active_ids', [])
-        
+
         folios = self.env['hotel.folio'].browse(folio_ids)
         return folios
 
@@ -195,14 +195,19 @@ class FolioAdvancePaymentInv(models.TransientModel):
         inv_obj = self.env['account.invoice']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         folios = self.folio_ids
-                            
+
+
+        if not self.partner_invoice_id or not self.partner_invoice_id.vat:
+            vat_error = _("We need the VAT of the customer")
+            raise ValidationError(vat_error)
+
         if self.advance_payment_method == 'all':
             inv_data = self._prepare_invoice()
             invoice = inv_obj.create(inv_data)
             for line in self.line_ids:
                 line.invoice_line_create(invoice.id, line.qty)
             self._validate_invoices(invoice)
-            
+
         elif self.advance_payment_method == 'all':
             pass
             #Group lines by tax_ids
@@ -290,7 +295,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         'discount': service.discount,
                         'price_unit': service.price_unit,
                         'service_id': service.id,
-                        }               
+                        }
             for reservation in folio.room_lines.filtered(
                     lambda x: x.id in self.reservation_ids.ids):
                 board_service = reservation.board_service_room_id
@@ -309,7 +314,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     description = folio.name + ' ' + reservation.room_type_id.name + ' (' + \
                         reservation.board_service_room_id.hotel_board_service_id.name + ')' \
                         if board_service else folio.name + ' ' + reservation.room_type_id.name
-                    if group_key not in invoice_lines: 
+                    if group_key not in invoice_lines:
                         invoice_lines[group_key] = {
                                 'description' : description,
                                 'reservation_id': reservation.id,
@@ -349,7 +354,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         overridden to implement custom invoice generation (making sure to call super() to establish
         a clean extension chain).
         """
-    
+
         journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
         if not journal_id:
             raise UserError(_('Please define an accounting sales journal for this company.'))
@@ -428,7 +433,7 @@ class LineAdvancePaymentInv(models.TransientModel):
         for record in self:
             if record.reservation_id:
                 record.price_room = record.reservation_line_ids[0].price
-        
+
     def _compute_folio_id(self):
         for record in self:
             origin = record.reservation_id if record.reservation_id.id else record.service_id
@@ -444,7 +449,7 @@ class LineAdvancePaymentInv(models.TransientModel):
                 record.description_dates = record.reservation_line_ids[0].date + ' - ' + \
                     ((fields.Date.from_string(record.reservation_line_ids[-1].date)) + \
                         timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
-                    
+
     @api.multi
     def invoice_line_create(self, invoice_id, qty):
         """ Create an invoice line.
@@ -493,5 +498,5 @@ class LineAdvancePaymentInv(models.TransientModel):
                     'service_ids': [(6, 0, [origin.id])]
                 })
             invoice_lines |= self.env['account.invoice.line'].create(vals)
-                
+
         return invoice_lines

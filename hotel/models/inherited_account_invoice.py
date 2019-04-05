@@ -33,34 +33,25 @@ class AccountInvoice(models.Model):
             'domain': [('id', 'in', payment_ids)],
         }
 
-    from_folio = fields.Boolean(compute='_compute_dif_customer_payment')
-    sale_ids = fields.Many2many(
-            'sale.order', 'sale_order_invoice_rel', 'invoice_id',
-            'order_id', 'Sale Orders', readonly=True,
-            help="This is the list of sale orders related to this invoice.")
+    from_folio = fields.Boolean(compute='_computed_folio_origin')
     folio_ids = fields.Many2many(
-            comodel_name='hotel.folio', compute='_compute_dif_customer_payment')
+            comodel_name='hotel.folio', compute='_computed_folio_origin')
 
     @api.multi
-    def _compute_dif_customer_payment(self):
+    def action_invoice_open(self):
+        to_open_invoices_without_vat = self.filtered(lambda inv: inv.state != 'open' and inv.partner_id.vat == False)
+        if to_open_invoices_without_vat:
+            vat_error = _("We need the VAT of the following companies")
+            for invoice in to_open_invoices_without_vat:
+                vat_error += ", " + invoice.partner_id.name
+            raise ValidationError(vat_error)
+        return super(AccountInvoice, self).action_invoice_open()
+
+    @api.multi
+    def _computed_folio_origin(self):
         for inv in self:
             folios = inv.mapped('invoice_line_ids.reservation_ids.folio_id')
             folios |= inv.mapped('invoice_line_ids.service_ids.folio_id')
             if folios:
                 inv.from_folio = True
                 inv.folio_ids = [(6, 0, folios.ids)]
-
-    @api.multi
-    def action_invoice_open(self):
-        #TODO: VAT Control
-        """
-        to_open_invoices_without_vat = self.filtered(
-            lambda inv: inv.state != 'open' and inv.partner_id.vat == False)
-        if to_open_invoices_without_vat:
-            vat_error = _("We need the VAT of the following companies")
-            for invoice in to_open_invoices_without_vat:
-                vat_error += ", " + invoice.partner_id.name
-            raise ValidationError(vat_error)
-        """
-        return super(AccountInvoice, self).action_invoice_open()
-
