@@ -13,9 +13,9 @@ class MassiveChangesWizard(models.TransientModel):
 
     # Availability fields
     change_quota = fields.Boolean(default=False)
-    quota = fields.Integer('Quota', default=-1)
+    quota = fields.Integer('Quota', default=0)
     change_max_avail = fields.Boolean(default=False)
-    max_avail = fields.Integer('Max. Avail.', default=-1)
+    max_avail = fields.Integer('Max. Avail.', default=0)
     change_no_ota = fields.Boolean(default=False)
     no_ota = fields.Boolean('No OTA', default=False)
 

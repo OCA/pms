@@ -116,8 +116,7 @@ class CallCenterReportWizard(models.TransientModel):
             worksheet.write(k_res+offset, 5, v_res.adults)
             worksheet.write(k_res+offset, 6, checkin_date.strftime(date_format),
                             xls_cell_format_date)
-            worksheet.write(k_res+offset, 7, checkin_date.strftime(time_format),
-                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 7, v_res.arrival_hour)
             worksheet.write(k_res+offset, 8, checkout_date.strftime(date_format),
                             xls_cell_format_date)
             worksheet.write(k_res+offset, 9, v_res.create_uid.name)
@@ -211,8 +210,7 @@ class CallCenterReportWizard(models.TransientModel):
             worksheet.write(k_res+offset, 6, v_res.adults)
             worksheet.write(k_res+offset, 7, checkin_date.strftime(date_format),
                             xls_cell_format_date)
-            worksheet.write(k_res+offset, 8, checkin_date.strftime(time_format),
-                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 8, v_res.arrival_hour)
             worksheet.write(k_res+offset, 9, checkout_date.strftime(date_format),
                             xls_cell_format_date)
             worksheet.write(k_res+offset, 10, v_res.create_uid.name)
@@ -304,21 +302,20 @@ class CallCenterReportWizard(models.TransientModel):
             worksheet.write(k_res+offset, 2, v_res.folio_id.date_order,
                             xls_cell_format_date)
             worksheet.write(k_res+offset, 3, v_res.partner_id.name)
-            worksheet.write(k_res+offset, 4, v_res.virtual_room_id.name)
+            worksheet.write(k_res+offset, 4, v_res.room_type_id.name)
             worksheet.write(k_res+offset, 5, v_res.nights)
             worksheet.write(k_res+offset, 6, v_res.adults)
             worksheet.write(k_res+offset, 7, checkin_date.strftime(date_format),
                             xls_cell_format_date)
-            worksheet.write(k_res+offset, 8, checkin_date.strftime(time_format),
-                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 8, v_res.arrival_hour)
             worksheet.write(k_res+offset, 9, checkout_date.strftime(date_format),
                             xls_cell_format_date)
             worksheet.write(k_res+offset, 10, v_res.create_uid.name)
             worksheet.write(k_res+offset, 11, v_res.price_total,
                             xls_cell_format_money)
-            worksheet.write(k_res+offset, 12, v_res.amount_room,
+            worksheet.write(k_res+offset, 12, v_res.price_total - v_res.discount,
                             xls_cell_format_money)
-            total_reservation_amount += v_res.amount_room
+            total_reservation_amount += v_res.price_total
 
         offset += len(reservations)
 

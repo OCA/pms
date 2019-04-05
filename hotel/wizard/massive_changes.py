@@ -1,8 +1,8 @@
 # Copyright 2017  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
-from openerp import models, fields, api
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo import models, fields, api
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class MassiveChangesWizard(models.TransientModel):
@@ -26,8 +26,7 @@ class MassiveChangesWizard(models.TransientModel):
         ('0', 'Global'),
         ('1', 'Room Type'),
     ], string='Applied On', default='0')
-    # room_type_ids = fields.Many2many('hotel.virtual.room',
-    #                                     string="Virtual Rooms")
+
     room_type_ids = fields.Many2many('hotel.room.type', string="Room Types")
 
     # Restriction fields
@@ -157,11 +156,10 @@ class MassiveChangesWizard(models.TransientModel):
     def _save_restrictions(self, ndate, room_types, record):
         hotel_room_type_re_it_obj = self.env['hotel.room.type.restriction.item']
         domain = [
-            ('date_start', '>=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('date_end', '<=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('date', '>=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('date', '<=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('restriction_id', '=', record.restriction_id.id),
         ]
-
         for room_type in room_types:
             vals = self._get_restrictions_values(record)
             if not any(vals):
@@ -173,8 +171,7 @@ class MassiveChangesWizard(models.TransientModel):
                 rrest_item_ids.write(vals)
             else:
                 vals.update({
-                    'date_start': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    'date_end': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                    'date': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'restriction_id': record.restriction_id.id,
                     'room_type_id': room_type.id,
                 })

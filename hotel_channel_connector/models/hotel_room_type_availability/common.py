@@ -18,18 +18,22 @@ class HotelRoomTypeAvailability(models.Model):
 
     @api.model
     def _default_max_avail(self):
-        room_type_id = self._context.get('room_type_id')
-        if room_type_id:
-            room_type_id = self.env['hotel.room_type'].browse(room_type_id)
-            return room_type_id.default_max_avail if room_type_id else -1
+        room_type_id = self.room_type_id.id or self._context.get('room_type_id')
+        channel_room_type = self.env['channel.hotel.room.type'].search([
+            ('odoo_id', '=', room_type_id)
+        ]) or None
+        if channel_room_type:
+            return channel_room_type.default_max_avail
         return -1
 
     @api.model
     def _default_quota(self):
-        room_type_id = self._context.get('room_type_id')
-        if room_type_id:
-            room_type_id = self.env['hotel.room_type'].browse(room_type_id)
-            return room_type_id.default_quota if room_type_id else -1
+        room_type_id = self.room_type_id.id or self._context.get('room_type_id')
+        channel_room_type = self.env['channel.hotel.room.type'].search([
+            ('odoo_id', '=', room_type_id)
+        ]) or None
+        if channel_room_type:
+            return channel_room_type.default_quota
         return -1
 
     room_type_id = fields.Many2one('hotel.room.type', 'Room Type',
@@ -44,6 +48,7 @@ class HotelRoomTypeAvailability(models.Model):
 
     quota = fields.Integer("Quota", default=_default_quota,
                            help="Quota assigned to the channel.")
+    # TODO: WHY max_avail IS READONLY ¿?
     max_avail = fields.Integer("Max. Availability", default=-1, readonly=True,
                                help="Maximum simultaneous availability.")
 
@@ -72,8 +77,34 @@ class HotelRoomTypeAvailability(models.Model):
 
     @api.onchange('room_type_id')
     def onchange_room_type_id(self):
-        if self.room_type_id:
-            self.quota = self.room_type_id.default_quota
+        channel_room_type = self.env['channel.hotel.room.type'].search([
+            ('odoo_id', '=', self.room_type_id.id)
+        ]) or None
+        if channel_room_type:
+            self.quota = channel_room_type.default_quota
+            self.max_avail = channel_room_type.default_max_avail
+            self.no_ota = 0
+
+    @api.model
+    def create(self, vals):
+        vals.update(self._prepare_add_missing_fields(vals))
+        return super().create(vals)
+
+    @api.model
+    def _prepare_add_missing_fields(self, values):
+        """ Deduce missing required fields from the onchange """
+        res = {}
+        onchange_fields = ['quota', 'max_avail']
+        if values.get('room_type_id'):
+            record = self.new(values)
+            if 'quota' not in values:
+                record.quota = record._default_quota()
+            if 'max_avail' not in values:
+                record.max_avail = record._default_max_avail()
+            for field in onchange_fields:
+                if field not in values:
+                    res[field] = record._fields[field].convert_to_write(record[field], record)
+        return res
 
 
 class ChannelHotelRoomTypeAvailability(models.Model):
@@ -152,6 +183,8 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                         _logger.info(vals_avail)
                     if room_type_avail_id.channel_avail != avail:
                         vals_avail.update({'channel_avail': avail})
+                    if self._context.get('update_no_ota', False):
+                        vals_avail.update({'channel_pushed': False})
                     if vals_avail:
                         room_type_avail_id.write(vals_avail)
 
@@ -209,11 +242,13 @@ class BindingHotelRoomTypeAvailabilityListener(Component):
         fields_to_check = ('quota', 'max_avail', 'no_ota')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
 
+        _logger.info("==[on_record_write] :: hotel.room.type.availability==")
+        _logger.info(fields)
+
         if any(fields_checked) and any(record.channel_bind_ids):
-
-            _logger.info("==[on_record_write] :: hotel.room.type.availability==")
-            _logger.info(fields)
-
+            if 'no_ota' in fields_checked:
+                self.env.context = dict(self.env.context)
+                self.env.context.update({'update_no_ota': True})
             for binding in record.channel_bind_ids:
                 binding.refresh_availability(
                     record.date,
@@ -261,7 +296,7 @@ class ChannelBindingHotelRoomTypeAvailabilityListener(Component):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        fields_to_check = ('date', 'channel_avail') # no_ota ¿?
+        fields_to_check = ('date', 'channel_avail')
         fields_checked = [elm for elm in fields_to_check if elm in fields]
 
         _logger.info("==[on_record_write] :: channel.hotel.room.type.availability==")
