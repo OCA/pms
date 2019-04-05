@@ -23,60 +23,28 @@ class ResPartner(models.Model):
         json_response = {'Id': 0}
         if any(partner_res):
             # Change customer data
-            _logger.info('ROOMMATIK %s exist in BD %s res.artner id Rewriting',
-                         partner_res[0].document_number,
-                         partner_res[0].id,)
+            _logger.warning('ROOMMATIK %s exist in BD [ %s ] Rewriting',
+                            partner_res[0].document_number,
+                            partner_res[0].id,)
             try:
                 partner_res[0].update(self.rm_preare_customer(customer))
                 write_custumer = partner_res[0]
             except:
-                _logger.error('ROOMMATIK Rewriting %s in BD %s ID',
+                _logger.error('ROOMMATIK Rewriting [%s] in BD [ %s ] ID',
                               partner_res[0].document_number,
                               partner_res[0].id,)
         else:
             # Create new customer
             try:
                 write_custumer = self.create(self.rm_preare_customer(customer))
-                _logger.info('ROOMMATIK Create %s in BD like %s ID',
-                             write_custumer.document_number,
-                             write_custumer.id,)
+                _logger.info('ROOMMATIK Writing %s Name: %s',
+                             customer['IdentityDocument']['Number'],
+                             customer['FirstName'])
             except:
-                _logger.error('ROOMMATIK Creating %s in BD %s ID',
-                              write_custumer.document_number,
-                              write_custumer.id,)
-
-        json_response = {'Id': write_custumer.id,
-                         'FirstName': write_custumer.firstname,
-                         'LastName1': write_custumer.lastname,
-                         'LastName2': write_custumer.lastname2,
-                         'Birthday': write_custumer.birthdate_date,
-                         'Sex': write_custumer.gender,
-                         'Address': {
-                            'Nationality': write_custumer.zip,
-                            'Country': write_custumer.zip,
-                            'ZipCode': write_custumer.zip,
-                            'City': write_custumer.city,
-                            'Street': write_custumer.street,
-                            'House': customer['Address']['House'],
-                            'Flat': customer['Address']['Flat'],
-                            'Number': customer['Address']['Number'],
-                            'Province': customer['Address']['Province'],
-                         },
-                         'IdentityDocument': {
-                            'Number': write_custumer.document_number,
-                            'Type': write_custumer.document_type,
-                            'ExpiryDate': customer[
-                                 'IdentityDocument']['ExpiryDate'],
-                            'ExpeditionDate': write_custumer.document_expedition_date,
-                         },
-                         'Contact': {
-                            'Telephone': write_custumer.phone,
-                            'Fax': customer['Contact']['Fax'],
-                            'Mobile': write_custumer.mobile,
-                            'Email': write_custumer.email,
-                         }
-                         }
-
+                _logger.error('ROOMMATIK Creating %s %s in BD',
+                              customer['IdentityDocument']['Number'],
+                              customer['FirstName'])
+        json_response = self.rm_get_a_customer(write_custumer.id)
         json_response = json.dumps(json_response)
         return json_response
 
@@ -112,3 +80,37 @@ class ResPartner(models.Model):
                 'IdentityDocument']['ExpeditionDate'],
                 "%d%m%Y").date(),
             }
+
+    def rm_get_a_customer(self, customer):
+        # Prepare a Customer for RoomMatik
+        partner = self.search([('id', '=', customer)])
+        response = {}
+        response['Id'] = partner.id
+        response['FirstName'] = partner.firstname
+        response['LastName1'] = partner.lastname
+        response['LastName2'] = partner.lastname2
+        response['Birthday'] = partner.birthdate_date
+        response['Sex'] = partner.gender
+        response['Address'] = {'Nationality': {},
+                               'Country': partner.country_id.name,
+                               'ZipCode': partner.zip,
+                               'City': partner.city,
+                               'Street': partner.street,
+                               'House': partner.street2,
+                               # 'Flat': "xxxxxxx",
+                               # 'Number': "xxxxxxx",
+                               'Province': partner.state_id.name,
+                               }
+        response['IdentityDocument'] = {
+                            'Number': partner.document_number,
+                            'Type': partner.document_type,
+                            'ExpiryDate': "",
+                            'ExpeditionDate': partner.document_expedition_date,
+                            }
+        response['Contact'] = {
+                                'Telephone': partner.phone,
+                                # 'Fax': 'xxxxxxx',
+                                'Mobile': partner.mobile,
+                                'Email': partner.email,
+                                }
+        return response

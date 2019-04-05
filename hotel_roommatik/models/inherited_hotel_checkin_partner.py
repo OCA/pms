@@ -14,7 +14,6 @@ class HotelFolio(models.Model):
     def rm_checkin_partner(self, stay):
         # CHECK-IN
         _logger = logging.getLogger(__name__)
-        # folio_rm = self.env['hotel.folio'].search([('id', '=', stay['Code'])])
         reservation_rm = self.env['hotel.reservation'].search([('id', '=',
                                                                 stay['Code'])])
         # Need checkin?
@@ -27,9 +26,6 @@ class HotelFolio(models.Model):
                 # ADD costumer ?
                 # costumer = self.env['res.partner'].rm_add_customer(room_partner["Customer"])
 
-                # Debug Stop -------------------
-                # import wdb; wdb.set_trace()
-                # Debug Stop ------------------
                 checkin_partner_val = {
                     'folio_id': reservation_rm.folio_id.id,
                     'reservation_id': reservation_rm.id,
@@ -87,40 +83,20 @@ class HotelFolio(models.Model):
         stay['Room'] = {}
         stay['Room']['Id'] = reserva.reservation_id.room_id.id
         stay['Room']['Name'] = reserva.reservation_id.room_id.name
-        stay['RoomType'] =  {}
+        stay['RoomType'] = {}
         stay['RoomType']['Id'] = reserva.reservation_id.room_type_id.id
         stay['RoomType']['Name'] = reserva.reservation_id.room_type_id.name
         stay['RoomType']['GuestNumber'] = "xxxxxxx"
-        stay['Arrival'] = reserva.reservation_id.real_checkin + 'T' + reserva.reservation_id.arrival_hour + ':00'
-        stay['Departure'] = reserva.reservation_id.real_checkout + 'T' + reserva.reservation_id.departure_hour + ':00'
-        # TODO ADD Customers ......................................................checkin_partner_ids
+        stay['Arrival'] = (reserva.reservation_id.real_checkin +
+                           'T' + reserva.reservation_id.arrival_hour + ':00')
+        stay['Departure'] = (reserva.reservation_id.real_checkout +
+                             'T' +
+                             reserva.reservation_id.departure_hour + ':00')
         stay['Customers'] = []
         for idx, cpi in enumerate(reserva.reservation_id.checkin_partner_ids):
-            stay['Customers'].append({'Customer':{}})
-            stay['Customers'][idx]['Customer']['Id'] = cpi.id
-            stay['Customers'][idx]['Customer']['FirstName'] = cpi.partner_id.firstname
-            stay['Customers'][idx]['Customer']['LastName1'] = cpi.partner_id.lastname
-            stay['Customers'][idx]['Customer']['LastName2'] = cpi.partner_id.lastname2
-            stay['Customers'][idx]['Customer']['Birthday'] = cpi.partner_id.birthdate_date
-            stay['Customers'][idx]['Customer']['Sex'] = cpi.partner_id.gender
-            stay['Customers'][idx]['Customer']['Address'] = {
-                                    'Nationality': {},
-                                    'Country': cpi.partner_id.country_id.name,
-                                    'ZipCode': cpi.partner_id.zip,
-                                    'City': cpi.partner_id.city,
-                                    'Street': cpi.partner_id.street,
-                                    'House': cpi.partner_id.street2,
-                                    # 'Flat': "xxxxxxx",
-                                    # 'Number': "xxxxxxx",
-                                    'Province': cpi.partner_id.state_id.name,
-                                    }
-            stay['Customers'][idx]['Customer']['IdentityDocument'] = {
-                                'Number': cpi.document_number,
-                                'Type': cpi.document_type,
-                                'ExpiryDate': "",
-                                'ExpeditionDate': cpi.document_expedition_date,
-                                }
-
+            stay['Customers'].append({'Customer': {}})
+            stay['Customers'][idx]['Customer'] = self.env[
+                            'res.partner'].rm_get_a_customer(cpi.partner_id.id)
         stay['TimeInterval'] = {}
         stay['TimeInterval']['Id'] = {}
         stay['TimeInterval']['Name'] = {}
@@ -128,108 +104,15 @@ class HotelFolio(models.Model):
         stay['Adults'] = reserva.reservation_id.adults
         stay['ReservationCode'] = {}
         stay['Total'] = reserva.reservation_id.price_total
-        stay['Paid'] = stay['Total'] - reserva.reservation_id.folio_pending_amount
+        stay['Paid'] = (stay['Total'] -
+                        reserva.reservation_id.folio_pending_amount)
         stay['Outstanding'] = {}
         stay['Taxable'] = reserva.reservation_id.price_tax
-
-
-        # Debug Stop -------------------
-        # import wdb; wdb.set_trace()
-        # Debug Stop -------------------
 
         json_response = json.dumps(stay)
 
         return json_response
-        # return stay
 
-        # stay1 = {
-        #
-        #     "Id": 123,
-        #     "Code": "44",
-        #     "Room": {
-        #         "Id": 123,
-        #         "Name": "Name",
-        #     },
-        #     "RoomType": {
-        #         "Id": 123,
-        #         "Name": "Name",
-        #         "GuestNumber": 123,
-        #     },
-        #     "Arrival": date(2001, 7, 19).strftime("%d%m%Y"),
-        #     "Departure": date(2001, 7, 19).strftime("%d%m%Y"),
-        #     "Customers": {
-        #         "Customer": {
-        #             "Id": 123,
-        #             "FirstName": "FirstName",
-        #             "LastName1": "LastName1",
-        #             "LastName2": "LastName2",
-        #             "Birthday": date(2001, 7, 19).strftime("%d%m%Y"),
-        #             "Sex": "Sex",
-        #             "Address": {
-        #                 "Nationality": "Nationality",
-        #                 "Country": "Country",
-        #                 "ZipCode": "ZipCode",
-        #                 "City": "City",
-        #                 "Street": "Street",
-        #                 "House": "House",
-        #                 "Flat": "Flat",
-        #                 "Number": "Number",
-        #                 "Province": "Province",
-        #                 },
-        #             "IdentityDocument": {
-        #                 "Number": "Number",
-        #                 "Type": "Type",
-        #                 "ExpiryDate": date(2001, 7, 19).strftime("%d%m%Y"),
-        #                 "ExpeditionDate": date(2001, 7, 19).strftime("%d%m%Y"),
-        #                 },
-        #             "Contact": {
-        #                 "Telephone": "Telephone",
-        #                 "Fax": "Fax",
-        #                 "Mobile": "Mobile",
-        #                 "Email": "Email",
-        #                 },
-        #             },
-        #         "Customer": {
-        #             "Id": 124,
-        #             "FirstName": "FirstName2",
-        #             "LastName1": "LastName12",
-        #             "LastName2": "LastName22",
-        #             "Birthday": date(2001, 7, 19).strftime("%d%m%Y"),
-        #             "Sex": "Sex",
-        #             "Address": {
-        #                 "Nationality": "Nationality",
-        #                 "Country": "Country",
-        #                 "ZipCode": "ZipCode",
-        #                 "City": "City",
-        #                 "Street": "Street",
-        #                 "House": "House",
-        #                 "Flat": "Flat",
-        #                 "Number": "Number",
-        #                 "Province": "Province",
-        #                 },
-        #             "IdentityDocument": {
-        #                 "Number": "Number",
-        #                 "Type": "Type",
-        #                 "ExpiryDate": date(2001, 7, 19).strftime("%d%m%Y"),
-        #                 "ExpeditionDate": date(2001, 7, 19).strftime("%d%m%Y"),
-        #                 },
-        #             "Contact": {
-        #                 "Telephone": "Telephone",
-        #                 "Fax": "Fax",
-        #                 "Mobile": "Mobile",
-        #                 "Email": "Email",
-        #                 },
-        #             },
-        #         },
-        #     "TimeInterval": {
-        #         "Id": 123,
-        #         "Name": "Name",
-        #         "Minutes": 123,
-        #         },
-        #     "Adults": 2,
-        #     "ReservationCode": "ReservationCode",
-        #     "Total": 10.5,
-        #     "Paid": 10.5,
-        #     "Outstanding": 10.5,
-        #     "Taxable": 10.5,
-        # }
+        # Debug Stop -------------------
+        #import wdb; wdb.set_trace()
+        # Debug Stop -------------------
