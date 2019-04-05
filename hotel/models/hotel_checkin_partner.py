@@ -19,6 +19,25 @@ class HotelCheckinPartner(models.Model):
             return reservation
         return False
 
+    def _default_partner_id(self):
+        if 'reservation_id' in self.env.context:
+            reservation = self.env['hotel.reservation'].browse([
+                self.env.context['reservation_id']
+            ])
+            partner_ids = []
+            if reservation.folio_id:
+                for room in reservation.folio_id.room_lines:
+                    partner_ids.append(room.mapped(
+                            'checkin_partner_ids.partner_id.id'))
+            if 'checkin_partner_ids' in self.env.context:
+                for checkin in self.env.context['checkin_partner_ids']:
+                    if checkin[0] == 0:
+                        partner_ids.append(checkin[2].get('partner_id'))
+            if self._context.get('include_customer') and reservation.partner_id.id \
+                    not in partner_ids and not reservation.partner_id.is_company:
+                return reservation.partner_id
+        return False
+
     def _default_folio_id(self):
         if 'folio_id' in self.env.context:
             folio = self.env['hotel.folio'].browse([
@@ -46,16 +65,6 @@ class HotelCheckinPartner(models.Model):
                 self.env.context['reservation_id']
             ])
             return reservation.checkout
-        return False
-
-    def _default_partner_id(self):
-        if 'reservation_id' in self.env.context:
-            reservation = self.env['hotel.reservation'].browse([
-                self.env.context['reservation_id']
-            ])
-            if reservation.partner_id.id not in reservation.mapped(
-                    'checkin_partner_ids.partner_id.id'):
-                return reservation.partner_id
         return False
 
     def _default_to_enter(self):
@@ -122,25 +131,13 @@ class HotelCheckinPartner(models.Model):
     @api.onchange('partner_id')
     def _check_partner_id(self):
         for record in self:
-            checkins = self.env['hotel.checkin.partner'].search([
-                            ('id', '!=', record.id),
-                            ('reservation_id', '=', record.reservation_id.id)
-                        ])
-            if record.partner_id.id in checkins.mapped('partner_id.id'):
-                raise models.ValidationError(
-                    _('This guest is already registered in the room'))
-
-    @api.multi
-    @api.constrains('partner_id')
-    def _check_partner_id(self):
-        for record in self:
-            checkins = self.env['hotel.checkin.partner'].search([
-                            ('id', '!=', record.id),
-                            ('reservation_id', '=', record.reservation_id.id)
-                        ])
-            if record.partner_id.id in checkins.mapped('partner_id.id'):
-                raise models.ValidationError(
-                    _('This guest is already registered in the room'))
+            if record.partner_id:
+                indoor_partner_ids = record.reservation_id.checkin_partner_ids.\
+                    filtered(lambda r: r.id != record.id).mapped('partner_id.id')
+                if indoor_partner_ids.count(record.partner_id.id) > 1:
+                    raise models.ValidationError(
+                        _('This guest is already registered in the room'))
+                    record.partner_id = None
 
     @api.multi
     def action_on_board(self):
@@ -152,4 +149,6 @@ class HotelCheckinPartner(models.Model):
     @api.multi
     def action_done(self):
         for record in self:
-            record.state = 'done'
+            if record.state == 'booking':
+                record.state = 'done'
+        return True

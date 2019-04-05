@@ -34,7 +34,7 @@
         'partner_contact_gender',
         'partner_contact_birthdate',
         'partner_firstname',
-        'web_responsive'
+        'partner_vat_unique',
     ],
     'data': [
         'data/code.ine.csv',
@@ -50,6 +50,7 @@
         'views/inherit_hotel_checkin_partner_views.xml',
         'security/ir.model.access.csv',
         'views/inherit_res_partner.xml',
+        'views/inherited_hotel_reservation_views.xml',
         'views/report_viajero_document.xml',
         'views/report_viajero_head.xml',
         'views/report_viajero_data.xml',

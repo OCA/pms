@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="hotel_reservation_view_form" model="ir.ui.view">
+        <field name="model">hotel.reservation</field>
+        <field name="inherit_id" ref="hotel.hotel_reservation_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='send_reservation_mail']" position="before">
+                <button name="print_all_checkins" string="Print All Checkins"
+                    type="object" icon="fa-print" attrs="{'invisible':[
+                        ('checkin_partner_ids','=', [])
+                    ]}" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
