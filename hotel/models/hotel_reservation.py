@@ -3,10 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import time
 from datetime import timedelta
-from lxml import etree
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import (
-    misc,
     float_is_zero,
     float_compare,
     DEFAULT_SERVER_DATE_FORMAT,
@@ -245,11 +243,17 @@ class HotelReservation(models.Model):
     # Non-stored field hotel.reservation.checkin_partner_count cannot be searched
     # searching on a computed field can also be enabled by setting the search parameter.
     # The value is a method name returning a Domains
-    checkin_partner_count = fields.Integer('Checkin counter',
-                                  compute='_compute_checkin_partner_count')
-    checkin_partner_pending_count = fields.Integer('Checkin Pending Num',
-                                          compute='_compute_checkin_partner_count',
-                                          search='_search_checkin_partner_pending')
+    checkin_partner_count = fields.Integer(
+        'Checkin counter',
+        compute='_compute_checkin_partner_count')
+    checkin_partner_pending_count = fields.Integer(
+        'Checkin Pending Num',
+        compute='_compute_checkin_partner_count',
+        search='_search_checkin_partner_pending')
+    customer_sleep_here = fields.Boolean(default=True,
+                                         string="Include customer",
+                                         help="Indicates if the customer \
+                                         sleeps in this room")
     # check_rooms = fields.Boolean('Check Rooms')
     splitted = fields.Boolean('Splitted', default=False)
     parent_reservation = fields.Many2one('hotel.reservation',
@@ -621,7 +625,6 @@ class HotelReservation(models.Model):
     """
     ONCHANGES ----------------------------------------------------------
     """
-
     @api.onchange('adults', 'room_id')
     def onchange_room_id(self):
         if self.room_id:
@@ -633,7 +636,6 @@ class HotelReservation(models.Model):
                     _('%s people do not fit in this room! ;)') % (self.adults))
             if self.adults == 0:
                 write_vals.update({'adults': self.room_id.capacity})
-            #Si el registro no existe, modificar room_type aunque ya esté establecido
             if not self.room_type_id:
                 write_vals.update({'room_type_id': self.room_id.room_type_id.id})
             self.update(write_vals)
@@ -1195,7 +1197,8 @@ class HotelReservation(models.Model):
         for record in self:
             record.state = 'done'
             if record.checkin_partner_ids:
-                record.checkin_partner_ids.action_done()
+                record.checkin_partner_ids.filtered(
+                    lambda check: check.state == 'booking').action_done()
         return True
 
     @api.multi

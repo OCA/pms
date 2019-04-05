@@ -7,6 +7,15 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="partner_contact_personal_information_page.personal_information" />
             <field name="arch" type="xml">
+                <xpath expr='//div[@name="button_box"]' position='before'>
+                    <field name="main_partner_id" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
+                         attrs="{'invisible': [('main_partner_id','=',False)]}">
+                             This partner was deactivated and merged with another client to avoid duplicity, you can see the active client in
+                             <bold><button class="alert-link" type="object" name="open_main_partner" string="Customer Link"/></bold>
+                    </div>
+                </xpath>
+
                 <xpath expr="//page[@name='personal_information_page']" position='inside'>
                     <group colspan="4">
                         <group>
@@ -19,6 +28,11 @@
                         </group>
                     </group>
                 </xpath>
+
+                <xpath expr='//field[@name="vat"]' position='after'>
+                    <field name="unconfirmed" />
+                </xpath>
+
             </field>
         </record>
 

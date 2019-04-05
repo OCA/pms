@@ -16,6 +16,3 @@ class HotelBoardServiceRoomTypeLine(models.Model):
     product_id = fields.Many2one(
         'product.product', 'Product', required=True, readonly=True)
     amount = fields.Float('Amount', digits=dp.get_precision('Product Price'), default=0.0)
-    
-                
-                    
