@@ -37,7 +37,7 @@
                                 <field name="name" />
                                 <field name="state" />
                                 <field name="pending_amount" />
-                                <field name="amount_total" />                            
+                                <field name="amount_total" />
                             </tree>
                         </field>
                         <field name="reservation_ids" widget="many2many_tags"
@@ -65,6 +65,7 @@
                                 <field name="price_total" />
                             </tree>
                         </field>
+                        <field name="auto_invoice" />
                     </group>
                     <footer>
                         <button name="create_invoices" string="Create and View Invoices" type="object"

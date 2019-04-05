@@ -4,11 +4,11 @@
 import time
 import logging
 from datetime import datetime, timedelta
-from openerp.exceptions import ValidationError
-from openerp.tools import (
+from odoo.exceptions import ValidationError
+from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
-from openerp import models, fields, api, _
+from odoo import models, fields, api, _
 import odoo.addons.decimal_precision as dp
 _logger = logging.getLogger(__name__)
 

@@ -4,7 +4,7 @@ import time
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo import api, fields, models, _
 import odoo.addons.decimal_precision as dp
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from datetime import timedelta
 
 
@@ -66,6 +66,9 @@ class FolioAdvancePaymentInv(models.TransientModel):
         ('fixed', 'Down payment (fixed amount)')
     ], string='What do you want to invoice?', default=_get_advance_payment_method,
                                               required=True)
+    auto_invoice = fields.Boolean('Auto Payment Invoice',
+                                  default=True,
+                                  help='Automatic validation and link payment to invoice')
     count = fields.Integer(default=_count, string='# of Orders')
     folio_ids  = fields.Many2many("hotel.folio", string="Folios",
                                   help="Folios grouped",
@@ -172,23 +175,25 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     @api.model
     def _validate_invoices(self, invoice):
-        invoice.action_invoice_open()
-        payment_ids = self.folio_ids.mapped('payment_ids.id')
-        domain = [('account_id', '=', invoice.account_id.id),
-            ('payment_id', 'in', payment_ids), ('reconciled', '=', False),
-            '|', ('amount_residual', '!=', 0.0),
-            ('amount_residual_currency', '!=', 0.0)]
-        if invoice.type in ('out_invoice', 'in_refund'):
-          domain.extend([('credit', '>', 0), ('debit', '=', 0)])
-          type_payment = _('Outstanding credits')
-        else:
-          domain.extend([('credit', '=', 0), ('debit', '>', 0)])
-          type_payment = _('Outstanding debits')
-        info = {'title': '', 'outstanding': True, 'content': [], 'invoice_id': invoice.id}
-        lines = self.env['account.move.line'].search(domain)
-        currency_id = invoice.currency_id
-        for line in lines:
-            invoice.assign_outstanding_credit(line.id)
+        if self.auto_invoice:
+            invoice.action_invoice_open()
+            payment_ids = self.folio_ids.mapped('payment_ids.id')
+            domain = [('account_id', '=', invoice.account_id.id),
+                ('payment_id', 'in', payment_ids), ('reconciled', '=', False),
+                '|', ('amount_residual', '!=', 0.0),
+                ('amount_residual_currency', '!=', 0.0)]
+            if invoice.type in ('out_invoice', 'in_refund'):
+              domain.extend([('credit', '>', 0), ('debit', '=', 0)])
+              type_payment = _('Outstanding credits')
+            else:
+              domain.extend([('credit', '=', 0), ('debit', '>', 0)])
+              type_payment = _('Outstanding debits')
+            info = {'title': '', 'outstanding': True, 'content': [], 'invoice_id': invoice.id}
+            lines = self.env['account.move.line'].search(domain)
+            currency_id = invoice.currency_id
+            for line in lines:
+                invoice.assign_outstanding_credit(line.id)
+        return True
 
     @api.multi
     def create_invoices(self):
