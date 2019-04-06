@@ -828,6 +828,8 @@ class HotelReservation(models.Model):
             record.reservation_line_ids.update({
                 'cancel_discount': 0
             })
+            if record.folio_id.state != 'confirm':
+                record.folio_id.action_confirm()
 
             if record.splitted:
                 master_reservation = record.parent_reservation or record
@@ -1388,6 +1390,13 @@ class HotelReservation(models.Model):
             action = self.env.ref('hotel.action_view_folio_advance_payment_inv').read()[0]
             action['context'] = {'default_reservation_id': self.id,
                                  'default_folio_id': self.folio_id.id}
+        return action
+
+    @api.multi
+    def create_invoice(self):
+        action = self.env.ref('hotel.action_view_folio_advance_payment_inv').read()[0]
+        action['context'] = {'default_reservation_id': self.id,
+                             'default_folio_id': self.folio_id.id}
         return action
 
     @api.multi

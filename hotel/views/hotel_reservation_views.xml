@@ -25,9 +25,11 @@
                     <field name="has_cancelled_reservations_to_send" invisible="1" />
                     <field name="has_checkout_to_send" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
-                    <button name="open_invoices_reservation"
+                    <button name="create_invoice"
                         string="Create Invoice" type="object" class="btn-primary" states="sale"
-                        attrs="{'invisible': ['|',('state', '=', 'draft'), ('reservation_type','not in',('normal'))]}" />
+                        attrs="{'invisible': ['|','|',
+                           ('state', '=', 'draft'), ('reservation_type','not in',('normal')),
+                           ('invoice_status','!=', 'to invoice')]}" />
                     <button name="send_reservation_mail" type="object" string="Send Confirmation Email"
                        attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}"/>
                     <button name="send_cancel_mail" type="object" string="Send Cancel Email"

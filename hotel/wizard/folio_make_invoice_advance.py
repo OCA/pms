@@ -291,6 +291,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         for folio in folios:
             for service in folio.service_ids.filtered(
                     lambda x: x.is_board_service == False and \
+                    x.invoice_status == 'invoice_status' and \
                     (x.ser_room_line.id in self.reservation_ids.ids or \
                     x.ser_room_line.id  == False)):
                 invoice_lines[service.id] = {
@@ -302,9 +303,11 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         'service_id': service.id,
                         }
             for reservation in folio.room_lines.filtered(
-                    lambda x: x.id in self.reservation_ids.ids):
+                    lambda x: x.id in self.reservation_ids.ids and
+                    x.invoice_status == 'to invoice'):
                 board_service = reservation.board_service_room_id
-                for day in reservation.reservation_line_ids.sorted('date'):
+                for day in reservation.reservation_line_ids.filtered(
+                        lambda x: not x.invoice_line_ids).sorted('date'):
                     extra_price = 0
                     if board_service:
                         services = reservation.service_ids.filtered(

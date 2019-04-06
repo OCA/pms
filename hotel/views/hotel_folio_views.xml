@@ -124,7 +124,8 @@
                                 context="{'from_room':False,'folio_id': id,'tree_view_ref':'hotel.hotel_service_view_tree', 'form_view_ref':'hotel.hotel_service_view_form'}"
                                 nolabel="1" />
                         </page>
-                        <page name="persons" string="Persons">
+                        <!--TODO: Add precheckin with indeterminate select room?? -->
+                        <page name="persons" string="Persons" invisible="1">
                             <field name="checkin_partner_ids"
                                    context="{
                                     'default_reservation_id': id,
@@ -220,6 +221,8 @@
                 <field name="date_order" select="1"/>
                 <field name="room_lines" widget="many2many_tags" />
                 <field name="amount_total" sum="Total amount"/>
+                <field name="pending_amount" sum="Total debt"/>
+                <field name="invoice_status" />
             </tree>
         </field>
     </record>
@@ -271,9 +274,16 @@
         <field name="arch" type="xml">
             <search string="Tables Detail">
                 <field name="partner_id" />
+                <field name="partner_invoice_id" />
+                <filter name="to_invoice" string="To invoice"
+                    domain="[('invoice_status', '=', 'to invoice')]" />
+                <filter name="payment_pending" string="Payment Pending"
+                    domain="[('pending_amount', '&gt;', 0)]" />
                 <group expand="0" string="Group By">
                     <filter string="Customer" icon="terp-stock_symbol-selection"
                         context="{'group_by':'partner_id'}" />
+                        <filter string="Invoice Contact"
+                            context="{'group_by':'partner_invoice_id'}" />
                 </group>
             </search>
         </field>

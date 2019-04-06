@@ -27,13 +27,6 @@ class HotelFolio(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _order = 'id'
 
-    # @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
-    def _get_invoice_qty(self):
-        pass
-    # @api.depends('product_id.invoice_policy', 'order_id.state')
-    def _compute_qty_delivered_updateable(self):
-        pass
-
     @api.model
     def _default_diff_invoicing(self):
         """
@@ -56,7 +49,6 @@ class HotelFolio(models.Model):
           invoice. This is also the default value if the conditions of no other status is met.
         - to invoice: if any Folio line is 'to invoice', the whole Folio is 'to invoice'
         - invoiced: if all Folio lines are invoiced, the Folio is invoiced.
-        - upselling: if all Folio lines are invoiced or upselling, the status is upselling.
 
         The invoice_ids are obtained thanks to the invoice lines of the Folio lines, and we also search
         for possible refunds created directly from existing invoices. This is necessary since such a
@@ -78,29 +70,25 @@ class HotelFolio(models.Model):
 
             # Ignore the status of the deposit product
             deposit_product_id = self.env['sale.advance.payment.inv']._default_product_id()
-            #~ line_invoice_status = [line.invoice_status for line in order.order_line if line.product_id != deposit_product_id]
+            service_invoice_status = [service.invoice_status for service in folio.service_ids if service.product_id != deposit_product_id]
+            reservation_invoice_status = [reservation.invoice_status for reservation in folio.room_lines]
 
-            #~ TODO: REVIEW INVOICE_STATUS
-            #~ if folio.state not in ('confirm', 'done'):
-                #~ invoice_status = 'no'
-            #~ elif any(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
-                #~ invoice_status = 'to invoice'
-            #~ elif all(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
-                #~ invoice_status = 'invoiced'
-            #~ elif all(invoice_status in ['invoiced', 'upselling'] for invoice_status in line_invoice_status):
-                #~ invoice_status = 'upselling'
-            #~ else:
-                #~ invoice_status = 'no'
+            if folio.state not in ('confirm', 'done'):
+                invoice_status = 'no'
+            elif any(invoice_status == 'to invoice' for invoice_status in service_invoice_status) or \
+                    any(invoice_status == 'to invoice' for invoice_status in reservation_invoice_status):
+                invoice_status = 'to invoice'
+            elif all(invoice_status == 'invoiced' for invoice_status in service_invoice_status) or \
+                    any(invoice_status == 'invoiced' for invoice_status in reservation_invoice_status):
+                invoice_status = 'invoiced'
+            else:
+                invoice_status = 'no'
 
             folio.update({
                 'invoice_count': len(set(invoice_ids.ids + refund_ids.ids)),
                 'invoice_ids': invoice_ids.ids + refund_ids.ids,
-                #~ 'invoice_status': invoice_status
+                'invoice_status': invoice_status
             })
-
-    # @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced')
-    def _compute_invoice_status(self):
-        pass
 
     @api.model
     def _get_default_team(self):
@@ -210,12 +198,11 @@ class HotelFolio(models.Model):
     invoice_count = fields.Integer(compute='_get_invoiced')
     invoice_ids = fields.Many2many('account.invoice', string='Invoices',
                                    compute='_get_invoiced', readonly=True, copy=False)
-    invoice_status = fields.Selection([('upselling', 'Upselling Opportunity'),
-                                       ('invoiced', 'Fully Invoiced'),
+    invoice_status = fields.Selection([('invoiced', 'Fully Invoiced'),
                                        ('to invoice', 'To Invoice'),
                                        ('no', 'Nothing to Invoice')],
                                       string='Invoice Status',
-                                      compute='_compute_invoice_status',
+                                      compute='_get_invoiced',
                                       store=True, readonly=True, default='no')
     partner_invoice_id = fields.Many2one('res.partner',
                                          string='Invoice Address', required=True,

@@ -30,7 +30,11 @@
                         <group>
                             <field name="group_folios" string="Add Folios"/>
                         </group>
-                        <field name="folio_ids" attrs="{'invisible': [('group_folios', '=', False)]}">
+                        <field name="folio_ids"
+                               attrs="{'invisible': [('group_folios', '=', False)]}"
+                               domain="[('invoice_status','=','to invoice')]"
+                               context="{'search_default_partner_invoice_id': partner_invoice_id}"
+                               >
                             <tree string="Folios" editable="bottom"
                                     decoration-danger="partner_invoice_id != parent.partner_invoice_id">
                                 <field name="partner_invoice_id" />
