@@ -13,6 +13,7 @@
     'category': 'Generic Modules/Hotel Management',
     'website': 'https://github.com/hootel/hootel',
     'depends': [
+        'base',
         'sale_stock',
         'account_payment_return',
         'partner_firstname',

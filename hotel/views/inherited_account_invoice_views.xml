@@ -12,6 +12,9 @@
             <xpath expr="//button[@name='%(account.action_account_invoice_payment)d']" position="attributes">
                 <attribute name="attrs">{'invisible': ['|',('from_folio','=',True)]}</attribute>
             </xpath>
+            <xpath expr="//field[@name='outstanding_credits_debits_widget']" position="after">
+              <field name="outstanding_folios_debits_widget" colspan="2" nolabel="1" widget="payment" attrs="{'invisible': [('state', 'not in', 'open')]}"/>
+            </xpath>
         </field>
     </record>
 

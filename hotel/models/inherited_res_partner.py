@@ -28,7 +28,7 @@ class ResPartner(models.Model):
                                         compute='_compute_reservations_count')
     folios_count = fields.Integer('Folios', compute='_compute_folios_count')
     unconfirmed = fields.Boolean('Unconfirmed', default=True)
-    main_partner_id = fields.Many2one('res.partner')
+    main_partner_id = fields.Many2one('res.partner', string='Destination Partner fusion')
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
