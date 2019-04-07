@@ -105,7 +105,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         return {}
 
     @api.multi
-    def _create_invoice(self, order, so_line, amount):
+    def _create_invoice(self, folio, service, amount):
         inv_obj = self.env['account.invoice']
         ir_property_obj = self.env['ir.property']
 
@@ -115,7 +115,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 or self.product_id.categ_id.property_account_income_categ_id.id
         if not account_id:
             inc_acc = ir_property_obj.get('property_account_income_categ_id', 'product.category')
-            account_id = order.fiscal_position_id.map_account(inc_acc).id if inc_acc else False
+            account_id = folio.fiscal_position_id.map_account(inc_acc).id if inc_acc else False
         if not account_id:
             raise UserError(
                 _('There is no income account defined for this product: "%s". You may have to install a chart of account from Accounting app, settings menu.') %
@@ -123,53 +123,54 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
         if self.amount <= 0.00:
             raise UserError(_('The value of the down payment amount must be positive.'))
-        context = {'lang': order.partner_id.lang}
+        context = {'lang': folio.partner_id.lang}
         if self.advance_payment_method == 'percentage':
-            amount = order.amount_untaxed * self.amount / 100
+            amount = folio.amount_untaxed * self.amount / 100
             name = _("Down payment of %s%%") % (self.amount,)
         else:
             amount = self.amount
             name = _('Down Payment')
         del context
         taxes = self.product_id.taxes_id.filtered(
-            lambda r: not order.company_id or r.company_id == order.company_id)
-        if order.fiscal_position_id and taxes:
-            tax_ids = order.fiscal_position_id.map_tax(taxes).ids
+            lambda r: not folio.company_id or r.company_id == folio.company_id)
+        if folio.fiscal_position_id and taxes:
+            tax_ids = folio.fiscal_position_id.map_tax(taxes).ids
         else:
             tax_ids = taxes.ids
 
         invoice = inv_obj.create({
-            'name': order.client_order_ref or order.name,
-            'origin': order.name,
+            'name': folio.client_order_ref or folio.name,
+            'origin': folio.name,
             'type': 'out_invoice',
             'reference': False,
-            'account_id': order.partner_id.property_account_receivable_id.id,
-            'partner_id': order.partner_invoice_id.id,
+            'folio_ids': [(6, 0, [folio.id])],
+            'account_id': folio.partner_id.property_account_receivable_id.id,
+            'partner_id': folio.partner_invoice_id.id,
             'invoice_line_ids': [(0, 0, {
                 'name': name,
-                'origin': order.name,
+                'origin': folio.name,
                 'account_id': account_id,
                 'price_unit': amount,
                 'quantity': 1.0,
                 'discount': 0.0,
                 'uom_id': self.product_id.uom_id.id,
                 'product_id': self.product_id.id,
-                'sale_line_ids': [(6, 0, [so_line.id])],
+                'service_ids': [(6, 0, [service.id])],
                 'invoice_line_tax_ids': [(6, 0, tax_ids)],
-                'account_analytic_id': order.analytic_account_id.id or False,
+                'account_analytic_id': folio.analytic_account_id.id or False,
             })],
-            'currency_id': order.pricelist_id.currency_id.id,
-            'payment_term_id': order.payment_term_id.id,
-            'fiscal_position_id': order.fiscal_position_id.id \
-                or order.partner_id.property_account_position_id.id,
-            'team_id': order.team_id.id,
-            'user_id': order.user_id.id,
-            'comment': order.note,
+            'currency_id': folio.pricelist_id.currency_id.id,
+            'payment_term_id': folio.payment_term_id.id,
+            'fiscal_position_id': folio.fiscal_position_id.id \
+                or folio.partner_id.property_account_position_id.id,
+            'team_id': folio.team_id.id,
+            'user_id': folio.user_id.id,
+            'comment': folio.note,
         })
         invoice.compute_taxes()
         invoice.message_post_with_view(
             'mail.message_origin_link',
-            values={'self': invoice, 'origin': order},
+            values={'self': invoice, 'origin': folio},
             subtype_id=self.env.ref('mail.mt_note').id)
         return invoice
 
@@ -178,16 +179,19 @@ class FolioAdvancePaymentInv(models.TransientModel):
         if self.auto_invoice:
             invoice.action_invoice_open()
             payment_ids = self.folio_ids.mapped('payment_ids.id')
-            domain = [('account_id', '=', invoice.account_id.id),
-                ('payment_id', 'in', payment_ids), ('reconciled', '=', False),
+            domain = [
+                ('account_id', '=', invoice.account_id.id),
+                ('payment_id', 'in', payment_ids),
+                ('reconciled', '=', False),
                 '|', ('amount_residual', '!=', 0.0),
-                ('amount_residual_currency', '!=', 0.0)]
+                ('amount_residual_currency', '!=', 0.0)
+                ]
             if invoice.type in ('out_invoice', 'in_refund'):
-              domain.extend([('credit', '>', 0), ('debit', '=', 0)])
-              type_payment = _('Outstanding credits')
+                domain.extend([('credit', '>', 0), ('debit', '=', 0)])
+                type_payment = _('Outstanding credits')
             else:
-              domain.extend([('credit', '=', 0), ('debit', '>', 0)])
-              type_payment = _('Outstanding debits')
+                domain.extend([('credit', '=', 0), ('debit', '>', 0)])
+                type_payment = _('Outstanding debits')
             info = {'title': '', 'outstanding': True, 'content': [], 'invoice_id': invoice.id}
             lines = self.env['account.move.line'].search(domain)
             currency_id = invoice.currency_id
@@ -211,7 +215,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
             invoice = inv_obj.create(inv_data)
             for line in self.line_ids:
                 line.invoice_line_create(invoice.id, line.qty)
-            self._validate_invoices(invoice)
 
         elif self.advance_payment_method == 'all':
             pass
@@ -244,7 +247,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 service_line = service_obj.create({
                     'name': _('Advance: %s') % (time.strftime('%m %Y'),),
                     'price_unit': amount,
-                    'product_uom_qty': 0.0,
+                    'product_qty': 0.0,
                     'folio_id': folio.id,
                     'discount': 0.0,
                     'product_uom': self.product_id.uom_id.id,
@@ -267,6 +270,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         # Necessary to force computation of taxes. In account_invoice, they are triggered
         # by onchanges, which are not triggered when doing a create.
         invoice.compute_taxes()
+        self._validate_invoices(invoice)
         invoice.message_post_with_view('mail.message_origin_link',
             values={'self': invoice, 'origin': folios},
             subtype_id=self.env.ref('mail.mt_note').id)
@@ -291,13 +295,13 @@ class FolioAdvancePaymentInv(models.TransientModel):
         for folio in folios:
             for service in folio.service_ids.filtered(
                     lambda x: x.is_board_service == False and \
-                    x.invoice_status == 'invoice_status' and \
+                    x.qty_to_invoice != 0 and \
                     (x.ser_room_line.id in self.reservation_ids.ids or \
                     x.ser_room_line.id  == False)):
                 invoice_lines[service.id] = {
                         'description' : service.name,
                         'product_id': service.product_id.id,
-                        'qty': service.product_qty,
+                        'qty': service.qty_to_invoice,
                         'discount': service.discount,
                         'price_unit': service.price_unit,
                         'service_id': service.id,

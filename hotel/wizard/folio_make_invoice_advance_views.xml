@@ -28,7 +28,8 @@
                                 attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}"/>
                         </group>
                         <group>
-                            <field name="group_folios" string="Add Folios"/>
+                            <field name="group_folios" string="Add Folios"
+                                    attrs="{'invisible': [('advance_payment_method', 'in', ('fixed','percentage'))]}"/>
                         </group>
                         <field name="folio_ids"
                                attrs="{'invisible': [('group_folios', '=', False)]}"
@@ -36,7 +37,8 @@
                                context="{'search_default_partner_invoice_id': partner_invoice_id}"
                                >
                             <tree string="Folios" editable="bottom"
-                                    decoration-danger="partner_invoice_id != parent.partner_invoice_id">
+                                    decoration-danger="partner_invoice_id != parent.partner_invoice_id"
+                                    attrs="{'invisible': [('advance_payment_method', 'in', ('fixed','percentage'))]}">
                                 <field name="partner_invoice_id" />
                                 <field name="name" />
                                 <field name="state" />
@@ -45,11 +47,13 @@
                             </tree>
                         </field>
                         <field name="reservation_ids" widget="many2many_tags"
-                            domain="[('folio_id', 'in', folio_ids)]"/>
+                            domain="[('folio_id', 'in', folio_ids)]"
+                            attrs="{'invisible': [('advance_payment_method', 'in', ('fixed','percentage'))]}"/>
                     </group>
                     <group>
-                        <field name="line_ids">
-                            <tree string="Lines" editable="bottom">
+                        <field name="line_ids" attrs="{'invisible': [('advance_payment_method', 'in', ('fixed','percentage'))]}"
+                                nolabel="1" >
+                            <tree string="Lines" editable="bottom"  create="false" >
                                 <field name="product_id" invisible="1" />
                                 <field name="price_room" invisible="1" />
                                 <field name="reservation_id"
@@ -69,6 +73,8 @@
                                 <field name="price_total" />
                             </tree>
                         </field>
+                    </group>
+                    <group>
                         <field name="auto_invoice" />
                     </group>
                     <footer>
