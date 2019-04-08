@@ -135,13 +135,13 @@
                             />
                         </page>
                         <page name="invoicing" string="Invoicing">
+                            <div class="alert alert-info" role="alert" style="margin-bottom:0px;">
+                                  these are the billing information associated with the booking client or the company (if a company is assigned). If you want to bill an independent contact, you can select it in the billing assistant
+                            </div>
                             <group>
-                                <field name="partner_diff_invoicing" string="Bill to another Address"/>
-                            </group>
-                            <group>
+                                <field name="partner_parent_id" />
                                 <field name="partner_invoice_id"
-                                       string="Contact Invoiced"
-                                       attrs="{'invisible':[('partner_diff_invoicing','=',False)]}"/>
+                                       string="Contact Invoiced"/>
                             </group>
                             <group>
                                 <group>
@@ -151,10 +151,6 @@
                                     <field name="partner_invoice_email"
                                       attrs="{'readonly': [('partner_invoice_id', '!=', False),
                                            ('partner_invoice_email','!=', False)]}" />
-                                </group>
-                                <group>
-                                    <field name="partner_invoice_parent_id" />
-                                    <field name="partner_invoice_type" />
                                 </group>
                                 <group>
                                     <label for="partner_invoice_street" string="Address"/>

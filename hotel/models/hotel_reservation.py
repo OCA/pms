@@ -221,10 +221,8 @@ class HotelReservation(models.Model):
     partner_invoice_country_id = fields.Many2one(related="partner_invoice_id.country_id")
     partner_invoice_email = fields.Char(related="partner_invoice_id.email")
     partner_invoice_lang = fields.Selection(related="partner_invoice_id.lang")
-    partner_invoice_type = fields.Selection(related="partner_invoice_id.type")
-    partner_invoice_parent_id = fields.Many2one(related="partner_invoice_id.parent_id")
+    partner_parent_id = fields.Many2one(related="partner_id.parent_id")
     closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
-    partner_diff_invoicing = fields.Boolean('Bill to another Address', default='_default_diff_invoicing')
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     reservation_line_ids = fields.One2many('hotel.reservation.line',
                                            'reservation_id',
@@ -655,7 +653,6 @@ class HotelReservation(models.Model):
         values = {
             'pricelist_id': pricelist,
             'partner_invoice_id': addr['invoice'],
-            'partner_diff_invoicing': False if self.partner_id.id == addr['invoice'] else True
         }
         self.update(values)
 
@@ -760,13 +757,6 @@ class HotelReservation(models.Model):
                 ('id', 'not in', rooms_occupied)
             ]
             return {'domain': {'room_id': domain_rooms}}
-
-    @api.onchange('partner_diff_invoicing')
-    def onchange_partner_diff_invoicing(self):
-        if self.partner_diff_invoicing is False:
-            self.update({'partner_invoice_id': self.partner_id.id})
-        elif self.partner_id == self.partner_invoice_id:
-            self.update({'partner_invoice_id': self.partner_id.address_get(['invoice'])['invoice'] or None})
 
     @api.onchange('partner_invoice_id')
     def onchange_partner_invoice_id(self):

@@ -218,10 +218,8 @@ class HotelFolio(models.Model):
     partner_invoice_country_id = fields.Many2one(related="partner_invoice_id.country_id")
     partner_invoice_email = fields.Char(related="partner_invoice_id.email")
     partner_invoice_lang  = fields.Selection(related="partner_invoice_id.lang")
-    partner_invoice_type  = fields.Selection(related="partner_invoice_id.type")
-    partner_invoice_parent_id  = fields.Many2one(related="partner_invoice_id.parent_id")
+    partner_parent_id  = fields.Many2one(related="partner_id.parent_id")
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', string='Fiscal Position')
-    partner_diff_invoicing = fields.Boolean('Bill to another Address', default='_default_diff_invoicing')
 
     #WorkFlow Mail Fields-----------------------------------------------
     has_confirmed_reservations_to_send = fields.Boolean(
@@ -416,8 +414,7 @@ class HotelFolio(models.Model):
         res = {}
         onchange_fields = ['partner_invoice_id',
                            'pricelist_id',
-                           'payment_term_id',
-                           'partner_diff_invoicing']
+                           'payment_term_id']
         if values.get('partner_id'):
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
@@ -442,7 +439,6 @@ class HotelFolio(models.Model):
                 'partner_invoice_id': False,
                 'payment_term_id': False,
                 'fiscal_position_id': False,
-                'partner_diff_invoicing': False,
             })
             return
 
@@ -455,7 +451,6 @@ class HotelFolio(models.Model):
             'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
             'partner_invoice_id': addr['invoice'],
             'user_id': self.partner_id.user_id.id or self.env.uid,
-            'partner_diff_invoicing': False if self.partner_id.id == addr['invoice'] else True
         }
 
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_sale_note') and \
@@ -476,13 +471,6 @@ class HotelFolio(models.Model):
                       self.reservation_type
                   )}
         self.update(values)
-
-    @api.onchange('partner_diff_invoicing')
-    def onchange_partner_diff_invoicing(self):
-        if self.partner_diff_invoicing is False:
-            self.update({'partner_invoice_id': self.partner_id.id})
-        elif self.partner_id == self.partner_invoice_id:
-            self.update({'partner_invoice_id': self.partner_id.address_get(['invoice'])['invoice'] or None})
 
     @api.onchange('partner_invoice_id')
     def onchange_partner_invoice_id(self):

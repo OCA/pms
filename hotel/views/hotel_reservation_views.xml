@@ -318,21 +318,14 @@
                               attrs="{'invisible': ['|',('reservation_type','in',('out')),
                                                     ('parent_reservation','!=',False)]}">
                             <group>
-                                <field name="partner_diff_invoicing" string="Bill to another Address"/>
-                            </group>
-                            <group>
-                                <field name="partner_invoice_id"
-                                       string="Contact Invoiced"
-                                       attrs="{'invisible':[('partner_diff_invoicing','=',False)]}"/>
+                               <field name="partner_parent_id" />
+                               <field name="partner_invoice_id"
+                                       string="Contact Invoiced"/>
                             </group>
                             <group>
                                 <group>
                                     <field name="partner_invoice_vat" />
                                     <field name="partner_invoice_email" />
-                                </group>
-                                <group>
-                                    <field name="partner_invoice_parent_id" />
-                                    <field name="partner_invoice_type" />
                                 </group>
                                 <group>
                                     <label for="partner_invoice_street" string="Address"/>
