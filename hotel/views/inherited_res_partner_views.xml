@@ -32,6 +32,10 @@
                 </button>
             </xpath>
 
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="is_tour_operator" attrs="{'invisible': [('company_type','!=','company')]}"/>
+            </xpath>
+
         </field>
     </record>
 

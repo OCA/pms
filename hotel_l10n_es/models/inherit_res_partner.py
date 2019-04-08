@@ -54,47 +54,23 @@ class ResPartner(models.Model):
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
-        result = super(ResPartner, self).name_search(name, args=None,
-                                                     operator='ilike',
-                                                     limit=100)
-        if args is None:
+        if not args:
             args = []
-        if name and operator in ('=', 'ilike', '=ilike', 'like', '=like'):
-            self.check_access_rights('read')
-            where_query = self._where_calc(args)
-            self._apply_ir_rules(where_query, 'read')
-            from_clause, where_clause, where_clause_params = where_query.get_sql()
-            where_str = where_clause and (" WHERE %s AND " % where_clause) or ' WHERE '
-
-            # search on the name of the contacts and of its company
-            search_name = name
-            if operator in ('ilike', 'like'):
-                search_name = '%%%s%%' % name
-            if operator in ('=ilike', '=like'):
-                operator = operator[1:]
-
-            unaccent = get_unaccent_wrapper(self.env.cr)
-
-            query = """SELECT id
-                         FROM res_partner
-                      {where} ({document_number} {operator} {percent})
-                     ORDER BY {display_name} {operator} {percent} desc,
-                              {display_name}
-                    """.format(where=where_str,
-                               operator=operator,
-                               document_number=unaccent('document_number'),
-                               display_name=unaccent('display_name'),
-                               percent=unaccent('%s'),)
-
-            where_clause_params += [search_name]*2
-            if limit:
-                query += ' limit %s'
-                where_clause_params.append(limit)
-            self.env.cr.execute(query, where_clause_params)
-            partner_ids = [row[0] for row in self.env.cr.fetchall()]
-            if partner_ids:
-                result += self.browse(partner_ids).name_get()
-        return result
+        domain = ['|',
+                  ('document_number', operator, name),
+                  ('vat', operator, name),
+                  ]
+        partners = self.search(domain + args, limit=limit,)
+        res = partners.name_get()
+        if limit:
+            limit_rest = limit - len(partners)
+        else:
+            limit_rest = limit
+        if limit_rest or not limit:
+            args += [('id', 'not in', partners.ids)]
+            res += super(ResPartner, self).name_search(
+                name, args=args, operator=operator, limit=limit_rest)
+        return res
 
     @api.model
     def _get_duplicated_ids(self, partner):

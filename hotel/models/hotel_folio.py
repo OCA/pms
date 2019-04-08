@@ -134,6 +134,9 @@ class HotelFolio(models.Model):
                                      ('web', 'Web')], 'Sales Channel', default='door')
     user_id = fields.Many2one('res.users', string='Salesperson', index=True,
                               track_visibility='onchange', default=lambda self: self.env.user)
+    tour_operator_id = fields.Many2one('res.partner',
+                                       'Tour Operator',
+                                       domain=[('is_tour_operator', '=', True)])
     date_order = fields.Datetime(
         string='Order Date',
         required=True, readonly=True, index=True,

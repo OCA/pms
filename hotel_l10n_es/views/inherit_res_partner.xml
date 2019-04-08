@@ -30,7 +30,7 @@
                 </xpath>
 
                 <xpath expr='//field[@name="vat"]' position='after'>
-                    <field name="unconfirmed" />
+                    <field name="unconfirmed" groups="base.group_no_one"/>
                 </xpath>
 
             </field>

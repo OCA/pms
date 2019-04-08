@@ -210,6 +210,7 @@ class HotelReservation(models.Model):
                                    required=True, track_visibility='onchange')
 
     partner_id = fields.Many2one(related='folio_id.partner_id')
+    tour_operator_id = fields.Many2one(related='folio_id.tour_operator_id')
     partner_invoice_id =  fields.Many2one(related='folio_id.partner_invoice_id')
     partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
     partner_invoice_name = fields.Char(related="partner_invoice_id.name")

@@ -84,6 +84,8 @@
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>
+                            <field name="tour_operator_id"
+                                options="{'no_create': True,'no_open': True}" />
                         </group>
                         <group>
                             <field name="partner_internal_comment"/>
@@ -287,6 +289,7 @@
             <search string="Tables Detail">
                 <field name="partner_id" />
                 <field name="partner_invoice_id" />
+                <field name="tour_operator_id" />
                 <filter name="to_invoice" string="To invoice"
                     domain="[('invoice_status', '=', 'to invoice')]" />
                 <filter name="payment_pending" string="Payment Pending"
@@ -294,8 +297,10 @@
                 <group expand="0" string="Group By">
                     <filter string="Customer" icon="terp-stock_symbol-selection"
                         context="{'group_by':'partner_id'}" />
-                        <filter string="Invoice Contact"
-                            context="{'group_by':'partner_invoice_id'}" />
+                    <filter string="Invoice Contact"
+                        context="{'group_by':'partner_invoice_id'}" />
+                    <filter string="Tour Operator" domain="[]"
+                        context="{'group_by':'tour_operator_id'}"/>
                 </group>
             </search>
         </field>
