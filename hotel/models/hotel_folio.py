@@ -244,9 +244,13 @@ class HotelFolio(models.Model):
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
     note = fields.Text('Terms and conditions')
     sequence = fields.Integer(string='Sequence', default=10)
-    team_id = fields.Many2one('crm.team', 'Sales Channel', change_default=True, default=_get_default_team, oldname='section_id')
+    team_id = fields.Many2one('crm.team',
+                              'Sales Channel',
+                              change_default=True,
+                              default=_get_default_team,
+                              oldname='section_id')
 
-    @api.depends('room_lines.price_total','service_ids.price_total')
+    @api.depends('room_lines.price_total', 'service_ids.price_total')
     def _amount_all(self):
         """
         Compute the total amounts of the SO.
@@ -254,9 +258,9 @@ class HotelFolio(models.Model):
         for record in self:
             amount_untaxed = amount_tax = 0.0
             amount_untaxed = sum(record.room_lines.mapped('price_subtotal')) + \
-                             sum(record.service_ids.mapped('price_subtotal'))
+                sum(record.service_ids.mapped('price_subtotal'))
             amount_tax = sum(record.room_lines.mapped('price_tax')) + \
-                         sum(record.service_ids.mapped('price_tax'))
+                sum(record.service_ids.mapped('price_tax'))
             record.update({
                 'amount_untaxed': record.pricelist_id.currency_id.round(amount_untaxed),
                 'amount_tax': record.pricelist_id.currency_id.round(amount_tax),
@@ -402,18 +406,26 @@ class HotelFolio(models.Model):
                 ).next_by_code('hotel.folio') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or _('New')
-
-        # Makes sure partner_invoice_id' and 'pricelist_id' are defined
-        lfields = ('partner_invoice_id', 'partner_shipping_id', 'pricelist_id')
-        if any(f not in vals for f in lfields):
-            partner = self.env['res.partner'].browse(vals.get('partner_id'))
-            addr = partner.address_get(['delivery', 'invoice'])
-            vals['partner_invoice_id'] = vals.setdefault('partner_invoice_id', addr['invoice'])
-            vals['pricelist_id'] = vals.setdefault(
-                'pricelist_id',
-                partner.property_product_pricelist and partner.property_product_pricelist.id)
+        vals.update(self._prepare_add_missing_fields(vals))
         result = super(HotelFolio, self).create(vals)
         return result
+
+    @api.model
+    def _prepare_add_missing_fields(self, values):
+        """ Deduce missing required fields from the onchange """
+        res = {}
+        onchange_fields = ['partner_invoice_id',
+                           'pricelist_id',
+                           'payment_term_id',
+                           'partner_diff_invoicing']
+        if values.get('partner_id'):
+            line = self.new(values)
+            if any(f not in values for f in onchange_fields):
+                line.onchange_partner_id()
+            for field in onchange_fields:
+                if field not in values:
+                    res[field] = line._fields[field].convert_to_write(line[field], line)
+        return res
 
     @api.multi
     @api.onchange('partner_id')
@@ -458,9 +470,11 @@ class HotelFolio(models.Model):
     @api.multi
     @api.onchange('pricelist_id')
     def onchange_pricelist_id(self):
-        values = {'reservation_type': self.env['hotel.folio'].calcule_reservation_type(
-                                       self.pricelist_id.is_staff,
-                                       self.reservation_type)}
+        values = {'reservation_type': self.env['hotel.folio'].\
+                  calcule_reservation_type(
+                      self.pricelist_id.is_staff,
+                      self.reservation_type
+                  )}
         self.update(values)
 
     @api.onchange('partner_diff_invoicing')
