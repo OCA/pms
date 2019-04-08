@@ -33,11 +33,13 @@ class HotelService(models.Model):
     @api.multi
     def name_get(self):
         result = []
-        for res in self:
-            name = u'%s (%s)' % (res.name, res.ser_room_line.name)
-            result.append((res.id, name))
+        for rec in self:
+            name = []
+            name.append('%(name)s' % {'name': rec.name})
+            if rec.ser_room_line.name:
+                name.append('%(name)s' % {'name': rec.ser_room_line.name})
+            result.append((rec.id, ", ".join(name)))
         return result
-
 
     @api.model
     def _default_ser_room_line(self):

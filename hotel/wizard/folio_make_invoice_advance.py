@@ -298,15 +298,15 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     lambda x: x.is_board_service == False and \
                     x.qty_to_invoice != 0 and \
                     (x.ser_room_line.id in self.reservation_ids.ids or \
-                    x.ser_room_line.id  == False)):
+                    not x.ser_room_line.id)):
                 invoice_lines[service.id] = {
-                        'description' : service.name,
-                        'product_id': service.product_id.id,
-                        'qty': service.qty_to_invoice,
-                        'discount': service.discount,
-                        'price_unit': service.price_unit,
-                        'service_id': service.id,
-                        }
+                    'description' : service.name,
+                    'product_id': service.product_id.id,
+                    'qty': service.qty_to_invoice,
+                    'discount': service.discount,
+                    'price_unit': service.price_unit,
+                    'service_id': service.id,
+                    }
             for reservation in folio.room_lines.filtered(
                     lambda x: x.id in self.reservation_ids.ids and
                     x.invoice_status == 'to invoice'):
@@ -432,7 +432,7 @@ class LineAdvancePaymentInv(models.TransientModel):
         for record in self:
             origin = record.reservation_id if record.reservation_id.id else record.service_id
             amount_line = record.price_unit * record.qty
-            if amount_line > 0:
+            if amount_line != 0:
                 product = record.product_id
                 price = amount_line * (1 - (record.discount or 0.0) * 0.01)
                 taxes = origin.tax_ids.compute_all(price, origin.currency_id, 1, product=product)
