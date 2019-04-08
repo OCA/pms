@@ -180,6 +180,7 @@ class HotelReservation(models.Model):
     reservation_type = fields.Selection(related='folio_id.reservation_type',
                                         default=lambda *a: 'normal')
     invoice_count = fields.Integer(related='folio_id.invoice_count')
+    credit_card_details = fields.Text(related='folio_id.credit_card_details')
     board_service_room_id = fields.Many2one('hotel.board.service.room.type',
                                             string='Board Service')
     cancelled_reason = fields.Selection([
@@ -219,9 +220,9 @@ class HotelReservation(models.Model):
     partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
     partner_invoice_country_id = fields.Many2one(related="partner_invoice_id.country_id")
     partner_invoice_email = fields.Char(related="partner_invoice_id.email")
-    partner_invoice_lang  = fields.Selection(related="partner_invoice_id.lang")
-    partner_invoice_type  = fields.Selection(related="partner_invoice_id.type")
-    partner_invoice_parent_id  = fields.Many2one(related="partner_invoice_id.parent_id")
+    partner_invoice_lang = fields.Selection(related="partner_invoice_id.lang")
+    partner_invoice_type = fields.Selection(related="partner_invoice_id.type")
+    partner_invoice_parent_id = fields.Many2one(related="partner_invoice_id.parent_id")
     closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
     partner_diff_invoicing = fields.Boolean('Bill to another Address', default='_default_diff_invoicing')
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)

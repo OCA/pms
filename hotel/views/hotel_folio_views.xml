@@ -145,8 +145,12 @@
                             </group>
                             <group>
                                 <group>
-                                    <field name="partner_invoice_vat" />
-                                    <field name="partner_invoice_email" />
+                                    <field name="partner_invoice_vat"
+                                      attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                           ('partner_invoice_vat','!=', False)]}" />
+                                    <field name="partner_invoice_email"
+                                      attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                           ('partner_invoice_email','!=', False)]}" />
                                 </group>
                                 <group>
                                     <field name="partner_invoice_parent_id" />
@@ -155,12 +159,24 @@
                                 <group>
                                     <label for="partner_invoice_street" string="Address"/>
                                     <div class="o_address_format">
-                                        <field name="partner_invoice_street" placeholder="Street..." class="o_address_street"/>
-                                        <field name="partner_invoice_street2" placeholder="Street 2..." class="o_address_street"/>
-                                        <field name="partner_invoice_city" placeholder="City" class="o_address_city"/>
-                                        <field name="partner_invoice_state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
-                                        <field name="partner_invoice_zip" placeholder="ZIP" class="o_address_zip"/>
-                                        <field name="partner_invoice_country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                        <field name="partner_invoice_street" placeholder="Street..." class="o_address_street"
+                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                                        ('partner_invoice_street','!=', False)]}"/>
+                                        <field name="partner_invoice_street2" placeholder="Street 2..." class="o_address_street"
+                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                                        ('partner_invoice_street2','!=', False)]}"/>
+                                        <field name="partner_invoice_city" placeholder="City" class="o_address_city"
+                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                                        ('partner_invoice_city','!=', False)]}"/>
+                                        <field name="partner_invoice_state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'
+                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                                        ('partner_invoice_state_id','!=', False)]}"/>
+                                        <field name="partner_invoice_zip" placeholder="ZIP" class="o_address_zip"
+                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                                        ('partner_invoice_zip','!=', False)]}"/>
+                                        <field name="partner_invoice_country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'
+                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
+                                                        ('partner_invoice_country_id','!=', False)]}"/>
                                     </div>
                                 </group>
                                 <group>
