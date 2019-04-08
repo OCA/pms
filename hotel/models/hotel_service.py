@@ -302,11 +302,11 @@ class HotelService(models.Model):
                 checkout_dt = fields.Date.from_string(checkout)
                 nights = abs((checkout_dt - checkin_dt).days)
                 vals.update(record.prepare_service_lines(
-                        dfrom=checkin,
-                        days=nights,
-                        per_person=product.per_person,
-                        persons=reservation.adults,
-                        old_line_days=record.service_line_ids))
+                    dfrom=checkin,
+                    days=nights,
+                    per_person=product.per_person,
+                    persons=reservation.adults,
+                    old_line_days=record.service_line_ids))
                 if record.product_id.daily_limit > 0:
                     for i in range(0, nights):
                         idate = (fields.Date.from_string(checkin) + timedelta(days=i)).strftime(
