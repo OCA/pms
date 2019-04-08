@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="glasof_exporter" name="Glasof Exporter"
+            parent="account.menu_finance_legal_statement"
+            groups="account.group_account_manager,account.group_account_user"
+            action="action_open_glasof_exporter" sequence="10" />
+
+    </data>
+</odoo>
