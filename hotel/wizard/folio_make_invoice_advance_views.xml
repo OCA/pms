@@ -37,8 +37,7 @@
                                context="{'search_default_partner_invoice_id': partner_invoice_id}"
                                >
                             <tree string="Folios" editable="bottom"
-                                    decoration-danger="partner_invoice_id != parent.partner_invoice_id"
-                                    attrs="{'invisible': [('advance_payment_method', 'in', ('fixed','percentage'))]}">
+                                    decoration-danger="partner_invoice_id != parent.partner_invoice_id">
                                 <field name="partner_invoice_id" />
                                 <field name="name" />
                                 <field name="state" />

@@ -13,10 +13,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
     _description = "Folios Advance Payment Invoice"
 
     @api.model
-    def _count(self):
-        return len(self._context.get('active_ids', []))
-
-    @api.model
     def _get_advance_payment_method(self):
         return 'all'
 
@@ -69,7 +65,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
     auto_invoice = fields.Boolean('Auto Payment Invoice',
                                   default=True,
                                   help='Automatic validation and link payment to invoice')
-    count = fields.Integer(default=_count, string='# of Orders')
+    count = fields.Integer(compute='_count', store=True, string='# of Orders')
     folio_ids  = fields.Many2many("hotel.folio", string="Folios",
                                   help="Folios grouped",
                                   default=_get_default_folio)
@@ -97,6 +93,11 @@ class FolioAdvancePaymentInv(models.TransientModel):
     deposit_taxes_id = fields.Many2many("account.tax", string="Customer Taxes",
                                         help="Taxes used for deposits",
                                         default=_default_deposit_taxes_id)
+
+    @api.depends('folio_ids')
+    def _count(self):
+        for record in self:
+            record.update({'count': len(self.folio_ids)})
 
     @api.onchange('advance_payment_method')
     def onchange_advance_payment_method(self):
