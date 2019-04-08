@@ -45,6 +45,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
     @api.model
     def _get_default_partner_invoice(self):
         folios = self._get_default_folio()
+        if folios[0].tour_operator_id:
+            return folios[0].tour_operator_id
         return folios[0].partner_invoice_id
 
     @api.model
@@ -57,7 +59,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     advance_payment_method = fields.Selection([
         ('all', 'Invoiceable lines (deduct down payments)'),
-        ('one', 'One line (Bill all in one line)'),
         ('percentage', 'Down payment (percentage)'),
         ('fixed', 'Down payment (fixed amount)')
     ], string='What do you want to invoice?', default=_get_advance_payment_method,
@@ -216,10 +217,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
             invoice = inv_obj.create(inv_data)
             for line in self.line_ids:
                 line.invoice_line_create(invoice.id, line.qty)
-
-        elif self.advance_payment_method == 'all':
-            pass
-            #Group lines by tax_ids
         else:
             # Create deposit product if necessary
             if not self.product_id:
@@ -389,7 +386,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'account_id': self.partner_invoice_id.property_account_receivable_id.id,
             'partner_id': self.partner_invoice_id.id,
             'journal_id': journal_id,
-            'currency_id': pricelist.id,
+            'currency_id': currency.id,
             'payment_term_id': payment_term.id,
             'fiscal_position_id': fiscal_position.id or self.partner_invoice_id.property_account_position_id.id,
             'company_id': company.id,
