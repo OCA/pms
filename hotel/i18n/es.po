@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-19 21:52+0000\n"
-"PO-Revision-Date: 2019-03-19 22:54+0100\n"
+"POT-Creation-Date: 2019-04-09 07:52+0000\n"
+"PO-Revision-Date: 2019-04-09 10:02+0200\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: \n"
 "Language: es\n"
 "X-Generator: Poedit 1.8.7.1\n"
 
@@ -3003,13 +3003,23 @@ msgid "# of Orders"
 msgstr "# de Pedidos"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_service_line.py:50
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_penalty_late
+msgid "% Penalty Late"
+msgstr "% Penalización cancelación tarde"
+
+#. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_penalty_noshow
+msgid "% Penalty No Show"
+msgstr "% Penalización No Show"
+
+#. module: hotel
+#: code:addons/hotel/models/hotel_service_line.py:52
 #, python-format
 msgid "%s limit exceeded for %s"
 msgstr "%s limite excedido por %s"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:630
+#: code:addons/hotel/models/hotel_reservation.py:637
 #, python-format
 msgid "%s people do not fit in this room! ;)"
 msgstr "%s personas no caben en esta habitación!"
@@ -4272,10 +4282,12 @@ msgstr "Acción Checkin"
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_amenity_active
 #: model:ir.model.fields,field_description:hotel.field_hotel_amenity_type_active
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_active
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_active
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_active
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_class_active
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_restriction_active
+#: model:ir.model.fields,field_description:hotel.field_hotel_service_line_active
 msgid "Active"
 msgstr "Activo"
 
@@ -4301,12 +4313,6 @@ msgid "Address"
 msgstr "Dirección"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_partner_invoice_type
-#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_partner_invoice_type
-msgid "Address Type"
-msgstr "Tipo de dirección"
-
-#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_adults
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_wizard_adults
 msgid "Adults"
@@ -4318,13 +4324,24 @@ msgid "Advance Inv"
 msgstr "Facturar adelanto"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:235
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:246
 #, python-format
 msgid "Advance: %s"
 msgstr "Importe: %s"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:366
+#: selection:product.template,consumed_on:0
+msgid "After night"
+msgstr "Después de la noche"
+
+#. module: hotel
+#: selection:hotel.cancelation.rule,apply_on_late:0
+#: selection:hotel.cancelation.rule,apply_on_noshow:0
+msgid "All Days"
+msgstr "Todos los días"
+
+#. module: hotel
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:381
 #, python-format
 msgid "All Folios must hace the same pricelist"
 msgstr "Todas las fichas deben tener la mis tarifa"
@@ -4358,6 +4375,7 @@ msgstr "Categoría"
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_amenity_name
 #: model:ir.model.fields,field_description:hotel.field_hotel_amenity_type_name
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_name
 msgid "Amenity Name"
 msgstr "Nombre"
 
@@ -4409,6 +4427,11 @@ msgid "Applied On"
 msgstr "Aplicad en"
 
 #. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
+msgid "Arriva Hour"
+msgstr "Arriva Hour"
+
+#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_real_checkin
 msgid "Arrival"
 msgstr "Llegada"
@@ -4421,7 +4444,7 @@ msgstr "Hora de llegada"
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_folio_wizard
 msgid "Articles"
-msgstr "Articles"
+msgstr "Artículos"
 
 #. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_room_floor_id
@@ -4434,6 +4457,11 @@ msgid "Attributes"
 msgstr "Atributos"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_auto_invoice
+msgid "Auto Payment Invoice"
+msgstr "Auto Payment Invoice"
+
+#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_preconfirm
 msgid "Auto confirm to Save"
 msgstr "Auto confirmar al Guardar"
@@ -4444,16 +4472,16 @@ msgid "Autoassign"
 msgstr "Autoasignar"
 
 #. module: hotel
-#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
-msgid "Autoconfirm"
-msgstr "Autoconfirmar"
-
-#. module: hotel
 #: model:ir.actions.server,name:hotel.autocheckout_reservations_ir_actions_server
 #: model:ir.cron,cron_name:hotel.autocheckout_reservations
 #: model:ir.cron,name:hotel.autocheckout_reservations
 msgid "Automatic Checkout on past reservations"
 msgstr "Checkout automático de reservas pasadas"
+
+#. module: hotel
+#: model:ir.model.fields,help:hotel.field_folio_advance_payment_inv_auto_invoice
+msgid "Automatic validation and link payment to invoice"
+msgstr "Automatic validation and link payment to invoice"
 
 #. module: hotel
 #: selection:hotel.wizard.massive.changes,section:0
@@ -4471,17 +4499,14 @@ msgid "Base price to compute the customer price. Sometimes called the catalog pr
 msgstr "Precio base para calcular el precio de los clientes. A veces llamado precio de catálogo."
 
 #. module: hotel
+#: selection:product.template,consumed_on:0
+msgid "Before night"
+msgstr "Antes de la Noche"
+
+#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_image
 msgid "Big-sized image"
 msgstr "Imagen grande"
-
-#. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_partner_diff_invoicing
-#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_partner_diff_invoicing
-#: model:ir.ui.view,arch_db:hotel.hotel_folio_view_form
-#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
-msgid "Bill to another Address"
-msgstr "Facturar a otra dirección\t"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_name
@@ -4622,9 +4647,19 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_line_cancel_discount
+msgid "Cancel Discount (%)"
+msgstr "Descuento Cancelación (%)"
+
+#. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_folio_view_form
 msgid "Cancel Folio"
 msgstr "Cancelar Ficha"
+
+#. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
+msgid "Cancel Reason"
+msgstr "Motivo de cancelación"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
@@ -4640,6 +4675,20 @@ msgstr "Cancelación de su reserva en ${object.company_id.property_name}"
 #: model:ir.model.fields,field_description:hotel.field_res_company_default_cancel_policy_days
 msgid "Cancelation Days"
 msgstr "Días de Cancelación"
+
+#. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_product_pricelist_cancelation_rule_id
+msgid "Cancelation Policy"
+msgstr "Políticas de cancelación"
+
+#. module: hotel
+#: model:ir.actions.act_window,name:hotel.action_hotel_cancelation_rule
+#: model:ir.model,name:hotel.model_hotel_cancelation_rule
+#: model:ir.ui.menu,name:hotel.menu_hotel_cancelation_rule
+#: model:ir.ui.view,arch_db:hotel.hotel_cancelation_rule_form
+#: model:ir.ui.view,arch_db:hotel.hotel_cancelation_rule_view_tree
+msgid "Cancelation Rules"
+msgstr "Reglas de cancelación"
 
 #. module: hotel
 #: selection:hotel.checkin.partner,state:0 selection:hotel.folio,state:0
@@ -4780,7 +4829,7 @@ msgid "Checkin counter"
 msgstr "Contador de Checkin"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_folio.py:566
+#: code:addons/hotel/models/hotel_folio.py:563
 #: model:ir.ui.menu,name:hotel.menu_hotel_checkin_partner
 #, python-format
 msgid "Checkins"
@@ -4944,6 +4993,13 @@ msgid "Connectivity"
 msgstr "Conectividad"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_room_type_consumed_on
+#: model:ir.model.fields,field_description:hotel.field_product_product_consumed_on
+#: model:ir.model.fields,field_description:hotel.field_product_template_consumed_on
+msgid "Consumed"
+msgstr "Consumed"
+
+#. module: hotel
 #: model:ir.model,name:hotel.model_res_partner
 msgid "Contact"
 msgstr "Contacto"
@@ -5030,6 +5086,7 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_create_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_line_create_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_line_create_uid
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_create_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_create_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_floor_create_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_create_uid
@@ -5062,6 +5119,7 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_create_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_line_create_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_line_create_date
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_create_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_create_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_floor_create_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_create_date
@@ -5095,6 +5153,8 @@ msgstr "Fecha de Creación"
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_credit_card_details
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_wizard_credit_card_details
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_credit_card_details
+#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
 msgid "Credit Card Details"
 msgstr "Datos de tarjeta"
 
@@ -5215,6 +5275,11 @@ msgid "Days"
 msgstr "Días"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_days_intime
+msgid "Days Late"
+msgstr "Max. días para cancelar en tiempo"
+
+#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_service_days_qty
 msgid "Days Qty"
 msgstr "Cantidad/día"
@@ -5273,16 +5338,21 @@ msgid "Departure Hour"
 msgstr "Hora de Salida"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_checkin_partner.py:107
+#: code:addons/hotel/models/hotel_checkin_partner.py:116
 #, python-format
 msgid "Departure date (%s) is prior to arrival on %s"
 msgstr "La fecha de salida (%s) is menos que la de Llegada %s"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_checkin_partner.py:118
+#: code:addons/hotel/models/hotel_checkin_partner.py:127
 #, python-format
 msgid "Departure date, is prior to arrival. Check it now. %s"
 msgstr "La fecha de salida es menor que la de Llegada %s"
+
+#. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
+msgid "Departure our"
+msgstr "Hora de salida"
 
 #. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_room_type_route_ids
@@ -5296,6 +5366,11 @@ msgstr "Dependiendo de los módulos instalados, este permite definir la ruta del
 #: model:ir.model.fields,field_description:hotel.field_room_closure_reason_description
 msgid "Description"
 msgstr "Descripción"
+
+#. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
+msgid "Description in Guest Documents"
+msgstr "Description in Guest Documents"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_description_pickingout
@@ -5319,6 +5394,12 @@ msgid "Descriptions"
 msgstr "Descripciones"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_res_partner_main_partner_id
+#: model:ir.model.fields,field_description:hotel.field_res_users_main_partner_id
+msgid "Destination Partner fusion"
+msgstr "Destination Partner fusion"
+
+#. module: hotel
 #: model:product.product,name:hotel.hotel_service_5
 #: model:product.template,name:hotel.hotel_service_5_product_template
 msgid "Dinner"
@@ -5327,7 +5408,7 @@ msgstr "Cena"
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_service_line_discount
 msgid "Discount"
-msgstr "Discount"
+msgstr "Descuento"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_line_discount
@@ -5354,6 +5435,7 @@ msgstr "Habitación con descuento"
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_line_display_name
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_line_display_name
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_rel_display_name
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_display_name
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_display_name
 #: model:ir.model.fields,field_description:hotel.field_hotel_floor_display_name
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_display_name
@@ -5398,10 +5480,10 @@ msgstr "Puerta"
 #: model:product.product,name:hotel.hotel_room_type_2_product_product
 #: model:product.template,name:hotel.hotel_room_type_2_product_template
 msgid "Double"
-msgstr "Double"
+msgstr "Doble"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:129
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:134
 #, python-format
 msgid "Down Payment"
 msgstr "Adelanto"
@@ -5428,7 +5510,7 @@ msgid "Down payment (percentage)"
 msgstr "Adelanto (Porcentaje)"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:126
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:131
 #, python-format
 msgid "Down payment of %s%%"
 msgstr "Adelanto de %s%%"
@@ -5449,7 +5531,7 @@ msgid "Duplicate Reservation"
 msgstr "Duplicar Reserva"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation_line.py:45
+#: code:addons/hotel/models/hotel_reservation_line.py:49
 #, python-format
 msgid "Duplicated reservation line date"
 msgstr "Fecha duplicada en la reserva"
@@ -5510,6 +5592,12 @@ msgstr "Cama Extra"
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_extra_beds_allowed
 msgid "Extra beds allowed"
 msgstr "Permitir camas supletorias"
+
+#. module: hotel
+#: selection:hotel.cancelation.rule,apply_on_late:0
+#: selection:hotel.cancelation.rule,apply_on_noshow:0
+msgid "First Day"
+msgstr "Primer día"
 
 #. module: hotel
 #: model:hotel.floor,name:hotel.hotel_floor_1
@@ -5610,12 +5698,6 @@ msgid "Followers (Partners)"
 msgstr "Seguidores (Empresas)"
 
 #. module: hotel
-#: code:addons/hotel/models/inherited_res_partner.py:155
-#, python-format
-msgid "For safety reasons, you cannot merge more than 3 contacts together. You can re-open the wizard several times if needed."
-msgstr "Por motivos de seguridad, no se puede fusionar más de 3 clientes al mismo tiempo."
-
-#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_virtual_available
 msgid "Forecast Quantity"
 msgstr "Cantidad prevista"
@@ -5637,7 +5719,7 @@ msgstr ""
 #: model:product.product,name:hotel.hotel_service_6
 #: model:product.template,name:hotel.hotel_service_6_product_template
 msgid "Free Bar"
-msgstr "Free Bar"
+msgstr "Barra libre"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_wizard_massive_changes_dfr
@@ -5775,6 +5857,11 @@ msgid "Has Confirmed Reservations To Send"
 msgstr "Tiene reservas confirmadas por enviar"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_account_invoice_has_folios_outstanding
+msgid "Has Folios Outstanding"
+msgstr "Tiene Pagos en Ficha"
+
+#. module: hotel
 #: model:hotel.amenity,name:hotel.hotel_amenity_3
 msgid "High speed Wired Internet access"
 msgstr "Acceso internet alta velocidad"
@@ -5839,12 +5926,12 @@ msgstr "Hotel Management / CallCenter"
 #. module: hotel
 #: model:res.groups,name:hotel.group_hotel_user
 msgid "Hotel Management / User"
-msgstr "Hotel Management / User"
+msgstr "Hotel Management / Usuario"
 
 #. module: hotel
 #: model:res.groups,name:hotel.group_hotel_manager
 msgid "Hotel Management/ Manager"
-msgstr "Hotel Management/ Manager"
+msgstr "Hotel Management/ Gerente"
 
 #. module: hotel
 #: model:ir.actions.act_window,name:hotel.action_hotel_massive_change
@@ -5959,6 +6046,7 @@ msgstr "Hotel services detail provide to customer and it will include in main In
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_line_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_line_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_rel_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_floor_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_id
@@ -5986,8 +6074,8 @@ msgstr "ID (identificación)"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_folio_view_form
-msgid "If a Hotel Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice or deliver. This is used to freeze the Hotel Folio."
-msgstr "If a Hotel Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice or deliver. This is used to freeze the Hotel Folio."
+msgid "If a Hotel Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice. This is used to freeze the Hotel Folio."
+msgstr "If a Hotel Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice. This is used to freeze the Hotel Folio."
 
 #. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_room_type_message_unread
@@ -6011,7 +6099,7 @@ msgid "If unchecked, it will allow you to hide the                              
 msgstr "Si lo deseleccionar, se desactivará                                     el plan de restricciones sin eliminarlo."
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:442
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:457
 #, python-format
 msgid "If you want drop the line, use the trash icon"
 msgstr "Si quieres eliminar la línea, usa el icono de la papelera"
@@ -6038,6 +6126,11 @@ msgid "In time"
 msgstr "A tiempo"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_customer_sleep_here
+msgid "Include customer"
+msgstr "Incluir cliente"
+
+#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_folio_advance_payment_inv_deposit_account_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_property_account_income_id
 msgid "Income Account"
@@ -6047,6 +6140,11 @@ msgstr "Cuenta de ingresos"
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_incoming_qty
 msgid "Incoming"
 msgstr "Entrada"
+
+#. module: hotel
+#: model:ir.model.fields,help:hotel.field_hotel_reservation_customer_sleep_here
+msgid "Indicates if the customer                                          sleeps in this room"
+msgstr "Indica si el cliente                                          duerme en esta habitación"
 
 #. module: hotel
 #: model:ir.actions.server,name:hotel.Guest_reservation_reminder_24hrs_ir_actions_server
@@ -6091,7 +6189,7 @@ msgid "International Article Number used for product identification."
 msgstr "Número de artículo internacional usado para la identificación de producto."
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:1139
+#: code:addons/hotel/models/hotel_reservation.py:1221
 #, python-format
 msgid "Invalid Nights! Max is                                         '%d'"
 msgstr "Núm de noches inválidado! Máximo s on                                        '%d'"
@@ -6129,6 +6227,11 @@ msgstr "Factura"
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_partner_invoice_id
 msgid "Invoice Address"
 msgstr "Dirección de factura"
+
+#. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_folio_view_search
+msgid "Invoice Contact"
+msgstr "Dirección de Facturación"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_invoice_count
@@ -6232,6 +6335,12 @@ msgid "Is Staff"
 msgstr "Es Staff"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_res_partner_is_tour_operator
+#: model:ir.model.fields,field_description:hotel.field_res_users_is_tour_operator
+msgid "Is Tour Operator"
+msgstr "Es Operadora Tuística"
+
+#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_is_extra_bed
 #: model:ir.model.fields,field_description:hotel.field_product_product_is_extra_bed
 #: model:ir.model.fields,field_description:hotel.field_product_template_is_extra_bed
@@ -6283,6 +6392,7 @@ msgstr "Fecha del último mensaje"
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_line___last_update
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_line___last_update
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_rel___last_update
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule___last_update
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner___last_update
 #: model:ir.model.fields,field_description:hotel.field_hotel_floor___last_update
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio___last_update
@@ -6320,6 +6430,7 @@ msgstr "Actualizado el"
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_line_write_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_line_write_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_write_uid
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_write_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_write_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_floor_write_uid
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_wizard_write_uid
@@ -6352,6 +6463,7 @@ msgstr "Última actualización de"
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_line_write_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_room_type_line_write_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_board_service_write_date
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_write_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_write_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_floor_write_date
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_wizard_write_date
@@ -6384,6 +6496,7 @@ msgstr "Apellidos, Nombre"
 
 #. module: hotel
 #: selection:hotel.reservation,cancelled_reason:0
+#: model:ir.ui.view,arch_db:hotel.hotel_cancelation_rule_form
 msgid "Late"
 msgstr "Tarde"
 
@@ -6399,6 +6512,16 @@ msgid "Late Payment"
 msgstr "Pago restrasado"
 
 #. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_apply_on_late
+msgid "Late apply on"
+msgstr "Apllicar cancelación tardía en"
+
+#. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_days_late
+msgid "Late first days"
+msgstr "Tardía en  los días inciales"
+
+#. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_search
 msgid "Lates and NoShows"
 msgstr "Impagos y NoShows"
@@ -6411,7 +6534,7 @@ msgstr "Líneas"
 #. module: hotel
 #: model:ir.model,name:hotel.model_line_advance_inv
 msgid "Lines Advance Invoice"
-msgstr "Lines Advance Invoice"
+msgstr "Líneas de factura"
 
 #. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_room_type_room_amenity_ids
@@ -6547,15 +6670,19 @@ msgid "Max. Stay can't be less than zero"
 msgstr "Max. estancia no puede ser menor que cero"
 
 #. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_cancelation_rule_form
+msgid "Max. days InTime before Checkin"
+msgstr "Máx. días en tiempo antes del checkin"
+
+#. module: hotel
+#: model:ir.model.fields,help:hotel.field_hotel_cancelation_rule_days_intime
+msgid "Maximum number of days for free cancellation before Checkin"
+msgstr "Maximum number of days for free cancellation before Checkin"
+
+#. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_image_medium
 msgid "Medium-sized image"
 msgstr "Imagen de tamaño mediano"
-
-#. module: hotel
-#: code:addons/hotel/models/inherited_res_partner.py:179
-#, python-format
-msgid "Merged with the following partners:"
-msgstr "Fusionado con los siguientes contactos:"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_sale_line_warn_msg
@@ -6639,7 +6766,7 @@ msgid "Name in reports"
 msgstr "Nombre en Informes"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_folio.py:111
+#: code:addons/hotel/models/hotel_folio.py:99
 #: code:addons/hotel/models/hotel_folio.py:403
 #: code:addons/hotel/models/hotel_folio.py:407
 #: code:addons/hotel/models/hotel_folio.py:409
@@ -6686,21 +6813,32 @@ msgid "Nights"
 msgstr "Noches"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:546
+#: code:addons/hotel/models/hotel_reservation.py:554
 #, python-format
 msgid "No Checkins!"
-msgstr "Sin Checkins!"
+msgstr "No Checkins!"
 
 #. module: hotel
 #: selection:hotel.reservation,cancelled_reason:0
+#: model:ir.ui.view,arch_db:hotel.hotel_cancelation_rule_form
 msgid "No Show"
 msgstr "No Show"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:545
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_apply_on_noshow
+msgid "No Show apply on"
+msgstr "No Show aplicar en"
+
+#. module: hotel
+#: code:addons/hotel/models/hotel_reservation.py:553
 #, python-format
 msgid "No checkin was made for this reservation"
 msgstr "No se ha llegado a realizar ningún checkin en esta reserva!"
+
+#. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_days_noshow
+msgid "NoShow first days"
+msgstr "NoShow en los días inciales"
 
 #. module: hotel
 #: selection:hotel.folio,reservation_type:0
@@ -6732,7 +6870,7 @@ msgstr "Número de acciones"
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_wizard_rooms_num
 msgid "Number of Rooms"
-msgstr "Number of Rooms"
+msgstr "Número de habitaciones"
 
 #. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_reservation_children
@@ -6761,11 +6899,6 @@ msgstr "Dentro"
 #: model:ir.ui.view,arch_db:hotel.hotel_checkin_partner_view_search
 msgid "On Board Tomorrow"
 msgstr "Personas Dentro Mañana"
-
-#. module: hotel
-#: selection:folio.advance.payment.inv,advance_payment_method:0
-msgid "One line (Bill all in one line)"
-msgstr "Una Línea (Facturar todo en una sola línea)"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
@@ -6846,13 +6979,25 @@ msgid "Outgoing"
 msgstr "Saliente"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:183
+#: model:ir.model.fields,field_description:hotel.field_account_invoice_outstanding_folios_debits_widget
+msgid "Outstanding Folios Debits Widget"
+msgstr "Outstanding Folios Debits Widget"
+
+#. module: hotel
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:193
 #, python-format
 msgid "Outstanding credits"
 msgstr "Crédito Pendiente"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:186
+#: code:addons/hotel/models/inherited_account_invoice.py:78
+#, python-format
+msgid "Outstanding credits in Folio"
+msgstr "Pagos por asignar en la Ficha"
+
+#. module: hotel
+#: code:addons/hotel/models/inherited_account_invoice.py:81
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:196
 #, python-format
 msgid "Outstanding debits"
 msgstr "Débito Pendiente"
@@ -6880,6 +7025,11 @@ msgid "Partner Note"
 msgstr "Nota de Cliente"
 
 #. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
+msgid "Partner Notes"
+msgstr "Notas del Cliente"
+
+#. module: hotel
 #: code:addons/hotel/models/inherited_account_payment.py:73
 #: code:addons/hotel/models/inherited_account_payment.py:115
 #: code:addons/hotel/models/inherited_account_payment.py:123
@@ -6904,6 +7054,11 @@ msgstr "Pago eliminado"
 #: model:ir.ui.view,arch_db:hotel.account_payment_view_form_folio
 msgid "Payment Matching"
 msgstr "Asignación de Pagos"
+
+#. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_folio_view_search
+msgid "Payment Pending"
+msgstr "Pagos Pendientes"
 
 #. module: hotel
 #: code:addons/hotel/models/inherited_payment_return.py:26
@@ -6933,7 +7088,7 @@ msgid "Payment return"
 msgstr "Devolución de cobro"
 
 #. module: hotel
-#: code:addons/hotel/models/inherited_account_invoice.py:27
+#: code:addons/hotel/models/inherited_account_invoice.py:29
 #: model:ir.model,name:hotel.model_account_payment
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_invoices_paid
 #: model:ir.ui.view,arch_db:hotel.hotel_folio_view_form
@@ -6982,13 +7137,13 @@ msgid "Phone"
 msgstr "Teléfono"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:355
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:370
 #, python-format
 msgid "Please define an accounting sales journal for this company."
 msgstr "Please define an accounting sales journal for this company."
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:463
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:478
 #, python-format
 msgid "Please define income account for this product: \"%s\" (id:%d) - or for its category: \"%s\"."
 msgstr "Please define income account for this product: \"%s\" (id:%d) - or for its category: \"%s\"."
@@ -7075,6 +7230,11 @@ msgstr "Tipo de Tarifa"
 #: model:ir.model.fields,help:hotel.field_hotel_reservation_pricelist_id
 msgid "Pricelist for current folio."
 msgstr "Tarifa de la ficha actúal"
+
+#. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_cancelation_rule_pricelist_ids
+msgid "Pricelist that use this rule"
+msgstr "Tarifa usada en esta regla"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_amenity_view_form
@@ -7219,15 +7379,15 @@ msgstr "Referencia"
 
 #. module: hotel
 #: code:addons/hotel/models/hotel_folio.py:313
-#: code:addons/hotel/models/hotel_reservation.py:985
+#: code:addons/hotel/models/hotel_reservation.py:1066
 #: model:ir.ui.view,arch_db:hotel.account_payment_view_form_folio
 #, python-format
 msgid "Register Payment"
 msgstr "Registrar pago"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_partner_invoice_parent_id
-#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_partner_invoice_parent_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_folio_partner_parent_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_partner_parent_id
 msgid "Related Company"
 msgstr "Empresa relacionada"
 
@@ -7324,13 +7484,13 @@ msgid "Reservation Wizard"
 msgstr "Reservation Wizard"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:616
+#: code:addons/hotel/models/hotel_reservation.py:624
 #, python-format
 msgid "Reservation has no adults"
 msgstr "La reserva no tiene adultos"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:614
+#: code:addons/hotel/models/hotel_reservation.py:622
 #, python-format
 msgid "Reservation persons can't be higher than room capacity"
 msgstr "Las personas de la reserva no pueden superiores a la capacidad de la habitación"
@@ -7418,7 +7578,7 @@ msgstr "Restricciones"
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_folio_view_form
 msgid "Retun Payments"
-msgstr "Retun Payments"
+msgstr "Devoluciones"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_return_ids
@@ -7430,7 +7590,7 @@ msgstr "Devolver"
 #: code:addons/hotel/models/inherited_payment_return.py:25
 #, python-format
 msgid "Return of %s registered"
-msgstr "Return of %s registered"
+msgstr "Devolución de %s registrada"
 
 #. module: hotel
 #: code:addons/hotel/models/hotel_folio.py:362
@@ -7535,7 +7695,7 @@ msgid "Room capacity can't be less than one"
 msgstr "La capacidad de la habitación no puede ser menor que uno"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:1063
+#: code:addons/hotel/models/hotel_reservation.py:1144
 #, python-format
 msgid "Room line Check In Date Should be                 less than the Check Out Date!"
 msgstr "La fecha de entrada debe ser                menor que la fecha de salida!"
@@ -7563,11 +7723,6 @@ msgstr "Rutas"
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_description_sale
 msgid "Sale Description"
 msgstr "Descripción de venta"
-
-#. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_account_invoice_sale_ids
-msgid "Sale Orders"
-msgstr "Pedidos de Venta"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_lst_price
@@ -7858,6 +8013,12 @@ msgid "Specifies if the product is shown in the calendar information."
 msgstr "Especificar si el producto es mostrado en la información del Calendario"
 
 #. module: hotel
+#: selection:hotel.cancelation.rule,apply_on_late:0
+#: selection:hotel.cancelation.rule,apply_on_noshow:0
+msgid "Specify days"
+msgstr "Días específicos"
+
+#. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_room_type_sale_ok
 msgid "Specify if the product can be selected in a sales order line."
 msgstr "Especifique si un producto puede ser seleccionado en un pedido de venta."
@@ -7904,6 +8065,7 @@ msgstr "Fecha de Inicio"
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_state
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_partner_invoice_state_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_line_state
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_partner_invoice_state_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_state
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_activity_state
@@ -7914,6 +8076,7 @@ msgstr "Estado"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_state
+#: model:ir.model.fields,field_description:hotel.field_hotel_service_state
 msgid "Status"
 msgstr "Estado"
 
@@ -8088,20 +8251,20 @@ msgid "The hotel's timezone, used to manage                                     
 msgstr "The hotel's timezone, used to manage                                     date and time values in reservations                                     It is important to set a value for this                                     field."
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:226
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:237
 #, python-format
 msgid "The product used to invoice a down payment should be of type 'Service'. Please use another product or update this product."
 msgstr "The product used to invoice a down payment should be of type 'Service'. Please use another product or update this product."
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:224
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:235
 #, python-format
 msgid "The product used to invoice a down payment should have an invoice policy set to \"Ordered quantities\". Please update your deposit product to be able to create a deposit invoice."
 msgstr "The product used to invoice a down payment should have an invoice policy set to \"Ordered quantities\". Please update your deposit product to be able to create a deposit invoice."
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:669
-#: code:addons/hotel/models/hotel_reservation.py:1089
+#: code:addons/hotel/models/hotel_reservation.py:679
+#: code:addons/hotel/models/hotel_reservation.py:1170
 #, python-format
 msgid "The room already is completed"
 msgstr "La habitación ya está completa"
@@ -8112,7 +8275,7 @@ msgid "The sale price is managed from the product template. Click on the 'Varian
 msgstr "El precio de venta se gestiona desde la plantilla del producto. Haga clic en el botón 'Precios variantes' para establecer los precios adicionales de los atributos."
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:122
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:127
 #, python-format
 msgid "The value of the down payment amount must be positive."
 msgstr "El valor del adelanto debe ser positivo"
@@ -8134,13 +8297,13 @@ msgid "There are not enough rooms!"
 msgstr "No hay suficientes habitaciones!"
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:118
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:123
 #, python-format
 msgid "There is no income account defined for this product: \"%s\". You may have to install a chart of account from Accounting app, settings menu."
 msgstr "There is no income account defined for this product: \"%s\". You may have to install a chart of account from Accounting app, settings menu."
 
 #. module: hotel
-#: code:addons/hotel/wizard/folio_make_invoice_advance.py:248
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:259
 #, python-format
 msgid "There is no invoiceable line."
 msgstr "No hay líneas facturables"
@@ -8163,19 +8326,13 @@ msgid "This field holds the image used as image for the product variant, limited
 msgstr "Este campo contiene la imagen usada como imagen de la variante del producto, limitada a 1024x1024px."
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_checkin_partner.py:131
-#: code:addons/hotel/models/hotel_checkin_partner.py:143
+#: code:addons/hotel/models/hotel_checkin_partner.py:139
 #, python-format
 msgid "This guest is already registered in the room"
 msgstr "Este huésped ya está registrado en ésta habitación"
 
 #. module: hotel
-#: model:ir.model.fields,help:hotel.field_account_invoice_sale_ids
-msgid "This is the list of sale orders related to this invoice."
-msgstr "Esta es la lista de pedidos de venta relacionados con esta factura."
-
-#. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:1267
+#: code:addons/hotel/models/hotel_reservation.py:1348
 #, python-format
 msgid "This is the parent reservation"
 msgstr "Esta es la reserva padre"
@@ -8192,13 +8349,13 @@ msgid "This pay is related with                                                 
 msgstr "Este pago esta vínculado                                                 con más de una Reserva."
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:1189
+#: code:addons/hotel/models/hotel_reservation.py:1270
 #, python-format
 msgid "This reservation can't be unified"
 msgstr "Esta reserva no se puede unificar"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:1218
+#: code:addons/hotel/models/hotel_reservation.py:1299
 #, python-format
 msgid "This reservation can't be unified: They                                     all need to be in the same room"
 msgstr "Esta reserva no se puede unificar: todos deben estar en la misma habitación"
@@ -8275,6 +8432,11 @@ msgid "To enter"
 msgstr "Por entrar"
 
 #. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_folio_view_search
+msgid "To invoice"
+msgstr "A Facturar"
+
+#. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_service_line_view_search
 msgid "Today"
 msgstr "Hoy"
@@ -8331,6 +8493,18 @@ msgstr "Cantidad Total"
 #: model:ir.model.fields,field_description:hotel.field_account_payment_amount_total_folio
 msgid "Total amount in folio"
 msgstr "Monto total en ficha de reserva"
+
+#. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_folio_view_tree
+msgid "Total debt"
+msgstr "Total debt"
+
+#. module: hotel
+#: model:ir.model.fields,field_description:hotel.field_hotel_folio_tour_operator_id
+#: model:ir.model.fields,field_description:hotel.field_hotel_reservation_tour_operator_id
+#: model:ir.ui.view,arch_db:hotel.hotel_folio_view_search
+msgid "Tour Operator"
+msgstr "Operadora Turística"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_room_type_service_type
@@ -8402,7 +8576,7 @@ msgid "Unexpected Error: Can't found a                                         f
 msgstr "Error inesperado: No se puede encontrar                                        habitaciones libres"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:1175
+#: code:addons/hotel/models/hotel_reservation.py:1256
 #, python-format
 msgid "Unexpected error copying record.                                             Can't split reservation!"
 msgstr "Ouch!.                                            No hemos podido dividir la reserva!"
@@ -8470,11 +8644,6 @@ msgid "Updated on"
 msgstr "Actualizado el"
 
 #. module: hotel
-#: selection:hotel.folio,invoice_status:0
-msgid "Upselling Opportunity"
-msgstr "Upselling Opportunity"
-
-#. module: hotel
 #: model:room.closure.reason,description:hotel.hotel_room_closure_reason_1
 msgid "Used for closing of rooms for extra privacy."
 msgstr "Usado para cerrar habitaciones por privacidad extra."
@@ -8483,12 +8652,6 @@ msgstr "Usado para cerrar habitaciones por privacidad extra."
 #: model:room.closure.reason,description:hotel.hotel_room_closure_reason_0
 msgid "Used for closing of rooms which require a maintenance. You can specify the reason in the own reservation."
 msgstr "Usado para cerrar habitaciones que requierenmantenimiento. Puedes especificar la razón en la propia reserva."
-
-#. module: hotel
-#: model:ir.model.fields,help:hotel.field_hotel_folio_partner_invoice_type
-#: model:ir.model.fields,help:hotel.field_hotel_reservation_partner_invoice_type
-msgid "Used to select automatically the right address according to the context in sales and purchases documents."
-msgstr "﻿Utilizado para seleccionar automáticamente la dirección correcta según el contexto en documentos de ventas y compras."
 
 #. module: hotel
 #: model:room.closure.reason,name:hotel.hotel_room_closure_reason_1
@@ -8557,7 +8720,7 @@ msgid "Warning"
 msgstr "Aviso"
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_service.py:324
+#: code:addons/hotel/models/hotel_service.py:331
 #, python-format
 msgid "Warning for %s"
 msgstr "Aviso para %s"
@@ -8578,6 +8741,18 @@ msgstr "No podemos crear una ficha vacía"
 #, python-format
 msgid "We need know the customer!"
 msgstr "Necesitamos conocer el cliente!"
+
+#. module: hotel
+#: code:addons/hotel/wizard/folio_make_invoice_advance.py:212
+#, python-format
+msgid "We need the VAT of the customer"
+msgstr "Necesitamos conocer el NIF del cliente"
+
+#. module: hotel
+#: code:addons/hotel/models/inherited_account_invoice.py:48
+#, python-format
+msgid "We need the VAT of the following companies"
+msgstr "Necesitamos el NIF de las siguientes compañías"
 
 #. module: hotel
 #: selection:hotel.folio,channel_type:0
@@ -8633,19 +8808,13 @@ msgid "XLS Reports"
 msgstr "XLS Reports"
 
 #. module: hotel
-#: code:addons/hotel/models/inherited_res_partner.py:162
-#, python-format
-msgid "You cannot merge a contact with one of his parent."
-msgstr "You cannot merge a contact with one of his parent."
-
-#. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:744
+#: code:addons/hotel/models/hotel_reservation.py:754
 #, python-format
 msgid "You tried to change/confirm                        reservation with room those already reserved in this                        reservation period: %s "
 msgstr "Estás intentando cambiar/confirmar                       una reserva con una habitación ya reservada en este                        periodo: %s "
 
 #. module: hotel
-#: code:addons/hotel/models/hotel_reservation.py:1075
+#: code:addons/hotel/models/hotel_reservation.py:1156
 #, python-format
 msgid "You tried to change/confirm                    reservation with room those already reserved in this                    reservation period: %s "
 msgstr "Estás intentando hacer                       una reserva en una habitación que ya está reservada                    en este periódo: %s "
@@ -8773,6 +8942,11 @@ msgstr "teléfono"
 #: model:ir.model,name:hotel.model_res_config_settings
 msgid "res.config.settings"
 msgstr "res.config.settings"
+
+#. module: hotel
+#: model:ir.ui.view,arch_db:hotel.hotel_folio_view_form
+msgid "these are the billing information associated with the booking client or the company (if a company is assigned). If you want to bill an independent contact, you can select it in the billing assistant"
+msgstr "these are the billing information associated with the booking client or the company (if a company is assigned). If you want to bill an independent contact, you can select it in the billing assistant"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.hotel_reservation_checkin_view_form
