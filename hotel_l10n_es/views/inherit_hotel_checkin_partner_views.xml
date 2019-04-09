@@ -109,7 +109,7 @@
                         <xpath expr="//field[@name='partner_id']" position="attributes">
                                 <attribute name="options">{"no_create": True}</attribute>
                                 <attribute name="required">False</attribute>
-                                <attribute name="string">'Search'</attribute>
+                                <attribute name="string">Search</attribute>
                         </xpath>
                         <xpath expr="//button[@name='action_on_board']" position="before">
                             <button type="action" class="oe_stat_button"

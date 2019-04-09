@@ -446,7 +446,8 @@ class HotelReservation(models.Model):
                             days=days_diff,
                             per_person=service.product_id.per_person,
                             persons=service.ser_room_line.adults,
-                            old_line_days=service.service_line_ids
+                            old_line_days=service.service_line_ids,
+                            consumed_on=service.product_id.consumed_on,
                             ))
             if ('checkin' in vals and record.checkin != vals['checkin']) or\
                ('checkout' in vals and record.checkout != vals['checkout']) or\
@@ -787,7 +788,8 @@ class HotelReservation(models.Model):
                         days=self.nights,
                         per_person=product.per_person,
                         persons=self.adults,
-                        old_line_days=False))
+                        old_line_days=False,
+                        consumed_on=product.consumed_on,))
                     board_services.append((0, False, res))
             other_services = self.service_ids.filtered(lambda r: not r.is_board_service)
             self.update({'service_ids': board_services})

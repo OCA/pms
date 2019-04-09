@@ -542,7 +542,8 @@ class ReservationWizard(models.TransientModel):
                                 days=nights,
                                 per_person=product.per_person,
                                 persons=line.adults,
-                                old_line_days=False))
+                                old_line_days=False,
+                                consumed_on=product.consumed_on,))
                     service_line.update(vals)
                     price_product = service_line.price_unit * (1 - (line.discount or 0.0) * 0.01)
                     pricelist = line.folio_wizard_id.pricelist_id

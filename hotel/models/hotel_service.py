@@ -187,6 +187,7 @@ class HotelService(models.Model):
                 per_person=product.per_person,
                 persons=reservation.adults,
                 old_day_lines=False,
+                consumed_on=product.consumed_on,
                 ))
         record = super(HotelService, self).create(vals)
         return record
@@ -220,7 +221,8 @@ class HotelService(models.Model):
                         days=nights,
                         per_person=product.per_person,
                         persons=reservation.adults,
-                        old_line_days=self.service_line_ids
+                        old_line_days=self.service_line_ids,
+                        consumed_on=product.consumed_on,
                         ))
         res = super(HotelService, self).write(vals)
         return res
@@ -306,7 +308,9 @@ class HotelService(models.Model):
                     days=nights,
                     per_person=product.per_person,
                     persons=reservation.adults,
-                    old_line_days=record.service_line_ids))
+                    old_line_days=record.service_line_ids,
+                    consumed_on=product.consumed_on,
+                    ))
                 if record.product_id.daily_limit > 0:
                     for i in range(0, nights):
                         idate = (fields.Date.from_string(checkin) + timedelta(days=i)).strftime(
@@ -385,11 +389,14 @@ class HotelService(models.Model):
         """
         cmds = [(5, 0, 0)]
         old_line_days = kwargs.get('old_line_days')
+        consumed_on = kwargs.get('consumed_on') if kwargs.get('consumed_on') else 'before'
         total_qty = 0
         day_qty = 1
         if kwargs.get('per_person'): #WARNING: Change adults in reservation NOT update qty service!!
             day_qty = kwargs.get('persons')
         for i in range(0, kwargs.get('days')):
+            if consumed_on == 'after':
+                i += 1
             idate = (fields.Date.from_string(kwargs.get('dfrom')) + timedelta(days=i)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
             if not old_line_days or idate not in old_line_days.mapped('date'):

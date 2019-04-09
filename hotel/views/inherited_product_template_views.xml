@@ -17,6 +17,8 @@
                         <group>
                             <field name="per_day" />
                             <field name="per_person" />
+                            <field name="consumed_on" widget="radio"
+                              attrs="{'invisible': [('per_day','!=',True)]}"/>
                         </group>
                     </group>
                 </page>

@@ -9,7 +9,10 @@ class ProductTemplate(models.Model):
 
     per_day = fields.Boolean('Unit increment per day')
     per_person = fields.Boolean('Unit increment per person')
+    consumed_on = fields.Selection([
+        ('before', 'Before night'),
+        ('after', 'After night')], 'Consumed', default='before')
     daily_limit = fields.Integer('Daily limit')
     is_extra_bed = fields.Boolean('Is extra bed', default=False)
     show_in_calendar = fields.Boolean('Show in Calendar', default=False,
-                                    help='Specifies if the product is shown in the calendar information.')
+        help='Specifies if the product is shown in the calendar information.')
