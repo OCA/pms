@@ -475,14 +475,6 @@ class HotelFolio(models.Model):
                   )}
         self.update(values)
 
-    @api.onchange('partner_invoice_id')
-    def onchange_partner_invoice_id(self):
-        if self.partner_invoice_id and not self.partner_invoice_id.parent_id and \
-                self.partner_invoice_id != self.partner_id:
-            self.update({
-                'partner_invoice_parent_id': self.partner_id.id,
-                'partner_invoice_type': 'invoice'})
-
     @api.model
     def calcule_reservation_type(self, is_staff, current_type):
         if current_type == 'out':
