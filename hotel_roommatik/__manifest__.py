@@ -21,6 +21,7 @@
         'partner_contact_birthdate'
     ],
     'data': [
+        'views/inherit_hotel_reservation.xml',
     ],
     'demo': [
     ],

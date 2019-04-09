@@ -51,7 +51,24 @@ class RoomMatik(models.Model):
         # (if code is related to a current stay)
         # (MANDATORY for check-out kiosk)
         apidata = self.env['hotel.checkin.partner']
+        return apidata.rm_get_stay(check_in_code)
+
+    @api.model
+    def rm_get_all_room_type_rates(self):
+        # Gets the current room rates and availability. (MANDATORY)
+        # return ArrayOfRoomTypeRate
+        _logger.info('ROOMMATIK Get Rooms and Rates')
+        apidata = self.env['hotel.room.type']
+        return apidata.rm_get_all_room_type_rates()
+
+    @api.model
+    def rm_get_prices(self, start_date, time_interval, number_intervals, room_type, guest_number):
+        # Gets some prices related to different dates of the same stay.
+        # return ArrayOfDecimal
+        _logger.info('ROOMMATIK Get Prices')
+        apidata = self.env['hotel.room.type']
+        return apidata.rm_get_prices(start_date, time_interval, number_intervals, room_type, guest_number)
+
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()
         # Debug Stop -------------------
-        return apidata.rm_get_stay(check_in_code)

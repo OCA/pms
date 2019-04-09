@@ -1,4 +1,4 @@
-# Copyright 2018 Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>
+# Copyright 2019 Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import json
@@ -12,11 +12,12 @@ class HotelFolio(models.Model):
 
     @api.model
     def rm_checkin_partner(self, stay):
-        # CHECK-IN
         _logger = logging.getLogger(__name__)
+        # CHECK-IN
         reservation_rm = self.env['hotel.reservation'].search([('id', '=',
                                                                 stay['Code'])])
         # Need checkin?
+
         total_chekins = reservation_rm.checkin_partner_pending_count
         if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
             _logger.info('ROOMMATIK checkin %s customer in %s Reservation.',
@@ -61,6 +62,9 @@ class HotelFolio(models.Model):
                     stay['Id'] = record.id
                     json_response = stay
                 except:
+                    # Debug Stop -------------------
+                    import wdb; wdb.set_trace()
+                    # Debug Stop -------------------
                     json_response = {'Estate': 'Error not create Checkin'}
                     _logger.error('ROOMMATIK writing %s in reservation: %s).',
                                   checkin_partner_val['document_number'],
@@ -77,42 +81,42 @@ class HotelFolio(models.Model):
 
     @api.model
     def rm_get_stay(self, code):
+        # BUSQUEDA POR LOCALIZADOR
         reserva = self.search([('id', '=', code)])
-        stay = {'Code': code}
-        stay['Id'] = reserva.folio_id.id
-        stay['Room'] = {}
-        stay['Room']['Id'] = reserva.reservation_id.room_id.id
-        stay['Room']['Name'] = reserva.reservation_id.room_id.name
-        stay['RoomType'] = {}
-        stay['RoomType']['Id'] = reserva.reservation_id.room_type_id.id
-        stay['RoomType']['Name'] = reserva.reservation_id.room_type_id.name
-        stay['RoomType']['GuestNumber'] = "xxxxxxx"
-        stay['Arrival'] = (reserva.reservation_id.real_checkin +
-                           'T' + reserva.reservation_id.arrival_hour + ':00')
-        stay['Departure'] = (reserva.reservation_id.real_checkout +
-                             'T' +
-                             reserva.reservation_id.departure_hour + ':00')
-        stay['Customers'] = []
-        for idx, cpi in enumerate(reserva.reservation_id.checkin_partner_ids):
-            stay['Customers'].append({'Customer': {}})
-            stay['Customers'][idx]['Customer'] = self.env[
-                            'res.partner'].rm_get_a_customer(cpi.partner_id.id)
-        stay['TimeInterval'] = {}
-        stay['TimeInterval']['Id'] = {}
-        stay['TimeInterval']['Name'] = {}
-        stay['TimeInterval']['Minutes'] = {}
-        stay['Adults'] = reserva.reservation_id.adults
-        stay['ReservationCode'] = {}
-        stay['Total'] = reserva.reservation_id.price_total
-        stay['Paid'] = (stay['Total'] -
-                        reserva.reservation_id.folio_pending_amount)
-        stay['Outstanding'] = {}
-        stay['Taxable'] = reserva.reservation_id.price_tax
+        if any(reserva):
+            stay = {'Code': reserva.reservation_id.localizator}
+            stay['Id'] = reserva.folio_id.id
+            stay['Room'] = {}
+            stay['Room']['Id'] = reserva.reservation_id.room_id.id
+            stay['Room']['Name'] = reserva.reservation_id.room_id.name
+            stay['RoomType'] = {}
+            stay['RoomType']['Id'] = reserva.reservation_id.room_type_id.id
+            stay['RoomType']['Name'] = reserva.reservation_id.room_type_id.name
+            stay['RoomType']['GuestNumber'] = "xxxxxxx"
+            stay['Arrival'] = (reserva.reservation_id.real_checkin +
+                               'T' + reserva.reservation_id.arrival_hour + ':00')
+            stay['Departure'] = (reserva.reservation_id.real_checkout +
+                                 'T' +
+                                 reserva.reservation_id.departure_hour + ':00')
+            stay['Customers'] = []
+            for idx, cpi in enumerate(reserva.reservation_id.checkin_partner_ids):
+                stay['Customers'].append({'Customer': {}})
+                stay['Customers'][idx]['Customer'] = self.env[
+                                'res.partner'].rm_get_a_customer(cpi.partner_id.id)
+            stay['TimeInterval'] = {}
+            stay['TimeInterval']['Id'] = {}
+            stay['TimeInterval']['Name'] = {}
+            stay['TimeInterval']['Minutes'] = {}
+            stay['Adults'] = reserva.reservation_id.adults
+            stay['ReservationCode'] = {}
+            stay['Total'] = reserva.reservation_id.price_total
+            stay['Paid'] = (stay['Total'] -
+                            reserva.reservation_id.folio_pending_amount)
+            stay['Outstanding'] = {}
+            stay['Taxable'] = reserva.reservation_id.price_tax
+
+        else:
+            stay = {'Code': ""}
 
         json_response = json.dumps(stay)
-
         return json_response
-
-        # Debug Stop -------------------
-        #import wdb; wdb.set_trace()
-        # Debug Stop -------------------

@@ -1,4 +1,4 @@
-# Copyright 2018 Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>
+# Copyright 2019 Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import json
@@ -59,7 +59,7 @@ class ResPartner(models.Model):
         street_2 = customer['Address']['House']
         street_2 += ' ' + customer['Address']['Flat']
         street_2 += ' ' + customer['Address']['Number']
-        return {
+        metadata = {
             'firstname': customer['FirstName'],
             'lastname': customer['LastName1'],
             'lastname2': customer['LastName2'],
@@ -80,6 +80,7 @@ class ResPartner(models.Model):
                 'IdentityDocument']['ExpeditionDate'],
                 "%d%m%Y").date(),
             }
+        return {k: v for k, v in metadata.items() if v is not ""}
 
     def rm_get_a_customer(self, customer):
         # Prepare a Customer for RoomMatik
