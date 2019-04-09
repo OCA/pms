@@ -760,14 +760,6 @@ class HotelReservation(models.Model):
             ]
             return {'domain': {'room_id': domain_rooms}}
 
-    @api.onchange('partner_invoice_id')
-    def onchange_partner_invoice_id(self):
-        if self.partner_invoice_id and not self.partner_invoice_id.parent_id and \
-                self.partner_invoice_id != self.partner_id:
-            self.update({
-                'partner_invoice_parent_id': self.partner_id.id,
-                'partner_invoice_type': 'invoice'})
-
     @api.onchange('board_service_room_id')
     def onchange_board_service(self):
         if self.board_service_room_id:
