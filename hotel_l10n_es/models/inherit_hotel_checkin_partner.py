@@ -100,10 +100,9 @@ class HotelCheckinPartner(models.Model):
                 if not record.check_dni(record.document_number):
                     record.document_number = False
                     raise UserError(_('Incorrect DNI'))
-            if not record.partner_id and record.document_number and record.document_type:
+            if not record.partner_id and record.document_number:
                 partner = self.env['res.partner'].search([
-                    ('document_number', '=', record.document_number),
-                    ('document_type', '=', record.document_type)
+                    ('document_number', '=', record.document_number)
                     ], limit=1)
                 if partner:
                     record.update({'partner_id': partner})
