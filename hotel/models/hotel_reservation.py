@@ -267,7 +267,10 @@ class HotelReservation(models.Model):
         ('mail', 'Mail'),
         ('phone', 'Phone'),
         ('call', 'Call Center'),
-        ('web', 'Web')], 'Sales Channel', default='door')
+        ('web', 'Web'),
+        ('agency', 'Agencia'),
+        ('operator', 'Tour operador'),
+        ('virtualdoor', 'Virtual Door'), ], 'Sales Channel', default='door')
     last_updated_res = fields.Datetime('Last Updated')
     folio_pending_amount = fields.Monetary(related='folio_id.pending_amount')
     segmentation_ids = fields.Many2many(related='folio_id.segmentation_ids')

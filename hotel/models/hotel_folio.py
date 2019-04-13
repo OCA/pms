@@ -135,7 +135,7 @@ class HotelFolio(models.Model):
         ('web', 'Web'),
         ('agency', 'Agencia'),
         ('operator', 'Tour operador'),
-        ('virtualdoor', 'Virtual Dooe'),], 'Sales Channel', default='door')
+        ('virtualdoor', 'Virtual Door'),], 'Sales Channel', default='door')
     user_id = fields.Many2one('res.users', string='Salesperson', index=True,
                               track_visibility='onchange', default=lambda self: self.env.user)
     tour_operator_id = fields.Many2one('res.partner',
