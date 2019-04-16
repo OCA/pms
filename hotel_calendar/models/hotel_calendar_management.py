@@ -179,14 +179,31 @@ class HotelCalendarManagement(models.TransientModel):
             for i in range(0, date_diff):
                 cur_date = date_start + timedelta(days=i)
                 cur_date_str = cur_date.strftime(DEFAULT_SERVER_DATE_FORMAT)
-
+                self.env.cr.execute('''
+                    SELECT
+                      hrl.id
+                    FROM hotel_reservation_line AS hrl
+                    WHERE date = %s
+                    ''', ((cur_date_str),))
+                line_ids = [r[0] for r in self.env.cr.fetchall()]
+                reservation_ids = self.env['hotel.reservation.line'].browse(line_ids).\
+                    mapped('reservation_id.id')
+                reservations = self.env['hotel.reservation'].\
+                    browse(reservation_ids).filtered(
+                        lambda r: r.state != 'cancelled'
+                        and not r.overbooking and not r.reselling
+                    )
+                reservations_rooms = reservations.mapped('room_id.id')
+                free_rooms = self.env['hotel.room'].search([
+                    ('id', 'not in', reservations_rooms),
+                ])
+                rooms_linked = self.env['hotel.room.type'].search([
+                    ('id', '=', room_type.id)
+                ]).room_ids
+                free_rooms = free_rooms & rooms_linked
                 json_data.setdefault(room_type.id, []).append({
                     'date': cur_date_str,
-                    'num': len(
-                        room_type_obj.check_availability_room_type(
-                            cur_date_str,
-                            cur_date_str,
-                            room_type_id=room_type.id)),
+                    'num': len(free_rooms),
                 })
 
         return json_data

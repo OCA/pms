@@ -1088,10 +1088,13 @@ class HotelReservation(models.Model):
         @return: array with the reservations _confirmed_ between both dates `dfrom` and `dto`
         """
         domain = self._get_domain_reservations_occupation(dfrom, dto)
+        _logger.info(domain)
         return self.env['hotel.reservation'].search(domain)
 
     @api.model
     def _get_domain_reservations_occupation(self, dfrom, dto):
+        #WARNING If add or remove domain items, update _hcalendar_get_count_reservations_json_data
+        # in calendar module hotel_calendar_management.py
         domain = [('reservation_line_ids.date', '>=', dfrom),
                   ('reservation_line_ids.date', '<=', dto),
                   ('state', '!=', 'cancelled'),
