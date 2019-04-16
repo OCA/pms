@@ -190,7 +190,6 @@
                                 />
                             <field placeholder="Partner Notes" colspan="2" nolabel="1" name="partner_internal_comment" string="Partner Note"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
-                            <field nolabel="1" placeholder="Cancel Reason" name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
                             <field nolabel="1" colspan="2" placeholder="Description in Guest Documents" name="name"/>
                             <field name="nights"/>
                             <field placeholder="Arriva Hour" name="arrival_hour"/>
