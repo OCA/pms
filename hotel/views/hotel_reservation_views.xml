@@ -174,14 +174,17 @@
                      <group col="8">
                         <group colspan="2" col="3"  string="General Info" name="contact_details" >
                             <field name="email" colspan="2" nolabel="1" placeholder="email" widget="email"
+                                force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                        'readonly': [('partner_id', '!=', False),
                                                    ('email','!=', False)]}"/>
                             <field name="mobile" colspan="2" nolabel="1" placeholder="mobile" widget="phone"
+                                force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                        'readonly': [('partner_id', '!=', False),
                                                    ('mobile','!=', False)]}"/>
                             <field name="phone" colspan="2" nolabel="1" placeholder="phone" widget="phone"
+                                force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                  'required': [('channel_type','in',('door','mail','phone')),
                                               ('mobile','=','')],
