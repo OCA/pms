@@ -46,11 +46,6 @@ class ChannelHotelReservation(models.Model):
          'A binding already exists with the same Channel ID.'),
     ]
 
-    @api.depends('channel_reservation_id', 'ota_id')
-    def _is_from_ota(self):
-        for record in self:
-            record.is_from_ota = (record.external_id and record.ota_id)
-
     @job(default_channel='root.channel')
     @api.model
     def refresh_availability(self, checkin, checkout, backend_id, room_id):
@@ -152,12 +147,19 @@ class HotelReservation(models.Model):
     # origin_sale = fields.Char('Origin', compute=_get_origin_sale,
     #                           store=True)
     is_from_ota = fields.Boolean('Is From OTA',
-                                 readonly=True)
+                                 compute='_is_from_ota',
+                                 store=True)
     able_to_modify_channel = fields.Boolean(compute=_set_access_for_channel_fields,
                                             string='Is user able to modify channel fields?')
     customer_notes = fields.Text(related='folio_id.customer_notes')
 
     unconfirmed_channel_price = fields.Boolean(related='folio_id.unconfirmed_channel_price')
+
+    @api.depends('channel_bind_ids.external_id', 'channel_bind_ids.ota_id')
+    def _is_from_ota(self):
+        for record in self:
+            record.is_from_ota = bool(any(bind.ota_reservation_id
+                                          for bind in record.channel_bind_ids))
 
     @api.onchange('checkin', 'checkout')
     def onchange_dates(self):
