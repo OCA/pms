@@ -92,6 +92,54 @@ class ResPartner(models.Model):
         duplicated_fields = ['vat', 'document_number']
         return duplicated_fields
 
+    @api.multi
+    def write(self, vals):
+        if vals.get('vat') and not self._context.get(
+                "ignore_vat_update", False):
+            for record in self:
+                vat = vals.get('vat')
+                if self.env.context.get('company_id'):
+                    company = self.env['res.company'].browse(self.env.context['company_id'])
+                else:
+                    company = self.env.user.company_id
+                if company.vat_check_vies:
+                    # force full VIES online check
+                    check_func = self.vies_vat_check
+                else:
+                    # quick and partial off-line checksum validation
+                    check_func = self.simple_vat_check
+                vat_country, vat_number = self._split_vat(vat)
+                #check with country code as prefix of the TIN
+                if not check_func(vat_country, vat_number):
+                    country_id = vals.get('country_id') or record.country_id.id
+                    vals['vat'] = record.fix_eu_vat_number(country_id, vat)
+        return super(ResPartner, self).write(vals)
+
+    @api.constrains('country_id')
+    def update_vat_code_country(self):
+        for record in self:
+            country_id = record.country_id.id
+            vat = record.vat
+            #check with country code as prefix of the TIN
+            if vat:
+                if self.env.context.get('company_id'):
+                    company = self.env['res.company'].browse(self.env.context['company_id'])
+                else:
+                    company = self.env.user.company_id
+                if company.vat_check_vies:
+                    # force full VIES online check
+                    check_func = self.vies_vat_check
+                else:
+                    # quick and partial off-line checksum validation
+                    check_func = self.simple_vat_check
+                vat_country, vat_number = self._split_vat(vat)
+                if not check_func(vat_country, vat_number):
+                    vat_with_code = record.fix_eu_vat_number(country_id, vat)
+                    if country_id and vat != vat_with_code:
+                        record.with_context({'ignore_vat_update': True}).write({
+                            'vat': vat_with_code
+                            })
+
     @api.constrains('vat')
     def _check_vat_unique(self):
         for record in self:
