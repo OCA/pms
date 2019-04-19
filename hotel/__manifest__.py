@@ -61,6 +61,8 @@
         'data/email_template_reserv.xml',
         'data/email_template_exit.xml',
         'wizard/wizard_reservation.xml',
+        'report/hotel_folio_templates.xml',
+        'report/hotel_folio.xml'
     ],
     'installable': True
 }

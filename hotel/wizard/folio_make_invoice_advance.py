@@ -391,7 +391,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'fiscal_position_id': fiscal_position.id or self.partner_invoice_id.property_account_position_id.id,
             'company_id': company.id,
             'user_id': user and user.id,
-            'team_id': team.id
+            'team_id': team.id,
+            'comment': self.folio_ids[0].note
         }
         return invoice_vals
 
