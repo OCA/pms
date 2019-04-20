@@ -242,7 +242,8 @@ class HotelReservationImporter(Component):
             )
         if is_cancellation:
             binding.odoo_id.with_context({
-                'connector_no_export': True}).action_cancel()
+                'connector_no_export': True,
+                'ota_limits': False}).action_cancel()
             # WuBook always add +1 in the channel manager for cancelled reservation
             # However, the quota in Odoo has preference in the availability
             cancelled_dates = binding.reservation_line_ids.mapped('date')
