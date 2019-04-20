@@ -856,3 +856,32 @@ class HotelFolio(models.Model):
                     info_grouped.append(vals)
         return sorted(sorted(info_grouped,key=lambda k: k['num'], reverse=True),
                       key=lambda k: k['room_type']['id'])
+
+    @api.multi
+    def _get_tax_amount_by_group(self):
+        self.ensure_one()
+        res = {}
+        for line in self.room_lines:
+            price_reduce = line.price_total
+            product = line.room_type_id.product_id
+            taxes = line.tax_ids.compute_all(price_reduce, quantity=1, product=product)['taxes']
+            for tax in line.tax_ids:
+                group = tax.tax_group_id
+                res.setdefault(group, {'amount': 0.0, 'base': 0.0})
+                for t in taxes:
+                    if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
+                        res[group]['amount'] += t['amount']
+                        res[group]['base'] += t['base']
+        for line in self.service_ids:
+            price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
+            taxes = line.tax_ids.compute_all(price_reduce, quantity=line.product_qty, product=line.product_id)['taxes']
+            for tax in line.tax_ids:
+                group = tax.tax_group_id
+                res.setdefault(group, {'amount': 0.0, 'base': 0.0})
+                for t in taxes:
+                    if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
+                        res[group]['amount'] += t['amount']
+                        res[group]['base'] += t['base']
+        res = sorted(res.items(), key=lambda l: l[0].sequence)
+        res = [(l[0].name, l[1]['amount'], l[1]['base'], len(res)) for l in res]
+        return res

@@ -56,7 +56,6 @@
                         <tr>
                             <th>Description</th>
                             <th class="text-right">Quantity</th>
-                            <th class="text-right">Unit Price</th>
                             <th t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">Disc.(%)</th>
                             <th class="text-right">Taxes</th>
                             <th class="text-right" groups="sale.group_show_price_subtotal">Amount</th>
@@ -66,29 +65,52 @@
                    <tbody class="sale_tbody">
                             <!-- Lines associated -->
                             <t t-foreach="doc.room_lines" t-as="l">
-                                <tr>
-                                    <td><span t-field="l.name"/></td>
-                                    <td class="text-right">
-                                        <span t-field="l.nights"/>
-                                    </td>
-                                    <!--<td class="text-right">
-                                        <span t-field="l.price_unit"/>
-                                    </td>-->
-                                    <td t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">
-                                        <span t-field="l.discount"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <span t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_ids))"/>
-                                    </td>
-                                    <td class="text-right" groups="sale.group_show_price_subtotal">
-                                        <span t-field="l.price_subtotal"
-                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                    </td>
-                                    <td class="text-right" groups="sale.group_show_price_total">
-                                        <span t-field="l.price_total"
-                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                    </td>
-                                </tr>
+                                <t t-if="l.to_print == True and l.price_total > 0">
+                                    <tr>
+                                        <td><span t-field="l.name"/></td>
+                                        <td class="text-right">
+                                            <span t-field="l.nights"/>
+                                        </td>
+                                        <td t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">
+                                            <span t-field="l.discount"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_ids))"/>
+                                        </td>
+                                        <td class="text-right" groups="sale.group_show_price_subtotal">
+                                            <span t-field="l.price_subtotal"
+                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                        </td>
+                                        <td class="text-right" groups="sale.group_show_price_total">
+                                            <span t-field="l.price_total"
+                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-foreach="doc.service_ids" t-as="l">
+                                <t t-if="l.to_print == True and l.price_total > 0">
+                                    <tr>
+                                        <td><span t-field="l.name"/></td>
+                                        <td class="text-right">
+                                            <span t-field="l.product_qty"/>
+                                        </td>
+                                        <td t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">
+                                            <span t-field="l.discount"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_ids))"/>
+                                        </td>
+                                        <td class="text-right" groups="sale.group_show_price_subtotal">
+                                            <span t-field="l.price_subtotal"
+                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                        </td>
+                                        <td class="text-right" groups="sale.group_show_price_total">
+                                            <span t-field="l.price_total"
+                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
                             </t>
                     </tbody>
                 </table>
@@ -104,7 +126,7 @@
                                         t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
                                 </td>
                             </tr>
-                            <!--<t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">
+                            -<t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">
                                 <tr style="border-bottom:1px solid #dddddd;">
                                     <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
                                         <td>
@@ -126,7 +148,7 @@
                                         </td>
                                     </t>
                                 </tr>
-                            </t>-->
+                            </t>
                             <tr class="border-black">
                                 <td><strong>Total</strong></td>
                                 <td class="text-right">
@@ -134,9 +156,59 @@
                                         t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
                                 </td>
                             </tr>
+                            <tr class="border-black">
+                                <td><strong>Pending Payment</strong></td>
+                                <td class="text-right">
+                                    <span t-field="doc.pending_amount"
+                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
+            </div>
+            <div>
+                <span t-if="doc.payment_ids">
+                    <table style="width:80%;">
+                        <thead>
+                            <tr>
+                                <th>Payment Ref.</th>
+                                <th>Payment Date</th>
+                                <th>Payment Method</th>
+                                <th>Paid Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="doc.payment_ids" t-as="l">
+                                <td t-esc="l.name" />
+                                <td t-esc="l.payment_date" />
+                                <td t-esc="l.journal_id.name" />
+                                <td t-esc="l.amount" />
+                            </tr>
+                        </tbody>
+                    </table>
+                </span>
+                <span t-if="doc.return_ids">
+                    <table style="width:80%;">
+                        <thead>
+                            <tr>
+                                <th>Return Ref.</th>
+                                <th>Return Date</th>
+                                <th>Return Method</th>
+                                <th>Return Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="doc.return_ids" t-as="r">
+                                <td t-esc="r.name" />
+                                <td t-esc="r.date" />
+                                <td t-esc="r.journal_id.name" />
+                                <t t-set="total_amount" t-value="sum(l.amount for l in r.line_ids)"/>
+                                <td t-esc="total_amount" />
+                            </tr>
+                        </tbody>
+                    </table>
+                </span>
             </div>
 
             <p t-field="doc.note" />

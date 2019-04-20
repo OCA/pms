@@ -127,6 +127,7 @@ class HotelService(models.Model):
     product_qty = fields.Integer('Quantity', default=1)
     days_qty = fields.Integer(compute="_compute_days_qty", store=True)
     is_board_service = fields.Boolean()
+    to_print = fields.Boolean('Print', help='Print in Folio Report')
     # Non-stored related field to allow portal user to see the image of the product he has ordered
     product_image = fields.Binary('Product Image', related="product_id.image", store=False, related_sudo=True)
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)

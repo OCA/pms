@@ -295,6 +295,7 @@ class HotelReservation(models.Model):
     has_checkout_to_send = fields.Boolean(
         related='folio_id.has_checkout_to_send',
         readonly=True)
+    to_print = fields.Boolean('Print', help='Print in Folio Report', default=True)
     # order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
     # product_id = fields.Many2one('product.product', related='order_line.product_id', string='Product')
     # product_uom = fields.Many2one('product.uom', string='Unit of Measure', required=True)
@@ -302,10 +303,11 @@ class HotelReservation(models.Model):
                                   related='pricelist_id.currency_id',
                                   string='Currency', readonly=True, required=True)
     invoice_status = fields.Selection([
-         ('invoiced', 'Fully Invoiced'),
-         ('to invoice', 'To Invoice'),
-         ('no', 'Nothing to Invoice')
-         ], string='Invoice Status', compute='_compute_invoice_status', store=True, readonly=True, default='no')
+        ('invoiced', 'Fully Invoiced'),
+        ('to invoice', 'To Invoice'),
+        ('no', 'Nothing to Invoice')
+        ], string='Invoice Status', compute='_compute_invoice_status',
+                                      store=True, readonly=True, default='no')
     tax_ids = fields.Many2many('account.tax',
                               string='Taxes',
                               domain=['|', ('active', '=', False), ('active', '=', True)])
@@ -741,7 +743,7 @@ class HotelReservation(models.Model):
     def onchange_room_availabiltiy_domain(self):
         self.ensure_one()
         if self.checkin and self.checkout:
-            if self.overbooking or self.reselling or self.state in ('cancelled'):
+            if self.overbooking or self.reselling:
                 return
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
@@ -1094,7 +1096,7 @@ class HotelReservation(models.Model):
     @api.model
     def _get_domain_reservations_occupation(self, dfrom, dto):
         #WARNING If add or remove domain items, update _hcalendar_get_count_reservations_json_data
-        # in calendar module hotel_calendar_management.py
+        # in calendar module hotel_calendar
         domain = [('reservation_line_ids.date', '>=', dfrom),
                   ('reservation_line_ids.date', '<=', dto),
                   ('state', '!=', 'cancelled'),
@@ -1141,9 +1143,7 @@ class HotelReservation(models.Model):
         if fields.Date.from_string(self.checkin) >= fields.Date.from_string(self.checkout):
             raise ValidationError(_('Room line Check In Date Should be \
                 less than the Check Out Date!'))
-        if not self.overbooking \
-                and self.state not in ('cancelled') \
-                and not self._context.get("ignore_avail_restrictions", False):
+        if not self.overbooking and not self._context.get("ignore_avail_restrictions", False):
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
                 (fields.Date.from_string(self.checkout) - timedelta(days=1)).
