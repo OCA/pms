@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import time
 from datetime import timedelta
+import readline
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import (
     float_is_zero,
@@ -155,6 +156,17 @@ class HotelReservation(models.Model):
                     fields.Date.from_string(res.checkout) - fields.Date.from_string(res.checkin)
                 ).days
 
+    @api.depends('folio_id', 'checkin', 'checkout')
+    def _compute_localizator(self):
+        for record in self:
+            localizator = str(record.folio_id.name)
+            checkout = int(re.sub("\D", "", record.checkout))
+            checkin = int(re.sub("\D", "", record.checkin))
+            localizator += '-' + (checkin + checkout) % 777
+            record.localizator = localizator
+
+    localizator = fields.Char('Localizator', compute='_compute_localizator',
+                              strore=True)
     name = fields.Text('Reservation Description', required=True)
     sequence = fields.Integer(string='Sequence', default=10)
 

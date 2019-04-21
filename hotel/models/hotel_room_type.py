@@ -22,10 +22,10 @@ class HotelRoomType(models.Model):
     board_service_room_type_ids = fields.One2many(
         'hotel.board.service.room.type', 'hotel_room_type_id', string='Board Services')
     room_amenity_ids = fields.Many2many('hotel.amenity',
-                                      'hotel_room_type_aminity_rel',
-                                      'room_type_ids', 'amenity_ids',
-                                      string='Room Type Amenities',
-                                      help='List of Amenities.')
+                                        'hotel_room_type_aminity_rel',
+                                        'room_type_ids', 'amenity_ids',
+                                        string='Room Type Amenities',
+                                        help='List of Amenities.')
 
     # TODO Hierarchical relationship for parent-child tree ?
     # parent_id = fields.Many2one ...
@@ -37,7 +37,7 @@ class HotelRoomType(models.Model):
     # Used for ordering
     sequence = fields.Integer('Sequence', default=0)
 
-    code_type = fields.Char('Code')
+    code_type = fields.Char('Code', required=True, )
 
     _order = "sequence, code_type, name"
 
@@ -45,6 +45,9 @@ class HotelRoomType(models.Model):
                          'code must be unique!')]
     # total number of rooms in this type
     total_rooms_count = fields.Integer(compute='_compute_total_rooms', store=True)
+
+    _sql_constraints = [
+        ('code_unique', 'unique(code_type)', 'Room Type Code must be unique!')]
 
     @api.depends('room_ids')
     def _compute_total_rooms(self):
@@ -111,3 +114,54 @@ class HotelRoomType(models.Model):
         for record in self:
             record.product_id.unlink()
         return super().unlink()
+
+    @api.model
+    def get_rate_room_types(self, **kwargs):
+        """
+        room_type_ids: Ids from room types to get rate, optional, if you
+            not use this param, the method return all room_types
+        from: Date from, mandatory
+        days: Number of days, mandatory
+        pricelist_id: Pricselist to use, optional
+        partner_id: Partner, optional
+        Return Dict Code Room Types: subdict with day, discount, price
+        """
+        vals = {}
+        room_type_ids = kwargs.get('room_type_ids', False)
+        room_types = self.env['hotel.room.type'].browse(room_type_ids) if \
+            room_type_ids else self.env['hotel.room.type'].search([])
+        date_from = kwargs.get('date_from', False)
+        days = kwargs.get('days', False)
+        discount = kwargs.get('discount', False)
+        if not date_from or not days:
+            raise ValidationError(_('Date From and days are mandatory'))
+        partner_id = kwargs.get('partner_id', False)
+        partner = self.env['res.partner'].browse(partner_id)
+        pricelist_id = partner.property_product_pricelist.id if partner else \
+            self.env['ir.default'].sudo().get(
+                'res.config.settings',
+                'default_pricelist_id')
+        pricelist_id = kwargs.get('pricelist_id',
+                                  partner.property_product_pricelist.id and
+                                  partner.property_product_pricelist.id or
+                                  self.env['ir.default'].sudo().get(
+                                      'res.config.settings',
+                                      'default_pricelist_id'))
+        vals.update({
+            'partner_id': partner_id if partner_id else False,
+            'discount': discount,
+            })
+        rate_vals = {}
+        for room_type in room_types:
+            vals.update({'room_type_id': room_type.id})
+            room_vals = self.env['hotel.reservation'].prepare_reservation_lines(
+                date_from,
+                days,
+                pricelist_id=pricelist_id,
+                vals=vals,
+                update_old_prices=False)
+            rate_vals.update({
+                room_type.code_type: [item[2] for item in \
+                               room_vals['reservation_line_ids'] if item[2]]
+                })
+        return rate_vals
