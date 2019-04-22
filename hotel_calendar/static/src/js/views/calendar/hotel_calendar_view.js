@@ -92,24 +92,6 @@ var CalendarMenu = Widget.extend({
       return $.when();
     },
 
-    toggle_show_adv_controls: function() {
-      var $pms_search = $(document).find('#pms-search');
-      if ($pms_search.position().top < 0)
-      {
-        var $navbar = $('.navbar');
-        var toPos = $navbar.height() + parseInt($navbar.css('border-top-width'), 10) + parseInt($navbar.css('border-bottom-width'), 10);
-        $pms_search.animate({
-          'top': `${toPos}px`,
-          'opacity': 1.0,
-        }, 'fast');
-      } else {
-        $pms_search.animate({
-          'top': `-${$pms_search.height()}px`,
-          'opacity': 0.0,
-        }, 'slow');
-      }
-    },
-
     toggle_show_notification: function() {
       this._show_notifications = !this._show_notifications;
       this._rpc({
