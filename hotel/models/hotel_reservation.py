@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import time
 from datetime import timedelta
-import readline
+import re
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import (
     float_is_zero,
@@ -159,14 +159,14 @@ class HotelReservation(models.Model):
     @api.depends('folio_id', 'checkin', 'checkout')
     def _compute_localizator(self):
         for record in self:
-            localizator = str(record.folio_id.name)
-            checkout = int(re.sub("\D", "", record.checkout))
-            checkin = int(re.sub("\D", "", record.checkin))
-            localizator += '-' + (checkin + checkout) % 777
+            localizator = re.sub("[^0-9]", "", record.folio_id.name)
+            checkout = int(re.sub("[^0-9]", "", record.checkout))
+            checkin = int(re.sub("[^0-9]", "", record.checkin))
+            localizator += str((checkin + checkout) % 99)
             record.localizator = localizator
 
     localizator = fields.Char('Localizator', compute='_compute_localizator',
-                              strore=True)
+                              store=True)
     name = fields.Text('Reservation Description', required=True)
     sequence = fields.Integer(string='Sequence', default=10)
 
