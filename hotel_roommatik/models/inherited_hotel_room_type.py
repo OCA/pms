@@ -1,9 +1,13 @@
 # Copyright 2019 Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, models
+from odoo import api, models, fields
 from datetime import datetime, timedelta
+from odoo.tools import (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT)
 import logging
+_logger = logging.getLogger(__name__)
 
 
 class HotelRoomType(models.Model):
@@ -12,38 +16,53 @@ class HotelRoomType(models.Model):
 
     @api.model
     def rm_get_all_room_type_rates(self):
-        # types = self.env['hotel.room.type'].search(['active', '=', True])
-        types = self.env['hotel.room.type'].search([])
-        dfrom = datetime.now()
-        dto = (dfrom + timedelta(hours=24))
-
+        room_types = self.env['hotel.room.type'].search([])
+        tz_hotel = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'tz_hotel')
+        dfrom = fields.Date.context_today(self.with_context(
+            tz=tz_hotel))
+        dto = (fields.Date.from_string(dfrom) + timedelta(days=1)).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
         room_type_rates = []
-        for i, type in enumerate(types):
-            frees = self.check_availability_room_type(dfrom, dto, type.id)
-            if any(frees):
-                room_type_rates.append({
-                    "RoomType": {
-                        "Id": type.id,
-                        "Name": type.product_id.name,
-                        "GuestNumber": type.get_capacity()
-                        },
-                    "TimeInterval": {
-                        "Id": "1",
-                        "Name": "1 day",
-                        "Minutes": "1440"
-                        },
-                    "Price": "",
-                    "IsAvailable": "",
-                })
-
+        for room_type in room_types:
+            free_rooms = self.check_availability_room_type(dfrom, dto,
+                                                           room_type.id)
+            rates = self.get_rate_room_types(
+                room_type_ids=room_type.id,
+                date_from=dfrom,
+                days=1,
+                partner_id=False)
+            room_type_rates.append({
+                "RoomType": {
+                    "Id": room_type.id,
+                    "Name": room_type.name,
+                    "GuestNumber": room_type.get_capacity()
+                    },
+                "TimeInterval": {
+                    "Id": "1",
+                    "Name": "1 day",
+                    "Minutes": "1440"
+                    },
+                "Price": rates['price'],
+                "IsAvailable": any(free_rooms),
+            })
         return room_type_rates
 
     @api.model
-    def rm_get_prices(self, start_date, time_interval, number_intervals, room_type, guest_number):
-        # TODO: FALTA POR COMPLETO
-        _logger = logging.getLogger(__name__)
-        _logger.info('ROOMMATIK get prices date %s Room: %s for %s Guests',
-                     start_date,
-                     room_type,
-                     guest_number)
-        return {'start_date': start_date, 'time_interval': time_interval, 'number_intervals': number_intervals}
+    def rm_get_prices(self, start_date, number_intervals, room_type, guest_number):
+        start_date = fields.Datetime.from_string(start_date)
+        end_date = start_date + timedelta(days=number_intervals)
+        dfrom = start_date.strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
+        dto = end_date.strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
+        free_rooms = self.check_availability_room_type(dfrom, dto,
+                                                       room_type.id)
+        if free_rooms:
+            rates = self.get_rate_room_types(
+                room_type_ids=room_type.id,
+                date_from=dfrom,
+                days=number_intervals,
+                partner_id=False)
+            return [item['price'] for item in rates.get(room_type.id)]
+        return []

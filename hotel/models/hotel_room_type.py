@@ -161,7 +161,7 @@ class HotelRoomType(models.Model):
                 vals=vals,
                 update_old_prices=False)
             rate_vals.update({
-                room_type.code_type: [item[2] for item in \
+                room_type.id: [item[2] for item in \
                                room_vals['reservation_line_ids'] if item[2]]
                 })
         return rate_vals

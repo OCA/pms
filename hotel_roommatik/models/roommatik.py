@@ -3,7 +3,10 @@
 
 import json
 from datetime import datetime
-from odoo import api, models
+from odoo import api, models, fields
+from odoo.tools import (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT)
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -14,10 +17,13 @@ class RoomMatik(models.Model):
     @api.model
     def rm_get_date(self):
         # RoomMatik API Gets the current business date/time. (MANDATORY)
-        utc_s = '+01:00'
-        # TODO Need know UTC in the machine/hotel
+        tz_hotel = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'tz_hotel')
+        self_tz = self.with_context(tz=tz_hotel)
+        mynow = fields.Datetime.context_timestamp(self_tz, datetime.now()).\
+            strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         json_response = {
-            'dateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f") + utc_s
+            'dateTime': mynow
             }
         json_response = json.dumps(json_response)
         return json_response
@@ -26,7 +32,7 @@ class RoomMatik(models.Model):
     def rm_get_reservation(self, reservation_code):
         # RoomMatik Gets a reservation ready for check-in
         # through the provided code. (MANDATORY)
-        apidata = self.env['hotel.folio']
+        apidata = self.env['hotel.reservation']
         return apidata.rm_get_reservation(reservation_code)
 
     @api.model
@@ -62,12 +68,13 @@ class RoomMatik(models.Model):
         return apidata.rm_get_all_room_type_rates()
 
     @api.model
-    def rm_get_prices(self, start_date, time_interval, number_intervals, room_type, guest_number):
+    def rm_get_prices(self, start_date, number_intervals, room_type, guest_number):
         # Gets some prices related to different dates of the same stay.
         # return ArrayOfDecimal
+        room_type = self.env['hotel.room.type'].browse(room_type)
         _logger.info('ROOMMATIK Get Prices')
         apidata = self.env['hotel.room.type']
-        return apidata.rm_get_prices(start_date, time_interval, number_intervals, room_type, guest_number)
+        return apidata.rm_get_prices(start_date, number_intervals, room_type, guest_number)
 
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()

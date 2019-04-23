@@ -38,22 +38,21 @@ class HotelFolio(models.Model):
                     'email': room_partner["Customer"]["Contact"]["Email"],
                     'mobile': room_partner["Customer"]["Contact"]["Mobile"],
                     'document_type': room_partner["Customer"][
-                                                 "IdentityDocument"]["Type"],
+                        "IdentityDocument"]["Type"],
                     'document_number': room_partner["Customer"][
-                                                 "IdentityDocument"]["Number"],
+                        "IdentityDocument"]["Number"],
                     'document_expedition_date': datetime.strptime(room_partner[
-                                            "Customer"]["IdentityDocument"][
-                                            "ExpiryDate"], "%d%m%Y").date(),
+                        "Customer"]["IdentityDocument"]["ExpiryDate"], "%d%m%Y").date(),
                     'gender': room_partner["Customer"]["Sex"],
                     'birthdate_date': datetime.strptime(room_partner[
-                                    "Customer"]["Birthday"], "%d%m%Y").date(),
+                        "Customer"]["Birthday"], "%d%m%Y").date(),
                     'code_ine_id': room_partner["Customer"][
-                                    "Address"]["Province"],
+                        "Address"]["Province"],
                     'state': 'booking',
                     }
                 try:
                     record = self.env['hotel.checkin.partner'].create(
-                                                        checkin_partner_val)
+                        checkin_partner_val)
                     _logger.info('ROOMMATIK check-in Document: %s in \
                                                     (%s Reservation) ID:%s.',
                                  checkin_partner_val['document_number'],
@@ -62,9 +61,6 @@ class HotelFolio(models.Model):
                     stay['Id'] = record.id
                     json_response = stay
                 except:
-                    # Debug Stop -------------------
-                    import wdb; wdb.set_trace()
-                    # Debug Stop -------------------
                     json_response = {'Estate': 'Error not create Checkin'}
                     _logger.error('ROOMMATIK writing %s in reservation: %s).',
                                   checkin_partner_val['document_number'],
@@ -102,7 +98,7 @@ class HotelFolio(models.Model):
             for idx, cpi in enumerate(reserva.reservation_id.checkin_partner_ids):
                 stay['Customers'].append({'Customer': {}})
                 stay['Customers'][idx]['Customer'] = self.env[
-                                'res.partner'].rm_get_a_customer(cpi.partner_id.id)
+                    'res.partner'].rm_get_a_customer(cpi.partner_id.id)
             stay['TimeInterval'] = {}
             stay['TimeInterval']['Id'] = {}
             stay['TimeInterval']['Name'] = {}

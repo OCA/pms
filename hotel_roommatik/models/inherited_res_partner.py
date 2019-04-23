@@ -27,7 +27,7 @@ class ResPartner(models.Model):
                             partner_res[0].document_number,
                             partner_res[0].id,)
             try:
-                partner_res[0].update(self.rm_preare_customer(customer))
+                partner_res[0].update(self.rm_prepare_customer(customer))
                 write_custumer = partner_res[0]
             except:
                 _logger.error('ROOMMATIK Rewriting [%s] in BD [ %s ] ID',
@@ -36,7 +36,7 @@ class ResPartner(models.Model):
         else:
             # Create new customer
             try:
-                write_custumer = self.create(self.rm_preare_customer(customer))
+                write_custumer = self.create(self.rm_prepare_customer(customer))
                 _logger.info('ROOMMATIK Writing %s Name: %s',
                              customer['IdentityDocument']['Number'],
                              customer['FirstName'])
@@ -48,14 +48,16 @@ class ResPartner(models.Model):
         json_response = json.dumps(json_response)
         return json_response
 
-    def rm_preare_customer(self, customer):
+    def rm_prepare_customer(self, customer):
         # Check Sex string
         if customer['Sex'] not in {'male', 'female'}:
             customer['Sex'] = ''
         # Check state_id
         city_srch = self.env['res.country.state'].search([
             ('name', 'ilike', customer['Address']['Province'])])
-        # Create Street2
+        country = self.env['res.country'].search([
+            ('name', 'ilike', customer['Address']['Province'])])
+        # Create Street2s
         street_2 = customer['Address']['House']
         street_2 += ' ' + customer['Address']['Flat']
         street_2 += ' ' + customer['Address']['Number']
