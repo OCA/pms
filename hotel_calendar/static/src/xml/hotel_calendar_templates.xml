@@ -370,12 +370,10 @@
 </t>
 
 <t t-name="HotelCalendar.SettingsMenu.Global">
-		<li><a href="#" data-action="toggle_show_adv_controls">Toggle Advance Controls</a></li>
-		<li class="divider"/>
     <li><a href="#" data-action="toggle_show_notification"><span t-if="manager._show_notifications" class="fa fa-check"/> Show Notifications</a></li>
-		<li><a href="#" data-action="toggle_show_pricelist"><span t-if="manager._show_pricelist" class="fa fa-check"/> Show Pricelist</a></li>
-		<li><a href="#" data-action="toggle_show_availability"><span t-if="manager._show_availability" class="fa fa-check"/> Show Availability</a></li>
-		<li><a href="#" data-action="toggle_show_divide_rooms_by_capacity"><span t-if="manager._show_divide_rooms_by_capacity" class="fa fa-check"/> Divide Rooms by Capacity</a></li>
+	<li><a href="#" data-action="toggle_show_pricelist"><span t-if="manager._show_pricelist" class="fa fa-check"/> Show Pricelist</a></li>
+	<li><a href="#" data-action="toggle_show_availability"><span t-if="manager._show_availability" class="fa fa-check"/> Show Availability</a></li>
+	<li><a href="#" data-action="toggle_show_divide_rooms_by_capacity"><span t-if="manager._show_divide_rooms_by_capacity" class="fa fa-check"/> Divide Rooms by Capacity</a></li>
 </t>
 
 </template>

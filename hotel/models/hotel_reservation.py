@@ -755,7 +755,7 @@ class HotelReservation(models.Model):
     def onchange_room_availabiltiy_domain(self):
         self.ensure_one()
         if self.checkin and self.checkout:
-            if self.overbooking or self.reselling:
+            if self.overbooking or self.reselling or self.state in ('cancelled'):
                 return
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
@@ -1155,7 +1155,9 @@ class HotelReservation(models.Model):
         if fields.Date.from_string(self.checkin) >= fields.Date.from_string(self.checkout):
             raise ValidationError(_('Room line Check In Date Should be \
                 less than the Check Out Date!'))
-        if not self.overbooking and not self._context.get("ignore_avail_restrictions", False):
+        if not self.overbooking \
+                and self.state not in ('cancelled') \
+                and not self._context.get("ignore_avail_restrictions", False):
             occupied = self.env['hotel.reservation'].get_reservations(
                 self.checkin,
                 (fields.Date.from_string(self.checkout) - timedelta(days=1)).
