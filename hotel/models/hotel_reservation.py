@@ -368,7 +368,7 @@ class HotelReservation(models.Model):
         if 'room_id' not in vals:
             vals.update(self._autoassign(vals))
         vals.update(self._prepare_add_missing_fields(vals))
-        if 'folio_id' in vals:
+        if 'folio_id' in vals and not 'channel_type' in vals:
             folio = self.env["hotel.folio"].browse(vals['folio_id'])
             vals.update({'channel_type': folio.channel_type})
         elif 'partner_id' in vals:
