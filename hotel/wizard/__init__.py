@@ -27,3 +27,4 @@ from . import split_reservation
 from . import duplicate_reservation
 from . import massive_price_reservation_days
 from . import wizard_reservation
+from . import service_on_day
