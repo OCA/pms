@@ -45,8 +45,8 @@ class AccountInvoice(models.Model):
     def action_invoice_open(self):
         to_open_invoices_without_vat = self.filtered(lambda inv: inv.state != 'open' and inv.partner_id.vat == False)
         to_open_invoices_without_country = self.filtered(lambda inv: inv.state != 'open' and not inv.partner_id.country_id)
-        if to_open_invoices_without_vat or to_open_invoices_without_country and \
-                self.env.context.get('allow_open_invoice', False):
+        if (to_open_invoices_without_vat or to_open_invoices_without_country) and \
+                self.env.context.get('validate_vat_number', True):
             vat_error = _("We need the VAT and Country of the following companies")
             for invoice in to_open_invoices_without_vat:
                 vat_error += ", " + invoice.partner_id.name
