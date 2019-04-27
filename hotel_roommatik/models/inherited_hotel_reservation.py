@@ -10,16 +10,33 @@ from dateutil import tz
 import json
 import logging
 _logger = logging.getLogger(__name__)
-import random
-
 
 class HotelReservation(models.Model):
 
     _inherit = 'hotel.reservation'
 
     @api.model
+    def _computed_deposit_roommatik(self, rm_localizator):
+        reservations = self.env['hotel.reservation'].search([
+            ('localizator', '=', rm_localizator)])
+        folio = reservations[0].folio_id
+        # We dont have the payments by room, that's why we have to computed
+        # the proportional deposit part if the folio has more rooms that the
+        # reservations code (this happens when in the same folio are
+        # reservations with different checkins/outs convinations)
+        if len(folio.room_lines) > len(reservations) and folio.invoices_paid > 0:
+
+            total_reservations = sum(reservations.mapped('price_total'))
+            paid_in_folio = folio.invoices_paid
+            total_in_folio = folio.amount_total
+            deposit = total_reservations * paid_in_folio / total_in_folio
+            return deposit
+        return folio.invoices_paid
+
+
+    @api.model
     def rm_get_reservation(self, code):
-        # BÚSQUEDA DE RESERVA POR LOCALIZADOR
+        # Search by localizator
         reservations = self._get_reservations_roommatik(code)
         reservations = reservations.filtered(
             lambda x: x.state in ('draft', 'confirm'))
@@ -38,7 +55,7 @@ class HotelReservation(models.Model):
                     'Id': reservations[0].localizator,
                     'Arrival': checkin,
                     'Departure': checkout,
-                    'Deposit': reservations[0].folio_id.invoices_paid,
+                    'Deposit': self._computed_deposit_roommatik(code)
                 }
             }
             for i, line in enumerate(reservations):

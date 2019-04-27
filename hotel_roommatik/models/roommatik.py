@@ -76,6 +76,21 @@ class RoomMatik(models.Model):
         apidata = self.env['hotel.room.type']
         return apidata.rm_get_prices(start_date, number_intervals, room_type, guest_number)
 
+    @api.model
+    def _rm_add_payment(self, code, payment):
+        apidata = self.env['account.payment']
+        reservation = self.env['hotel.reservation'].search([
+            '|', ('localizator', '=', code),
+            ('folio_id.name', '=', code)])
+        if reservation:
+            for cashpay in payment['PaymentTransaction']['CashPayments']:
+
+            for cashpay in payment['PaymentTransaction']['CreditCardPayments:']:
+
+
+
+
+        return apidata.rm_checkin_partner(stay)
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()
         # Debug Stop -------------------

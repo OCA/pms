@@ -159,11 +159,12 @@ class HotelReservation(models.Model):
     @api.depends('folio_id', 'checkin', 'checkout')
     def _compute_localizator(self):
         for record in self:
-            localizator = re.sub("[^0-9]", "", record.folio_id.name)
-            checkout = int(re.sub("[^0-9]", "", record.checkout))
-            checkin = int(re.sub("[^0-9]", "", record.checkin))
-            localizator += str((checkin + checkout) % 99)
-            record.localizator = localizator
+            if record.folio_id:
+                localizator = re.sub("[^0-9]", "", record.folio_id.name)
+                checkout = int(re.sub("[^0-9]", "", record.checkout))
+                checkin = int(re.sub("[^0-9]", "", record.checkin))
+                localizator += str((checkin + checkout) % 99)
+                record.localizator = localizator
 
     localizator = fields.Char('Localizator', compute='_compute_localizator',
                               store=True)

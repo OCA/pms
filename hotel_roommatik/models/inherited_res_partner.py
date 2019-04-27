@@ -53,10 +53,10 @@ class ResPartner(models.Model):
         if customer['Sex'] not in {'male', 'female'}:
             customer['Sex'] = ''
         # Check state_id
-        city_srch = self.env['res.country.state'].search([
+        state = self.env['res.country.state'].search([
             ('name', 'ilike', customer['Address']['Province'])])
         country = self.env['res.country'].search([
-            ('name', 'ilike', customer['Address']['Province'])])
+            ('code_alpha3', '=', customer['Address']['Country'])])
         # Create Street2s
         street_2 = customer['Address']['House']
         street_2 += ' ' + customer['Address']['Flat']
@@ -72,17 +72,17 @@ class ResPartner(models.Model):
             'city': customer['Address']['City'],
             'street': customer['Address']['Street'],
             'street2': street_2,
-            'state_id': city_srch.id,
+            'state_id': state.id if state else False,
+            'country': country.id if country else False,
             'phone': customer['Contact']['Telephone'],
             'mobile': customer['Contact']['Mobile'],
             'email': customer['Contact']['Email'],
             'document_number': customer['IdentityDocument']['Number'],
             'document_type': customer['IdentityDocument']['Type'],
             'document_expedition_date': datetime.strptime(customer[
-                'IdentityDocument']['ExpeditionDate'],
-                "%d%m%Y").date(),
+                'IdentityDocument']['ExpeditionDate'], "%d%m%Y").date(),
             }
-        return {k: v for k, v in metadata.items() if v is not ""}
+        return {k: v for k, v in metadata.items() if v != ""}
 
     def rm_get_a_customer(self, customer):
         # Prepare a Customer for RoomMatik
@@ -94,26 +94,27 @@ class ResPartner(models.Model):
         response['LastName2'] = partner.lastname2
         response['Birthday'] = partner.birthdate_date
         response['Sex'] = partner.gender
-        response['Address'] = {'Nationality': {},
-                               'Country': partner.country_id.name,
-                               'ZipCode': partner.zip,
-                               'City': partner.city,
-                               'Street': partner.street,
-                               'House': partner.street2,
-                               # 'Flat': "xxxxxxx",
-                               # 'Number': "xxxxxxx",
-                               'Province': partner.state_id.name,
-                               }
+        response['Address'] = {
+            #  'Nationality': 'xxxxx'
+            'Country': partner.country_id.code_alpha3,
+            'ZipCode': partner.zip,
+            'City': partner.city,
+            'Street': partner.street,
+            'House': partner.street2,
+            # 'Flat': "xxxxxxx",
+            # 'Number': "xxxxxxx",
+            'Province': partner.state_id.name,
+        }
         response['IdentityDocument'] = {
-                            'Number': partner.document_number,
-                            'Type': partner.document_type,
-                            'ExpiryDate': "",
-                            'ExpeditionDate': partner.document_expedition_date,
-                            }
+            'Number': partner.document_number,
+            'Type': partner.document_type,
+            'ExpiryDate': "",
+            'ExpeditionDate': partner.document_expedition_date,
+        }
         response['Contact'] = {
-                                'Telephone': partner.phone,
-                                # 'Fax': 'xxxxxxx',
-                                'Mobile': partner.mobile,
-                                'Email': partner.email,
-                                }
+            'Telephone': partner.phone,
+            # 'Fax': 'xxxxxxx',
+            'Mobile': partner.mobile,
+            'Email': partner.email,
+        }
         return response

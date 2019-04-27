@@ -276,6 +276,7 @@ class CallCenterReportWizard(models.TransientModel):
         worksheet.write('I1', _('In-Hora'), xls_cell_format_header)
         worksheet.write('J1', _('Checkout'), xls_cell_format_header)
         worksheet.write('K1', _('Creado por'), xls_cell_format_header)
+        worksheet.write('K1', _('Cancelado en'), xls_cell_format_header)
         worksheet.write('L1', _('Precio Final'), xls_cell_format_header)
         worksheet.write('M1', _('Precio Original'), xls_cell_format_header)
 
@@ -311,6 +312,8 @@ class CallCenterReportWizard(models.TransientModel):
             worksheet.write(k_res+offset, 9, checkout_date.strftime(date_format),
                             xls_cell_format_date)
             worksheet.write(k_res+offset, 10, v_res.create_uid.name)
+            worksheet.write(k_res+offset, 9, v_res.last_updated_res,
+                            xls_cell_format_date)
             worksheet.write(k_res+offset, 11, v_res.price_total,
                             xls_cell_format_money)
             worksheet.write(k_res+offset, 12, v_res.price_total - v_res.discount,

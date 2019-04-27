@@ -14,10 +14,8 @@ class HotelFolio(models.Model):
     def rm_checkin_partner(self, stay):
         _logger = logging.getLogger(__name__)
         # CHECK-IN
-        reservation_rm = self.env['hotel.reservation'].search([('id', '=',
-                                                                stay['Code'])])
+        reservation_rm = self.env['hotel.reservation'].browse(stay['ReservationCode'])
         # Need checkin?
-
         total_chekins = reservation_rm.checkin_partner_pending_count
         if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
             _logger.info('ROOMMATIK checkin %s customer in %s Reservation.',
@@ -35,35 +33,23 @@ class HotelFolio(models.Model):
                     'exit_date': datetime.strptime(stay["Departure"],
                                                    "%d%m%Y").date(),
                     'partner_id': room_partner["Customer"]["Id"],
-                    'email': room_partner["Customer"]["Contact"]["Email"],
-                    'mobile': room_partner["Customer"]["Contact"]["Mobile"],
-                    'document_type': room_partner["Customer"][
-                        "IdentityDocument"]["Type"],
-                    'document_number': room_partner["Customer"][
-                        "IdentityDocument"]["Number"],
-                    'document_expedition_date': datetime.strptime(room_partner[
-                        "Customer"]["IdentityDocument"]["ExpiryDate"], "%d%m%Y").date(),
-                    'gender': room_partner["Customer"]["Sex"],
-                    'birthdate_date': datetime.strptime(room_partner[
-                        "Customer"]["Birthday"], "%d%m%Y").date(),
-                    'code_ine_id': room_partner["Customer"][
-                        "Address"]["Province"],
-                    'state': 'booking',
                     }
                 try:
                     record = self.env['hotel.checkin.partner'].create(
                         checkin_partner_val)
-                    _logger.info('ROOMMATIK check-in Document: %s in \
+                    _logger.info('ROOMMATIK check-in partner: %s in \
                                                     (%s Reservation) ID:%s.',
-                                 checkin_partner_val['document_number'],
+                                 checkin_partner_val['partner_id'],
                                  checkin_partner_val['reservation_id'],
                                  record.id)
+                    record.action_on_board()
                     stay['Id'] = record.id
+                    stay['Room'] = reservation_rm.room_id.id
                     json_response = stay
                 except:
                     json_response = {'Estate': 'Error not create Checkin'}
                     _logger.error('ROOMMATIK writing %s in reservation: %s).',
-                                  checkin_partner_val['document_number'],
+                                  checkin_partner_val['partner_id'],
                                   checkin_partner_val['reservation_id'])
                     return json_response
 
@@ -78,24 +64,28 @@ class HotelFolio(models.Model):
     @api.model
     def rm_get_stay(self, code):
         # BUSQUEDA POR LOCALIZADOR
-        reserva = self.search([('id', '=', code)])
-        if any(reserva):
-            stay = {'Code': reserva.reservation_id.localizator}
-            stay['Id'] = reserva.folio_id.id
+        checkin_partner = self.search([('id', '=', code)])
+        default_arrival_hour = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_arrival_hour')
+        default_departure_hour = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'default_departure_hour')
+        if any(checkin_partner):
+            arrival = "%s %s" % (checkin_partner.enter_date,
+                                 default_arrival_hour)
+            departure = "%s %s" % (checkin_partner.exit_date,
+                                   default_departure_hour)
+            stay = {'Code': checkin_partner.id}
+            stay['Id'] = checkin_partner.id
             stay['Room'] = {}
-            stay['Room']['Id'] = reserva.reservation_id.room_id.id
-            stay['Room']['Name'] = reserva.reservation_id.room_id.name
+            stay['Room']['Id'] = checkin_partner.reservation_id.room_id.id
+            stay['Room']['Name'] = checkin_partner.reservation_id.room_id.name
             stay['RoomType'] = {}
-            stay['RoomType']['Id'] = reserva.reservation_id.room_type_id.id
-            stay['RoomType']['Name'] = reserva.reservation_id.room_type_id.name
-            stay['RoomType']['GuestNumber'] = "xxxxxxx"
-            stay['Arrival'] = (reserva.reservation_id.real_checkin +
-                               'T' + reserva.reservation_id.arrival_hour + ':00')
-            stay['Departure'] = (reserva.reservation_id.real_checkout +
-                                 'T' +
-                                 reserva.reservation_id.departure_hour + ':00')
+            stay['RoomType']['Id'] = checkin_partner.reservation_id.room_type_id.id
+            stay['RoomType']['Name'] = checkin_partner.reservation_id.room_type_id.name
+            stay['Arrival'] = arrival
+            stay['Departure'] = departure
             stay['Customers'] = []
-            for idx, cpi in enumerate(reserva.reservation_id.checkin_partner_ids):
+            for idx, cpi in enumerate(checkin_partner.reservation_id.checkin_partner_ids):
                 stay['Customers'].append({'Customer': {}})
                 stay['Customers'][idx]['Customer'] = self.env[
                     'res.partner'].rm_get_a_customer(cpi.partner_id.id)
@@ -103,13 +93,12 @@ class HotelFolio(models.Model):
             stay['TimeInterval']['Id'] = {}
             stay['TimeInterval']['Name'] = {}
             stay['TimeInterval']['Minutes'] = {}
-            stay['Adults'] = reserva.reservation_id.adults
+            stay['Adults'] = checkin_partner.reservation_id.adults
             stay['ReservationCode'] = {}
-            stay['Total'] = reserva.reservation_id.price_total
-            stay['Paid'] = (stay['Total'] -
-                            reserva.reservation_id.folio_pending_amount)
-            stay['Outstanding'] = {}
-            stay['Taxable'] = reserva.reservation_id.price_tax
+            stay['Total'] = checkin_partner.reservation_id.price_total
+            stay['Paid'] = checkin_partner.reservation_id.folio_id.invoices_paid
+            stay['Outstanding'] = checkin_partner.reservation_id.folio_id.pending_amount
+            stay['Taxable'] = checkin_partner.reservation_id.price_tax
 
         else:
             stay = {'Code': ""}
