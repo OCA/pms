@@ -25,6 +25,7 @@ class AccountPayment(models.Model):
                     'partner_type': 'customer',
                     'state': 'draft',
                 }
+                self.update(vals)
             for cashpay in payment['PaymentTransaction']['CreditCardPayments']:
                 vals = {
                     'journal_id': 15,  # TODO:config setting
@@ -38,5 +39,5 @@ class AccountPayment(models.Model):
                     'partner_type': 'customer',
                     'state': 'draft',
                 }
-        self.update(vals)
+                self.update(vals)
         self.with_context({'ignore_notification_post': True}).post()
