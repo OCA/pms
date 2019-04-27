@@ -244,6 +244,8 @@
                         <page name="services" string="Services"
                                 attrs="{'invisible': ['|',('reservation_type','in',('out')),
                                                       ('parent_reservation','!=',False)]}">
+                            <button name="%(action_service_on_day)d" string="Service on Day"
+                                    type="action" icon="fa-coffee"/>
                             <group string="Reservation Services" name="reservation_services">
                                 <field name="service_ids"
                                        context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id, 'form_view_ref':'hotel.hotel_service_view_form'}"

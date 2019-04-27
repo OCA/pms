@@ -34,6 +34,9 @@ class HotelServiceLine(models.Model):
 
     @api.depends('day_qty', 'service_id.price_total')
     def _compute_price_total(self):
+        """
+        Used to reports
+        """
         for record in self:
             record.price_total = (record.service_id.price_total * record.day_qty) / record.service_id.product_qty
 
