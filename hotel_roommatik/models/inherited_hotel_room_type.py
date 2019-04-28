@@ -3,9 +3,9 @@
 
 from odoo import api, models, fields
 from datetime import datetime, timedelta
-from odoo.tools import (
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT)
+from odoo.addons.hotel_roommatik.models.roommatik import (
+    DEFAULT_ROOMMATIK_DATE_FORMAT,
+    DEFAULT_ROOMMATIK_DATE_FORMAT)
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class HotelRoomType(models.Model):
         dfrom = fields.Date.context_today(self.with_context(
             tz=tz_hotel))
         dto = (fields.Date.from_string(dfrom) + timedelta(days=1)).strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
+            DEFAULT_ROOMMATIK_DATE_FORMAT)
         room_type_rates = []
         for room_type in room_types:
             free_rooms = self.check_availability_room_type(dfrom, dto,
@@ -53,9 +53,9 @@ class HotelRoomType(models.Model):
         start_date = fields.Datetime.from_string(start_date)
         end_date = start_date + timedelta(days=number_intervals)
         dfrom = start_date.strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
+            DEFAULT_ROOMMATIK_DATE_FORMAT)
         dto = end_date.strftime(
-            DEFAULT_SERVER_DATE_FORMAT)
+            DEFAULT_ROOMMATIK_DATE_FORMAT)
         free_rooms = self.check_availability_room_type(dfrom, dto,
                                                        room_type.id)
         if free_rooms:

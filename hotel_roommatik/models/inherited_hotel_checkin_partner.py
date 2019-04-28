@@ -3,6 +3,9 @@
 
 import json
 from odoo import api, models
+from odoo.addons.hotel_roommatik.models.roommatik import (
+    DEFAULT_ROOMMATIK_DATE_FORMAT,
+    DEFAULT_ROOMMATIK_DATETIME_FORMAT
 from datetime import datetime
 import logging
 
@@ -13,9 +16,20 @@ class HotelFolio(models.Model):
     @api.model
     def rm_checkin_partner(self, stay):
         _logger = logging.getLogger(__name__)
-        # CHECK-IN
-        reservation_rm = self.env['hotel.reservation'].browse(stay['ReservationCode'])
-        # Need checkin?
+        if not stay.get('ReservationCode'):
+            reservation_obj = self.env['hotel.reservation']
+            vals = {
+                checkin: datetime.strptime(stay["Arrival"],
+                                           DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
+                checkout: datetime.strptime(stay["Departure"],
+                                           DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
+                adults: stay['Adults'],
+                room_type_id: stay['RoomType'],
+                partner_id: stay["Customers"][0]["Id"]
+            }
+            reservation_rm = reservation_obj.create(vals)
+        else:
+            reservation_rm = self.env['hotel.reservation'].browse(stay['ReservationCode'])
         total_chekins = reservation_rm.checkin_partner_pending_count
         if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
             _logger.info('ROOMMATIK checkin %s customer in %s Reservation.',

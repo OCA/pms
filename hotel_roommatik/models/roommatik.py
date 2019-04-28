@@ -10,6 +10,11 @@ from odoo.tools import (
 import logging
 _logger = logging.getLogger(__name__)
 
+DEFAULT_ROOMMATIK_DATE_FORMAT = "%Y-%m-%d"
+DEFAULT_ROOMMATIK_TIME_FORMAT = "%H:%M:%S"
+DEFAULT_ROOMMATIK_DATETIME_FORMAT = "%s %s" % (
+    DEFAULT_ROOMMATIK_DATE_FORMAT,
+    DEFAULT_ROOMMATIK_TIME_FORMAT)
 
 class RoomMatik(models.Model):
     _name = 'roommatik.api'
@@ -21,7 +26,7 @@ class RoomMatik(models.Model):
             'res.config.settings', 'tz_hotel')
         self_tz = self.with_context(tz=tz_hotel)
         mynow = fields.Datetime.context_timestamp(self_tz, datetime.now()).\
-            strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            strftime(DEFAULT_ROOMMATIK_DATETIME_FORMAT)
         json_response = {
             'dateTime': mynow
             }
@@ -33,7 +38,7 @@ class RoomMatik(models.Model):
         # RoomMatik Gets a reservation ready for check-in
         # through the provided code. (MANDATORY)
         apidata = self.env['hotel.reservation']
-        return apidata.rm_get_reservation(reservation_code)
+        return apidata.sudo().rm_get_reservation(reservation_code)
 
     @api.model
     def rm_add_customer(self, customer):

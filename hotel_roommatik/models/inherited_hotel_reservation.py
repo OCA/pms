@@ -2,9 +2,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, fields
-from odoo.tools import (
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT)
+from odoo.addons.hotel_roommatik.models.roommatik import (
+    DEFAULT_ROOMMATIK_DATE_FORMAT,
+    DEFAULT_ROOMMATIK_DATETIME_FORMAT
 from datetime import datetime, timedelta
 from dateutil import tz
 import json
