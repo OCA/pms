@@ -78,8 +78,8 @@
         <field name="inherit_id" ref="hotel.hotel_reservation_view_search" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='folio_id']" position="after">
-                <field name="ota_reservation_id" />
-                <field name="ota_id" />
+                <field name="ota_reservation_id" string="Id on OTA"/>
+                <field name="ota_id" string="OTA"/>
                 <field name="external_id" />
             </xpath>
             <xpath expr="//group" position="inside">
