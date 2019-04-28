@@ -22,7 +22,6 @@
         'base_iso3166'
     ],
     'data': [
-        'views/inherit_hotel_reservation.xml',
     ],
     'demo': [
     ],
