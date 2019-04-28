@@ -26,6 +26,8 @@
                                   domain="[('is_company','=', False)]"/>
                             <field name="enter_date"/>
                             <field name="exit_date"/>
+                            <field name="arrival_hour"/>
+                            <field name="departure_hour"/>
                         </group>
                         <group name="group_left">
                             <field name="reservation_id"/>

@@ -124,3 +124,6 @@ class HotelCheckinPartner(models.Model):
                 raise UserError(
                     _('To perform the checkin the following data are missing:\
                     %s') % (', '.join(missing_fields)))
+            if not record.reservation_id.segmentation_ids:
+                raise UserError(
+                    _('To perform the checkin the segmentation is required'))
