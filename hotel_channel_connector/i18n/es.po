@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-13 22:02+0000\n"
-"PO-Revision-Date: 2019-03-13 23:37+0100\n"
+"POT-Creation-Date: 2019-04-28 21:37+0000\n"
+"PO-Revision-Date: 2019-04-28 23:44+0200\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -30,7 +30,7 @@ msgid " The restriction plan [%s] should be delete from the channel manager."
 msgstr "El plan de restricciones [%s] debe ser eliminado desde el Channel Manager"
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:186
+#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:177
 #, python-format
 msgid " The room type [%s] should be delete from the channel manager."
 msgstr "El tipo de habitación [%s] debe ser eliminado desde el Channel Manager"
@@ -46,21 +46,6 @@ msgid "# Sales"
 msgstr "# Ventas"
 
 #. module: hotel_channel_connector
-#: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_massive_changes_wizard_view_form
-msgid "<strong> Max. Avail.</strong>"
-msgstr "<strong> Disponibilidad Máxima </strong>"
-
-#. module: hotel_channel_connector
-#: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_massive_changes_wizard_view_form
-msgid "<strong> No OTA</strong>"
-msgstr "<strong> No OTA</strong>"
-
-#. module: hotel_channel_connector
-#: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_massive_changes_wizard_view_form
-msgid "<strong> Quota</strong>"
-msgstr "<strong> Cupo</strong>"
-
-#. module: hotel_channel_connector
 #: sql_constraint:channel.binding:0 sql_constraint:channel.hotel.reservation:0
 #: sql_constraint:channel.hotel.room.type:0
 #: sql_constraint:channel.hotel.room.type.availability:0
@@ -69,7 +54,7 @@ msgstr "<strong> Cupo</strong>"
 #: sql_constraint:channel.ota.info:0 sql_constraint:channel.product.pricelist:0
 #: sql_constraint:channel.product.pricelist.item:0
 msgid "A binding already exists with the same Channel ID."
-msgstr "AYa existe una conexión con este Channel ID."
+msgstr "Ya existe una conexión con este Channel ID."
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,help:hotel_channel_connector.field_channel_hotel_room_type_description_sale
@@ -128,11 +113,6 @@ msgstr "Activo"
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_activity_ids
 msgid "Activities"
 msgstr "Actividades"
-
-#. module: hotel_channel_connector
-#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_partner_invoice_type
-msgid "Address Type"
-msgstr "Tipo de dirección"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_adults
@@ -241,11 +221,6 @@ msgid "Big-sized image"
 msgstr "Imagen grande"
 
 #. module: hotel_channel_connector
-#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_partner_diff_invoicing
-msgid "Bill to another Address"
-msgstr "Facturar a otra dirección\t"
-
-#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_board_service_room_id
 msgid "Board Service"
 msgstr "Servicio"
@@ -253,7 +228,7 @@ msgstr "Servicio"
 #. module: hotel_channel_connector
 #: model:ir.model,name:hotel_channel_connector.model_hotel_board_service_room_type
 msgid "Board Service included in Room"
-msgstr "Servicios incluidos en la habitación"
+msgstr "BoardServices incluidos en la habitación"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_board_service_room_type_ids
@@ -270,6 +245,11 @@ msgstr "Bloqueado"
 #: selection:hotel.board.service.room.type,channel_service:0
 msgid "Breakfast Only"
 msgstr "Solo Desayuno"
+
+#. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_call_center
+msgid "Call Center"
+msgstr "Call Center"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_purchase_ok
@@ -311,6 +291,11 @@ msgid "Can't modify channel room type class"
 msgstr "No se puede modificar esta categoría de habitación"
 
 #. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_product_pricelist_cancelation_rule_id
+msgid "Cancelation Policy"
+msgstr "Políticas de cancelación"
+
+#. module: hotel_channel_connector
 #: selection:channel.hotel.reservation,channel_status:0
 msgid "Cancelled"
 msgstr "Cancelada"
@@ -342,7 +327,7 @@ msgid "Cause of out of service"
 msgstr "Causa de fuera de servicio"
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:107
+#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:97
 #, python-format
 msgid "Chanel short code can't be longer than 4 characters"
 msgstr "El código corto de canal no puede ser mayor de 4 carácters"
@@ -426,7 +411,7 @@ msgstr "Habitación del Channel"
 #. module: hotel_channel_connector
 #: model:ir.model,name:hotel_channel_connector.model_channel_hotel_room_type_restriction
 msgid "Channel Hotel Room Type Restriction"
-msgstr "Tipo Habitacion del Channel"
+msgstr "Channel Hotel Room Type Restriction"
 
 #. module: hotel_channel_connector
 #: model:ir.model,name:hotel_channel_connector.model_channel_hotel_room_type_restriction_item
@@ -451,6 +436,7 @@ msgstr "Channel Modificado"
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_ota_id
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_ota_info_ota_id
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_hotel_reservation_ota_id
 msgid "Channel OTA ID"
 msgstr "Channel OTA ID"
 
@@ -461,6 +447,7 @@ msgstr "Channel OTA Info"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_ota_reservation_id
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_hotel_reservation_ota_reservation_id
 msgid "Channel OTA Reservation Code"
 msgstr "Channel OTA Código de Reserva"
 
@@ -511,7 +498,7 @@ msgstr "Restricción del Channel"
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_backend_passwd
 msgid "Channel Service Password"
-msgstr "Password Channel"
+msgstr "Contraseña Channel"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_backend_security_token
@@ -650,6 +637,11 @@ msgid "Connect to Channel"
 msgstr "Conectar al Channel"
 
 #. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_consumed_on
+msgid "Consumed"
+msgstr "Consumido"
+
+#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_standard_price
 msgid "Cost"
 msgstr "Precio de coste"
@@ -708,6 +700,11 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_hotel_room_type_availability_create_date
 msgid "Created on"
 msgstr "Creado en"
+
+#. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_credit_card_details
+msgid "Credit Card Details"
+msgstr "Datos de tarjeta"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_currency_id
@@ -1151,6 +1148,11 @@ msgid "Hotel Reservation"
 msgstr "Reserva del hotel"
 
 #. module: hotel_channel_connector
+#: model:ir.model,name:hotel_channel_connector.model_hotel_room
+msgid "Hotel Room"
+msgstr "Habitaciones"
+
+#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_availability_channel_bind_ids
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_hotel_room_type_availability_channel_bind_ids
 msgid "Hotel Room Type Availability Connector Bindings"
@@ -1193,8 +1195,14 @@ msgstr "ID (identificación)"
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_ota_info_external_id
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_product_pricelist_external_id
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_product_pricelist_item_external_id
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_hotel_reservation_external_id
 msgid "ID on Channel"
 msgstr "ID en el Channel"
+
+#. module: hotel_channel_connector
+#: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_reservation_view_search
+msgid "Id on OTA"
+msgstr "ID en la OTA"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,help:hotel_channel_connector.field_channel_hotel_reservation_message_unread
@@ -1272,6 +1280,11 @@ msgstr "Importar Reservas"
 
 #. module: hotel_channel_connector
 #: model:ir.ui.view,arch_db:hotel_channel_connector.channel_backend_view_form
+msgid "Import Reservations in a Range"
+msgstr "Importar reservas en un rango"
+
+#. module: hotel_channel_connector
+#: model:ir.ui.view,arch_db:hotel_channel_connector.channel_backend_view_form
 msgid "Import Restriction Plans"
 msgstr "Importar Planes de Restricciones"
 
@@ -1296,6 +1309,11 @@ msgid "Imports"
 msgstr "Importados"
 
 #. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_customer_sleep_here
+msgid "Include customer"
+msgstr "Incluir cliente"
+
+#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_property_account_income_id
 msgid "Income Account"
 msgstr "Cuenta de ingresos"
@@ -1304,6 +1322,11 @@ msgstr "Cuenta de ingresos"
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_incoming_qty
 msgid "Incoming"
 msgstr "Entrada"
+
+#. module: hotel_channel_connector
+#: model:ir.model.fields,help:hotel_channel_connector.field_channel_hotel_reservation_customer_sleep_here
+msgid "Indicates if the customer                                          sleeps in this room"
+msgstr "Indica si el cliente                                          duerme en esta habitación"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_categ_id
@@ -1511,6 +1534,11 @@ msgid "List of adults there in guest list. "
 msgstr "Adultos en la lista de huéspedes."
 
 #. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_localizator
+msgid "Localizator"
+msgstr "Localizator"
+
+#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_location_id
 msgid "Location"
 msgstr "Ubicación"
@@ -1710,9 +1738,20 @@ msgid "Number of unread messages"
 msgstr "Número de mensajes no leidos"
 
 #. module: hotel_channel_connector
+#: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_reservation_view_form
+#: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_reservation_view_search
+msgid "OTA"
+msgstr "OTA"
+
+#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_ota_info_name
 msgid "OTA Name"
 msgstr "Nombre de OTA"
+
+#. module: hotel_channel_connector
+#: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_reservation_view_form
+msgid "OTA code"
+msgstr "código OTA"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_backend_ota_ids
@@ -1726,13 +1765,13 @@ msgid "OTA's Capacity"
 msgstr "Capacidad OTA"
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:99
+#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:89
 #, python-format
 msgid "OTA's capacity can't be greater than room type capacity"
 msgstr "La capacidad en la OTA no puede ser superior a la capacidad del tipo de habitación"
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:97
+#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:87
 #, python-format
 msgid "OTA's capacity can't be less than one"
 msgstr "La capacidad de la OTA no puede ser menor que uno"
@@ -1817,7 +1856,7 @@ msgstr "Descuento precio"
 #. module: hotel_channel_connector
 #: selection:hotel.channel.connector.issue,section:0
 msgid "Price Plan"
-msgstr "Price Plan"
+msgstr "Tarifa"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_product_pricelist_item_price_round
@@ -1837,7 +1876,7 @@ msgstr "Recargo de precio"
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_product_pricelist_odoo_id
 #: model:ir.ui.menu,name:hotel_channel_connector.pricelist_menu
 msgid "Pricelist"
-msgstr "Lista de precios"
+msgstr "Tarifas"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_backend_pricelist_from
@@ -1883,7 +1922,17 @@ msgstr "Tarifa de la ficha actúal"
 #. module: hotel_channel_connector
 #: model:ir.model,name:hotel_channel_connector.model_product_pricelist_item
 msgid "Pricelist item"
-msgstr "Item de Lista de precios"
+msgstr "Elemento Tarifa"
+
+#. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_to_print
+msgid "Print"
+msgstr "Imprimir"
+
+#. module: hotel_channel_connector
+#: model:ir.model.fields,help:hotel_channel_connector.field_channel_hotel_reservation_to_print
+msgid "Print in Folio Report"
+msgstr "Imprimir en el informe de la Ficha"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_product_variant_id
@@ -2027,7 +2076,7 @@ msgid "Refused"
 msgstr "Rechazado"
 
 #. module: hotel_channel_connector
-#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_partner_invoice_parent_id
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_partner_parent_id
 msgid "Related Company"
 msgstr "Empresa relacionada"
 
@@ -2058,6 +2107,11 @@ msgid "Reservation Description"
 msgstr "Descripción de Reserva"
 
 #. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_backend_reservation_from
+msgid "Reservation From"
+msgstr "Reserva Desde"
+
+#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_reservation_line_ids
 msgid "Reservation Line"
 msgstr "Reservation Line"
@@ -2066,6 +2120,11 @@ msgstr "Reservation Line"
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_reservation_no
 msgid "Reservation No"
 msgstr "Nº de Reserva"
+
+#. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_backend_reservation_to
+msgid "Reservation To"
+msgstr "Reserva hasta"
 
 #. module: hotel_channel_connector
 #: model:ir.ui.view,arch_db:hotel_channel_connector.hotel_reservation_view_pivot_graph
@@ -2140,6 +2199,11 @@ msgstr "Características del tipo de habitación"
 #: model:ir.actions.act_window,name:hotel_channel_connector.hotel_room_type_availability_action
 msgid "Room Type Availability"
 msgstr "Disponibilidad del tipo de habitación"
+
+#. module: hotel_channel_connector
+#: model:ir.model,name:hotel_channel_connector.model_hotel_room_type_class
+msgid "Room Type Class"
+msgstr "Room Type Class"
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_room_ids
@@ -2454,27 +2518,13 @@ msgid "The expense is accounted for when a vendor bill is validated, except in a
 msgstr "El gasto se contabiliza cuando se valida una factura del proveedor, excepto en la contabilidad anglosajona con valoración perpetua del inventario, en cuyo caso el gasto (cuenta del coste de los bienes vendidos) se reconoce en la validación de la factura del cliente. Si el campo está vacío, usa el definido en la categoría del producto."
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:62
-#: code:addons/hotel_channel_connector/models/hotel_room_type_availability/common.py:70
+#: code:addons/hotel_channel_connector/models/hotel_room_type_availability/common.py:75
 #, python-format
 msgid "The maximum simultaneous availability can't be greater than the total rooms count!"
-msgstr "La disponibilidad máx. simultánea no puede ser mayor al número real de habtiaciones disponibles!"
+msgstr "The maximum simultaneous availability can't be greater than the total rooms count!"
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type_availability/common.py:108
-#, python-format
-msgid ""
-"The new availability can't be \\\n"
-"                        greater than the max. availability \\\n"
-"                        (%s) [Input: %d\\Max: %d]"
-msgstr ""
-"La nueva disponibilidad no puede ser \\\n"
-"                        mayor que la máx. disponibilidad \\\n"
-"                        (%s) [Input: %d\\Max: %d]"
-
-#. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:59
-#: code:addons/hotel_channel_connector/models/hotel_room_type_availability/common.py:67
+#: code:addons/hotel_channel_connector/models/hotel_room_type_availability/common.py:72
 #, python-format
 msgid "The quota assigned to the channel manager can't be greater than the total rooms count!"
 msgstr "The quota assigned to the channel manager can't be greater than the total rooms count!"
@@ -2506,7 +2556,7 @@ msgid "This field holds the image used as image for the product variant, limited
 msgstr "Este campo contiene la imagen usada como imagen de la variante del producto, limitada a 1024x1024px."
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:185
+#: code:addons/hotel_channel_connector/models/hotel_room_type/common.py:176
 #: code:addons/hotel_channel_connector/models/hotel_room_type_restriction/common.py:103
 #: code:addons/hotel_channel_connector/models/product_pricelist/common.py:148
 #, python-format
@@ -2564,6 +2614,11 @@ msgid "Total Rooms Count"
 msgstr "Total Habitaciones"
 
 #. module: hotel_channel_connector
+#: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_reservation_tour_operator_id
+msgid "Tour Operator"
+msgstr "Operadora Turística"
+
+#. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_service_type
 msgid "Track Service"
 msgstr "Servicio de seguimiento"
@@ -2618,11 +2673,6 @@ msgstr "Contador de mensajes sin leer"
 #: model:ir.ui.view,arch_db:hotel_channel_connector.channel_hotel_room_type_view_form
 msgid "Use `-1` for managing no Quota or Maximum simultaneous availability."
 msgstr "Usa -1 para no restringir por cupo o por Max. disponibilidad simultánea"
-
-#. module: hotel_channel_connector
-#: model:ir.model.fields,help:hotel_channel_connector.field_channel_hotel_reservation_partner_invoice_type
-msgid "Used to select automatically the right address according to the context in sales and purchases documents."
-msgstr "﻿Utilizado para seleccionar automáticamente la dirección correcta según el contexto en documentos de ventas y compras."
 
 #. module: hotel_channel_connector
 #: model:ir.model.fields,field_description:hotel_channel_connector.field_channel_hotel_room_type_valuation
@@ -2709,7 +2759,7 @@ msgid "When doing real-time inventory valuation, counterpart journal items for a
 msgstr "Cuando se realiza una valoración de inventario en tiempo real, la contrapartida para todos los movimientos de salida serán imputados en esta cuenta, a menos que se haya establecido una cuenta de valoración específica en la ubicación destino. Cuando no se establece en el producto, se usa la establecida en la categoría."
 
 #. module: hotel_channel_connector
-#: code:addons/hotel_channel_connector/models/hotel_reservation/common.py:93
+#: code:addons/hotel_channel_connector/models/hotel_reservation/common.py:92
 #, python-format
 msgid "You can't delete OTA's reservations"
 msgstr "No puedes eliminar reservas de OTA"
