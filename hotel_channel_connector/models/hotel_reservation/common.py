@@ -21,20 +21,17 @@ class ChannelHotelReservation(models.Model):
                               ondelete='cascade')
     ota_id = fields.Many2one('channel.ota.info',
                              string='Channel OTA ID',
-                             readonly=True,
-                             old_name='wchannel_id')
+                             readonly=True)
     ota_reservation_id = fields.Char("Channel OTA Reservation Code",
-                                     readonly=True,
-                                     old_name='wchannel_reservation_code')
-    channel_raw_data = fields.Text(readonly=True, old_name='wbook_json')
+                                     readonly=True)
+    channel_raw_data = fields.Text(readonly=True)
 
     channel_status = fields.Selection([
         ('0', 'No Channel'),
-    ], string='Channel Status', default='0', readonly=True, old_name='wstatus')
-    channel_status_reason = fields.Char("Channel Status Reason", readonly=True,
-                                        old_name='wstatus_reason')
+    ], string='Channel Status', default='0', readonly=True)
+    channel_status_reason = fields.Char("Channel Status Reason", readonly=True)
     channel_modified = fields.Boolean("Channel Modified", readonly=True,
-                                      default=False, old_name='wmodified')
+                                      default=False)
 
     channel_total_amount = fields.Monetary(string='Channel Total Amount',
                                            readonly=True, digits=dp.get_precision('Product Price'))
@@ -143,11 +140,19 @@ class HotelReservation(models.Model):
         comodel_name='channel.hotel.reservation',
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
+    ota_id = fields.Many2one('channel.ota.info',
+                             string='Channel OTA ID',
+                             readonly=True,
+                             compute='_compute_external_data')
+    ota_reservation_id = fields.Char("Channel OTA Reservation Code",
+                                     compute='_compute_external_data')
+    external_id = fields.Char(string='ID on Channel',
+                              compute='_compute_external_data')
     # TODO: Dario v2
     # origin_sale = fields.Char('Origin', compute=_get_origin_sale,
     #                           store=True)
     is_from_ota = fields.Boolean('Is From OTA',
-                                 compute='_is_from_ota',
+                                 compute='_compute_external_data',
                                  store=True)
     able_to_modify_channel = fields.Boolean(compute=_set_access_for_channel_fields,
                                             string='Is user able to modify channel fields?')
@@ -155,11 +160,22 @@ class HotelReservation(models.Model):
 
     unconfirmed_channel_price = fields.Boolean(related='folio_id.unconfirmed_channel_price')
 
-    @api.depends('channel_bind_ids.external_id', 'channel_bind_ids.ota_id')
-    def _is_from_ota(self):
+    @api.depends('channel_bind_ids.external_id', 'channel_bind_ids.ota_id',
+                 'channel_bind_ids.ota_reservation_id')
+    def _compute_external_data(self):
         for record in self:
-            record.is_from_ota = bool(any(bind.ota_reservation_id
-                                          for bind in record.channel_bind_ids))
+            vals = {
+                'ota_reservation_id': record.channel_bind_ids[0].
+                                      ota_reservation_id if
+                                      record.channel_bind_ids else False,
+                'ota_id': record.channel_bind_ids[0].ota_id.id if
+                          record.channel_bind_ids else False,
+                'external_id': record.channel_bind_ids[0].external_id if
+                               record.channel_bind_ids else False,
+                'is_from_ota': bool(any(bind.ota_reservation_id
+                                        for bind in record.channel_bind_ids))
+            }
+            record.update(vals)
 
     @api.onchange('checkin', 'checkout')
     def onchange_dates(self):
