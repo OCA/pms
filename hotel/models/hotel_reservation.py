@@ -905,6 +905,9 @@ class HotelReservation(models.Model):
     def draft(self):
         for record in self:
             record.state = 'draft'
+            record.reservation_line_ids.update({
+                'cancel_discount': 0
+            })
             if record.splitted:
                 master_reservation = record.parent_reservation or record
                 splitted_reservs = self.env['hotel.reservation'].search([
