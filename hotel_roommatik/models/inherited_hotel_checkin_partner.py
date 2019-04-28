@@ -5,7 +5,7 @@ import json
 from odoo import api, models
 from odoo.addons.hotel_roommatik.models.roommatik import (
     DEFAULT_ROOMMATIK_DATE_FORMAT,
-    DEFAULT_ROOMMATIK_DATETIME_FORMAT
+    DEFAULT_ROOMMATIK_DATETIME_FORMAT)
 from datetime import datetime
 import logging
 

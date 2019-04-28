@@ -22,6 +22,7 @@
         'base_iso3166'
     ],
     'data': [
+        'data/res_users_data.xml'
     ],
     'demo': [
     ],
