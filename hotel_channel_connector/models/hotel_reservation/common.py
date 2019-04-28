@@ -142,11 +142,13 @@ class HotelReservation(models.Model):
         string='Hotel Channel Connector Bindings')
     ota_id = fields.Many2one('channel.ota.info',
                              string='Channel OTA ID',
-                             readonly=True,
+                             store=True,
                              compute='_compute_external_data')
     ota_reservation_id = fields.Char("Channel OTA Reservation Code",
+                                     store=True,
                                      compute='_compute_external_data')
     external_id = fields.Char(string='ID on Channel',
+                              store=True,
                               compute='_compute_external_data')
     # TODO: Dario v2
     # origin_sale = fields.Char('Origin', compute=_get_origin_sale,
