@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+ir_model_hotel_budget,hoteldatabi.budget.manager,hotel_data_bi.model_budget,hotel.group_hotel_manager,1,1,1,1
+ir_model_hotel_budget_user,hoteldatabi.budget.user,hotel_data_bi.model_budget,hotel.group_hotel_user,0,0,0,0
+ir_model_hotel_data_bi_export_data,hoteldatabi.data_bi.export_data,hotel_data_bi.model_data_bi,hotel_data_bi.group_hotel_export_data,1,0,0,0
