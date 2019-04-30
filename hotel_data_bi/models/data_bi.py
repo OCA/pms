@@ -94,12 +94,18 @@ class Data_Bi(models.Model):
             dic_export.append({'Regimen': dic_regimen})
         # if (archivo == 0) or (archivo == 6):
         #     dic_export.append({'Reservas': dic_reservas})
-        # if (archivo == 0) or (archivo == 7):
-        #     dic_export.append({'Capacidad': dic_capacidad})
-        # if (archivo == 0) or (archivo == 8):
-        #     dic_export.append({'Tipo Habitación': dic_tipo_habitacion})
-        # if (archivo == 0) or (archivo == 9):
-        #     dic_export.append({'Budget': dic_budget})
+        if (archivo == 0) or (archivo == 7) or (archivo == 8):
+            room_types = self.env['hotel.room.type'].search([])
+        if (archivo == 0) or (archivo == 7):
+            dic_capacidad = self.data_bi_capacidad(compan.id_hotel, room_types)
+            dic_export.append({'Capacidad': dic_capacidad})
+        if (archivo == 0) or (archivo == 8):
+            dic_tipo_habitacion = self.data_bi_habitacione(compan.id_hotel,
+                                                           room_types)
+            dic_export.append({'Tipo Habitación': dic_tipo_habitacion})
+        if (archivo == 0) or (archivo == 9):
+            dic_budget = self.data_bi_budget(compan.id_hotel)
+            dic_export.append({'Budget': dic_budget})
         # if (archivo == 0) or (archivo == 10):
         #     dic_export.append({'Bloqueos': dic_bloqueos})
         # if (archivo == 0) or (archivo == 11):
@@ -183,3 +189,55 @@ class Data_Bi(models.Model):
                                 'ID_EstadoReserva': i,
                                 'Descripcion': estado_array_txt[i]})
         return dic_estados
+
+    @api.model
+    def data_bi_habitacione(self, compan, rooms):
+        dic_tipo_habitacion = []  # Diccionario con Virtuals Rooms
+        for room in rooms:
+            dic_tipo_habitacion.append({
+                'ID_Hotel': compan,
+                'ID_Tipo_Habitacion': room['id'],
+                'Descripcion': room['name'],
+                'Estancias': room['capacity']})
+        return dic_tipo_habitacion
+
+    @api.model
+    def data_bi_capacidad(self, compan, rooms):
+        dic_capacidad = []  # Diccionario con las capacidades
+        for room in rooms:
+            dic_capacidad.append({
+                'ID_Hotel': compan,
+                'Hasta_Fecha':
+                (date.today() + timedelta(days=365 * 3)).strftime("%Y-%m-%d"),
+                'ID_Tipo_Habitacion': room['id'],
+                'Nro_Habitaciones': room['total_rooms_count']})
+        return dic_capacidad
+
+    @api.model
+    def data_bi_budget(self, compan):
+        budgets = self.env['budget'].search([])
+        dic_budget = []  # Diccionario con las previsiones Budget
+        for budget in budgets:
+            dic_budget.append({'ID_Hotel': compan,
+                               'Fecha': str(budget.year) + '-' +
+                               str(budget.month).zfill(2) + '-01',
+                               # 'ID_Tarifa': 0,
+                               # 'ID_Canal': 0,
+                               # 'ID_Pais': 0,
+                               # 'ID_Regimen': 0,
+                               # 'ID_Tipo_Habitacion': 0,
+                               # 'ID_Cliente': 0,
+                               'Room_Nights': budget.room_nights,
+                               'Room_Revenue': budget.room_revenue,
+                               # 'Pension_Revenue': 0,
+                               'Estancias': budget.estancias})
+        # Fecha fecha Primer día del mes
+        # ID_Tarifa numérico Código de la Tarifa
+        # ID_Canal numérico Código del Canal
+        # ID_Pais numérico Código del País
+        # ID_Regimen numérico Cóigo del Régimen
+        # ID_Tipo_Habitacion numérico Código del Tipo de Habitación
+        # iD_Segmento numérico Código del Segmento
+        # ID_Cliente numérico Código del Cliente
+        # Pension_Revenue numérico con dos decimales Ingresos por Pensión
+        return dic_budget
