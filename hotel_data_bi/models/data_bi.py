@@ -114,8 +114,9 @@ class Data_Bi(models.Model):
         if (archivo == 0) or (archivo == 12):
             dic_segmentos = self.data_bi_segment(compan.id_hotel)
             dic_export.append({'Segmentos': dic_segmentos})
-        # if (archivo == 0) or (archivo == 13):
-        #     dic_export.append({'Clientes': dic_clientes})
+        if (archivo == 0) or (archivo == 13):
+            dic_clientes = self.data_bi_client(compan.id_hotel)
+            dic_export.append({'Clientes': dic_clientes})
         if (archivo == 0) or (archivo == 14):
             dic_estados = self.data_bi_estados(compan.id_hotel)
             dic_export.append({'Estado Reservas': dic_estados})
@@ -276,3 +277,55 @@ class Data_Bi(models.Model):
                                       'ID_Segmento': linea.id,
                                       'Descripcion': seg_desc})
         return dic_segmentos
+
+    @api.model
+    def data_bi_client(self, compan):
+        dic_clientes = []  # Diccionario con Clientes (OTAs y agencias)
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 0,
+                             'Descripcion': u'Ninguno'})
+        lineas = self.env['channel.ota.info'].search([])
+
+        for linea in lineas:
+            dic_clientes.append({'ID_Hotel': compan,
+                                 'ID_Cliente': linea.id,
+                                 'Descripcion': linea.name})
+
+        lineas = self.env['res.partner'].search([('is_tour_operator',
+                                                '=', True)])
+        id_cli_count = 700
+        for linea in lineas:
+            dic_clientes.append({'ID_Hotel': compan,
+                                 'ID_Cliente': id_cli_count,
+                                 'Descripcion': linea.name})
+            id_cli_count += 1
+
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 999,
+                             'Descripcion': u'Web Propia'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 901,
+                             'Descripcion': u'Expedia Empaquedata'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 902,
+                             'Descripcion': u'Expedia Sin Comisión'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 903,
+                             'Descripcion': u'Puerta'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 904,
+                             'Descripcion': u'E-Mail'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 905,
+                             'Descripcion': u'Teléfono'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 906,
+                             'Descripcion': u'Call-Center'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 907,
+                             'Descripcion': u'Agencia'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 908,
+                             'Descripcion': u'Touroperador'})
+
+        return dic_clientes
