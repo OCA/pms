@@ -108,8 +108,9 @@ class Data_Bi(models.Model):
             dic_export.append({'Budget': dic_budget})
         # if (archivo == 0) or (archivo == 10):
         #     dic_export.append({'Bloqueos': dic_bloqueos})
-        # if (archivo == 0) or (archivo == 11):
-        #     dic_export.append({'Motivo Bloqueo': dic_moti_bloq})
+        if (archivo == 0) or (archivo == 11):
+            dic_moti_bloq = self.data_bi_moti_bloq(compan.id_hotel)
+            dic_export.append({'Motivo Bloqueo': dic_moti_bloq})
         # if (archivo == 0) or (archivo == 12):
         #     dic_export.append({'Segmentos': dic_segmentos})
         # if (archivo == 0) or (archivo == 13):
@@ -241,3 +242,14 @@ class Data_Bi(models.Model):
         # ID_Cliente numérico Código del Cliente
         # Pension_Revenue numérico con dos decimales Ingresos por Pensión
         return dic_budget
+
+    @api.model
+    def data_bi_moti_bloq(self, compan):
+        dic_moti_bloq = []  # Diccionario con Motivo de Bloqueos
+        bloqeo_array = ['Staff', _('Out of Service')]
+        for i in range(0, len(bloqeo_array)):
+            dic_moti_bloq.append({'ID_Hotel': compan,
+                                  'ID_Motivo_Bloqueo': i,
+                                  'Descripcion': bloqeo_array[i].encode(
+                                      'ascii', 'xmlcharrefreplace')})
+        return dic_moti_bloq
