@@ -41,13 +41,11 @@ class HotelRoomType(models.Model):
 
     _order = "sequence, code_type, name"
 
-    _sql_constraints = [('code_type_unique', 'unique(code_type)',
-                         'code must be unique!')]
     # total number of rooms in this type
     total_rooms_count = fields.Integer(compute='_compute_total_rooms', store=True)
 
-    _sql_constraints = [
-        ('code_unique', 'unique(code_type)', 'Room Type Code must be unique!')]
+    _sql_constraints = [('code_unique', 'unique(code_type)',
+                         'Room Type Code must be unique!')]
 
     @api.depends('room_ids')
     def _compute_total_rooms(self):
