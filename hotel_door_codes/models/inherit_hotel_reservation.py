@@ -31,6 +31,10 @@ class Inherit_hotel_reservation(models.Model):
     def doorcode4(self, fecha):
         # Calculate de Door Code... need a date in String format "%Y-%m-%d"
         compan = self.env.user.company_id
+        if not compan.precode:
+            compan.precode = ""
+        if not compan.postcode:
+            compan.postcode = ""
         d = datetime.strptime(fecha, DEFAULT_SERVER_DATE_FORMAT)
         dia_semana = datetime.weekday(d)  # Dias a restar y ponerlo en lunes
         d = d - timedelta(days=dia_semana)
