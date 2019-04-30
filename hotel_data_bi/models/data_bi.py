@@ -84,10 +84,12 @@ class Data_Bi(models.Model):
         if (archivo == 0) or (archivo == 2):
             dic_canal = self.data_bi_canal(compan.id_hotel)
             dic_export.append({'Canal': dic_canal})
-        # if (archivo == 0) or (archivo == 3):
-        #     dic_export.append({'Hotel': dic_hotel})
-        # if (archivo == 0) or (archivo == 4):
-        #     dic_export.append({'Pais': dic_pais})
+        if (archivo == 0) or (archivo == 3):
+            dic_hotel = self.data_bi_hotel(compan)
+            dic_export.append({'Hotel': dic_hotel})
+        if (archivo == 0) or (archivo == 4):
+            dic_pais = self.data_bi_pais(compan.id_hotel)
+            dic_export.append({'Pais': dic_pais})
         # if (archivo == 0) or (archivo == 5):
         #     dic_export.append({'Regimen': dic_regimen})
         # if (archivo == 0) or (archivo == 6):
@@ -137,3 +139,21 @@ class Data_Bi(models.Model):
                               'ID_Canal': i,
                               'Descripcion': canal_array[i]})
         return dic_canal
+
+    @api.model
+    def data_bi_hotel(self, compan):
+        dic_hotel = []  # Diccionario con el/los nombre de los hoteles
+        dic_hotel.append({'ID_Hotel': compan.id_hotel,
+                          'Descripcion': compan.property_name})
+        return dic_hotel
+
+    @api.model
+    def data_bi_pais(self, compan):
+        dic_pais = []
+        # Diccionario con los nombre de los Paises usando los del INE
+        paises = self.env['code.ine'].search_read([], ['code', 'name'])
+        for pais in paises:
+            dic_pais.append({'ID_Hotel': compan,
+                             'ID_Pais': pais['code'],
+                             'Descripcion': pais['name']})
+        return dic_pais
