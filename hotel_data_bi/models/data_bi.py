@@ -80,7 +80,6 @@ class Data_Bi(models.Model):
         if (archivo == 0) or (archivo == 1):
             dic_tarifa = self.data_bi_tarifa(compan.id_hotel)
             dic_export.append({'Tarifa': dic_tarifa})
-
         if (archivo == 0) or (archivo == 2):
             dic_canal = self.data_bi_canal(compan.id_hotel)
             dic_export.append({'Canal': dic_canal})
@@ -109,8 +108,9 @@ class Data_Bi(models.Model):
         #     dic_export.append({'Segmentos': dic_segmentos})
         # if (archivo == 0) or (archivo == 13):
         #     dic_export.append({'Clientes': dic_clientes})
-        # if (archivo == 0) or (archivo == 14):
-        #     dic_export.append({'Estado Reservas': dic_estados})
+        if (archivo == 0) or (archivo == 14):
+            dic_estados = self.data_bi_estados(compan.id_hotel)
+            dic_export.append({'Estado Reservas': dic_estados})
 
         # Debug Stop -------------------
         import wdb; wdb.set_trace()
@@ -171,3 +171,15 @@ class Data_Bi(models.Model):
                                 'ID_Regimen': board_service['id'],
                                 'Descripcion': board_service['name']})
         return dic_regimen
+
+    @api.model
+    def data_bi_estados(self, compan):
+        dic_estados = []  # Diccionario con los Estados Reserva
+        estado_array_txt = ['Borrador', 'Confirmada', 'Hospedandose',
+                            'Checkout', 'Cancelada']
+        estado_array = ['draft', 'confirm', 'booking', 'done', 'cancelled']
+        for i in range(0, len(estado_array)):
+            dic_estados.append({'ID_Hotel': compan,
+                                'ID_EstadoReserva': i,
+                                'Descripcion': estado_array_txt[i]})
+        return dic_estados
