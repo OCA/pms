@@ -44,6 +44,7 @@ class Data_Bi(models.Model):
 
         Generate a dicctionary to by send in JSON
         archivo = response file type
+            archivo == 0 'ALL'
             archivo == 1 'Tarifa'
             archivo == 2 'Canal'
             archivo == 3 'Hotel'
@@ -68,11 +69,21 @@ class Data_Bi(models.Model):
 
         _logger.warning("Init Export Data_Bi Module")
 
+        if not isinstance(archivo, int):
+            archivo = 0
+            dic_param = []
+            dic_param.append({'Archivo': archivo,
+                              'Fechafoto': fechafoto.strftime('%Y-%m-%d')})
+        compan = self.env.user.company_id
+
         dic_export = []  # Diccionario con todo lo necesario para exportar.
-        # if (archivo == 0) or (archivo == 1):
-        #     dic_export.append({'Tarifa': dic_tarifa})
-        # if (archivo == 0) or (archivo == 2):
-        #     dic_export.append({'Canal': dic_canal})
+        if (archivo == 0) or (archivo == 1):
+            dic_tarifa = self.data_bi_tarifa(compan.id_hotel)
+            dic_export.append({'Tarifa': dic_tarifa})
+
+        if (archivo == 0) or (archivo == 2):
+            dic_canal = self.data_bi_canal(compan.id_hotel)
+            dic_export.append({'Canal': dic_canal})
         # if (archivo == 0) or (archivo == 3):
         #     dic_export.append({'Hotel': dic_hotel})
         # if (archivo == 0) or (archivo == 4):
@@ -98,10 +109,31 @@ class Data_Bi(models.Model):
         # if (archivo == 0) or (archivo == 14):
         #     dic_export.append({'Estado Reservas': dic_estados})
 
+        # Debug Stop -------------------
+        import wdb; wdb.set_trace()
+        # Debug Stop -------------------
         dictionaryToJson = json.dumps(dic_export)
         _logger.warning("End Export Data_Bi Module to Json")
 
-        # Debug Stop -------------------
-        # import wdb; wdb.set_trace()
-        # Debug Stop -------------------
         return dictionaryToJson
+
+    @api.model
+    def data_bi_tarifa(self, compan):
+        dic_tarifa = []  # Diccionario con las tarifas
+        tarifas = self.env['product.pricelist'].search_read([], ['name'])
+        for tarifa in tarifas:
+            dic_tarifa.append({'ID_Hotel': compan,
+                               'ID_Tarifa': tarifa['id'],
+                               'Descripcion': tarifa['name']})
+        return dic_tarifa
+
+    @api.model
+    def data_bi_canal(self, compan):
+        dic_canal = []  # Diccionario con los Canales
+        canal_array = ['Directo', 'OTA', 'Call-Center', 'Agencia',
+                       'Touroperador']
+        for i in range(0, len(canal_array)):
+            dic_canal.append({'ID_Hotel': compan,
+                              'ID_Canal': i,
+                              'Descripcion': canal_array[i]})
+        return dic_canal
