@@ -90,8 +90,9 @@ class Data_Bi(models.Model):
         if (archivo == 0) or (archivo == 4):
             dic_pais = self.data_bi_pais(compan.id_hotel)
             dic_export.append({'Pais': dic_pais})
-        # if (archivo == 0) or (archivo == 5):
-        #     dic_export.append({'Regimen': dic_regimen})
+        if (archivo == 0) or (archivo == 5):
+            dic_regimen = self.data_bi_regimen(compan.id_hotel)
+            dic_export.append({'Regimen': dic_regimen})
         # if (archivo == 0) or (archivo == 6):
         #     dic_export.append({'Reservas': dic_reservas})
         # if (archivo == 0) or (archivo == 7):
@@ -157,3 +158,16 @@ class Data_Bi(models.Model):
                              'ID_Pais': pais['code'],
                              'Descripcion': pais['name']})
         return dic_pais
+
+    @api.model
+    def data_bi_regimen(self, compan):
+        dic_regimen = []  # Diccionario con los Board Services
+        board_services = self.env['hotel.board.service'].search_read([])
+        dic_regimen.append({'ID_Hotel': compan,
+                            'ID_Regimen': 0,
+                            'Descripcion': 'Sin régimen'})
+        for board_service in board_services:
+            dic_regimen.append({'ID_Hotel': compan,
+                                'ID_Regimen': board_service['id'],
+                                'Descripcion': board_service['name']})
+        return dic_regimen
