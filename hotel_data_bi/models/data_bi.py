@@ -111,24 +111,26 @@ class Data_Bi(models.Model):
         if (archivo == 0) or (archivo == 11):
             dic_moti_bloq = self.data_bi_moti_bloq(compan.id_hotel)
             dic_export.append({'Motivo Bloqueo': dic_moti_bloq})
-        # if (archivo == 0) or (archivo == 12):
-        #     dic_export.append({'Segmentos': dic_segmentos})
+        if (archivo == 0) or (archivo == 12):
+            dic_segmentos = self.data_bi_segment(compan.id_hotel)
+            dic_export.append({'Segmentos': dic_segmentos})
         # if (archivo == 0) or (archivo == 13):
         #     dic_export.append({'Clientes': dic_clientes})
         if (archivo == 0) or (archivo == 14):
             dic_estados = self.data_bi_estados(compan.id_hotel)
             dic_export.append({'Estado Reservas': dic_estados})
 
+        dictionaryToJson = json.dumps(dic_export)
+        _logger.warning("End Export Data_Bi Module to Json")
         # Debug Stop -------------------
         import wdb; wdb.set_trace()
         # Debug Stop -------------------
-        dictionaryToJson = json.dumps(dic_export)
-        _logger.warning("End Export Data_Bi Module to Json")
 
         return dictionaryToJson
 
     @api.model
     def data_bi_tarifa(self, compan):
+        _logger.info("DataBi: Calculating all fees")
         dic_tarifa = []  # Diccionario con las tarifas
         tarifas = self.env['product.pricelist'].search_read([], ['name'])
         for tarifa in tarifas:
@@ -139,6 +141,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_canal(self, compan):
+        _logger.info("DataBi: Calculating all channels")
         dic_canal = []  # Diccionario con los Canales
         canal_array = ['Directo', 'OTA', 'Call-Center', 'Agencia',
                        'Touroperador']
@@ -150,6 +153,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_hotel(self, compan):
+        _logger.info("DataBi: Calculating hotel names")
         dic_hotel = []  # Diccionario con el/los nombre de los hoteles
         dic_hotel.append({'ID_Hotel': compan.id_hotel,
                           'Descripcion': compan.property_name})
@@ -157,6 +161,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_pais(self, compan):
+        _logger.info("DataBi: Calculating all countries")
         dic_pais = []
         # Diccionario con los nombre de los Paises usando los del INE
         paises = self.env['code.ine'].search_read([], ['code', 'name'])
@@ -168,6 +173,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_regimen(self, compan):
+        _logger.info("DataBi: Calculating all board services")
         dic_regimen = []  # Diccionario con los Board Services
         board_services = self.env['hotel.board.service'].search_read([])
         dic_regimen.append({'ID_Hotel': compan,
@@ -181,6 +187,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_estados(self, compan):
+        _logger.info("DataBi: Calculating all the states of the reserves")
         dic_estados = []  # Diccionario con los Estados Reserva
         estado_array_txt = ['Borrador', 'Confirmada', 'Hospedandose',
                             'Checkout', 'Cancelada']
@@ -193,7 +200,8 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_habitacione(self, compan, rooms):
-        dic_tipo_habitacion = []  # Diccionario con Virtuals Rooms
+        _logger.info("DataBi: Calculating all room types")
+        dic_tipo_habitacion = []  # Diccionario con Rooms types
         for room in rooms:
             dic_tipo_habitacion.append({
                 'ID_Hotel': compan,
@@ -204,6 +212,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_capacidad(self, compan, rooms):
+        _logger.info("DataBi: Calculating all the capacitys")
         dic_capacidad = []  # Diccionario con las capacidades
         for room in rooms:
             dic_capacidad.append({
@@ -216,6 +225,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_budget(self, compan):
+        _logger.info("DataBi: Calculating budget")
         budgets = self.env['budget'].search([])
         dic_budget = []  # Diccionario con las previsiones Budget
         for budget in budgets:
@@ -245,11 +255,24 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_moti_bloq(self, compan):
+        _logger.info("DataBi: Calculating all blocking reasons")
         dic_moti_bloq = []  # Diccionario con Motivo de Bloqueos
         bloqeo_array = ['Staff', _('Out of Service')]
         for i in range(0, len(bloqeo_array)):
             dic_moti_bloq.append({'ID_Hotel': compan,
                                   'ID_Motivo_Bloqueo': i,
-                                  'Descripcion': bloqeo_array[i].encode(
-                                      'ascii', 'xmlcharrefreplace')})
+                                  'Descripcion': bloqeo_array[i]})
         return dic_moti_bloq
+
+    @api.model
+    def data_bi_segment(self, compan):
+        _logger.info("DataBi: Calculating all the segmentations")
+        dic_segmentos = []  # Diccionario con Segmentación
+        lineas = self.env['res.partner.category'].search([])
+        for linea in lineas:
+            if linea.parent_id.name:
+                seg_desc = linea.parent_id.name + " / " + linea.name
+                dic_segmentos.append({'ID_Hotel': compan,
+                                      'ID_Segmento': linea.id,
+                                      'Descripcion': seg_desc})
+        return dic_segmentos
