@@ -431,8 +431,8 @@ class HotelReservation(models.Model):
             real_checkout = vals['real_checkout'] if 'real_checkout' in vals else record.real_checkout
 
             days_diff = (
-                fields.Date.from_string(real_checkout) - \
-                fields.Date.from_string(real_checkin)
+                fields.Date.from_string(checkout) - \
+                fields.Date.from_string(checkin)
             ).days
             if self.compute_board_services(vals):
                 record.service_ids.filtered(lambda r: r.is_board_service == True).unlink()
@@ -452,16 +452,20 @@ class HotelReservation(models.Model):
             if record.compute_price_out_vals(vals):
                 pricelist_id = vals['pricelist_id'] if 'pricelist_id' in vals else record.pricelist_id.id
                 record.update(record.prepare_reservation_lines(
-                    real_checkin,
+                    checkin,
                     days_diff,
                     pricelist_id,
                     vals=vals)) #REVISAR el unlink
             if record.compute_qty_service_day(vals):
+                service_days_diff = (
+                    fields.Date.from_string(real_checkout) - \
+                    fields.Date.from_string(real_checkin)
+                ).days
                 for service in record.service_ids:
                     if service.product_id.per_day:
                         service.update(service.prepare_service_lines(
                             dfrom=real_checkin,
-                            days=days_diff,
+                            days=service_days_diff,
                             per_person=service.product_id.per_person,
                             persons=service.ser_room_line.adults,
                             old_line_days=service.service_line_ids,

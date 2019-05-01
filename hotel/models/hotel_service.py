@@ -294,7 +294,12 @@ class HotelService(models.Model):
         for record in self:
             if record.per_day and record.ser_room_line:
                 product = record.product_id
-                reservation = record.ser_room_line
+                if self.env.context.get('default_ser_room_line'):
+                    reservation = self.env['hotel.reservation'].browse(
+                        self.env.context.get('default_ser_room_line')
+                    )
+                else:
+                    reservation = record.ser_room_line
                 if reservation.splitted:
                     checkin = reservation.real_checkin
                     checkout = reservation.real_checkout
