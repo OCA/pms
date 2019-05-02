@@ -68,13 +68,15 @@ class Data_Bi(models.Model):
             fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
 
         _logger.warning("Init Export Data_Bi Module")
-
         if not isinstance(archivo, int):
             archivo = 0
             dic_param = []
             dic_param.append({'Archivo': archivo,
                               'Fechafoto': fechafoto.strftime('%Y-%m-%d')})
         compan = self.env.user.company_id
+
+        days_ago = 60
+        limit_ago = (fechafoto - timedelta(days=days_ago)).strftime('%Y-%m-%d')
 
         dic_export = []  # Diccionario con todo lo necesario para exportar.
         if (archivo == 0) or (archivo == 1):
@@ -106,8 +108,11 @@ class Data_Bi(models.Model):
         if (archivo == 0) or (archivo == 9):
             dic_budget = self.data_bi_budget(compan.id_hotel)
             dic_export.append({'Budget': dic_budget})
-        # if (archivo == 0) or (archivo == 10):
-        #     dic_export.append({'Bloqueos': dic_bloqueos})
+        if (archivo == 0) or (archivo == 10):
+            line_res = self.env['hotel.reservation.line'].search(
+                [('date', '>=', limit_ago)], order="date")
+            dic_bloqueos = self.data_bi_bloqueos(compan.id_hotel, line_res)
+            dic_export.append({'Bloqueos': dic_bloqueos})
         if (archivo == 0) or (archivo == 11):
             dic_moti_bloq = self.data_bi_moti_bloq(compan.id_hotel)
             dic_export.append({'Motivo Bloqueo': dic_moti_bloq})
@@ -329,3 +334,30 @@ class Data_Bi(models.Model):
                              'Descripcion': u'Touroperador'})
 
         return dic_clientes
+
+    @api.model
+    def data_bi_bloqueos(self, compan, lines):
+        _logger.info("DataBi: Calculating all reservations blocked")
+        dic_bloqueos = []  # Diccionario con Bloqueos
+        lines = lines.filtered(
+            lambda n: (n.reservation_id.reservation_type != 'normal') and (
+                       n.reservation_id.state != 'cancelled'))
+        for line in lines:
+            # if linea.reservation_id.state != 'cancelled':
+            if line.reservation_id.reservation_type == 'out':
+                id_m_b = 1
+            else:
+                id_m_b = 0
+            dic_bloqueos.append({
+                'ID_Hotel': compan,
+                'Fecha_desde': line.date,
+                'Fecha_hasta': (datetime.strptime(line.date, "%Y-%m-%d") +
+                                timedelta(days=1)).strftime("%Y-%m-%d"),
+                'ID_Tipo_Habitacion': line.reservation_id.room_type_id.id,
+                'ID_Motivo_Bloqueo': id_m_b,
+                'Nro_Habitaciones': 1})
+        return dic_bloqueos
+
+        # # Debug Stop -------------------
+        # import wdb; wdb.set_trace()
+        # # Debug Stop -------------------
