@@ -240,7 +240,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         model = 'hotel.checkin.partner';
         title = _t('Checkins');
       } else if (type === 'invoice') {
-        model = 'sale.order';
+        model = 'account.invoice';
         title = _t('Invoices');
       } else if (type === 'folio') {
         model = 'hotel.folio'
