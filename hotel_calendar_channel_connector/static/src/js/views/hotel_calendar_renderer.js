@@ -40,7 +40,7 @@ odoo.define('hotel_calendar_channel_connector.PMSHotelCalendarRenderer', functio
     },
 
     _generate_search_domain: function(tsearch, type) {
-      var domain = this._super(tsearch);
+      var domain = this._super(tsearch, type);
 
       if (type === 'book') {
         domain.splice(0, 0, '|');

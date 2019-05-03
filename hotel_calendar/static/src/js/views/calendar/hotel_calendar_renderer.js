@@ -227,6 +227,10 @@ var HotelCalendarView = AbstractRenderer.extend({
                   ['partner_id.vat', 'ilike', tsearch],
                   ['partner_id.email', 'ilike', tsearch],
                   ['partner_id.phone', 'ilike', tsearch]);
+      if (type === 'invoice') {
+        domain.splice(0, 0, '|');
+        domain.push(['number', 'ilike', tsearch]);
+      }
       return domain;
     },
 
@@ -240,7 +244,7 @@ var HotelCalendarView = AbstractRenderer.extend({
         model = 'hotel.checkin.partner';
         title = _t('Checkins');
       } else if (type === 'invoice') {
-        model = 'sale.order';
+        model = 'account.invoice';
         title = _t('Invoices');
       } else if (type === 'folio') {
         model = 'hotel.folio'
