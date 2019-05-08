@@ -1,16 +1,24 @@
 # Copyright 2017  Darío Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from openerp import models, fields, api
+from odoo.tools import (
+    DEFAULT_SERVER_DATE_FORMAT)
 
 
 class ServiceOnDay(models.TransientModel):
     _name = 'service.on.day'
 
+    def _get_default_date(self):
+        tz_hotel = self.env['ir.default'].sudo().get(
+            'res.config.settings', 'tz_hotel')
+        today = fields.Date.context_today(self.with_context(tz=tz_hotel))
+        return fields.Date.from_string(today).strftime(DEFAULT_SERVER_DATE_FORMAT)
+
 
     product_id = fields.Many2one('product.product', 'Service', required=True,
                                  domain=[('per_day', '=', True)])
     product_qty = fields.Integer('Quantity', default=1)
-    date = fields.Date('Date', default=fields.Date.today())
+    date = fields.Date('Date', default=_get_default_date)
 
     @api.multi
     def set_service(self):
