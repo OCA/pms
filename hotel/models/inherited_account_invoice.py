@@ -4,7 +4,7 @@
 from odoo import models, fields, api, _
 import json
 from odoo.tools import float_is_zero, float_compare, pycompat
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class AccountInvoice(models.Model):
@@ -111,3 +111,10 @@ class AccountInvoice(models.Model):
                     info['title'] = type_payment
                     self.outstanding_folios_debits_widget = json.dumps(info)
                     self.has_folio_outstanding = True
+
+    @api.multi
+    def unlink(self):
+        for invoice in self:
+            if invoice.number:
+                raise UserError(_('You cannot delete an invoice after it has been validated (and received a number). You can set it back to "Draft" state and modify its content, then re-confirm it.'))
+        return super(AccountInvoice, self).unlink()
