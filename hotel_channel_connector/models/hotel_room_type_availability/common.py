@@ -47,12 +47,15 @@ class HotelRoomTypeAvailability(models.Model):
     date = fields.Date('Date', required=True, track_visibility='always')
 
     quota = fields.Integer("Quota", default=_default_quota,
+                           track_visibility='always',
                            help="Quota assigned to the channel.")
     # TODO: WHY max_avail IS READONLY ¿?
     max_avail = fields.Integer("Max. Availability", default=-1, readonly=True,
+                               track_visibility='always',
                                help="Maximum simultaneous availability.")
 
     no_ota = fields.Boolean('No OTA', default=False,
+                            track_visibility='onchange',
                             help="Set zero availability to the connected OTAs "
                                  "even when the availability is positive,"
                                  "except to the Online Reception (booking engine)")
@@ -117,6 +120,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                               required=True,
                               ondelete='cascade')
     channel_avail = fields.Integer("Availability", readonly=True,
+                                   track_visibility='always',
                                    help="Availability of the room type for the channel manager."
                                         "This availability is set based on the real availability, "
                                         "the quota, and the max availability.")
