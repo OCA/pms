@@ -10,7 +10,11 @@
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='cardex_warning']" position="after">
-                      <field name="id_hotel" />
+                    <group string="DataBi Hotel Services" name="hotel_databi">
+                        <field name="id_hotel" />
+                        <field name="data_bi_days" />
+                        <field name="expedia_rate" />
+                    </group>
                 </xpath>
             </field>
         </record>
