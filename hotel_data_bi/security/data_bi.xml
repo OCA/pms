@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!--Group for hotel export data bi -->
+    <record id="group_hotel_export_data" model="res.groups">
+        <field name="name">Hotel Management / Export data BI</field>
+    </record>
+</data>
+</odoo>
