@@ -240,13 +240,7 @@ class HotelReservation(models.Model):
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     reservation_line_ids = fields.One2many('hotel.reservation.line',
                                            'reservation_id',
-                                           readonly=True, required=True,
-                                           states={
-                                               'draft': [('readonly', False)],
-                                               'sent': [('readonly', False)],
-                                               'confirm': [('readonly', False)],
-                                               'booking': [('readonly', False)],
-                                           })
+                                           required=True)
     service_ids = fields.One2many('hotel.service', 'ser_room_line')
 
     pricelist_id = fields.Many2one('product.pricelist',
