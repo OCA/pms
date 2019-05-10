@@ -2,3 +2,13 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 ir_model_hotel_budget,hoteldatabi.budget.manager,hotel_data_bi.model_budget,hotel.group_hotel_manager,1,1,1,1
 ir_model_hotel_budget_user,hoteldatabi.budget.user,hotel_data_bi.model_budget,hotel.group_hotel_user,0,0,0,0
 ir_model_hotel_data_bi_export_data,hoteldatabi.data_bi.export_data,hotel_data_bi.model_data_bi,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_room_type,hoteldatabi.hotel_room_type,hotel.model_hotel_room_type,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_hotel_reservation_line,hoteldatabi.hotel_reservation_line,hotel.model_hotel_reservation_line,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_hotel_reservation,hoteldatabi.hotel_reservation,hotel.model_hotel_reservation,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_hotel_board_service,hoteldatabi.hotel_board_service,hotel.model_hotel_board_service,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_code_ine,hoteldatabi.code_ine,hotel_l10n_es.model_code_ine,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_budget ,hoteldatabi.budget,hotel_data_bi.model_budget,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_channel_ota_info,hoteldatabi.channel_ota_info,hotel_channel_connector.model_channel_ota_info,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_hotel_folio,hoteldatabi.hotel_folio,hotel.model_hotel_folio,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_hotel_room,hoteldatabi.hotel_room,hotel.model_hotel_room,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_channel_hotel_reservation,hoteldatabi.channel_hotel_reservation,hotel_channel_connector.model_channel_hotel_reservation,hotel_data_bi.group_hotel_export_data,1,0,0,0
