@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <template id="report_viajero_data">
-            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important; font-size:1.5em;">
                 <table width="100%" border="1" style="border-style: double;">
                     <tr>
                         <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
@@ -31,7 +31,7 @@
                     </tr>
                 </table><br/>
             </div>
-            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important; font-size:1.5em;">
                 <table width="100%" border="1" style="border-style: double;">
                     <tr>
                         <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
@@ -51,7 +51,7 @@
                     </tr>
                 </table><br/>
             </div>
-            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important; font-size:1.5em;">
                 <table width="100%" border="1" style="border-style: double;">
                     <tr>
                         <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
@@ -79,7 +79,7 @@
                     </tr>
                 </table><br/>
             </div>
-            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
+            <div class="row" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important; font-size:1.5em;">
                 <table width="100%" border="1" style="border-style: double;">
                     <tr>
                         <td width="40%" style="padding-left:3px;border:double; border-width: 1px">
