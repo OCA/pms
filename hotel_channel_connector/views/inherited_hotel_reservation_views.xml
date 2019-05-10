@@ -44,8 +44,9 @@
             <xpath expr="//field[@name='checkout']" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
             </xpath>
-            <xpath expr="//field[@name='reservation_line_ids']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_from_ota','=',True),('able_to_modify_channel','=',False)]}</attribute>
+            <xpath expr="//notebook/page[@name='days']/field[@name='reservation_line_ids']/tree/field[@name='price']" position="attributes">
+                <attribute name="attrs">{'readonly': [('parent.is_from_ota','=',True),('parent.able_to_modify_channel','=',False)]}</attribute>
+                <attribute name="force_save">True</attribute>
             </xpath>
         </field>
     </record>
