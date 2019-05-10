@@ -22,10 +22,16 @@ class ChannelBackend(models.Model):
     def _get_default_server(self):
         return 'https://wired.wubook.net/xrws/'
 
+    def _get_default_wubook_parity(self):
+        return self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
+
     lcode = fields.Char('Channel Service lcode')
     pkey = fields.Char('Channel Service PKey')
     server = fields.Char('Channel Service Server',
                          default=_get_default_server)
+    wubook_parity_pricelist_id = fields.Many2one('product.pricelist', 'WuBook Parity Pricelist',
+                                                 required=True,
+                                                 default=_get_default_wubook_parity)
 
     @contextmanager
     @api.multi
