@@ -121,6 +121,8 @@ class HotelReservationImporter(Component):
             if 'tax_inclusive' in broom['ancillary'] and not broom['ancillary']['tax_inclusive']:
                 _logger.info("--- Incoming Reservation without taxes included!")
                 tax_inclusive = False
+        # rate_id ( 0: WuBook Parity (aka standard rate); > 0: the id of the booked pricing plan)
+        rate_id = 0
         # Generate Reservation Day Lines
         reservation_lines = []
         tprice = 0.0
@@ -141,6 +143,11 @@ class HotelReservationImporter(Component):
                     'price': room_day_price,
                 }))
                 tprice += room_day_price
+            rate_id = brday['rate_id']
+        # TODO: Review different pricelist in the different booked rooms (folio in Odoo)
+        rate_id = rate_id > 0 and rate_id or self.env['channel.backend'].sudo().search([
+                ('id', '=', self.backend_record.id)
+            ]).wubook_parity_pricelist_id
         # Get OTA
         ota_id = self.env['channel.ota.info'].search([
             ('backend_id', '=', self.backend_record.id),
@@ -163,6 +170,7 @@ class HotelReservationImporter(Component):
             'checkout': checkout_str,
             'adults': persons,
             'children': book['children'],
+            'pricelist_id': rate_id.id,
             'reservation_line_ids': reservation_lines,
             'to_assign': True,
             'state': is_cancellation and 'cancelled' or 'confirm',
