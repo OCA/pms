@@ -294,7 +294,7 @@
                                     type="action" icon="fa-bolt"/>
                             <field name="reservation_line_ids" nolabel="1">
                                 <tree create="false" delete="false" editable="bottom">
-                                    <field name="date" />
+                                    <field name="date" readonly="1" force_save="1"/>
                                     <field name="price" />
                                     <field name="discount" />
                                     <field name="cancel_discount"
