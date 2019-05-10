@@ -16,7 +16,7 @@
     'license': 'AGPL-3',
     'author': "Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>",
     'website': 'www.aldahotels.com',
-    'depends': ['hotel', 'hotel_l10n_es'],
+    'depends': ['hotel', 'hotel_l10n_es', 'hotel_channel_connector'],
     'category': 'hotel/revenue',
     'data': [
         'views/budget.xml',
