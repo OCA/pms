@@ -170,7 +170,7 @@ class HotelReservationImporter(Component):
             'checkout': checkout_str,
             'adults': persons,
             'children': book['children'],
-            'pricelist_id': rate_id,
+            #'pricelist_id': rate_id,
             'reservation_line_ids': reservation_lines,
             'to_assign': True,
             'state': is_cancellation and 'cancelled' or 'confirm',
