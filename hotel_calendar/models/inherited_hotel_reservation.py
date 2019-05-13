@@ -141,7 +141,7 @@ class HotelReservation(models.Model):
                 'capacity': room.capacity,
                 'class_name': room.room_type_id.class_id.name,
                 'class_id': room.room_type_id.class_id.id,
-                'shared': room.shared_room,
+                'shared_id': room.shared_room_id,
                 'price': room.room_type_id
                 and ['pricelist', room.room_type_id.id, pricelist_id,
                      room.room_type_id.name] or 0,

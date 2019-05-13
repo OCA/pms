@@ -40,6 +40,7 @@
         'views/inherited_res_partner_views.xml',
         'views/hotel_room_type_views.xml',
         'views/hotel_room_views.xml',
+        'views/hotel_shared_room_views.xml',
         'views/hotel_room_type_class_views.xml',
         'views/general.xml',
         'views/inherited_product_template_views.xml',

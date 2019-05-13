@@ -171,7 +171,7 @@ class HotelReservation(models.Model):
     name = fields.Text('Reservation Description', required=True)
     sequence = fields.Integer(string='Sequence', default=10)
 
-    room_id = fields.Many2one('hotel.room', string='Room')
+    room_id = fields.Many2one('hotel.room', string='Room', ondelete='restrict')
 
     reservation_no = fields.Char('Reservation No', size=64, readonly=True)
     adults = fields.Integer('Adults', size=64, readonly=False,
@@ -316,8 +316,9 @@ class HotelReservation(models.Model):
         ], string='Invoice Status', compute='_compute_invoice_status',
                                       store=True, readonly=True, default='no')
     tax_ids = fields.Many2many('account.tax',
-                              string='Taxes',
-                              domain=['|', ('active', '=', False), ('active', '=', True)])
+                               string='Taxes',
+                               ondelete='restrict',
+                               domain=['|', ('active', '=', False), ('active', '=', True)])
     qty_to_invoice = fields.Float(
         compute='_get_to_invoice_qty', string='To Invoice', store=True, readonly=True,
         digits=dp.get_precision('Product Unit of Measure'))

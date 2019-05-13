@@ -31,8 +31,8 @@ class ChannelHotelRoomType(models.Model):
                               string='Room Type',
                               required=True,
                               ondelete='cascade')
-    channel_short_code = fields.Char("Channel Short Code", old_name='wscode')
-    ota_capacity = fields.Integer("OTA's Capacity", default=1, old_name='wcapacity',
+    channel_short_code = fields.Char("Channel Short Code")
+    ota_capacity = fields.Integer("OTA's Capacity", default=1,
                                   help="The capacity of the room for OTAs.")
 
     default_quota = fields.Integer("Default Quota",
@@ -52,8 +52,8 @@ class ChannelHotelRoomType(models.Model):
     max_price = fields.Float('Max. Price', default=200.0, digits=dp.get_precision('Product Price'),
                              help="Setup the max price to prevent incidents while editing your prices.")
 
-    @api.onchange('default_quota', 'default_max_avail')
-    def _onchange_availability(self):
+    @api.constrains('default_quota', 'default_max_avail', 'total_rooms_count')
+    def _constrains_availability(self):
         for rec in self:
             to_eval = []
             to_eval.append(rec.total_rooms_count)
@@ -64,8 +64,8 @@ class ChannelHotelRoomType(models.Model):
 
             rec.default_availability = min(to_eval)
 
-    @api.onchange('room_ids')
-    def _get_capacity(self):
+    @api.constrains('room_ids')
+    def _constrain_capacity(self):
         for rec in self:
             rec.ota_capacity = rec.odoo_id.get_capacity()
 

@@ -34,6 +34,8 @@ class HotelRoomType(models.Model):
     active = fields.Boolean('Active', default=True,
                             help="The active field allows you to hide the \
                             category without removing it.")
+    shared_room = fields.Boolean('Shared Room', default=False,
+                            help="This room type is reservation by beds")
     # Used for ordering
     sequence = fields.Integer('Sequence', default=0)
 
@@ -47,7 +49,7 @@ class HotelRoomType(models.Model):
     _sql_constraints = [('code_unique', 'unique(code_type)',
                          'Room Type Code must be unique!')]
 
-    @api.depends('room_ids')
+    @api.depends('room_ids', 'room_ids.active')
     def _compute_total_rooms(self):
         for record in self:
             record.total_rooms_count = len(record.room_ids)
@@ -106,6 +108,18 @@ class HotelRoomType(models.Model):
             'type': 'service',
         })
         return super().create(vals)
+
+    @api.constrains('shared_room', 'room_ids')
+    def _constrain_shared_room(self):
+        for record in self:
+            if record.shared_room:
+                if any(not room.shared_room_id for room in record.room_ids):
+                    raise ValidationError(_('We cant save normal rooms \
+                                            in a shared room type'))
+            else:
+                if any(room.shared_room_id for room in record.room_ids):
+                    raise ValidationError(_('We cant save shared rooms \
+                                            in a normal room type'))
 
     @api.multi
     def unlink(self):
