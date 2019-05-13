@@ -122,7 +122,7 @@ class HotelReservationImporter(Component):
                 _logger.info("--- Incoming Reservation without taxes included!")
                 tax_inclusive = False
         # rate_id ( 0: WuBook Parity (aka standard rate); > 0: the id of the booked pricing plan)
-        rate_id = 0
+        rate_id = default_rate_id = 0
         # Generate Reservation Day Lines
         reservation_lines = []
         tprice = 0.0
@@ -145,14 +145,16 @@ class HotelReservationImporter(Component):
                 tprice += room_day_price
             rate_id = brday['rate_id']
         # TODO: Review different pricelist in the different booked rooms (folio in Odoo)
-        if rate_id > 0:
-            rate_id = self.env['channel.product.pricelist'].search(
-                'external_id', '=', rate_id).odoo_id.id
-        if rate_id <= 0:
-            rate_id = self.env['channel.backend'].sudo().search([
+        if rate_id == 0:
+            default_rate_id = self.env['channel.backend'].search([
                 ('id', '=', self.backend_record.id)
             ]).wubook_parity_pricelist_id.id
-
+        else:
+            rate_id = self.env['channel.product.pricelist'].search([
+                ('backend_id', '=', self.backend_record.id),
+                ('external_id', '=', rate_id)
+            ]) or None
+        rate_id = rate_id and rate_id.odoo_id.id or default_rate_id
         # Get OTA
         ota_id = self.env['channel.ota.info'].search([
             ('backend_id', '=', self.backend_record.id),
