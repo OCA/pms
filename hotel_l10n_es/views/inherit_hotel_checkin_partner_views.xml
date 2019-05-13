@@ -69,42 +69,19 @@
                         <xpath expr="//field[@name='partner_id']" position="after">
                                 <field name="firstname" attrs="{'required': [
                                         ('lastname','==', False)
-                                        ],'readonly': [('partner_id', '!=', False),
-                                             ('firstname','!=', False)]
-                                        }"
-                                        force_save="1" />
+                                        ]}" />
                                 <field name="lastname" attrs="{'required': [
                                         ('firstname','==', False)
-                                        ], 'readonly': [('partner_id', '!=', False),
-                                           ('lastname','!=', False)]}"
-                                        force_save="1" />
+                                        ]}" />
                                 <field name="document_type"
                                        attrs="{'required': [
                                                ('document_number','!=', False)
-                                               ],'readonly': [('document_number', '!=', False),
-                                            ('document_type','!=', False),
-                                            ('partner_id','!=', False)]}"
-                                            force_save="1"/>
-                                <field name="document_number" string="Doc. Number"
-                                        attrs="{'readonly': [('partner_id', '!=', False),
-                                             ('document_number','!=', False)]}"
-                                             force_save="1"/>
-                                <field name="document_expedition_date" string="Exp. Date"
-                                        attrs="{'readonly': [('partner_id', '!=', False),
-                                             ('document_expedition_date','!=', False)]}"
-                                             force_save="1"/>
-                                <field name="birthdate_date" string="Birthdate"
-                                        attrs="{'readonly': [('partner_id', '!=', False),
-                                             ('birthdate_date','!=', False)]}"
-                                             force_save="1" />
-                                <field name="code_ine_id"
-                                        attrs="{'readonly': [('partner_id', '!=', False),
-                                             ('code_ine_id','!=', False)]}"
-                                             force_save="1" />
-                                <field name="gender"
-                                        attrs="{'readonly': [('partner_id', '!=', False),
-                                             ('gender','!=', False)]}"
-                                             force_save="1" />
+                                               ]}" />
+                                <field name="document_number" string="Doc. Number" />
+                                <field name="document_expedition_date" string="Exp. Date" />
+                                <field name="birthdate_date" string="Birthdate" />
+                                <field name="code_ine_id" />
+                                <field name="gender" />
                         </xpath>
                         <xpath expr="//field[@name='partner_id']" position="attributes">
                                 <attribute name="options">{"no_create": True}</attribute>

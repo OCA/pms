@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+
+    <act_window
+      id="budget_act_window"
+      name="Budget for DataBI"
+      res_model="budget"
+      view_mode="tree,form"
+    />
+
+    <menuitem
+      id="budget_menu"
+      name="Budget for DataBI"
+      parent="hotel.configuration_others"
+      sequence="36"
+      action="budget_act_window"
+      groups="hotel.group_hotel_manager"
+    />
+
+    <record model="ir.ui.view" id="budget_form_view">
+        <field name="name">budget.form (in hotel_data_bi)</field>
+        <field name="model">budget</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group string="Hotel Budget:" colspan="1">
+                      <group name="group_top">
+                          <group>
+                              <div>
+                                  <label for="month" string="Period:"
+                                         style="font-weight: bold !important;margin-right:107px;margin-left: 0px;"/>
+                                  <field name="month" style="width:110px"/>
+                                  <field name="year" style="width:110px;margin-left: 34px;"/>
+                              </div>
+                          </group>
+                          <group>
+                              <field name="room_nights"/>
+                              <field name="room_revenue"/>
+                              <field name="estancias"/>
+                          </group>
+                      </group>
+                    </group>
+                    <div>
+                        <button name="export_data_bi" class="oe_form_button_save btn btn-primary btn-sm" type="object" string="Generate Conexion"
+                        groups="base.group_system"/>
+                    </div>
+                </sheet>
+                <div class="oe_chatter"></div>
+            </form>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="budget_tree_view">
+        <field name="name">budget.tree (in hotel_data_bi)</field>
+        <field name="model">budget</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="month"/>
+                <field name="year"/>
+                <field name="room_nights"/>
+                <field name="room_revenue"/>
+                <field name="estancias"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

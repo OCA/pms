@@ -8,6 +8,7 @@ from . import hotel_floor
 from . import hotel_folio
 from . import hotel_reservation
 from . import hotel_room
+from . import hotel_shared_room
 from . import hotel_amenity
 from . import hotel_amenity_type
 from . import hotel_room_type

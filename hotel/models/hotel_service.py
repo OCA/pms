@@ -115,7 +115,8 @@ class HotelService(models.Model):
 
     name = fields.Char('Service description', required=True)
     sequence = fields.Integer(string='Sequence', default=10)
-    product_id = fields.Many2one('product.product', 'Service', required=True)
+    product_id = fields.Many2one('product.product', 'Service',
+                                 ondelete='restrict', required=True)
     folio_id = fields.Many2one('hotel.folio', 'Folio',
                                ondelete='cascade',
                                default=_default_folio_id)
@@ -132,10 +133,11 @@ class HotelService(models.Model):
     product_image = fields.Binary('Product Image', related="product_id.image", store=False, related_sudo=True)
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
     invoice_status = fields.Selection([
-         ('invoiced', 'Fully Invoiced'),
-         ('to invoice', 'To Invoice'),
-         ('no', 'Nothing to Invoice')
-         ], string='Invoice Status', compute='_compute_invoice_status', store=True, readonly=True, default='no')
+        ('invoiced', 'Fully Invoiced'),
+        ('to invoice', 'To Invoice'),
+        ('no', 'Nothing to Invoice')
+        ], string='Invoice Status', compute='_compute_invoice_status',
+        store=True, readonly=True, default='no')
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
