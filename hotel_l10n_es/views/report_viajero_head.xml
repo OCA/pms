@@ -5,10 +5,10 @@
             <t t-set="company" t-value="res_company"></t>
             <style type="text/css">
                 .titulo {
-                    font-size: 1.8em;
+                    font-size: 1.9em;
                 }
                 .titulo2 {
-                    font-size: 1.2em;
+                    font-size: 1.32em;
                 }
                 .page {
                     margin: 0 auto;
@@ -24,19 +24,19 @@
                 }
                 .cabezera p {padding 8em}
                 .amount {
-                    font-size: 0.65em;
+                    font-size: 1.4em;
                 }
                 #datos {
                     text-align: center;
                     padding: 0 15px;
-                    font-size: 0.85em;
+                    font-size: 1.98em;
                 }
                 .bloque {
                     margin: 5px 0;
                 }
                 .fecha {
                     font-weight: bold;
-                    font-size: 0.85em;
+                    font-size: 0.98em;
                 }
                 .firma {
                     width: 80%;
@@ -45,13 +45,13 @@
                     margin: 0 auto;
                 }
                 .legal p {
-                    font-size: 0.6em;
+                    font-size: 0.76em;
                 }
                 td {
-                    font-size: 1.2em;
+                    font-size: 1.32em;
                 }
                 .numerocheck {
-                    font-size: 0.9em;
+                    font-size: 1.81em;
                 }
                 .container-fluid,
                 col-md-12,
@@ -79,7 +79,7 @@
                 Total amount (Reservation Card):
                 <strong><span t-field="o.reservation_id.folio_id.amount_total"/></strong>
             </p>
-            <p>
+            <p class="amount">
                 <strong>CIF:
                     <span t-field="company.vat"/></strong><br/>
                 <strong><span t-field="company.display_name"/></strong><br/>
