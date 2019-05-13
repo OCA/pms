@@ -19,7 +19,10 @@
             <div class="oe_title">
               <label for="name" string="Name" />
               <h1>
-                <field name="name" />
+                <field name="name"
+                    attrs="{'readonly':[('shared_room_id','!=', False)]}" />
+                <field name="shared_room_id" string="Ubication"
+                    invisible='True' />
               </h1>
               <!-- <label for="to_be_cleaned" string="To be Cleaned" />
               <h2>
@@ -29,12 +32,15 @@
             <notebook>
               <page name="information_hotel_room" string="Information">
                 <group colspan="4" col="4">
-                  <field name="floor_id" string="Ubication" />
+                  <field name="floor_id" string="Ubication"
+                      attrs="{'readonly':[('shared_room_id','!=', False)]}" />
                   <!-- <field name="categ_id" select="1" domain="[('isroomtype','=',True)]" string="Room Type" /> -->
-                  <field name="room_type_id" string="Room Type" />
-                  <field name="capacity" />
-                  <field name="shared_room" help="It allows several reservations on the same room simultaneously based on the capacity of people"/>
-                  <field name="extra_beds_allowed" />
+                  <field name="room_type_id" string="Room Type"
+                      attrs="{'readonly':[('shared_room_id','!=', False)]}"/>
+                  <field name="capacity"
+                      attrs="{'readonly':[('shared_room_id','!=', False)]}" />
+                  <field name="extra_beds_allowed"
+                      attrs="{'invisible':[('shared_room_id','!=', False)]}"/>
                   <!-- <field name="uom_id" invisible="1" /> -->
                 </group>
                 <group>
@@ -56,7 +62,7 @@
               </page>
             </notebook>
             <group>
-              <field name="sequence" />
+              <field name="sequence" attrs="{'readonly':[('shared_room_id','!=', False)]}"/>
             </group>
           </sheet>
         </form>

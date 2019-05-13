@@ -99,7 +99,8 @@ class HotelFolio(models.Model):
                        default=lambda self: _('New'))
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
     partner_id = fields.Many2one('res.partner',
-                                 track_visibility='onchange')
+                                 track_visibility='onchange',
+                                 ondelete='restrict',)
 
     room_lines = fields.One2many('hotel.reservation', 'folio_id',
                                  readonly=False,
@@ -107,19 +108,20 @@ class HotelFolio(models.Model):
                                  help="Hotel room reservation detail.",)
 
     service_ids = fields.One2many('hotel.service', 'folio_id',
-                                       readonly=False,
-                                       states={'done': [('readonly', True)]},
-                                       help="Hotel services detail provide to "
-                                       "customer and it will include in "
-                                       "main Invoice.")
+                                  readonly=False,
+                                  states={'done': [('readonly', True)]},
+                                  help="Hotel services detail provide to "
+                                  "customer and it will include in "
+                                  "main Invoice.")
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('hotel.folio'))
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account', readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, help="The analytic account related to a folio.", copy=False)
     currency_id = fields.Many2one('res.currency', related='pricelist_id.currency_id',
-                                  string='Currency', readonly=True, required=True)
+                                  string='Currency', readonly=True, required=True, ondelete='restrict',)
 
     pricelist_id = fields.Many2one('product.pricelist',
                                    string='Pricelist',
                                    required=True,
+                                   ondelete='restrict',
                                    states={'draft': [('readonly', False)],
                                            'sent': [('readonly', False)]},
                                    help="Pricelist for current folio.")
@@ -136,10 +138,11 @@ class HotelFolio(models.Model):
         ('agency', 'Agencia'),
         ('operator', 'Tour operador'),
         ('virtualdoor', 'Virtual Door'),], 'Sales Channel', default='door')
-    user_id = fields.Many2one('res.users', string='Salesperson', index=True,
+    user_id = fields.Many2one('res.users', string='Salesperson', index=True, ondelete='restrict',
                               track_visibility='onchange', default=lambda self: self.env.user)
     tour_operator_id = fields.Many2one('res.partner',
                                        'Tour Operator',
+                                       ondelete='restrict',
                                        domain=[('is_tour_operator', '=', True)])
     date_order = fields.Datetime(
         string='Order Date',
@@ -245,12 +248,14 @@ class HotelFolio(models.Model):
         help='Margin in days to create a notice if a payment \
                 advance has not been recorded')
     segmentation_ids = fields.Many2many('res.partner.category',
-                                        string='Segmentation')
+                                        string='Segmentation',
+                                        ondelete='restrict')
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
     note = fields.Text('Terms and conditions')
     sequence = fields.Integer(string='Sequence', default=10)
     team_id = fields.Many2one('crm.team',
                               'Sales Channel',
+                              ondelete='restrict',
                               change_default=True,
                               default=_get_default_team,
                               oldname='section_id')
