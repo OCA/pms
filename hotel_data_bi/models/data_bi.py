@@ -176,6 +176,9 @@ class Data_Bi(models.Model):
         _logger.info("DataBi: Calculating all countries")
         dic_pais = []
         # Diccionario con los nombre de los Paises usando los del INE
+        dic_pais.append({'ID_Hotel': compan,
+                         'ID_Pais': 'NONE',
+                         'Descripcion': 'No Asignado'})
         paises = self.env['code.ine'].search_read([], ['code', 'name'])
         for pais in paises:
             dic_pais.append({'ID_Hotel': compan,
@@ -338,6 +341,9 @@ class Data_Bi(models.Model):
         dic_clientes.append({'ID_Hotel': compan,
                              'ID_Cliente': 908,
                              'Descripcion': u'Touroperador'})
+        dic_clientes.append({'ID_Hotel': compan,
+                             'ID_Cliente': 909,
+                             'Descripcion': u'Virtual Door'})
         return dic_clientes
 
     @api.model
@@ -397,22 +403,18 @@ class Data_Bi(models.Model):
                 precio_iva = ota_prices[0]['precio_iva']
                 precio_comision = ota_prices[0]['precio_comision']
 
-            # if linea.reservation_id.id == 6742:
-            #     # # Debug Stop -------------------
-            #     import wdb; wdb.set_trace()
-            #     # # Debug Stop -------------------
             if linea.reservation_id.discount != 0:
                 precio_dto = linea.price * (
                     linea.reservation_id.discount/100)
 
             dic_reservas.append({
-                'ID_Reserva': linea.reservation_id.folio_id.name,
+                'ID_Reserva': linea.reservation_id.folio_id.id,
                 'ID_Hotel': compan,
                 'ID_EstadoReserva': estado_array.index(
                                                 linea.reservation_id.state),
                 'FechaVenta': linea.reservation_id.create_date[0:10],
                 'ID_Segmento': id_segmen,
-                # 'ID_Cliente': channel_c,
+                'ID_Cliente': self.data_bi_channel_cli(linea, dic_clientes),
                 'ID_Canal': channels[linea.reservation_id.channel_type],
                 'FechaExtraccion': date.today().strftime('%Y-%m-%d'),
                 'Entrada': linea.date,
@@ -431,7 +433,7 @@ class Data_Bi(models.Model):
                 'PrecioIva': precio_iva,
                 'PrecioDto': precio_dto,
                 'ID_Tarifa': linea.reservation_id.pricelist_id.id,
-                # 'ID_Pais': id_codeine
+                'ID_Pais': self.data_bi_get_codeine(linea)
                 })
         # ID_Reserva numérico Código único de la reserva
         # ID_Hotel numérico Código del Hotel
@@ -453,6 +455,57 @@ class Data_Bi(models.Model):
         # ID_Tarifa numérico Código de la tarifa aplicada a la reserva
         # ID_Pais numérico Código del país
         return dic_reservas
+
+    @api.model
+    def data_bi_channel_cli(self, reserva, dic_clientes):
+        response = 0
+
+        if reserva.reservation_id.channel_type == "door":
+            response = 903
+
+        elif reserva.reservation_id.channel_type == "mail":
+            response = 904
+
+        elif reserva.reservation_id.channel_type == "phone":
+            response = 905
+
+        elif reserva.reservation_id.channel_type == "call":
+            response = 906
+
+        elif reserva.reservation_id.channel_type == "virtualdoor":
+            response = 909
+
+        elif reserva.reservation_id.channel_type == "web":
+            if reserva.reservation_id.ota_id.id:
+                # OTA
+                response = reserva.reservation_id.ota_id.id
+            else:
+                # Web Propia
+                response = 999
+
+        elif reserva.reservation_id.channel_type == "agency":
+            tour = reserva.reservation_id.tour_operator_id
+            if tour.name:
+                mach = next((
+                    l for l in dic_clientes if l['Descripcion'] == tour.name),
+                                                                        False)
+                response = mach['ID_Cliente']
+            else:
+                response = 907
+
+        elif reserva.reservation_id.channel_type == "operator":
+            tour = reserva.reservation_id.tour_operator_id
+            if tour.name:
+                mach = next((
+                    l for l in dic_clientes if l['Descripcion'] == tour.name),
+                                                                        False)
+                response = mach['ID_Cliente']
+                # _logger.info("%s Por Agencia: %s :", mach['Descripcion'], str(response))
+            else:
+                response = 908
+                # _logger.info("%s Por Agencia: %s :",reserva.reservation_id.folio_id.name, str(response))
+
+        return response
 
     @api.model
     def data_bi_comisiones_ota(self, reserva):
@@ -543,6 +596,17 @@ class Data_Bi(models.Model):
                              })
         return response_dic
 
-        # # Debug Stop -------------------
+    @api.model
+    def data_bi_get_codeine(self, reserva):
+        response = 'NONE'
+        code = reserva.reservation_id.partner_id.code_ine_id
+        if code:
+            response = code.code
+        else:
+            for l in reserva.reservation_id.folio_id.checkin_partner_ids:
+                if l.code_ine_id:
+                    response = l.code_ine_id.code
+        return response
+        # Debug Stop -------------------
         # import wdb; wdb.set_trace()
-        # # Debug Stop -------------------
+        # Debug Stop -------------------
