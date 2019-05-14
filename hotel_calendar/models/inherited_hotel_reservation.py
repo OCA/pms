@@ -3,6 +3,7 @@
 import logging
 from datetime import timedelta
 from odoo import models, fields, api, _
+from odoo.models import operator
 from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 _logger = logging.getLogger(__name__)
@@ -246,16 +247,16 @@ class HotelReservation(models.Model):
 
         self.env.cr.execute('''
             WITH RECURSIVE gen_table_days AS (
-              SELECT hrt.id, %s::Date AS date
+              SELECT hrt.id, %s::Date AS date, hrt.sequence
               FROM hotel_room_type AS hrt
                 UNION ALL
-              SELECT hrt.id, (td.date + INTERVAL '1 day')::Date
+              SELECT hrt.id, (td.date + INTERVAL '1 day')::Date, hrt.sequence
               FROM gen_table_days as td
               LEFT JOIN hotel_room_type AS hrt ON hrt.id=td.id
               WHERE td.date < %s
             )
             SELECT
-              TO_CHAR(gtd.date, 'DD/MM/YYYY') as date, gtd.id as room_type_id,
+              TO_CHAR(gtd.date, 'DD/MM/YYYY') as date, gtd.id as room_type_id, gtd.sequence,
               pt.name, ppi.fixed_price as price, pt.list_price
             FROM gen_table_days AS gtd
             LEFT JOIN hotel_room_type AS hrt ON hrt.id = gtd.id
@@ -273,13 +274,17 @@ class HotelReservation(models.Model):
                 json_data.setdefault(results['room_type_id'], {}).update({
                     'title': results['name'],
                     'room': results['room_type_id'],
+                    'sequence': results['sequence'],
                 })
             json_data[results['room_type_id']].setdefault('days', {}).update({
                 results['date']: results['price'] or results['list_price']
             })
 
+        json_data_by_sequence = list(json_data.values())
+        json_data_by_sequence.sort(key=operator.itemgetter('sequence'))
+
         json_rooms_prices = {}
-        for prices in list(json_data.values()):
+        for prices in json_data_by_sequence:
             json_rooms_prices.setdefault(pricelist_id, []).append(prices)
         return json_rooms_prices
 
