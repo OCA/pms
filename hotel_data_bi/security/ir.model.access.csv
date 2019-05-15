@@ -13,3 +13,4 @@ access_channel_ota_info,hoteldatabi.channel_ota_info,hotel_channel_connector.mod
 access_hotel_folio,hoteldatabi.hotel_folio,hotel.model_hotel_folio,hotel_data_bi.group_hotel_export_data,1,0,0,0
 access_hotel_room,hoteldatabi.hotel_room,hotel.model_hotel_room,hotel_data_bi.group_hotel_export_data,1,0,0,0
 access_channel_hotel_reservation,hoteldatabi.channel_hotel_reservation,hotel_channel_connector.model_channel_hotel_reservation,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_hotel_checkin_partner,hoteldatabi.hotel_checkin_partner,hotel.model_hotel_checkin_partner,hotel_data_bi.group_hotel_export_data,1,0,0,0
