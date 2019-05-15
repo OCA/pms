@@ -42,7 +42,6 @@ class ResPartner(models.Model):
         ('N', 'Permiso Residencia Español'),
         ('X', 'Permiso Residencia Europeo')],
         help=_('Select a valid document type'),
-        default='D',
         string='Doc. type',
         )
     document_number = fields.Char('Document number', index=True)
@@ -157,7 +156,7 @@ class ResPartner(models.Model):
                 return super(ResPartner, self)._check_vat_unique()
         return True
 
-    @api.constrains('document_number')
+    @api.constrains('document_number', 'document_type')
     def _check_document_number_unique(self):
         for record in self:
             if not record.document_number:
