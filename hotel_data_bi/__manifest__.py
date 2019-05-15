@@ -12,7 +12,7 @@
     Create a user and give the 'Hotel Management/Export data BI' permission.
         """,
     'summary': "Export hotel data for business intelligence",
-    'version': '2.0',
+    'version': '2.1',
     'license': 'AGPL-3',
     'author': "Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>",
     'website': 'www.aldahotels.com',
