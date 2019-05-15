@@ -121,7 +121,8 @@ class Data_Bi(models.Model):
             dic_export.append({'Segmentos': dic_segmentos})
         if (archivo == 0) or (archivo == 13) or (archivo == 6):
             dic_clientes = self.data_bi_client(compan.id_hotel)
-            dic_export.append({'Clientes': dic_clientes})
+            if (archivo == 0) or (archivo == 13):
+                dic_export.append({'Clientes': dic_clientes})
         if (archivo == 0) or (archivo == 14):
             dic_estados = self.data_bi_estados(compan.id_hotel, estado_array)
             dic_export.append({'Estado Reservas': dic_estados})
@@ -142,9 +143,9 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_tarifa(self, compan):
-        _logger.info("DataBi: Calculating all fees")
         dic_tarifa = []  # Diccionario con las tarifas
         tarifas = self.env['product.pricelist'].search_read([], ['name'])
+        _logger.info("DataBi: Calculating %s fees", str(len(tarifas)))
         for tarifa in tarifas:
             dic_tarifa.append({'ID_Hotel': compan,
                                'ID_Tarifa': tarifa['id'],
@@ -173,13 +174,13 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_pais(self, compan):
-        _logger.info("DataBi: Calculating all countries")
         dic_pais = []
         # Diccionario con los nombre de los Paises usando los del INE
         dic_pais.append({'ID_Hotel': compan,
                          'ID_Pais': 'NONE',
                          'Descripcion': 'No Asignado'})
         paises = self.env['code.ine'].search_read([], ['code', 'name'])
+        _logger.info("DataBi: Calculating %s countries", str(len(paises)))
         for pais in paises:
             dic_pais.append({'ID_Hotel': compan,
                              'ID_Pais': pais['code'],
@@ -188,9 +189,10 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_regimen(self, compan):
-        _logger.info("DataBi: Calculating all board services")
         dic_regimen = []  # Diccionario con los Board Services
         board_services = self.env['hotel.board.service'].search_read([])
+        _logger.info("DataBi: Calculating %s board services", str(
+                                                        len(board_services)))
         dic_regimen.append({'ID_Hotel': compan,
                             'ID_Regimen': 0,
                             'Descripcion': 'Sin régimen'})
@@ -215,7 +217,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_habitacione(self, compan, rooms):
-        _logger.info("DataBi: Calculating all room types")
+        _logger.info("DataBi: Calculating %s room types", str(len(rooms)))
         dic_tipo_habitacion = []  # Diccionario con Rooms types
         for room in rooms:
             dic_tipo_habitacion.append({
@@ -227,7 +229,7 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_capacidad(self, compan, rooms):
-        _logger.info("DataBi: Calculating all the capacitys")
+        _logger.info("DataBi: Calculating %s room capacity", str(len(rooms)))
         dic_capacidad = []  # Diccionario con las capacidades
         for room in rooms:
             dic_capacidad.append({
@@ -240,8 +242,8 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_budget(self, compan):
-        _logger.info("DataBi: Calculating budget")
         budgets = self.env['budget'].search([])
+        _logger.info("DataBi: Calculating %s budget", str(len(budgets)))
         dic_budget = []  # Diccionario con las previsiones Budget
         for budget in budgets:
             dic_budget.append({'ID_Hotel': compan,
@@ -281,9 +283,9 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_segment(self, compan):
-        _logger.info("DataBi: Calculating all the segmentations")
         dic_segmentos = []  # Diccionario con Segmentación
         lineas = self.env['res.partner.category'].search([])
+        _logger.info("DataBi: Calculating %s segmentations", str(len(lineas)))
         for linea in lineas:
             if linea.parent_id.name:
                 seg_desc = linea.parent_id.name + " / " + linea.name
@@ -299,6 +301,7 @@ class Data_Bi(models.Model):
                              'ID_Cliente': 0,
                              'Descripcion': u'Ninguno'})
         lineas = self.env['channel.ota.info'].search([])
+        _logger.info("DataBi: Calculating %s otas", str(len(lineas)))
 
         for linea in lineas:
             dic_clientes.append({'ID_Hotel': compan,
@@ -308,6 +311,7 @@ class Data_Bi(models.Model):
         lineas = self.env['res.partner'].search([('is_tour_operator',
                                                 '=', True)])
         id_cli_count = 700
+        _logger.info("DataBi: Calculating %s Operators", str(len(lineas)))
         for linea in lineas:
             dic_clientes.append({'ID_Hotel': compan,
                                  'ID_Cliente': id_cli_count,
@@ -348,11 +352,11 @@ class Data_Bi(models.Model):
 
     @api.model
     def data_bi_bloqueos(self, compan, lines):
-        _logger.info("DataBi: Calculating all reservations blocked")
         dic_bloqueos = []  # Diccionario con Bloqueos
         lines = lines.filtered(
             lambda n: (n.reservation_id.reservation_type != 'normal') and (
                        n.reservation_id.state != 'cancelled'))
+        _logger.info("DataBi: Calculating %s Bloqued", str(len(lines)))
         for line in lines:
             # if linea.reservation_id.state != 'cancelled':
             if line.reservation_id.reservation_type == 'out':
@@ -370,11 +374,12 @@ class Data_Bi(models.Model):
         return dic_bloqueos
 
     @api.model
-    def data_bi_reservas(self, compan, lineas, estado_array, dic_clientes):
+    def data_bi_reservas(self, compan, lines, estado_array, dic_clientes):
         dic_reservas = []
-        lineas = lineas.filtered(
+        lineas = lines.filtered(
             lambda n: (n.reservation_id.reservation_type == 'normal') and (
                        n.price > 0))
+        _logger.info("DataBi: Calculating %s reservations", str(len(lineas)))
         channels = {'door': 0,
                     'mail': 1,
                     'phone': 2,
@@ -385,6 +390,8 @@ class Data_Bi(models.Model):
                     'virtualdoor': 7}
 
         for linea in lineas:
+            # _logger.info("DataBi: %s", linea.reservation_id.folio_id.name)
+
             id_segmen = 0
             if len(linea.reservation_id.segmentation_ids) > 0:
                 id_segmen = linea.reservation_id.segmentation_ids[0].id
@@ -462,19 +469,14 @@ class Data_Bi(models.Model):
 
         if reserva.reservation_id.channel_type == "door":
             response = 903
-
         elif reserva.reservation_id.channel_type == "mail":
             response = 904
-
         elif reserva.reservation_id.channel_type == "phone":
             response = 905
-
         elif reserva.reservation_id.channel_type == "call":
             response = 906
-
         elif reserva.reservation_id.channel_type == "virtualdoor":
             response = 909
-
         elif reserva.reservation_id.channel_type == "web":
             if reserva.reservation_id.ota_id.id:
                 # OTA
@@ -482,7 +484,6 @@ class Data_Bi(models.Model):
             else:
                 # Web Propia
                 response = 999
-
         elif reserva.reservation_id.channel_type == "agency":
             tour = reserva.reservation_id.tour_operator_id
             if tour.name:
@@ -492,7 +493,6 @@ class Data_Bi(models.Model):
                 response = mach['ID_Cliente']
             else:
                 response = 907
-
         elif reserva.reservation_id.channel_type == "operator":
             tour = reserva.reservation_id.tour_operator_id
             if tour.name:
