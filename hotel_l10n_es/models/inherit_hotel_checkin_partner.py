@@ -107,8 +107,6 @@ class HotelCheckinPartner(models.Model):
                 if partner:
                     record.update({'partner_id': partner})
 
-
-
     @api.multi
     def check_required_fields(self):
         for record in self:

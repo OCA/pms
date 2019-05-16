@@ -40,7 +40,7 @@
                 background-color: #FFFFFF;
             }
             .pie {
-                font-size: 0.95em;
+                font-size: 1.95em;
                 margin: 2em 0 4em 0;
             }
             .tipo {
@@ -135,7 +135,13 @@
                         <div class="tipo col span_1_of_2">SALIDA</div>
                         <t t-if="o.checkin != ''">
                             <div class="datos col span_2_of_2">Entrada
-                                <span t-field="o.checkin" t-options='{"format": "d MMMM"}'/></div>
+                                <t t-if="o.checkin == 'no prevista'">
+                                    <span t-field="o.checkin"/>
+                                </t>
+                                <t t-else="">
+                                    <span t-esc="datetime.datetime.strptime(o.checkin, '%Y-%m-%d').strftime('%d de %B')"/>
+                                </t>
+                            </div>
                         </t>
                         <div class="notas col span_2_of_2" align="left">
                             <span t-field="o.notas"/>
@@ -148,9 +154,10 @@
                         </div>
                         <div class="tipo col span_1_of_2">CLIENTE</div>
                         <div class="datos col span_2_of_2">Del
-                            <span t-field="o.checkin" t-options='{"format": "d MMMM"}'/>
+                            <span t-esc="datetime.datetime.strptime(o.checkin, '%Y-%m-%d').strftime('%d de %b')"/>
                             al
-                            <span t-field="o.checkout" t-options='{"format": "d MMMM"}'/></div>
+                            <span t-esc="datetime.datetime.strptime(o.checkout, '%Y-%m-%d').strftime('%d de %b')"/>
+                        </div>
                         <div class="notas col span_2_of_2" align="left">
                             <span t-field="o.notas"/>
                         </div>
@@ -162,9 +169,10 @@
                         </div>
                         <div class="tipo col span_1_of_2">REVISAR</div>
                         <div class="datos col span_2_of_2">Entrada
-                            <span t-field="o.checkin" t-options='{"format": "d MMMM"}'/>
+                            <span t-esc="datetime.datetime.strptime(o.checkin, '%Y-%m-%d').strftime('%d de %b')"/>
                             al
-                            <span t-field="o.checkout" t-options='{"format": "d MMMM"}'/></div>
+                            <span t-esc="datetime.datetime.strptime(o.checkout, '%Y-%m-%d').strftime('%d de %b')"/>
+                        </div>
                         <div class="notas col span_2_of_2" align="left">
                             <span t-field="o.notas"/>
                         </div>
@@ -176,18 +184,21 @@
                         </div>
                         <div class="tipo col span_1_of_2">STAFF</div>
                         <div class="datos col span_2_of_2">Del
-                            <span t-field="o.checkin" t-options='{"format": "d MMMM"}'/>
+                            <span t-esc="datetime.datetime.strptime(o.checkin, '%Y-%m-%d').strftime('%d de %b')"/>
                             al
-                            <span t-field="o.checkout" t-options='{"format": "d MMMM"}'/></div>
+                            <span t-esc="datetime.datetime.strptime(o.checkout, '%Y-%m-%d').strftime('%d de %b')"/>
+                        </div>
                         <div class="notas col span_2_of_2" align="left">
                             <span t-field="o.notas"/>
                         </div>
                     </div>
                 </t>
-                <div class="pie">Impreso el
-                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/>
-                    Habitaciones:
-                    <t t-esc="totalkelly"/></div>
+                <div class="pie">
+                    <p>Impreso el
+                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y a las %H:%M')"/>
+                    </p>
+                    <p>Habitaciones:
+                    <t t-esc="totalkelly"/></p></div>
             </div>
         </t>
     </template>
