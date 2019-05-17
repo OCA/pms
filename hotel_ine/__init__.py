@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Alda Hotels <informatica@aldahotels.com>
+#    Copyright (C) 2019 Alda Hotels <informatica@aldahotels.com>
 #                       Jose Luis Algara <osotranquilo@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,5 +19,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from . import police_wizard
+from . import wizard
