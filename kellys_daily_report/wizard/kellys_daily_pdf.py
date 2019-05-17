@@ -26,10 +26,13 @@ class KellysWizard(models.TransientModel):
     _name = 'kellysreport'
 
     @api.model
+    def _get_default_date(self):
+        return date.today()
+
     def _get_default_habitaciones(self):
         return self.calculalimpiar(datetime.now())
 
-    date_start = fields.Date("Fecha del listado", default=date.today())
+    date_start = fields.Date("Fecha del listado", default=_get_default_date)
     habitaciones = fields.Many2many('kellysrooms', string="Limpieza:",
                                     default=_get_default_habitaciones)
     order = fields.Selection([
