@@ -36,33 +36,33 @@ class HotelRoom(models.Model):
                                         default='0',
                                         required=True)
 
-    @api.constrains('room_type_id')
-    def _constrain_shared_room_type(self):
-        for record in self:
-            if record.shared_room_id:
-                if not record.room_type_id.shared_room:
-                    raise ValidationError(_('We cant save normal rooms \
-                                            in a shared room type'))
-            else:
-                if record.room_type_id.shared_room:
-                    raise ValidationError(_('We cant save shared rooms \
-                                            in a normal room type'))
+    # @api.constrains('room_type_id')
+    # def _constrain_shared_room_type(self):
+    #     for record in self:
+    #         if record.shared_room_id:
+    #             if not record.room_type_id.shared_room:
+    #                 raise ValidationError(_('We cant save normal rooms \
+    #                                         in a shared room type'))
+    #         else:
+    #             if record.room_type_id.shared_room:
+    #                 raise ValidationError(_('We cant save shared rooms \
+    #                                         in a normal room type'))
 
-    @api.constrains('shared_room_id')
-    def _constrain_shared_room(self):
-        for record in self:
-            if record.shared_room_id:
-                if not record.capacity > 1:
-                    raise ValidationError(_('We cant save normal rooms \
-                                            in a shared room type'))
+    # @api.constrains('shared_room_id')
+    # def _constrain_shared_room(self):
+    #     for record in self:
+    #         if record.shared_room_id:
+    #             if not record.capacity > 1:
+    #                 raise ValidationError(_('We cant save normal rooms \
+    #                                         in a shared room type'))
 
-    @api.constrains('capacity')
-    def _check_capacity(self):
-        for record in self:
-            if record.shared_room_id and record.capacity != 1:
-                raise ValidationError(_("A Bed only can has capacity one"))
-            if record.capacity < 1:
-                raise ValidationError(_("Room capacity can't be less than one"))
+    # @api.constrains('capacity')
+    # def _check_capacity(self):
+    #     for record in self:
+    #         if record.shared_room_id and record.capacity != 1:
+    #             raise ValidationError(_("A Bed only can has capacity one"))
+    #         if record.capacity < 1:
+    #             raise ValidationError(_("Room capacity can't be less than one"))
 
     @api.multi
     def get_capacity(self, extra_bed=0):

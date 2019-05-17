@@ -53,7 +53,7 @@ class HotelSharedRoom(models.Model):
                 bed.update({'active': True})
                 inactive_beds -= bed
                 continue
-            name = u'%s (%s)' % (self.name, i)
+            name = u'%s (%s)' % (self.name, i + 1)
             bed_vals = {
                 'name': name,
                 'max_adult': 1,
