@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Hotel Settings -->
+    <record id="view_hotel_calendar_config_settings" model="ir.ui.view">
+        <field name="name">res.config.calendar.settings.view.form.inherit.hotel</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="80"/>
+        <field name="inherit_id" ref="hotel.view_hotel_config_settings"/>
+        <field name="arch" type="xml">
+            <xpath expr="//h2[@id='default_hours']" position="before">
+                <h2>Calendar Colors</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="text-muted">
+                                Set Background Colors
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <group>
+                                        <field name="color_pre_reservation"  widget="color" />
+                                        <field name="color_reservation" widget="color" />
+                                        <field name="color_reservation_pay" widget="color" />
+                                        <field name="color_stay" widget="color" />
+                                        <field name="color_stay_pay" widget="color" />
+                                        <field name="color_checkout" widget="color" />
+                                        <field name="color_dontsell" widget="color" />
+                                        <field name="color_staff" widget="color" />
+                                        <field name="color_to_assign" widget="color" />
+                                        <field name="color_payment_pending" widget="color" />
+                                    </group>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="text-muted">
+                                Set Letter Colors
+                            </div>
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <group>
+                                        <field name="color_letter_pre_reservation" widget="color" />
+                                        <field name="color_letter_reservation" widget="color" />
+                                        <field name="color_letter_reservation_pay" widget="color" />
+                                        <field name="color_letter_stay" widget="color" />
+                                        <field name="color_letter_stay_pay" widget="color" />
+                                        <field name="color_letter_checkout" widget="color" />
+                                        <field name="color_letter_dontsell" widget="color" />
+                                        <field name="color_letter_staff" widget="color" />
+                                        <field name="color_letter_to_assign" widget="color" />
+                                        <field name="color_letter_payment_pending" widget="color" />
+                                    </group>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

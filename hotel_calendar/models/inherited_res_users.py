@@ -82,28 +82,6 @@ class ResUsers(models.Model):
         'calendar.event.type',
         string="Deny Calander Event Tags")
 
-    color_pre_reservation = fields.Char('Pre-reservation', default='#A24680')
-    color_reservation = fields.Char('Confirmed Reservation ', default='#7C7BAD')
-    color_reservation_pay = fields.Char('Paid Reservation', default='#7C7BAD')
-    color_stay = fields.Char('Checkin', default='#FF4040')
-    color_stay_pay = fields.Char('Paid Checkin', default='#82BF07')
-    color_checkout = fields.Char('Checkout', default='#7E7E7E')
-    color_dontsell = fields.Char('Dont Sell', default='#000000')
-    color_staff = fields.Char('Staff', default='#C08686')
-    color_to_assign = fields.Char('Ota Reservation to Assign', default='#ED722E')
-    color_payment_pending = fields.Char('Payment Pending', default='#A24689')
-
-    color_letter_pre_reservation = fields.Char('Letter  Pre-reservation', default='#FFFFFF')
-    color_letter_reservation = fields.Char('Letter  Confirmed Reservation ', default='#FFFFFF')
-    color_letter_reservation_pay = fields.Char('Letter Paid Reservation', default='#FFFFFF')
-    color_letter_stay = fields.Char('Letter Checkin', default='#FFFFFF')
-    color_letter_stay_pay = fields.Char('Letter Stay Pay', default='#FFFFFF')
-    color_letter_checkout = fields.Char('Letter Checkout', default='#FFFFFF')
-    color_letter_dontsell = fields.Char('Letter Dont Sell', default='#FFFFFF')
-    color_letter_staff = fields.Char('Letter Staff', default='#FFFFFF')
-    color_letter_to_assign = fields.Char('Letter Ota to Assign', default='#FFFFFF')
-    color_letter_payment_pending = fields.Char('Letter Payment Pending', default='#FFFFFF')
-
     def __init__(self, pool, cr):
         """ Override of __init__ to add access rights.
         Access rights are disabled by default, but allowed on some specific
@@ -129,26 +107,6 @@ class ResUsers(models.Model):
             'npms_default_num_days',
             'npms_allowed_events_tags',
             'npms_denied_events_tags',
-            'color_pre_reservation',
-            'color_reservation',
-            'color_reservation_pay',
-            'color_stay',
-            'color_stay_pay',
-            'color_checkout',
-            'color_dontsell',
-            'color_staff',
-            'color_to_assign',
-            'color_payment_pending',
-            'color_letter_pre_reservation',
-            'color_letter_reservation',
-            'color_letter_reservation_pay',
-            'color_letter_stay',
-            'color_letter_stay_pay',
-            'color_letter_checkout',
-            'color_letter_dontsell',
-            'color_letter_staff',
-            'color_letter_to_assign',
-            'color_letter_payment_pending',
         ])
         # duplicate list to avoid modifying the original reference
         type(self).SELF_READABLE_FIELDS = list(self.SELF_READABLE_FIELDS)
@@ -169,24 +127,4 @@ class ResUsers(models.Model):
             'npms_default_num_days',
             'npms_allowed_events_tags',
             'npms_denied_events_tags',
-            'color_pre_reservation',
-            'color_reservation',
-            'color_reservation_pay',
-            'color_stay',
-            'color_stay_pay',
-            'color_checkout',
-            'color_dontsell',
-            'color_staff',
-            'color_to_assign',
-            'color_payment_pending',
-            'color_letter_pre_reservation',
-            'color_letter_reservation',
-            'color_letter_reservation_pay',
-            'color_letter_stay',
-            'color_letter_stay_pay',
-            'color_letter_checkout',
-            'color_letter_dontsell',
-            'color_letter_staff',
-            'color_letter_to_assign',
-            'color_letter_payment_pending',
         ])

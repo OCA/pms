@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="0">
+        <record id="color_pre_reservation" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_pre_reservation</field>
+            <field name="value">#A24680</field>
+        </record>
+        <record id="color_reservation" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_reservation</field>
+            <field name="value">#7C7BAD</field>
+        </record>
+        <record id="color_reservation_pay" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_reservation_pay</field>
+            <field name="value">#584D76</field>
+        </record>
+        <record id="color_stay" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_stay</field>
+            <field name="value">#FF4040</field>
+        </record>
+        <record id="color_stay_pay" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_stay_pay</field>
+            <field name="value">#82BF07</field>
+        </record>
+        <record id="color_checkout" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_checkout</field>
+            <field name="value">#7E7E7E</field>
+        </record>
+        <record id="color_dontsell" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_dontsell</field>
+            <field name="value">#000000</field>
+        </record>
+        <record id="color_staff" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_staff</field>
+            <field name="value">#C08686</field>
+        </record>
+        <record id="color_to_assign" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_to_assign</field>
+            <field name="value">#ED722E</field>
+        </record>
+        <record id="color_payment_pending" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_payment_pending</field>
+            <field name="value">#A24689</field>
+        </record>
+
+        <record id="color_letter_pre_reservation" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_pre_reservation</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_reservation" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_reservation</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_reservation_pay" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_reservation_pay</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_stay" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_stay</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_stay_pay" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_stay_pay</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_checkout" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_checkout</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_dontsell" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_dontsell</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_staff" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_staff</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_to_assign" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_to_assign</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+        <record id="color_letter_payment_pending" model="ir.config_parameter">
+            <field name="key">hotel_calendar.color_letter_payment_pending</field>
+            <field name="value">#FFFFFF</field>
+        </record>
+    </data>
+</openerp>

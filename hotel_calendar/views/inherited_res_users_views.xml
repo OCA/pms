@@ -36,40 +36,6 @@
                         <field name="npms_denied_events_tags" widget="many2many_tags" />
                     </group>
                 </group>
-                <group string="Reservation States Colours" name="reservation_colors" colspan="8">
-                    <group>
-                        <group colspan="4">
-                            <field name="color_pre_reservation"  widget="color" />
-                            <field name="color_reservation" widget="color" />
-                            <field name="color_reservation_pay" widget="color" />
-                            <field name="color_stay" widget="color" />
-                            <field name="color_stay_pay" widget="color" />
-                        </group>
-                        <group colspan="4">
-                            <field name="color_checkout" widget="color" />
-                            <field name="color_dontsell" widget="color" />
-                            <field name="color_staff" widget="color" />
-                            <field name="color_to_assign" widget="color" />
-                            <field name="color_payment_pending" widget="color" />
-                        </group>
-                    </group>
-                    <group>
-                        <group colspan="4">
-                            <field name="color_letter_pre_reservation" widget="color" />
-                            <field name="color_letter_reservation" widget="color" />
-                            <field name="color_letter_reservation_pay" widget="color" />
-                            <field name="color_letter_stay" widget="color" />
-                            <field name="color_letter_stay_pay" widget="color" />
-                        </group>
-                        <group colspan="4">
-                            <field name="color_letter_checkout" widget="color" />
-                            <field name="color_letter_dontsell" widget="color" />
-                            <field name="color_letter_staff" widget="color" />
-                            <field name="color_letter_to_assign" widget="color" />
-                            <field name="color_letter_payment_pending" widget="color" />
-                        </group>
-                    </group>
-                </group>
             </xpath>
         </field>
     </record>

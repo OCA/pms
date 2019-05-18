@@ -10,7 +10,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
                 <div class="app_settings_block" data-string="Hotel" string="Hotel" data-key="hotel" groups="hotel.group_hotel_manager">
-                    <h2>Hotel Default</h2>
+                    <h2 id="default_hotel">Hotel Default</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-xs-12 col-md-6 o_setting_box">
                             <label for="default_pricelist_id"/>
@@ -35,7 +35,7 @@
                             </div>
                         </div>
                     </div>
-                    <h2>Hotel Default Hours</h2>
+                    <h2 id="default_hours">Hotel Default Hours</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-xs-12 col-md-12 o_setting_box">
                             <label for="tz_hotel"/>

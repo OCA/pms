@@ -20,43 +20,42 @@ class HotelReservation(models.Model):
     @api.multi
     def _generate_color(self):
         self.ensure_one()
-
         reserv_color = '#FFFFFF'
         reserv_color_text = '#000000'
-        user = self.env.user
+        ICPSudo = self.env['ir.config_parameter'].sudo()
         if self.reservation_type == 'staff':
-            reserv_color = user.color_staff
-            reserv_color_text = user.color_letter_staff
+            reserv_color = ICPSudo.get_param('hotel_calendar.color_staff')
+            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_staff')
         elif self.reservation_type == 'out':
-            reserv_color = user.color_dontsell
-            reserv_color_text = user.color_letter_dontsell
+            reserv_color = ICPSudo.get_param('hotel_calendar.color_dontsell')
+            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_dontsell')
         elif self.to_assign:
-            reserv_color = user.color_to_assign
-            reserv_color_text = user.color_letter_to_assign
+            reserv_color = ICPSudo.get_param('hotel_calendar.color_to_assign')
+            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_to_assign')
         elif self.state == 'draft':
-            reserv_color = user.color_pre_reservation
-            reserv_color_text = user.color_letter_pre_reservation
+            reserv_color = ICPSudo.get_param('hotel_calendar.color_pre_reservation')
+            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_pre_reservation')
         elif self.state == 'confirm':
             if self.folio_id.pending_amount <= 0:
-                reserv_color = user.color_reservation_pay
-                reserv_color_text = user.color_letter_reservation_pay
+                reserv_color = ICPSudo.get_param('hotel_calendar.color_reservation_pay')
+                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_reservation_pay')
             else:
-                reserv_color = user.color_reservation
-                reserv_color_text = user.color_letter_reservation
+                reserv_color = ICPSudo.get_param('hotel_calendar.color_reservation')
+                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_reservation')
         elif self.state == 'booking':
             if self.folio_id.pending_amount <= 0:
-                reserv_color = user.color_stay_pay
-                reserv_color_text = user.color_letter_stay_pay
+                reserv_color = ICPSudo.get_param('hotel_calendar.color_stay_pay')
+                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_stay_pay')
             else:
-                reserv_color = user.color_stay
-                reserv_color_text = user.color_letter_stay
+                reserv_color = ICPSudo.get_param('hotel_calendar.color_stay')
+                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_stay')
         else:
             if self.folio_id.pending_amount <= 0:
-                reserv_color = user.color_checkout
-                reserv_color_text = user.color_letter_checkout
+                reserv_color = ICPSudo.get_param('hotel_calendar.color_checkout')
+                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_checkout')
             else:
-                reserv_color = user.color_payment_pending
-                reserv_color_text = user.color_letter_payment_pending
+                reserv_color = ICPSudo.get_param('hotel_calendar.color_payment_pending')
+                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_payment_pending')
         return (reserv_color, reserv_color_text)
 
     @api.depends('state', 'reservation_type', 'folio_id.pending_amount', 'to_assign')
