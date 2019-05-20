@@ -541,50 +541,47 @@ class Data_Bi(models.Model):
             precio_neto -= precio_comision
             precio_iva = (precio_neto*10/100)
             precio_neto -= precio_iva
-            data = json.loads(
+            if reserva.reservation_id.channel_bind_ids.channel_raw_data:
+                data = json.loads(
                     reserva.reservation_id.channel_bind_ids.channel_raw_data)
 
-            jsonBooked = data['booked_rooms'][0]
-            if jsonBooked.get('ancillary').get(
-                    'channel_rate_name') is not None:
-                jsonRate = jsonBooked.get('ancillary').get(
-                    'channel_rate_name')
-                # _logger.warning("EXPEDIA ancillary : %s - %s",
-                #                 jsonRate, reserva.id)
-
-            elif jsonBooked.get('roomdays')[0].get(
-                    'ancillary').get(
+                jsonBooked = data['booked_rooms'][0]
+                if jsonBooked.get('ancillary').get(
                         'channel_rate_name') is not None:
-                jsonRate = jsonBooked.get(
-                    'roomdays')[0].get(
-                    'ancillary').get('channel_rate_name')
-                # _logger.warning("EXPEDIA roomdays : %s - %s",
-                #                 jsonRate, reserva.id)
+                    jsonRate = jsonBooked.get('ancillary').get(
+                        'channel_rate_name')
+                    # _logger.warning("EXPEDIA ancillary : %s - %s",
+                    #                 jsonRate, reserva.id)
 
-            else:
-                _logger.critical(
-                    "EXPEDIA Tarifa No Contemplada : "
-                    + jsonBooked)
+                elif jsonBooked.get('roomdays')[0].get(
+                        'ancillary').get(
+                            'channel_rate_name') is not None:
+                    jsonRate = jsonBooked.get(
+                        'roomdays')[0].get(
+                        'ancillary').get('channel_rate_name')
+                    # _logger.warning("EXPEDIA roomdays : %s - %s",
+                    #                 jsonRate, reserva.id)
 
-            jsonRefundable = jsonRate.upper().find('REFUNDABLE')
-            # _logger.warning("EXPEDIA Tarifa : %s", jsonRate)
-            # _logger.warning("EXPEDIA Tarifa : %s y %s",
-            #                 jsonRate, str(jsonRefundable))
+                else:
+                    _logger.critical(
+                        "EXPEDIA Tarifa No Contemplada : "
+                        + jsonBooked)
 
-            # 10 % Iva
-            precio_iva = round((precio_neto-(precio_neto/1.1)), 2)
-            # 18 % comision ?
-            precio_comision = inv_percent(
+                jsonRefundable = jsonRate.upper().find('REFUNDABLE')
+                # _logger.warning("EXPEDIA Tarifa : %s", jsonRate)
+                # _logger.warning("EXPEDIA Tarifa : %s y %s",
+                #                 jsonRate, str(jsonRefundable))
+
+                # 10 % Iva
+                precio_iva = round((precio_neto-(precio_neto/1.1)), 2)
+                # 18 % comision ?
+                precio_comision = inv_percent(
                             precio_neto, self.env.user.company_id.expedia_rate)
-            precio_neto += precio_comision
-            # 3% Refundable ?
-            if jsonRefundable >= 0:
-                precio_dto = inv_percent(precio_neto, 3)
-                precio_neto += precio_dto
-            # _logger.warning("ODOO: %s , precio_neto: %s , precio_comision: \
-            #     %s , precio_iva: %s , precio_dto: %s", reserva.price,
-            #                 precio_neto, precio_comision, precio_iva,
-            #                 precio_dto)
+                precio_neto += precio_comision
+                # 3% Refundable ?
+                if jsonRefundable >= 0:
+                    precio_dto = inv_percent(precio_neto, 3)
+                    precio_neto += precio_dto
 
         response_dic.append({'ota': reserva.reservation_id.ota_id.id,
                              'ota_id': reserva.reservation_id.ota_id.ota_id,
