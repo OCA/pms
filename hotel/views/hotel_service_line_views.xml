@@ -42,7 +42,8 @@
                 <field name="day_qty"/>
                 <field name="price_unit" />
                 <field name="service_id" />
-                <field name="tax_ids" widget="many2many_tags"/>
+                <field name="room_id" />
+                <field name="tax_ids" invisible="1"/>
                 <field name="discount" />
                 <field name="price_total" />
             </tree>

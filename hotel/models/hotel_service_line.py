@@ -12,7 +12,6 @@ class HotelServiceLine(models.Model):
     service_id = fields.Many2one('hotel.service', string='Service Room',
                                  ondelete='cascade', required=True,
                                  copy=False)
-    active = fields.Boolean('Active', compute="_compute_active")
     date = fields.Date('Date')
     day_qty = fields.Integer('Units')
     product_id = fields.Many2one(related='service_id.product_id', store=True)
@@ -21,6 +20,10 @@ class HotelServiceLine(models.Model):
                                store=True)
     price_unit = fields.Float('Unit Price',
                               related="service_id.price_unit",
+                              readonly=True,
+                              store=True)
+    room_id = fields.Many2one(strin='Room',
+                              related="service_id.ser_room_line",
                               readonly=True,
                               store=True)
     discount = fields.Float('Discount',
