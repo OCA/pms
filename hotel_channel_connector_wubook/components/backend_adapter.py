@@ -9,6 +9,7 @@ from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.addons.payment.models.payment_acquirer import _partner_split_name
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
 from odoo import fields, _
+from odoo.tools.misc import DEFAULT_SERVER_DATE_FORMAT
 
 # GLOBAL VARS
 DEFAULT_WUBOOK_DATE_FORMAT = "%d/%m/%Y"
@@ -199,6 +200,18 @@ class WuBookAdapter(AbstractComponent):
         return results
 
     def fetch_rooms_values(self, date_from, date_to, rooms=False):
+        # WuBook Knowledge Base:
+        # 1.- The returned restrictions are the Standard Restrictions (default restriction plan).
+        # The prices are related to the WuBook Parity, that is, pid = 0 (unless you modify it, linking the
+        # WuBook Parity to a specific pricing plan).
+        # 2.- You simply can't download room information for days in the past or more than 2 years in the future.
+        date_today = fields.Date.today()
+        date_2_years = (fields.Date.from_string(date_today) + timedelta(days=365) * 2).strftime(
+            DEFAULT_SERVER_DATE_FORMAT)
+        if date_from < date_today or date_from > date_2_years:
+            date_from = date_today
+        if date_to < date_today or date_to > date_2_years:
+            date_to = date_today
         rcode, results = self._server.fetch_rooms_values(
             self._session_info[0],
             self._session_info[1],

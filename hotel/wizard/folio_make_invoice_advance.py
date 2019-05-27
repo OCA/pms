@@ -221,7 +221,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             # Create deposit product if necessary
             if not self.product_id:
                 vals = self._prepare_deposit_product()
-                self.product_id = self.env['product.product'].create(vals)
+                self.product_id = self.env['product.product'].sudo().create(vals)
                 self.env['ir.config_parameter'].sudo().set_param(
                     'sale.default_deposit_product_id', self.product_id.id)
 

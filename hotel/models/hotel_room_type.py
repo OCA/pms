@@ -109,17 +109,17 @@ class HotelRoomType(models.Model):
         })
         return super().create(vals)
 
-    @api.constrains('shared_room', 'room_ids')
-    def _constrain_shared_room(self):
-        for record in self:
-            if record.shared_room:
-                if any(not room.shared_room_id for room in record.room_ids):
-                    raise ValidationError(_('We cant save normal rooms \
-                                            in a shared room type'))
-            else:
-                if any(room.shared_room_id for room in record.room_ids):
-                    raise ValidationError(_('We cant save shared rooms \
-                                            in a normal room type'))
+    # @api.constrains('shared_room', 'room_ids')
+    # def _constrain_shared_room(self):
+    #     for record in self:
+    #         if record.shared_room:
+    #             if any(not room.shared_room_id for room in record.room_ids):
+    #                 raise ValidationError(_('We cant save normal rooms \
+    #                                         in a shared room type'))
+    #         else:
+    #             if any(room.shared_room_id for room in record.room_ids):
+    #                 raise ValidationError(_('We cant save shared rooms \
+    #                                         in a normal room type'))
 
     @api.multi
     def unlink(self):

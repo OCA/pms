@@ -12,12 +12,12 @@
     </record>
 
     <record model="hotel.room.type.class">
-        <field name="name">Beds Number</field>
+        <field name="name">Bed</field>
         <field name="code_class">3</field>
     </record>
 
     <record model="hotel.room.type.class">
-        <field name="name">Beds</field>
+        <field name="name">Unit</field>
         <field name="code_class">4</field>
     </record>
 
