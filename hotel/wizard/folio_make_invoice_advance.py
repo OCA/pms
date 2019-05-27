@@ -321,7 +321,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                                     timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
                             extra_price += service.price_unit * \
                                 service.service_line_ids.filtered(
-                                    lambda x: x.date == day.date).day_qty
+                                    lambda x: x.date == date).day_qty
                     #group_key: if group by reservation, We no need group by room_type
                     group_key = (reservation.id, reservation.room_type_id.id, day.price + extra_price, day.discount)
                     date = fields.Date.from_string(day.date)
