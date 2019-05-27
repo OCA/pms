@@ -315,6 +315,10 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         services = reservation.service_ids.filtered(
                             lambda x: x.is_board_service == True)
                         for service in services:
+                            date = day.date
+                            if service.product_id.consumed_on == 'after':
+                                date = (fields.Date.from_string(day.date) + \
+                                    timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
                             extra_price += service.price_unit * \
                                 service.service_line_ids.filtered(
                                     lambda x: x.date == day.date).day_qty
