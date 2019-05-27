@@ -31,6 +31,7 @@
     'category': 'hotel/ine',
     'data': [
             'wizard/inewizard.xml',
+            'views/inherited_hotel_room_view.xml',
     ],
     'demo': [
     ],
