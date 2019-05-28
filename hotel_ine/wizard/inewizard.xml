@@ -4,7 +4,7 @@
 
             <act_window
                 id="action_ine_download"
-                name="Action INE File Download"
+                name="I.N.E. File Download"
                 res_model="ine.wizard"
                 view_mode="form"
             />
@@ -16,8 +16,8 @@
                     <form>
                         <sheet>
                             <group string="Generar estadistica para el I.N.E." colspan="1">
-                                    <field name="ine_start" style="width:110px;"/>
-                                    <field name="ine_end" style="width:110px"/>
+                                    <field name="ine_year" style="width:110px;"/>
+                                    <field name="ine_month" style="width:110px"/>
                             </group>
                             <div>
                             <button name="generate_file" class="oe_form_button_save btn btn-primary btn-sm" type="object" string="Generate file"/>
