@@ -17,7 +17,7 @@ class HotelRoomTypeAvailabilityExporter(Component):
         channel_hotel_room_type_obj = self.env['channel.hotel.room.type']
         channel_room_type_avail_ids = self.env['channel.hotel.room.type.availability'].search([
             ('backend_id', '=', self.backend_record.id),
-            ('channel_pushed', '=', False),
+            # ('channel_pushed', '=', False),
             ('date', '>=', fields.Date.today())
         ])
         room_types = channel_room_type_avail_ids.mapped('room_type_id')
@@ -44,6 +44,17 @@ class HotelRoomTypeAvailabilityExporter(Component):
         _logger.info(avails)
         if any(avails):
             try:
+                # For functions updating room values (like availability, prices, restrictions and so on),
+                # for example update_avail(), there is a maximum number of updatable days (for __each room__)
+                # depending on the time window.
+                # Number of updated days    Time window (seconds)
+                # 1460                      1
+                # 4380                      180
+                # 13140                     3600
+                # 25550                     43200
+                # 29200                     86400
+                # 32850                     172800
+                # 36500                     259200
                 self.backend_adapter.update_availability(avails)
             except ChannelConnectorError as err:
                 self.create_issue(
