@@ -15,11 +15,13 @@ class HotelRoomTypeAvailabilityExporter(Component):
 
     def push_availability(self):
         channel_hotel_room_type_obj = self.env['channel.hotel.room.type']
-        channel_room_type_avail_ids = self.env['channel.hotel.room.type.availability'].search([
+        search_domain = [
             ('backend_id', '=', self.backend_record.id),
-            # ('channel_pushed', '=', False),
             ('date', '>=', fields.Date.today())
-        ])
+        ]
+        if not self.env['channel.hotel.room.type.availability']._context.get('force_update', False):
+            search_domain.append(('channel_pushed', '=', False))
+        channel_room_type_avail_ids = self.env['channel.hotel.room.type.availability'].search(search_domain)
         room_types = channel_room_type_avail_ids.mapped('room_type_id')
         avails = []
         for room_type in room_types:
