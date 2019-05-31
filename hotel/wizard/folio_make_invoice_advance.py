@@ -472,46 +472,44 @@ class LineAdvancePaymentInv(models.TransientModel):
             :param qty: float quantity to invoice
             :returns recordset of account.invoice.line created
         """
+        self.ensure_one()
         invoice_lines = self.env['account.invoice.line']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-        for line in self:
-            origin = line.reservation_id if line.reservation_id.id else line.service_id
-            res = {}
-            product = line.product_id
-            account = product.property_account_income_id or product.categ_id.property_account_income_categ_id
-            if not account:
-                raise UserError(_('Please define income account for this product: "%s" (id:%d) - or for its category: "%s".') %
-                    (product.name, product.id, product.categ_id.name))
+        origin = self.reservation_id if self.reservation_id.id else self.service_id
+        product = self.product_id
+        account = product.property_account_income_id or product.categ_id.property_account_income_categ_id
+        if not account:
+            raise UserError(_('Please define income account for this product: "%s" (id:%d) - or for its category: "%s".') %
+                (product.name, product.id, product.categ_id.name))
 
-            fpos = line.folio_id.fiscal_position_id or line.folio_id.partner_id.property_account_position_id
-            if fpos:
-                account = fpos.map_account(account)
-            vals = {
-                'sequence': origin.sequence,
-                'origin': origin.name,
-                'account_id': account.id,
-                'price_unit': line.price_unit,
-                'quantity': line.qty,
-                'discount': line.discount,
-                'uom_id': product.uom_id.id,
-                'product_id': product.id or False,
-                'invoice_line_tax_ids': [(6, 0, origin.tax_ids.ids)],
-                'account_analytic_id': line.folio_id.analytic_account_id.id,
-                'analytic_tag_ids': [(6, 0, origin.analytic_tag_ids.ids)]
-            }
-            if line.reservation_id:
-                vals.update({
-                    'name': line.description + ' (' + line.description_dates + ')',
-                    'invoice_id': invoice_id,
-                    'reservation_ids': [(6, 0, [origin.id])],
-                    'reservation_line_ids': [(6, 0, line.reservation_line_ids.ids)]
-                })
-            elif line.service_id:
-                vals.update({
-                    'name': line.description,
-                    'invoice_id': invoice_id,
-                    'service_ids': [(6, 0, [origin.id])]
-                })
-            invoice_lines |= self.env['account.invoice.line'].create(vals)
-
+        fpos = self.folio_id.fiscal_position_id or self.folio_id.partner_id.property_account_position_id
+        if fpos:
+            account = fpos.map_account(account)
+        vals = {
+            'sequence': origin.sequence,
+            'origin': origin.name,
+            'account_id': account.id,
+            'price_unit': self.price_unit,
+            'quantity': self.qty,
+            'discount': self.discount,
+            'uom_id': product.uom_id.id,
+            'product_id': product.id or False,
+            'invoice_line_tax_ids': [(6, 0, origin.tax_ids.ids)],
+            'account_analytic_id': self.folio_id.analytic_account_id.id,
+            'analytic_tag_ids': [(6, 0, origin.analytic_tag_ids.ids)]
+        }
+        if self.reservation_id:
+            vals.update({
+                'name': self.description + ' (' + self.description_dates + ')',
+                'invoice_id': invoice_id,
+                'reservation_ids': [(6, 0, [origin.id])],
+                'reservation_line_ids': [(6, 0, self.reservation_line_ids.ids)]
+            })
+        elif self.service_id:
+            vals.update({
+                'name': self.description,
+                'invoice_id': invoice_id,
+                'service_ids': [(6, 0, [origin.id])]
+            })
+        invoice_lines |= self.env['account.invoice.line'].create(vals)
         return invoice_lines
