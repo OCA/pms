@@ -67,10 +67,10 @@ class FolioAdvancePaymentInv(models.TransientModel):
                                   default=True,
                                   help='Automatic validation and link payment to invoice')
     count = fields.Integer(compute='_count', store=True, string='# of Orders')
-    folio_ids  = fields.Many2many("hotel.folio", string="Folios",
+    folio_ids = fields.Many2many("hotel.folio", string="Folios",
                                   help="Folios grouped",
                                   default=_get_default_folio)
-    reservation_ids  = fields.Many2many("hotel.reservation", string="Rooms",
+    reservation_ids = fields.Many2many("hotel.reservation", string="Rooms",
                                   help="Folios grouped",
                                   default=_get_default_reservation)
     group_folios = fields.Boolean('Group Folios')
@@ -297,7 +297,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     (x.ser_room_line.id in self.reservation_ids.ids or \
                     not x.ser_room_line.id)):
                 invoice_lines[service.id] = {
-                    'description' : service.name,
+                    'description': service.name,
                     'product_id': service.product_id.id,
                     'qty': service.qty_to_invoice,
                     'discount': service.discount,
@@ -315,13 +315,13 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         services = reservation.service_ids.filtered(
                             lambda x: x.is_board_service == True)
                         for service in services:
-                            date = day.date
+                            service_date = day.date
                             if service.product_id.consumed_on == 'after':
-                                date = (fields.Date.from_string(day.date) + \
+                                service_date = (fields.Date.from_string(day.date) + \
                                     timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
                             extra_price += service.price_unit * \
                                 service.service_line_ids.filtered(
-                                    lambda x: x.date == date).day_qty
+                                    lambda x: x.date == service_date).day_qty
                     #group_key: if group by reservation, We no need group by room_type
                     group_key = (reservation.id, reservation.room_type_id.id, day.price + extra_price, day.discount)
                     date = fields.Date.from_string(day.date)
