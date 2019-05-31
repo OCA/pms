@@ -119,7 +119,7 @@ class FolioWizard(models.TransientModel):
     @api.onchange('autoassign')
     def create_reservations(self):
         self.ensure_one()
-        cmds = []
+        cmds = [(5,0,0)]
         for line in self.room_type_wizard_ids:
             if line.rooms_num == 0:
                 continue
