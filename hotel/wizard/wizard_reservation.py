@@ -64,9 +64,9 @@ class FolioWizard(models.TransientModel):
                                    default=_get_default_pricelist,
                                    help="Pricelist for current folio.")
     checkin = fields.Date('Check In', required=True,
-                              default=_get_default_checkin)
+                          default=_get_default_checkin)
     checkout = fields.Date('Check Out', required=True,
-                               default=_get_default_checkout)
+                           default=_get_default_checkout)
     credit_card_details = fields.Text('Credit Card Details')
     internal_comment = fields.Text(string='Internal Folio Notes')
     reservation_wizard_ids = fields.One2many('hotel.reservation.wizard',
@@ -182,13 +182,15 @@ class FolioWizard(models.TransientModel):
         checkin_str = checkin_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
         checkout_str = checkout_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
+        cmds = [(5,0,0)]
         room_type_ids = self.env['hotel.room.type'].search([])
-        cmds = room_type_ids.mapped(lambda x: (0, False, {
-            'room_type_id': x.id,
-            'folio_wizard_id': self.id,
-            'checkin': checkin_str,
-            'checkout': checkout_str,
-        }))
+        for room_type in room_type_ids:
+            cmds.append((0, False, {
+                'room_type_id': room_type.id,
+                'folio_wizard_id': self.id,
+                'checkin': checkin_str,
+                'checkout': checkout_str,
+                }))
         self.update({
             'checkin': checkin_str,
             'checkout': checkout_str,
