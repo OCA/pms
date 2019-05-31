@@ -287,7 +287,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     @api.onchange('reservation_ids')
     def prepare_invoice_lines(self):
-        vals = []
+        vals = [(5,0,0)]
         folios = self.folio_ids
         invoice_lines = {}
         for folio in folios:
