@@ -350,15 +350,8 @@ class HotelReservationImporter(Component):
                 processed_rids.append(rcode)
                 continue
 
-            # Search Customer
-            customer_mail = book.get('customer_mail', False)
-            partner_id = False
-            if customer_mail:
-                partner_id = res_partner_obj.search([
-                    ('email', '=', customer_mail)
-                ], limit=1)
-            if not partner_id:
-                partner_id = res_partner_obj.create(self._generate_partner_vals(book))
+            # Create new Customer
+            partner_id = res_partner_obj.create(self._generate_partner_vals(book))
 
             reservations = []
             used_rooms = []

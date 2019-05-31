@@ -244,7 +244,7 @@ class ChannelBackend(models.Model):
     @api.model
     def cron_push_changes(self):
         backends = self.env[self._name].search([])
-        backends.push_availability()
+        backends.with_context({'force_update': True}).push_availability()
         backends.push_restriction()
         backends.push_pricelist()
 
