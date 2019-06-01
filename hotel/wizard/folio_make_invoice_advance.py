@@ -323,22 +323,30 @@ class FolioAdvancePaymentInv(models.TransientModel):
                                 service.service_line_ids.filtered(
                                     lambda x: x.date == service_date).day_qty
                     #group_key: if group by reservation, We no need group by room_type
-                    group_key = (reservation.id, reservation.room_type_id.id, day.price + extra_price, day.discount)
-                    date = fields.Date.from_string(day.date)
+                    group_key = (reservation.id, reservation.room_type_id.id,
+                                 day.price + extra_price, day.discount,
+                                 day.cancel_discount)
+                    if day.cancel_discount == 100:
+                        continue
+                    discount_factor = 1.0
+                    for discount in [day.discount, day.cancel_discount]:
+                        discount_factor = (
+                            discount_factor * ((100.0 - discount) / 100.0))
+                    final_discount = 100.0 - (discount_factor * 100.0)
                     description = folio.name + ' ' + reservation.room_type_id.name + ' (' + \
                         reservation.board_service_room_id.hotel_board_service_id.name + ')' \
                         if board_service else folio.name + ' ' + reservation.room_type_id.name
                     if group_key not in invoice_lines:
                         invoice_lines[group_key] = {
-                                'description' : description,
-                                'reservation_id': reservation.id,
-                                'room_type_id': reservation.room_type_id,
-                                'product_id': self.env['product.product'].browse(
-                                    reservation.room_type_id.product_id.id),
-                                'discount': day.discount,
-                                'price_unit': day.price + extra_price,
-                                'reservation_line_ids': [(4, day.id)]
-                            }
+                            'description': description,
+                            'reservation_id': reservation.id,
+                            'room_type_id': reservation.room_type_id,
+                            'product_id': self.env['product.product'].browse(
+                                reservation.room_type_id.product_id.id),
+                            'discount': final_discount,
+                            'price_unit': day.price + extra_price,
+                            'reservation_line_ids': [(4, day.id)]
+                        }
                     else:
                         invoice_lines[group_key][('reservation_line_ids')].append((4,day.id))
         for group_key in invoice_lines:

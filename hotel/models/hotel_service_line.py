@@ -30,10 +30,19 @@ class HotelServiceLine(models.Model):
                             related="service_id.discount",
                             readonly=True,
                             store=True)
+    cancel_discount = fields.Float('Discount', compute='_compute_cancel_discount')
     tax_ids = fields.Many2many('account.tax',
                                string='Taxes',
                                related="service_id.tax_ids",
                                readonly="True")
+
+    def _cancel_discount(self):
+        for record in self:
+            if record.reservation_id:
+                day = record.reservation_id.reservation_line_ids.filtered(
+                    lambda d: d.date == record.date
+                )
+                record.cancel_discount = day.cancel_discount
 
     @api.depends('day_qty', 'service_id.price_total')
     def _compute_price_total(self):
@@ -41,7 +50,10 @@ class HotelServiceLine(models.Model):
         Used to reports
         """
         for record in self:
-            record.price_total = (record.service_id.price_total * record.day_qty) / record.service_id.product_qty
+            if record.service_id.product_qty != 0:
+                record.price_total = (record.service_id.price_total * record.day_qty) / record.service_id.product_qty
+            else:
+                record.price_total = 0
 
     @api.constrains('day_qty')
     def no_free_resources(self):

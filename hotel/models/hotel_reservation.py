@@ -980,6 +980,10 @@ class HotelReservation(models.Model):
         self.ensure_one()
         pricelist = self.pricelist_id
         if self.state == 'cancelled':
+            #REVIEW: Set 0 qty on cancel room services (view constrain service_line_days)
+            for service in self.service_ids:
+                service.service_line_ids.write({'day_qty': 0})
+                service._compute_days_qty()
             if self.cancelled_reason and pricelist and pricelist.cancelation_rule_id:
                 date_start_dt = fields.Date.from_string(self.real_checkin or self.checkin)
                 date_end_dt = fields.Date.from_string(self.real_checkout or self.checkout)

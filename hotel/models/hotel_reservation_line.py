@@ -47,3 +47,14 @@ class HotelReservationLine(models.Model):
             )
             if duplicated:
                 raise ValidationError(_('Duplicated reservation line date'))
+
+    @api.constrains('state')
+    def constrains_service_cancel(self):
+        for record in self:
+            if record.state == 'cancelled':
+                room_services = record.reservation_id.service_ids
+                for service in room_services:
+                    cancel_lines = service.service_line_ids.filtered(
+                        lambda r: r.date == record.date
+                    )
+                    cancel_lines.day_qty = 0
