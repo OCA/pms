@@ -62,6 +62,7 @@ class AccountPayment(models.Model):
             'state': 'draft'}
         self.update(vals)
         self.with_context({'ignore_notification_post': True}).post()
+        self._compute_folio_amount()
         if self.folio_id:
             msg = _("Payment %s modified: \n") % (self.communication)
             if self.save_amount and self.save_amount != self.amount:
