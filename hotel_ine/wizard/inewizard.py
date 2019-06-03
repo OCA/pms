@@ -91,7 +91,7 @@ class Wizard(models.TransientModel):
         encuesta = ET.Element("ENCUESTA")
         cabezera = ET.SubElement(encuesta, "CABECERA")
         fecha = ET.SubElement(cabezera, "FECHA_REFERENCIA")
-        ET.SubElement(fecha, "MES").text = str(self.ine_month)
+        ET.SubElement(fecha, "MES").text = "%02d" % (str(self.ine_month))
         ET.SubElement(fecha, "ANYO").text = str(self.ine_year)
         ET.SubElement(cabezera, "DIAS_ABIERTO_MES_REFERENCIA").text = (
             str(last_day))
