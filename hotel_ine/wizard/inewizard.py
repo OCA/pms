@@ -20,7 +20,7 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api, _
+from openerp import models, fields, api
 import base64
 import datetime
 import calendar
@@ -28,21 +28,6 @@ import xml.etree.cElementTree as ET
 from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
-
-
-# def _get_default_date(option):
-#     now = datetime.datetime.now()
-#     month = int(now.month)-1
-#     year = int(now.year)
-#     if month <= 0:
-#         month = 12
-#         year -= year
-#     start_date = datetime.datetime(year, month, 1)
-#     end_date = calendar.monthrange(year, month)[1] - 1
-#     month_end_date = start_date + datetime.timedelta(days=end_date)
-#     if option == "start":
-#         return start_date
-#     return month_end_date
 
 
 def get_years():
@@ -86,7 +71,6 @@ class Wizard(models.TransientModel):
     @api.one
     def generate_file(self):
         _logger.warning("Start Export INE XML file")
-        # month_first_date = datetime.datetime(self.ine_year, self.ine_month, 1)
         last_day = calendar.monthrange(self.ine_year, self.ine_month)[1]
         ine_start_search = datetime.date(self.ine_year, self.ine_month, 1)
         ine_end_search = ine_start_search + datetime.timedelta(days=last_day)
@@ -138,6 +122,7 @@ class Wizard(models.TransientModel):
             ('date', '>=', ine_start_search),
             ('date', '<=', ine_end_search),
             ('reservation_id.room_id.in_ine', '=', True),
+            ('reservation_id.reservation_type', '=', 'normal'),
             ])
         room_nights = all_room_nights.filtered(
                     lambda n: (self.get_codeine(n.reservation_id)))
@@ -157,16 +142,14 @@ class Wizard(models.TransientModel):
 
         # Adding overnight stays per day and INE code
         for dia in range(1, last_day+1):
-            _logger.info("INE: Calculating %s de %s reservation", dia, last_day)
-            for room_night in room_nights.filtered(lambda x: x.date == str(self.ine_year)+'-'+str(self.ine_month).zfill(2)+'-'+str(dia).zfill(2)):
+            for room_night in room_nights.filtered(
+                    lambda x: x.date == str(self.ine_year)+'-'+str(
+                    self.ine_month).zfill(2)+'-'+str(dia).zfill(2)):
                 ine_code = self.get_codeine(room_night.reservation_id)
                 for idx, val in enumerate(dic_tabla):
                     if val['ine'] == ine_code and val['dia'] == dia:
                         dic_tabla[idx]['pernocta'] += room_night.reservation_id.adults
 
-                        # Debug Stop -------------------
-                        # import wdb; wdb.set_trace()
-                        # Debug Stop -------------------
         # Calculating outputs and entries
         count = 1
         last_stay = 0
@@ -178,7 +161,8 @@ class Wizard(models.TransientModel):
             if last_stay < dic_tabla[idx]['pernocta']:
                 dic_tabla[idx]['entradas'] += dic_tabla[idx]['pernocta']
             elif last_stay > dic_tabla[idx]['pernocta']:
-                dic_tabla[idx]['salidas'] += last_stay - dic_tabla[idx]['pernocta']
+                dic_tabla[idx]['salidas'] += last_stay - dic_tabla[idx][
+                                                                    'pernocta']
             last_stay = dic_tabla[idx]['pernocta']
 
         # "Print" outputs and entries
@@ -193,23 +177,128 @@ class Wizard(models.TransientModel):
                 else:
                     ET.SubElement(residencia, "ID_PAIS"
                                   ).text = str(dic_tabla[idx]['ine'])
-            if (dic_tabla[idx]['entradas'] != 0) or (dic_tabla[idx]['salidas'] != 0) or (dic_tabla[idx]['pernocta'] != 0):
+            if ((dic_tabla[idx]['entradas'] != 0)
+                    or (dic_tabla[idx]['salidas'] != 0)
+                    or (dic_tabla[idx]['pernocta'] != 0)):
                 movimiento = ET.SubElement(residencia, "MOVIMIENTO")
-                ET.SubElement(movimiento, "N_DIA").text = "%02d" % dic_tabla[idx]['dia']
-                ET.SubElement(movimiento, "ENTRADAS").text = str(dic_tabla[idx]['entradas'])
-                ET.SubElement(movimiento, "SALIDAS").text = str(dic_tabla[idx]['salidas'])
-                ET.SubElement(movimiento, "PERNOCTACIONES").text = str(dic_tabla[idx]['pernocta'])
+                ET.SubElement(movimiento, "N_DIA").text = (
+                                                "%02d" % dic_tabla[idx]['dia'])
+                ET.SubElement(movimiento, "ENTRADAS").text = str(
+                                                    dic_tabla[idx]['entradas'])
+                ET.SubElement(movimiento, "SALIDAS").text = str(
+                                                    dic_tabla[idx]['salidas'])
+                ET.SubElement(movimiento, "PERNOCTACIONES").text = str(
+                                                    dic_tabla[idx]['pernocta'])
 
+        habitaciones = ET.SubElement(encuesta, "HABITACIONES")
+        # Bucle de HABITACIONES_MOVIMIENTO
+
+        ingresos = 0
+        habitaci = 0
+        hab_vend = 0
+        for dia in range(1, last_day+1):
+            suple = 0
+            doble = 0
+            dindi = 0
+            otras = 0
+
+            habitaci += len(active_room)
+            habitaci -= self.env['hotel.reservation.line'].search([
+                ('date', '=', str(self.ine_year)+'-'+str(
+                    self.ine_month).zfill(2)+'-'+str(dia).zfill(2)),
+                ('reservation_id.reservation_type', '!=', 'normal'),
+                ], count=True)
+            for room_night in room_nights.filtered(lambda x: x.date == str(
+                                            self.ine_year)+'-'+str(
+                                            self.ine_month).zfill(2)+'-'+str(
+                                            dia).zfill(2)):
+                ingresos += room_night.price
+                hab_vend += 1
+
+                if room_night.reservation_id.room_id.capacity == 2:
+                    if room_night.reservation_id.adults == 1:
+                        dindi += 1
+                    else:
+                        doble += 1
+                else:
+                    otras += 1
+                if len(room_night.reservation_id.service_ids):
+                    for service in room_night.reservation_id.service_ids:
+                        if service.product_id.is_extra_bed:
+                            suple += 1
+
+            habitaciones_m = ET.SubElement(habitaciones,
+                                           "HABITACIONES_MOVIMIENTO")
+            ET.SubElement(habitaciones_m,
+                          "HABITACIONES_N_DIA").text = "%02d" % (dia)
+            ET.SubElement(habitaciones_m,
+                          "PLAZAS_SUPLETORIAS").text = str(suple)
+            ET.SubElement(habitaciones_m,
+                          "HABITACIONES_DOBLES_USO_DOBLE").text = str(doble)
+            ET.SubElement(habitaciones_m,
+                          "HABITACIONES_DOBLES_USO_INDIVIDUAL").text = str(
+                                                                        dindi)
+            ET.SubElement(habitaciones_m,
+                          "HABITACIONES_OTRAS").text = str(otras)
+
+        precios = ET.SubElement(encuesta, "PRECIOS")
+        ET.SubElement(precios,
+                      "REVPAR_MENSUAL").text = str(round(ingresos/habitaci, 2))
+        ET.SubElement(precios,
+                      "ADR_MENSUAL").text = str(round(ingresos/hab_vend, 2))
+        ET.SubElement(precios, "ADR_TOUROPERADOR_TRADICIONAL").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_TRADICIONAL"
+                      ).text = '0'
+        ET.SubElement(precios,
+                      "ADR_TOUROPERADOR_ONLINE").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_ONLINE"
+                      ).text = '0'
+        ET.SubElement(precios,
+                      "ADR_EMPRESAS").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_EMPRESAS").text = '0'
+        ET.SubElement(precios,
+                      "ADR_AGENCIA_DE_VIAJE_TRADICIONAL").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_AGENCIA_TRADICIONAL"
+                      ).text = '0'
+        ET.SubElement(precios, "ADR_AGENCIA_DE_VIAJE_ONLINE").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_AGENCIA_ONLINE"
+                      ).text = '0'
+        ET.SubElement(precios, "ADR_PARTICULARES").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_PARTICULARES").text = '0'
+        ET.SubElement(precios,
+                      "ADR_GRUPOS").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_GRUPOS").text = '0'
+        ET.SubElement(precios, "ADR_INTERNET").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_INTERNET").text = '0'
+        ET.SubElement(precios, "ADR_OTROS").text = '0'
+        ET.SubElement(precios,
+                      "PCTN_HABITACIONES_OCUPADAS_OTROS").text = '0'
+
+        personal = ET.SubElement(encuesta, "PERSONAL_OCUPADO")
+        ET.SubElement(personal, "PERSONAL_NO_REMUNERADO").text = '0'
+        ET.SubElement(personal,
+                      "PERSONAL_REMUNERADO_FIJO").text = str(
+                          compan.ine_permanent_staff)
+        ET.SubElement(personal,
+                      "PERSONAL_REMUNERADO_EVENTUAL").text = str(
+                      compan.ine_eventual_staff)
 
         xmlstr = '<?xml version="1.0" encoding="ISO-8859-1"?>'
         xmlstr += ET.tostring(encuesta).decode('utf-8')
         return self.write({
              'txt_filename': 'INE_'+str(self.ine_month)+'_'+str(
                                                 self.ine_year) + '.' + 'xml',
-             # 'adr_screen': _('ADR in the month of the survey: ')+str(
-             #     round(month_adr_sum/month_adr_rooms, 2))+_('€ and '),
-             # 'rev_screen': ' RevPar : '+str(round(
-             #     month_adr_sum/month_revpar_staff_rooms, 2))+'€',
+             'adr_screen': 'ADR en el mes de la encuesta: '+str(
+                 round(ingresos/habitaci, 2)) + '€ y ',
+             'rev_screen': ' RevPar : '+str(round(ingresos/hab_vend, 2))+'€',
              'txt_binary': base64.encodestring(xmlstr.encode())
              })
 
