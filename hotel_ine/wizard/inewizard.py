@@ -91,14 +91,14 @@ class Wizard(models.TransientModel):
         encuesta = ET.Element("ENCUESTA")
         cabezera = ET.SubElement(encuesta, "CABECERA")
         fecha = ET.SubElement(cabezera, "FECHA_REFERENCIA")
-        ET.SubElement(fecha, "MES").text = str(self.ine_month)
+        ET.SubElement(fecha, "MES").text = "%02d" % (self.ine_month)
         ET.SubElement(fecha, "ANYO").text = str(self.ine_year)
         ET.SubElement(cabezera, "DIAS_ABIERTO_MES_REFERENCIA").text = (
             str(last_day))
         ET.SubElement(cabezera, "RAZON_SOCIAL").text = compan.name
         ET.SubElement(cabezera, "NOMBRE_ESTABLECIMIENTO").text = (
             compan.property_name)
-        ET.SubElement(cabezera, "CIF_NIF").text = compan.vat[2:]
+        ET.SubElement(cabezera, "CIF_NIF").text = compan.vat[2:].strip()
         ET.SubElement(cabezera, "NUMERO_REGISTRO").text = compan.ine_tourism
         ET.SubElement(cabezera, "DIRECCION").text = compan.street
         ET.SubElement(cabezera, "CODIGO_POSTAL").text = compan.zip
