@@ -515,9 +515,11 @@ class HotelReservation(models.Model):
     def _prepare_add_missing_fields(self, values):
         """ Deduce missing required fields from the onchange """
         res = {}
-        onchange_fields = ['room_id', 'reservation_type', 'tax_ids',
+        onchange_fields = ['room_id', 'tax_ids',
                            'currency_id', 'name', 'service_ids']
         if values.get('room_type_id'):
+            if not values.get('reservation_type'):
+                values['reservation_type'] = 'normal'
             line = self.new(values)
             if any(f not in values for f in onchange_fields):
                 line.onchange_room_id()
