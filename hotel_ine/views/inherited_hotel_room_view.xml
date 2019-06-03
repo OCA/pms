@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="hotel_room_view_form" model="ir.ui.view">
+        <field name="model">hotel.room</field>
+        <field name="inherit_id" ref="hotel.hotel_room_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+              <page string="I.N.E.">
+                <group>
+                    <field name="in_ine" colspan="2"/>
+                </group>
+              </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

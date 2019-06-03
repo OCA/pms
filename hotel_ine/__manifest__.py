@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Alda Hotels <informatica@aldahotels.com>
-#                       Jose Luis Algara <osotranquilo@gmail.com>
+#    Odoo, Open Source Management Solution
+#    Copyright (C) 2019 Jose Luis Algara Toledo <osotranquilo@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,5 +18,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from . import police_wizard
+{
+    'name': 'Hotel Ine',
+    'description': """
+        Create de INE Report""",
+    'version': '1.0.0',
+    'license': 'AGPL-3',
+    'summary': "Export hotel data for INE report",
+    'author': "Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>",
+    'website': 'www.aldahotels.com',
+    'depends': ['hotel', 'hotel_l10n_es'],
+    'category': 'hotel/ine',
+    'data': [
+            'wizard/inewizard.xml',
+            'views/inherited_hotel_room_view.xml',
+    ],
+    'demo': [
+    ],
+    'installable': True,
+    'auto_install': False,
+    'application': False,
+}
