@@ -171,7 +171,8 @@ class HotelReservation(models.Model):
     name = fields.Text('Reservation Description', required=True)
     sequence = fields.Integer(string='Sequence', default=10)
 
-    room_id = fields.Many2one('hotel.room', string='Room', ondelete='restrict')
+    room_id = fields.Many2one('hotel.room', string='Room',
+                              track_visibility='onchange', ondelete='restrict')
 
     reservation_no = fields.Char('Reservation No', size=64, readonly=True)
     adults = fields.Integer('Adults', size=64, readonly=False,
@@ -199,10 +200,11 @@ class HotelReservation(models.Model):
     cancelled_reason = fields.Selection([
         ('late', 'Late'),
         ('intime', 'In time'),
-        ('noshow', 'No Show')], 'Cause of cancelled')
+        ('noshow', 'No Show')], 'Cause of cancelled', track_visibility='onchange')
     out_service_description = fields.Text('Cause of out of service')
 
     folio_id = fields.Many2one('hotel.folio', string='Folio',
+                               track_visibility='onchange',
                                ondelete='cascade')
 
     checkin = fields.Date('Check In', required=True,
