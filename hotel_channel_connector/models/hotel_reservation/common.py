@@ -215,7 +215,7 @@ class HotelReservation(models.Model):
         if self._context.get('connector_no_export', True) and \
                 (vals.get('checkin') or vals.get('checkout') or
                  vals.get('room_id') or vals.get('state') or
-                 vals.get('overbooking')):
+                 'overbooking' in vals):
             old_vals = []
             new_vals = []
             for record in self:
@@ -228,17 +228,10 @@ class HotelReservation(models.Model):
                     'backend_id': backend_id,
                     'room_id': record.room_id.id,
                 })
-                # check if the reservation if moved into a new room type
-                new_room_type_id = self.env['channel.hotel.room.type'].search([
-                    ('room_ids', 'in', vals.get('room_id'))
-                ])
-                new_backend_id = backend_id
-                if new_room_type_id.odoo_id != record.room_id.room_type_id:
-                    new_backend_id = new_room_type_id.backend_id.id or None
                 new_vals.append({
                     'checkin': vals.get('checkin', record.checkin),
                     'checkout': vals.get('checkout', record.checkout),
-                    'backend_id': new_backend_id,
+                    'backend_id': backend_id,
                     'room_id': vals.get('room_id', record.room_id.id),
                 })
 
@@ -252,12 +245,11 @@ class HotelReservation(models.Model):
                     backend_id=v_i['backend_id'],
                     room_id=v_i['room_id'])
                 # NOTE: A reservation can be moved into a room type not connected to any channel
-                if new_backend_id:
-                    channel_room_type_avail_obj.sudo().refresh_availability(
-                        checkin=new_vals[k_i]['checkin'],
-                        checkout=new_vals[k_i]['checkout'],
-                        backend_id=new_vals[k_i]['backend_id'],
-                        room_id=new_vals[k_i]['room_id'])
+                channel_room_type_avail_obj.sudo().refresh_availability(
+                    checkin=new_vals[k_i]['checkin'],
+                    checkout=new_vals[k_i]['checkout'],
+                    backend_id=new_vals[k_i]['backend_id'],
+                    room_id=new_vals[k_i]['room_id'])
         else:
             res = super().write(vals)
         return res
