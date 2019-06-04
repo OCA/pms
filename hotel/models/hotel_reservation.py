@@ -784,7 +784,7 @@ class HotelReservation(models.Model):
     @api.onchange('board_service_room_id')
     def onchange_board_service(self):
         if self.board_service_room_id:
-            board_services = []
+            board_services = [(5,0,0)]
             for line in self.board_service_room_id.board_service_line_ids:
                 product = line.product_id
                 if product.per_day:
