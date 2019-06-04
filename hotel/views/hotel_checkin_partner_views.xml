@@ -55,8 +55,7 @@
                     attrs="{'invisible': [('state','!=','draft')]}"
                 />
                 <field name="auto_booking" invisible="1" />
-                <field name="partner_id" required="True"
-                       domain="[('is_company','=', False)]"/>
+                <field name="partner_id" required="True" />
                 <field name="mobile" />
                 <field name="email"/>
                 <field name="enter_date"/>

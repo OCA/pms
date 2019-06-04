@@ -127,6 +127,10 @@ class HotelCheckinPartner(models.Model):
     def _check_partner_id(self):
         for record in self:
             if record.partner_id:
+                if record.partner_id.is_company:
+                    raise models.ValidationError(
+                        _('A Checkin Guest is configured like a company, \
+                          modify it in contact form if its a mistake'))
                 indoor_partner_ids = record.reservation_id.checkin_partner_ids.\
                     filtered(lambda r: r.id != record.id).mapped('partner_id.id')
                 if indoor_partner_ids.count(record.partner_id.id) > 1:
