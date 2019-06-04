@@ -866,9 +866,13 @@ class HotelReservation(models.Model):
     @api.multi
     def action_cancel(self):
         for record in self:
+            cancel_reason = 'intime' if self._context.get("no_penalty", False) \
+                else record.compute_cancelation_reason()
+            if self._context.get("no_penalty", False):
+                _logger.info("///MODIFIED RESERVATION - NO PENALTY")
             record.write({
                 'state': 'cancelled',
-                'cancelled_reason': record.compute_cancelation_reason()
+                'cancelled_reason': cancel_reason
             })
             record._compute_cancelled_discount()
             if record.splitted:

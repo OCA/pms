@@ -306,6 +306,7 @@ class HotelReservationImporter(Component):
             rcode = str(book['reservation_code'])
             crcode = str(book['channel_reservation_code']) \
                 if book['channel_reservation_code'] else 'undefined'
+            rcode_modified = str(book['reservation_code'])
 
             # Can't process failed reservations
             #  (for example set a invalid new reservation and receive in
@@ -335,6 +336,21 @@ class HotelReservationImporter(Component):
                 ], limit=1)
                 if reserv_bind:
                     folio_id = reserv_bind.folio_id
+
+            if rcode_modified:
+                if book['was_modified'] and rcode in book['modified_reservations']:
+                    continue
+                else:
+                    reservations = self.env['channel.hotel.reservation'].search([
+                        ('external_id', 'in', book['modified_reservations']),
+                        ('backend_id', '=', self.backend_record.id),
+                        ('state', '!=', 'cancelled')
+                    ])
+                    if reservations:
+                        reservations.with_context({
+                            'connector_no_export': True,
+                            'ota_limits': False,
+                            'no_penalty': True}).action_cancel()
 
             # Need update reservations?
             reservs_processed = False
