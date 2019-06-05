@@ -142,7 +142,9 @@ class Wizard(models.TransientModel):
                                       })
 
         # Adding overnight stays per day and INE code
+        pernocta_total = []
         for dia in range(1, last_day+1):
+            pernocta_total.append(0)
             for room_night in room_nights.filtered(
                     lambda x: x.date == str(self.ine_year)+'-'+str(
                     self.ine_month).zfill(2)+'-'+str(dia).zfill(2)):
@@ -164,7 +166,7 @@ class Wizard(models.TransientModel):
                                                                     'pernocta']
             # _logger.warning("%s: %s Perenocta: %s In: %s Out: %s Last=%s", dic_tabla[idx]['ine'], dic_tabla[idx]['dia'], dic_tabla[idx]['pernocta'], dic_tabla[idx]['entradas'], dic_tabla[idx]['salidas'],last_stay)
             last_stay = dic_tabla[idx]['pernocta']
-
+            pernocta_total[(dic_tabla[idx]['dia'])-1] += dic_tabla[idx]['pernocta']
 
         # "Print" outputs and entries
         ine_residen = ""
@@ -227,6 +229,10 @@ class Wizard(models.TransientModel):
                     for service in room_night.reservation_id.service_ids:
                         if service.product_id.is_extra_bed:
                             suple += 1
+
+            # Here, we correct the extra beds
+            if pernocta_total[dia-1] > suple + compan.ine_seats:
+                suple = pernocta_total[dia-1] - compan.ine_seats
 
             habitaciones_m = ET.SubElement(habitaciones,
                                            "HABITACIONES_MOVIMIENTO")
