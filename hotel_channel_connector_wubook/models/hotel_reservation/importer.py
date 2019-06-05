@@ -316,9 +316,6 @@ class HotelReservationImporter(Component):
                     )
             if reservation:
                 reservation = reservation[0]
-                state = 'booking' if any(
-                    checkin.status == 'booking' for checkin \
-                    in reservation.checkin_partner_ids) else 'confirm'
                 vals = {
                     'channel_raw_data': json.dumps(book),
                     'channel_status': str(book['status']),
@@ -326,9 +323,9 @@ class HotelReservationImporter(Component):
                     'to_assign': True,
                     'customer_notes': book['customer_notes'],
                     'channel_total_amount': book['amount'],
-                    'state': state,
                     'external_id': str(book['reservation_code']),
                 }
+                reservation.odoo_id.confirm()
                 reservation.with_context({'connector_no_export': True}).write(vals)
                 reservations -= reservation
             else:
