@@ -167,6 +167,9 @@ class HotelReservationImporter(Component):
             ('backend_id', '=', self.backend_record.id),
             ('ota_id', '=', str(book['id_channel'])),
         ], limit=1)
+        modified_codes = ''
+        if book['modified_reservations']:
+            modified_codes = ' '.join(str(e) for e in book['modified_reservations'])
         binding_vals = {
             'backend_id': self.backend_record.id,
             'external_id': rcode,
@@ -176,6 +179,7 @@ class HotelReservationImporter(Component):
             'channel_raw_data': json.dumps(book),
             'channel_modified': book['was_modified'],
             'channel_total_amount': book['amount'],
+            'modified_reservations': modified_codes,
         }
         vals = {
             'real_checkin': real_checkin_str,
@@ -284,6 +288,53 @@ class HotelReservationImporter(Component):
                 'state': 'confirm',
             })
 
+    @api.model()
+    def wubook_modification(self, reservations, book):
+        channel_room_type_obj = self.env['channel.hotel.room.type']
+        checkin_utc_dt, checkout_utc_dt = self._get_book_dates(book)
+        checkin = checkin_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        checkout = checkout_utc_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
+        new_books = []
+        for broom in book['booked_rooms']:
+            reservation = False
+            room_type_bind = channel_room_type_obj.search([
+                ('backend_id', '=', self.backend_record.id),
+                ('external_id', '=', broom['room_id'])
+            ], limit=1)
+            if reservations:
+                modified_codes = ' '.join(str(e) for e in book['modified_reservations'])
+                modified_reservations = self.env['channel.hotel.reservation'].search([
+                    ('modified_reservations', 'in', modified_codes),
+                ])
+                used_rooms = False
+                if modified_reservations:
+                    used_rooms = modified_reservations.mapped('room_id')
+                reservation = reservations.filtered(
+                    lambda res: res.room_type_id == room_type_bind.odoo_id and
+                    res.checkin == checkin and res.checkout == checkout and
+                    res.room_id.id not in used_rooms
+                    )
+            if reservation:
+                reservation = reservation[0]
+                state = 'booking' if any(
+                    checkin.status == 'booking' for checkin \
+                    in reservation.checkin_partner_ids) else 'confirm'
+                vals = {
+                    'channel_raw_data': json.dumps(book),
+                    'channel_status': str(book['status']),
+                    'channel_status_reason': book.get('status_reason', ''),
+                    'to_assign': True,
+                    'customer_notes': book['customer_notes'],
+                    'channel_total_amount': book['amount'],
+                    'state': state,
+                    'external_id': str(book['reservation_code']),
+                }
+                reservation.with_context({'connector_no_export': True}).write(vals)
+                reservations -= reservation
+            else:
+                new_books.append(broom)
+        return new_books, reservations
+
 
     # FIXME: Super big method!!! O_o
     @api.model
@@ -302,6 +353,7 @@ class HotelReservationImporter(Component):
         checkout_utc_dt = False
         split_booking = False
         for book in bookings:   # This create a new folio
+            new_books = book['booked_rooms']
             splitted_map = {}
             rcode = str(book['reservation_code'])
             crcode = str(book['channel_reservation_code']) \
@@ -338,19 +390,24 @@ class HotelReservationImporter(Component):
                     folio_id = reserv_bind.folio_id
 
             if rcode_modified:
-                if book['was_modified'] and rcode in book['modified_reservations']:
+                is_cancellation = book['status'] in WUBOOK_STATUS_BAD
+                if book['was_modified'] and is_cancellation:
                     continue
                 else:
                     reservations = self.env['channel.hotel.reservation'].search([
                         ('external_id', 'in', book['modified_reservations']),
-                        ('backend_id', '=', self.backend_record.id),
-                        ('state', '!=', 'cancelled')
+                        ('backend_id', '=', self.backend_record.id)
                     ])
                     if reservations:
-                        reservations.with_context({
+                        new_books, old_reservations = self.wubook_modification(reservations, book)
+                    if old_reservations:
+                        old_reservations.with_context({
                             'connector_no_export': True,
                             'ota_limits': False,
                             'no_penalty': True}).action_cancel()
+                    else:
+                        processed_rids.append(rcode)
+                        continue
 
             # Need update reservations?
             reservs_processed = False
@@ -372,7 +429,7 @@ class HotelReservationImporter(Component):
             reservations = []
             used_rooms = []
             # Iterate booked rooms
-            for broom in book['booked_rooms']:
+            for broom in new_books:
                 room_type_bind = channel_room_type_obj.search([
                     ('backend_id', '=', self.backend_record.id),
                     ('external_id', '=', broom['room_id'])
