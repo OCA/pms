@@ -401,10 +401,11 @@ class HotelReservationImporter(Component):
                     if reservations:
                         new_books, old_reservations = self.wubook_modification(reservations, book)
                     if old_reservations:
-                        old_reservations.odoo_id.with_context({
-                            'connector_no_export': True,
-                            'ota_limits': False,
-                            'no_penalty': True}).action_cancel()
+                        for res in old_reservations:
+                            res.odoo_id.with_context({
+                                'connector_no_export': True,
+                                'ota_limits': False,
+                                'no_penalty': True}).action_cancel()
                     if len(new_books) == 0:
                         processed_rids.append(rcode)
                         continue
