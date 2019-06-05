@@ -12,7 +12,6 @@
                   <button icon="fa fa-2x fa-thumb-tack"
                         type="object"
                         class="oe_stat_button"
-                        id="mark_readed"
                         name="mark_as_readed"
                         attrs="{'invisible':[('to_assign','=', False)]}"
                         help="Mark as Read"
