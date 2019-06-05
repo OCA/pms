@@ -122,6 +122,7 @@ class Wizard(models.TransientModel):
             ('date', '>=', ine_start_search),
             ('date', '<=', ine_end_search),
             ('reservation_id.room_id.in_ine', '=', True),
+            ('reservation_id.state', '!=', "cancelled"),
             ('reservation_id.reservation_type', '=', 'normal'),
             ])
         room_nights = all_room_nights.filtered(
@@ -151,19 +152,19 @@ class Wizard(models.TransientModel):
                         dic_tabla[idx]['pernocta'] += room_night.reservation_id.adults
 
         # Calculating outputs and entries
-        count = 1
         last_stay = 0
         for idx, row in enumerate(dic_tabla):
-            if count == last_day:
+            if dic_tabla[idx]['dia'] == 1:
                 last_stay = 0
-                count = 1
-            count += 1
+
             if last_stay < dic_tabla[idx]['pernocta']:
-                dic_tabla[idx]['entradas'] += dic_tabla[idx]['pernocta']
+                dic_tabla[idx]['entradas'] += dic_tabla[idx]['pernocta'] - last_stay
             elif last_stay > dic_tabla[idx]['pernocta']:
                 dic_tabla[idx]['salidas'] += last_stay - dic_tabla[idx][
                                                                     'pernocta']
+            # _logger.warning("%s: %s Perenocta: %s In: %s Out: %s Last=%s", dic_tabla[idx]['ine'], dic_tabla[idx]['dia'], dic_tabla[idx]['pernocta'], dic_tabla[idx]['entradas'], dic_tabla[idx]['salidas'],last_stay)
             last_stay = dic_tabla[idx]['pernocta']
+
 
         # "Print" outputs and entries
         ine_residen = ""
