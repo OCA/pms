@@ -304,9 +304,9 @@ class HotelReservationImporter(Component):
             if reservations:
                 modified_codes = ' '.join(str(e) for e in book['modified_reservations'])
                 modified_reservations = self.env['channel.hotel.reservation'].search([
-                    ('modified_reservations', 'in', modified_codes),
+                    ('modified_reservations', 'ilike', modified_codes),
                 ])
-                used_rooms = False
+                used_rooms = []
                 if modified_reservations:
                     used_rooms = modified_reservations.mapped('room_id')
                 reservation = reservations.filtered(
@@ -358,7 +358,6 @@ class HotelReservationImporter(Component):
             rcode = str(book['reservation_code'])
             crcode = str(book['channel_reservation_code']) \
                 if book['channel_reservation_code'] else 'undefined'
-            rcode_modified = str(book['reservation_code'])
 
             # Can't process failed reservations
             #  (for example set a invalid new reservation and receive in
@@ -389,7 +388,7 @@ class HotelReservationImporter(Component):
                 if reserv_bind:
                     folio_id = reserv_bind.folio_id
 
-            if rcode_modified:
+            if len(book['modified_reservations']) > 0:
                 is_cancellation = book['status'] in WUBOOK_STATUS_BAD
                 if book['was_modified'] and is_cancellation:
                     continue
@@ -402,27 +401,29 @@ class HotelReservationImporter(Component):
                     if reservations:
                         new_books, old_reservations = self.wubook_modification(reservations, book)
                     if old_reservations:
-                        old_reservations.with_context({
+                        old_reservations.odoo_id.with_context({
                             'connector_no_export': True,
                             'ota_limits': False,
                             'no_penalty': True}).action_cancel()
-                    else:
+                    if len(new_books) == 0:
                         processed_rids.append(rcode)
                         continue
 
             # Need update reservations?
-            reservs_processed = False
-            reservs_binds = channel_reserv_obj.search([
-                ('backend_id', '=', self.backend_record.id),
-                ('external_id', '=', rcode),
-            ])
-            for reserv_bind in reservs_binds:
-                self._update_reservation_binding(reserv_bind, book)
-                reservs_processed = True
-            # Do Nothing if already processed 'external_id'
-            if reservs_processed:
-                processed_rids.append(rcode)
-                continue
+            is_cancellation = book['status'] in WUBOOK_STATUS_BAD
+            if not book['was_modified'] and is_cancellation:
+                reservs_processed = False
+                reservs_binds = channel_reserv_obj.search([
+                    ('backend_id', '=', self.backend_record.id),
+                    ('external_id', '=', rcode),
+                ])
+                for reserv_bind in reservs_binds:
+                    self._update_reservation_binding(reserv_bind, book)
+                    reservs_processed = True
+                # Do Nothing if already processed 'external_id'
+                if reservs_processed:
+                    processed_rids.append(rcode)
+                    continue
 
             # Create new Customer
             partner_id = res_partner_obj.create(self._generate_partner_vals(book))
