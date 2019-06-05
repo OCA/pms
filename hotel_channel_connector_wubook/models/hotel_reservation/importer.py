@@ -288,7 +288,7 @@ class HotelReservationImporter(Component):
                 'state': 'confirm',
             })
 
-    @api.model()
+    @api.model
     def wubook_modification(self, reservations, book):
         channel_room_type_obj = self.env['channel.hotel.room.type']
         checkin_utc_dt, checkout_utc_dt = self._get_book_dates(book)
@@ -394,6 +394,7 @@ class HotelReservationImporter(Component):
                 if book['was_modified'] and is_cancellation:
                     continue
                 else:
+                    old_reservations = False
                     reservations = self.env['channel.hotel.reservation'].search([
                         ('external_id', 'in', book['modified_reservations']),
                         ('backend_id', '=', self.backend_record.id)
