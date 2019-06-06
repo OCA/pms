@@ -3,17 +3,17 @@
 
     <!-- Hotel Settings -->
     <data>
-        <!--  Inherit Company view to add 'Hotel dataBI' -->
+        <!-- Inherit Company view to add 'Hotel dataBI' -->
         <record id="data_bi_view_company_form" model="ir.ui.view">
             <field name="name">databi.config.view_company_form</field>
             <field name="model">res.company</field>
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='cardex_warning']" position="after">
+                <xpath expr="//page[@name='hotel_settings_page']" position="inside">
                     <group string="DataBi Hotel Services" name="hotel_databi">
-                        <field name="id_hotel" />
-                        <field name="data_bi_days" />
-                        <field name="expedia_rate" />
+                        <field name="id_hotel"/>
+                        <field name="data_bi_days"/>
+                        <field name="expedia_rate"/>
                     </group>
                 </xpath>
             </field>
