@@ -388,6 +388,7 @@ class HotelReservationImporter(Component):
             if len(book['modified_reservations']) > 0:
                 is_cancellation = book['status'] in WUBOOK_STATUS_BAD
                 if book['was_modified'] and is_cancellation:
+                    processed_rids.append(rcode)
                     continue
                 else:
                     old_reservations = False
