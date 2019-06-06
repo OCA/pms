@@ -358,7 +358,6 @@ class Data_Bi(models.Model):
                        n.reservation_id.state != 'cancelled'))
         _logger.info("DataBi: Calculating %s Bloqued", str(len(lines)))
         for line in lines:
-            # if linea.reservation_id.state != 'cancelled':
             if line.reservation_id.reservation_type == 'out':
                 id_m_b = 1
             else:
@@ -368,7 +367,7 @@ class Data_Bi(models.Model):
                 'Fecha_desde': line.date,
                 'Fecha_hasta': (datetime.strptime(line.date, "%Y-%m-%d") +
                                 timedelta(days=1)).strftime("%Y-%m-%d"),
-                'ID_Tipo_Habitacion': line.reservation_id.room_type_id.id,
+                'ID_Tipo_Habitacion': line.reservation_id.room_id.room_type_id.id,
                 'ID_Motivo_Bloqueo': id_m_b,
                 'Nro_Habitaciones': 1})
         return dic_bloqueos
