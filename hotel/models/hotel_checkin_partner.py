@@ -152,6 +152,9 @@ class HotelCheckinPartner(models.Model):
             record.update(vals)
             if record.reservation_id.state == 'confirm':
                 record.reservation_id.state = 'booking'
+        return {
+            "type": "ir.actions.do_nothing",
+        }
 
     @api.multi
     def action_done(self):
