@@ -120,7 +120,7 @@ class Wizard(models.TransientModel):
 
         all_room_nights = self.env['hotel.reservation.line'].search([
             ('date', '>=', ine_start_search),
-            ('date', '<=', ine_end_search),
+            ('date', '<', ine_end_search),
             ('reservation_id.room_id.in_ine', '=', True),
             ('reservation_id.state', '!=', "cancelled"),
             ('reservation_id.reservation_type', '=', 'normal'),
