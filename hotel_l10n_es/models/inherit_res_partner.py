@@ -139,6 +139,18 @@ class ResPartner(models.Model):
                             'vat': vat_with_code
                             })
 
+    @api.constrains('vat', 'commercial_partner_country_id')
+    def check_vat(self):
+        spain = self.env['res.country'].search([
+            ('code', '=', 'ES')
+        ])
+        from_spain = False
+        for partner in self:
+            if partner.country_id == spain:
+                from_spain = True
+        if from_spain:
+            return super(ResPartner, self).check_vat()
+
     @api.constrains('vat')
     def _check_vat_unique(self):
         for record in self:
