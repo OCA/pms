@@ -3,7 +3,9 @@
 
 import os
 import binascii
+import logging
 from odoo import models, api, fields
+_logger = logging.getLogger(__name__)
 
 
 class ChannelBackend(models.Model):
@@ -241,6 +243,40 @@ class ChannelBackend(models.Model):
                                              title="Export Restrictions")
         return True
 
+    @api.multi
+    def channel_availability_watchdog(self):
+        # search all availability to the future TODO: It not prepared for multiple backends
+        availabilities = self.env['hotel.room.type.availability'].search([
+            ('date', '>=', fields.Date.today())
+        ])
+        email_values = {'body_html': ''}
+        for record in availabilities:
+            room_type_id = record.room_type_id.id
+            date = record.date
+            free_rooms = len(self.env['hotel.room.type'].check_availability_room_type(date, date, room_type_id))
+            channel_avail = availabilities.filtered(
+                lambda r: r.room_type_id.id == room_type_id and r.date == date).channel_bind_ids.channel_avail
+            if free_rooms < channel_avail:
+                # the channel binding availability listener will update this record as 'channel_pushed': False
+                record.channel_bind_ids.update({
+                    'channel_avail': free_rooms,
+                })
+                msg = "Channel availability mismatch for room type %s." % self.env['hotel.room.type'].browse(
+                                                room_type_id).name
+                msg = msg + " " + "Free [%s] :: Channel [%s] on %s." % (free_rooms, channel_avail, date)
+                _logger.warning(msg)
+
+                email_values.update({'body_html': email_values['body_html'] + msg + '<br/>'})
+
+        if len(email_values['body_html']) > 0:
+            template = self.env.ref('hotel_channel_connector.mail_template_hotel_availability_watchdog')
+            email_values.update({'email_to': self._context['email_to']})
+            template.send_mail(self.id, email_values=email_values)
+            # push availability on demand
+            self.with_context({'show_notify': False}).push_availability()
+
+        return True
+
     @api.model
     def cron_push_changes(self):
         backends = self.env[self._name].search([])
@@ -252,8 +288,12 @@ class ChannelBackend(models.Model):
     def cron_import_reservations(self):
         self.env[self._name].search([]).import_reservations()
 
-
     @api.model
     def cron_close_online_sales(self, status=True):
         backends = self.env[self._name].search([])
         backends.close_online_sales()
+
+    @api.model
+    def cron_channel_availability_watchdog(self):
+        backends = self.env[self._name].search([])
+        backends.channel_availability_watchdog()
