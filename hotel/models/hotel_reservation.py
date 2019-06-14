@@ -1117,7 +1117,7 @@ class HotelReservation(models.Model):
         @return: array with the reservations _confirmed_ between both dates `dfrom` and `dto`
         """
         domain = self._get_domain_reservations_occupation(dfrom, dto)
-        _logger.info(domain)
+        # _logger.info(domain)
         return self.env['hotel.reservation'].search(domain)
 
     @api.model

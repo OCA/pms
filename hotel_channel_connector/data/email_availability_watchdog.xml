@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Email Template For Channel Availability Watchdog -->
+        <record id="mail_template_hotel_availability_watchdog" model="mail.template">
+            <field name="name">Channel Availability Watchdog by Email</field>
+            <field name="subject">Channel availability mismatch ${object.username}</field>
+            <field name="model_id" ref="hotel_channel_connector.model_channel_backend"/>
+            <field name="auto_delete" eval="False" />
+            <field name="body_html">Channel Availability Watchdog by Email</field>
+        </record>
+    </data>
+</odoo>

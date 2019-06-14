@@ -38,6 +38,8 @@
         'views/channel_ota_info_views.xml',
         'wizard/inherited_massive_changes.xml',
         'data/menus.xml',
+        'data/cron_jobs.xml',
+        'data/email_availability_watchdog.xml',
         'security/ir.model.access.csv',
         #'security/wubook_security.xml',
         # 'views/res_config.xml'
