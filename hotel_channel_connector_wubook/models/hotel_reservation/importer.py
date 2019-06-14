@@ -302,6 +302,8 @@ class HotelReservationImporter(Component):
                 ('external_id', '=', broom['room_id'])
             ], limit=1)
             if reservations:
+                #REVIEW: modified_reservations is possibly useless (used_room nerver
+                # it will match with rooms in reservations recordset paramenter
                 modified_codes = ' '.join(str(e) for e in book['modified_reservations'])
                 modified_reservations = self.env['channel.hotel.reservation'].search([
                     ('modified_reservations', 'ilike', modified_codes),
@@ -323,9 +325,13 @@ class HotelReservationImporter(Component):
                     'to_assign': True,
                     'customer_notes': book['customer_notes'],
                     'channel_total_amount': book['amount'],
+                    'modified_reservations': modified_codes,
                     'external_id': str(book['reservation_code']),
                 }
-                reservation.odoo_id.confirm()
+                reservation.odoo_id.with_context({
+                    'connector_no_export': True,
+                    'ota_limits': False,
+                    'no_penalty': True}).confirm()
                 reservation.with_context({'connector_no_export': True}).write(vals)
                 reservations -= reservation
             else:
@@ -390,7 +396,7 @@ class HotelReservationImporter(Component):
                 if book['was_modified'] and is_cancellation:
                     processed_rids.append(rcode)
                     continue
-                else:
+                elif not is_cancellation:
                     old_reservations = False
                     reservations = self.env['channel.hotel.reservation'].search([
                         ('external_id', 'in', book['modified_reservations']),
