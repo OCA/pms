@@ -310,7 +310,7 @@ class HotelReservationImporter(Component):
                 ])
                 used_rooms = []
                 if modified_reservations:
-                    used_rooms = modified_reservations.mapped('room_id')
+                    used_rooms = modified_reservations.mapped('room_id.id')
                 reservation = reservations.filtered(
                     lambda res: res.room_type_id == room_type_bind.odoo_id and
                     res.checkin == checkin and res.checkout == checkout and
