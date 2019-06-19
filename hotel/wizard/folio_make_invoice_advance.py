@@ -388,9 +388,10 @@ class FolioAdvancePaymentInv(models.TransientModel):
         company = self.folio_ids[0].company_id
         user = self.folio_ids[0].user_id
         team = self.folio_ids[0].team_id
-        for folio in self.folio_ids:
-            if folio.pricelist_id != pricelist:
-                raise UserError(_('All Folios must hace the same pricelist'))
+        # REVIEW: Multi pricelist in folios??
+        # for folio in self.folio_ids:
+        #     if folio.pricelist_id != pricelist:
+        #         raise UserError(_('All Folios must hace the same pricelist'))
         invoice_vals = {
             'name': self.folio_ids[0].client_order_ref or '',
             'origin': origin,
