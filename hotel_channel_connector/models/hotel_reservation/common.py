@@ -45,9 +45,10 @@ class ChannelHotelReservation(models.Model):
 
     @job(default_channel='root.channel')
     @api.model
-    def refresh_availability(self, checkin, checkout, backend_id, room_id):
+    def refresh_availability(self, checkin, checkout, backend_id, room_id,
+                             room_type_id=False, from_channel=False):
         self.env['channel.hotel.room.type.availability'].refresh_availability(
-            checkin, checkout, backend_id, room_id)
+            checkin, checkout, backend_id, room_id, room_type_id, from_channel)
 
     @job(default_channel='root.channel')
     @api.model
@@ -216,9 +217,12 @@ class HotelReservation(models.Model):
                 (vals.get('checkin') or vals.get('checkout') or
                  vals.get('room_id') or vals.get('state') or
                  'overbooking' in vals):
+            from_channel = False
             old_vals = []
             new_vals = []
             for record in self:
+                if record.channel_bind_ids:
+                    from_channel = True
                 backend_id = self.env['channel.hotel.room.type'].search([
                     ('odoo_id', '=', record.room_id.room_type_id.id)
                 ]).backend_id.id
@@ -243,13 +247,15 @@ class HotelReservation(models.Model):
                     checkin=v_i['checkin'],
                     checkout=v_i['checkout'],
                     backend_id=v_i['backend_id'],
-                    room_id=v_i['room_id'])
+                    room_id=v_i['room_id'],
+                    from_channel=from_channel)
                 # NOTE: A reservation can be moved into a room type not connected to any channel
                 channel_room_type_avail_obj.sudo().refresh_availability(
                     checkin=new_vals[k_i]['checkin'],
                     checkout=new_vals[k_i]['checkout'],
                     backend_id=new_vals[k_i]['backend_id'],
-                    room_id=new_vals[k_i]['room_id'])
+                    room_id=new_vals[k_i]['room_id'],
+                    from_channel=from_channel)
         else:
             res = super().write(vals)
         return res

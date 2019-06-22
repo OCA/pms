@@ -187,7 +187,7 @@ class ChannelHotelRoomTypeAvailability(models.Model):
                         _logger.info(vals_avail)
                     if room_type_avail_id.channel_avail != avail:
                         vals_avail.update({'channel_avail': avail})
-                    if self._context.get('update_no_ota', False):
+                    if self._context.get('update_no_ota', False) or from_channel:
                         vals_avail.update({'channel_pushed': False})
                     if vals_avail:
                         room_type_avail_id.write(vals_avail)
