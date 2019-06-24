@@ -369,11 +369,11 @@ class HotelRoomTypeWizards(models.TransientModel):
                         if restriction:
                             if restriction.channel_bind_ids[0]:
                                 max_avail = restriction.channel_bind_ids[0].channel_avail
-                        elif res.room_type_id.channel_bind_ids:
-                            if res.room_type_id.channel_bind_ids[0]:
-                                max_avail = res.room_type_id.channel_bind_ids[0].default_max_avail
-                        if max_avail < avail:
-                            avail = min(max_avail, real_max)
+                    elif res.room_type_id.channel_bind_ids:
+                        if res.room_type_id.channel_bind_ids[0]:
+                            max_avail = res.room_type_id.channel_bind_ids[0].default_max_avail
+                    if max_avail < avail:
+                        avail = min(max_avail, real_max)
                 else:
                     avail = real_max
 
