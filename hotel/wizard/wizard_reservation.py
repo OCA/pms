@@ -363,15 +363,16 @@ class HotelRoomTypeWizards(models.TransientModel):
                         min_stay = date_min_days
                 if user.has_group('hotel.group_hotel_call'):
                     max_avail = real_max
+                    restriction = False
                     if avail_restrictions:
                         restriction = avail_restrictions.filtered(
                                     lambda r: r.date == ndate_str)
                         if restriction:
                             if restriction.channel_bind_ids[0]:
                                 max_avail = restriction.channel_bind_ids[0].channel_avail
-                    elif res.room_type_id.channel_bind_ids:
+                    if not restriction and res.room_type_id.channel_bind_ids:
                         if res.room_type_id.channel_bind_ids[0]:
-                            max_avail = res.room_type_id.channel_bind_ids[0].default_max_avail
+                            max_avail = res.room_type_id.channel_bind_ids[0].default_availability
                     if max_avail < avail:
                         avail = min(max_avail, real_max)
                 else:
