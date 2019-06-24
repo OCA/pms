@@ -328,6 +328,8 @@ class HotelRoomTypeWizards(models.TransientModel):
             record.can_confirm = record.max_rooms > 0 and record.min_stay <= date_diff
 
     def _compute_max(self):
+        # REVIEW: This methid has a incorrect dependencies with hotel_channel_conector
+        # because use avail model defined on this module
         for res in self:
             user = self.env['res.users'].browse(self.env.uid)
             date_start = fields.Date.from_string(res.checkin)
@@ -367,6 +369,9 @@ class HotelRoomTypeWizards(models.TransientModel):
                         if restriction:
                             if restriction.channel_bind_ids[0]:
                                 max_avail = restriction.channel_bind_ids[0].channel_avail
+                        elif res.room_type_id.channel_bind_ids:
+                            if res.room_type_id.channel_bind_ids[0]:
+                                max_avail = res.room_type_id.channel_bind_ids[0].default_max_avail
                         if max_avail < avail:
                             avail = min(max_avail, real_max)
                 else:
