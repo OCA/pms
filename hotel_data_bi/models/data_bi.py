@@ -408,7 +408,10 @@ class Data_Bi(models.Model):
                 precio_dto = ota_prices[0]['precio_dto']
                 precio_iva = ota_prices[0]['precio_iva']
                 precio_comision = ota_prices[0]['precio_comision']
-
+            else:
+                precio_iva = round((precio_neto-(precio_neto/1.1)), 2)
+                precio_neto -= precio_iva
+                
             if linea.reservation_id.discount != 0:
                 precio_dto = linea.price * (
                     linea.reservation_id.discount/100)
