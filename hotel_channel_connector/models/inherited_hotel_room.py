@@ -54,7 +54,7 @@ class HotelRoom(models.Model):
                         ('room_type_id', '=', item['old_room_type_id']),
                         ('channel_avail', '>=', old_channel_room_type.total_rooms_count),
                         ('date', '>=', _today)
-                    ], order='date asc') or Falses
+                    ], order='date asc') or False
                     if channel_availability:
                         date_range = channel_availability.mapped('date')
                         dfrom = date_range[0]
