@@ -71,7 +71,8 @@ class HotelRoom(models.Model):
                     ])
 
                     # updates new room type values
-                    new_channel_room_type._onchange_availability()
+                    # TODO: _onchange_availability doesn't exist
+                    #new_channel_room_type._onchange_availability()
                     if new_channel_room_type.ota_capacity > new_channel_room_type.capacity:
                         new_channel_room_type._get_capacity()
                         issue_backend_id = new_channel_room_type.backend_id.id
