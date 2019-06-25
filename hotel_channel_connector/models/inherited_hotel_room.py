@@ -40,7 +40,8 @@ class HotelRoom(models.Model):
                         ('odoo_id', '=', item['old_room_type_id'])
                     ])
 
-                    old_channel_room_type._onchange_availability()
+                    # TODO: _onchange_availability doesn't exist
+                    #old_channel_room_type._onchange_availability()
                     if old_channel_room_type.ota_capacity > old_channel_room_type.capacity:
                         old_channel_room_type._get_capacity()
                         issue_backend_id = old_channel_room_type.backend_id.id
@@ -53,7 +54,7 @@ class HotelRoom(models.Model):
                         ('room_type_id', '=', item['old_room_type_id']),
                         ('channel_avail', '>=', old_channel_room_type.total_rooms_count),
                         ('date', '>=', _today)
-                    ], order='date asc') or False
+                    ], order='date asc') or Falses
                     if channel_availability:
                         date_range = channel_availability.mapped('date')
                         dfrom = date_range[0]
