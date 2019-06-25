@@ -46,7 +46,7 @@ class RoomMatik(models.Model):
         # Addition will be ok if the returned customer has ID. (MANDATORY)
         _logger.info('ROOMMATIK Customer Creation')
         apidata = self.env['res.partner']
-        return apidata.rm_add_customer(customer)
+        return apidata.sudo().rm_add_customer(customer)
 
     @api.model
     def rm_checkin_partner(self, stay):
@@ -54,7 +54,7 @@ class RoomMatik(models.Model):
         # Addition will be ok if the returned stay has ID. (MANDATORY)
         _logger.info('ROOMMATIK Check-IN')
         apidata = self.env['hotel.checkin.partner']
-        return apidata.rm_checkin_partner(stay)
+        return apidata.sudo().rm_checkin_partner(stay)
 
     @api.model
     def rm_get_stay(self, check_in_code):
@@ -62,7 +62,7 @@ class RoomMatik(models.Model):
         # (if code is related to a current stay)
         # (MANDATORY for check-out kiosk)
         apidata = self.env['hotel.checkin.partner']
-        return apidata.rm_get_stay(check_in_code)
+        return apidata.sudo().rm_get_stay(check_in_code)
 
     @api.model
     def rm_get_all_room_type_rates(self):
@@ -70,7 +70,7 @@ class RoomMatik(models.Model):
         # return ArrayOfRoomTypeRate
         _logger.info('ROOMMATIK Get Rooms and Rates')
         apidata = self.env['hotel.room.type']
-        return apidata.rm_get_all_room_type_rates()
+        return apidata.sudo().rm_get_all_room_type_rates()
 
     @api.model
     def rm_get_prices(self, start_date, number_intervals, room_type, guest_number):
@@ -79,12 +79,12 @@ class RoomMatik(models.Model):
         room_type = self.env['hotel.room.type'].browse(room_type)
         _logger.info('ROOMMATIK Get Prices')
         apidata = self.env['hotel.room.type']
-        return apidata.rm_get_prices(start_date, number_intervals, room_type, guest_number)
+        return apidata.sudo().rm_get_prices(start_date, number_intervals, room_type, guest_number)
 
     @api.model
     def _rm_add_payment(self, code, payment):
         apidata = self.env['account.payment']
-        return apidata.rm_checkin_partner(code, payment)
+        return apidata.sudo().rm_checkin_partner(code, payment)
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()
         # Debug Stop -------------------

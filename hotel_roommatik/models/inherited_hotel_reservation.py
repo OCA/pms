@@ -60,7 +60,7 @@ class HotelReservation(models.Model):
             }
             for i, line in enumerate(reservations):
                 total_chekins = line.checkin_partner_pending_count
-                json_response['Reservation'].setdefault('Rooms', [i]).append({
+                json_response['Reservation'].setdefault('Rooms', []).append({
                     'Id': line.id,
                     'Adults': line.adults,
                     'IsAvailable': total_chekins > 0,

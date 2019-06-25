@@ -43,7 +43,7 @@ class HotelRoomType(models.Model):
                     "Name": "1 day",
                     "Minutes": "1440"
                     },
-                "Price": rates['price'],
+                "Price": rates[room_type.id][0].get('price'),
                 "IsAvailable": any(free_rooms),
             })
         return room_type_rates
