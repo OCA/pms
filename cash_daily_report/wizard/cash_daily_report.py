@@ -79,7 +79,7 @@ class CashDailyReportWizard(models.TransientModel):
 
         worksheet.write('A1', _('Name'), xls_cell_format_header)
         worksheet.write('B1', _('Reference'), xls_cell_format_header)
-        worksheet.write('C1', _('Client'), xls_cell_format_header)
+        worksheet.write('C1', _('Client/Supplier'), xls_cell_format_header)
         worksheet.write('D1', _('Date'), xls_cell_format_header)
         worksheet.write('E1', _('Journal'), xls_cell_format_header)
         worksheet.write('F1', _('Amount'), xls_cell_format_header)
@@ -94,16 +94,23 @@ class CashDailyReportWizard(models.TransientModel):
         ])
         offset = 1
         total_account_payment_amount = 0.0
+        journals = {}
         for k_payment, v_payment in enumerate(account_payments):
+            amount = v_payment.amount if v_payment.payment_type == 'inbound' \
+                else -v_payment.amount
+            if v_payment.journal_id.name not in journals:
+                journals.update({v_payment.journal_id.name: amount})
+            else:
+                journals[v_payment.journal_id.name] += amount
             worksheet.write(k_payment+offset, 0, v_payment.name)
             worksheet.write(k_payment+offset, 1, v_payment.communication)
             worksheet.write(k_payment+offset, 2, v_payment.partner_id.name)
             worksheet.write(k_payment+offset, 3, v_payment.payment_date,
                             xls_cell_format_date)
             worksheet.write(k_payment+offset, 4, v_payment.journal_id.name)
-            worksheet.write(k_payment+offset, 5, v_payment.amount,
+            worksheet.write(k_payment+offset, 5, amount,
                             xls_cell_format_money)
-            total_account_payment_amount += v_payment.amount
+            total_account_payment_amount += amount
 
         payment_returns_obj = self.env['payment.return']
         payment_returns = payment_returns_obj.search([
@@ -112,7 +119,12 @@ class CashDailyReportWizard(models.TransientModel):
         ])
         offset += len(account_payments)
         total_payment_returns_amount = k_line = 0.0
+        return_journals = {}
         for k_payment, v_payment in enumerate(payment_returns):
+            if v_payment.journal_id.name not in return_journals:
+                journals.update({v_payment.journal_id.name: v_line.amount})
+            else:
+                return_journals[v_payment.journal_id.name] += amount
             for k_line, v_line in enumerate(v_payment.line_ids):
                 worksheet.write(k_line+offset, 0, v_payment.name)
                 worksheet.write(k_line+offset, 1, v_line.reference)
@@ -146,6 +158,11 @@ class CashDailyReportWizard(models.TransientModel):
             5,
             total_account_payment_amount - total_payment_returns_amount,
             xls_cell_format_money)
+        for journal in journals:
+            line += 1
+            worksheet.write(line, 4, _(journal))
+            worksheet.write(line, 5, journals[journal],
+                            xls_cell_format_money)
 
         workbook.close()
         file_data.seek(0)
