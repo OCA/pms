@@ -3,6 +3,7 @@
 
 from odoo import api, models, fields
 from datetime import datetime, timedelta
+import json
 from odoo.addons.hotel_roommatik.models.roommatik import (
     DEFAULT_ROOMMATIK_DATE_FORMAT,
     DEFAULT_ROOMMATIK_DATE_FORMAT)
@@ -46,7 +47,8 @@ class HotelRoomType(models.Model):
                 "Price": rates[room_type.id][0].get('price'),
                 "IsAvailable": any(free_rooms),
             })
-        return room_type_rates
+            json_response = json.dumps(room_type_rates)
+        return json_response
 
     @api.model
     def rm_get_prices(self, start_date, number_intervals, room_type, guest_number):
