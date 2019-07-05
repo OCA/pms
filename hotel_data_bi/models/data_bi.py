@@ -541,21 +541,23 @@ class Data_Bi(models.Model):
             # Expedia.
             expedia_rate = self.data_bi_rate_expedia(reserva)
 
-            # if reserva.reservation_id.folio_id.name == 'F/05078':
+            # if reserva.reservation_id.folio_id.name == 'F/03767':
             #     # Debug Stop -------------------
             #     import wdb; wdb.set_trace()
             #     # Debug Stop -------------------
 
             precio_iva = precio_neto-(precio_neto/1.1)
             precio_neto -= precio_iva
-            precio_comision = inv_percent(precio_neto, expedia_rate[1])
-            precio_neto += precio_comision
 
             if (expedia_rate[3] == 'MERCHANT'):
+                precio_comision = inv_percent(precio_neto, expedia_rate[1])
+                precio_neto += precio_comision
                 # iva "interno" de expedia.....
                 precio_iva2 = (precio_neto*10/100)
                 precio_neto += precio_iva2
             else:
+                precio_comision = precio_neto*((100 - expedia_rate[1])/100)
+                precio_neto += precio_comision
                 precio_neto -= precio_comision
 
             if expedia_rate[2] != 'NONE':
@@ -576,7 +578,6 @@ class Data_Bi(models.Model):
                 precio_dto += inv_percent(precio_neto, 3)
                 precio_neto += precio_dto
 
-            #
             # _logger.info("%s - %s - %s - %s - En Odoo:%s - Neto a MOP:%s",
             #              reserva.reservation_id.folio_id.name,
             #              expedia_rate[0],
