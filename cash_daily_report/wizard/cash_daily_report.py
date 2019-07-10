@@ -121,11 +121,11 @@ class CashDailyReportWizard(models.TransientModel):
         total_payment_returns_amount = k_line = 0.0
         return_journals = {}
         for k_payment, v_payment in enumerate(payment_returns):
-            if v_payment.journal_id.name not in return_journals:
-                journals.update({v_payment.journal_id.name: v_line.amount})
-            else:
-                return_journals[v_payment.journal_id.name] += amount
             for k_line, v_line in enumerate(v_payment.line_ids):
+                if v_payment.journal_id.name not in return_journals:
+                    journals.update({v_payment.journal_id.name: v_line.amount})
+                else:
+                    return_journals[v_payment.journal_id.name] += amount
                 worksheet.write(k_line+offset, 0, v_payment.name)
                 worksheet.write(k_line+offset, 1, v_line.reference)
                 worksheet.write(k_line+offset, 2, v_line.partner_id.name)
