@@ -378,8 +378,11 @@ class Data_Bi(models.Model):
     def data_bi_reservas(self, compan, lines, estado_array, dic_clientes):
         dic_reservas = []
         lineas = lines.filtered(
-            lambda n: (n.reservation_id.reservation_type == 'normal') and (
-                       n.price > 0))
+            lambda n:
+                (n.reservation_id.reservation_type == 'normal') and
+                (n.price > 0) and
+                (n.reservation_id.state != 'cancelled')
+                )
         _logger.info("DataBi: Calculating %s reservations", str(len(lineas)))
         channels = {'door': 0,
                     'mail': 1,
