@@ -413,6 +413,12 @@ class Data_Bi(models.Model):
                 precio_dto = ota_prices[0]['precio_dto']
                 precio_iva = ota_prices[0]['precio_iva']
                 precio_comision = ota_prices[0]['precio_comision']
+            elif linea.reservation_id.channel_type == 'call':
+                # Call Center. 7% comision
+                precio_comision = (precio_neto*7/100)
+                precio_neto -= precio_comision
+                precio_iva = (precio_neto*10/100)
+                precio_neto -= precio_iva
             else:
                 precio_iva = round((precio_neto-(precio_neto/1.1)), 2)
                 precio_neto -= precio_iva
