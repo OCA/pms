@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
@@ -367,7 +368,8 @@ class Data_Bi(models.Model):
                 'Fecha_desde': line.date,
                 'Fecha_hasta': (datetime.strptime(line.date, "%Y-%m-%d") +
                                 timedelta(days=1)).strftime("%Y-%m-%d"),
-                'ID_Tipo_Habitacion': line.reservation_id.room_id.room_type_id.id,
+                'ID_Tipo_Habitacion':
+                    line.reservation_id.room_id.room_type_id.id,
                 'ID_Motivo_Bloqueo': id_m_b,
                 'Nro_Habitaciones': 1})
         return dic_bloqueos
@@ -376,8 +378,11 @@ class Data_Bi(models.Model):
     def data_bi_reservas(self, compan, lines, estado_array, dic_clientes):
         dic_reservas = []
         lineas = lines.filtered(
-            lambda n: (n.reservation_id.reservation_type == 'normal') and (
-                       n.price > 0))
+            lambda n:
+                (n.reservation_id.reservation_type == 'normal') and
+                (n.price > 0) and
+                (n.reservation_id.state != 'cancelled')
+                )
         _logger.info("DataBi: Calculating %s reservations", str(len(lineas)))
         channels = {'door': 0,
                     'mail': 1,
@@ -408,10 +413,16 @@ class Data_Bi(models.Model):
                 precio_dto = ota_prices[0]['precio_dto']
                 precio_iva = ota_prices[0]['precio_iva']
                 precio_comision = ota_prices[0]['precio_comision']
+            elif linea.reservation_id.channel_type == 'call':
+                # Call Center. 7% comision
+                precio_comision = (precio_neto*7/100)
+                precio_neto -= precio_comision
+                precio_iva = (precio_neto*10/100)
+                precio_neto -= precio_iva
             else:
                 precio_iva = round((precio_neto-(precio_neto/1.1)), 2)
                 precio_neto -= precio_iva
-                
+
             if linea.reservation_id.discount != 0:
                 precio_dto = linea.price * (
                     linea.reservation_id.discount/100)
@@ -502,10 +513,8 @@ class Data_Bi(models.Model):
                     l for l in dic_clientes if l['Descripcion'] == tour.name),
                                                                         False)
                 response = mach['ID_Cliente']
-                # _logger.info("%s Por Agencia: %s :", mach['Descripcion'], str(response))
             else:
                 response = 908
-                # _logger.info("%s Por Agencia: %s :",reserva.reservation_id.folio_id.name, str(response))
 
         return response
 
@@ -523,68 +532,78 @@ class Data_Bi(models.Model):
             precio_iva = (precio_neto*10/100)
             precio_neto -= precio_iva
 
-        if reserva.reservation_id.ota_id.ota_id == "9":
+        elif reserva.reservation_id.ota_id.ota_id == "9":
             # Hotelbeds 20% comision
             precio_comision = (precio_neto*20/100)
             precio_neto -= precio_comision
             precio_iva = (precio_neto*10/100)
             precio_neto -= precio_iva
 
-        if reserva.reservation_id.ota_id.ota_id == "11":
+        elif reserva.reservation_id.ota_id.ota_id == "11":
             # HRS 20% comision
             precio_comision = (precio_neto*20/100)
             precio_neto -= precio_comision
             precio_iva = (precio_neto*10/100)
             precio_neto -= precio_iva
 
-        if reserva.reservation_id.ota_id.ota_id == "1":
+        elif reserva.reservation_id.ota_id.ota_id == "1":
             # Expedia.
-            precio_comision = (precio_neto*15/100)
-            precio_neto -= precio_comision
-            precio_iva = (precio_neto*10/100)
+            expedia_rate = self.data_bi_rate_expedia(reserva)
+
+            # if reserva.reservation_id.folio_id.name == 'F/03767':
+            #     # Debug Stop -------------------
+            #     import wdb; wdb.set_trace()
+            #     # Debug Stop -------------------
+
+            precio_iva = precio_neto-(precio_neto/1.1)
             precio_neto -= precio_iva
-            if reserva.reservation_id.channel_bind_ids.channel_raw_data:
-                data = json.loads(
-                    reserva.reservation_id.channel_bind_ids.channel_raw_data)
 
-                jsonBooked = data['booked_rooms'][0]
-                if jsonBooked.get('ancillary').get(
-                        'channel_rate_name') is not None:
-                    jsonRate = jsonBooked.get('ancillary').get(
-                        'channel_rate_name')
-                    # _logger.warning("EXPEDIA ancillary : %s - %s",
-                    #                 jsonRate, reserva.id)
-
-                elif jsonBooked.get('roomdays')[0].get(
-                        'ancillary').get(
-                            'channel_rate_name') is not None:
-                    jsonRate = jsonBooked.get(
-                        'roomdays')[0].get(
-                        'ancillary').get('channel_rate_name')
-                    # _logger.warning("EXPEDIA roomdays : %s - %s",
-                    #                 jsonRate, reserva.id)
-
-                else:
-                    _logger.critical(
-                        "EXPEDIA Tarifa No Contemplada : "
-                        + jsonBooked)
-
-                jsonRefundable = jsonRate.upper().find('REFUNDABLE')
-                # _logger.warning("EXPEDIA Tarifa : %s", jsonRate)
-                # _logger.warning("EXPEDIA Tarifa : %s y %s",
-                #                 jsonRate, str(jsonRefundable))
-
-                # 10 % Iva
-                precio_iva = round((precio_neto-(precio_neto/1.1)), 2)
-                # 18 % comision ?
-                precio_comision = inv_percent(
-                            precio_neto, self.env.user.company_id.expedia_rate)
+            if (expedia_rate[3] == 'MERCHANT'):
+                precio_comision = inv_percent(precio_neto, expedia_rate[1])
                 precio_neto += precio_comision
-                # 3% Refundable ?
-                if jsonRefundable >= 0:
-                    precio_dto = inv_percent(precio_neto, 3)
-                    precio_neto += precio_dto
+                # iva "interno" de expedia.....
+                precio_iva2 = (precio_neto*10/100)
+                precio_neto += precio_iva2
+            else:
+                precio_comision = precio_neto*((100 - expedia_rate[1])/100)
+                precio_neto += precio_comision
+                precio_neto -= precio_comision
 
+            if expedia_rate[2] != 'NONE':
+                # De enero a marzo: 7%
+                # De abril a 15 octubre: 5%
+                # De 16 octubre a 31 diciembre: 7%
+                fence_dto = 7
+                fence_dia = int(reserva.date[8:10])
+                fence_mes = int(reserva.date[5:7])
+                if (fence_mes >= 4) and (fence_mes <= 10):
+                    fence_dto = 5
+                    if (fence_dia > 15) and (fence_mes == 10):
+                        fence_dto = 7
+                precio_dto += inv_percent(precio_neto, fence_dto)
+                precio_neto += precio_dto
+
+            if expedia_rate[0] == 'NON-REFUNDABLE':
+                precio_dto += inv_percent(precio_neto, 3)
+                precio_neto += precio_dto
+
+            # _logger.info("%s - %s - %s - %s - En Odoo:%s - Neto a MOP:%s",
+            #              reserva.reservation_id.folio_id.name,
+            #              expedia_rate[0],
+            #              expedia_rate[2],
+            #              expedia_rate[3],
+            #              reserva.price,
+            #              precio_neto
+            #              )
+            # _logger.info('Neto: %s Comision: %s IVA: %s DTO: %s ',
+            #              precio_neto,
+            #              precio_comision,
+            #              precio_iva,
+            #              precio_dto)
+        precio_neto = round(precio_neto, 2)
+        precio_comision = round(precio_comision, 2)
+        precio_iva = round(precio_iva, 2)
+        precio_dto = round(precio_dto, 2)
         response_dic.append({'ota': reserva.reservation_id.ota_id.id,
                              'ota_id': reserva.reservation_id.ota_id.ota_id,
                              'precio_odoo': reserva.price,
@@ -594,6 +613,75 @@ class Data_Bi(models.Model):
                              'precio_dto': precio_dto,
                              })
         return response_dic
+
+    @api.model
+    def data_bi_rate_expedia(self, reserva):
+        if datetime.strptime(reserva.reservation_id.folio_id.date_order[:10],
+                             "%Y-%m-%d") < datetime(2019, 5, 9):
+            comi_rate = 18
+        else:
+            comi_rate = self.env.user.company_id.expedia_rate
+        json_rate = ''
+        json_promo = 'NONE'
+        json_pay_model = ''
+        if reserva.reservation_id.channel_bind_ids.channel_raw_data:
+            data = json.loads(
+                reserva.reservation_id.channel_bind_ids.channel_raw_data)
+
+            if data.get('channel_data')['pay_model'] is not None:
+                json_pay_model = data.get('channel_data')['pay_model'].upper()
+            else:
+                _logger.critical("EXPEDIA NO pay_model: %s",
+                                 reserva.reservation_id.folio_id.name,)
+                json_pay_model = 'MERCHANT'
+
+            if data.get('ancillary') is not None:
+                json_rate = data.get('ancillary').get('Expedia Rates').upper()
+                # _logger.info("EXPEDIA ANCILLARY 1 : %s - %s",
+                #              json_rate,
+                #              reserva.reservation_id.folio_id.name)
+
+            else:
+                jsonBooked = data['booked_rooms'][0]
+                if jsonBooked.get('ancillary').get(
+                        'channel_rate_name') is not None:
+                    json_rate = jsonBooked.get('ancillary').get(
+                        'channel_rate_name').upper()
+                    # _logger.info("EXPEDIA ANCILLARY 2 : %s - %s",
+                    #              json_rate,
+                    #              reserva.reservation_id.folio_id.name)
+
+                elif data.get('booked_rooms')[0].get(
+                        'roomdays')[0].get('ancillary').get(
+                                            'channel_rate_name') is not None:
+                    json_rate = data.get(
+                                'booked_rooms')[0].get(
+                                'roomdays')[0].get(
+                                'ancillary').get('channel_rate_name').upper()
+                    json_promo = data.get(
+                                'booked_rooms')[0].get(
+                                'roomdays')[0].get(
+                                'ancillary').get('promoName').upper()
+                    # _logger.info("EXPEDIA ANCILLARY 3 : %s - %s",
+                    #              json_rate,
+                    #              reserva.reservation_id.folio_id.name)
+
+                else:
+                    _logger.critical("EXPEDIA Tarifa No Contemplada: %s",
+                                     reserva.reservation_id.folio_id.name)
+                    json_rate = 'ROOM ONLY'
+        else:
+            _logger.error("EXPEDIA NO RAW DATA: %s",
+                          reserva.reservation_id.folio_id.name)
+            json_rate = 'ROOM ONLY'
+
+        if json_rate == '':
+            _logger.critical("EXPEDIA Tarifa No Contemplada: %s",
+                             reserva.reservation_id.folio_id.name)
+            json_rate = 'ROOM ONLY'
+        if json_promo == '':
+            json_promo = 'NONE'
+        return [json_rate, comi_rate, json_promo, json_pay_model]
 
     @api.model
     def data_bi_get_codeine(self, reserva):
