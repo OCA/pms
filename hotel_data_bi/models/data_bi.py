@@ -380,8 +380,7 @@ class Data_Bi(models.Model):
         lineas = lines.filtered(
             lambda n:
                 (n.reservation_id.reservation_type == 'normal') and
-                (n.price > 0) and
-                (n.reservation_id.state != 'cancelled')
+                (n.price > 0)
                 )
         _logger.info("DataBi: Calculating %s reservations", str(len(lineas)))
         channels = {'door': 0,
@@ -423,9 +422,10 @@ class Data_Bi(models.Model):
                 precio_iva = round((precio_neto-(precio_neto/1.1)), 2)
                 precio_neto -= precio_iva
 
-            if linea.reservation_id.discount != 0:
-                precio_dto = linea.price * (
-                    linea.reservation_id.discount/100)
+            if (linea.discount != 0) or (linea.cancel_discount != 0):
+                precio_dto = linea.price * ((linea.discount or 0.0) * 0.01)
+                price = linea.price - precio_dto
+                precio_dto += price * ((linea.cancel_discount or 0.0) * 0.01)
 
             dic_reservas.append({
                 'ID_Reserva': linea.reservation_id.folio_id.id,
