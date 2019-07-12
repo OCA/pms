@@ -21,6 +21,7 @@ class ResPartner(models.Model):
             customer['IdentityDocument']['Number'])])
 
         json_response = {'Id': 0}
+        write_customer = False
         if any(partner_res):
             # Change customer data
             _logger.warning('ROOMMATIK %s exist in BD [ %s ] Rewriting',
@@ -28,7 +29,7 @@ class ResPartner(models.Model):
                             partner_res[0].id,)
             try:
                 partner_res[0].update(self.rm_prepare_customer(customer))
-                write_custumer = partner_res[0]
+                write_customer = partner_res[0]
             except:
                 _logger.error('ROOMMATIK Rewriting [%s] in BD [ %s ] ID',
                               partner_res[0].document_number,
@@ -36,7 +37,7 @@ class ResPartner(models.Model):
         else:
             # Create new customer
             try:
-                write_custumer = self.create(self.rm_prepare_customer(customer))
+                write_customer = self.create(self.rm_prepare_customer(customer))
                 _logger.info('ROOMMATIK Writing %s Name: %s',
                              customer['IdentityDocument']['Number'],
                              customer['FirstName'])
@@ -44,9 +45,12 @@ class ResPartner(models.Model):
                 _logger.error('ROOMMATIK Creating %s %s in BD',
                               customer['IdentityDocument']['Number'],
                               customer['FirstName'])
-        json_response = self.rm_get_a_customer(write_custumer.id)
-        json_response = json.dumps(json_response)
-        return json_response
+        if write_customer:
+            json_response = self.rm_get_a_customer(write_customer.id)
+            json_response = json.dumps(json_response)
+            return json_response
+        else:
+            return False
 
     def rm_prepare_customer(self, customer):
         # Check Sex string
