@@ -1,8 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_node_backend,access_node_backend,model_node_backend,base.group_user,1,0,0,0
-access_hotel_node_user,access_hotel_node_user,model_hotel_node_user,base.group_user,1,0,0,0
-access_hotel_node_group,access_hotel_node_group,model_hotel_node_group,base.group_user,1,0,0,0
-access_hotel_node_group_remote,access_hotel_node_group_remote,model_hotel_node_group_remote,base.group_user,1,0,0,0
-access_hotel_node_room,access_hotel_node_room,model_hotel_node_room,base.group_user,1,0,0,0
-access_hotel_node_room_type,access_hotel_node_room_type,model_hotel_node_room_type,base.group_user,1,0,0,0
-access_node_room_type,access_node_room_type,model_node_room_type,base.group_user,1,0,0,0
