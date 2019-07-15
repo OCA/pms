@@ -94,7 +94,9 @@ class HotelReservation(models.Model):
                 'state': reserv['state'],
                 'price_room_services_set': reserv['price_room_services_set'],
                 'amount_total': reserv['amount_total'],
-                'real_dates': [reserv['real_checkin'], reserv['real_checkout']]})
+                'real_dates': [reserv['real_checkin'], reserv['real_checkout']],
+                'channel_type': reserv['channel_type'],
+            })
             json_reservation_tooltips.update({
                 reserv['id']: {
                     'folio_name': reserv['folio_name'],
