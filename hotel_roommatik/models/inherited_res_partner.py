@@ -30,10 +30,8 @@ class ResPartner(models.Model):
                 _logger.info('ROOMMATIK %s exist in BD [ %s ] Rewriting',
                              partner_res[0].document_number,
                              partner_res[0].id,)
-            except:
-                _logger.error('ROOMMATIK Rewriting [%s] in BD [ %s ] ID',
-                              partner_res[0].document_number,
-                              partner_res[0].id,)
+            except Exception as e:
+                error_name = e.name
         else:
             # Create new customer
             try:
@@ -44,8 +42,8 @@ class ResPartner(models.Model):
                 write_customer = self.env['res.partner'].search([
                      ('document_number', '=',
                       customer['IdentityDocument']['Number'])])
-            except:
-                write_customer = False
+            except Exception as e:
+                error_name = e.name
                 partner_res = self.env['res.partner'].search([(
                     'document_number', '=',
                     customer['IdentityDocument']['Number'])])
@@ -56,10 +54,8 @@ class ResPartner(models.Model):
             json_response = json.dumps(json_response)
             return json_response
         else:
-            _logger.error('ROOMMATIK Creating %s %s in BD',
-                          customer['IdentityDocument']['Number'],
-                          customer['FirstName'])
-            return False
+            _logger.error(error_name)
+            return [False, error_name]
 
     def rm_prepare_customer(self, customer):
         # Check Sex string
