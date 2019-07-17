@@ -9,7 +9,7 @@
     Darío Lodeiros,\
     Jose Luis Algara,\
     Alexandre Díaz,\
-    Q. Barriuso,',
+    Pablo Quesada,',
     'category': 'Generic Modules/Hotel Management',
     'website': 'https://github.com/hootel/hootel',
     'depends': [
@@ -22,6 +22,7 @@
     'license': "AGPL-3",
     'demo': ['data/hotel_demo.xml'],
     'data': [
+        'data/hotel_data.xml',
         'security/hotel_security.xml',
         'security/ir.model.access.csv',
         'wizard/massive_changes.xml',
@@ -35,6 +36,9 @@
         'wizard/massive_price_reservation_days.xml',
         'wizard/folio_make_invoice_advance_views.xml',
         'data/hotel_sequence.xml',
+        'views/inherited_res_company_views.xml',
+        'views/inherited_res_users_views.xml',
+        'views/hotel_property_views.xml',
         'views/hotel_floor_views.xml',
         'views/hotel_folio_views.xml',
         'views/inherited_res_partner_views.xml',
@@ -57,6 +61,7 @@
         'views/hotel_checkin_partner_views.xml',
         'views/hotel_board_service_room_type_views.xml',
         'views/hotel_cancelation_rule_views.xml',
+        'views/inherited_webclient_templates.xml',
         'data/cron_jobs.xml',
         'data/records.xml',
         'data/email_template_cancel.xml',
@@ -65,6 +70,9 @@
         'wizard/wizard_reservation.xml',
         'report/hotel_folio_templates.xml',
         'report/hotel_folio.xml'
+    ],
+    'qweb': [
+        'static/src/xml/*.xml',
     ],
     'installable': True
 }
