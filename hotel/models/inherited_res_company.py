@@ -7,6 +7,8 @@ from odoo import models, fields
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
+    hotel_ids = fields.One2many('hotel.property', 'company_id', 'Hotels')
+
     additional_hours = fields.Integer('Additional Hours',
                                       help="Provide the min hours value for \
                                         check in, checkout days, whatever \

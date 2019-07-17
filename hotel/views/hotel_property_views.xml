@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- views -->
+
+    <record id="hotel_property_views_form" model="ir.ui.view">
+        <field name="name">hotel_property_views_form</field>
+        <field name="model">hotel.property</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Configuration">
+                <sheet>
+                    <label for="partner_id" class="oe_edit_only"/>
+                    <h1>
+                        <field name="partner_id" class="oe_inline" />
+                    </h1>
+                    <notebook>
+                        <page string="Hotel Settings" name="hotel_settings">
+                            <group colspan="4" col="4">
+                                <field name="company_id" class="oe_inline" />
+                            </group>
+                            <group colspan="4" col="4">
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hotel_property_views_tree" model="ir.ui.view">
+        <field name="name">hotel_property_views_tree</field>
+        <field name="model">hotel.property</field>
+        <field name="arch" type="xml">
+            <tree string="Hotel settings summary">
+                <field name="partner_id"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- actions -->
+
+    <record id="hotel_property_action" model="ir.actions.act_window">
+        <field name="name">Hotel Property</field>
+        <field name="res_model">hotel.property</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
