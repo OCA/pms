@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, fields, _
-from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
 from odoo.addons.queue_job.job import job
@@ -25,7 +24,6 @@ class ChannelHotelRoomType(models.Model):
     @api.model
     def _default_availability(self):
         return max(min(self.default_quota, self.default_max_avail), 0)
-
 
     odoo_id = fields.Many2one(comodel_name='hotel.room.type',
                               string='Room Type',
@@ -172,10 +170,14 @@ class HotelRoomType(models.Model):
 
     @api.multi
     def disconnect_channel_bind_ids(self):
-        channel_bind_ids = self.mapped('channel_bind_ids')
-        msg = _("This function is not yet implemented.")
-        msg += _(" The room type [%s] should be delete from the channel manager.") % channel_bind_ids.get_external_id
-        raise UserError(msg)
+        # TODO: multichannel rooms is not implemented
+        self.channel_bind_ids.with_context({'connector_no_export': True}).unlink()
+
+    @api.multi
+    def write(self, vals):
+        if 'active' in vals and vals.get('active') is False:
+            self.channel_bind_ids.unlink()
+        return super().write(vals)
 
 
 class BindingHotelRoomTypeListener(Component):
