@@ -66,6 +66,7 @@
         <field name="arch" type="xml">
             <tree string=" Hotel Room Type">
                 <field name="sequence" widget="handle"/>
+                <field name="hotel_id" />
                 <field name="name" />
                 <field name="code_type"/>
                 <field name="list_price"/>

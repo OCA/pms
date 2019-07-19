@@ -4,6 +4,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class HotelRoomType(models.Model):
     """ Before creating a 'room type', you need to consider the following:
     With the term 'room type' is meant a sales type of residential accommodation: for
@@ -12,6 +13,10 @@ class HotelRoomType(models.Model):
     _name = "hotel.room.type"
     _description = "Room Type"
     _inherits = {'product.product': 'product_id'}
+
+    @api.model
+    def _get_default_hotel(self):
+        return self.env.user.hotel_id
 
     # Relationship between models
     product_id = fields.Many2one('product.product', 'Product Room Type',
@@ -26,6 +31,8 @@ class HotelRoomType(models.Model):
                                         'room_type_ids', 'amenity_ids',
                                         string='Room Type Amenities',
                                         help='List of Amenities.')
+    hotel_id = fields.Many2one('hotel.property', 'Hotel', required=True, ondelete='restrict',
+                               default=_get_default_hotel,)
 
     # TODO Hierarchical relationship for parent-child tree ?
     # parent_id = fields.Many2one ...

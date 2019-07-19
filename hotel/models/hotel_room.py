@@ -5,6 +5,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class HotelRoom(models.Model):
     """ The rooms for lodging can be for sleeping, usually called rooms, and also
      for speeches (conference rooms), parking, relax with cafe con leche, spa...
@@ -12,6 +13,10 @@ class HotelRoom(models.Model):
     _name = 'hotel.room'
     _description = 'Hotel Room'
     _order = "sequence, room_type_id, name"
+
+    @api.model
+    def _get_default_hotel(self):
+        return self.env.user.hotel_id
 
     name = fields.Char('Room Name', required=True)
     active = fields.Boolean('Active', default=True)
@@ -21,6 +26,9 @@ class HotelRoom(models.Model):
                                    ondelete='restrict')
     floor_id = fields.Many2one('hotel.floor', 'Ubication',
                                help='At which floor the room is located.')
+    hotel_id = fields.Many2one('hotel.property', 'Hotel', required=True, ondelete='restrict',
+                               default=_get_default_hotel,)
+
     max_adult = fields.Integer('Max Adult')
     max_child = fields.Integer('Max Child')
     capacity = fields.Integer('Capacity')
