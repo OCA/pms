@@ -15,3 +15,6 @@ class HotelProperty(models.Model):
     company_id = fields.Many2one('res.company', help='The company that owns or operates this hotel.')
     user_ids = fields.Many2many('res.users', 'hotel_property_users_rel', 'hotel_id', 'user_id',
                                 string='Accepted Users')
+
+    room_type_ids = fields.One2many('hotel.room.type', 'hotel_id', 'Room Types')
+    room_ids = fields.One2many('hotel.room', 'hotel_id', 'Room')
