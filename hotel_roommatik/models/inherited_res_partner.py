@@ -106,13 +106,13 @@ class ResPartner(models.Model):
         response['Address'] = {
             #  'Nationality': 'xxxxx'
             'Country': partner.country_id.code_alpha3,
-            'ZipCode': partner.zip,
-            'City': partner.city,
-            'Street': partner.street,
-            'House': partner.street2,
+            'ZipCode': partner.zip if partner.zip else "",
+            'City': partner.city if partner.city else "",
+            'Street': partner.street if partner.street else "",
+            'House': partner.street2 if partner.street2 else "",
             # 'Flat': "xxxxxxx",
             # 'Number': "xxxxxxx",
-            'Province': partner.state_id.name,
+            'Province': partner.state_id.name if partner.state_id.name else "",
         }
         response['IdentityDocument'] = {
             'Number': partner.document_number,
@@ -121,9 +121,9 @@ class ResPartner(models.Model):
             'ExpeditionDate': partner.document_expedition_date,
         }
         response['Contact'] = {
-            'Telephone': partner.phone,
+            'Telephone': partner.phone if partner.phone else "",
             # 'Fax': 'xxxxxxx',
-            'Mobile': partner.mobile,
-            'Email': partner.email,
+            'Mobile': partner.mobile if partner.mobile else "",
+            'Email': partner.email if partner.email else "",
         }
         return response
