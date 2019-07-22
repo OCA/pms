@@ -4,9 +4,9 @@
 import json
 from datetime import datetime
 from odoo import api, models, fields
-from odoo.tools import (
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT)
+# from odoo.tools import (
+#     DEFAULT_SERVER_DATE_FORMAT,
+#     DEFAULT_SERVER_DATETIME_FORMAT)
 import logging
 _logger = logging.getLogger(__name__)
 

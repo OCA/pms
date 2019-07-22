@@ -1,15 +1,11 @@
 # Copyright 2019 Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, models, fields
-from odoo.addons.hotel_roommatik.models.roommatik import (
-    DEFAULT_ROOMMATIK_DATE_FORMAT,
-    DEFAULT_ROOMMATIK_DATETIME_FORMAT)
-from datetime import datetime, timedelta
-from dateutil import tz
+from odoo import api, models
 import json
 import logging
 _logger = logging.getLogger(__name__)
+
 
 class HotelReservation(models.Model):
 
@@ -32,7 +28,6 @@ class HotelReservation(models.Model):
             deposit = total_reservations * paid_in_folio / total_in_folio
             return deposit
         return folio.invoices_paid
-
 
     @api.model
     def rm_get_reservation(self, code):
