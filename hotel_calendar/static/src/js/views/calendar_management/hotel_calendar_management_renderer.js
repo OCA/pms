@@ -84,7 +84,9 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
 
     save_changes: function() {
         var oparams = this.get_values_to_save();
-        this.trigger_up('onSaveChanges', oparams);
+        if (oparams) {
+            this.trigger_up('onSaveChanges', oparams);
+         }
     },
 
     resetSaveState: function() {
