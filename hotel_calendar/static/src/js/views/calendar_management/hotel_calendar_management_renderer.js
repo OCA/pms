@@ -140,6 +140,9 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
 
         // Sticky Header Days
         $('.o_content').scroll(this._on_scroll.bind(this));
+
+        // Initialize Save Button state to disable
+        document.getElementById("btn_save_changes").disabled = true;
     },
 
     setCalendarData: function (prices, restrictions, availability, count_reservations) {
@@ -166,8 +169,10 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
             var btn_save = self.$el.find('#btn_save_changes');
             if (self._hcalendar.hasChangesToSave()) {
                 btn_save.addClass('need-save');
+                document.getElementById("btn_save_changes").disabled = false;
             } else {
                 btn_save.removeClass('need-save');
+                document.getElementById("btn_save_changes").disabled = true;
             }
         });
     },
@@ -339,7 +344,8 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
         });
 
         // Save Button
-        this.$el.find("#btn_save_changes").on('click', function(ev){
+        this.$el.find("#btn_save_changes").on('click', function(ev) {
+            document.getElementById(this.id).disabled = true;
             self.save_changes();
         });
 
@@ -350,6 +356,7 @@ var HotelCalendarManagementView = AbstractRenderer.extend({
 
         /** RENDER CALENDAR **/
         this.trigger_up('onLoadCalendarSettings');
+
     },
 
     setHCalendarSettings: function (results) {
