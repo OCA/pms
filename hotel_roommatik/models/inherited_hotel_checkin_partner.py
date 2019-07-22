@@ -9,6 +9,7 @@ from odoo.addons.hotel_roommatik.models.roommatik import (
 from datetime import datetime
 import logging
 
+
 class HotelFolio(models.Model):
 
     _inherit = 'hotel.checkin.partner'
@@ -19,33 +20,32 @@ class HotelFolio(models.Model):
         if not stay.get('ReservationCode'):
             reservation_obj = self.env['hotel.reservation']
             vals = {
-                checkin: datetime.strptime(stay["Arrival"],
-                                           DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
-                checkout: datetime.strptime(stay["Departure"],
-                                           DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
-                adults: stay['Adults'],
-                room_type_id: stay['RoomType'],
-                partner_id: stay["Customers"][0]["Id"]
+                'checkin': datetime.strptime(
+                    stay["Arrival"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
+                'checkout': datetime.strptime(
+                    stay["Departure"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
+                'adults': stay['Adults'],
+                'room_type_id': stay['RoomType'],
+                'partner_id': stay["Customers"][0]["Id"]
             }
             reservation_rm = reservation_obj.create(vals)
         else:
-            reservation_rm = self.env['hotel.reservation'].browse(stay['ReservationCode'])
+            reservation_rm = self.env['hotel.reservation'].browse(
+                stay['ReservationCode'])
         total_chekins = reservation_rm.checkin_partner_pending_count
         if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
             _logger.info('ROOMMATIK checkin %s customer in %s Reservation.',
                          total_chekins,
                          reservation_rm.id)
             for room_partner in stay["Customers"]:
-                # ADD costumer ?
-                # costumer = self.env['res.partner'].rm_add_customer(room_partner["Customer"])
 
                 checkin_partner_val = {
                     'folio_id': reservation_rm.folio_id.id,
                     'reservation_id': reservation_rm.id,
-                    'enter_date': datetime.strptime(stay["Arrival"],
-                                                    "%d%m%Y").date(),
-                    'exit_date': datetime.strptime(stay["Departure"],
-                                                   "%d%m%Y").date(),
+                    'enter_date': datetime.strptime(
+                        stay["Arrival"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
+                    'exit_date': datetime.strptime(
+                        stay["Departure"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
                     'partner_id': room_partner["Customer"]["Id"],
                     }
                 try:
@@ -84,10 +84,10 @@ class HotelFolio(models.Model):
         default_departure_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_departure_hour')
         if any(checkin_partner):
-            arrival = "%s %s" % (checkin_partner.enter_date,
-                                 default_arrival_hour)
-            departure = "%s %s" % (checkin_partner.exit_date,
-                                   default_departure_hour)
+            arrival = "%s %s:00" % (checkin_partner.enter_date.strftime(
+                DEFAULT_ROOMMATIK_DATE_FORMAT), default_arrival_hour)
+            departure = "%s %s:00" % (checkin_partner.exit_date.strftime(
+                DEFAULT_ROOMMATIK_DATE_FORMAT), default_departure_hour)
             stay = {'Code': checkin_partner.id}
             stay['Id'] = checkin_partner.id
             stay['Room'] = {}

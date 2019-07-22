@@ -5,6 +5,8 @@ import json
 from odoo import api, models
 from datetime import datetime
 import logging
+from odoo.addons.hotel_roommatik.models.roommatik import (
+    DEFAULT_ROOMMATIK_DATE_FORMAT)
 
 
 class ResPartner(models.Model):
@@ -31,7 +33,10 @@ class ResPartner(models.Model):
                              partner_res[0].document_number,
                              partner_res[0].id,)
             except Exception as e:
-                error_name = e.name
+                if 'args' in e.__dir__():
+                    error_name = e.args
+                else:
+                    error_name = e.name
         else:
             # Create new customer
             try:
@@ -43,11 +48,16 @@ class ResPartner(models.Model):
                      ('document_number', '=',
                       customer['IdentityDocument']['Number'])])
             except Exception as e:
-                error_name = e.name
+                if 'args' in e.__dir__():
+                    error_name = e.args
+                else:
+                    error_name = e.name
+
                 partner_res = self.env['res.partner'].search([(
                     'document_number', '=',
                     customer['IdentityDocument']['Number'])])
                 partner_res.unlink()
+
 
         if write_customer:
             json_response = self.rm_get_a_customer(write_customer.id)
@@ -74,8 +84,8 @@ class ResPartner(models.Model):
             'firstname': customer['FirstName'],
             'lastname': customer['LastName1'],
             'lastname2': customer['LastName2'],
-            'birthdate_date': datetime.strptime(customer['Birthday'],
-                                                "%d%m%Y").date(),
+            'birthdate_date': datetime.strptime(
+                customer['Birthday'], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
             'gender': customer['Sex'],
             'zip': customer['Address']['ZipCode'],
             'city': customer['Address']['City'],
@@ -88,8 +98,9 @@ class ResPartner(models.Model):
             'email': customer['Contact']['Email'],
             'document_number': customer['IdentityDocument']['Number'],
             'document_type': customer['IdentityDocument']['Type'],
-            'document_expedition_date': datetime.strptime(customer[
-                'IdentityDocument']['ExpeditionDate'], "%d%m%Y").date(),
+            'document_expedition_date': datetime.strptime(
+                customer['IdentityDocument']['ExpeditionDate'],
+                DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
             }
         return {k: v for k, v in metadata.items() if v != ""}
 

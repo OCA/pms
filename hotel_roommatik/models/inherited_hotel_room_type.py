@@ -5,8 +5,7 @@ from odoo import api, models, fields
 from datetime import datetime, timedelta
 import json
 from odoo.addons.hotel_roommatik.models.roommatik import (
-    DEFAULT_ROOMMATIK_DATE_FORMAT,
-    DEFAULT_ROOMMATIK_DATE_FORMAT)
+    DEFAULT_ROOMMATIK_DATE_FORMAT,)
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -51,7 +50,8 @@ class HotelRoomType(models.Model):
         return json_response
 
     @api.model
-    def rm_get_prices(self, start_date, number_intervals, room_type, guest_number):
+    def rm_get_prices(self, start_date, number_intervals,
+                      room_type, guest_number):
         start_date = fields.Datetime.from_string(start_date)
         end_date = start_date + timedelta(days=number_intervals)
         dfrom = start_date.strftime(
