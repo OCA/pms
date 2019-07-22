@@ -24,33 +24,38 @@ class ResPartner(models.Model):
         write_customer = False
         if any(partner_res):
             # Change customer data
-            _logger.warning('ROOMMATIK %s exist in BD [ %s ] Rewriting',
-                            partner_res[0].document_number,
-                            partner_res[0].id,)
             try:
                 partner_res[0].update(self.rm_prepare_customer(customer))
                 write_customer = partner_res[0]
-            except:
-                _logger.error('ROOMMATIK Rewriting [%s] in BD [ %s ] ID',
-                              partner_res[0].document_number,
-                              partner_res[0].id,)
+                _logger.info('ROOMMATIK %s exist in BD [ %s ] Rewriting',
+                             partner_res[0].document_number,
+                             partner_res[0].id,)
+            except Exception as e:
+                error_name = e.name
         else:
             # Create new customer
             try:
-                write_customer = self.create(self.rm_prepare_customer(customer))
-                _logger.info('ROOMMATIK Writing %s Name: %s',
+                self.create(self.rm_prepare_customer(customer))
+                _logger.info('ROOMMATIK Created %s Name: %s',
                              customer['IdentityDocument']['Number'],
                              customer['FirstName'])
-            except:
-                _logger.error('ROOMMATIK Creating %s %s in BD',
-                              customer['IdentityDocument']['Number'],
-                              customer['FirstName'])
+                write_customer = self.env['res.partner'].search([
+                     ('document_number', '=',
+                      customer['IdentityDocument']['Number'])])
+            except Exception as e:
+                error_name = e.name
+                partner_res = self.env['res.partner'].search([(
+                    'document_number', '=',
+                    customer['IdentityDocument']['Number'])])
+                partner_res.unlink()
+
         if write_customer:
             json_response = self.rm_get_a_customer(write_customer.id)
             json_response = json.dumps(json_response)
             return json_response
         else:
-            return False
+            _logger.error(error_name)
+            return [False, error_name]
 
     def rm_prepare_customer(self, customer):
         # Check Sex string
@@ -77,7 +82,7 @@ class ResPartner(models.Model):
             'street': customer['Address']['Street'],
             'street2': street_2,
             'state_id': state.id if state else False,
-            'country': country.id if country else False,
+            'country_id': country.id if country else False,
             'phone': customer['Contact']['Telephone'],
             'mobile': customer['Contact']['Mobile'],
             'email': customer['Contact']['Email'],
@@ -101,13 +106,13 @@ class ResPartner(models.Model):
         response['Address'] = {
             #  'Nationality': 'xxxxx'
             'Country': partner.country_id.code_alpha3,
-            'ZipCode': partner.zip,
-            'City': partner.city,
-            'Street': partner.street,
-            'House': partner.street2,
+            'ZipCode': partner.zip if partner.zip else "",
+            'City': partner.city if partner.city else "",
+            'Street': partner.street if partner.street else "",
+            'House': partner.street2 if partner.street2 else "",
             # 'Flat': "xxxxxxx",
             # 'Number': "xxxxxxx",
-            'Province': partner.state_id.name,
+            'Province': partner.state_id.name if partner.state_id.name else "",
         }
         response['IdentityDocument'] = {
             'Number': partner.document_number,
@@ -116,9 +121,9 @@ class ResPartner(models.Model):
             'ExpeditionDate': partner.document_expedition_date,
         }
         response['Contact'] = {
-            'Telephone': partner.phone,
+            'Telephone': partner.phone if partner.phone else "",
             # 'Fax': 'xxxxxxx',
-            'Mobile': partner.mobile,
-            'Email': partner.email,
+            'Mobile': partner.mobile if partner.mobile else "",
+            'Email': partner.email if partner.email else "",
         }
         return response

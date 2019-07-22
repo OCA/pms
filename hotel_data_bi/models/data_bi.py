@@ -27,9 +27,9 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def inv_percent(amount, percent):
+def inv_percent_inc(amount, percent):
     """Return the amount to which a percentage was applied."""
-    return round(amount*(100/float(100-percent)) - amount, 2)
+    return (amount - (amount*(100-percent))/100)
 
 
 class Data_Bi(models.Model):
@@ -550,26 +550,31 @@ class Data_Bi(models.Model):
             # Expedia.
             expedia_rate = self.data_bi_rate_expedia(reserva)
 
-            # if reserva.reservation_id.folio_id.name == 'F/03767':
+            # if reserva.reservation_id.folio_id.name == 'F/08211':
             #     # Debug Stop -------------------
             #     import wdb; wdb.set_trace()
             #     # Debug Stop -------------------
-
             precio_iva = precio_neto-(precio_neto/1.1)
             precio_neto -= precio_iva
 
-            if (expedia_rate[3] == 'MERCHANT'):
-                precio_comision = inv_percent(precio_neto, expedia_rate[1])
-                precio_neto += precio_comision
-                # iva "interno" de expedia.....
-                precio_iva2 = (precio_neto*10/100)
-                precio_neto += precio_iva2
-            else:
-                precio_comision = precio_neto*((100 - expedia_rate[1])/100)
-                precio_neto += precio_comision
-                precio_neto -= precio_comision
+            precio_comision = inv_percent_inc(precio_neto, expedia_rate[1])
+            precio_neto -= precio_comision
+
+            # if (expedia_rate[3] == 'MERCHANT'):
+            #     # iva "interno" de expedia.....
+            #     precio_iva2 = precio_neto-(precio_neto/1.1)
+            #     precio_neto -= precio_iva2
+            #     precio_comision += precio_iva2
+            # else:
+            #     precio_comision = inv_percent_inc(precio_neto, expedia_rate[1])
+            #     precio_neto += precio_comision
 
             if expedia_rate[2] != 'NONE':
+                # Es Promocion (Fence, Packet, etc.)
+                # "iva" "interno" de expedia..... es una comision extra
+                precio_iva2 = precio_neto-(precio_neto/1.1)
+                precio_neto -= precio_iva2
+                precio_comision += precio_iva2
                 # De enero a marzo: 7%
                 # De abril a 15 octubre: 5%
                 # De 16 octubre a 31 diciembre: 7%
@@ -580,12 +585,10 @@ class Data_Bi(models.Model):
                     fence_dto = 5
                     if (fence_dia > 15) and (fence_mes == 10):
                         fence_dto = 7
-                precio_dto += inv_percent(precio_neto, fence_dto)
-                precio_neto += precio_dto
+                precio_dto += inv_percent_inc(precio_neto, fence_dto)
 
             if expedia_rate[0] == 'NON-REFUNDABLE':
-                precio_dto += inv_percent(precio_neto, 3)
-                precio_neto += precio_dto
+                precio_dto += inv_percent_inc(precio_neto, 3)
 
             # _logger.info("%s - %s - %s - %s - En Odoo:%s - Neto a MOP:%s",
             #              reserva.reservation_id.folio_id.name,
