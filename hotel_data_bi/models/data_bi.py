@@ -28,8 +28,13 @@ _logger = logging.getLogger(__name__)
 
 
 def inv_percent_inc(amount, percent):
-    """Return the amount to which a percentage was applied."""
+    """Return the amount to which a percentage was increment applied."""
     return (amount - (amount*(100-percent))/100)
+
+
+def inv_percent(amount, percent):
+    """Return the amount to which a percentage was applied."""
+    return amount/((100-percent)/100)
 
 
 class Data_Bi(models.Model):
@@ -550,59 +555,56 @@ class Data_Bi(models.Model):
             # Expedia.
             expedia_rate = self.data_bi_rate_expedia(reserva)
 
-            # if reserva.reservation_id.folio_id.name == 'F/08211':
-            #     # Debug Stop -------------------
-            #     import wdb; wdb.set_trace()
-            #     # Debug Stop -------------------
+            # Odoo IVA discount
             precio_iva = precio_neto-(precio_neto/1.1)
             precio_neto -= precio_iva
 
-            precio_comision = inv_percent_inc(precio_neto, expedia_rate[1])
-            precio_neto -= precio_comision
+            if (expedia_rate[3] == 'MERCHANT'):
+                # EXPEDIA COLECT
+                precio_comision = inv_percent(
+                    precio_neto, expedia_rate[1]) - precio_neto
+                precio_calculo = precio_neto + precio_comision
+                # iva "interno" de expedia.....
+                precio_iva2 = (precio_calculo*1.1) - precio_calculo
+                precio_calculo += precio_iva2
+                if expedia_rate[2] != 'NONE':
+                    # FENCED MOD
+                    # De enero a marzo: 7%
+                    # De abril a 15 octubre: 5%
+                    # De 16 octubre a 31 diciembre: 7%
+                    fence_dto = 7
+                    fence_dia = int(reserva.date[8:10])
+                    fence_mes = int(reserva.date[5:7])
+                    if (fence_mes >= 4) and (fence_mes <= 10):
+                        fence_dto = 5
+                        if (fence_dia > 15) and (fence_mes == 10):
+                            fence_dto = 7
+                    precio_dto += inv_percent(
+                        precio_calculo, fence_dto) - precio_calculo
+                # Corrector segundo iva...
+                precio_dto += (precio_iva2 - precio_iva)
 
-            # if (expedia_rate[3] == 'MERCHANT'):
-            #     # iva "interno" de expedia.....
-            #     precio_iva2 = precio_neto-(precio_neto/1.1)
-            #     precio_neto -= precio_iva2
-            #     precio_comision += precio_iva2
-            # else:
-            #     precio_comision = inv_percent_inc(precio_neto, expedia_rate[1])
-            #     precio_neto += precio_comision
+            else:
+                precio_comision = inv_percent_inc(precio_neto, expedia_rate[1])
+                precio_neto -= precio_comision
 
-            if expedia_rate[2] != 'NONE':
-                # Es Promocion (Fence, Packet, etc.)
-                # "iva" "interno" de expedia..... es una comision extra
-                precio_iva2 = precio_neto-(precio_neto/1.1)
-                precio_neto -= precio_iva2
-                precio_comision += precio_iva2
-                # De enero a marzo: 7%
-                # De abril a 15 octubre: 5%
-                # De 16 octubre a 31 diciembre: 7%
-                fence_dto = 7
-                fence_dia = int(reserva.date[8:10])
-                fence_mes = int(reserva.date[5:7])
-                if (fence_mes >= 4) and (fence_mes <= 10):
-                    fence_dto = 5
-                    if (fence_dia > 15) and (fence_mes == 10):
-                        fence_dto = 7
-                precio_dto += inv_percent_inc(precio_neto, fence_dto)
-
-            if expedia_rate[0] == 'NON-REFUNDABLE':
-                precio_dto += inv_percent_inc(precio_neto, 3)
-
-            # _logger.info("%s - %s - %s - %s - En Odoo:%s - Neto a MOP:%s",
+            # precio_neto = round(precio_neto, 2)
+            # precio_comision = round(precio_comision, 2)
+            # precio_iva = round(precio_iva, 2)
+            # precio_dto = round(precio_dto, 2)
+            # _logger.info("%s - %s - %s - %s - En Odoo:%s",
             #              reserva.reservation_id.folio_id.name,
             #              expedia_rate[0],
             #              expedia_rate[2],
             #              expedia_rate[3],
-            #              reserva.price,
-            #              precio_neto
+            #              reserva.price
             #              )
             # _logger.info('Neto: %s Comision: %s IVA: %s DTO: %s ',
             #              precio_neto,
             #              precio_comision,
             #              precio_iva,
             #              precio_dto)
+
         precio_neto = round(precio_neto, 2)
         precio_comision = round(precio_comision, 2)
         precio_iva = round(precio_iva, 2)
