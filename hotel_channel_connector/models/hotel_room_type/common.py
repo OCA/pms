@@ -137,6 +137,14 @@ class HotelRoomType(models.Model):
         for record in self:
             record.capacity = record.get_capacity()
 
+    @api.constrains('active')
+    def _check_active(self):
+        for record in self:
+            if not record.active and record.total_rooms_count > 0:
+                raise ValidationError(
+                    _("You can not archive a room type with active rooms.") + " " +
+                    _("Please, change the %s room(s) to other room type.") % str(record.total_rooms_count))
+
     @api.multi
     def get_restrictions(self, date, restriction_plan_id):
         self.ensure_one()
