@@ -12,7 +12,7 @@
                         attrs="{'invisible': [('channel_bind_ids','!=', [])]}"
                 />
                 <button name="open_channel_bind_ids" type="object"
-                        class="oe_stat_button" icon="fa-cloud-upload" string="Synchronize to Channel"
+                        class="oe_stat_button" icon="fa fa-gears" string="Configure Channel"
                         attrs="{'invisible': [('channel_bind_ids','=', [])]}"
                 />
                 <button name="disconnect_channel_bind_ids" type="object"
