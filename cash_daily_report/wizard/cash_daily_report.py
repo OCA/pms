@@ -136,7 +136,7 @@ class CashDailyReportWizard(models.TransientModel):
                 if v_payment.journal_id.name not in return_journals:
                     return_journals.update({v_payment.journal_id.name: -v_line.amount})
                 else:
-                    return_journals[v_payment.journal_id.name] += -amount
+                    return_journals[v_payment.journal_id.name] += -v_line.amount
                 worksheet.write(k_line+offset, 0, v_payment.name)
                 worksheet.write(k_line+offset, 1, v_line.reference)
                 worksheet.write(k_line+offset, 2, v_line.partner_id.name)
