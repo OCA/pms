@@ -376,6 +376,7 @@ var PMSCalendarController = AbstractController.extend({
     _assign_multi_calendar_events: function() {
         var self = this;
         this._multi_calendar.on_calendar('hcalOnSavePricelist', function(ev){
+          document.getElementById("btn_save_changes").disabled = true;
           self.savePricelist(ev.detail.calendar_obj, ev.detail.pricelist_id, ev.detail.pricelist);
         });
 
