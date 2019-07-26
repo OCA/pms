@@ -22,22 +22,27 @@
 				    					<tbody>
 				    						<tr>
 				    							<td>
-				    								<span class="filter-title">FROM</span><br/>
+				    								<span class="filter-title">FROM</span>
 				    								<div class="input-group date" id="date_begin">
 										                <input type="text" class="o_datepicker_input form-control" name="date_begin" required="required" />
 										                <span class="input-group-addon">
 										                    <span class="fa fa-calendar"></span>
 										                </span>
 										            </div>
+
 				    							</td>
 				    							<td>
-				    								<span class="filter-title">TO</span><br/>
-				    								<div class="input-group date" id="date_end">
-										                <input type="text" class="o_datepicker_input form-control" name="date_end" required="required" />
-										                <span class="input-group-addon">
-										                    <span class="fa fa-calendar"></span>
-										                </span>
-										            </div>
+													<span class="filter-title">RANGE</span>
+													<div class="input-group date">
+														<input id="date_end_days" required="required" class="form-control" />
+													</div>
+<!--				    								<span class="filter-title">TO</span><br/>-->
+<!--				    								<div class="input-group date" id="date_end">-->
+<!--										                <input type="text" class="o_datepicker_input form-control" name="date_end" required="required" />-->
+<!--										                <span class="input-group-addon">-->
+<!--										                    <span class="fa fa-calendar"></span>-->
+<!--										                </span>-->
+<!--										            </div>-->
 				    							</td>
 				    						</tr>
 				    					</tbody>
