@@ -3,7 +3,8 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api, fields
+from odoo import api, fields, _
+from odoo.exceptions import ValidationError
 
 
 class HotelRoomTypeRestrictionExporter(Component):
@@ -23,6 +24,7 @@ class HotelRoomTypeRestrictionExporter(Component):
                 section='restriction',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))
 
     @api.model
     def create_rplan(self, binding):
@@ -33,5 +35,6 @@ class HotelRoomTypeRestrictionExporter(Component):
                 section='restriction',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))
         else:
             self.binder.bind(external_id, binding)

@@ -53,6 +53,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
             importer = work.component(usage='hotel.room.type.restriction.importer')
             return importer.import_restriction_plans()
 
+
 class HotelRoomTypeRestriction(models.Model):
     _inherit = 'hotel.room.type.restriction'
 
@@ -99,10 +100,15 @@ class HotelRoomTypeRestriction(models.Model):
 
     @api.multi
     def disconnect_channel_bind_ids(self):
-        channel_bind_ids = self.mapped('channel_bind_ids')
-        msg = _("This function is not yet implemented.")
-        msg += _(" The restriction plan [%s] should be delete from the channel manager.") % channel_bind_ids.get_external_id
-        raise UserError(msg)
+        # TODO: multichannel rooms is not implemented
+        self.channel_bind_ids.with_context({'connector_no_export': True}).unlink()
+
+    @api.multi
+    def write(self, vals):
+        if 'active' in vals and vals.get('active') is False:
+            self.channel_bind_ids.unlink()
+        return super().write(vals)
+
 
 class BindingHotelRoomTypeListener(Component):
     _name = 'binding.hotel.room.type.restriction.listener'
@@ -114,6 +120,7 @@ class BindingHotelRoomTypeListener(Component):
         if 'name' in fields:
             for binding in record.channel_bind_ids:
                 binding.update_plan_name()
+
 
 class ChannelBindingHotelRoomTypeRestrictionListener(Component):
     _name = 'channel.binding.hotel.room.type.restriction.listener'
