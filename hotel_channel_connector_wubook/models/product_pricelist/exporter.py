@@ -3,7 +3,8 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api, _, fields
+from odoo import api, fields, _
+from odoo.exceptions import ValidationError
 
 
 class ProductPricelistExporter(Component):
@@ -23,6 +24,7 @@ class ProductPricelistExporter(Component):
                 section='pricelist',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))
 
     @api.model
     def create_plan(self, binding):
@@ -33,6 +35,7 @@ class ProductPricelistExporter(Component):
                 section='pricelist',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))
         else:
             binding.external_id = external_id
             self.binder.bind(external_id, binding)
@@ -67,6 +70,7 @@ class ProductPricelistExporter(Component):
                 section='pricelist',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))
         else:
             binding.external_id = external_id
             self.binder.bind(external_id, binding)
@@ -102,3 +106,4 @@ class ProductPricelistExporter(Component):
                 section='pricelist',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))

@@ -82,7 +82,6 @@ class ProductPricelist(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
-
     pricelist_type = fields.Selection(selection_add=[
         ('virtual', 'Virtual Plan'),
     ])
@@ -103,7 +102,6 @@ class ProductPricelist(models.Model):
                    or item.price_max_margin != 0
                    for item in record.item_ids):
                 record.is_virtual_plan = False
-
 
     @api.multi
     @api.depends('name')
@@ -144,10 +142,14 @@ class ProductPricelist(models.Model):
 
     @api.multi
     def disconnect_channel_bind_ids(self):
-        channel_bind_ids = self.mapped('channel_bind_ids')
-        msg = _("This function is not yet implemented.")
-        msg += _(" The pricelist [%s] should be delete from the channel manager.") % channel_bind_ids.get_external_id
-        raise UserError(msg)
+        # TODO: multichannel rooms is not implemented
+        self.channel_bind_ids.with_context({'connector_no_export': True}).unlink()
+
+    @api.multi
+    def write(self, vals):
+        if 'active' in vals and vals.get('active') is False:
+            self.channel_bind_ids.unlink()
+        return super().write(vals)
 
 
 class BindingProductPricelistListener(Component):

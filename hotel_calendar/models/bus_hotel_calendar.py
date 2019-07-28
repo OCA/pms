@@ -52,6 +52,7 @@ class BusHotelCalendar(models.TransientModel):
                 'price_room_services_set': vals['price_room_services_set'],
                 'amount_total': vals['pending_amount'] + vals['invoices_paid'],
                 'real_dates': vals['real_dates'],
+                'channel_type': vals['channel_type'],
             },
             'tooltip': {
                 'folio_name': vals['folio_name'],

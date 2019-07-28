@@ -3,7 +3,8 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api
+from odoo import api, _
+from odoo.exceptions import ValidationError
 
 
 class HotelRoomTypeRestrictionDeleter(Component):
@@ -18,3 +19,4 @@ class HotelRoomTypeRestrictionDeleter(Component):
                 section='restriction',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']) + ". " + _(str(err)))

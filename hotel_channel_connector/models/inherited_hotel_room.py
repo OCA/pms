@@ -61,7 +61,7 @@ class HotelRoom(models.Model):
 
                     channel_availability = self.env['channel.hotel.room.type.availability'].search([
                         ('room_type_id', '=', item['old_room_type_id']),
-                        ('channel_avail', '>=', old_room_type_total_rooms_count),
+                        ('channel_avail', '>', old_room_type_total_rooms_count),
                         ('date', '>=', _today)
                     ], order='date asc') or False
                     if channel_availability:
@@ -119,6 +119,11 @@ class HotelRoom(models.Model):
                             checkout=dto,
                             backend_id=new_channel_room_type.backend_id.id,
                             room_type_id=item['new_room_type_id'], )
+            # TODO: channel_backend MUST be the same for both room types
+            channel_backend = self.env['channel.hotel.room.type'].search([
+                ('odoo_id', '=', vals.get('room_type_id'))
+            ]).backend_id
+            channel_backend.channel_availability_watchdog()
         else:
             res = super().write(vals)
         return res

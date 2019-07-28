@@ -5,20 +5,43 @@
         <field name="model">hotel.room.type</field>
         <field name="inherit_id" ref="hotel.hotel_room_type_view_form" />
         <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Channel Bindings" invisible="1">
+                    <field name="channel_bind_ids" />
+                </page>
+            </xpath>
+
+            <xpath expr="//button[@name='toggle_active']" position="replace">
+                <!-- custom message for warning when archiving a channel room type with binding -->
+                <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive"
+                    confirm="Archive a room type will automatically delete the room type in the Channel.
+                    Ensure yourself no reservations are binded to this room type from today and hereafter.
+                    Do you want to proceed?"
+                    attrs="{'invisible': [('channel_bind_ids', '=', [])]}">
+                    <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                </button>
+                <!-- default message for archiving a channel room type without binding -->
+                <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive"
+                    attrs="{'invisible': [('channel_bind_ids','!=', [])]}">
+                    <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                </button>
+            </xpath>
+
             <xpath expr="//button[@name='toggle_active']" position="before">
-                <field name="channel_bind_ids" invisible="1" />
                 <button name="open_channel_bind_ids" type="object"
                         class="oe_stat_button" icon="fa-toggle-off" string="Connect to Channel"
-                        attrs="{'invisible': [('channel_bind_ids','!=', [])]}"
+                        attrs="{'invisible': ['|', ('channel_bind_ids','!=', []), ('active','=', False) ]}"
                 />
                 <button name="open_channel_bind_ids" type="object"
-                        class="oe_stat_button" icon="fa-cloud-upload" string="Synchronize to Channel"
+                        class="oe_stat_button" icon="fa fa-gears" string="Configure Channel"
                         attrs="{'invisible': [('channel_bind_ids','=', [])]}"
                 />
                 <button name="disconnect_channel_bind_ids" type="object"
                         class="oe_stat_button" icon="fa-toggle-on" string="Disconnect from Channel"
                         attrs="{'invisible': [('channel_bind_ids','=', [])]}"
-                        confirm="Disconnecting will automatically delete the room type in the Channel. Do you want to proceed?"
+                        confirm="Disconnecting will unbind the room type from the Channel but it will not be deleted.
+                        Ensure yourself no reservations are binded to this room type from today and hereafter.
+                        Do you want to proceed?"
                 />
             </xpath>
 

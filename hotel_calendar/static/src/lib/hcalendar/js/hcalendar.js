@@ -1240,6 +1240,8 @@ HotelCalendar.prototype = {
           });
         }
       });
+      // Initialize Save Button state to disable
+      this.btnSaveChanges.disabled = true;
       cell.appendChild(this.btnSaveChanges);
     }
     //cell.setAttribute('class', 'col-xs-1 col-lg-1');
@@ -2451,8 +2453,10 @@ HotelCalendar.prototype = {
     if (this.edivc.querySelector('.hcal-input-changed') !== null)
     {
       this.btnSaveChanges.classList.add('need-save');
+      this.btnSaveChanges.disabled = false;
     } else {
       this.btnSaveChanges.classList.remove('need-save');
+      this.btnSaveChanges.disabled = true;
     }
   },
 

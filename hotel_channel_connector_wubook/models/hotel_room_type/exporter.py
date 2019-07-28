@@ -3,7 +3,8 @@
 
 from odoo.addons.component.core import Component
 from odoo.addons.hotel_channel_connector.components.core import ChannelConnectorError
-from odoo import api, fields
+from odoo import api, fields, _
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 
 class HotelRoomTypeExporter(Component):
@@ -44,6 +45,7 @@ class HotelRoomTypeExporter(Component):
                 section='room',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))
 
     @api.model
     def create_room(self, binding):
@@ -78,6 +80,7 @@ class HotelRoomTypeExporter(Component):
                 section='room',
                 internal_message=str(err),
                 channel_message=err.data['message'])
+            raise ValidationError(_(err.data['message']))
         else:
             binding.with_context({
                 'connector_no_export': True,
