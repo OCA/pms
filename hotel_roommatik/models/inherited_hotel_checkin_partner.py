@@ -25,12 +25,13 @@ class HotelFolio(models.Model):
                 'checkout': datetime.strptime(
                     stay["Departure"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
                 'adults': stay['Adults'],
+                'Arrival_hour': stay['arrival_hour'],
                 'room_type_id': stay['RoomType'],
                 'partner_id': stay["Customers"][0]["Id"]
             }
             reservation_rm = reservation_obj.create(vals)
         else:
-            reservation_rm = self.env['hotel.reservation'].browse(
+            reservation_rm = self.env['hotel.reservation'].sudo().browse(
                 stay['ReservationCode'])
         total_chekins = reservation_rm.checkin_partner_pending_count
         if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
@@ -49,7 +50,7 @@ class HotelFolio(models.Model):
                     'partner_id': room_partner["Customer"]["Id"],
                     }
                 try:
-                    record = self.env['hotel.checkin.partner'].create(
+                    record = self.env['hotel.checkin.partner'].sudo().create(
                         checkin_partner_val)
                     _logger.info('ROOMMATIK check-in partner: %s in \
                                                     (%s Reservation) ID:%s.',
