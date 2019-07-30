@@ -564,6 +564,7 @@ class Data_Bi(models.Model):
                 precio_comision = inv_percent(
                     precio_neto, expedia_rate[1]) - precio_neto
                 precio_calculo = precio_neto + precio_comision
+                precio_neto -= precio_comision
                 # iva "interno" de expedia.....
                 precio_iva2 = (precio_calculo*1.1) - precio_calculo
                 precio_calculo += precio_iva2
