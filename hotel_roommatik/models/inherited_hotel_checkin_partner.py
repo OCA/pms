@@ -20,18 +20,16 @@ class HotelFolio(models.Model):
         if not stay.get('ReservationCode'):
             reservation_obj = self.env['hotel.reservation']
             vals = {
-                'checkin': datetime.strptime(
-                    stay["Arrival"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
-                'checkout': datetime.strptime(
-                    stay["Departure"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
+                'checkin': stay["Arrival"],
+                'checkout': stay["Departure"],
                 'adults': stay['Adults'],
-                'Arrival_hour': stay['arrival_hour'],
-                'room_type_id': stay['RoomType'],
+                'arrival_hour': stay['Arrival_hour'],
+                'room_type_id': stay['RoomType']['Id'],
                 'partner_id': stay["Customers"][0]["Id"]
             }
             reservation_rm = reservation_obj.create(vals)
         else:
-            reservation_rm = self.env['hotel.reservation'].sudo().browse(
+            reservation_rm = self.env['hotel.reservation'].browse(
                 stay['ReservationCode'])
         total_chekins = reservation_rm.checkin_partner_pending_count
         if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
@@ -43,14 +41,12 @@ class HotelFolio(models.Model):
                 checkin_partner_val = {
                     'folio_id': reservation_rm.folio_id.id,
                     'reservation_id': reservation_rm.id,
-                    'enter_date': datetime.strptime(
-                        stay["Arrival"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
-                    'exit_date': datetime.strptime(
-                        stay["Departure"], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
-                    'partner_id': room_partner["Customer"]["Id"],
+                    'partner_id': room_partner["Id"],
+                    'enter_date': stay["Arrival"],
+                    'exit_date': stay["Departure"],
                     }
                 try:
-                    record = self.env['hotel.checkin.partner'].sudo().create(
+                    record = self.env['hotel.checkin.partner'].create(
                         checkin_partner_val)
                     _logger.info('ROOMMATIK check-in partner: %s in \
                                                     (%s Reservation) ID:%s.',
