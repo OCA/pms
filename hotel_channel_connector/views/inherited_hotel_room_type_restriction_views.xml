@@ -6,9 +6,7 @@
         <field name="inherit_id" ref="hotel.room_type_restriction_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//form/sheet" position="inside">
-                <page string="Channel Bindings" invisible="1">
-                    <field name="channel_bind_ids" />
-                </page>
+                    <field name="channel_bind_ids" invisible="1" />
             </xpath>
 
             <xpath expr="//button[@name='toggle_active']" position="replace">
