@@ -82,6 +82,23 @@ class RoomMatik(models.Model):
         return apidata.sudo().rm_get_prices(start_date, number_intervals, room_type, guest_number)
 
     @api.model
+    def rm_get_segmentation(self):
+        # Gets segmentation list
+        # return ArrayOfSegmentation
+        segmentations = self.env['res.partner.category'].sudo().search([])
+        _logger.info('ROOMMATIK Get segmentation')
+        response = []
+        for segmentation in segmentations:
+            response.append({
+                "Segmentation": {
+                    "Id": segmentation.id,
+                    "Name": segmentation.display_name,
+                    },
+                })
+            json_response = json.dumps(response)
+        return json_response
+
+    @api.model
     def _rm_add_payment(self, code, payment):
         apidata = self.env['account.payment']
         return apidata.sudo().rm_checkin_partner(code, payment)

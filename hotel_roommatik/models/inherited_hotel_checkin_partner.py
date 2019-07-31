@@ -25,7 +25,9 @@ class HotelFolio(models.Model):
                 'adults': stay['Adults'],
                 'arrival_hour': stay['Arrival_hour'],
                 'room_type_id': stay['RoomType']['Id'],
-                'partner_id': stay["Customers"][0]["Id"]
+                'partner_id': stay["Customers"][0]["Id"],
+                'segmentation_ids': stay['Segmentation'],
+                'channel_type': 'virtualdoor',
             }
             reservation_rm = reservation_obj.create(vals)
         else:
@@ -37,6 +39,13 @@ class HotelFolio(models.Model):
                          total_chekins,
                          reservation_rm.id)
             for room_partner in stay["Customers"]:
+                if room_partner['Address']['Nationality'] == 'ESP':
+                    code_ine = room_partner['Address']['Province']
+                else:
+                    code_ine = room_partner['Address']['Nationality']
+                province = self.env['code.ine'].search(
+                    [('name', '=', code_ine)], limit=1)
+                code_ine = province.id
 
                 checkin_partner_val = {
                     'folio_id': reservation_rm.folio_id.id,
@@ -44,6 +53,7 @@ class HotelFolio(models.Model):
                     'partner_id': room_partner["Id"],
                     'enter_date': stay["Arrival"],
                     'exit_date': stay["Departure"],
+                    'code_ine_id': code_ine,
                     }
                 try:
                     record = self.env['hotel.checkin.partner'].create(
@@ -57,8 +67,10 @@ class HotelFolio(models.Model):
                     stay['Id'] = record.id
                     stay['Room'] = reservation_rm.room_id.id
                     json_response = stay
-                except:
-                    json_response = {'Estate': 'Error not create Checkin'}
+                except Exception as e:
+                    error_name = 'Error not create Checkin '
+                    error_name += e.name
+                    json_response = {'Estate': error_name}
                     _logger.error('ROOMMATIK writing %s in reservation: %s).',
                                   checkin_partner_val['partner_id'],
                                   checkin_partner_val['reservation_id'])
