@@ -5,20 +5,39 @@
         <field name="model">hotel.room.type.restriction</field>
         <field name="inherit_id" ref="hotel.room_type_restriction_view_form" />
         <field name="arch" type="xml">
+            <xpath expr="//form/sheet" position="inside">
+                    <field name="channel_bind_ids" invisible="1" />
+            </xpath>
+
+            <xpath expr="//button[@name='toggle_active']" position="replace">
+                <!-- custom message for warning when archiving a channel restriction plan with binding -->
+                <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive"
+                    confirm="Archive a restriction plan will automatically delete the restriction plan in the Channel.
+                    Do you want to proceed?"
+                    attrs="{'invisible': [('channel_bind_ids', '=', [])]}">
+                    <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                </button>
+                <!-- default message for archiving a channel restriction plan without binding -->
+                <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive"
+                    attrs="{'invisible': [('channel_bind_ids','!=', [])]}">
+                    <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                </button>
+            </xpath>
+
             <xpath expr="//button[@name='toggle_active']" position="before">
-                <field name="channel_bind_ids" invisible="1" />
                 <button name="open_channel_bind_ids" type="object"
                         class="oe_stat_button" icon="fa-toggle-off" string="Connect to Channel"
-                        attrs="{'invisible': [('channel_bind_ids','!=', [])]}"
+                        attrs="{'invisible': ['|', ('channel_bind_ids','!=', []), ('active','=', False) ]}"
                 />
                 <button name="open_channel_bind_ids" type="object"
-                        class="oe_stat_button" icon="fa-cloud-upload" string="Synchronize to Channel"
+                        class="oe_stat_button" icon="fa fa-gears" string="Configure Channel"
                         attrs="{'invisible': [('channel_bind_ids','=', [])]}"
                 />
                 <button name="disconnect_channel_bind_ids" type="object"
                         class="oe_stat_button" icon="fa-toggle-on" string="Disconnect from Channel"
                         attrs="{'invisible': [('channel_bind_ids','=', [])]}"
-                        confirm="Disconnecting will automatically delete the restriction plan in the Channel. Do you want to proceed?"
+                        confirm="Disconnecting will unbind the restriction plan from the Channel but it will not be deleted.
+                        Do you want to proceed?"
                 />
             </xpath>
         </field>

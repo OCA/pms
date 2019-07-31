@@ -267,11 +267,11 @@ class ChannelBackend(models.Model):
                 _logger.warning(msg)
 
                 email_values.update({'body_html': email_values['body_html'] + msg + '<br/>'})
-
         if len(email_values['body_html']) > 0:
-            template = self.env.ref('hotel_channel_connector.mail_template_hotel_availability_watchdog')
-            email_values.update({'email_to': self._context['email_to']})
-            template.send_mail(self.id, email_values=email_values)
+            if 'email_to' in self._context:
+                template = self.env.ref('hotel_channel_connector.mail_template_hotel_availability_watchdog')
+                email_values.update({'email_to': self._context['email_to']})
+                template.send_mail(self.id, email_values=email_values)
             # push availability on demand
             self.with_context({'show_notify': False}).push_availability()
 
