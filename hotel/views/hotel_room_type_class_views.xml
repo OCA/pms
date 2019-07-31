@@ -17,6 +17,8 @@
                   </div>
                     <group colspan="4">
                       <group>
+                        <field name="hotel_ids" widget="many2many_tags"
+                            options="{'no_create': True,'no_open': True}"/>
                         <field name="name" />
                         <field name="code_class" />
                       </group>

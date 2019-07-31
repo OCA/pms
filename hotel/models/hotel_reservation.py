@@ -240,6 +240,8 @@ class HotelReservation(models.Model):
     partner_parent_id = fields.Many2one(related="partner_id.parent_id")
     closure_reason_id = fields.Many2one(related='folio_id.closure_reason_id')
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='folio_id.hotel_id')
     reservation_line_ids = fields.One2many('hotel.reservation.line',
                                            'reservation_id',
                                            required=True)

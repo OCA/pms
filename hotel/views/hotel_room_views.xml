@@ -32,6 +32,7 @@
             <notebook>
               <page name="information_hotel_room" string="Information">
                 <group colspan="4" col="4">
+                  <field name="hotel_id" invisible="1"/>
                   <field name="floor_id" string="Ubication"
                       attrs="{'readonly':[('shared_room_id','!=', False)]}" />
                   <!-- <field name="categ_id" select="1" domain="[('isroomtype','=',True)]" string="Room Type" /> -->

@@ -37,6 +37,8 @@ class HotelBoardServiceRoomType(models.Model):
                           compute='_compute_board_amount',
                           store=True)
     board_service_line_ids = fields.One2many('hotel.board.service.room.type.line', 'hotel_board_service_room_type_id')
+    hotel_id = fields.Many2one('hotel.property',
+                               related='hotel_room_type_id.hotel_id')
 
     @api.model_cr
     def init(self):

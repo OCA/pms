@@ -9,3 +9,4 @@ class HotelFloor(models.Model):
 
     name = fields.Char('Ubication Name', translate=True, size=64, required=True, index=True)
     sequence = fields.Integer('Sequence')
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False, ondelete='restrict')

@@ -11,6 +11,8 @@ class HotelBoardServiceRoomTypeLine(models.Model):
 
     #TODO def default_amount "amount of service"
 
+
+
     hotel_board_service_room_type_id = fields.Many2one(
         'hotel.board.service.room.type', 'Board Service Room', ondelete='cascade', required=True)
     product_id = fields.Many2one(

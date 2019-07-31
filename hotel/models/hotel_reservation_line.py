@@ -37,6 +37,8 @@ class HotelReservationLine(models.Model):
         'reservation_line_invoice_rel',
         'reservation_line_id', 'invoice_line_id',
         string='Invoice Lines', readonly=True, copy=False)
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='reservation_id.hotel_id')
 
     @api.constrains('date')
     def constrains_duplicated_date(self):

@@ -15,12 +15,15 @@
                      options='{"terminology": "archive"}'/>
             </button>
           </div>
-            <div class="oe_title">
-              <label for="name" string="Name" />
-              <h1>
-                <field name="name" />
-              </h1>
-            </div>
+          <div class="oe_title">
+            <label for="name" string="Name" />
+            <h1>
+              <field name="name" />
+            </h1>
+          </div>
+          <group>
+            <field name="hotel_id" invisible="1"/>
+          </group>
           <div>
             <separator string="Pricelist Items"/>
             <field name="item_ids" nolabel="1">

@@ -68,6 +68,10 @@ class HotelCheckinPartner(models.Model):
             return reservation.checkout
         return False
 
+    @api.model
+    def _get_default_hotel(self):
+        return self.env.user.hotel_id
+
     partner_id = fields.Many2one('res.partner', default=_default_partner_id,
                                  required=True)
     email = fields.Char('E-mail', related='partner_id.email')
@@ -91,6 +95,8 @@ class HotelCheckinPartner(models.Model):
                              'State', readonly=True,
                              default=lambda *a: 'draft',
                              track_visibility='onchange')
+    hotel_id = fields.Many2one('hotel.property', default=_get_default_hotel,
+                               required=True)
 
     @api.model
     def create(self, vals):

@@ -12,6 +12,8 @@
                     <group>
                         <field name="name" colspan="1" />
                         <field name="sequence" select="1" />
+                        <field name="hotel_ids" widget="many2many_tags"
+                                      options="{'no_create': True,'no_open': True}"/>
                     </group>
                 </sheet>
             </form>

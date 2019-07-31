@@ -38,6 +38,7 @@ class AccountInvoice(models.Model):
     from_folio = fields.Boolean(compute='_computed_folio_origin')
     folio_ids = fields.Many2many(
             comodel_name='hotel.folio', compute='_computed_folio_origin')
+    hotel_id = fields.Many2one('hotel.property')
     outstanding_folios_debits_widget = fields.Text(compute='_get_outstanding_folios_JSON')
     has_folios_outstanding = fields.Boolean(compute='_get_outstanding_folios_JSON')
 

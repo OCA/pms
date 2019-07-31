@@ -35,6 +35,8 @@ class HotelServiceLine(models.Model):
                                string='Taxes',
                                related="service_id.tax_ids",
                                readonly="True")
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='service_id.hotel_id')
 
     def _cancel_discount(self):
         for record in self:

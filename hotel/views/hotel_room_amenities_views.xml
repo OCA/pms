@@ -18,7 +18,9 @@
                     </group>
                     <notebook>
                         <page string="Information">
-                            <group colspan="4" col="4">
+                            <group colspan="4" col="4">                                
+                                <field name="hotel_ids" widget="many2many_tags"
+                                  options="{'no_create': True,'no_open': True}"/>
                                 <field name="room_amenity_type_id" select="2" string="Amenity Type" />
                                 <!-- <field name="categ_id" select="1"
                                     domain="[('isamenitytype','=',True)]" /> -->

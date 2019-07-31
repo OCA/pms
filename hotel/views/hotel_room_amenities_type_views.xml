@@ -11,6 +11,8 @@
                 <sheet>
                     <group>
                         <field name="name" string="Amenity Type" />
+                        <field name="hotel_ids" widget="many2many_tags"
+                                      options="{'no_create': True,'no_open': True}"/>
                         <!-- <field name="parent_id" domain="[('isamenitytype','=',True)]" /> -->
                         <!-- <field name="isamenitytype" invisible="1" /> -->
                     </group>

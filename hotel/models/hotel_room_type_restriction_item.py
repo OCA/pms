@@ -21,6 +21,8 @@ class HotelRoomTypeRestrictionItem(models.Model):
     closed = fields.Boolean('Closed')
     closed_departure = fields.Boolean('Closed Departure')
     closed_arrival = fields.Boolean('Closed Arrival')
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='restriction_id.hotel_id')
 
     _sql_constraints = [('room_type_registry_unique',
                          'unique(restriction_id, room_type_id, date)',
