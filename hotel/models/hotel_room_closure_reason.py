@@ -8,3 +8,5 @@ class RoomClosureReason(models.Model):
 
     name = fields.Char('Name', translate=True, required=True)
     description = fields.Text('Description', translate=True)
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
+                                 ondelete='restrict')

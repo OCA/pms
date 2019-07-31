@@ -6,6 +6,10 @@ from odoo import models, fields, api
 class HotelRoomTypeRestriction(models.Model):
     _name = 'hotel.room.type.restriction'
 
+    @api.model
+    def _get_default_hotel(self):
+        return self.env.user.hotel_id
+
     name = fields.Char('Restriction Plan Name', required=True)
     item_ids = fields.One2many('hotel.room.type.restriction.item',
                                'restriction_id', string='Restriction Items',
@@ -14,6 +18,8 @@ class HotelRoomTypeRestriction(models.Model):
                             help='If unchecked, it will allow you to hide the \
                                     restriction plan without removing it.',
                             default=True)
+    hotel_id = fields.Many2one('hotel.property', default=_get_default_hotel,
+                               required=True, ondelete='cascade')
 
     @api.multi
     @api.depends('name')

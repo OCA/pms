@@ -20,6 +20,7 @@ class HotelBoardService(models.Model):
                           digits=dp.get_precision('Product Price'),
                           compute='_compute_board_amount',
                           store=True)
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False, ondelete='restrict')
 
     @api.depends('board_service_line_ids.amount')
     def _compute_board_amount(self):

@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='country_group_ids']" position="before">
+                <field name="hotel_ids" widget="many2many_tags"
+                              options="{'no_create': True,'no_open': True}"/>
                 <field name="pricelist_type" />
                 <field name="cancelation_rule_id" />
             </xpath>

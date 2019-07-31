@@ -16,3 +16,5 @@ class ProductTemplate(models.Model):
     is_extra_bed = fields.Boolean('Is extra bed', default=False)
     show_in_calendar = fields.Boolean('Show in Calendar', default=False,
         help='Specifies if the product is shown in the calendar information.')
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
+                                 ondelete='restrict')

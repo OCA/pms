@@ -14,6 +14,8 @@ class ProductPricelist(models.Model):
     cancelation_rule_id = fields.Many2one(
         'hotel.cancelation.rule',
         string="Cancelation Policy")
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
+                                 ondelete='restrict')
 
     @api.multi
     @api.depends('name')

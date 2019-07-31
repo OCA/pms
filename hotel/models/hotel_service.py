@@ -132,6 +132,8 @@ class HotelService(models.Model):
     # Non-stored related field to allow portal user to see the image of the product he has ordered
     product_image = fields.Binary('Product Image', related="product_id.image", store=False, related_sudo=True)
     company_id = fields.Many2one(related='folio_id.company_id', string='Company', store=True, readonly=True)
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='folio_id.hotel_id')
     invoice_status = fields.Selection([
         ('invoiced', 'Fully Invoiced'),
         ('to invoice', 'To Invoice'),

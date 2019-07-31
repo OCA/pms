@@ -94,10 +94,16 @@ class HotelFolio(models.Model):
     def _get_default_team(self):
         return self.env['crm.team']._get_default_team_id()
 
+    @api.model
+    def _get_default_hotel(self):
+        return self.env.user.hotel_id
+
     #Main Fields--------------------------------------------------------
     name = fields.Char('Folio Number', readonly=True, index=True,
                        default=lambda self: _('New'))
     client_order_ref = fields.Char(string='Customer Reference', copy=False)
+    hotel_id = fields.Many2one('hotel.property', default=_get_default_hotel,
+                               required=True)
     partner_id = fields.Many2one('res.partner',
                                  track_visibility='onchange',
                                  ondelete='restrict',)

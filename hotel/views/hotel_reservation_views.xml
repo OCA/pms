@@ -236,6 +236,7 @@
                      </group>
                     <group invisible="1">
                         <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                        <field name="hotel_id" invisible="1"/>
                         <!-- <field name="check_rooms" invisible="1"/> -->
                         <field name="checkin_partner_pending_count" invisible="1"/>
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
@@ -254,6 +255,8 @@
                                     <tree string="Services" editable="bottom"
                                             decoration-success="is_board_service == True">
                                         <field name="is_board_service" invisible="1" />
+                                        <field name="company_id" invisible="0"/>
+                                        <field name="hotel_id" invisible="0"/>
                                         <button type="object" class="oe_stat_button"
                                             icon="fa fa-1x fa-bed"
                                             name="open_service_lines"

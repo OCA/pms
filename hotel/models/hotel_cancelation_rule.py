@@ -28,3 +28,7 @@ class HotelCancelationRule(models.Model):
         ('all', 'All Days'),
         ('days', 'Specify days')], 'No Show apply on', default='all')
     days_noshow = fields.Integer('NoShow first days', default="2")
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
+                                 ondelete='restrict')
+
+    #TODO: Constrain coherence hotel_ids pricelist and cancelation_rules

@@ -20,6 +20,8 @@ class HotelRoomTypeClass(models.Model):
                             category without removing it.")
     sequence = fields.Integer('Sequence', default=0)
     code_class = fields.Char('Code')
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
+                                 ondelete='restrict')
 
     _sql_constraints = [('code_class_unique', 'unique(code_class)',
                          'code must be unique!')]

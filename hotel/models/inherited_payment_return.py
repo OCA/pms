@@ -7,6 +7,8 @@ class PaymentReturn(models.Model):
     _inherit = 'payment.return'
 
     folio_id = fields.Many2one('hotel.folio', string='Folio')
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='folio_id.hotel_id')
 
     @api.multi
     def action_confirm(self):

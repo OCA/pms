@@ -10,6 +10,8 @@
                 <sheet>
                     <field name="name" />
                     <field name="description" />
+                    <field name="hotel_ids" widget="many2many_tags"
+                        options="{'no_create': True,'no_open': True}"/>
                 </sheet>
             </form>
         </field>

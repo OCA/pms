@@ -18,6 +18,8 @@ class HotelSharedRoom(models.Model):
         required=True, ondelete='restrict',
         domain=[('shared_room', '=', True)]
         )
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='room_type_id.hotel_id')
     floor_id = fields.Many2one('hotel.floor', 'Ubication',
                                help='At which floor the room is located.',
                                ondelete='restrict',)

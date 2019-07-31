@@ -24,6 +24,8 @@ class HotelBoardServiceLine(models.Model):
         'Amount',
         digits=dp.get_precision('Product Price'),
         default=_get_default_price)
+    hotel_ids = fields.Many2many('hotel.property',
+                                 related='hotel_board_service_id.hotel_ids')
 
     @api.onchange('product_id')
     def onchange_product_id(self):

@@ -11,6 +11,8 @@
                 <sheet>
                     <h3>
                         <field name="name" />
+                        <field name="hotel_ids" widget="many2many_tags"
+                                      options="{'no_create': True,'no_open': True}"/>
                         <separator />
                         <label for="name" string="Max. days InTime before Checkin" />
                         <field name="days_intime" />
