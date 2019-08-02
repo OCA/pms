@@ -1,8 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <menuitem id="cash_daily_report_wizard" name="Cash Daily Report Wizard"
-            parent="hotel.hotel_reports_menu"
-            action="action_open_cash_daily_report_wizard" sequence="45" />
-    </data>
+    
+    <menuitem id="cash_daily_report_wizard" name="Cash Daily Report Wizard"
+        parent="hotel.hotel_reports_menu"
+        action="action_open_cash_daily_report_wizard"
+        sequence="45" />
+
+    <menuitem id="hotel_payments_menu" name="Payments"
+        sequence="80"
+        parent="hotel.hotel_management_menu"
+        groups="hotel.group_hotel_user"/>
+
+    <menuitem id="hotel_supplier_payment_menu" name="Supplier Payments"
+        sequence="80"
+        parent="hotel_payments_menu"
+        groups="hotel.group_hotel_user"
+        action="account.action_account_payments_payable"/>
+
+    <record id="action_account_payments_internal" model="ir.actions.act_window">
+            <field name="name">Internal Transfers</field>
+            <field name="res_model">account.payment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,graph</field>
+            <field name="context">{'default_payment_type': 'transfer', 'search_default_transfers_filter': 1}</field>
+            <field name="domain">[]</field>
+            <field name="view_id" ref="account.view_account_supplier_payment_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  Click to register a payment
+                </p><p>
+                  Payments are used to register liquidity movements (send, collect or transfer money).
+                  You can then process those payments by your own means or by using installed facilities.
+                </p>
+            </field>
+        </record>
+
+    <menuitem id="hotel_transfer_menu" name="Internal Transfer"
+        sequence="100"
+        parent="hotel_payments_menu"
+        groups="hotel.group_hotel_user"
+        action="cash_daily_report.action_account_payments_internal"/>
+
 </odoo>
