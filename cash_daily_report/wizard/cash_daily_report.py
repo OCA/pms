@@ -99,14 +99,22 @@ class CashDailyReportWizard(models.TransientModel):
         payment_journals = {}
         expense_journals = {}
         for k_payment, v_payment in enumerate(account_payments):
-            amount = v_payment.amount if v_payment.payment_type == 'inbound' \
+            where = v_payment.partner_id.name
+            amount = v_payment.amount if v_payment.payment_type in ('inbound') \
                 else -v_payment.amount
+            if v_payment.payment_type == 'transfer':
+                where = v_payment.destination_journal_id.name
+                total_account_payment += -amount
+                if v_payment.destination_journal_id.name not in payment_journals:
+                    payment_journals.update({v_payment.destination_journal_id.name: -amount})
+                else:
+                    payment_journals[v_payment.destination_journal_id.name] += -amount
             if amount < 0:
                 total_account_expenses += -amount
                 if v_payment.journal_id.name not in expense_journals:
-                    expense_journals.update({v_payment.journal_id.name: -amount})
+                    expense_journals.update({v_payment.journal_id.name: amount})
                 else:
-                    expense_journals[v_payment.journal_id.name] += -amount
+                    expense_journals[v_payment.journal_id.name] += amount
             else:
                 total_account_payment += amount
                 if v_payment.journal_id.name not in payment_journals:
@@ -115,7 +123,7 @@ class CashDailyReportWizard(models.TransientModel):
                     payment_journals[v_payment.journal_id.name] += amount
             worksheet.write(k_payment+offset, 0, v_payment.name)
             worksheet.write(k_payment+offset, 1, v_payment.communication)
-            worksheet.write(k_payment+offset, 2, v_payment.partner_id.name)
+            worksheet.write(k_payment+offset, 2, where)
             worksheet.write(k_payment+offset, 3, v_payment.payment_date,
                             xls_cell_format_date)
             worksheet.write(k_payment+offset, 4, v_payment.journal_id.name)
@@ -152,6 +160,9 @@ class CashDailyReportWizard(models.TransientModel):
         line = offset
         if k_line:
             line = k_line + offset
+
+        
+        result_journals = {}
         # NORMAL PAYMENTS
         if total_account_payment != 0:
             line += 1
@@ -163,6 +174,10 @@ class CashDailyReportWizard(models.TransientModel):
             worksheet.write(line, 4, _(journal))
             worksheet.write(line, 5, payment_journals[journal],
                             xls_cell_format_money)
+            if journal not in result_journals:
+                result_journals.update({journal: payment_journals[journal]})
+            else:
+                result_journals[journal] += payment_journals[journal]
 
         # RETURNS
         if total_payment_returns_amount != 0:
@@ -175,6 +190,10 @@ class CashDailyReportWizard(models.TransientModel):
             worksheet.write(line, 4, _(journal))
             worksheet.write(line, 5, return_journals[journal],
                             xls_cell_format_money)
+            if journal not in result_journals:
+                result_journals.update({journal: return_journals[journal]})
+            else:
+                result_journals[journal] += return_journals[journal]
 
         # EXPENSES
         if total_account_expenses != 0:
@@ -187,13 +206,25 @@ class CashDailyReportWizard(models.TransientModel):
             worksheet.write(line, 4, _(journal))
             worksheet.write(line, 5, -expense_journals[journal],
                             xls_cell_format_money)
+            if journal not in result_journals:
+                result_journals.update({journal: expense_journals[journal]})
+            else:
+                result_journals[journal] += expense_journals[journal]
+
+        #TOTALS
         line += 1
         worksheet.write(line, 4, _('TOTAL'), xls_cell_format_header)
         worksheet.write(
             line,
             5,
-            total_account_payment_amount + total_payment_returns_amount,
+            total_account_payment + total_payment_returns_amount - total_account_expenses,
             xls_cell_format_header)
+        for journal in result_journals:
+            line += 1
+            worksheet.write(line, 4, _(journal))
+            worksheet.write(line, 5, result_journals[journal],
+                            xls_cell_format_money)
+        
         workbook.close()
         file_data.seek(0)
         tnow = fields.Datetime.now().replace(' ', '_')

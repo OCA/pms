@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0\n"
+"Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-20 07:33+0000\n"
-"PO-Revision-Date: 2018-05-20 09:34+0200\n"
+"POT-Creation-Date: 2019-08-02 08:24+0000\n"
+"PO-Revision-Date: 2019-08-02 10:28+0200\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -37,10 +37,15 @@ msgid "Cash Daily Report Wizard"
 msgstr "Informe de caja diaria"
 
 #. module: cash_daily_report
+#: model:ir.actions.act_window,help:cash_daily_report.action_account_payments_internal
+msgid "Click to register a payment"
+msgstr "Pulse para registrar un pago"
+
+#. module: cash_daily_report
 #: code:addons/cash_daily_report/wizard/cash_daily_report.py:82
 #, python-format
-msgid "Client"
-msgstr "Cliente"
+msgid "Client/Supplier"
+msgstr "Client/Supplier"
 
 #. module: cash_daily_report
 #: model:ir.ui.view,arch_db:cash_daily_report.view_cash_daily_report_wizard
@@ -66,12 +71,12 @@ msgstr "Fecha"
 #. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_display_name
 msgid "Display Name"
-msgstr "Mostrar Nombre"
+msgstr "Nombre mostrado"
 
 #. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_date_end
 msgid "End Date"
-msgstr "Fecha finalización"
+msgstr "Fecha de finalización"
 
 #. module: cash_daily_report
 #: model:ir.ui.view,arch_db:cash_daily_report.view_cash_daily_report_wizard
@@ -81,7 +86,17 @@ msgstr "Generar XLS"
 #. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_id
 msgid "ID"
-msgstr "ID"
+msgstr "ID (identificación)"
+
+#. module: cash_daily_report
+#: model:ir.ui.menu,name:cash_daily_report.hotel_transfer_menu
+msgid "Internal Transfer"
+msgstr "Internal Transfer"
+
+#. module: cash_daily_report
+#: model:ir.actions.act_window,name:cash_daily_report.action_account_payments_internal
+msgid "Internal Transfers"
+msgstr "Internal Transfers"
 
 #. module: cash_daily_report
 #: code:addons/cash_daily_report/wizard/cash_daily_report.py:84
@@ -97,7 +112,7 @@ msgstr "Última modificación en"
 #. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_write_uid
 msgid "Last Updated by"
-msgstr "Última actualización por"
+msgstr "Última actualización de"
 
 #. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_write_date
@@ -111,10 +126,24 @@ msgid "Name"
 msgstr "Nombre"
 
 #. module: cash_daily_report
-#: code:addons/cash_daily_report/wizard/cash_daily_report.py:128
+#: code:addons/cash_daily_report/wizard/cash_daily_report.py:157
 #, python-format
 msgid "Not Any Payments"
 msgstr "No hay movimientos"
+
+#. module: cash_daily_report
+#: model:ir.ui.menu,name:cash_daily_report.hotel_payments_menu
+msgid "Payments"
+msgstr "Pagos"
+
+#. module: cash_daily_report
+#: model:ir.actions.act_window,help:cash_daily_report.action_account_payments_internal
+msgid ""
+"Payments are used to register liquidity movements (send, collect or transfer money).\n"
+"                  You can then process those payments by your own means or by using installed facilities."
+msgstr ""
+"Los pagos se utilizan para registrar movimientos de liquidez (enviar, recibir o transferir dinero).\n"
+"Puede procesar esos pagos por sus propios medios o utilizando los servicios instalados."
 
 #. module: cash_daily_report
 #: code:addons/cash_daily_report/wizard/cash_daily_report.py:81
@@ -125,40 +154,46 @@ msgstr "Referencia"
 #. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_date_start
 msgid "Start Date"
-msgstr "Fecha de inicio"
+msgstr "Fecha de Inicio"
 
 #. module: cash_daily_report
-#: code:addons/cash_daily_report/wizard/cash_daily_report.py:143
+#: model:ir.ui.menu,name:cash_daily_report.hotel_supplier_payment_menu
+msgid "Supplier Payments"
+msgstr "Supplier Payments"
+
+#. module: cash_daily_report
+#: code:addons/cash_daily_report/wizard/cash_daily_report.py:197
 #, python-format
 msgid "TOTAL"
 msgstr "TOTAL"
 
 #. module: cash_daily_report
-#: code:addons/cash_daily_report/wizard/cash_daily_report.py:139
+#: code:addons/cash_daily_report/wizard/cash_daily_report.py:188
+#, python-format
+msgid "TOTAL EXPENSES"
+msgstr "TOTAL EXPENSES"
+
+#. module: cash_daily_report
+#: code:addons/cash_daily_report/wizard/cash_daily_report.py:176
 #, python-format
 msgid "TOTAL PAYMENT RETURNS"
 msgstr "TOTAL DEVOLUCIONES"
 
 #. module: cash_daily_report
-#: code:addons/cash_daily_report/wizard/cash_daily_report.py:134
+#: code:addons/cash_daily_report/wizard/cash_daily_report.py:164
 #, python-format
 msgid "TOTAL PAYMENTS"
 msgstr "TOTAL PAGOS"
 
 #. module: cash_daily_report
-#: model:ir.ui.menu,name:cash_daily_report.menu_account_finance_xls_reports
-msgid "XLS Reports"
-msgstr "XLS Reports"
-
-#. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_xls_binary
-msgid "Xls binary"
-msgstr "Xls archivo"
+msgid "Xls Binary"
+msgstr "Xls Binary"
 
 #. module: cash_daily_report
 #: model:ir.model.fields,field_description:cash_daily_report.field_cash_daily_report_wizard_xls_filename
-msgid "Xls filename"
-msgstr "Xls nombre de archivo"
+msgid "Xls Filename"
+msgstr "Xls Filename"
 
 #. module: cash_daily_report
 #: model:ir.model,name:cash_daily_report.model_cash_daily_report_wizard
