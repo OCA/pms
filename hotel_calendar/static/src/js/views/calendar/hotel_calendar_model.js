@@ -69,39 +69,44 @@ return AbstractModel.extend({
     },
 
     get_room_types: function() {
+        var domain = [['hotel_id', '=', Session.user_hotels.current_hotel[0]]];
         return this._rpc({
             model: 'hotel.room.type',
             method: 'search_read',
-            args: [false, ['id','name']],
+            args: [domain, ['id','name']],
             context: Session.user_context,
         });
     },
     get_floors: function() {
+        var domain = [['hotel_ids', 'in', Session.user_hotels.current_hotel[0]]];
         return this._rpc({
             model: 'hotel.floor',
             method: 'search_read',
-            args: [false, ['id','name']],
+            args: [domain, ['id','name']],
             context: Session.user_context,
         });
     },
     get_amenities: function() {
+        var domain = [['hotel_ids', 'in', Session.user_hotels.current_hotel[0]]];
         return this._rpc({
             model: 'hotel.amenity',
             method: 'search_read',
-            args: [false, ['id','name']],
+            args: [domain, ['id','name']],
             context: Session.user_context,
         });
     },
     get_room_type_class: function() {
+        var domain = [['hotel_ids', 'in', Session.user_hotels.current_hotel[0]]];
         return this._rpc({
             model: 'hotel.room.type.class',
             method: 'search_read',
-            args: [false, ['id','name']],
+            args: [domain, ['id','name']],
             context: Session.user_context,
         });
     },
 
     search_count: function(domain) {
+        // TODO: add hotel_id domain based on modelName
         return this._rpc({
             model: this.modelName,
             method: 'search_count',

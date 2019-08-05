@@ -4,7 +4,7 @@ import logging
 from datetime import timedelta
 from odoo import models, fields, api, _
 from odoo.models import operator
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 _logger = logging.getLogger(__name__)
 
@@ -69,6 +69,7 @@ class HotelReservation(models.Model):
 
     @api.model
     def _hcalendar_reservation_data(self, reservations):
+        _logger.warning('_found [%s] reservations for hotel [%s]', len(reservations), self.env.user.hotel_id.id)
         json_reservations = []
         json_reservation_tooltips = {}
         for reserv in reservations:
@@ -127,11 +128,11 @@ class HotelReservation(models.Model):
                     'services': reserv['services'],
                 }
             })
-
         return (json_reservations, json_reservation_tooltips)
 
     @api.model
     def _hcalendar_room_data(self, rooms):
+        _logger.warning('_found [%s] rooms for hotel [%s]', len(rooms), self.env.user.hotel_id.id)
         pricelist_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_pricelist_id')
         if pricelist_id:
@@ -156,6 +157,7 @@ class HotelReservation(models.Model):
 
     @api.model
     def _hcalendar_calendar_data(self, calendars):
+        _logger.warning('_found [%s] calendars for hotel [%s]', len(calendars), self.env.user.hotel_id.id)
         return [
             {
                 'id': calendar.id,
@@ -168,6 +170,7 @@ class HotelReservation(models.Model):
 
     @api.model
     def _hcalendar_event_data(self, events):
+        # TODO: Filter events by hotel
         json_events = [
             {
                 'id': event.id,
@@ -179,7 +182,10 @@ class HotelReservation(models.Model):
 
     @api.model
     def get_hcalendar_calendar_data(self):
-        calendars = self.env['hotel.calendar'].search([])
+        hotel_id = self.env.user.hotel_id.id
+        calendars = self.env['hotel.calendar'].search([
+            ('hotel_id', '=', hotel_id)
+        ])
         res = self._hcalendar_calendar_data(calendars)
         return res
 
@@ -241,7 +247,11 @@ class HotelReservation(models.Model):
         if pricelist_id:
             pricelist_id = int(pricelist_id)
 
-        room_types_ids = self.env['hotel.room.type'].search([])
+        hotel_id = self.env.user.hotel_id.id
+
+        room_types_ids = self.env['hotel.room.type'].search([
+            ('hotel_id', '=', hotel_id)
+        ])
 
         dfrom_str = dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
         dto_str = dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
@@ -296,13 +306,15 @@ class HotelReservation(models.Model):
         if restriction_id:
             restriction_id = int(restriction_id)
 
+        hotel_id = self.env.user.hotel_id.id
+
         # Get Restrictions
         json_rooms_rests = {}
-        room_typed_ids = self.env['hotel.room.type'].search(
-            [],
-            order='sequence ASC')
+        room_typed_ids = self.env['hotel.room.type'].search([], order='sequence ASC')
+
         room_type_rest_obj = self.env['hotel.room.type.restriction.item']
         rtype_rest_ids = room_type_rest_obj.search([
+            ('hotel_id', '=', hotel_id),
             ('room_type_id', 'in', room_typed_ids.ids),
             ('date', '>=', dfrom_dt),
             ('date', '<=', dto_dt),
@@ -372,9 +384,19 @@ class HotelReservation(models.Model):
         if not dfrom or not dto:
             raise ValidationError(_('Input Error: No dates defined!'))
 
+        hotel_id = self.env.user.hotel_id.id
+
         dfrom_dt = fields.Date.from_string(dfrom)
         dto_dt = fields.Date.from_string(dto)
-        rooms = self.env['hotel.room'].search([], order='sequence ASC')
+
+        rooms = self.env['hotel.room'].search([
+            ('hotel_id', '=', hotel_id)
+        ], order='sequence ASC') or None
+
+        if not rooms:
+            raise AccessError(
+                _("Wrong hotel and company access settings for this user. "
+                  "No rooms found for hotel %s") % self.env.user.hotel_id.name)
 
         json_res, json_res_tooltips = self.get_hcalendar_reservations_data(
             dfrom_dt, dto_dt, rooms)
@@ -390,7 +412,6 @@ class HotelReservation(models.Model):
             'calendars': withRooms and self.get_hcalendar_calendar_data()
             or []
         }
-
         return vals
 
     @api.multi
