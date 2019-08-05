@@ -26,7 +26,7 @@ class HotelCheckinPartner(models.Model):
                 'arrival_hour': stay['Arrival_hour'],
                 'room_type_id': stay['RoomType']['Id'],
                 'partner_id': stay["Customers"][0]["Id"],
-                'segmentation_ids': (6, 0, stay['Segmentation']),
+                'segmentation_ids': [(6, 0, [stay['Segmentation']])],
                 'channel_type': 'virtualdoor',
             }
             reservation_rm = reservation_obj.create(vals)
