@@ -10,7 +10,7 @@ from datetime import datetime
 import logging
 
 
-class HotelFolio(models.Model):
+class HotelCheckinPartner(models.Model):
 
     _inherit = 'hotel.checkin.partner'
 
