@@ -6,6 +6,8 @@ from odoo import models, fields, api
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
+    # TODO REVIEW: deprecated ?¿
+
     @api.multi
     def update_price(self, room_type_id, date, price):
         room_type = self.env['hotel.room.type'].browse(room_type_id)
