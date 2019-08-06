@@ -285,6 +285,18 @@ class HotelReservationImporter(Component):
         # Force an update with the correct availability
         channel_availability.push_availability(binding.backend_id)
 
+    def _force_update_availability_wubook(self, binding):
+        # WuBook always add +1 in the channel manager for cancelled reservation
+        # However, the quota in Odoo has preference in the availability
+        cancelled_dates = binding.reservation_line_ids.mapped('date')
+        channel_availability = self.env['channel.hotel.room.type.availability'].search([
+            ('backend_id', '=', binding.backend_id.id),
+            ('date', 'in', cancelled_dates)
+        ])
+        channel_availability.write({'channel_pushed': False})
+        # Force an update with the correct availability
+        channel_availability.push_availability(binding.backend_id)
+
     def _update_reservation_binding(self, binding, book):
         is_cancellation = book['status'] in WUBOOK_STATUS_BAD
         binding.with_context({'connector_no_export': True}).write({
@@ -436,7 +448,7 @@ class HotelReservationImporter(Component):
                                 'connector_no_export': True,
                                 'ota_limits': False,
                                 'no_penalty': True}).action_cancel()
-                            self._force_update_availability_wubook(res.odoo_id)
+                            self._force_update_availability_wubook(res.channel_bind_ids[0])
                     if len(new_books) == 0:
                         processed_rids.append(rcode)
                         continue
