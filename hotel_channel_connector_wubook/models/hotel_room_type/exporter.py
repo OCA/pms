@@ -23,7 +23,7 @@ class HotelRoomTypeExporter(Component):
                     boards.update(
                         {board.channel_service: {
                             'dtype': 2 if board.price_type == 'fixed' else 1,
-                            'value': board.amount}}
+                            'value': board.amount * binding.ota_capacity}}
                     ) and board.channel_service
             return self.backend_adapter.modify_room(
                 binding.external_id,
@@ -59,7 +59,7 @@ class HotelRoomTypeExporter(Component):
                     boards.update(
                         {board.channel_service: {
                             'dtype': 2 if board.price_type == 'fixed' else 1,
-                            'value': board.amount}}
+                            'value': board.amount * binding.ota_capacity}}
                     ) and board.channel_service
             external_id = self.backend_adapter.create_room(
                 short_code,
