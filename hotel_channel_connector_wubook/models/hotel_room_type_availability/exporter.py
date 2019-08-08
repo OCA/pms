@@ -63,7 +63,7 @@ class HotelRoomTypeAvailabilityExporter(Component):
                     channel_message=err.data['message'])
                 return False
             else:
-                channel_room_type_avails.with_context({
+                channel_room_type_avail_ids.with_context({
                     'connector_no_export': True,
                 }).write({
                     'channel_pushed': True,
