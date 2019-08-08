@@ -223,19 +223,23 @@ class HotelReservation(models.Model):
             for record in self:
                 if record.channel_bind_ids:
                     from_channel = True
-                backend_id = self.env['channel.hotel.room.type'].search([
+                old_backend_id = self.env['channel.hotel.room.type'].search([
                     ('odoo_id', '=', record.room_id.room_type_id.id)
-                ]).backend_id.id
+                ]).backend_id.id or None
                 old_vals.append({
                     'checkin': record.checkin,
                     'checkout': record.checkout,
-                    'backend_id': backend_id,
+                    'backend_id': old_backend_id,
                     'room_id': record.room_id.id,
                 })
+                # NOTE: A reservation can be moved into a room type not connected to any channel
+                new_backend_id = self.env['channel.hotel.room.type'].search([
+                    ('room_ids', 'in', vals.get('room_id', record.room_id.id))
+                ]).backend_id.id or None
                 new_vals.append({
                     'checkin': vals.get('checkin', record.checkin),
                     'checkout': vals.get('checkout', record.checkout),
-                    'backend_id': backend_id,
+                    'backend_id': new_backend_id,
                     'room_id': vals.get('room_id', record.room_id.id),
                 })
 
@@ -249,7 +253,6 @@ class HotelReservation(models.Model):
                     backend_id=v_i['backend_id'],
                     room_id=v_i['room_id'],
                     from_channel=from_channel)
-                # NOTE: A reservation can be moved into a room type not connected to any channel
                 channel_room_type_avail_obj.sudo().refresh_availability(
                     checkin=new_vals[k_i]['checkin'],
                     checkout=new_vals[k_i]['checkout'],
