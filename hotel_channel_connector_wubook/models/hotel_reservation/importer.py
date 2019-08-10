@@ -640,6 +640,7 @@ class HotelReservationImporter(Component):
                     folio_id = hotel_folio_obj.with_context({
                         'connector_no_export': True}).create(vals)
 
+
                 # Update Reservation Spitted Parents
                 sorted_rlines = folio_id.room_lines.sorted(key='id')
                 for k_pid, v_pid in splitted_map.items():
@@ -652,6 +653,9 @@ class HotelReservationImporter(Component):
                 for rline in rlines:
                     for rline_bind in rline.channel_bind_ids:
                         self.binder.bind(rline_bind.external_id, rline_bind)
+                    # TODO: Imp refactoring method
+                    # Force to_assign = true (fix the to_assign splitted reservations)
+                    rline.update({'to_assign': True})
 
                 processed_rids.append(rcode)
         return (processed_rids, any(failed_reservations),
