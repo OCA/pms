@@ -1256,23 +1256,22 @@ class HotelReservation(models.Model):
             )
             # Days Price
             reservation_lines = [[], []]
-            tprice = [0.0, 0.0]
             for rline in record.reservation_line_ids:
                 rline_dt = fields.Date.from_string(rline.date)
                 if rline_dt >= new_start_date_dt:
                     reservation_lines[1].append((0, False, {
                         'date': rline.date,
-                        'price': rline.price
+                        'price': rline.price,
+                        'cancel_discount': rline.cancel_discount,
+                        'discount': rline.discount,
+                        'invoice_line_ids': rline.invoice_line_ids,
+                        'state': rline.state,
                     }))
-                    tprice[1] += rline.price
                     reservation_lines[0].append((2, rline.id, False))
-                else:
-                    tprice[0] += rline.price
 
             parent_res = record.parent_reservation or record
             vals.update({
                 'splitted': True,
-                'price_total': tprice[1],
                 'parent_reservation': parent_res.id,
                 'room_type_id': parent_res.room_type_id.id,
                 'state': parent_res.state,
@@ -1286,7 +1285,6 @@ class HotelReservation(models.Model):
                                             Can't split reservation!"))
             record.write({
                 'checkout': new_start_date_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                'price_total': tprice[0],
                 'splitted': True,
                 'reservation_line_ids': reservation_lines[0],
             })
@@ -1343,13 +1341,15 @@ class HotelReservation(models.Model):
         reservation_line_ids = splitted_reservs.mapped('reservation_line_ids')
         reservation_line_ids.sorted(key=lambda r: r.date)
         rlines = [(5, False, False)]
-        tprice = 0.0
         for rline in reservation_line_ids:
             rlines.append((0, False, {
                 'date': rline.date,
                 'price': rline.price,
+                'cancel_discount': rline.cancel_discount,
+                'discount': rline.discount,
+                'invoice_line_ids': rline.invoice_line_ids,
+                'state': rline.state,
             }))
-            tprice += rline.price
 
         # Unify
         osplitted_reservs = splitted_reservs - master_reservation
@@ -1365,7 +1365,6 @@ class HotelReservation(models.Model):
             'checkout': last_checkout,
             'splitted': master_reservation.real_checkin != first_checkin or master_reservation.real_checkout != last_checkout,
             'reservation_line_ids': rlines,
-            'price_total': tprice,
         })
         return True
 
