@@ -1224,6 +1224,19 @@ class HotelReservation(models.Model):
             if record.checkin_partner_ids:
                 record.checkin_partner_ids.filtered(
                     lambda check: check.state == 'booking').action_done()
+            if record.splitted:
+                master_reservation = record.parent_reservation or record
+                splitted_reservs = self.env['hotel.reservation'].search([
+                    ('splitted', '=', True),
+                    '|',
+                    ('parent_reservation', '=', master_reservation.id),
+                    ('id', '=', master_reservation.id),
+                    ('folio_id', '=', record.folio_id.id),
+                    ('id', '!=', record.id),
+                    ('state', 'not in', ('cancelled', 'done'))
+                ])
+                if splitted_reservs:
+                    splitted_reservs.update({'state': 'done'})
         return True
 
     @api.multi
