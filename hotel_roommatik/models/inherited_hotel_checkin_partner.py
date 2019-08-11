@@ -30,10 +30,14 @@ class HotelCheckinPartner(models.Model):
                 'channel_type': 'virtualdoor',
             }
             reservation_rm = reservation_obj.create(vals)
+            stay['ReservationCode'] = reservation_rm.localizator
         else:
-            reservation_rm = self.env['hotel.reservation'].browse(
-                stay['ReservationCode'])
+            reservation_rm = self.env['hotel.reservation'].search([
+                ('localizator', '=', stay['ReservationCode'])
+                ])
         total_chekins = reservation_rm.checkin_partner_pending_count
+        stay['Total'] = reservation_rm.folio_pending_amount
+        stay['Paid'] = reservation_rm._computed_deposit_roommatik(stay['ReservationCode'])
         if total_chekins > 0 and len(stay["Customers"]) <= total_chekins:
             _logger.info('ROOMMATIK checkin %s customer in %s Reservation.',
                          total_chekins,
@@ -65,19 +69,21 @@ class HotelCheckinPartner(models.Model):
                                  record.id)
                     record.action_on_board()
                     stay['Id'] = record.id
-                    stay['Room'] = reservation_rm.room_id.id
+                    stay['Room'] = {}
+                    stay['Room']['Id'] = reservation_rm.room_id.id
+                    stay['Room']['Name'] = reservation_rm.room_id.name
                     json_response = stay
                 except Exception as e:
                     error_name = 'Error not create Checkin '
                     error_name += e.name
-                    json_response = {'Estate': error_name}
+                    json_response = {'State': error_name}
                     _logger.error('ROOMMATIK writing %s in reservation: %s).',
                                   checkin_partner_val['partner_id'],
                                   checkin_partner_val['reservation_id'])
                     return json_response
 
         else:
-            json_response = {'Estate': 'Error checkin_partner_pending_count \
+            json_response = {'State': 'Error checkin_partner_pending_count \
                                                         values do not match.'}
             _logger.error('ROOMMATIK checkin pending count do not match for \
                                         Reservation ID %s.', reservation_rm.id)
@@ -93,10 +99,8 @@ class HotelCheckinPartner(models.Model):
         default_departure_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_departure_hour')
         if any(checkin_partner):
-            arrival = "%s %s:00" % (checkin_partner.enter_date.strftime(
-                DEFAULT_ROOMMATIK_DATE_FORMAT), default_arrival_hour)
-            departure = "%s %s:00" % (checkin_partner.exit_date.strftime(
-                DEFAULT_ROOMMATIK_DATE_FORMAT), default_departure_hour)
+            arrival = checkin_partner.enter_date or default_arrival_hour
+            departure = checkin_partner.exit_date or default_departure_hour
             stay = {'Code': checkin_partner.id}
             stay['Id'] = checkin_partner.id
             stay['Room'] = {}

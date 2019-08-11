@@ -76,9 +76,11 @@ class RoomMatik(models.Model):
     def rm_get_prices(self, start_date, number_intervals, room_type, guest_number):
         # Gets some prices related to different dates of the same stay.
         # return ArrayOfDecimal
-        room_type = self.env['hotel.room.type'].browse(room_type)
-        _logger.info('ROOMMATIK Get Prices')
         apidata = self.env['hotel.room.type']
+        room_type = apidata.browse(int(room_type))
+        _logger.info('ROOMMATIK Get Prices')
+        if not room_type:
+            return {'State': 'Error Room Type not Found'}
         return apidata.sudo().rm_get_prices(start_date, number_intervals, room_type, guest_number)
 
     @api.model

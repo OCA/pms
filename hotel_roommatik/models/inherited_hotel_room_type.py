@@ -52,8 +52,8 @@ class HotelRoomType(models.Model):
     @api.model
     def rm_get_prices(self, start_date, number_intervals,
                       room_type, guest_number):
-        start_date = fields.Datetime.from_string(start_date)
-        end_date = start_date + timedelta(days=number_intervals)
+        start_date = fields.Date.from_string(start_date)
+        end_date = start_date + timedelta(days=int(number_intervals))
         dfrom = start_date.strftime(
             DEFAULT_ROOMMATIK_DATE_FORMAT)
         dto = end_date.strftime(
@@ -64,7 +64,7 @@ class HotelRoomType(models.Model):
             rates = self.get_rate_room_types(
                 room_type_ids=room_type.id,
                 date_from=dfrom,
-                days=number_intervals,
+                days=int(number_intervals),
                 partner_id=False)
             return [item['price'] for item in rates.get(room_type.id)]
         return []
