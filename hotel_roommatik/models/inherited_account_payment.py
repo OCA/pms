@@ -7,7 +7,7 @@ class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     @api.model
-    def _rm_add_payment(self, code, payment):
+    def rm_add_payment(self, code, payment):
         reservation = self.env['hotel.reservation'].search([
             '|', ('localizator', '=', code),
             ('folio_id.name', '=', code)])
