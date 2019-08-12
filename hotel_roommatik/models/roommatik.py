@@ -103,7 +103,7 @@ class RoomMatik(models.Model):
     @api.model
     def rm_add_payment(self, code, payment):
         apidata = self.env['account.payment']
-        return apidata.sudo().rm_checkin_partner(code, payment)
+        return apidata.sudo().rm_add_payment(code, payment)
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()
         # Debug Stop -------------------
