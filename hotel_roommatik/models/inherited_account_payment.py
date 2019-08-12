@@ -11,8 +11,10 @@ class AccountPayment(models.Model):
         reservation = self.env['hotel.reservation'].search([
             '|', ('localizator', '=', code),
             ('folio_id.name', '=', code)])
+        if not reservation:
+            return False
         if reservation:
-            for cashpay in payment['PaymentTransaction']['CashPayments']:
+            for cashpay in payment['CashPayments']:
                 vals = {
                     'journal_id': 7,  # TODO:config setting
                     'partner_id': reservation.partner_invoice_id.id,
@@ -25,8 +27,8 @@ class AccountPayment(models.Model):
                     'partner_type': 'customer',
                     'state': 'draft',
                 }
-                self.update(vals)
-            for cashpay in payment['PaymentTransaction']['CreditCardPayments']:
+                pay = self.create(vals)
+            for cashpay in payment['CreditCardPayments']:
                 vals = {
                     'journal_id': 15,  # TODO:config setting
                     'partner_id': reservation.partner_invoice_id.id,
@@ -39,5 +41,6 @@ class AccountPayment(models.Model):
                     'partner_type': 'customer',
                     'state': 'draft',
                 }
-                self.update(vals)
-        self.with_context({'ignore_notification_post': True}).post()
+                pay = self.create(vals)
+        pay.post()
+        return True
