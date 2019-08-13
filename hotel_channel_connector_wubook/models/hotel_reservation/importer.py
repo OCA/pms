@@ -620,9 +620,21 @@ class HotelReservationImporter(Component):
                 for rline in rlines:
                     for rline_bind in rline.channel_bind_ids:
                         self.binder.bind(rline_bind.external_id, rline_bind)
-                    # TODO: Imp refactoring method
+                    # TODO: Imp importer, refactoring method
                     # Force to_assign = true (fix the to_assign splitted reservations)
                     rline.update({'to_assign': True})
+                    # Force to update avail on splitteds sections
+                    if rline.parent_reservation:
+                        # This break with multi channels by room type
+                        backend_id = self.env['channel.hotel.room.type'].search([
+                            ('odoo_id', '=', rline.room_type_id.id)
+                        ]).backend_id
+                        self.env['channel.hotel.room.type.availability'].sudo().refresh_availability(
+                            checkin=rline.real_checkin,
+                            checkout=rline.real_checkout,
+                            backend_id=backend_id.id,
+                            room_type_id=rline.room_type_id.id,
+                            from_channel=True,)
 
                 processed_rids.append(rcode)
         return (processed_rids, any(failed_reservations),
