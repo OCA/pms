@@ -57,8 +57,7 @@ class HotelCheckinPartner(models.Model):
                     'partner_id': room_partner["Id"],
                     'enter_date': stay["Arrival"],
                     'exit_date': stay["Departure"],
-                    'code_ine_id': code_ine,
-                    'segmentation_ids': [(6, 0, [stay['Segmentation']])],
+                    'code_ine_id': code_ine,,
                     }
                 try:
                     record = self.env['hotel.checkin.partner'].create(
@@ -68,6 +67,10 @@ class HotelCheckinPartner(models.Model):
                                  checkin_partner_val['partner_id'],
                                  checkin_partner_val['reservation_id'],
                                  record.id)
+                    if not record.reservation_id.segmentation_ids:
+                        record.reservation_id.update({
+                            'segmentation_ids': [(6, 0, [stay['Segmentation']])]
+                        })
                     record.action_on_board()
                     stay['Id'] = record.id
                     stay['Room'] = {}
@@ -76,7 +79,7 @@ class HotelCheckinPartner(models.Model):
                     json_response = stay
                 except Exception as e:
                     error_name = 'Error not create Checkin '
-                    error_name += e.name
+                    error_name += str(e)
                     json_response = {'State': error_name}
                     _logger.error('ROOMMATIK writing %s in reservation: %s).',
                                   checkin_partner_val['partner_id'],
