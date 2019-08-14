@@ -95,6 +95,37 @@ class HotelReservationImporter(Component):
             return count
 
     @api.model
+    def _get_board_services(self, broom, book, room_type_bind, persons):
+        board_service = None
+        board_service_amount = 0.0
+        # WuBook Reservation Engine
+        if book['id_channel'] == 0:
+            board_service = room_type_bind.board_service_room_type_ids.filtered(
+                lambda r: r.channel_service == book['boards'][room_type_bind.external_id]).id or None
+        # Booking.com Reservation Engine
+        elif book['id_channel'] == 2:
+            detected_board = book.get('ancillary', {}).get('Detected Board') or None
+            # Board services can be included in the rate plan and detected by the WuBook API
+            if detected_board and detected_board != 'nb':
+                board_service = room_type_bind.board_service_room_type_ids.filtered(
+                    lambda r: r.channel_service == detected_board).id or None
+                # NOTE: Board services are managed by day and by person
+                board_service_amount = board_service and room_type_bind.board_service_room_type_ids.browse(
+                    board_service).amount * persons
+            else:
+                detected_addons = broom.get('ancillary', {}).get('addons') or []
+                # Board services can be included as a list of addons where the price is broken down by day and service
+                boards_map = {"Breakfast": "bb"}
+                for addon in detected_addons:
+                    detected_board = addon.get('type') in boards_map and boards_map[addon.get('type')]
+                    board_service = room_type_bind.board_service_room_type_ids.filtered(
+                        lambda r: r.channel_service == detected_board).id or None
+                    # TODO: what to do if more than one addon is shipped in this array ¿?
+
+        # TODO: Expedia.com Reservation Engine
+        return board_service, board_service_amount
+
+    @api.model
     def _generate_booking_vals(self, broom, crcode, rcode, room_type_bind,
                                split_booking, dates_checkin, dates_checkout, real_checkin, real_checkout, book):
         is_cancellation = book['status'] in WUBOOK_STATUS_BAD
@@ -123,6 +154,8 @@ class HotelReservationImporter(Component):
                 tax_inclusive = False
         # rate_id ( 0: WuBook Parity (aka standard rate); > 0: the id of the booked pricing plan)
         rate_id = default_rate_id = 0
+        # Information about Board Services
+        board_service, board_service_amount = self._get_board_services(broom, book, room_type_bind, persons)
         # Generate Reservation Day Lines
         reservation_lines = []
         tprice = 0.0
@@ -140,7 +173,7 @@ class HotelReservationImporter(Component):
                 room_day_price = brday['price'] + amount_day_tax
                 reservation_lines.append((0, False, {
                     'date': wndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    'price': room_day_price,
+                    'price': room_day_price - board_service_amount,
                 }))
                 tprice += room_day_price
             rate_id = brday['rate_id']
@@ -161,7 +194,7 @@ class HotelReservationImporter(Component):
                 ('backend_id', '=', self.backend_record.id),
                 ('external_id', '=', rate_id)
             ]) or None
-        rate_id = rate_id and rate_id.odoo_id.id or default_rate_id
+        rate_id = rate_id and rate_id.odoo_id.id or default_rate_id  # TODO: NEED A FIX because it fails if rate_id > 0 and rate plan is Unknown in Odoo
         # Get OTA
         ota_id = self.env['channel.ota.info'].search([
             ('backend_id', '=', self.backend_record.id),
@@ -190,6 +223,7 @@ class HotelReservationImporter(Component):
             'children': book['children'],
             'pricelist_id': rate_id,
             'reservation_line_ids': reservation_lines,
+            'board_service_room_id': board_service,
             'to_assign': True,
             'state': is_cancellation and 'cancelled' or 'confirm',
             'room_type_id': room_type_bind.odoo_id.id,
@@ -197,10 +231,6 @@ class HotelReservationImporter(Component):
             'name': room_type_bind and room_type_bind.name,
             'channel_bind_ids': [(0, False, binding_vals)],
         }
-        if book['id_channel'] == 0:
-            # Information about boards: only for wubook reservations
-            vals.update({'board_service_room_id': room_type_bind.board_service_room_type_ids.filtered(
-                lambda r: r.channel_service == book['boards'][room_type_bind.external_id]).id or None})
 
         return vals
 
