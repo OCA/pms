@@ -152,8 +152,8 @@ class HotelReservationImporter(Component):
             if 'tax_inclusive' in broom['ancillary'] and not broom['ancillary']['tax_inclusive']:
                 _logger.info("--- Incoming Reservation without taxes included!")
                 tax_inclusive = False
-        # rate_id ( 0: WuBook Parity (aka standard rate); > 0: the id of the booked pricing plan)
-        rate_id = default_rate_id = 0
+        # WuBook rate plan
+        rate_id = None
         # Information about Board Services
         board_service, board_service_amount = self._get_board_services(broom, book, room_type_bind, persons)
         # Generate Reservation Day Lines
@@ -177,24 +177,29 @@ class HotelReservationImporter(Component):
                 }))
                 tprice += room_day_price
             rate_id = brday['rate_id']
-        # TODO: Review different pricelist in the different booked rooms (folio in Odoo)
-        if rate_id < 0:
-            rate_id = 0
-            self.create_issue(
-                section='reservation',
-                internal_emssage="Reservation imported with unknown \
-                    pricelist (established by default)",
-                channel_object_id=book['reservation_code'])
-        if rate_id == 0:
-            default_rate_id = self.env['channel.backend'].search([
-                ('id', '=', self.backend_record.id)
-            ]).wubook_parity_pricelist_id.id
-        else:
+            # TODO: Review different pricelist in the different booked rooms (folio in Odoo)
+
+        parity_rate_id = self.env['channel.backend'].search([
+            ('id', '=', self.backend_record.id)
+        ]).wubook_parity_pricelist_id.id
+        # WuBook API rate_id ( booked pricing plan: -1 Unknown, 0 WuBook Parity or WuBook id of the plan)
+        if rate_id > 0:
             rate_id = self.env['channel.product.pricelist'].search([
                 ('backend_id', '=', self.backend_record.id),
                 ('external_id', '=', rate_id)
             ]) or None
-        rate_id = rate_id and rate_id.odoo_id.id or default_rate_id  # TODO: NEED A FIX because it fails if rate_id > 0 and rate plan is Unknown in Odoo
+        elif rate_id == 0:
+            rate_id = parity_rate_id
+        else:
+            rate_id = None
+        if not rate_id:
+            # Unknown rate < 0 OR mapped incorrectly in Odoo
+            self.create_issue(
+                section='reservation',
+                internal_message="Reservation imported with unknown \
+                                pricelist (established by default)",
+                channel_object_id=book['reservation_code'])
+        rate_id = rate_id and rate_id.odoo_id.id or parity_rate_id
         # Get OTA
         ota_id = self.env['channel.ota.info'].search([
             ('backend_id', '=', self.backend_record.id),
@@ -398,7 +403,7 @@ class HotelReservationImporter(Component):
             if crcode in failed_reservations:
                 self.create_issue(
                     section='reservation',
-                    internal_emssage="Can't process a reservation that previusly failed!",
+                    internal_message="Can't process a reservation that previously failed!",
                     channel_object_id=book['reservation_code'])
                 continue
 
