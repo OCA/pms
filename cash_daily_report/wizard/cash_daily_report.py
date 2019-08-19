@@ -171,7 +171,7 @@ class CashDailyReportWizard(models.TransientModel):
                     return_journals[v_payment.journal_id.name] += -v_line.amount
 
                 if v_payment.date not in total_dates:
-                    total_dates.update({v_payment.date: {v_payment.journal_id.name: -amount}})
+                    total_dates.update({v_payment.date: {v_payment.journal_id.name: -v_line.amount}})
                 else:
                     if v_payment.journal_id.name not in total_dates[v_payment.date]:
                         total_dates[v_payment.date].update({v_payment.journal_id.name: -v_line.amount})
