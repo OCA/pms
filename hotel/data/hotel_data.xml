@@ -5,10 +5,12 @@
         <!-- Basic hotel  -->
         <record id="main_hotel_property" model="hotel.property">
             <field name="name">My Hotel</field>
-
+            <field name="company_id" ref="base.main_company"/>
         </record>
 
         <record model="res.users" id="base.user_root">
+            <field name="company_id" ref="base.main_company"/>
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]"/>
             <field name="hotel_id" ref="main_hotel_property"/>
             <field name="hotel_ids" eval="[(4, ref('main_hotel_property'))]"/>
         </record>
