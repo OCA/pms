@@ -112,15 +112,15 @@ class HotelReservationImporter(Component):
                 # NOTE: Board services are managed by day and by person
                 board_service_amount = board_service and room_type_bind.board_service_room_type_ids.browse(
                     board_service).amount * persons
-            else:
-                detected_addons = broom.get('ancillary', {}).get('addons') or []
-                # Board services can be included as a list of addons where the price is broken down by day and service
-                boards_map = {"Breakfast": "bb"}
-                for addon in detected_addons:
-                    detected_board = addon.get('type') in boards_map and boards_map[addon.get('type')]
-                    board_service = room_type_bind.board_service_room_type_ids.filtered(
-                        lambda r: r.channel_service == detected_board).id or None
-                    # TODO: what to do if more than one addon is shipped in this array ¿?
+            # else:
+            #     detected_addons = broom.get('ancillary', {}).get('addons') or []
+            #     # Board services can be included as a list of addons where the price is broken down by day and service
+            #     boards_map = {"Breakfast": "bb"}
+            #     for addon in detected_addons:
+            #         detected_board = addon.get('type') in boards_map and boards_map[addon.get('type')]
+            #         board_service = room_type_bind.board_service_room_type_ids.filtered(
+            #             lambda r: r.channel_service == detected_board).id or None
+            #         # TODO: what to do if more than one addon is shipped in this array ¿?
 
         # TODO: Expedia.com Reservation Engine
         return board_service, board_service_amount
