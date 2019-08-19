@@ -21,7 +21,7 @@
 #
 ##############################################################################
 from datetime import timedelta
-from odoo import    api, fields
+from odoo import api, fields
 from odoo.tests import common
 from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
@@ -30,8 +30,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-# TestMail crea recursos utiles para nuestros test...
-# por ejemplo, usuarios con distintos tipos de nivel, etc...
 class TestHotel(common.SavepointCase):
 
     @classmethod
