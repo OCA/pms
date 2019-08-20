@@ -258,34 +258,20 @@ class HotelReservationImporter(Component):
         }
 
     def _get_book_dates(self, book):
-        tz_hotel = self.env['ir.default'].sudo().get('res.config.settings', 'tz_hotel')
         default_arrival_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_arrival_hour')
         default_departure_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_departure_hour')
 
-        # Get dates for the reservation (GMT->UTC)
-        arr_hour = default_arrival_hour if book['arrival_hour'] == "--" \
-            else book['arrival_hour']
-        # HOT-FIX: Wubook 24:00 hour
-        arr_hour_s = arr_hour.split(':')
-        if arr_hour_s[0] == '24':
-            arr_hour_s[0] = '00'
-            arr_hour = ':'.join(arr_hour_s)
-        checkin = "%s %s" % (book['date_arrival'], arr_hour)
-        checkin_dt = datetime.strptime(checkin, DEFAULT_WUBOOK_DATETIME_FORMAT).replace(
-            tzinfo=tz.gettz(str(tz_hotel)))
-        checkin_utc_dt = checkin_dt.astimezone(tz.gettz('UTC'))
-        #checkin = checkin_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        checkin = "%s %s" % (book['date_arrival'], default_arrival_hour)
+        checkin_utc_dt = datetime.strptime(checkin, DEFAULT_WUBOOK_DATETIME_FORMAT).replace(
+            tzinfo=tz.gettz('UTC'))
 
-        checkout = "%s %s" % (book['date_departure'],
-                              default_departure_hour)
-        checkout_dt = datetime.strptime(checkout, DEFAULT_WUBOOK_DATETIME_FORMAT).replace(
-            tzinfo=tz.gettz(str(tz_hotel)))
-        checkout_utc_dt = checkout_dt.astimezone(tz.gettz('UTC'))
-        #checkout = checkout_utc_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        checkout = "%s %s" % (book['date_departure'], default_departure_hour)
+        checkout_utc_dt = datetime.strptime(checkout, DEFAULT_WUBOOK_DATETIME_FORMAT).replace(
+            tzinfo=tz.gettz('UTC'))
 
-        return (checkin_utc_dt, checkout_utc_dt)
+        return checkin_utc_dt, checkout_utc_dt
 
     def _update_reservation_binding(self, binding, book):
         is_cancellation = book['status'] in WUBOOK_STATUS_BAD
