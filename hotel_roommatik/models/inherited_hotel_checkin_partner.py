@@ -125,7 +125,7 @@ class HotelCheckinPartner(models.Model):
             stay['TimeInterval']['Name'] = {}
             stay['TimeInterval']['Minutes'] = {}
             stay['Adults'] = checkin_partner.reservation_id.adults
-            stay['ReservationCode'] = {}
+            stay['ReservationCode'] = checkin_partner.reservation_id.localizator
             stay['Total'] = checkin_partner.reservation_id.price_total
             stay['Paid'] = checkin_partner.reservation_id.folio_id.invoices_paid
             stay['Outstanding'] = checkin_partner.reservation_id.folio_id.pending_amount
