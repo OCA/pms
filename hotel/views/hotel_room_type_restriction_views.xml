@@ -22,7 +22,7 @@
             </h1>
           </div>
           <group>
-            <field name="hotel_id" invisible="1"/>
+            <field name="hotel_id" invisible="0"/>
           </group>
           <div>
             <separator string="Pricelist Items"/>

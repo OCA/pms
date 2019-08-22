@@ -22,7 +22,7 @@
                         <field name="class_id" />
                       </group>
                       <group>
-                          <field name="hotel_id" invisible="1"/>
+                          <field name="hotel_id" invisible="0"/>
                           <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                       </group>
                     </group>

@@ -10,6 +10,7 @@ class ProductPricelist(models.Model):
 
     @api.multi
     def update_price(self, room_type_id, date, price):
+        import wdb; wdb.set_trace()
         room_type = self.env['hotel.room.type'].browse(room_type_id)
         pritem_obj = self.env['product.pricelist.item']
         for record in self:
