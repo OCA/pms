@@ -64,6 +64,7 @@
                          </button>
 
                     </div>
+                    <field name="hotel_id" invisible="0"/>
                     <h2><field name="name"/></h2>
                     <h1>
                         <field name="partner_id" default_focus="1" placeholder="Guest" attrs="{'invisible':[('reservation_type','in',('out'))]}"/>
@@ -237,6 +238,7 @@
                 <field name="amount_total" sum="Total amount"/>
                 <field name="pending_amount" sum="Total debt"/>
                 <field name="invoice_status" />
+                <field name="hotel_id" invisible="0"/>
             </tree>
         </field>
     </record>

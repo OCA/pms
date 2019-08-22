@@ -6,7 +6,7 @@ from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, api, _, fields
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
@@ -211,9 +211,12 @@ class HotelCalendarManagement(models.TransientModel):
     @api.model
     def get_hcalendar_all_data(self, dfrom, dto, pricelist_id, restriction_id,
                                withRooms):
+        hotel_id = self.env.user.hotel_id.id
+
         if not dfrom or not dto:
             raise ValidationError(_('Input Error: No dates defined!'))
         vals = {}
+        # TODO: res.config by hotel
         if not pricelist_id:
             pricelist_id = self.env['ir.default'].sudo().get(
                 'res.config.settings', 'default_pricelist_id')
@@ -221,17 +224,16 @@ class HotelCalendarManagement(models.TransientModel):
             restriction_id = self.env['ir.default'].sudo().get(
                 'res.config.settings', 'default_restriction_id')
 
+        # TODO: ensure pricelist_id and restriction_id belong to the current hotel
         pricelist_id = int(pricelist_id)
         vals.update({'pricelist_id': pricelist_id})
         restriction_id = int(restriction_id)
         vals.update({'restriction_id': restriction_id})
 
-        room_type_rest_it_obj = self.env['hotel.room.type.restriction.item']
-        restriction_item_ids = room_type_rest_it_obj.search([
+        restriction_item_ids = self.env['hotel.room.type.restriction.item'].search([
             ('date', '>=', dfrom), ('date', '<=', dto),
             ('restriction_id', '=', restriction_id),
         ])
-
         pricelist_item_ids = self.env['product.pricelist.item'].search([
             ('date_start', '>=', dfrom), ('date_end', '<=', dto),
             ('pricelist_id', '=', pricelist_id),
@@ -241,6 +243,7 @@ class HotelCalendarManagement(models.TransientModel):
 
         json_prices = self._hcalendar_pricelist_json_data(pricelist_item_ids)
         json_rest = self._hcalendar_restriction_json_data(restriction_item_ids)
+        # TODO REVIEW: what are json_rc and json_events used for in calendar management ¿?
         json_rc = self._hcalendar_get_count_reservations_json_data(dfrom, dto)
         json_events = self._hcalendar_events_json_data(dfrom, dto)
         vals.update({
@@ -251,9 +254,15 @@ class HotelCalendarManagement(models.TransientModel):
         })
 
         if withRooms:
-            room_ids = self.env['hotel.room.type'].search(
-                [],
-                order='sequence ASC')
+            room_ids = self.env['hotel.room.type'].search([
+                ('hotel_id', '=', hotel_id)
+            ], order='sequence ASC') or None
+
+            if not room_ids:
+                raise AccessError(
+                    _("Wrong hotel and company access settings for this user. "
+                      "No room types found for hotel %s") % self.env.user.hotel_id.name)
+
             json_rooms = self._hcalendar_room_json_data(room_ids)
             vals.update({'rooms': json_rooms or []})
 

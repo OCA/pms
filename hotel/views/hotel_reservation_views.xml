@@ -142,6 +142,7 @@
                     </div>
                     <span class="label label-danger" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}">Cancelled Reservation!</span>
                     <span class="label label-warning" attrs="{'invisible': [('overbooking', '=', False)]}">OverBooking!</span>
+                    <field name="hotel_id" invisible="0"/>
                     <h1>
                         <field name="room_id" select="1"
                           nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
