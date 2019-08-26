@@ -9,9 +9,9 @@
         <field name="arch" type="xml">
             <form string="Hotel Configuration">
                 <sheet>
-                    <label for="partner_id" class="oe_edit_only"/>
+                    <label for="name" class="oe_edit_only"/>
                     <h1>
-                        <field name="partner_id" class="oe_inline" />
+                        <field name="name" class="oe_inline" />
                     </h1>
                     <notebook>
                         <page string="Hotel Settings" name="hotel_settings">
@@ -32,7 +32,7 @@
         <field name="model">hotel.property</field>
         <field name="arch" type="xml">
             <tree string="Hotel settings summary">
-                <field name="partner_id"/>
+                <field name="name"/>
                 <field name="company_id"/>
             </tree>
         </field>
