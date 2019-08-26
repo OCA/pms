@@ -12,7 +12,8 @@ class HotelProperty(models.Model):
 
     partner_id = fields.Many2one('res.partner', 'Hotel Property',
                                  required=True, delegate=True, ondelete='cascade')
-    company_id = fields.Many2one('res.company', help='The company that owns or operates this hotel.')
+    company_id = fields.Many2one('res.company', help='The company that owns or operates this hotel.',
+                                 required=True)
     user_ids = fields.Many2many('res.users', 'hotel_property_users_rel', 'hotel_id', 'user_id',
                                 string='Accepted Users')
 
