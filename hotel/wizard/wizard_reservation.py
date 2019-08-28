@@ -51,8 +51,7 @@ class FolioWizard(models.TransientModel):
 
     @api.model
     def _get_default_pricelist(self):
-        return self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_pricelist_id')
+        return self.env.user.hotel_id.pricelist_id.id
 
     partner_id = fields.Many2one('res.partner', required=True, string="Customer")
     email = fields.Char('E-mail')
@@ -107,8 +106,7 @@ class FolioWizard(models.TransientModel):
             vals = {}
             pricelist = self.partner_id.property_product_pricelist and \
                         self.partner_id.property_product_pricelist.id or \
-                        self.env['ir.default'].sudo().get(
-                            'res.config.settings', 'default_pricelist_id')
+                        self.env.user.hotel_id.pricelist_id.id
             vals.update({
                 'pricelist_id': pricelist,
                 'email': self.partner_id.email,
@@ -171,8 +169,7 @@ class FolioWizard(models.TransientModel):
         @param self: object pointer
         '''
         self.ensure_one()
-        tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
+        tz_hotel = self.env.user.hotel_id.tz
         today = fields.Date.context_today(self.with_context(tz=tz_hotel))
         checkin_dt = fields.Date.from_string(today) if not self.checkin else fields.Date.from_string(self.checkin)
         checkout_dt = fields.Date.from_string(today) if not self.checkout else fields.Date.from_string(self.checkout)

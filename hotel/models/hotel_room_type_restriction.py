@@ -14,20 +14,18 @@ class HotelRoomTypeRestriction(models.Model):
     item_ids = fields.One2many('hotel.room.type.restriction.item',
                                'restriction_id', string='Restriction Items',
                                copy=True)
-    active = fields.Boolean('Active',
-                            help='If unchecked, it will allow you to hide the \
-                                    restriction plan without removing it.',
-                            default=True)
-    hotel_id = fields.Many2one('hotel.property', default=_get_default_hotel,
-                               required=True, ondelete='cascade')
+    active = fields.Boolean('Active', default=True,
+                            help='If unchecked, it will allow you to hide the '
+                                 'restriction plan without removing it.')
+    hotel_ids = fields.One2many('hotel.property',
+                                'restriction_id', string='Restriction Plan',
+                                default=_get_default_hotel, required=True)
 
     @api.multi
     @api.depends('name')
     def name_get(self):
-        restriction_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restriction_id')
-        if restriction_id:
-            restriction_id = int(restriction_id)
+        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
+        restriction_id = self.env.user.hotel_id.restriction_id.id
         names = []
         for record in self:
             if record.id == restriction_id:

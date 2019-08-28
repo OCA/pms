@@ -25,7 +25,6 @@ from . import hotel_room_type_restriction_item
 from . import hotel_reservation_line
 from . import hotel_checkin_partner
 from . import inherited_product_pricelist
-from . import res_config
 from . import inherited_res_partner
 from . import inherited_mail_compose_message
 from . import hotel_room_type_class

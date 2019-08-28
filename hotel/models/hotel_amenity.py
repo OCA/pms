@@ -12,6 +12,6 @@ class HotelRoomAmenitie(models.Model):
     default_code = fields.Char('Internal Reference')
     room_amenity_type_id = fields.Many2one('hotel.amenity.type',
                                              'Amenity Catagory')
-    hotel_ids = fields.Many2many('hotel.property', 'Hotels', required=False, ondelete='restrict')
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False, ondelete='restrict')
 
     #TODO: Constrain coherence hotel_ids with amenity types hotel_ids

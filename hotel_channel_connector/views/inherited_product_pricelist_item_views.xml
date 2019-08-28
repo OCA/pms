@@ -22,8 +22,4 @@
         </field>
     </record>
 
-    <menuitem name="Pricelist" id="pricelist_menu"
-              action="product.product_pricelist_action2" sequence="22"
-              parent="hotel.configuration_others" />
-
 </odoo>

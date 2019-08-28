@@ -21,8 +21,10 @@ class HotelRoomTypeRestrictionItem(models.Model):
     closed = fields.Boolean('Closed')
     closed_departure = fields.Boolean('Closed Departure')
     closed_arrival = fields.Boolean('Closed Arrival')
-    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
-                               related='restriction_id.hotel_id')
+    hotel_ids = fields.One2many('hotel.property',
+                                'restriction_id', string='Restriction Plan',
+                                store=True, readonly=True,
+                                related='restriction_id.hotel_ids')
 
     _sql_constraints = [('room_type_registry_unique',
                          'unique(restriction_id, room_type_id, date)',
@@ -37,7 +39,7 @@ class HotelRoomTypeRestrictionItem(models.Model):
                 raise ValidationError(_("Min. Stay can't be less than zero"))
             elif record.min_stay_arrival < 0:
                 raise ValidationError(
-                    ("Min. Stay Arrival can't be less than zero"))
+                    _("Min. Stay Arrival can't be less than zero"))
             elif record.max_stay < 0:
                 raise ValidationError(_("Max. Stay can't be less than zero"))
             elif record.max_stay_arrival < 0:

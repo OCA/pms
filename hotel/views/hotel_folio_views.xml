@@ -64,7 +64,6 @@
                          </button>
 
                     </div>
-                    <field name="hotel_id" invisible="0"/>
                     <h2><field name="name"/></h2>
                     <h1>
                         <field name="partner_id" default_focus="1" placeholder="Guest" attrs="{'invisible':[('reservation_type','in',('out'))]}"/>
@@ -80,8 +79,8 @@
                             <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancel'))]}"/>
                         </group>
                         <group>
+                            <field name="hotel_id" invisible="0"/>
                             <field name="pricelist_id" />
-                            <field name="hotel_id" invisible="1"/>
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="reservation_type" attrs="{'readonly':[('state','not in',('draft'))]}"/>
                             <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>

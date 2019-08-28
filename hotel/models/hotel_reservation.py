@@ -31,8 +31,7 @@ class HotelReservation(models.Model):
         if folio and folio.room_lines:
             return folio.room_lines[0].checkin
         else:
-            tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
+            tz_hotel = self.env.user.hotel_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_hotel))
             return fields.Date.from_string(today).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
@@ -45,16 +44,14 @@ class HotelReservation(models.Model):
         if folio and folio.room_lines:
             return folio.room_lines[0].checkout
         else:
-            tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
+            tz_hotel = self.env.user.hotel_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_hotel))
             return (fields.Date.from_string(today) + timedelta(days=1)).strftime(
                 DEFAULT_SERVER_DATE_FORMAT)
 
     def _get_default_arrival_hour(self):
         folio = False
-        default_arrival_hour = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_arrival_hour')
+        default_arrival_hour = self.env.user.hotel_id.arrival_hour
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
@@ -66,8 +63,7 @@ class HotelReservation(models.Model):
 
     def _get_default_departure_hour(self):
         folio = False
-        default_departure_hour = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_departure_hour')
+        default_departure_hour = self.env.user.hotel_id.departure_hour
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
@@ -226,7 +222,7 @@ class HotelReservation(models.Model):
 
     partner_id = fields.Many2one(related='folio_id.partner_id')
     tour_operator_id = fields.Many2one(related='folio_id.tour_operator_id')
-    partner_invoice_id =  fields.Many2one(related='folio_id.partner_invoice_id')
+    partner_invoice_id = fields.Many2one(related='folio_id.partner_invoice_id')
     partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
     partner_invoice_name = fields.Char(related="partner_invoice_id.name")
     partner_invoice_street = fields.Char(related="partner_invoice_id.street")
@@ -673,8 +669,8 @@ class HotelReservation(models.Model):
     def onchange_partner_id(self):
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
-                self.partner_id.property_product_pricelist.id or \
-                self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
+                    self.partner_id.property_product_pricelist.id or \
+                    self.env.user.hotel_id.pricelist_id.id
         values = {
             'pricelist_id': pricelist,
             'partner_invoice_id': addr['invoice'],
@@ -896,8 +892,7 @@ class HotelReservation(models.Model):
         self.ensure_one()
         pricelist = self.pricelist_id
         if pricelist and pricelist.cancelation_rule_id:
-            tz_hotel = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'tz_hotel')
+            tz_hotel = self.env.user.hotel_id.tz
             today = fields.Date.context_today(self.with_context(
                 tz=tz_hotel))
             days_diff = (fields.Date.from_string(self.real_checkin) -
