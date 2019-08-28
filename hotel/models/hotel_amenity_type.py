@@ -13,6 +13,6 @@ class HotelRoomAmenitieType(models.Model):
     room_amenity_ids = fields.One2many('hotel.amenity',
                                        'room_amenity_type_id',
                                        'Amenities in this category')
-    hotel_ids = fields.Many2many('hotel.property', 'Hotels', required=False, ondelete='restrict')
+    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False, ondelete='restrict')
 
     #TODO: Constrain coherence hotel_ids with amenities hotel_ids

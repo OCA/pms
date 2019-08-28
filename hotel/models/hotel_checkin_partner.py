@@ -189,14 +189,12 @@ class HotelCheckinPartner(models.Model):
 
     def _get_arrival_hour(self):
         self.ensure_one()
-        tz_hotel = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'tz_hotel')
+        tz_hotel = self.env.user.hotel_id.tz
         today = fields.Datetime.context_timestamp(
             self.with_context(tz=tz_hotel),
             datetime.datetime.strptime(fields.Date.today(),
                                        DEFAULT_SERVER_DATE_FORMAT))
-        default_arrival_hour = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_arrival_hour')
+        default_arrival_hour = self.env.user.hotel_id.arrival_hour
         if self.reservation_id.checkin < today.strftime(DEFAULT_SERVER_DATE_FORMAT):
             return default_arrival_hour
         now = fields.Datetime.context_timestamp(
@@ -208,14 +206,12 @@ class HotelCheckinPartner(models.Model):
 
     def _get_departure_hour(self):
         self.ensure_one()
-        tz_hotel = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'tz_hotel')
+        tz_hotel = self.env.user.hotel_id.tz
         today = fields.Datetime.context_timestamp(
             self.with_context(tz=tz_hotel),
             datetime.datetime.strptime(fields.Date.today(),
                                        DEFAULT_SERVER_DATE_FORMAT))
-        default_departure_hour = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_departure_hour')
+        default_departure_hour = self.env.user.hotel_id.departure_hour
         if self.reservation_id.checkout < today.strftime(DEFAULT_SERVER_DATE_FORMAT):
             return default_departure_hour
         now = fields.Datetime.context_timestamp(

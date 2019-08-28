@@ -4,6 +4,7 @@
 from odoo import models, fields
 
 
+#  TODO: refactoring to cancellation.rule
 class HotelCancelationRule(models.Model):
     _name = 'hotel.cancelation.rule'
     _description = 'Cancelation Rules'

@@ -13,12 +13,29 @@
                     <h1>
                         <field name="name" class="oe_inline" />
                     </h1>
+                    <field name="company_id" class="oe_inline" />
                     <notebook>
-                        <page string="Hotel Settings" name="hotel_settings">
+                        <page string="General Information" name="hotel_general">
+                            <group>
+                            </group>
+                        </page>
+                        <page string="Settings" name="hotel_settings">
                             <group colspan="4" col="4">
-                                <field name="company_id" class="oe_inline" />
+                                <field name="pricelist_id" required="True" />
+                                <field name="restriction_id" required="True" />
+                            </group>
+                            <group>
+                                <field name="tz" widget="timezone_mismatch"/>
                             </group>
                             <group colspan="4" col="4">
+                                <field name="arrival_hour" />
+                                <field name="departure_hour"  />
+                            </group>
+                        </page>
+                        <page string="Rooms" name="hotel_settings">
+                            <group>
+                                <field name="room_type_ids"/>
+                                <field name="room_ids"/>
                             </group>
                         </page>
                     </notebook>
@@ -41,10 +58,14 @@
     <!-- actions -->
 
     <record id="hotel_property_action" model="ir.actions.act_window">
-        <field name="name">Hotel Property</field>
+        <field name="name">Hotels</field>
         <field name="res_model">hotel.property</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
+
+    <!-- menus -->
+
+    <menuitem action="hotel_property_action" id="hotel_property_menu" parent="base.menu_users" sequence="10"/>
 
 </odoo>

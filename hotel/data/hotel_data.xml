@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- keep noupdate to zero for development -->
     <data noupdate="1">
         <!-- Basic hotel  -->
+        <record id="main_hotel_room_type_restriction" model="hotel.room.type.restriction">
+            <field name="name">Restriction Plan</field>
+        </record>
+
         <record id="main_hotel_property" model="hotel.property">
             <field name="name">My Hotel</field>
             <field name="company_id" ref="base.main_company"/>
+            <field name="pricelist_id" ref="product.list0"/>
+            <field name="restriction_id" ref="main_hotel_room_type_restriction"/>
         </record>
 
         <record model="res.users" id="base.user_root">

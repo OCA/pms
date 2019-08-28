@@ -23,6 +23,7 @@ class ChannelBackend(models.Model):
         return 'https://wired.wubook.net/xrws/'
 
     def _get_default_wubook_parity(self):
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         return self.env['ir.default'].sudo().get('res.config.settings', 'default_pricelist_id')
 
     lcode = fields.Char('Channel Service lcode')
