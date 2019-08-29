@@ -167,6 +167,11 @@ class HotelReservation(models.Model):
                  'channel_bind_ids.ota_reservation_id')
     def _compute_external_data(self):
         for record in self:
+            is_from_ota = False
+            for bind in record.channel_bind_ids:
+                if bind.ota_reservation_id and \
+                        bind.ota_reservation_id != 'undefined':
+                    is_from_ota = True
             vals = {
                 'ota_reservation_id': record.channel_bind_ids[0].
                                       ota_reservation_id if
@@ -175,8 +180,7 @@ class HotelReservation(models.Model):
                           record.channel_bind_ids else False,
                 'external_id': record.channel_bind_ids[0].external_id if
                                record.channel_bind_ids else False,
-                'is_from_ota': bool(any(bind.ota_reservation_id
-                                        for bind in record.channel_bind_ids))
+                'is_from_ota': is_from_ota
             }
             record.update(vals)
 
