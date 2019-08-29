@@ -22,6 +22,7 @@ class RoomMatik(models.Model):
     @api.model
     def rm_get_date(self):
         # RoomMatik API Gets the current business date/time. (MANDATORY)
+        # TODO: refactoring 'res.config.settings', 'default_departure_hour' by the current self.env.user.hotel_id
         tz_hotel = self.env['ir.default'].sudo().get(
             'res.config.settings', 'tz_hotel')
         self_tz = self.with_context(tz=tz_hotel)
