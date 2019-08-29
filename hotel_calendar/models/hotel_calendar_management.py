@@ -216,18 +216,15 @@ class HotelCalendarManagement(models.TransientModel):
         if not dfrom or not dto:
             raise ValidationError(_('Input Error: No dates defined!'))
         vals = {}
-        # TODO: res.config by hotel
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         if not pricelist_id:
-            pricelist_id = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_pricelist_id')
+            pricelist_id = self.env.user.hotel_id.pricelist_id.id
+        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
         if not restriction_id:
-            restriction_id = self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_restriction_id')
+            restriction_id = self.env.user.hotel_id.restriction_id.id
 
         # TODO: ensure pricelist_id and restriction_id belong to the current hotel
-        pricelist_id = int(pricelist_id)
         vals.update({'pricelist_id': pricelist_id})
-        restriction_id = int(restriction_id)
         vals.update({'restriction_id': restriction_id})
 
         restriction_item_ids = self.env['hotel.room.type.restriction.item'].search([

@@ -8,9 +8,32 @@
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page" position="after">
-                <page string="Hotels" name="hotel_page">
-                    <group name="hotel">
-                        <field name="hotel_ids"/>
+                <page string="Hotel Preferences" name="hotel_preferences">
+                    <group>
+                        <group string="Reservation Background Colors">
+                            <field name="color_pre_reservation"  widget="color" />
+                            <field name="color_reservation" widget="color" />
+                            <field name="color_reservation_pay" widget="color" />
+                            <field name="color_stay" widget="color" />
+                            <field name="color_stay_pay" widget="color" />
+                            <field name="color_checkout" widget="color" />
+                            <field name="color_dontsell" widget="color" />
+                            <field name="color_staff" widget="color" />
+                            <field name="color_to_assign" widget="color" />
+                            <field name="color_payment_pending" widget="color" />
+                        </group>
+                        <group string="Reservation Letter Colors">
+                            <field name="color_letter_pre_reservation" widget="color" />
+                            <field name="color_letter_reservation" widget="color" />
+                            <field name="color_letter_reservation_pay" widget="color" />
+                            <field name="color_letter_stay" widget="color" />
+                            <field name="color_letter_stay_pay" widget="color" />
+                            <field name="color_letter_checkout" widget="color" />
+                            <field name="color_letter_dontsell" widget="color" />
+                            <field name="color_letter_staff" widget="color" />
+                            <field name="color_letter_to_assign" widget="color" />
+                            <field name="color_letter_payment_pending" widget="color" />
+                        </group>
                     </group>
                 </page>
             </xpath>

@@ -40,6 +40,9 @@ class HotelProperty(models.Model):
 
     # TODO: refactoring 'res.config.settings', 'tz_hotel' by the current hotel.property.tz (inherited in res.partner)
 
+    default_cancel_policy_days = fields.Integer('Cancellation Days')
+    default_cancel_policy_percent = fields.Float('Percent to pay')
+
     def _check_hours(self):
         r = re.compile('[0-2][0-9]:[0-5][0-9]')
         if not r.match(self.arrival_hour):
