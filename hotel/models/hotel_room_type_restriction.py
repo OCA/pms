@@ -18,7 +18,7 @@ class HotelRoomTypeRestriction(models.Model):
                             help='If unchecked, it will allow you to hide the '
                                  'restriction plan without removing it.')
     hotel_ids = fields.One2many('hotel.property',
-                                'restriction_id', string='Restriction Plan',
+                                'restriction_id', string='Hotel',
                                 default=_get_default_hotel, required=True)
 
     @api.multi

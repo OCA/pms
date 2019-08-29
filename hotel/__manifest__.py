@@ -35,7 +35,6 @@
         'wizard/massive_price_reservation_days.xml',
         'wizard/folio_make_invoice_advance_views.xml',
         'data/hotel_sequence.xml',
-        'views/inherited_res_company_views.xml',
         'views/inherited_res_users_views.xml',
         'views/hotel_property_views.xml',
         'views/hotel_floor_views.xml',

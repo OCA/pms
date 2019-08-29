@@ -11,11 +11,8 @@ class HotelRoomTypeResrtrictionItem(models.Model):
     @api.model
     def create(self, vals):
         res = super(HotelRoomTypeResrtrictionItem, self).create(vals)
-        restrictions_default_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restriction_id')
-        if restrictions_default_id:
-            restrictions_default_id = int(restrictions_default_id)
-        if res.restriction_id.id == restrictions_default_id:
+        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
+        if res.restriction_id.id == self.env.user.hotel_id.restriction_id.id:
             self.env['bus.hotel.calendar'].send_restriction_notification({
                 'restriction_id': res.restriction_id.id,
                 'date': res.date,
@@ -53,14 +50,12 @@ class HotelRoomTypeResrtrictionItem(models.Model):
 
     @api.multi
     def unlink(self):
-        restrictions_default_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restriction_id')
-        if restrictions_default_id:
-            restrictions_default_id = int(restrictions_default_id)
+        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
+        default_restriction_id = self.env.user.hotel_id.restriction_id.id
         # Construct dictionary with relevant info of removed records
         unlink_vals = []
         for record in self:
-            if record.restriction_id.id != restrictions_default_id:
+            if record.restriction_id.id != default_restriction_id:
                 continue
             unlink_vals.append({
                 'restriction_id': record.restriction_id.id,

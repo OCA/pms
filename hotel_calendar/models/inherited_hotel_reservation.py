@@ -133,10 +133,8 @@ class HotelReservation(models.Model):
     @api.model
     def _hcalendar_room_data(self, rooms):
         _logger.warning('_found [%s] rooms for hotel [%s]', len(rooms), self.env.user.hotel_id.id)
-        pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_pricelist_id')
-        if pricelist_id:
-            pricelist_id = int(pricelist_id)
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
+        pricelist_id = self.env.user.hotel_id.pricelist_id.id
         json_rooms = [
             {
                 'id': room.id,
@@ -242,13 +240,9 @@ class HotelReservation(models.Model):
 
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom_dt, dto_dt):
-        pricelist_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_pricelist_id')
-        if pricelist_id:
-            pricelist_id = int(pricelist_id)
-
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
+        pricelist_id = self.env.user.hotel_id.pricelist_id.id
         hotel_id = self.env.user.hotel_id.id
-
         room_types_ids = self.env['hotel.room.type'].search([
             ('hotel_id', '=', hotel_id)
         ])
@@ -301,13 +295,9 @@ class HotelReservation(models.Model):
 
     @api.model
     def get_hcalendar_restrictions_data(self, dfrom_dt, dto_dt):
-        restriction_id = self.env['ir.default'].sudo().get(
-            'res.config.settings', 'default_restriction_id')
-        if restriction_id:
-            restriction_id = int(restriction_id)
-
+        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
+        restriction_id = self.env.user.hotel_id.restriction_id.id
         hotel_id = self.env.user.hotel_id.id
-
         # Get Restrictions
         json_rooms_rests = {}
         room_typed_ids = self.env['hotel.room.type'].search([], order='sequence ASC')
@@ -369,10 +359,8 @@ class HotelReservation(models.Model):
             'days': user_id.pms_default_num_days,
             'allow_invalid_actions': type_move == 'allow_invalid',
             'assisted_movement': type_move == 'assisted',
-            'default_arrival_hour': self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_arrival_hour'),
-            'default_departure_hour': self.env['ir.default'].sudo().get(
-                'res.config.settings', 'default_departure_hour'),
+            'default_arrival_hour': self.env.user.hotel_id.arrival_hour,
+            'default_departure_hour': self.env.user.hotel_id.departure_hour,
             'show_notifications': user_id.pms_show_notifications,
             'show_pricelist': user_id.pms_show_pricelist,
             'show_availability': user_id.pms_show_availability,

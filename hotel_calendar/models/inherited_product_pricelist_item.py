@@ -9,6 +9,7 @@ class ProductPricelistItem(models.Model):
     @api.model
     def create(self, vals):
         res = super(ProductPricelistItem, self).create(vals)
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         pricelist_default_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_pricelist_id')
         if pricelist_default_id:
@@ -37,6 +38,7 @@ class ProductPricelistItem(models.Model):
 
     @api.multi
     def write(self, vals):
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         pricelist_default_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_pricelist_id')
         if pricelist_default_id:
@@ -76,6 +78,7 @@ class ProductPricelistItem(models.Model):
 
     @api.multi
     def unlink(self):
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         pricelist_default_id = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_pricelist_id')
         if pricelist_default_id:
