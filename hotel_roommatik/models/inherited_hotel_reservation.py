@@ -36,10 +36,12 @@ class HotelReservation(models.Model):
         reservations = reservations.filtered(
             lambda x: x.state in ('draft', 'confirm'))
         if any(reservations):
+            # TODO: refactoring 'res.config.settings', 'default_arrival_hour' by the current self.env.user.hotel_id.arrival_hour
             default_arrival_hour = self.env['ir.default'].sudo().get(
                 'res.config.settings', 'default_arrival_hour')
             checkin = "%s %s" % (reservations[0].checkin,
                                  default_arrival_hour)
+            # TODO: refactoring 'res.config.settings', 'default_departure_hour' by the current self.env.user.hotel_id.departure_hour
             default_departure_hour = self.env['ir.default'].sudo().get(
                 'res.config.settings', 'default_departure_hour')
             checkout = "%s %s" % (reservations[0].checkout,

@@ -98,8 +98,10 @@ class HotelCheckinPartner(models.Model):
     def rm_get_stay(self, code):
         # BUSQUEDA POR LOCALIZADOR
         checkin_partner = self.search([('id', '=', code)])
+        # TODO: refactoring 'res.config.settings', 'default_arrival_hour' by the current self.env.user.hotel_id.arrival_hour
         default_arrival_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_arrival_hour')
+        # TODO: refactoring 'res.config.settings', 'default_departure_hour' by the current self.env.user.hotel_id.departure_hour
         default_departure_hour = self.env['ir.default'].sudo().get(
             'res.config.settings', 'default_departure_hour')
         if any(checkin_partner):

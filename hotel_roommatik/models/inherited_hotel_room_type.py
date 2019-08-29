@@ -17,6 +17,7 @@ class HotelRoomType(models.Model):
     @api.model
     def rm_get_all_room_type_rates(self):
         room_types = self.env['hotel.room.type'].search([])
+        # TODO: refactoring 'res.config.settings', 'default_departure_hour' by the current self.env.user.hotel_id
         tz_hotel = self.env['ir.default'].sudo().get(
             'res.config.settings', 'tz_hotel')
         dfrom = fields.Date.context_today(self.with_context(
