@@ -295,16 +295,19 @@ class HotelReservation(models.Model):
 
     @api.model
     def get_hcalendar_restrictions_data(self, dfrom_dt, dto_dt):
-        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
-        restriction_id = self.env.user.hotel_id.restriction_id.id
+        """ Returns the room type restrictions between dfrom_dt and dto_dt
+        for the room types of the current_hotel and the its default restriction plan
+        """
         hotel_id = self.env.user.hotel_id.id
-        # Get Restrictions
+        restriction_id = self.env.user.hotel_id.restriction_id.id
+
         json_rooms_rests = {}
-        room_typed_ids = self.env['hotel.room.type'].search([], order='sequence ASC')
+        room_typed_ids = self.env['hotel.room.type'].search([
+            ('hotel_id', '=', hotel_id)
+        ], order='sequence ASC')
 
         room_type_rest_obj = self.env['hotel.room.type.restriction.item']
         rtype_rest_ids = room_type_rest_obj.search([
-            ('hotel_id', '=', hotel_id),
             ('room_type_id', 'in', room_typed_ids.ids),
             ('date', '>=', dfrom_dt),
             ('date', '<=', dto_dt),
@@ -340,31 +343,31 @@ class HotelReservation(models.Model):
             ('start', '>=', dfrom_dt.strftime(DEFAULT_SERVER_DATE_FORMAT)),
             ('stop', '<=', dto_dt.strftime(DEFAULT_SERVER_DATE_FORMAT))
         ]
-        if user_id.pms_allowed_events_tags:
-            domain.append(('categ_ids', 'in', user_id.pms_allowed_events_tags))
-        if user_id.pms_denied_events_tags:
+        if self.env.user.hotel_id.pms_allowed_events_tags:
+            domain.append(('categ_ids', 'in', self.env.user.hotel_id.pms_allowed_events_tags))
+        if self.env.user.hotel_id.pms_denied_events_tags:
             domain.append(
-                ('categ_ids', 'not in', user_id.pms_denied_events_tags))
+                ('categ_ids', 'not in', self.env.user.hotel_id.pms_denied_events_tags))
         events_raw = self.env['calendar.event'].search(domain)
         return self._hcalendar_event_data(events_raw)
 
     @api.model
     def get_hcalendar_settings(self):
         user_id = self.env['res.users'].browse(self.env.uid)
-        type_move = user_id.pms_type_move
+        type_move = self.env.user.hotel_id.pms_type_move
         return {
-            'divide_rooms_by_capacity': user_id.pms_divide_rooms_by_capacity,
-            'eday_week': user_id.pms_end_day_week,
-            'eday_week_offset': user_id.pms_end_day_week_offset,
-            'days': user_id.pms_default_num_days,
+            'divide_rooms_by_capacity': self.env.user.hotel_id.pms_divide_rooms_by_capacity,
+            'eday_week': self.env.user.hotel_id.pms_end_day_week,
+            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
+            'days': self.env.user.hotel_id.pms_default_num_days,
             'allow_invalid_actions': type_move == 'allow_invalid',
             'assisted_movement': type_move == 'assisted',
             'default_arrival_hour': self.env.user.hotel_id.arrival_hour,
             'default_departure_hour': self.env.user.hotel_id.departure_hour,
-            'show_notifications': user_id.pms_show_notifications,
-            'show_pricelist': user_id.pms_show_pricelist,
-            'show_availability': user_id.pms_show_availability,
-            'show_num_rooms': user_id.pms_show_num_rooms,
+            'show_notifications': self.env.user.pms_show_notifications,
+            'show_pricelist': self.env.user.pms_show_pricelist,
+            'show_availability': self.env.user.pms_show_availability,
+            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
         }
 
     @api.model

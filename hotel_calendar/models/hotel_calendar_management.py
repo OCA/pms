@@ -141,11 +141,11 @@ class HotelCalendarManagement(models.TransientModel):
         date_start_str = date_start.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         user_id = self.env['res.users'].browse(self.env.uid)
         domain = []
-        if user_id.pms_allowed_events_tags:
-            domain.append(('categ_ids', 'in', user_id.pms_allowed_events_tags))
-        if user_id.pms_denied_events_tags:
+        if self.env.user.hotel_id.pms_allowed_events_tags:
+            domain.append(('categ_ids', 'in', self.env.user.hotel_id.pms_allowed_events_tags))
+        if self.env.user.hotel_id.pms_denied_events_tags:
             domain.append(
-                ('categ_ids', 'not in', user_id.pms_denied_events_tags))
+                ('categ_ids', 'not in', self.env.user.hotel_id.pms_denied_events_tags))
         events_raw = self.env['calendar.event'].search(domain)
         events_ll = self.env['calendar.event'].search([
             ('start', '<=', dto),
@@ -272,6 +272,6 @@ class HotelCalendarManagement(models.TransientModel):
             'eday_week': user_id.npms_end_day_week,
             'eday_week_offset': user_id.npms_end_day_week_offset,
             'days': user_id.npms_default_num_days,
-            'show_notifications': user_id.pms_show_notifications,
-            'show_num_rooms': user_id.pms_show_num_rooms,
+            'show_notifications': self.env.user.pms_show_notifications,
+            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
         }
