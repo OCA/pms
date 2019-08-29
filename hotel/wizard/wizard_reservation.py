@@ -242,6 +242,7 @@ class FolioWizard(models.TransientModel):
                 'board_service_room_id': line.board_service_room_id.id,
                 'to_assign': line.to_assign,
                 'service_ids': services_room,
+                'pricelist_id': self.pricelist_id.id, # REVIEW: Create folio with reservations dont respect the pricelist_id on folio dict
             }))
         for line in self.service_wizard_ids:
             services.append((0, False, {
