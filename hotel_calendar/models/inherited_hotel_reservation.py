@@ -20,43 +20,41 @@ class HotelReservation(models.Model):
     @api.multi
     def _generate_color(self):
         self.ensure_one()
-        reserv_color = '#FFFFFF'
-        reserv_color_text = '#000000'
-        ICPSudo = self.env['ir.config_parameter'].sudo()
+        company_id = self.env.user.company_id
         if self.reservation_type == 'staff':
-            reserv_color = ICPSudo.get_param('hotel_calendar.color_staff')
-            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_staff')
+            reserv_color = company_id.color_staff
+            reserv_color_text = company_id.color_letter_staff
         elif self.reservation_type == 'out':
-            reserv_color = ICPSudo.get_param('hotel_calendar.color_dontsell')
-            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_dontsell')
+            reserv_color = company_id.color_dontsell
+            reserv_color_text = company_id.color_letter_dontsell
         elif self.to_assign:
-            reserv_color = ICPSudo.get_param('hotel_calendar.color_to_assign')
-            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_to_assign')
+            reserv_color = company_id.color_to_assign
+            reserv_color_text = company_id.color_letter_to_assign
         elif self.state == 'draft':
-            reserv_color = ICPSudo.get_param('hotel_calendar.color_pre_reservation')
-            reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_pre_reservation')
+            reserv_color = company_id.color_pre_reservation
+            reserv_color_text = company_id.color_letter_pre_reservation
         elif self.state == 'confirm':
             if self.folio_id.pending_amount <= 0:
-                reserv_color = ICPSudo.get_param('hotel_calendar.color_reservation_pay')
-                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_reservation_pay')
+                reserv_color = company_id.color_reservation_pay
+                reserv_color_text = company_id.color_letter_reservation_pay
             else:
-                reserv_color = ICPSudo.get_param('hotel_calendar.color_reservation')
-                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_reservation')
+                reserv_color = company_id.color_reservation
+                reserv_color_text = company_id.color_letter_reservation
         elif self.state == 'booking':
             if self.folio_id.pending_amount <= 0:
-                reserv_color = ICPSudo.get_param('hotel_calendar.color_stay_pay')
-                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_stay_pay')
+                reserv_color = company_id.color_stay_pay
+                reserv_color_text = company_id.color_letter_stay_pay
             else:
-                reserv_color = ICPSudo.get_param('hotel_calendar.color_stay')
-                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_stay')
+                reserv_color = company_id.color_stay
+                reserv_color_text = company_id.color_letter_stay
         else:
             if self.folio_id.pending_amount <= 0:
-                reserv_color = ICPSudo.get_param('hotel_calendar.color_checkout')
-                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_checkout')
+                reserv_color = company_id.color_checkout
+                reserv_color_text = company_id.color_letter_checkout
             else:
-                reserv_color = ICPSudo.get_param('hotel_calendar.color_payment_pending')
-                reserv_color_text = ICPSudo.get_param('hotel_calendar.color_letter_payment_pending')
-        return (reserv_color, reserv_color_text)
+                reserv_color = company_id.color_payment_pending
+                reserv_color_text = company_id.color_letter_payment_pending
+        return reserv_color, reserv_color_text
 
     @api.depends('state', 'reservation_type', 'folio_id.pending_amount', 'to_assign')
     def _compute_color(self):
@@ -353,7 +351,6 @@ class HotelReservation(models.Model):
 
     @api.model
     def get_hcalendar_settings(self):
-        user_id = self.env['res.users'].browse(self.env.uid)
         type_move = self.env.user.hotel_id.pms_type_move
         return {
             'divide_rooms_by_capacity': self.env.user.hotel_id.pms_divide_rooms_by_capacity,
