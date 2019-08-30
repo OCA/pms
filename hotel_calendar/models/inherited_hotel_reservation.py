@@ -383,8 +383,8 @@ class HotelReservation(models.Model):
 
         if not rooms:
             raise AccessError(
-                _("Wrong hotel and company access settings for this user. "
-                  "No rooms found for hotel %s") % self.env.user.hotel_id.name)
+                _("No rooms found for hotel %s. "
+                  "Please, review the rooms configured for this hotel.") % self.env.user.hotel_id.name)
 
         json_res, json_res_tooltips = self.get_hcalendar_reservations_data(
             dfrom_dt, dto_dt, rooms)
