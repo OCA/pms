@@ -40,7 +40,7 @@ return AbstractModel.extend({
     },
 
     get_pricelists: function () {
-        var domain = [['hotel_ids', 'in', Session.user_hotels.current_hotel[0]]];
+        var domain = [['hotel_ids', 'in', Session.hotel_id]];
         domain.push(['pricelist_type', '=', 'daily']);
         return this._rpc({
             model: 'product.pricelist',
@@ -51,7 +51,7 @@ return AbstractModel.extend({
     },
 
     get_restrictions: function () {
-        var domain = [['hotel_id', '=', Session.user_hotels.current_hotel[0]]];
+        var domain = [['hotel_ids', 'in', Session.hotel_id]];
         return this._rpc({
             model: 'hotel.room.type.restriction',
             method: 'search_read',
