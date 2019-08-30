@@ -69,7 +69,7 @@ return AbstractModel.extend({
     },
 
     get_room_types: function() {
-        var domain = [['hotel_id', '=', Session.user_hotels.current_hotel[0]]];
+        var domain = [['hotel_id', '=', Session.hotel_id]];
         return this._rpc({
             model: 'hotel.room.type',
             method: 'search_read',
@@ -78,7 +78,7 @@ return AbstractModel.extend({
         });
     },
     get_floors: function() {
-        var domain = [['hotel_ids', 'in', Session.user_hotels.current_hotel[0]]];
+        var domain = [['hotel_ids', 'in', Session.hotel_id]];
         return this._rpc({
             model: 'hotel.floor',
             method: 'search_read',
@@ -87,7 +87,7 @@ return AbstractModel.extend({
         });
     },
     get_amenities: function() {
-        var domain = [['hotel_ids', 'in', Session.user_hotels.current_hotel[0]]];
+        var domain = [['hotel_ids', 'in', Session.hotel_id]];
         return this._rpc({
             model: 'hotel.amenity',
             method: 'search_read',
@@ -96,7 +96,7 @@ return AbstractModel.extend({
         });
     },
     get_room_type_class: function() {
-        var domain = [['hotel_ids', 'in', Session.user_hotels.current_hotel[0]]];
+        var domain = [['hotel_ids', 'in', Session.hotel_id]];
         return this._rpc({
             model: 'hotel.room.type.class',
             method: 'search_read',
