@@ -106,7 +106,7 @@ return AbstractModel.extend({
     },
 
     search_count: function(domain) {
-        // TODO: add hotel_id domain based on modelName
+        domain.push(['hotel_id', '=', Session.hotel_id]);
         return this._rpc({
             model: this.modelName,
             method: 'search_count',
