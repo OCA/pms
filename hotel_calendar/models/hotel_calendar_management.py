@@ -267,11 +267,10 @@ class HotelCalendarManagement(models.TransientModel):
 
     @api.multi
     def get_hcalendar_settings(self):
-        user_id = self.env['res.users'].browse(self.env.uid)
         return {
-            'eday_week': user_id.npms_end_day_week,
-            'eday_week_offset': user_id.npms_end_day_week_offset,
-            'days': user_id.npms_default_num_days,
+            'eday_week': self.env.user.hotel_id.pms_end_day_week,
+            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
+            'days': self.env.user.hotel_id.pms_default_num_days,
             'show_notifications': self.env.user.pms_show_notifications,
             'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
         }
