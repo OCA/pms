@@ -181,13 +181,13 @@ class HotelReservationImporter(Component):
 
         parity_rate_id = self.env['channel.backend'].search([
             ('id', '=', self.backend_record.id)
-        ]).wubook_parity_pricelist_id.id
+        ]).wubook_parity_pricelist_id
         # WuBook API rate_id ( booked pricing plan: -1 Unknown, 0 WuBook Parity or WuBook id of the plan)
         if rate_id > 0:
             rate_id = self.env['channel.product.pricelist'].search([
                 ('backend_id', '=', self.backend_record.id),
                 ('external_id', '=', rate_id)
-            ]) or None
+            ]).odoo_id or None
         elif rate_id == 0:
             rate_id = parity_rate_id
         else:
@@ -199,7 +199,7 @@ class HotelReservationImporter(Component):
                 internal_message="Reservation imported with unknown \
                                 pricelist (established by default)",
                 channel_object_id=book['reservation_code'])
-        rate_id = rate_id and rate_id.odoo_id.id or parity_rate_id
+        rate_id = rate_id and rate_id.id or parity_rate_id.id
         # Get OTA
         ota_id = self.env['channel.ota.info'].search([
             ('backend_id', '=', self.backend_record.id),
