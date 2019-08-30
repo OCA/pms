@@ -17,6 +17,9 @@ class HotelRoomTypeRestriction(models.Model):
     active = fields.Boolean('Active', default=True,
                             help='If unchecked, it will allow you to hide the '
                                  'restriction plan without removing it.')
+    # TODO: Review this relationship.
+    #  1. How to create a new hotel if hotel_property.restriction_id is required?
+    #  2. If you delete the hotel_id from the hotel is also deleted
     hotel_ids = fields.One2many('hotel.property',
                                 'restriction_id', string='Hotel',
                                 default=_get_default_hotel, required=True)
