@@ -52,14 +52,13 @@ var CalendarMenu = Widget.extend({
         this._rpc({
             model: 'res.users',
             method: 'read',
-            args: [[Session.uid], ["pms_show_notifications", "pms_show_pricelist", "pms_show_availability", "pms_divide_rooms_by_capacity"]],
+            args: [[Session.uid], ["pms_show_notifications", "pms_show_pricelist", "pms_show_availability"]],
             context: Session.user_context,
         })
       ).then(function(result) {
         this._show_notifications = result[0]['pms_show_notifications'];
         this._show_pricelist = result[0]['pms_show_pricelist'];
         this._show_availability = result[0]['pms_show_availability'];
-        this._show_divide_rooms_by_capacity = result[0]['pms_divide_rooms_by_capacity'];
         return this.update();
       }.bind(this));
     },
@@ -127,18 +126,6 @@ var CalendarMenu = Widget.extend({
           window.location.reload();
       });
     },
-
-    toggle_show_divide_rooms_by_capacity: function() {
-      this._show_divide_rooms_by_capacity = !this._show_divide_rooms_by_capacity;
-      this._rpc({
-          model: 'res.users',
-          method: 'write',
-          args: [[Session.uid], {pms_divide_rooms_by_capacity: this._show_divide_rooms_by_capacity}],
-          context: Session.user_context,
-      }).then(function () {
-          window.location.reload();
-      });
-    }
 });
 
 var PMSCalendarView = AbstractView.extend({
