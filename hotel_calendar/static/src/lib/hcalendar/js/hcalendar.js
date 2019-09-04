@@ -602,8 +602,6 @@ HotelCalendar.prototype = {
     // Two-Step filter: Scrollbar mistake
     this.options.room_classes = [];
     this.options.room_types = [];
-    this._roomCapacityTotal = 0;
-    this._roomCapacities = {};
     // 1.1 Filter rooms
     for (var r of this.options.rooms) {
       r._active = this._in_domain(r, this._domains[HotelCalendar.DOMAIN.ROOMS]);
@@ -612,22 +610,19 @@ HotelCalendar.prototype = {
         // 1.2 Filter room classes used in occupation rows
         if (this.options.room_classes.indexOf(r.type) === -1) {
             this.options.room_classes.push(r.type);
-            this._roomCapacities[r.type] = 0;
         }
         // 1.3 Filter room types used in pricelist rows
         if (this.options.room_types.indexOf(r._userData.room_type_id) === -1) {
             this.options.room_types.push(r._userData.room_type_id);
         }
-        // 1.4 Update total rooms for calculate occupancy
-        this._roomCapacityTotal += 1;
-        this._roomCapacities[r.type] += 1;
       } else {
         r._html.classList.add('hcal-hidden');
       }
     }
     // Hide all the rows corresponding to occupation and prices
-    $("tr[id^=ROW_DETAIL_FREE_TYPE]").addClass('hcal-hidden');
-    $("tr[id^=ROW_DETAIL_PRICE_ROOM]").addClass('hcal-hidden');
+    $("[id^=ROW_DETAIL_FREE_TYPE]").addClass('hcal-hidden');
+    $("[id^=ROW_DETAIL_PRICE_ROOM]").addClass('hcal-hidden');
+    // TODO: update OCCUPATION
 
     this._calcViewHeight();
 
@@ -916,8 +911,7 @@ HotelCalendar.prototype = {
     if (!day) { return false; }
 
     var num_rooms = this._roomCapacities[room_type];
-    num_rooms -= _.reduce(this.getDayRoomTypeReservations(day, room_type), function(memo, r)
-        { var count = ((r.room && r.room.shared)?r.getTotalPersons(false):1); if (r.room._active === false) count = 0; return memo + count; }, 0);
+    num_rooms -= _.reduce(this.getDayRoomTypeReservations(day, room_type), function(memo, r){ return memo + ((r.room && r.room.shared)?r.getTotalPersons(false):1); }, 0);
     return num_rooms;
   },
 
@@ -926,8 +920,7 @@ HotelCalendar.prototype = {
     if (!day) { return false; }
 
     var num_rooms = this._roomCapacityTotal;
-    num_rooms -= _.reduce(this.getReservationsByDay(day, true), function(memo, r)
-        { var count = ((r.room && r.room.shared)?r.getTotalPersons(false):1); if (r.room._active === false) count = 0; return memo + count; }, 0);
+    num_rooms -= _.reduce(this.getReservationsByDay(day, true), function(memo, r){ return memo + ((r.room && r.room.shared)?r.getTotalPersons(false):1); }, 0);
     return num_rooms;
   },
 
