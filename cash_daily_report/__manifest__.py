@@ -38,6 +38,7 @@
     'data': [
         'wizard/cash_daily_report.xml',
         'data/menus.xml',
+        'data/cron_jobs.xml',
     ],
     'qweb': [],
     'test': [

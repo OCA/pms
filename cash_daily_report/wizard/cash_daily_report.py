@@ -33,6 +33,18 @@ class CashDailyReportWizard(models.TransientModel):
     _name = 'cash.daily.report.wizard'
 
     @api.model
+    def automatic_period_lock_date(self):
+        # The secong month day close the mont previous
+        days = 2
+        closeday = datetime.today().replace(day=days)
+        if datetime.date.today() == closeday:
+            company = self.env['res.company'].search([])
+            lastday = datetime.date.today() - datetime.timedelta(days)
+            company.write({
+              'period_lock_date': lastday
+            })
+
+    @api.model
     @api.model
     def _get_default_date_start(self):
         return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
@@ -145,7 +157,7 @@ class CashDailyReportWizard(models.TransientModel):
                     else:
                         total_dates[v_payment.payment_date][v_payment.journal_id.name] += amount
 
-            worksheet.write(k_payment+offset, 0, v_payment.name)
+            worksheet.write(k_payment+offset, 0, v_payment.create_uid.login)
             worksheet.write(k_payment+offset, 1, v_payment.communication)
             worksheet.write(k_payment+offset, 2, where)
             worksheet.write(k_payment+offset, 3, v_payment.payment_date,
@@ -178,7 +190,7 @@ class CashDailyReportWizard(models.TransientModel):
                     else:
                         total_dates[v_payment.date][v_payment.journal_id.name] += -v_line.amount
 
-                worksheet.write(k_line+offset, 0, v_payment.name)
+                worksheet.write(k_line+offset, 0, v_payment.create_uid.login)
                 worksheet.write(k_line+offset, 1, v_line.reference)
                 worksheet.write(k_line+offset, 2, v_line.partner_id.name)
                 worksheet.write(k_line+offset, 3, v_payment.date,
@@ -193,7 +205,6 @@ class CashDailyReportWizard(models.TransientModel):
         line = offset
         if k_line:
             line = k_line + offset
-
 
         result_journals = {}
         # NORMAL PAYMENTS
