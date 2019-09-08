@@ -35,7 +35,7 @@ class CashDailyReportWizard(models.TransientModel):
     def automatic_period_lock_date(self):
         # The secong month day close the mont previous
         days = 2
-        closeday = datetime.today().replace(day=days)
+        closeday = datetime.date.today().replace(day=days)
         if datetime.date.today() >= closeday:
             companies = self.env['res.company'].search([])
             for record in companies:
