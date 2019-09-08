@@ -20,11 +20,10 @@
 ##############################################################################
 from io import BytesIO
 import datetime
-from datetime import datetime, date, time
 import xlsxwriter
 import base64
 from odoo import api, fields, models, _
-from openerp.exceptions import except_orm, UserError, ValidationError
+from openerp.exceptions import UserError
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
@@ -37,12 +36,15 @@ class CashDailyReportWizard(models.TransientModel):
         # The secong month day close the mont previous
         days = 2
         closeday = datetime.today().replace(day=days)
-        if datetime.date.today() == closeday:
-            company = self.env['res.company'].search([])
-            lastday = datetime.date.today() - datetime.timedelta(days)
-            company.write({
-              'period_lock_date': lastday
-            })
+        if datetime.date.today() >= closeday:
+            companies = self.env['res.company'].search([])
+            for record in companies:
+                lastday = datetime.date.today().replace(day=1) + \
+                    datetime.timedelta(days=-1)
+                if record.period_lock_date != lastday:
+                    record.write({
+                      'period_lock_date': lastday
+                    })
 
     @api.model
     @api.model
