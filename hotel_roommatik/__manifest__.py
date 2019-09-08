@@ -19,7 +19,8 @@
         'partner_contact_gender',
         'partner_second_lastname',
         'partner_contact_birthdate',
-        'base_iso3166'
+        'base_iso3166',
+        'base_location',
     ],
     'data': [
         'data/res_users_data.xml'

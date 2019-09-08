@@ -68,14 +68,20 @@ class ResPartner(models.Model):
             return [False, error_name]
 
     def rm_prepare_customer(self, customer):
+        zip = self.env['res.better.zip'].search([
+            ('name', 'ilike', customer['Address']['ZipCode'])])
         # Check Sex string
         if customer['Sex'] not in {'male', 'female'}:
             customer['Sex'] = ''
         # Check state_id
         state = self.env['res.country.state'].search([
             ('name', 'ilike', customer['Address']['Province'])])
+        if not state and zip:
+            state = zip.state_id
         country = self.env['res.country'].search([
             ('code_alpha3', '=', customer['Address']['Country'])])
+        if not country and zip:
+            country = zip.country_id
         # Create Street2s
         street_2 = customer['Address']['House']
         street_2 += ' ' + customer['Address']['Flat']
@@ -87,7 +93,7 @@ class ResPartner(models.Model):
             'birthdate_date': datetime.strptime(
                 customer['Birthday'], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
             'gender': customer['Sex'],
-            'zip': customer['Address']['ZipCode'],
+            'zip': zip,
             'city': customer['Address']['City'],
             'street': customer['Address']['Street'],
             'street2': street_2,
