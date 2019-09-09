@@ -218,10 +218,10 @@ class HotelCalendarManagement(models.TransientModel):
         vals = {}
         # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         if not pricelist_id:
-            pricelist_id = self.env.user.hotel_id.pricelist_id.id
+            pricelist_id = self.env.user.hotel_id.default_pricelist_id.id
         # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
         if not restriction_id:
-            restriction_id = self.env.user.hotel_id.restriction_id.id
+            restriction_id = self.env.user.hotel_id.default_restriction_id.id
 
         # TODO: ensure pricelist_id and restriction_id belong to the current hotel
         vals.update({'pricelist_id': pricelist_id})

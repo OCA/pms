@@ -9,8 +9,8 @@
         <record id="main_hotel_property" model="hotel.property">
             <field name="name">My Hotel</field>
             <field name="company_id" ref="base.main_company"/>
-            <field name="pricelist_id" ref="product.list0"/>
-            <field name="restriction_id" ref="main_hotel_room_type_restriction"/>
+            <field name="default_pricelist_id" ref="product.list0"/>
+            <field name="default_restriction_id" ref="main_hotel_room_type_restriction"/>
         </record>
 
         <record model="res.users" id="base.user_root">

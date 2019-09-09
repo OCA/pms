@@ -132,7 +132,7 @@ class HotelReservation(models.Model):
     def _hcalendar_room_data(self, rooms):
         _logger.warning('_found [%s] rooms for hotel [%s]', len(rooms), self.env.user.hotel_id.id)
         # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
-        pricelist_id = self.env.user.hotel_id.pricelist_id.id
+        pricelist_id = self.env.user.hotel_id.default_pricelist_id.id
         json_rooms = [
             {
                 'id': room.id,
@@ -239,7 +239,7 @@ class HotelReservation(models.Model):
     @api.model
     def get_hcalendar_pricelist_data(self, dfrom_dt, dto_dt):
         # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
-        pricelist_id = self.env.user.hotel_id.pricelist_id.id
+        pricelist_id = self.env.user.hotel_id.default_pricelist_id.id
         hotel_id = self.env.user.hotel_id.id
         room_types_ids = self.env['hotel.room.type'].search([
             ('hotel_id', '=', hotel_id)
@@ -294,10 +294,10 @@ class HotelReservation(models.Model):
     @api.model
     def get_hcalendar_restrictions_data(self, dfrom_dt, dto_dt):
         """ Returns the room type restrictions between dfrom_dt and dto_dt
-        for the room types of the current_hotel and the its default restriction plan
+        for the room types of the current_hotel within the default restriction plan
         """
         hotel_id = self.env.user.hotel_id.id
-        restriction_id = self.env.user.hotel_id.restriction_id.id
+        restriction_id = self.env.user.hotel_id.default_restriction_id.id
 
         json_rooms_rests = {}
         room_typed_ids = self.env['hotel.room.type'].search([

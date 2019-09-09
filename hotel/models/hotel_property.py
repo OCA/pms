@@ -23,13 +23,13 @@ class HotelProperty(models.Model):
     room_ids = fields.One2many('hotel.room', 'hotel_id', 'Rooms')
 
     # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
-    pricelist_id = fields.Many2one('product.pricelist', 'Product Pricelist',
-                                   help='The default pricelist used in this hotel.',
-                                   required=True)
+    default_pricelist_id = fields.Many2one('product.pricelist', 'Product Pricelist',
+                                           help='The default pricelist used in this hotel.',
+                                           required=True)
     # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
-    restriction_id = fields.Many2one('hotel.room.type.restriction', 'Restriction Plan',
-                                     help='The default restriction plan used in this hotel.',
-                                     required=True)
+    default_restriction_id = fields.Many2one('hotel.room.type.restriction', 'Restriction Plan',
+                                             help='The default restriction plan used in this hotel.',
+                                             required=True)
 
     # TODO: refactoring 'res.config.settings', 'default_arrival_hour' by the current hotel.property.arrival_hour
     arrival_hour = fields.Char('Arrival Hour (GMT)',

@@ -21,8 +21,8 @@
                         </page>
                         <page string="Settings" name="hotel_settings">
                             <group colspan="4" col="4" string="Price and Restriction Plans">
-                                <field name="pricelist_id" required="True" />
-                                <field name="restriction_id" required="True" />
+                                <field name="default_pricelist_id" required="True" />
+                                <field name="default_restriction_id" required="True" />
                             </group>
                             <group string="Timezone">
                                 <field name="tz" widget="timezone_mismatch"/>

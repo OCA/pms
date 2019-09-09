@@ -670,7 +670,7 @@ class HotelReservation(models.Model):
         addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
                     self.partner_id.property_product_pricelist.id or \
-                    self.env.user.hotel_id.pricelist_id.id
+                    self.env.user.hotel_id.default_pricelist_id.id
         values = {
             'pricelist_id': pricelist,
             'partner_invoice_id': addr['invoice'],

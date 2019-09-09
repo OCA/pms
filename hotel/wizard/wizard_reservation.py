@@ -51,7 +51,7 @@ class FolioWizard(models.TransientModel):
 
     @api.model
     def _get_default_pricelist(self):
-        return self.env.user.hotel_id.pricelist_id.id
+        return self.env.user.hotel_id.default_pricelist_id.id
 
     partner_id = fields.Many2one('res.partner', required=True, string="Customer")
     email = fields.Char('E-mail')
@@ -106,7 +106,7 @@ class FolioWizard(models.TransientModel):
             vals = {}
             pricelist = self.partner_id.property_product_pricelist and \
                         self.partner_id.property_product_pricelist.id or \
-                        self.env.user.hotel_id.pricelist_id.id
+                        self.env.user.hotel_id.default_pricelist_id.id
             vals.update({
                 'pricelist_id': pricelist,
                 'email': self.partner_id.email,

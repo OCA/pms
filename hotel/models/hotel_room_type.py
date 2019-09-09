@@ -156,16 +156,10 @@ class HotelRoomType(models.Model):
             raise ValidationError(_('Date From and days are mandatory'))
         partner_id = kwargs.get('partner_id', False)
         partner = self.env['res.partner'].browse(partner_id)
-        pricelist_id = partner.property_product_pricelist.id if partner else \
-            self.env['ir.default'].sudo().get(
-                'res.config.settings',
-                'default_pricelist_id')
         pricelist_id = kwargs.get('pricelist_id',
                                   partner.property_product_pricelist.id and
                                   partner.property_product_pricelist.id or
-                                  self.env['ir.default'].sudo().get(
-                                      'res.config.settings',
-                                      'default_pricelist_id'))
+                                  self.env.user.hotel_id.default_pricelist_id.id)
         vals.update({
             'partner_id': partner_id if partner_id else False,
             'discount': discount,
