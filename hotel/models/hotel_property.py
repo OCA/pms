@@ -32,17 +32,18 @@ class HotelProperty(models.Model):
                                              required=True)
 
     # TODO: refactoring 'res.config.settings', 'default_arrival_hour' by the current hotel.property.arrival_hour
-    arrival_hour = fields.Char('Arrival Hour (GMT)',
-                               help="HH:mm Format", default="14:00")
+    default_arrival_hour = fields.Char('Arrival Hour (GMT)',
+                                       help="HH:mm Format", default="14:00")
     # TODO: refactoring 'res.config.settings', 'default_departure_hour' by the current hotel.property.departure_hour
-    departure_hour = fields.Char('Departure Hour (GMT)',
-                                 help="HH:mm Format", default="12:00")
+    default_departure_hour = fields.Char('Departure Hour (GMT)',
+                                         help="HH:mm Format", default="12:00")
 
     # TODO: refactoring 'res.config.settings', 'tz_hotel' by the current hotel.property.tz (inherited in res.partner)
 
     default_cancel_policy_days = fields.Integer('Cancellation Days')
     default_cancel_policy_percent = fields.Float('Percent to pay')
 
+    @api.constrains('default_arrival_hour', 'default_departure_hour')
     def _check_hours(self):
         r = re.compile('[0-2][0-9]:[0-5][0-9]')
         if not r.match(self.arrival_hour):

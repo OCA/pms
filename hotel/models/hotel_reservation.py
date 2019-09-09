@@ -51,7 +51,7 @@ class HotelReservation(models.Model):
 
     def _get_default_arrival_hour(self):
         folio = False
-        default_arrival_hour = self.env.user.hotel_id.arrival_hour
+        default_arrival_hour = self.env.user.hotel_id.default_arrival_hour
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
@@ -63,7 +63,7 @@ class HotelReservation(models.Model):
 
     def _get_default_departure_hour(self):
         folio = False
-        default_departure_hour = self.env.user.hotel_id.departure_hour
+        default_departure_hour = self.env.user.hotel_id.default_departure_hour
         if 'folio_id' in self._context:
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])

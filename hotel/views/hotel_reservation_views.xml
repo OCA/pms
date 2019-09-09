@@ -196,8 +196,8 @@
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
                             <field nolabel="1" colspan="2" placeholder="Description in Guest Documents" name="name"/>
                             <field name="nights"/>
-                            <field placeholder="Arriva Hour" name="arrival_hour"/>
-                            <field placeholder="Departure our" name="departure_hour"/>
+                            <field placeholder="Arrival Hour" name="arrival_hour"/>
+                            <field placeholder="Departure Hour" name="departure_hour"/>
                         </group>
                         <group colspan="2" col="3" string="Reservation Details" name="reservation_details">
                             <field name="pricelist_id"
