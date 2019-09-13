@@ -46,7 +46,7 @@ class HotelProperty(models.Model):
     @api.constrains('default_arrival_hour', 'default_departure_hour')
     def _check_hours(self):
         r = re.compile('[0-2][0-9]:[0-5][0-9]')
-        if not r.match(self.arrival_hour):
+        if not r.match(self.default_arrival_hour):
             raise ValidationError(_("Invalid arrival hour (Format: HH:mm)"))
-        if not r.match(self.departure_hour):
+        if not r.match(self.default_departure_hour):
             raise ValidationError(_("Invalid departure hour (Format: HH:mm)"))
