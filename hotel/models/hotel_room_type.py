@@ -53,17 +53,14 @@ class HotelRoomType(models.Model):
     # total number of rooms in this type
     total_rooms_count = fields.Integer(compute='_compute_total_rooms', store=True)
 
-    _sql_constraints = [('code_unique', 'unique(code_type)',
-                         'Room Type Code must be unique!')]
+    _sql_constraints = [
+        ('code_hotel_unique', 'unique(code_type, hotel_id)', 'Room Type Code must be unique by Hotel!'),
+    ]
 
     @api.depends('room_ids', 'room_ids.active')
     def _compute_total_rooms(self):
         for record in self:
             record.total_rooms_count = len(record.room_ids)
-
-    def _check_duplicated_rooms(self):
-        # FIXME Using a Many2one relationship duplicated should not been possible
-        pass
 
     @api.multi
     def get_capacity(self):
