@@ -79,10 +79,16 @@ class TestHotel(common.SavepointCase):
         cls._init_mock_hotel()
 
         # Create Tests Records
+        cls.main_hotel_property = cls.env.ref('hotel.main_hotel_property')
+        cls.demo_hotel_property = cls.env.ref('hotel.demo_hotel_property')
+
         cls.room_type_0 = cls.env.ref('hotel.hotel_room_type_0')
         cls.room_type_1 = cls.env.ref('hotel.hotel_room_type_1')
         cls.room_type_2 = cls.env.ref('hotel.hotel_room_type_2')
         cls.room_type_3 = cls.env.ref('hotel.hotel_room_type_3')
+
+        cls.demo_room_type_0 = cls.env.ref('hotel.demo_hotel_room_type_0')
+        cls.demo_room_type_1 = cls.env.ref('hotel.demo_hotel_room_type_1')
 
         cls.room_0 = cls.env.ref('hotel.hotel_room_0')
         cls.room_1 = cls.env.ref('hotel.hotel_room_1')
@@ -91,3 +97,4 @@ class TestHotel(common.SavepointCase):
         cls.room_4 = cls.env.ref('hotel.hotel_room_4')
         cls.room_5 = cls.env.ref('hotel.hotel_room_5')
         cls.room_6 = cls.env.ref('hotel.hotel_room_6')
+

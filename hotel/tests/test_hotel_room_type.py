@@ -27,9 +27,24 @@ from odoo.tools import mute_logger
 
 class TestHotelRoomType(TestHotel):
 
-    def test_code_type_unique(self):
-        #TODO: use sudo users hotel
+    # TODO: use users with different access rules
+
+    # code type must be unique by hotel
+    def test_code_type_unique_by_hotel(self):
         with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'):
             self.room_type_0.sudo().write({
                 'code_type': self.room_type_1.code_type
             })
+
+    # code type can be used in other hotel
+    def test_code_type_unique_shared_by_hotel(self):
+        test_result = self.demo_room_type_0.sudo().write({
+            'code_type': self.room_type_0.code_type
+        })
+        self.assertEqual(test_result, True)
+
+    # rooms of the same room type are in the same hotel
+    def test_coherence_rooms_by_hotel(self):
+        # TODO: ...
+        pass
+
