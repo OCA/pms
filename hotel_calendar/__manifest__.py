@@ -29,7 +29,6 @@
         'views/hotel_calendar_management_views.xml',
         'views/hotel_calendar_views.xml',
         'data/menus.xml',
-        'data/ir_config_parameter.xml',
         'security/ir.model.access.csv',
     ],
     'qweb': [
