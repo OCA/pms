@@ -425,7 +425,39 @@
                     })]"/>
         </record>
 
-        <!-- out of service room -->
+        <!-- Multi Hotel Demo -->
+        <record id="demo_hotel_room_type_restriction" model="hotel.room.type.restriction">
+            <field name="name">Restriction Plan Demo</field>
+        </record>
+
+        <record id="demo_hotel_property" model="hotel.property">
+            <field name="name">My Hotel Demo</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="default_pricelist_id" ref="product.list0"/>
+            <field name="default_restriction_id" ref="demo_hotel_room_type_restriction"/>
+        </record>
+
+        <!-- hotel.room.type    -->
+
+        <record id="demo_hotel_room_type_0" model="hotel.room.type">
+            <field name="hotel_id" ref="hotel.demo_hotel_property"/>
+            <field name="name">Economic</field>
+            <field name="code_type">ECO</field>
+            <field name="list_price">21.00</field>
+            <field name="class_id" ref="hotel_room_type_class_0"/>
+            <field name="room_amenity_ids"
+                   eval="[(4, ref('hotel_amenity_0'))]"/>
+
+        </record>
+        <record id="demo_hotel_room_type_1" model="hotel.room.type">
+            <field name="hotel_id" ref="hotel.demo_hotel_property"/>
+            <field name="name">Single</field>
+            <field name="code_type">SNG</field>
+            <field name="list_price">20.00</field>
+            <field name="class_id" ref="hotel_room_type_class_0"/>
+            <field name="room_amenity_ids"
+                   eval="[(4, ref('hotel_amenity_0')), (4, ref('hotel_amenity_4'))]"/>
+        </record>
 
     </data>
 </odoo>
