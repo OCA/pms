@@ -39,9 +39,10 @@ return AbstractModel.extend({
         });
     },
 
-    get_pricelists: function () {
-        var domain = [['hotel_ids', 'in', Session.hotel_id]];
-        domain.push(['pricelist_type', '=', 'daily']);
+    get_pricelist_plans: function () {
+        var domain = [['pricelist_type', '=', 'daily']];
+        domain.push('|',['hotel_ids', 'in', Session.hotel_id],
+                        ['hotel_ids', '=', false]);
         return this._rpc({
             model: 'product.pricelist',
             method: 'search_read',
@@ -50,8 +51,9 @@ return AbstractModel.extend({
         });
     },
 
-    get_restrictions: function () {
-        var domain = [['hotel_ids', 'in', Session.hotel_id]];
+    get_restriction_plans: function () {
+        // TODO: FIXME: search and read restriction plans for current hotel
+        var domain = [['item_ids.room_type_id.hotel_id', '=', Session.hotel_id]];
         return this._rpc({
             model: 'hotel.room.type.restriction',
             method: 'search_read',

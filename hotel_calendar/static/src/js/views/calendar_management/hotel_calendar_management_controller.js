@@ -101,8 +101,8 @@ var MPMSCalendarController = AbstractController.extend({
             self.renderer._pricelist_id = results['pricelist_id'];
             self.renderer._restriction_id = results['restriction_id'];
             $.when(
-                self.model.get_pricelists(),
-                self.model.get_restrictions(),
+                self.model.get_pricelist_plans(),
+                self.model.get_restriction_plans(),
             ).then(function(a1, a2){
                 self.renderer.loadViewFilters(a1, a2);
             })
