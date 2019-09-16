@@ -20,7 +20,7 @@
         'account_cancel'
     ],
     'license': "AGPL-3",
-    'demo': ['data/hotel_demo.xml'],
+    'demo': ['demo/hotel_demo.xml'],
     'data': [
         'data/hotel_data.xml',
         'security/hotel_security.xml',
