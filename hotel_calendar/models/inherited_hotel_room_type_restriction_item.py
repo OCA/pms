@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 class HotelRoomTypeResrtrictionItem(models.Model):
     _inherit = 'hotel.room.type.restriction.item'
 
+    # CRUD methods
     @api.model
     def create(self, vals):
         res = super(HotelRoomTypeResrtrictionItem, self).create(vals)

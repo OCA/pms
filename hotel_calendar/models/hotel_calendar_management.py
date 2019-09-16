@@ -13,6 +13,17 @@ _logger = logging.getLogger(__name__)
 class HotelCalendarManagement(models.TransientModel):
     _name = 'hotel.calendar.management'
 
+    # Business methods
+    @api.multi
+    def get_hcalendar_settings(self):
+        return {
+            'eday_week': self.env.user.hotel_id.pms_end_day_week,
+            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
+            'days': self.env.user.hotel_id.pms_default_num_days,
+            'show_notifications': self.env.user.pms_show_notifications,
+            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
+        }
+
     @api.model
     def _get_prices_values(self, price):
         vals = {
@@ -32,59 +43,6 @@ class HotelCalendarManagement(models.TransientModel):
             'closed_departure': restriction['closed_departure'],
         }
         return vals
-
-    @api.model
-    def save_changes(self, pricelist_id, restriction_id, pricelist,
-                     restrictions, availability=False):
-        room_type_obj = self.env['hotel.room.type']
-        product_pricelist_item_obj = self.env['product.pricelist.item']
-        room_type_rest_item_obj = self.env['hotel.room.type.restriction.item']
-
-        # Save Pricelist
-        for k_price in pricelist.keys():
-            room_type_id = room_type_obj.browse([int(k_price)])
-            room_type_prod_tmpl_id = room_type_id.product_id.product_tmpl_id
-            for price in pricelist[k_price]:
-                price_id = product_pricelist_item_obj.search([
-                    ('date_start', '>=', price['date']),
-                    ('date_end', '<=', price['date']),
-                    ('pricelist_id', '=', int(pricelist_id)),
-                    ('applied_on', '=', '1_product'),
-                    ('compute_price', '=', 'fixed'),
-                    ('product_tmpl_id', '=', room_type_prod_tmpl_id.id),
-                ], limit=1)
-                vals = self._get_prices_values(price)
-                if not price_id:
-                    vals.update({
-                        'date_start': price['date'],
-                        'date_end': price['date'],
-                        'pricelist_id': int(pricelist_id),
-                        'applied_on': '1_product',
-                        'compute_price': 'fixed',
-                        'product_tmpl_id': room_type_prod_tmpl_id.id,
-                    })
-                    price_id = product_pricelist_item_obj.create(vals)
-                else:
-                    price_id.write(vals)
-
-        # Save Restrictions
-        for k_res in restrictions.keys():
-            for restriction in restrictions[k_res]:
-                res_id = room_type_rest_item_obj.search([
-                    ('date', '=', restriction['date']),
-                    ('restriction_id', '=', int(restriction_id)),
-                    ('room_type_id', '=', int(k_res)),
-                ], limit=1)
-                vals = self._get_restrictions_values(restriction)
-                if not res_id:
-                    vals.update({
-                        'date': restriction['date'],
-                        'restriction_id': int(restriction_id),
-                        'room_type_id': int(k_res),
-                    })
-                    res_id = room_type_rest_item_obj.create(vals)
-                else:
-                    res_id.write(vals)
 
     @api.model
     def _hcalendar_room_json_data(self, rooms):
@@ -265,12 +223,55 @@ class HotelCalendarManagement(models.TransientModel):
 
         return vals
 
-    @api.multi
-    def get_hcalendar_settings(self):
-        return {
-            'eday_week': self.env.user.hotel_id.pms_end_day_week,
-            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
-            'days': self.env.user.hotel_id.pms_default_num_days,
-            'show_notifications': self.env.user.pms_show_notifications,
-            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
-        }
+    @api.model
+    def save_changes(self, pricelist_id, restriction_id, pricelist,
+                     restrictions, availability=False):
+        room_type_obj = self.env['hotel.room.type']
+        product_pricelist_item_obj = self.env['product.pricelist.item']
+        room_type_rest_item_obj = self.env['hotel.room.type.restriction.item']
+
+        # Save Pricelist
+        for k_price in pricelist.keys():
+            room_type_id = room_type_obj.browse([int(k_price)])
+            room_type_prod_tmpl_id = room_type_id.product_id.product_tmpl_id
+            for price in pricelist[k_price]:
+                price_id = product_pricelist_item_obj.search([
+                    ('date_start', '>=', price['date']),
+                    ('date_end', '<=', price['date']),
+                    ('pricelist_id', '=', int(pricelist_id)),
+                    ('applied_on', '=', '1_product'),
+                    ('compute_price', '=', 'fixed'),
+                    ('product_tmpl_id', '=', room_type_prod_tmpl_id.id),
+                ], limit=1)
+                vals = self._get_prices_values(price)
+                if not price_id:
+                    vals.update({
+                        'date_start': price['date'],
+                        'date_end': price['date'],
+                        'pricelist_id': int(pricelist_id),
+                        'applied_on': '1_product',
+                        'compute_price': 'fixed',
+                        'product_tmpl_id': room_type_prod_tmpl_id.id,
+                    })
+                    price_id = product_pricelist_item_obj.create(vals)
+                else:
+                    price_id.write(vals)
+
+        # Save Restrictions
+        for k_res in restrictions.keys():
+            for restriction in restrictions[k_res]:
+                res_id = room_type_rest_item_obj.search([
+                    ('date', '=', restriction['date']),
+                    ('restriction_id', '=', int(restriction_id)),
+                    ('room_type_id', '=', int(k_res)),
+                ], limit=1)
+                vals = self._get_restrictions_values(restriction)
+                if not res_id:
+                    vals.update({
+                        'date': restriction['date'],
+                        'restriction_id': int(restriction_id),
+                        'room_type_id': int(k_res),
+                    })
+                    res_id = room_type_rest_item_obj.create(vals)
+                else:
+                    res_id.write(vals)

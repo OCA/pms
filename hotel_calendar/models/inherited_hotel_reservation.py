@@ -12,11 +12,13 @@ _logger = logging.getLogger(__name__)
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
+    # Fields declaration
     reserve_color = fields.Char(compute='_compute_color', string='Color',
                                 store=True)
     reserve_color_text = fields.Char(compute='_compute_color', string='Color',
                                      store=True)
 
+    # Business methods
     @api.multi
     def _generate_color(self):
         self.ensure_one()
@@ -64,6 +66,47 @@ class HotelReservation(models.Model):
                 'reserve_color': colors[0],
                 'reserve_color_text': colors[1],
             })
+
+    @api.model
+    def get_hcalendar_settings(self):
+        type_move = self.env.user.hotel_id.pms_type_move
+        return {
+            'divide_rooms_by_capacity': self.env.user.hotel_id.pms_divide_rooms_by_capacity,
+            'eday_week': self.env.user.hotel_id.pms_end_day_week,
+            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
+            'days': self.env.user.hotel_id.pms_default_num_days,
+            'allow_invalid_actions': type_move == 'allow_invalid',
+            'assisted_movement': type_move == 'assisted',
+            'default_arrival_hour': self.env.user.hotel_id.default_arrival_hour,
+            'default_departure_hour': self.env.user.hotel_id.default_departure_hour,
+            'show_notifications': self.env.user.pms_show_notifications,
+            'show_pricelist': self.env.user.pms_show_pricelist,
+            'show_availability': self.env.user.pms_show_availability,
+            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
+        }
+
+    @api.model
+    def _hcalendar_room_data(self, rooms):
+        _logger.warning('_found [%s] rooms for hotel [%s]', len(rooms), self.env.user.hotel_id.id)
+        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
+        pricelist_id = self.env.user.hotel_id.default_pricelist_id.id
+        json_rooms = [
+            {
+                'id': room.id,
+                'name': room.name,
+                'capacity': room.capacity,
+                'class_name': room.room_type_id.class_id.name,
+                'class_id': room.room_type_id.class_id.id,
+                'shared_id': room.shared_room_id,
+                'price': room.room_type_id
+                and ['pricelist', room.room_type_id.id, pricelist_id,
+                     room.room_type_id.name] or 0,
+                'room_type_name': room.room_type_id.name,
+                'room_type_id': room.room_type_id.id,
+                'floor_id': room.floor_id.id,
+                'amentity_ids': room.room_type_id.room_amenity_ids.ids,
+            } for room in rooms]
+        return json_rooms
 
     @api.model
     def _hcalendar_reservation_data(self, reservations):
@@ -126,43 +169,7 @@ class HotelReservation(models.Model):
                     'services': reserv['services'],
                 }
             })
-        return (json_reservations, json_reservation_tooltips)
-
-    @api.model
-    def _hcalendar_room_data(self, rooms):
-        _logger.warning('_found [%s] rooms for hotel [%s]', len(rooms), self.env.user.hotel_id.id)
-        # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
-        pricelist_id = self.env.user.hotel_id.default_pricelist_id.id
-        json_rooms = [
-            {
-                'id': room.id,
-                'name': room.name,
-                'capacity': room.capacity,
-                'class_name': room.room_type_id.class_id.name,
-                'class_id': room.room_type_id.class_id.id,
-                'shared_id': room.shared_room_id,
-                'price': room.room_type_id
-                and ['pricelist', room.room_type_id.id, pricelist_id,
-                     room.room_type_id.name] or 0,
-                'room_type_name': room.room_type_id.name,
-                'room_type_id': room.room_type_id.id,
-                'floor_id': room.floor_id.id,
-                'amentity_ids': room.room_type_id.room_amenity_ids.ids,
-            } for room in rooms]
-        return json_rooms
-
-    @api.model
-    def _hcalendar_calendar_data(self, calendars):
-        _logger.warning('_found [%s] calendars for hotel [%s]', len(calendars), self.env.user.hotel_id.id)
-        return [
-            {
-                'id': calendar.id,
-                'name': calendar.name,
-                'segmentation_ids': calendar.segmentation_ids.ids,
-                'location_ids': calendar.location_ids.ids,
-                'amenity_ids': calendar.amenity_ids.ids,
-                'room_type_ids': calendar.room_type_ids.ids,
-            } for calendar in calendars]
+        return json_reservations, json_reservation_tooltips
 
     @api.model
     def _hcalendar_event_data(self, events):
@@ -177,13 +184,17 @@ class HotelReservation(models.Model):
         return json_events
 
     @api.model
-    def get_hcalendar_calendar_data(self):
-        hotel_id = self.env.user.hotel_id.id
-        calendars = self.env['hotel.calendar'].search([
-            ('hotel_id', '=', hotel_id)
-        ])
-        res = self._hcalendar_calendar_data(calendars)
-        return res
+    def _hcalendar_calendar_data(self, calendars):
+        _logger.warning('_found [%s] calendars for hotel [%s]', len(calendars), self.env.user.hotel_id.id)
+        return [
+            {
+                'id': calendar.id,
+                'name': calendar.name,
+                'segmentation_ids': calendar.segmentation_ids.ids,
+                'location_ids': calendar.location_ids.ids,
+                'amenity_ids': calendar.amenity_ids.ids,
+                'room_type_ids': calendar.room_type_ids.ids,
+            } for calendar in calendars]
 
     @api.model
     def get_hcalendar_reservations_data(self, dfrom_dt, dto_dt, rooms):
@@ -350,22 +361,13 @@ class HotelReservation(models.Model):
         return self._hcalendar_event_data(events_raw)
 
     @api.model
-    def get_hcalendar_settings(self):
-        type_move = self.env.user.hotel_id.pms_type_move
-        return {
-            'divide_rooms_by_capacity': self.env.user.hotel_id.pms_divide_rooms_by_capacity,
-            'eday_week': self.env.user.hotel_id.pms_end_day_week,
-            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
-            'days': self.env.user.hotel_id.pms_default_num_days,
-            'allow_invalid_actions': type_move == 'allow_invalid',
-            'assisted_movement': type_move == 'assisted',
-            'default_arrival_hour': self.env.user.hotel_id.default_arrival_hour,
-            'default_departure_hour': self.env.user.hotel_id.default_departure_hour,
-            'show_notifications': self.env.user.pms_show_notifications,
-            'show_pricelist': self.env.user.pms_show_pricelist,
-            'show_availability': self.env.user.pms_show_availability,
-            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
-        }
+    def get_hcalendar_calendar_data(self):
+        hotel_id = self.env.user.hotel_id.id
+        calendars = self.env['hotel.calendar'].search([
+            ('hotel_id', '=', hotel_id)
+        ])
+        res = self._hcalendar_calendar_data(calendars)
+        return res
 
     @api.model
     def get_hcalendar_all_data(self, dfrom, dto, withRooms=True):
@@ -493,6 +495,7 @@ class HotelReservation(models.Model):
 
         return True
 
+    # CRUD methods
     @api.model
     def create(self, vals):
         reservation_id = super(HotelReservation, self).create(vals)

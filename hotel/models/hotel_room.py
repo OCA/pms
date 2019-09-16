@@ -14,8 +14,8 @@ class HotelRoom(models.Model):
     _description = 'Hotel Room'
     _order = "sequence, room_type_id, name"
 
+    # Fields declaration
     name = fields.Char('Room Name', required=True)
-    # Relationship between models
     hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
                                related='room_type_id.hotel_id')
     room_type_id = fields.Many2one('hotel.room.type', 'Hotel Room Type',

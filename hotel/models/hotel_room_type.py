@@ -15,11 +15,12 @@ class HotelRoomType(models.Model):
     _inherits = {'product.product': 'product_id'}
     _order = "sequence, code_type, name"
 
+    # Default methods
     @api.model
     def _get_default_hotel(self):
         return self.env.user.hotel_id
 
-    # Relationship between models
+    # Fields declaration
     product_id = fields.Many2one('product.product', 'Product Room Type',
                                  required=True, delegate=True,
                                  ondelete='cascade')

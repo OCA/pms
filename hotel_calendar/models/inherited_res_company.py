@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
+    # background reservation colors
     color_pre_reservation = fields.Char('Pre-reservation', default='#A24680')
     color_reservation = fields.Char('Confirmed Reservation ', default='#7C7BAD')
     color_reservation_pay = fields.Char('Paid Reservation', default='#584D76')
@@ -17,7 +18,7 @@ class ResCompany(models.Model):
     color_staff = fields.Char('Staff', default='#C08686')
     color_to_assign = fields.Char('Ota Reservation to Assign', default='#ED722E')
     color_payment_pending = fields.Char('Payment Pending', default='#A24689')
-
+    # foreground reservation colors
     color_letter_pre_reservation = fields.Char('Letter Pre-reservation', default='#FFFFFF')
     color_letter_reservation = fields.Char('Letter Confirmed Reservation ', default='#FFFFFF')
     color_letter_reservation_pay = fields.Char('Letter Paid Reservation', default='#FFFFFF')

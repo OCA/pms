@@ -20,6 +20,7 @@ class BusHotelCalendar(models.TransientModel):
         - warn : Show a warning notification
         - noshow : Don't show any notification
     '''
+    # Business methods
     @api.model
     def _generate_reservation_notif(self, vals):
         user_id = self.env['res.users'].browse(self.env.uid)

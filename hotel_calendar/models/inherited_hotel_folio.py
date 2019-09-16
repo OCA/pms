@@ -6,6 +6,7 @@ from odoo import models, api, _
 class HotelFolio(models.Model):
     _inherit = 'hotel.folio'
 
+    # CRUD methods
     @api.multi
     def write(self, vals):
         ret = super(HotelFolio, self).write(vals)
@@ -19,11 +20,11 @@ class HotelFolio(models.Model):
     @api.multi
     def unlink(self):
         for record in self:
-            record.room_lines.send_bus_notification('unlink',
-                                   'warn',
-                                   _("Folio Deleted"))
+            record.room_lines.send_bus_notification('unlink', 'warn',
+                                                    _("Folio Deleted"))
         return super(HotelFolio, self).unlink()
 
+    # Business methods
     @api.multi
     def compute_amount(self):
         ret = super(HotelFolio, self).compute_amount()
