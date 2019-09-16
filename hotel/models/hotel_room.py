@@ -15,59 +15,33 @@ class HotelRoom(models.Model):
     _order = "sequence, room_type_id, name"
 
     name = fields.Char('Room Name', required=True)
-    active = fields.Boolean('Active', default=True)
-    sequence = fields.Integer('Sequence', default=0)
+    # Relationship between models
+    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
+                               related='room_type_id.hotel_id')
     room_type_id = fields.Many2one('hotel.room.type', 'Hotel Room Type',
                                    required=True,
                                    ondelete='restrict')
+    shared_room_id = fields.Many2one('hotel.shared.room', 'Shared Room',
+                                     default=False)
     floor_id = fields.Many2one('hotel.floor', 'Ubication',
                                help='At which floor the room is located.')
-    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
-                                related='room_type_id.hotel_id')
 
     max_adult = fields.Integer('Max Adult')
     max_child = fields.Integer('Max Child')
     capacity = fields.Integer('Capacity')
     to_be_cleaned = fields.Boolean('To be Cleaned', default=False)
-    shared_room_id = fields.Many2one('hotel.shared.room', 'Shared Room',
-                                     default=False)
+    extra_beds_allowed = fields.Integer('Extra beds allowed',
+                                        default='0',
+                                        required=True)
     description_sale = fields.Text(
         'Sale Description', translate=True,
         help="A description of the Product that you want to communicate to "
              " your customers. This description will be copied to every Sales "
              " Order, Delivery Order and Customer Invoice/Credit Note")
-    extra_beds_allowed = fields.Integer('Extra beds allowed',
-                                        default='0',
-                                        required=True)
+    active = fields.Boolean('Active', default=True)
+    sequence = fields.Integer('Sequence', default=0)
 
-    # @api.constrains('room_type_id')
-    # def _constrain_shared_room_type(self):
-    #     for record in self:
-    #         if record.shared_room_id:
-    #             if not record.room_type_id.shared_room:
-    #                 raise ValidationError(_('We cant save normal rooms \
-    #                                         in a shared room type'))
-    #         else:
-    #             if record.room_type_id.shared_room:
-    #                 raise ValidationError(_('We cant save shared rooms \
-    #                                         in a normal room type'))
-
-    # @api.constrains('shared_room_id')
-    # def _constrain_shared_room(self):
-    #     for record in self:
-    #         if record.shared_room_id:
-    #             if not record.capacity > 1:
-    #                 raise ValidationError(_('We cant save normal rooms \
-    #                                         in a shared room type'))
-
-    # @api.constrains('capacity')
-    # def _check_capacity(self):
-    #     for record in self:
-    #         if record.shared_room_id and record.capacity != 1:
-    #             raise ValidationError(_("A Bed only can has capacity one"))
-    #         if record.capacity < 1:
-    #             raise ValidationError(_("Room capacity can't be less than one"))
-
+    # Business methods
     @api.multi
     def get_capacity(self, extra_bed=0):
         if not self.shared_room_id:

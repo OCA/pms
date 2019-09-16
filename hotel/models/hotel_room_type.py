@@ -13,6 +13,7 @@ class HotelRoomType(models.Model):
     _name = "hotel.room.type"
     _description = "Room Type"
     _inherits = {'product.product': 'product_id'}
+    _order = "sequence, code_type, name"
 
     @api.model
     def _get_default_hotel(self):
@@ -22,6 +23,8 @@ class HotelRoomType(models.Model):
     product_id = fields.Many2one('product.product', 'Product Room Type',
                                  required=True, delegate=True,
                                  ondelete='cascade')
+    hotel_id = fields.Many2one('hotel.property', 'Hotel', required=True, ondelete='restrict',
+                               default=_get_default_hotel,)
     room_ids = fields.One2many('hotel.room', 'room_type_id', 'Rooms')
     class_id = fields.Many2one('hotel.room.type.class', 'Hotel Type Class')
     board_service_room_type_ids = fields.One2many(
@@ -31,44 +34,43 @@ class HotelRoomType(models.Model):
                                         'room_type_ids', 'amenity_ids',
                                         string='Room Type Amenities',
                                         help='List of Amenities.')
-    hotel_id = fields.Many2one('hotel.property', 'Hotel', required=True, ondelete='restrict',
-                               default=_get_default_hotel,)
-
-    # TODO Hierarchical relationship for parent-child tree ?
-    # parent_id = fields.Many2one ...
-
-    # Used for activate records
-    active = fields.Boolean('Active', default=True,
-                            help="The active field allows you to hide the \
-                            category without removing it.")
-    shared_room = fields.Boolean('Shared Room', default=False,
-                            help="This room type is reservation by beds")
-    # Used for ordering
-    sequence = fields.Integer('Sequence', default=0)
 
     code_type = fields.Char('Code', required=True, )
-
-    _order = "sequence, code_type, name"
-
-    # total number of rooms in this type
+    shared_room = fields.Boolean('Shared Room', default=False,
+                                 help="This room type is reservation by beds")
     total_rooms_count = fields.Integer(compute='_compute_total_rooms', store=True)
+    active = fields.Boolean('Active', default=True)
+    sequence = fields.Integer('Sequence', default=0)
 
     _sql_constraints = [
-        ('code_hotel_unique', 'unique(code_type, hotel_id)', 'Room Type Code must be unique by Hotel!'),
+        ('code_type_hotel_unique', 'unique(code_type, hotel_id)', 'Room Type Code must be unique by Hotel!'),
     ]
 
+    # Constraints and onchanges
     @api.depends('room_ids', 'room_ids.active')
     def _compute_total_rooms(self):
         for record in self:
             record.total_rooms_count = len(record.room_ids)
 
+    # CRUD methods
+    @api.model
+    def create(self, vals):
+        """ Add room types as not purchase services. """
+        vals.update({
+            'purchase_ok': False,
+            'type': 'service',
+        })
+        return super().create(vals)
+
+    @api.multi
+    def unlink(self):
+        for record in self:
+            record.product_id.unlink()
+        return super().unlink()
+
+    # Business methods
     @api.multi
     def get_capacity(self):
-        """
-        Get the minimum capacity in the rooms of this type or zero if has no rooms
-        @param self: The object pointer
-        @return: An integer with the capacity of this room type
-        """
         self.ensure_one()
         capacities = self.room_ids.mapped('capacity')
         return min(capacities) if any(capacities) else 0
@@ -77,13 +79,7 @@ class HotelRoomType(models.Model):
     def check_availability_room_type(self, dfrom, dto,
                                      room_type_id=False, notthis=[]):
         """
-        Check the avalability for an specific type of room
-        @param self: The object pointer
-        @param dfrom: Range date from
-        @param dto: Range date to
-        @param room_type_id: Room Type
-        @param notthis: Array excluding Rooms
-        @return: A recordset of free rooms ?
+        Check the max availability for an specific type of room in a range of dates
         """
         reservations = self.env['hotel.reservation'].get_reservations(dfrom,
                                                                       dto)
@@ -100,45 +96,13 @@ class HotelRoomType(models.Model):
         return free_rooms.sorted(key=lambda r: r.sequence)
 
     @api.model
-    def create(self, vals):
-        """
-        Overrides orm create method.
-        @param self: The object pointer
-        @param vals: dictionary of fields value.
-        @return: new record set for hotel room type.
-        """
-        vals.update({
-            'purchase_ok': False,
-            'type': 'service',
-        })
-        return super().create(vals)
-
-    # @api.constrains('shared_room', 'room_ids')
-    # def _constrain_shared_room(self):
-    #     for record in self:
-    #         if record.shared_room:
-    #             if any(not room.shared_room_id for room in record.room_ids):
-    #                 raise ValidationError(_('We cant save normal rooms \
-    #                                         in a shared room type'))
-    #         else:
-    #             if any(room.shared_room_id for room in record.room_ids):
-    #                 raise ValidationError(_('We cant save shared rooms \
-    #                                         in a normal room type'))
-
-    @api.multi
-    def unlink(self):
-        for record in self:
-            record.product_id.unlink()
-        return super().unlink()
-
-    @api.model
     def get_rate_room_types(self, **kwargs):
         """
         room_type_ids: Ids from room types to get rate, optional, if you
             not use this param, the method return all room_types
         from: Date from, mandatory
         days: Number of days, mandatory
-        pricelist_id: Pricselist to use, optional
+        pricelist_id: Pricelist to use, optional
         partner_id: Partner, optional
         Return Dict Code Room Types: subdict with day, discount, price
         """
