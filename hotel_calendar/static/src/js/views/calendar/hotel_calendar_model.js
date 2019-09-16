@@ -78,7 +78,10 @@ return AbstractModel.extend({
         });
     },
     get_floors: function() {
-        var domain = [['hotel_ids', 'in', Session.hotel_id]];
+        var domain = [('|',
+                ['hotel_ids', 'in', Session.hotel_id],
+                ['hotel_ids', '=', false]
+                )];
         return this._rpc({
             model: 'hotel.floor',
             method: 'search_read',
@@ -87,7 +90,11 @@ return AbstractModel.extend({
         });
     },
     get_amenities: function() {
-        var domain = [['hotel_ids', 'in', Session.hotel_id]];
+        var domain = [('|',
+                ['hotel_ids', 'in', Session.hotel_id],
+                ['hotel_ids', '=', false]
+                )];
+        // TODO: Filter rooms by amenities is not working
         return this._rpc({
             model: 'hotel.amenity',
             method: 'search_read',
@@ -96,7 +103,10 @@ return AbstractModel.extend({
         });
     },
     get_room_type_class: function() {
-        var domain = [['hotel_ids', 'in', Session.hotel_id]];
+        var domain = [('|',
+                ['hotel_ids', 'in', Session.hotel_id],
+                ['hotel_ids', '=', false]
+                )];
         return this._rpc({
             model: 'hotel.room.type.class',
             method: 'search_read',
