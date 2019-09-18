@@ -88,8 +88,8 @@ class ResPartner(models.Model):
         street_2 += ' ' + customer['Address']['Number']
         metadata = {
             'firstname': customer['FirstName'],
-            'lastname': customer['LastName1'],
-            'lastname2': customer['LastName2'],
+            'lastname': customer['LastName1'] + ' ' + customer['LastName2'],
+            'lastname2': '',
             'birthdate_date': datetime.strptime(
                 customer['Birthday'], DEFAULT_ROOMMATIK_DATE_FORMAT).date(),
             'gender': customer['Sex'],
@@ -117,7 +117,7 @@ class ResPartner(models.Model):
         response['Id'] = partner.id
         response['FirstName'] = partner.firstname
         response['LastName1'] = partner.lastname
-        response['LastName2'] = partner.lastname2
+        response['LastName2'] = ''
         response['Birthday'] = partner.birthdate_date
         response['Sex'] = partner.gender
         response['Address'] = {
