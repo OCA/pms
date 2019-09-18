@@ -41,6 +41,36 @@ class HotelRoom(models.Model):
     active = fields.Boolean('Active', default=True)
     sequence = fields.Integer('Sequence', default=0)
 
+    # Constraints and onchanges
+    @api.constrains('capacity')
+    def _check_capacity(self):
+        for record in self:
+            if record.capacity < 1:
+                raise ValidationError(_("The capacity of the room must be greater than 0."))
+
+    # CRUD methods
+    @api.model
+    def create(self, vals):
+        if vals.get('hotel_id', self.env.user.hotel_id.id) != self.env['hotel.room.type'].browse(
+                vals['room_type_id']).hotel_id.id:
+            raise ValidationError(_("A room cannot be created in a room type of another hotel."))
+        return super().create(vals)
+
+    @api.multi
+    def write(self, vals):
+        for record in self:
+            if vals.get('hotel_id', record.hotel_id.id) != record.hotel_id.id:
+                raise ValidationError(_("A room cannot be changed to another hotel.") + " " +
+                                      _("%s does not belong to %s.")
+                                      % (record, record.hotel_id))
+            room_type_ids = self.env['hotel.room.type'].search([
+                ('hotel_id', '=', record.hotel_id.id)
+            ]).ids
+            if vals.get('room_type_id', record.room_type_id.id) not in room_type_ids:
+                raise ValidationError(_("A room cannot be changed to a room type of another hotel or "
+                                        "unlinked from a room type."))
+        return super().write(vals)
+
     # Business methods
     @api.multi
     def get_capacity(self, extra_bed=0):

@@ -22,6 +22,6 @@
 ##############################################################################
 # from . import test_reservation
 # from . import test_folio
-# from . import test_hotel_room_model
 from . import test_inherited_ir_http
 from . import test_hotel_room_type
+from . import test_hotel_room
