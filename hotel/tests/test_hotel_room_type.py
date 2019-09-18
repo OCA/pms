@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
@@ -37,14 +36,9 @@ class TestHotelRoomType(TestHotel):
             })
 
     # code type can be used in other hotel
-    def test_code_type_unique_shared_by_hotel(self):
+    def test_code_type_shared_by_hotel(self):
         test_result = self.demo_room_type_0.sudo().write({
             'code_type': self.room_type_0.code_type
         })
         self.assertEqual(test_result, True)
-
-    # rooms of the same room type are in the same hotel
-    def test_coherence_rooms_by_hotel(self):
-        # TODO: ...
-        pass
 
