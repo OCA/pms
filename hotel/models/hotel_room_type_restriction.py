@@ -4,9 +4,19 @@ from odoo import models, fields, api
 
 
 class HotelRoomTypeRestriction(models.Model):
+    """ The hotel room type restriction is used as a daily restriction plan for room types
+     and therefore is related only with one hotel. """
     _name = 'hotel.room.type.restriction'
 
+    # Default methods
+    @api.model
+    def _get_default_hotel(self):
+        return self.env.user.hotel_id
+
+    # Fields declaration
     name = fields.Char('Restriction Plan Name', required=True)
+    hotel_id = fields.Many2one('hotel.property', 'Hotel', required=True, ondelete='restrict',
+                               default=_get_default_hotel)
     item_ids = fields.One2many('hotel.room.type.restriction.item',
                                'restriction_id', string='Restriction Items',
                                copy=True)

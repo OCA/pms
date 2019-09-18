@@ -22,7 +22,8 @@
             </h1>
           </div>
           <div>
-            <separator string="Pricelist Items"/>
+            <field name="hotel_id" options="{'no_create': True,'no_open': True}"/>
+            <separator string="Restriction Items"/>
             <field name="item_ids" nolabel="1">
               <tree string="Restriction Items">
                 <field name="room_type_id"/>
