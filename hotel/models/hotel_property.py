@@ -12,6 +12,7 @@ class HotelProperty(models.Model):
     _description = 'Hotel'
     _inherits = {'res.partner': 'partner_id'}
 
+    # Fields declaration
     partner_id = fields.Many2one('res.partner', 'Hotel Property',
                                  required=True, delegate=True, ondelete='cascade')
     company_id = fields.Many2one('res.company', help='The company that owns or operates this hotel.',
@@ -43,6 +44,7 @@ class HotelProperty(models.Model):
     default_cancel_policy_days = fields.Integer('Cancellation Days')
     default_cancel_policy_percent = fields.Float('Percent to pay')
 
+    # Constraints and onchanges
     @api.constrains('default_arrival_hour', 'default_departure_hour')
     def _check_hours(self):
         r = re.compile('[0-2][0-9]:[0-5][0-9]')
