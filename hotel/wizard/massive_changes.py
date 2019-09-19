@@ -1,14 +1,31 @@
 # Copyright 2017  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class MassiveChangesWizard(models.TransientModel):
     _name = 'hotel.wizard.massive.changes'
 
-    # Common fields
+    # Default methods
+    @api.model
+    def _get_default_hotel(self):
+        return self.env.user.hotel_id
+
+    # Fields declaration
+    hotel_id = fields.Many2one('hotel.property', 'Hotel', required=True, default=_get_default_hotel)
+    pricelist_id = fields.Many2one(
+        'product.pricelist', 'Pricelist Plan',
+        domain="[('pricelist_type', '=', 'daily'), ('hotel_ids.id', '=', context.get('hotel_id'))]")
+    restriction_id = fields.Many2one(
+        'hotel.room.type.restriction', 'Restriction Plan',
+        domain="[('hotel_id.id', '=', context.get('hotel_id'))]")
+    room_type_ids = fields.Many2many(
+        'hotel.room.type', string="Room Types",
+        domain="[('hotel_id.id', '=', context.get('hotel_id'))]")
+
     section = fields.Selection([
         ('restrictions', 'Restrictions'),
         ('prices', 'Pricelist'),
@@ -27,47 +44,80 @@ class MassiveChangesWizard(models.TransientModel):
         ('1', 'Room Type'),
     ], string='Applied On', default='0')
 
-    room_type_ids = fields.Many2many('hotel.room.type', string="Room Types")
-
     # Restriction fields
-    restriction_id = fields.Many2one('hotel.room.type.restriction',
-                                     'Restriction Plan')
-    change_min_stay = fields.Boolean(default=False)
+    change_min_stay = fields.Boolean(default=False, help="Mark for a massive change in this field.")
     min_stay = fields.Integer("Min. Stay")
-    change_min_stay_arrival = fields.Boolean(default=False)
+    change_min_stay_arrival = fields.Boolean(default=False, help="Mark for a massive change in this field.")
     min_stay_arrival = fields.Integer("Min. Stay Arrival")
-    change_max_stay = fields.Boolean(default=False)
+    change_max_stay = fields.Boolean(default=False, help="Mark for a massive change in this field.")
     max_stay = fields.Integer("Max. Stay")
-    change_max_stay_arrival = fields.Boolean(default=False)
+    change_max_stay_arrival = fields.Boolean(default=False, help="Mark for a massive change in this field.")
     max_stay_arrival = fields.Integer("Max. Stay Arrival")
-    change_closed = fields.Boolean(default=False)
+    change_closed = fields.Boolean(default=False, help="Mark for a massive change in this field.")
     closed = fields.Boolean('Closed')
-    change_closed_departure = fields.Boolean(default=False)
+    change_closed_departure = fields.Boolean(default=False, help="Mark for a massive change in this field.")
     closed_departure = fields.Boolean('Closed Departure')
-    change_closed_arrival = fields.Boolean(default=False)
+    change_closed_arrival = fields.Boolean(default=False, help="Mark for a massive change in this field.")
     closed_arrival = fields.Boolean('Closed Arrival')
 
     # Pricelist fields
-    pricelist_id = fields.Many2one('product.pricelist', 'Pricelist')
     price = fields.Char('Price', help="Can use '+','-' \
                                         or '%'...\nExamples:\n a) +12.3 \
                                         \t> Increase the price in 12.3\n \
                                         b) -1.45% \t> Substract 1.45%\n c) 45 \
                                         \t\t> Sets the price to 45")
 
+    # Constraints and onchanges
     @api.onchange('date_start')
     def onchange_date_start(self):
         self.ensure_one()
         self.date_end = self.date_start
 
+    # Action methods
     @api.multi
-    def is_valid_date(self, chkdate):
+    def _get_restrictions_values(self, record):
         self.ensure_one()
-        wday = chkdate.timetuple()[6]
-        wedays = (self.dmo, self.dtu, self.dwe, self.dth, self.dfr, self.dsa,
-                  self.dsu)
-        return (chkdate >= self.date_start and chkdate <= self.date_end
-                and wedays[wday])
+        vals = {}
+        if record.change_min_stay:
+            vals.update({'min_stay': record.min_stay})
+        if record.change_min_stay_arrival:
+            vals.update({'min_stay_arrival': record.min_stay_arrival})
+        if record.change_max_stay:
+            vals.update({'max_stay': record.max_stay})
+        if record.change_max_stay_arrival:
+            vals.update({'max_stay_arrival': record.max_stay_arrival})
+        if record.change_closed:
+            vals.update({'closed': record.closed})
+        if record.change_closed_departure:
+            vals.update({'closed_departure': record.closed_departure})
+        if record.change_closed_arrival:
+            vals.update({'closed_arrival': record.closed_arrival})
+        return vals
+
+    @api.model
+    def _save_restrictions(self, ndate, room_types, record):
+        hotel_room_type_re_it_obj = self.env['hotel.room.type.restriction.item']
+        domain = [
+            ('date', '>=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('date', '<=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
+            ('restriction_id', '=', record.restriction_id.id),
+        ]
+        for room_type in room_types:
+            vals = self._get_restrictions_values(record)
+            if not any(vals):
+                continue
+
+            rrest_item_ids = hotel_room_type_re_it_obj.search(
+                domain+[('room_type_id', '=', room_type.id)])
+            if any(rrest_item_ids):
+                rrest_item_ids.write(vals)
+            else:
+                vals.update({
+                    'date': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                    'restriction_id': record.restriction_id.id,
+                    'room_type_id': room_type.id,
+                })
+                hotel_room_type_re_it_obj.create(vals)
 
     @api.model
     def _save_prices(self, ndate, room_types, record):
@@ -134,61 +184,6 @@ class MassiveChangesWizard(models.TransientModel):
                     'fixed_price': price,
                 })
 
-    def _get_restrictions_values(self, record):
-        vals = {}
-        if record.change_min_stay:
-            vals.update({'min_stay': record.min_stay})
-        if record.change_min_stay_arrival:
-            vals.update({'min_stay_arrival': record.min_stay_arrival})
-        if record.change_max_stay:
-            vals.update({'max_stay': record.max_stay})
-        if record.change_max_stay_arrival:
-            vals.update({'max_stay_arrival': record.max_stay_arrival})
-        if record.change_closed:
-            vals.update({'closed': record.closed})
-        if record.change_closed_departure:
-            vals.update({'closed_departure': record.closed_departure})
-        if record.change_closed_arrival:
-            vals.update({'closed_arrival': record.closed_arrival})
-        return vals
-
-    @api.model
-    def _save_restrictions(self, ndate, room_types, record):
-        hotel_room_type_re_it_obj = self.env['hotel.room.type.restriction.item']
-        domain = [
-            ('date', '>=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('date', '<=', ndate.strftime(DEFAULT_SERVER_DATE_FORMAT)),
-            ('restriction_id', '=', record.restriction_id.id),
-        ]
-        for room_type in room_types:
-            vals = self._get_restrictions_values(record)
-            if not any(vals):
-                continue
-
-            rrest_item_ids = hotel_room_type_re_it_obj.search(
-                domain+[('room_type_id', '=', room_type.id)])
-            if any(rrest_item_ids):
-                rrest_item_ids.write(vals)
-            else:
-                vals.update({
-                    'date': ndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
-                    'restriction_id': record.restriction_id.id,
-                    'room_type_id': room_type.id,
-                })
-                hotel_room_type_re_it_obj.create(vals)
-
-    @api.multi
-    def massive_change_close(self):
-        self._do_massive_change()
-        return True
-
-    @api.multi
-    def massive_change(self):
-        self._do_massive_change()
-        return {
-            "type": "ir.actions.do_nothing",
-        }
-
     @api.model
     def _save(self, ndate, room_types, record):
         if record.section == 'restrictions':
@@ -200,14 +195,22 @@ class MassiveChangesWizard(models.TransientModel):
     def _do_massive_change(self):
         hotel_room_type_obj = self.env['hotel.room.type']
         for record in self:
+            if record.section == 'prices' and record.pricelist_id.hotel_ids != record.hotel_id:
+                raise ValidationError(_("Mismatch between hotel and pricelist plan.") + " " +
+                                      _("The pricelist plan does not belongs to the current hotel."))
+            if record.section == 'restriction' and record.restriction_id.hotel_id != record.hotel_id:
+                raise ValidationError(_("Mismatch between hotel and restriction plan.") + " " +
+                                      _("The restriction plan does not belongs to the current hotel."))
             date_start_dt = fields.Date.from_string(record.date_start)
             date_end_dt = fields.Date.from_string(record.date_end)
             # Use min '1' for same date
             diff_days = abs((date_end_dt - date_start_dt).days) + 1
             wedays = (record.dmo, record.dtu, record.dwe, record.dth,
                       record.dfr, record.dsa, record.dsu)
+
+            # filter room types to the pricelist or restriction hotel
             room_types = record.room_type_ids if record.applied_on == '1' \
-                else hotel_room_type_obj.search([])
+                else hotel_room_type_obj.search([('hotel_id', '=', record.hotel_id.id)])
 
             for i in range(0, diff_days):
                 ndate = date_start_dt + timedelta(days=i)
@@ -215,3 +218,25 @@ class MassiveChangesWizard(models.TransientModel):
                     continue
                 self._save(ndate, room_types, record)
         return True
+
+    @api.multi
+    def massive_change(self):
+        self._do_massive_change()
+        return {
+            "type": "ir.actions.do_nothing",
+        }
+
+    @api.multi
+    def massive_change_close(self):
+        self._do_massive_change()
+        return True
+
+    # TODO: method deprecated and not used anywhere
+    @api.multi
+    def is_valid_date(self, chkdate):
+        self.ensure_one()
+        wday = chkdate.timetuple()[6]
+        wedays = (self.dmo, self.dtu, self.dwe, self.dth, self.dfr, self.dsa,
+                  self.dsu)
+        return (chkdate >= self.date_start and chkdate <= self.date_end
+                and wedays[wday])

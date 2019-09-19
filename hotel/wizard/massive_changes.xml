@@ -6,73 +6,57 @@
 		<field name="model">hotel.wizard.massive.changes</field>
 		<field name="arch" type="xml">
 			<form string="Massive Changes" >
-				<!-- Common Fields -->
-				<group>
-					<field name="section" required="1" />
-					<field name="applied_on" required="1" />
-					<!-- <field name="room_type_ids" widget="many2many_tags" attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}" /> -->
-					<field name="room_type_ids" widget="many2many_tags" attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}" />
-				</group>
-				<group colspan="8" col="8">
-					<field name="date_start" required="1"  colspan="4"/>
-					<field name="date_end" required="1" colspan="4" />
-					<field name="dmo" />
-					<field name="dtu" />
-					<field name="dwe" />
-					<field name="dth" />
-					<field name="dfr" />
-					<field name="dsa" />
-					<field name="dsu" />
-				</group>
-				<!-- Restricion Fields -->
-				<group col="4" colspan="4" attrs="{'invisible':[('section', '!=', 'restrictions')]}">
-					<field name="restriction_id" colspan="4" attrs="{'required':[('section', '=', 'restrictions')]}" />
-					<table class="oe_form_group" colspan="4">
-						<thead>
-							<th width="20%"></th>
-							<th></th>
-						</thead>
-						<tbody>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_min_stay" /> <strong> Stay Min.</strong></td>
-								<td class="oe_form_group_cell" colspan="3"><field name="min_stay" attrs="{'readonly':[('change_min_stay', '=', False)]}" /></td>
-							</tr>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_max_stay" /> <strong> Stay Max.</strong></td>
-								<td class="oe_form_group_cell"><field name="max_stay" attrs="{'readonly':[('change_max_stay', '=', False)]}" /></td>
-							</tr>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_min_stay_arrival" /> <strong> Stay Min. Arrival</strong></td>
-								<td class="oe_form_group_cell"><field name="min_stay_arrival" attrs="{'readonly':[('change_min_stay_arrival', '=', False)]}" /></td>
-							</tr>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_max_stay_arrival" /> <strong> Stay Max. Arrival</strong></td>
-								<td class="oe_form_group_cell"><field name="max_stay_arrival" attrs="{'readonly':[('change_max_stay_arrival', '=', False)]}" /></td>
-							</tr>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_closed" /> <strong> Closed</strong></td>
-								<td class="oe_form_group_cell"><field name="closed" attrs="{'readonly':[('change_closed', '=', False)]}" /></td>
-							</tr>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_closed_departure" /> <strong> Closed Departure</strong></td>
-								<td class="oe_form_group_cell"><field name="closed_departure" attrs="{'readonly':[('change_closed_departure', '=', False)]}" /></td>
-							</tr>
-							<tr class="oe_form_group_row">
-								<td class="oe_form_group_cell oe_form_group_cell_label"><field name="change_closed_arrival" /> <strong> Closed Arrival</strong></td>
-								<td class="oe_form_group_cell"><field name="closed_arrival" attrs="{'readonly':[('change_closed_arrival', '=', False)]}" /></td>
-							</tr>
-						</tbody>
-					</table>
-				</group>
-				<!-- Priclist Fields -->
-				<group attrs="{'invisible':[('section', '!=', 'prices')]}">
-					<field name="pricelist_id"
-								 attrs="{'required':[('section', '=', 'prices')]}"
-								 domain="[
- 												('pricelist_type', '=', 'daily')
- 												]" />
-					<field name="price" attrs="{'required':[('section', '=', 'prices')]}"/>
-				</group>
+					<group>
+						<field name="hotel_id" readonly="1" />
+						<field name="section" required="1" />
+						<field name="applied_on" required="1" />
+						<field name="room_type_ids" widget="many2many_tags"
+							   attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}"
+							   options="{'no_create': True,'no_open': True}"
+						/>
+					</group>
+					<group colspan="8" col="8">
+						<field name="date_start" required="1"  colspan="4"/>
+						<field name="date_end" required="1" colspan="4" />
+						<field name="dmo" />
+						<field name="dtu" />
+						<field name="dwe" />
+						<field name="dth" />
+						<field name="dfr" />
+						<field name="dsa" />
+						<field name="dsu" />
+					</group>
+					<!-- Restriction Fields -->
+					<group col="8" attrs="{'invisible':[('section', '!=', 'restrictions')]}">
+						<field name="restriction_id"
+							   attrs="{'required':[('section', '=', 'restrictions')]}"
+							   options="{'no_create': True,'no_open': True}"
+							   colspan="8"
+						/>
+						<field colspan="2" name="change_min_stay" />
+						<field colspan="2" name="min_stay" attrs="{'readonly':[('change_min_stay', '=', False)]}" />
+						<field colspan="2" name="change_max_stay" />
+						<field colspan="2" name="max_stay" attrs="{'readonly':[('change_max_stay', '=', False)]}" />
+						<field colspan="2" name="change_min_stay_arrival" />
+						<field colspan="2" name="min_stay_arrival" attrs="{'readonly':[('change_min_stay_arrival', '=', False)]}" />
+						<field colspan="2" name="change_max_stay_arrival" />
+						<field colspan="2" name="max_stay_arrival" attrs="{'readonly':[('change_max_stay_arrival', '=', False)]}" />
+						<field colspan="2" name="change_closed" />
+						<field colspan="6" name="closed" attrs="{'readonly':[('change_closed', '=', False)]}" />
+						<field colspan="2" name="change_closed_departure" />
+						<field colspan="6" name="closed_departure" attrs="{'readonly':[('change_closed_departure', '=', False)]}" />
+						<field colspan="2" name="change_closed_arrival" />
+						<field colspan="6" name="closed_arrival" attrs="{'readonly':[('change_closed_arrival', '=', False)]}" />
+
+					</group>
+					<!-- Pricelist Fields -->
+					<group attrs="{'invisible':[('section', '!=', 'prices')]}">
+						<field name="pricelist_id"
+							   attrs="{'required':[('section', '=', 'prices')]}"
+							   options="{'no_create': True,'no_open': True}"
+						/>
+						<field name="price" attrs="{'required':[('section', '=', 'prices')]}"/>
+					</group>
 				<footer>
 					<button name="massive_change" string="Massive Change" type="object"
 						class="oe_highlight" />
