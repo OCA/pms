@@ -23,6 +23,7 @@
 # from . import test_reservation
 # from . import test_folio
 from . import test_inherited_ir_http
+from . import test_inherited_product_pricelist
 from . import test_hotel_room_type
 from . import test_hotel_room
 from . import test_massive_changes

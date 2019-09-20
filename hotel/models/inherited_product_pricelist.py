@@ -28,7 +28,11 @@ class ProductPricelist(models.Model):
             if record.pricelist_type == 'daily' and len(record.hotel_ids) != 1:
                 raise ValidationError(_("A daily pricelist is used as a daily Rate Plan for room types "
                                         "and therefore must be related with one and only one hotel."))
-            if record.pricelist_type == 'daily' and len(record.hotel_ids) == 1 \
-                    and record.hotel_ids.id != record.hotel_ids.default_pricelist_id.hotel_ids.id:
-                raise ValidationError(_("Relationship mismatch.") + " " +
-                                      _("This pricelist is used as default in a different hotel."))
+
+            if record.pricelist_type == 'daily' and len(record.hotel_ids) == 1:
+                hotel_id = self.env['hotel.property'].search([
+                    ('default_pricelist_id', '=', record.id)
+                ]) or None
+                if hotel_id and hotel_id != record.hotel_ids:
+                    raise ValidationError(_("Relationship mismatch.") + " " +
+                                          _("This pricelist is used as default in a different hotel."))
