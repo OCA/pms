@@ -68,6 +68,23 @@ class MassiveChangesWizard(models.TransientModel):
                                         \t\t> Sets the price to 45")
 
     # Constraints and onchanges
+    @api.constrains('pricelist_id')
+    def _check_pricelist_id(self):
+        for record in self:
+            if record.pricelist_id.pricelist_type != 'daily':
+                raise ValidationError(_("A daily pricelist plan is required for massive changes.") + " " +
+                                      _("Please review the hotel configuration before proceed."))
+
+    @api.constrains('hotel_id')
+    def _check_hotel_id(self):
+        for record in self:
+            if record.section == 'prices' and record.pricelist_id.hotel_ids != record.hotel_id:
+                raise ValidationError(_("Mismatch between hotel and pricelist plan.") + " " +
+                                      _("The pricelist plan does not belongs to the current hotel."))
+            if record.section == 'restriction' and record.restriction_id.hotel_id != record.hotel_id:
+                raise ValidationError(_("Mismatch between hotel and restriction plan.") + " " +
+                                      _("The restriction plan does not belongs to the current hotel."))
+
     @api.onchange('date_start')
     def onchange_date_start(self):
         self.ensure_one()
@@ -195,12 +212,6 @@ class MassiveChangesWizard(models.TransientModel):
     def _do_massive_change(self):
         hotel_room_type_obj = self.env['hotel.room.type']
         for record in self:
-            if record.section == 'prices' and record.pricelist_id.hotel_ids != record.hotel_id:
-                raise ValidationError(_("Mismatch between hotel and pricelist plan.") + " " +
-                                      _("The pricelist plan does not belongs to the current hotel."))
-            if record.section == 'restriction' and record.restriction_id.hotel_id != record.hotel_id:
-                raise ValidationError(_("Mismatch between hotel and restriction plan.") + " " +
-                                      _("The restriction plan does not belongs to the current hotel."))
             date_start_dt = fields.Date.from_string(record.date_start)
             date_end_dt = fields.Date.from_string(record.date_end)
             # Use min '1' for same date
