@@ -145,7 +145,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'origin': folio.name,
             'type': 'out_invoice',
             'reference': False,
-            'folio_ids': [(6, 0, [folio.id])],
+            'folio_ids': [(6, 0, [folio.id])], #REVIEW: Folio_ids is a computed field, Why need this value?
             'account_id': folio.partner_id.property_account_receivable_id.id,
             'partner_id': folio.partner_invoice_id.id,
             'invoice_line_ids': [(0, 0, {
