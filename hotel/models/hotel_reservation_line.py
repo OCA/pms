@@ -5,10 +5,12 @@ from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 
+
 class HotelReservationLine(models.Model):
     _name = "hotel.reservation.line"
     _order = "date"
 
+    # Default Methods ang Gets
     @api.multi
     def name_get(self):
         result = []
@@ -18,9 +20,26 @@ class HotelReservationLine(models.Model):
             result.append((res.id, name))
         return result
 
-    reservation_id = fields.Many2one('hotel.reservation', string='Reservation',
-                                     ondelete='cascade', required=True,
-                                     copy=False)
+    # Fields declaration
+    reservation_id = fields.Many2one(
+        'hotel.reservation',
+        string='Reservation',
+        ondelete='cascade',
+        required=True,
+        copy=False)
+    invoice_line_ids = fields.Many2many(
+        'account.invoice.line',
+        'reservation_line_invoice_rel',
+        'reservation_line_id',
+        'invoice_line_id',
+        string='Invoice Lines',
+        readonly=True,
+        copy=False)
+    hotel_id = fields.Many2one(
+        'hotel.property',
+        store=True,
+        readonly=True,
+        related='reservation_id.hotel_id')
     date = fields.Date('Date')
     state = fields.Selection(related='reservation_id.state')
     price = fields.Float(
@@ -32,14 +51,8 @@ class HotelReservationLine(models.Model):
     discount = fields.Float(
         string='Discount (%)',
         digits=dp.get_precision('Discount'), default=0.0)
-    invoice_line_ids = fields.Many2many(
-        'account.invoice.line',
-        'reservation_line_invoice_rel',
-        'reservation_line_id', 'invoice_line_id',
-        string='Invoice Lines', readonly=True, copy=False)
-    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
-                               related='reservation_id.hotel_id')
 
+    # Constraints and onchanges
     @api.constrains('date')
     def constrains_duplicated_date(self):
         for record in self:
