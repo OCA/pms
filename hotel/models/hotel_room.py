@@ -25,9 +25,6 @@ class HotelRoom(models.Model):
                                      default=False)
     floor_id = fields.Many2one('hotel.floor', 'Ubication',
                                help='At which floor the room is located.')
-
-    max_adult = fields.Integer('Max Adult')
-    max_child = fields.Integer('Max Child')
     capacity = fields.Integer('Capacity')
     to_be_cleaned = fields.Boolean('To be Cleaned', default=False)
     extra_beds_allowed = fields.Integer('Extra beds allowed',
