@@ -6,4 +6,5 @@ from odoo import models, fields
 class View(models.Model):
     _inherit = 'ir.ui.view'
 
+    # Fields declaration
     type = fields.Selection(selection_add=[('pms', "PMS"), ('mpms', 'Management PMS')])

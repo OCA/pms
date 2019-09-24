@@ -1,18 +1,17 @@
 # Copyright 2018 Alexandre Díaz <dev@redneboa.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-from odoo import models, fields, api
+from odoo import models, api
 _logger = logging.getLogger(__name__)
 
 
-class HotelRoomTypeResrtrictionItem(models.Model):
+class HotelRoomTypeRestrictionItem(models.Model):
     _inherit = 'hotel.room.type.restriction.item'
 
-    # CRUD methods
+    # ORM overrides
     @api.model
     def create(self, vals):
-        res = super(HotelRoomTypeResrtrictionItem, self).create(vals)
-        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
+        res = super(HotelRoomTypeRestrictionItem, self).create(vals)
         if res.restriction_id.id == self.env.user.hotel_id.default_restriction_id.id:
             self.env['bus.hotel.calendar'].send_restriction_notification({
                 'restriction_id': res.restriction_id.id,
@@ -31,7 +30,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
 
     @api.multi
     def write(self, vals):
-        ret_vals = super(HotelRoomTypeResrtrictionItem, self).write(vals)
+        ret_vals = super(HotelRoomTypeRestrictionItem, self).write(vals)
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for record in self:
             bus_hotel_calendar_obj.send_restriction_notification({
@@ -51,7 +50,6 @@ class HotelRoomTypeResrtrictionItem(models.Model):
 
     @api.multi
     def unlink(self):
-        # TODO: refactoring res.config.settings', 'default_restriction_id by the current hotel.property.restriction_id
         default_restriction_id = self.env.user.hotel_id.default_restriction_id.id
         # Construct dictionary with relevant info of removed records
         unlink_vals = []
@@ -71,7 +69,7 @@ class HotelRoomTypeResrtrictionItem(models.Model):
                 'room_type_id': record.room_type_id.id,
                 'id': record.id,
             })
-        res = super(HotelRoomTypeResrtrictionItem, self).unlink()
+        res = super(HotelRoomTypeRestrictionItem, self).unlink()
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
         for uval in unlink_vals:
             bus_hotel_calendar_obj.send_restriction_notification(uval)
