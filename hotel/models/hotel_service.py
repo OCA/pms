@@ -512,10 +512,11 @@ class HotelService(models.Model):
             if reservation and self.is_board_service:
                 board_room_type = reservation.board_service_room_id
                 if board_room_type.price_type == 'fixed':
-                    return self.env['hotel.board.service.room.type.line'].search([
-                        ('hotel_board_service_room_type_id',
-                         '=', board_room_type.id),
-                        ('product_id', '=', self.product_id.id)]).amount
+                    return self.env['hotel.board.service.room.type.line'].\
+                        search([
+                            ('hotel_board_service_room_type_id',
+                             '=', board_room_type.id),
+                            ('product_id', '=', self.product_id.id)]).amount
                 else:
                     return (reservation.price_total *
                             self.env['hotel.board.service.room.type.line'].

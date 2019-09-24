@@ -2,8 +2,6 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
-from odoo.osv.expression import get_unaccent_wrapper
-from odoo.exceptions import ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 

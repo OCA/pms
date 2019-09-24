@@ -27,7 +27,8 @@ class PaymentReturn(models.Model):
                 payments = self.env['account.payment'].search([
                     ('move_line_ids', 'in', line.move_line_ids.ids)
                 ])
-                folios_line = self.env['hotel.folio'].browse(payments.mapped('folio_id.id'))
+                folios_line = self.env['hotel.folio'].browse(
+                    payments.mapped('folio_id.id'))
                 for folio in folios_line:
                     if self.id not in folio.return_ids.ids:
                         folio.update({'return_ids': [(4, self.id)]})
