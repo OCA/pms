@@ -39,7 +39,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             folios = self._get_default_folio()
             reservations = self.env['hotel.reservation']
             for folio in folios:
-                reservations |= folio.room_lines
+                reservations |= folio.reservation_ids
         return reservations
 
     @api.model
@@ -304,7 +304,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     'price_unit': service.price_unit,
                     'service_id': service.id,
                     }
-            for reservation in folio.room_lines.filtered(
+            for reservation in folio.reservation_ids.filtered(
                     lambda x: x.id in self.reservation_ids.ids and
                     x.invoice_status == 'to invoice'):
                 board_service = reservation.board_service_room_id
@@ -363,7 +363,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         services = self.env['hotel.service']
         old_folio_ids = self.reservation_ids.mapped('folio_id.id')
         for folio in folios.filtered(lambda r: r.id not in old_folio_ids):
-            folio_reservations = folio.room_lines
+            folio_reservations = folio.reservation_ids
             if folio_reservations:
                 reservations |= folio_reservations
         self.reservation_ids |= reservations

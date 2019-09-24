@@ -9,22 +9,22 @@
                 <field name="has_channel_reservations" invisible="True" />
                 <field name="customer_notes" readonly="True" attrs="{'invisible':[('has_channel_reservations', '=', False)]}"/>
             </xpath>
-            <!--xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkout']" position="after">
+            <!--xpath expr="//notebook/page/field[@name='reservation_ids']/tree/field[@name='checkout']" position="after">
                 <field name="is_from_ota" invisible="1"/>
             </xpath>
-            <xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkout']" position="attributes">
+            <xpath expr="//notebook/page/field[@name='reservation_ids']/tree/field[@name='checkout']" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_from_ota', '!=', False)]}</attribute>
             </xpath>
-            <xpath expr="//notebook/page/field[@name='room_lines']/tree/field[@name='checkin']" position="attributes">
+            <xpath expr="//notebook/page/field[@name='reservation_ids']/tree/field[@name='checkin']" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_from_ota', '!=', False)]}</attribute>
             </xpath>
-            <xpath expr="//notebook/page/field[@name='room_lines']/form/sheet/header/field[@name='folio_id']" position="after">
+            <xpath expr="//notebook/page/field[@name='reservation_ids']/form/sheet/header/field[@name='folio_id']" position="after">
                 <field name="is_from_ota" invisible="1"/>
             </xpath>
-            <xpath expr="//notebook/page/field[@name='room_lines']/form/sheet/h3/field[@name='checkout']" position="attributes">
+            <xpath expr="//notebook/page/field[@name='reservation_ids']/form/sheet/h3/field[@name='checkout']" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_from_ota', '!=', False)]}</attribute>
             </xpath>
-            <xpath expr="//notebook/page/field[@name='room_lines']/form/sheet/h3/field[@name='checkin']" position="attributes">
+            <xpath expr="//notebook/page/field[@name='reservation_ids']/form/sheet/h3/field[@name='checkin']" position="attributes">
                 <attribute name="attrs">{'readonly': [('is_from_ota', '!=', False)]}</attribute>
             </xpath-->
         </field>

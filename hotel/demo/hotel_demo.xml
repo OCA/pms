@@ -339,7 +339,7 @@
         <!-- reservation of 1 economic room for 1 person -->
         <record id="hotel_folio_0" model="hotel.folio">
             <field name="partner_id" ref="base.res_partner_address_27"/>
-            <field name="room_lines"
+            <field name="reservation_ids"
                    eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('hotel_room_type_0'),
@@ -353,7 +353,7 @@
         <!-- reservation of 1 triple room for 3 people on behalf on the company -->
         <record id="hotel_folio_1" model="hotel.folio">
             <field name="partner_id" ref="base.res_partner_12"/>
-            <field name="room_lines"
+            <field name="reservation_ids"
                    eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('hotel_room_type_3'),
@@ -367,7 +367,7 @@
         <!-- TODO: The third reservation is marked from State: Cancelled to Pending Entry at Folio creation -->
         <record id="hotel_folio_2" model="hotel.folio">
             <field name="partner_id" ref="base.res_partner_address_10"/>
-            <field name="room_lines"
+            <field name="reservation_ids"
                    eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': 1,
@@ -397,7 +397,7 @@
         <!-- reservation of the conference room for 1 day on behalf of a company -->
         <record id="hotel_folio_3" model="hotel.folio">
             <field name="partner_id" ref="base.res_partner_12"/>
-            <field name="room_lines"
+            <field name="reservation_ids"
                    eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('hotel_room_type_4'),
@@ -411,7 +411,7 @@
         <record id="hotel_folio_4" model="hotel.folio">
             <field name="partner_id" ref="main_hotel_property"/>
             <field name="reservation_type">out</field>
-            <field name="room_lines"
+            <field name="reservation_ids"
                    eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('hotel_room_type_1'),

@@ -634,7 +634,7 @@ class HotelReservationImporter(Component):
                 addons = str(book['addons_list']) if any(book['addons_list']) else ''
                 discounts = book.get('discount', '')
                 vals = {
-                    'room_lines': reservations,
+                    'reservation_ids': reservations,
                     'customer_notes': "%s\nADDONS:\n%s\nDISCOUNT:\n%s" % (
                         book['customer_notes'], addons, discounts),
                     'channel_type': 'web',
@@ -654,14 +654,14 @@ class HotelReservationImporter(Component):
 
 
                 # Update Reservation Spitted Parents
-                sorted_rlines = folio_id.room_lines.sorted(key='id')
+                sorted_rlines = folio_id.reservation_ids.sorted(key='id')
                 for k_pid, v_pid in splitted_map.items():
                     preserv = sorted_rlines[k_pid-1]
                     for pid in v_pid:
                         creserv = sorted_rlines[pid-1]
                         creserv.parent_reservation = preserv.id
                 # Bind reservations
-                rlines = sorted_rlines = folio_id.room_lines
+                rlines = sorted_rlines = folio_id.reservation_ids
                 for rline in rlines:
                     for rline_bind in rline.channel_bind_ids:
                         self.binder.bind(rline_bind.external_id, rline_bind)

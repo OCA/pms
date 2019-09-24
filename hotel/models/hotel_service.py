@@ -43,8 +43,8 @@ class HotelService(models.Model):
 
     @api.model
     def _default_ser_room_line(self):
-        if self.env.context.get('room_lines'):
-            ids = [item[1] for item in self.env.context['room_lines']]
+        if self.env.context.get('reservation_ids'):
+            ids = [item[1] for item in self.env.context['reservation_ids']]
             return self.env['hotel.reservation'].browse([
                 (ids)], limit=1)
         elif self.env.context.get('default_ser_room_line'):
@@ -186,7 +186,7 @@ class HotelService(models.Model):
             checkin_dt = fields.Date.from_string(checkin)
             checkout_dt = fields.Date.from_string(checkout)
             nights = abs((checkout_dt - checkin_dt).days)
-            vals.update(self.prepare_service_lines(
+            vals.update(self.prepare_service_ids(
                 dfrom=checkin,
                 days=nights,
                 per_person=product.per_person,
@@ -221,7 +221,7 @@ class HotelService(models.Model):
                     checkin_dt = fields.Date.from_string(checkin)
                     checkout_dt = fields.Date.from_string(checkout)
                     nights = abs((checkout_dt - checkin_dt).days)
-                    record.update(record.prepare_service_lines(
+                    record.update(record.prepare_service_ids(
                         dfrom=checkin,
                         days=nights,
                         per_person=product.per_person,
@@ -289,7 +289,7 @@ class HotelService(models.Model):
         """
         Compute the default quantity according to the
         configuration of the selected product, in per_day product configuration,
-        the qty is autocalculated and readonly based on service_lines qty
+        the qty is autocalculated and readonly based on service_ids qty
         """
         if not self.product_id:
             return
@@ -313,7 +313,7 @@ class HotelService(models.Model):
                 checkin_dt = fields.Date.from_string(checkin)
                 checkout_dt = fields.Date.from_string(checkout)
                 nights = abs((checkout_dt - checkin_dt).days)
-                vals.update(record.prepare_service_lines(
+                vals.update(record.prepare_service_ids(
                     dfrom=checkin,
                     days=nights,
                     per_person=product.per_person,
@@ -393,7 +393,7 @@ class HotelService(models.Model):
                     origin.company_id)
 
     @api.model
-    def prepare_service_lines(self, **kwargs):
+    def prepare_service_ids(self, **kwargs):
         """
         Prepare line and respect the old manual changes on lines
         """
@@ -454,7 +454,7 @@ class HotelService(models.Model):
             record.update(vals)
 
     @api.multi
-    def open_service_lines(self):
+    def open_service_ids(self):
         action = self.env.ref('hotel.action_hotel_services_form').read()[0]
         action['views'] = [(self.env.ref('hotel.hotel_service_view_form').id, 'form')]
         action['res_id'] = self.id
@@ -465,7 +465,7 @@ class HotelService(models.Model):
     #~ def constrains_qty_per_day(self):
         #~ for record in self:
             #~ if record.per_day:
-                #~ service_lines = self.env['hotel.service_line']
-                #~ total_day_qty = sum(service_lines.with_context({'service_id': record.id}).mapped('day_qty'))
+                #~ service_ids = self.env['hotel.service_line']
+                #~ total_day_qty = sum(service_ids.with_context({'service_id': record.id}).mapped('day_qty'))
                 #~ if record.product_qty != total_day_qty:
                     #~ raise ValidationError (_('The quantity per line and per day does not correspond'))

@@ -56,7 +56,7 @@
                 <field name="to_print" />
                 <button type="object" class="oe_stat_button"
                     icon="fa fa-1x fa-bed"
-                    name="open_service_lines"
+                    name="open_service_ids"
                     attrs="{'invisible':[('is_board_service','=', False)]}" />
                 <field name="per_day" invisible="1" readonly="1"/>
                 <field name="folio_id" invisible="1"/>
@@ -71,7 +71,7 @@
                 <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
                 <button type="object" class="oe_stat_button"
                     icon="fa fa-2x fa-bars"
-                    name="open_service_lines"
+                    name="open_service_ids"
                     attrs="{'invisible': [('per_day','=',False)]}"/>
                 <field name="days_qty" invisible="1"/>
                 <field name="price_unit" />

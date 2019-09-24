@@ -47,9 +47,9 @@ class TestHotelReservations(TestHotel):
             org_reserv_end_utc_dt,
             self.hotel_room_simple_100,
             "Reservation Test #2")
-        self.assertEqual(len(folio.room_lines), 2, 'Invalid room lines count')
+        self.assertEqual(len(folio.reservation_ids), 2, 'Invalid room lines count')
         folio.action_cancel()
         self.assertEqual(folio.state, 'cancel', 'Invalid folio state')
-        for rline in folio.room_lines:
+        for rline in folio.reservation_ids:
             self.assertEqual(rline.state, 'cancelled',
                              'Invalid reservation state')

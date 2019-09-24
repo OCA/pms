@@ -49,7 +49,7 @@
             </div>
 
             <!-- Is there a discount on at least one line? -->
-            <t t-set="display_discount" t-value="any([l.discount for l in doc.room_lines])"/>
+            <t t-set="display_discount" t-value="any([l.discount for l in doc.reservation_ids])"/>
 
                 <table class="table table-condensed">
                     <thead>
@@ -64,7 +64,7 @@
                    </thead>
                    <tbody class="sale_tbody">
                             <!-- Lines associated -->
-                            <t t-foreach="doc.room_lines" t-as="l">
+                            <t t-foreach="doc.reservation_ids" t-as="l">
                                 <t t-if="l.to_print == True and l.price_total > 0">
                                     <tr>
                                         <td><span t-field="l.name"/></td>

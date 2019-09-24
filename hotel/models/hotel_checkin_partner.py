@@ -28,7 +28,7 @@ class HotelCheckinPartner(models.Model):
             ])
             partner_ids = []
             if reservation.folio_id:
-                for room in reservation.folio_id.room_lines:
+                for room in reservation.folio_id.reservation_ids:
                     partner_ids.append(room.mapped(
                         'checkin_partner_ids.partner_id.id'))
             if 'checkin_partner_ids' in self.env.context:

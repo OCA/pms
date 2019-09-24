@@ -331,7 +331,7 @@
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="subheading" style="color: #555555" align="justify">
-                                                                                            <strong>Noches</strong>: ${len(object.room_lines[0].reservation_lines)}</td>
+                                                                                            <strong>Noches</strong>: ${len(object.reservation_ids[0].reservation_lines)}</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="paragraph" style="padding: 10px 0 0 0;" align="justify">

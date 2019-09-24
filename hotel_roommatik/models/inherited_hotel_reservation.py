@@ -20,7 +20,7 @@ class HotelReservation(models.Model):
         # the proportional deposit part if the folio has more rooms that the
         # reservations code (this happens when in the same folio are
         # reservations with different checkins/outs convinations)
-        if len(folio.room_lines) > len(reservations) and folio.invoices_paid > 0:
+        if len(folio.reservation_ids) > len(reservations) and folio.invoices_paid > 0:
 
             total_reservations = sum(reservations.mapped('price_total'))
             paid_in_folio = folio.invoices_paid

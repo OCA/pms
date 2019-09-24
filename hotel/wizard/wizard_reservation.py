@@ -28,8 +28,8 @@ class FolioWizard(models.TransientModel):
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
-        if folio and folio.room_lines:
-            return folio.room_lines[0].checkin
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].checkin
         return fields.Date.today()
 
     @api.model
@@ -39,8 +39,8 @@ class FolioWizard(models.TransientModel):
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
-        if folio and folio.room_lines:
-            return folio.room_lines[0].checkout
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].checkout
         return fields.Date.today()
 
     @api.model
@@ -253,7 +253,7 @@ class FolioWizard(models.TransientModel):
         vals = {
             'partner_id': self.partner_id.id,
             'channel_type': self.channel_type,
-            'room_lines': reservations,
+            'reservation_ids': reservations,
             'service_ids': services,
             'pricelist_id': self.pricelist_id.id,
             'internal_comment': self.internal_comment,
@@ -263,7 +263,7 @@ class FolioWizard(models.TransientModel):
         }
         newfol = self.env['hotel.folio'].create(vals)
         if self.confirm:
-            newfol.room_lines.confirm()
+            newfol.reservation_ids.confirm()
         action = self.env.ref('hotel.open_hotel_folio1_form_tree_all').read()[0]
         if newfol:
             action['views'] = [(self.env.ref('hotel.hotel_folio_view_form').id, 'form')]
@@ -543,7 +543,7 @@ class ReservationWizard(models.TransientModel):
                         checkin_dt = fields.Date.from_string(line.checkin)
                         checkout_dt = fields.Date.from_string(line.checkout)
                         nights = abs((checkout_dt - checkin_dt).days)
-                        vals.update(service_line.prepare_service_lines(
+                        vals.update(service_line.prepare_service_ids(
                                 dfrom=line.checkin,
                                 days=nights,
                                 per_person=product.per_person,

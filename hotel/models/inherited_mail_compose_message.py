@@ -15,7 +15,7 @@ class MailComposeMessage(models.TransientModel):
                 self._context['default_res_id']
             ])
             if folio:
-                cmds = [(1, lid, {'to_send': False}) for lid in folio.room_lines.ids]
+                cmds = [(1, lid, {'to_send': False}) for lid in folio.reservation_ids.ids]
                 if any(cmds):
-                    folio.room_lines = cmds
+                    folio.reservation_ids = cmds
         return super(MailComposeMessage, self).send_mail(auto_commit=auto_commit)

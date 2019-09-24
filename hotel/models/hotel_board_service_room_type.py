@@ -126,7 +126,7 @@ class HotelBoardServiceRoomType(models.Model):
     def create(self, vals):
         if 'hotel_board_service_id' in vals:
             vals.update(
-                self.prepare_board_service_room_lines(
+                self.prepare_board_service_reservation_ids(
                     vals['hotel_board_service_id'])
             )
         return super(HotelBoardServiceRoomType, self).create(vals)
@@ -135,14 +135,14 @@ class HotelBoardServiceRoomType(models.Model):
     def write(self, vals):
         if 'hotel_board_service_id' in vals:
             vals.update(
-                self.prepare_board_service_room_lines(
+                self.prepare_board_service_reservation_ids(
                     vals['hotel_board_service_id'])
             )
         return super(HotelBoardServiceRoomType, self).write(vals)
 
     # Business methods
     @api.model
-    def prepare_board_service_room_lines(self, board_service_id):
+    def prepare_board_service_reservation_ids(self, board_service_id):
         """
         Prepare line to price products config
         """

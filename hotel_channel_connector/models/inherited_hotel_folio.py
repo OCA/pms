@@ -8,10 +8,10 @@ from odoo.addons.queue_job.job import job
 class HotelFolio(models.Model):
     _inherit = 'hotel.folio'
 
-    @api.depends('room_lines')
+    @api.depends('reservation_ids')
     def _has_channel_reservations(self):
         for record in self:
-            channel_reservations = record.room_lines.filtered(lambda x: x.room_id)
+            channel_reservations = record.reservation_ids.filtered(lambda x: x.room_id)
             record.has_channel_reservations = any(channel_reservations)
 
     customer_notes = fields.Text("Channel Customer Notes",
@@ -31,7 +31,7 @@ class HotelFolio(models.Model):
     @api.multi
     def action_confirm(self):
         for rec in self:
-            rec.room_lines.write({
+            rec.reservation_ids.write({
                 'to_assign': False,
             })
         return super().action_confirm()
@@ -41,12 +41,12 @@ class HotelFolio(models.Model):
         super().get_grouped_reservations_json(state, import_all=import_all)
         self.ensure_one()
         info_grouped = []
-        for rline in self.room_lines:
+        for rline in self.reservation_ids:
             if (import_all or rline.to_send) and not rline.parent_reservation and rline.state == state and ((rline.state == 'cancelled' and not rline.channel_modified) or rline.state != 'cancelled'):
                 dates = (rline.real_checkin, rline.real_checkout)
                 vals = {
                     'num': len(
-                        self.room_lines.filtered(lambda r: r.real_checkin == dates[0] and r.real_checkout == dates[1] and r.room_type_id.id == rline.room_type_id.id and (r.to_send or import_all) and not r.parent_reservation and r.state == rline.state and ((r.state == 'cancelled' and not r.channel_modified) or r.state != 'cancelled'))
+                        self.reservation_ids.filtered(lambda r: r.real_checkin == dates[0] and r.real_checkout == dates[1] and r.room_type_id.id == rline.room_type_id.id and (r.to_send or import_all) and not r.parent_reservation and r.state == rline.state and ((r.state == 'cancelled' and not r.channel_modified) or r.state != 'cancelled'))
                     ),
                     'room_type': {
                         'id': rline.room_type_id.id,
@@ -68,12 +68,12 @@ class HotelFolio(models.Model):
         return sorted(sorted(info_grouped, key=lambda k: k['num'],
                              reverse=True), key=lambda k: k['room_type']['id'])
 
-    @api.depends('room_lines')
+    @api.depends('reservation_ids')
     def _compute_has_cancelled_reservations_to_send(self):
         super()._compute_has_cancelled_reservations_to_send()
         channel_hotel_reserv_obj = self.env['channel.hotel.reservation']
         for record in self:
-            splitted_reservation_ids = record.room_lines.filtered(lambda x: x.splitted)
+            splitted_reservation_ids = record.reservation_ids.filtered(lambda x: x.splitted)
             has_to_send = False
             for rline in splitted_reservation_ids:
                 master_reservation = rline.parent_reservation or rline

@@ -29,8 +29,8 @@ class HotelReservation(models.Model):
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
-        if folio and folio.room_lines:
-            return folio.room_lines[0].checkin
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].checkin
         else:
             tz_hotel = self.env.user.hotel_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_hotel))
@@ -43,8 +43,8 @@ class HotelReservation(models.Model):
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
-        if folio and folio.room_lines:
-            return folio.room_lines[0].checkout
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].checkout
         else:
             tz_hotel = self.env.user.hotel_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_hotel))
@@ -58,8 +58,8 @@ class HotelReservation(models.Model):
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
-        if folio and folio.room_lines:
-            return folio.room_lines[0].arrival_hour
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].arrival_hour
         else:
             return default_arrival_hour
 
@@ -70,8 +70,8 @@ class HotelReservation(models.Model):
             folio = self.env['hotel.folio'].search([
                 ('id', '=', self._context['folio_id'])
             ])
-        if folio and folio.room_lines:
-            return folio.room_lines[0].departure_hour
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].departure_hour
         else:
             return default_departure_hour
 
@@ -686,7 +686,7 @@ class HotelReservation(models.Model):
                     res.update(
                         self.env['hotel.service']._prepare_add_missing_fields(
                             res))
-                    res.update(self.env['hotel.service'].prepare_service_lines(
+                    res.update(self.env['hotel.service'].prepare_service_ids(
                         dfrom=self.checkin,
                         days=self.nights,
                         per_person=product.per_person,
@@ -916,7 +916,7 @@ class HotelReservation(models.Model):
                 ).days
                 for service in record.service_ids:
                     if service.product_id.per_day:
-                        service.update(service.prepare_service_lines(
+                        service.update(service.prepare_service_ids(
                             dfrom=real_checkin,
                             days=service_days_diff,
                             per_person=service.product_id.per_person,
@@ -943,7 +943,7 @@ class HotelReservation(models.Model):
         # Yes?, then, this is share folio ;)
         for record in self:
             if record.folio_id:
-                record.shared_folio = len(record.folio_id.room_lines) > 1 or \
+                record.shared_folio = len(record.folio_id.reservation_ids) > 1 or \
                     any(record.folio_id.service_ids.filtered(
                         lambda x: x.ser_room_line.id != record.id))
 
