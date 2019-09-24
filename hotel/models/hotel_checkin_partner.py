@@ -12,6 +12,7 @@ from odoo.tools import (
 class HotelCheckinPartner(models.Model):
     _name = 'hotel.checkin.partner'
 
+    # Default Methods ang Gets
     def _default_reservation_id(self):
         if 'reservation_id' in self.env.context:
             reservation = self.env['hotel.reservation'].browse([
@@ -29,13 +30,14 @@ class HotelCheckinPartner(models.Model):
             if reservation.folio_id:
                 for room in reservation.folio_id.room_lines:
                     partner_ids.append(room.mapped(
-                            'checkin_partner_ids.partner_id.id'))
+                        'checkin_partner_ids.partner_id.id'))
             if 'checkin_partner_ids' in self.env.context:
                 for checkin in self.env.context['checkin_partner_ids']:
                     if checkin[0] == 0:
                         partner_ids.append(checkin[2].get('partner_id'))
-            if self._context.get('include_customer') and reservation.partner_id.id \
-                    not in partner_ids and not reservation.partner_id.is_company:
+            if self._context.get('include_customer') and \
+                    reservation.partner_id.id not in partner_ids and \
+                    not reservation.partner_id.is_company:
                 return reservation.partner_id
         return False
 
@@ -72,15 +74,25 @@ class HotelCheckinPartner(models.Model):
     def _get_default_hotel(self):
         return self.env.user.hotel_id
 
-    partner_id = fields.Many2one('res.partner', default=_default_partner_id,
-                                 required=True)
+    # Fields declaration
+    partner_id = fields.Many2one(
+        'res.partner',
+        default=_default_partner_id,
+        required=True)
+    reservation_id = fields.Many2one(
+        'hotel.reservation',
+        default=_default_reservation_id)
+    folio_id = fields.Many2one(
+        'hotel.folio',
+        default=_default_folio_id,
+        readonly=True,
+        required=True)
+    hotel_id = fields.Many2one(
+        'hotel.property',
+        default=_get_default_hotel,
+        required=True)
     email = fields.Char('E-mail', related='partner_id.email')
     mobile = fields.Char('Mobile', related='partner_id.mobile')
-    reservation_id = fields.Many2one(
-        'hotel.reservation', default=_default_reservation_id)
-    folio_id = fields.Many2one('hotel.folio',
-                               default=_default_folio_id,
-                               readonly=True, required=True)
     enter_date = fields.Date(default=_default_enter_date, required=True)
     exit_date = fields.Date(default=_default_exit_date, required=True)
     arrival_hour = fields.Char('Arrival Hour',
@@ -88,24 +100,17 @@ class HotelCheckinPartner(models.Model):
     departure_hour = fields.Char('Departure Hour',
                                  help="Default Departure Hour (HH:MM)")
     auto_booking = fields.Boolean('Get in Now', default=False)
-    state = fields.Selection([('draft', 'Pending Entry'),
-                              ('booking', 'On Board'),
-                              ('done', 'Out'),
-                              ('cancelled', 'Cancelled')],
-                             'State', readonly=True,
-                             default=lambda *a: 'draft',
-                             track_visibility='onchange')
-    hotel_id = fields.Many2one('hotel.property', default=_get_default_hotel,
-                               required=True)
+    state = fields.Selection([
+        ('draft', 'Pending Entry'),
+        ('booking', 'On Board'),
+        ('done', 'Out'),
+        ('cancelled', 'Cancelled')],
+        string='State',
+        readonly=True,
+        default=lambda *a: 'draft',
+        track_visibility='onchange')
 
-    @api.model
-    def create(self, vals):
-        record = super(HotelCheckinPartner, self).create(vals)
-        if vals.get('auto_booking', False):
-            record.action_on_board()
-        return record
-
-    # Validation for Departure date is after arrival date.
+    # Constraints and onchanges
     @api.multi
     @api.constrains('exit_date', 'enter_date')
     def _check_exit_date(self):
@@ -137,13 +142,16 @@ class HotelCheckinPartner(models.Model):
                     raise models.ValidationError(
                         _('A Checkin Guest is configured like a company, \
                           modify it in contact form if its a mistake'))
-                indoor_partner_ids = record.reservation_id.checkin_partner_ids.\
-                    filtered(lambda r: r.id != record.id).mapped('partner_id.id')
+                indoor_partner_ids = record.reservation_id.\
+                    checkin_partner_ids.filtered(
+                        lambda r: r.id != record.id
+                        ).mapped('partner_id.id')
                 if indoor_partner_ids.count(record.partner_id.id) > 1:
                     record.partner_id = None
                     raise models.ValidationError(
                         _('This guest is already registered in the room'))
 
+    # Action methods
     @api.multi
     def action_on_board(self):
         for record in self:
@@ -159,7 +167,9 @@ class HotelCheckinPartner(models.Model):
             if record.reservation_id.state == 'confirm':
                 record.reservation_id.state = 'booking'
                 if record.reservation_id.splitted:
-                    master_reservation = record.reservation_id.parent_reservation or record.reservation_id
+                    master_reservation = \
+                        record.reservation_id.parent_reservation or \
+                        record.reservation_id
                     splitted_reservs = self.env['hotel.reservation'].search([
                         ('splitted', '=', True),
                         '|',
@@ -187,6 +197,15 @@ class HotelCheckinPartner(models.Model):
                 record.update(vals)
         return True
 
+    # ORM Overrides
+    @api.model
+    def create(self, vals):
+        record = super(HotelCheckinPartner, self).create(vals)
+        if vals.get('auto_booking', False):
+            record.action_on_board()
+        return record
+
+    # Business methods
     def _get_arrival_hour(self):
         self.ensure_one()
         tz_hotel = self.env.user.hotel_id.tz
@@ -195,7 +214,8 @@ class HotelCheckinPartner(models.Model):
             datetime.datetime.strptime(fields.Date.today(),
                                        DEFAULT_SERVER_DATE_FORMAT))
         default_arrival_hour = self.env.user.hotel_id.arrival_hour
-        if self.reservation_id.checkin < today.strftime(DEFAULT_SERVER_DATE_FORMAT):
+        if self.reservation_id.checkin < today.strftime(
+                DEFAULT_SERVER_DATE_FORMAT):
             return default_arrival_hour
         now = fields.Datetime.context_timestamp(
             self.with_context(tz=tz_hotel),
@@ -212,7 +232,8 @@ class HotelCheckinPartner(models.Model):
             datetime.datetime.strptime(fields.Date.today(),
                                        DEFAULT_SERVER_DATE_FORMAT))
         default_departure_hour = self.env.user.hotel_id.departure_hour
-        if self.reservation_id.checkout < today.strftime(DEFAULT_SERVER_DATE_FORMAT):
+        if self.reservation_id.checkout < today.strftime(
+                DEFAULT_SERVER_DATE_FORMAT):
             return default_departure_hour
         now = fields.Datetime.context_timestamp(
             self.with_context(tz=tz_hotel),
