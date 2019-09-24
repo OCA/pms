@@ -10,7 +10,8 @@ class HotelRoomAmenityType(models.Model):
 
     # Fields declaration
     name = fields.Char('Amenity Type Name', translate=True, required=True)
-    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False, ondelete='restrict')
+    hotel_ids = fields.Many2many(
+        'hotel.property', string='Hotels', required=False, ondelete='restrict')
     room_amenity_ids = fields.One2many('hotel.amenity',
                                        'room_amenity_type_id',
                                        'Amenities in this category')

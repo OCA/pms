@@ -3,6 +3,7 @@
 from odoo import fields, models
 from odoo.addons import decimal_precision as dp
 
+
 class HotelBoardServiceRoomTypeLine(models.Model):
     _name = 'hotel.board.service.room.type.line'
     _description = 'Services on Board Service included in Room'
@@ -18,5 +19,6 @@ class HotelBoardServiceRoomTypeLine(models.Model):
         'Product',
         required=True,
         readonly=True)
-    #TODO def default_amount "amount of service"
-    amount = fields.Float('Amount', digits=dp.get_precision('Product Price'), default=0.0)
+    # TODO def default_amount "amount of service"
+    amount = fields.Float('Amount', digits=dp.get_precision(
+        'Product Price'), default=0.0)

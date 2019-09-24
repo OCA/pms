@@ -1,4 +1,4 @@
-# Copyright 2017  Dario Lodeiros
+# Copyright 2017  Dario
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models, _
 from odoo.addons import decimal_precision as dp
@@ -79,7 +79,8 @@ class HotelBoardServiceRoomType(models.Model):
                 board_pricelist = self.env['hotel.board.service.room.type'].search([
                     ('pricelist_id', '=', record.pricelist_id.id),
                     ('hotel_room_type_id', '=', record.hotel_room_type_id.id),
-                    ('hotel_board_service_id', '=', record.hotel_board_service_id.id),
+                    ('hotel_board_service_id', '=',
+                     record.hotel_board_service_id.id),
                     ('id', '!=', record.id)
                 ])
                 if board_pricelist:
@@ -89,7 +90,8 @@ class HotelBoardServiceRoomType(models.Model):
                 board_pricelist = self.env['hotel.board.service.room.type'].search([
                     ('pricelist_id', '=', False),
                     ('hotel_room_type_id', '=', record.hotel_room_type_id.id),
-                    ('hotel_board_service_id', '=', record.hotel_board_service_id.id),
+                    ('hotel_board_service_id', '=',
+                     record.hotel_board_service_id.id),
                     ('id', '!=', record.id)
                 ])
                 if board_pricelist:
@@ -124,18 +126,18 @@ class HotelBoardServiceRoomType(models.Model):
     def create(self, vals):
         if 'hotel_board_service_id' in vals:
             vals.update(
-                    self.prepare_board_service_room_lines(
-                        vals['hotel_board_service_id'])
-                )
+                self.prepare_board_service_room_lines(
+                    vals['hotel_board_service_id'])
+            )
         return super(HotelBoardServiceRoomType, self).create(vals)
 
     @api.multi
     def write(self, vals):
         if 'hotel_board_service_id' in vals:
             vals.update(
-                    self.prepare_board_service_room_lines(
-                        vals['hotel_board_service_id'])
-                )
+                self.prepare_board_service_room_lines(
+                    vals['hotel_board_service_id'])
+            )
         return super(HotelBoardServiceRoomType, self).write(vals)
 
     # Business methods
@@ -148,8 +150,8 @@ class HotelBoardServiceRoomType(models.Model):
         board_service = self.env['hotel.board.service'].browse(
             board_service_id)
         for line in board_service.board_service_line_ids:
-                cmds.append((0, False, {
-                    'product_id': line.product_id.id,
-                    'amount': line.amount
-                }))
+            cmds.append((0, False, {
+                'product_id': line.product_id.id,
+                'amount': line.amount
+            }))
         return {'board_service_line_ids': cmds}

@@ -9,11 +9,18 @@ class HotelCancelationRule(models.Model):
     _name = 'hotel.cancelation.rule'
     _description = 'Cancelation Rules'
 
+    # Fields declaration
     name = fields.Char('Amenity Name', translate=True, required=True)
+    pricelist_ids = fields.One2many(
+        'product.pricelist',
+        'cancelation_rule_id',
+        'Pricelist that use this rule')
+    hotel_ids = fields.Many2many(
+        'hotel.property',
+        string='Hotels',
+        required=False,
+        ondelete='restrict')
     active = fields.Boolean('Active', default=True)
-    pricelist_ids = fields.One2many('product.pricelist',
-                                    'cancelation_rule_id',
-                                    'Pricelist that use this rule')
     days_intime = fields.Integer(
         'Days Late',
         help='Maximum number of days for free cancellation before Checkin')
@@ -29,7 +36,5 @@ class HotelCancelationRule(models.Model):
         ('all', 'All Days'),
         ('days', 'Specify days')], 'No Show apply on', default='all')
     days_noshow = fields.Integer('NoShow first days', default="2")
-    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
-                                 ondelete='restrict')
 
-    #TODO: Constrain coherence hotel_ids pricelist and cancelation_rules
+    # TODO: Constrain coherence hotel_ids pricelist and cancelation_rules
