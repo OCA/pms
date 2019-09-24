@@ -10,10 +10,15 @@ class HotelRoomAmenity(models.Model):
 
     # Fields declaration
     name = fields.Char('Amenity Name', translate=True, required=True)
-    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False, ondelete='restrict')
+    hotel_ids = fields.Many2many(
+        'hotel.property',
+        string='Hotels',
+        required=False,
+        ondelete='restrict')
+    room_amenity_type_id = fields.Many2one(
+        'hotel.amenity.type',
+        'Amenity Category')
     default_code = fields.Char('Internal Reference')
-    room_amenity_type_id = fields.Many2one('hotel.amenity.type',
-                                           'Amenity Category')
     active = fields.Boolean('Active', default=True)
 
     # TODO: Constrain coherence hotel_ids with amenity types hotel_ids

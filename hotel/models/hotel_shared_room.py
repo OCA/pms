@@ -58,8 +58,6 @@ class HotelSharedRoom(models.Model):
             name = u'%s (%s)' % (self.name, i + 1)
             bed_vals = {
                 'name': name,
-                'max_adult': 1,
-                'max_child': 0,
                 'capacity': 1,
                 'room_type_id': self.room_type_id.id,
                 'sequence': self.sequence,
