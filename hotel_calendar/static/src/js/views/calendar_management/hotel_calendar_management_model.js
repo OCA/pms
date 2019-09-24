@@ -52,8 +52,7 @@ return AbstractModel.extend({
     },
 
     get_restriction_plans: function () {
-        // TODO: FIXME: search and read restriction plans for current hotel
-        var domain = [['item_ids.room_type_id.hotel_id', '=', Session.hotel_id]];
+        var domain = [['hotel_id', '=', Session.hotel_id]];
         return this._rpc({
             model: 'hotel.room.type.restriction',
             method: 'search_read',

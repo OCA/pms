@@ -8,7 +8,6 @@ from . import inherited_hotel_reservation
 from . import inherited_res_company
 from . import inherited_res_users
 from . import inherited_hotel_room_type_restriction_item
-from . import inherited_product_pricelist
 from . import inherited_product_pricelist_item
 from . import inherited_hotel_folio
 from . import ir_actions_act_window_view

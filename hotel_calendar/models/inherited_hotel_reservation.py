@@ -18,7 +18,7 @@ class HotelReservation(models.Model):
     reserve_color_text = fields.Char(compute='_compute_color', string='Color',
                                      store=True)
 
-    # Business methods
+    # TODO: Add the following method into _compute_color
     @api.multi
     def _generate_color(self):
         self.ensure_one()
@@ -58,6 +58,7 @@ class HotelReservation(models.Model):
                 reserv_color_text = company_id.color_letter_payment_pending
         return reserv_color, reserv_color_text
 
+    # Constraints and onchanges
     @api.depends('state', 'reservation_type', 'folio_id.pending_amount', 'to_assign')
     def _compute_color(self):
         for record in self:
@@ -67,24 +68,30 @@ class HotelReservation(models.Model):
                 'reserve_color_text': colors[1],
             })
 
+    # ORM overrides
     @api.model
-    def get_hcalendar_settings(self):
-        type_move = self.env.user.hotel_id.pms_type_move
-        return {
-            'divide_rooms_by_capacity': self.env.user.hotel_id.pms_divide_rooms_by_capacity,
-            'eday_week': self.env.user.hotel_id.pms_end_day_week,
-            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
-            'days': self.env.user.hotel_id.pms_default_num_days,
-            'allow_invalid_actions': type_move == 'allow_invalid',
-            'assisted_movement': type_move == 'assisted',
-            'default_arrival_hour': self.env.user.hotel_id.default_arrival_hour,
-            'default_departure_hour': self.env.user.hotel_id.default_departure_hour,
-            'show_notifications': self.env.user.pms_show_notifications,
-            'show_pricelist': self.env.user.pms_show_pricelist,
-            'show_availability': self.env.user.pms_show_availability,
-            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
-        }
+    def create(self, vals):
+        reservation_id = super(HotelReservation, self).create(vals)
+        reservation_id.send_bus_notification('create',
+                                             'notify',
+                                             _("Reservation Created"))
+        return reservation_id
 
+    @api.multi
+    def write(self, vals):
+        _logger.info("RESERV WRITE")
+        ret = super(HotelReservation, self).write(vals)
+        self.send_bus_notification('write', 'noshow')
+        return ret
+
+    @api.multi
+    def unlink(self):
+        self.send_bus_notification('unlink',
+                                   'warn',
+                                   _("Reservation Deleted"))
+        return super(HotelReservation, self).unlink()
+
+    # Business methods
     @api.model
     def _hcalendar_room_data(self, rooms):
         _logger.warning('_found [%s] rooms for hotel [%s]', len(rooms), self.env.user.hotel_id.id)
@@ -404,6 +411,24 @@ class HotelReservation(models.Model):
         }
         return vals
 
+    @api.model
+    def get_hcalendar_settings(self):
+        type_move = self.env.user.hotel_id.pms_type_move
+        return {
+            'divide_rooms_by_capacity': self.env.user.hotel_id.pms_divide_rooms_by_capacity,
+            'eday_week': self.env.user.hotel_id.pms_end_day_week,
+            'eday_week_offset': self.env.user.hotel_id.pms_end_day_week_offset,
+            'days': self.env.user.hotel_id.pms_default_num_days,
+            'allow_invalid_actions': type_move == 'allow_invalid',
+            'assisted_movement': type_move == 'assisted',
+            'default_arrival_hour': self.env.user.hotel_id.default_arrival_hour,
+            'default_departure_hour': self.env.user.hotel_id.default_departure_hour,
+            'show_notifications': self.env.user.pms_show_notifications,
+            'show_pricelist': self.env.user.pms_show_pricelist,
+            'show_availability': self.env.user.pms_show_availability,
+            'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
+        }
+
     @api.multi
     def generate_bus_values(self, naction, ntype, ntitle=''):
         self.ensure_one()
@@ -494,26 +519,3 @@ class HotelReservation(models.Model):
             })
 
         return True
-
-    # CRUD methods
-    @api.model
-    def create(self, vals):
-        reservation_id = super(HotelReservation, self).create(vals)
-        reservation_id.send_bus_notification('create',
-                                             'notify',
-                                             _("Reservation Created"))
-        return reservation_id
-
-    @api.multi
-    def write(self, vals):
-        _logger.info("RESERV WRITE")
-        ret = super(HotelReservation, self).write(vals)
-        self.send_bus_notification('write', 'noshow')
-        return ret
-
-    @api.multi
-    def unlink(self):
-        self.send_bus_notification('unlink',
-                                   'warn',
-                                   _("Reservation Deleted"))
-        return super(HotelReservation, self).unlink()

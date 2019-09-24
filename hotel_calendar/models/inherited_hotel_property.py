@@ -6,6 +6,7 @@ from odoo import models, fields
 class HotelProperty(models.Model):
     _inherit = 'hotel.property'
 
+    # Fields declaration
     pms_show_num_rooms = fields.Integer('Number of rooms to show',
                                         default=0)
     pms_divide_rooms_by_capacity = fields.Boolean('Divide rooms by capacity',

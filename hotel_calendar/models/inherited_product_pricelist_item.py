@@ -6,7 +6,7 @@ from odoo import models, api
 class ProductPricelistItem(models.Model):
     _inherit = 'product.pricelist.item'
 
-    # CRUD methods
+    # ORM overrides
     @api.model
     def create(self, vals):
         res = super(ProductPricelistItem, self).create(vals)

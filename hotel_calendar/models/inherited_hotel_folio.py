@@ -6,7 +6,7 @@ from odoo import models, api, _
 class HotelFolio(models.Model):
     _inherit = 'hotel.folio'
 
-    # CRUD methods
+    # ORM overrides
     @api.multi
     def write(self, vals):
         ret = super(HotelFolio, self).write(vals)

@@ -6,10 +6,12 @@ from odoo import models, fields
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
+    # Fields declaration
     pms_show_notifications = fields.Boolean('Show Notifications', default=True)
     pms_show_pricelist = fields.Boolean('Show Pricelist', default=True)
     pms_show_availability = fields.Boolean('Show Availability', default=True)
 
+    # ORM overrides
     def __init__(self, pool, cr):
         """ Override of __init__ to add access rights.
         Access rights are disabled by default, but allowed on some specific
