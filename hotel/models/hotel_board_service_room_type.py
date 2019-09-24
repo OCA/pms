@@ -18,9 +18,12 @@ class HotelBoardServiceRoomType(models.Model):
         result = []
         for res in self:
             if res.pricelist_id:
-                name = u'%s (%s)' % (res.hotel_board_service_id.name, res.pricelist_id.name)
+                name = u'%s (%s)' % (
+                    res.hotel_board_service_id.name,
+                    res.pricelist_id.name)
             else:
-                name = u'%s (%s)' % (res.hotel_board_service_id.name, _('Generic'))
+                name = u'%s (%s)' % (res.hotel_board_service_id.name,
+                                     _('Generic'))
             result.append((res.id, name))
         return result
 

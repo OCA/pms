@@ -4,7 +4,7 @@ from odoo import fields, models
 from odoo.addons import decimal_precision as dp
 
 class HotelBoardServiceRoomTypeLine(models.Model):
-    _name = 'hotel.board.service.room.type.line's
+    _name = 'hotel.board.service.room.type.line'
     _description = 'Services on Board Service included in Room'
 
     # Fields declaration
