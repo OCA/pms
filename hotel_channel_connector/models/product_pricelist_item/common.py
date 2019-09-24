@@ -55,8 +55,8 @@ class ProductPricelistItem(models.Model):
         for record in self:
             channel_room_type = self.env['channel.hotel.room.type'].search(
                 [('product_tmpl_id', '=', record.product_tmpl_id.id)])
-            if record.fixed_price < channel_room_type.min_price or \
-                    record.fixed_price > channel_room_type.max_price:
+            if channel_room_type and (record.fixed_price < channel_room_type.min_price or \
+                    record.fixed_price > channel_room_type.max_price):
                 msg = _("The room type '%s' limits the price between '%s' and '%s'.") \
                       % (record.name, channel_room_type.min_price, channel_room_type.max_price)
                 raise ValidationError(msg)

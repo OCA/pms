@@ -49,11 +49,11 @@ class CashDailyReportWizard(models.TransientModel):
     @api.model
     @api.model
     def _get_default_date_start(self):
-        return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+        return datetime.datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     @api.model
     def _get_default_date_end(self):
-        return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+        return datetime.datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
 
     date_start = fields.Date("Start Date", default=_get_default_date_start)
     date_end = fields.Date("End Date", default=_get_default_date_end)

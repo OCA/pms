@@ -148,7 +148,7 @@ class HotelReservationImporter(Component):
         # Parse 'ancyllary' info
         if 'ancillary' in broom:
             if 'guests' in broom['ancillary']:
-                persons = broom['ancillary']['guests']
+                persons = min(broom['ancillary']['guests'], persons)
             if 'tax_inclusive' in broom['ancillary'] and not broom['ancillary']['tax_inclusive']:
                 _logger.info("--- Incoming Reservation without taxes included!")
                 tax_inclusive = False
