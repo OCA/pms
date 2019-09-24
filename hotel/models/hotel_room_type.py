@@ -53,7 +53,7 @@ class HotelRoomType(models.Model):
         for record in self:
             record.total_rooms_count = len(record.room_ids)
 
-    # CRUD methods
+    # ORM Overrides
     @api.model
     def create(self, vals):
         """ Add room types as not purchase services. """

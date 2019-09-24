@@ -8,20 +8,37 @@ class HotelBoardService(models.Model):
     _name = "hotel.board.service"
     _description = "Board Services"
 
-    name = fields.Char('Board Name', translate=True, size=64, required=True, index=True)
-    board_service_line_ids = fields.One2many('hotel.board.service.line',
-                                             'hotel_board_service_id')
-    price_type = fields.Selection([
-        ('fixed','Fixed'),
-        ('percent','Percent')], string='Type', default='fixed', required=True)
+    # Fields declaration
+    name = fields.Char(
+        'Board Name',
+        translate=True,
+        size=64,
+        required=True,
+        index=True)
+    board_service_line_ids = fields.One2many(
+        'hotel.board.service.line',
+        'hotel_board_service_id')
+    hotel_ids = fields.Many2many(
+        'hotel.property',
+        string='Hotels',
+        required=False,
+        ondelete='restrict')
     hotel_board_service_room_type_ids = fields.One2many(
-        'hotel.board.service.room.type', 'hotel_board_service_id')
-    amount = fields.Float('Amount',
-                          digits=dp.get_precision('Product Price'),
-                          compute='_compute_board_amount',
-                          store=True)
-    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False, ondelete='restrict')
+        'hotel.board.service.room.type',
+        'hotel_board_service_id')
+    price_type = fields.Selection([
+        ('fixed', 'Fixed'),
+        ('percent', 'Percent')],
+        string='Type',
+        default='fixed',
+        required=True)
+    amount = fields.Float(
+        'Amount',
+        digits=dp.get_precision('Product Price'),
+        compute='_compute_board_amount',
+        store=True)
 
+    # Compute and Search methods
     @api.depends('board_service_line_ids.amount')
     def _compute_board_amount(self):
         for record in self:
