@@ -42,7 +42,7 @@ class HotelServiceLine(models.Model):
         store=True)
     room_id = fields.Many2one(
         string='Room',
-        related="service_id.ser_room_line",
+        related="service_id.reservation_id",
         readonly=True,
         store=True)
     discount = fields.Float(

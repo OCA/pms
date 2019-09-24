@@ -237,7 +237,7 @@ class HotelReservation(models.Model):
               ON hf.closure_reason_id = rcr.id
             LEFT JOIN hotel_board_service_room_type_rel AS hbsrt ON hr.board_service_room_id = hbsrt.id
             LEFT JOIN hotel_board_service AS hbs ON hbsrt.hotel_board_service_id = hbs.id
-            LEFT JOIN hotel_service AS hs ON hr.id = hs.ser_room_line
+            LEFT JOIN hotel_service AS hs ON hr.id = hs.reservation_id
             LEFT JOIN product_product AS pp2 ON hs.product_id = pp2.id
             LEFT JOIN product_template AS pt2 ON pp2.product_tmpl_id = pt2.id
             WHERE room_id IN %s AND (

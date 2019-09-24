@@ -23,19 +23,19 @@ class HotelService(models.Model):
         for rec in self:
             name = []
             name.append('%(name)s' % {'name': rec.name})
-            if rec.ser_room_line.name:
-                name.append('%(name)s' % {'name': rec.ser_room_line.name})
+            if rec.reservation_id.name:
+                name.append('%(name)s' % {'name': rec.reservation_id.name})
             result.append((rec.id, ", ".join(name)))
         return result
 
     @api.model
-    def _default_ser_room_line(self):
+    def _default_reservation_id(self):
         if self.env.context.get('reservation_ids'):
             ids = [item[1] for item in self.env.context['reservation_ids']]
             return self.env['hotel.reservation'].browse([
                 (ids)], limit=1)
-        elif self.env.context.get('default_ser_room_line'):
-            return self.env.context.get('default_ser_room_line')
+        elif self.env.context.get('default_reservation_id'):
+            return self.env.context.get('default_reservation_id')
         return False
 
     @api.model
@@ -56,10 +56,10 @@ class HotelService(models.Model):
         'Folio',
         ondelete='cascade',
         default=_default_folio_id)
-    ser_room_line = fields.Many2one(
+    reservation_id = fields.Many2one(
         'hotel.reservation',
         'Room',
-        default=_default_ser_room_line)
+        default=_default_reservation_id)
     service_line_ids = fields.One2many(
         'hotel.service.line',
         'service_id')
@@ -235,8 +235,8 @@ class HotelService(models.Model):
         for record in self:
             folio = record.folio_id or self.env['hotel.folio'].browse(
                 self.env.context.get('default_folio_id'))
-            reservation = record.ser_room_line or self.env.context.get(
-                'ser_room_line')
+            reservation = record.reservation_id or self.env.context.get(
+                'reservation_id')
             currency = folio.currency_id if folio else reservation.currency_id
             product = record.product_id
             price = record.price_unit * (1 - (record.discount or 0.0) * 0.01)
@@ -277,14 +277,14 @@ class HotelService(models.Model):
         vals = {}
         vals['product_qty'] = 1.0
         for record in self:
-            if record.per_day and record.ser_room_line:
+            if record.per_day and record.reservation_id:
                 product = record.product_id
-                if self.env.context.get('default_ser_room_line'):
+                if self.env.context.get('default_reservation_id'):
                     reservation = self.env['hotel.reservation'].browse(
-                        self.env.context.get('default_ser_room_line')
+                        self.env.context.get('default_reservation_id')
                     )
                 else:
-                    reservation = record.ser_room_line
+                    reservation = record.reservation_id
                 if reservation.splitted:
                     checkin = reservation.real_checkin
                     checkout = reservation.real_checkout
@@ -354,7 +354,7 @@ class HotelService(models.Model):
         if not(name == '' and operator == 'ilike'):
             args += [
                 '|',
-                ('ser_room_line.name', operator, name),
+                ('reservation_id.name', operator, name),
                 ('name', operator, name)
             ]
         return super(HotelService, self).name_search(
@@ -365,7 +365,7 @@ class HotelService(models.Model):
         vals.update(self._prepare_add_missing_fields(vals))
         if self.compute_lines_out_vals(vals):
             reservation = self.env['hotel.reservation'].browse(
-                vals['ser_room_line'])
+                vals['reservation_id'])
             product = self.env['product.product'].browse(vals['product_id'])
             if reservation.splitted:
                 checkin = reservation.real_checkin
@@ -401,8 +401,8 @@ class HotelService(models.Model):
             else:
                 for record in self:
                     reservations = self.env['hotel.reservation']
-                    reservation = reservations.browse(vals['ser_room_line']) \
-                        if 'ser_room_line' in vals else record.ser_room_line
+                    reservation = reservations.browse(vals['reservation_id']) \
+                        if 'reservation_id' in vals else record.reservation_id
                     if reservation.splitted:
                         checkin = reservation.real_checkin
                         checkout = reservation.real_checkout
@@ -459,8 +459,8 @@ class HotelService(models.Model):
             # If company_id is set, always filter taxes by the company
             folio = record.folio_id or self.env['hotel.folio'].browse(
                 self.env.context.get('default_folio_id'))
-            reservation = record.ser_room_line or self.env.context.get(
-                'ser_room_line')
+            reservation = record.reservation_id or self.env.context.get(
+                'reservation_id')
             origin = folio if folio else reservation
             record.tax_ids = record.product_id.taxes_id.filtered(
                 lambda r: not record.company_id or
@@ -469,8 +469,8 @@ class HotelService(models.Model):
     @api.multi
     def _get_display_price(self, product):
         folio = self.folio_id or self.env.context.get('default_folio_id')
-        reservation = self.ser_room_line or self.env.context.get(
-            'ser_room_line')
+        reservation = self.reservation_id or self.env.context.get(
+            'reservation_id')
         origin = folio if folio else reservation
         if origin.pricelist_id.discount_policy == 'with_discount':
             return product.with_context(pricelist=origin.pricelist_id.id).price
@@ -503,8 +503,8 @@ class HotelService(models.Model):
     def _compute_price_unit(self):
         self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')
-        reservation = self.ser_room_line or self.env.context.get(
-            'ser_room_line')
+        reservation = self.reservation_id or self.env.context.get(
+            'reservation_id')
         origin = reservation if reservation else folio
         if origin:
             partner = origin.partner_id
