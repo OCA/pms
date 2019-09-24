@@ -16,9 +16,15 @@ class HotelRoomTypeClass(models.Model):
 
     name = fields.Char('Class Name', required=True, translate=True)
     # Relationship between models
-    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
-                                 ondelete='restrict')
-    room_type_ids = fields.One2many('hotel.room.type', 'class_id', 'Types')
+    hotel_ids = fields.Many2many(
+        'hotel.property',
+        string='Hotels',
+        required=False,
+        ondelete='restrict')
+    room_type_ids = fields.One2many(
+        'hotel.room.type',
+        'class_id',
+        'Types')
     code_class = fields.Char('Code')
     active = fields.Boolean('Active', default=True)
     sequence = fields.Integer('Sequence', default=0)

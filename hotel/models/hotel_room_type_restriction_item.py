@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class HotelRoomTypeRestrictionItem(models.Model):
     _name = 'hotel.room.type.restriction.item'
 
+    # Field Declarations
     restriction_id = fields.Many2one('hotel.room.type.restriction',
                                      'Restriction Plan', ondelete='cascade',
                                      index=True)
@@ -26,6 +27,7 @@ class HotelRoomTypeRestrictionItem(models.Model):
                          'unique(restriction_id, room_type_id, date)',
                          'Only can exists one restriction in the same day for the same room type!')]
 
+    # Constraints and onchanges
     @api.multi
     @api.constrains('min_stay', 'min_stay_arrival', 'max_stay',
                     'max_stay_arrival')
