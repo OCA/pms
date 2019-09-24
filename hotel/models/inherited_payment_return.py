@@ -6,10 +6,17 @@ from openerp import models, fields, api, _
 class PaymentReturn(models.Model):
     _inherit = 'payment.return'
 
-    folio_id = fields.Many2one('hotel.folio', string='Folio')
-    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
-                               related='folio_id.hotel_id')
+    # Fields declaration
+    folio_id = fields.Many2one(
+        'hotel.folio',
+        string='Folio')
+    hotel_id = fields.Many2one(
+        'hotel.property',
+        store=True,
+        readonly=True,
+        related='folio_id.hotel_id')
 
+    # Business methods
     @api.multi
     def action_confirm(self):
         pay = super(PaymentReturn, self).action_confirm()

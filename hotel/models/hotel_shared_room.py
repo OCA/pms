@@ -11,30 +11,41 @@ class HotelSharedRoom(models.Model):
     _description = 'Hotel Shared Room'
     _order = "room_type_id, name"
 
+    # Fields declaration
     name = fields.Char('Room Name', required=True)
-    active = fields.Boolean('Active', default=True)
     room_type_id = fields.Many2one(
-        'hotel.room.type', 'Hotel Room Type',
-        required=True, ondelete='restrict',
+        'hotel.room.type',
+        'Hotel Room Type',
+        required=True,
+        ondelete='restrict',
         domain=[('shared_room', '=', True)]
         )
-    hotel_id = fields.Many2one('hotel.property', store=True, readonly=True,
-                               related='room_type_id.hotel_id')
-    floor_id = fields.Many2one('hotel.floor', 'Ubication',
-                               help='At which floor the room is located.',
-                               ondelete='restrict',)
+    hotel_id = fields.Many2one(
+        'hotel.property',
+        store=True,
+        readonly=True,
+        related='room_type_id.hotel_id')
+    floor_id = fields.Many2one(
+        'hotel.floor',
+        'Ubication',
+        ondelete='restrict',
+        help='At which floor the room is located.')
+    bed_ids = fields.One2many(
+        'hotel.room',
+        'shared_room_id',
+        readonly=True,
+        ondelete='restrict',)
+    active = fields.Boolean('Active', default=True)
     sequence = fields.Integer('Sequence', required=True)
     beds = fields.Integer('Beds')
-    bed_ids = fields.One2many('hotel.room',
-                              'shared_room_id',
-                              readonly=True,
-                              ondelete='restrict',)
     description_sale = fields.Text(
-        'Sale Description', translate=True,
+        'Sale Description',
+        translate=True,
         help="A description of the Product that you want to communicate to "
              " your customers. This description will be copied to every Sales "
              " Order, Delivery Order and Customer Invoice/Credit Note")
 
+    # Constraints and onchanges
     @api.constrains('beds')
     def _constrain_beds(self):
         self.ensure_one()

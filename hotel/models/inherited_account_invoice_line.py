@@ -1,11 +1,13 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-from odoo import api, fields, models, _
+from odoo import fields, models
+
 
 class AccountInvoiceLine(models.Model):
     _inherit = 'account.invoice.line'
 
+    # Fields declaration
     reservation_ids = fields.Many2many(
         'hotel.reservation',
         'reservation_invoice_rel',

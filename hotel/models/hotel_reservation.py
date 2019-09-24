@@ -943,8 +943,9 @@ class HotelReservation(models.Model):
         # Yes?, then, this is share folio ;)
         for record in self:
             if record.folio_id:
-                record.shared_folio = len(record.folio_id.reservation_ids) > 1 or \
-                    any(record.folio_id.service_ids.filtered(
+                record.shared_folio = \
+                    len(record.folio_id.reservation_ids) > 1 \
+                    or any(record.folio_id.service_ids.filtered(
                         lambda x: x.ser_room_line.id != record.id))
 
     @api.multi
