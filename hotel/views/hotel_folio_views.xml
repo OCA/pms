@@ -2,6 +2,13 @@
 <odoo>
 
     <!--=== Hotel Folio ==== -->
+    <act_window id="action_view_folio_advance_payment_inv"
+        name="Invoice Folio"
+        src_model="hotel.folio"
+        res_model="folio.advance.payment.inv"
+        key2="client_action_multi" target="new"
+        view_mode="form" multi="True"/>
+
     <!-- Form view of hotel folio -->
     <record model="ir.ui.view" id="hotel_folio_view_form">
         <field name="name">hotel.folio.form</field>
@@ -318,13 +325,6 @@
     </record>
 
     <!-- Add create invoice merge folio -->
-
-    <act_window id="action_view_folio_advance_payment_inv"
-        name="Invoice Folio"
-        src_model="hotel.folio"
-        res_model="folio.advance.payment.inv"
-        key2="client_action_multi" target="new"
-        view_mode="form" multi="True"/>
 
     <act_window name="Send Confirm Mail"
         res_model="mail.compose.message"

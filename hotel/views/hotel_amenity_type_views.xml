@@ -40,8 +40,6 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="menu_amenity" name="Amenity"
-        parent="hotel.hotel_configuration_menu" sequence="2" />
     <menuitem name="Amenity Types"
         id="menu_action_hotel_room_amenity_type_view_form" action="action_hotel_room_amenity_type_view_form"
         sequence="3" parent="hotel.menu_amenity" />

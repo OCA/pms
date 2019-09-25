@@ -11,11 +11,11 @@ class HotelRoomTypeRestriction(models.Model):
     # Default methods
     @api.model
     def _get_default_hotel(self):
-        return self.env.user.hotel_id
+        return self.env.user.hotel_id or None
 
     # Fields declaration
     name = fields.Char('Restriction Plan Name', required=True)
-    hotel_id = fields.Many2one('hotel.property', 'Hotel', required=True, ondelete='restrict',
+    hotel_id = fields.Many2one('hotel.property', 'Hotel', ondelete='restrict',
                                default=_get_default_hotel)
     item_ids = fields.One2many('hotel.room.type.restriction.item',
                                'restriction_id', string='Restriction Items',

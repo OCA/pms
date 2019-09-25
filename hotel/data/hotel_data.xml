@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Basic hotel  -->
+
+        <!-- hotel.users -->
+
+        <record id="base.user_root" model="res.users">
+            <field name="groups_id" eval="[(4,ref('hotel.group_hotel_manager'))]"/>
+        </record>
+
+        <record id="base.user_demo" model="res.users">
+            <field name="groups_id" eval="[(4,ref('hotel.group_hotel_user'))]"/>
+        </record>
+
+    <!-- Basic hotel  -->
+
         <record id="main_hotel_room_type_restriction" model="hotel.room.type.restriction">
             <field name="name">Restriction Plan</field>
         </record>
