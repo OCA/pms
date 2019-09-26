@@ -12,13 +12,18 @@ class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
     # Fields declaration
-    hotel_ids = fields.Many2many('hotel.property', string='Hotels', required=False,
-                                 ondelete='restrict')
-    cancelation_rule_id = fields.Many2one('hotel.cancelation.rule',string="Cancelation Policy")
-
+    hotel_ids = fields.Many2many(
+        'hotel.property',
+        string='Hotels',
+        required=False,
+        ondelete='restrict')
+    cancelation_rule_id = fields.Many2one(
+        'hotel.cancelation.rule',
+        string="Cancelation Policy")
     pricelist_type = fields.Selection([
-        ('daily', 'Daily Plan'),
-    ], string='Pricelist Type', default='daily')
+        ('daily', 'Daily Plan')],
+                                      string='Pricelist Type',
+                                      default='daily')
     is_staff = fields.Boolean('Is Staff')
 
     # Constraints and onchanges
@@ -26,13 +31,17 @@ class ProductPricelist(models.Model):
     def _check_pricelist_type_hotel_ids(self):
         for record in self:
             if record.pricelist_type == 'daily' and len(record.hotel_ids) != 1:
-                raise ValidationError(_("A daily pricelist is used as a daily Rate Plan for room types "
-                                        "and therefore must be related with one and only one hotel."))
+                raise ValidationError(
+                    _("A daily pricelist is used as a daily Rate Plan "
+                      "for room types and therefore must be related with "
+                      "one and only one hotel."))
 
             if record.pricelist_type == 'daily' and len(record.hotel_ids) == 1:
                 hotel_id = self.env['hotel.property'].search([
                     ('default_pricelist_id', '=', record.id)
                 ]) or None
                 if hotel_id and hotel_id != record.hotel_ids:
-                    raise ValidationError(_("Relationship mismatch.") + " " +
-                                          _("This pricelist is used as default in a different hotel."))
+                    raise ValidationError(
+                        _("Relationship mismatch.") + " " +
+                        _("This pricelist is used as default in a "
+                          "different hotel."))

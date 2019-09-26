@@ -7758,7 +7758,7 @@ msgstr "Devoluciones"
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_room_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_wizard_room_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_service_line_room_id
-#: model:ir.model.fields,field_description:hotel.field_hotel_service_ser_room_line
+#: model:ir.model.fields,field_description:hotel.field_hotel_service_reservation_id
 #: model:ir.ui.menu,name:hotel.menu_hotel_room
 #: model:ir.ui.view,arch_db:hotel.hotel_reservation_view_form
 msgid "Room"

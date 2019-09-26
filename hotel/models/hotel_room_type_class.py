@@ -14,6 +14,7 @@ class HotelRoomTypeClass(models.Model):
     _description = "Room Type Class"
     _order = "sequence, name, code_class"
 
+    # Fields declaration
     name = fields.Char('Class Name', required=True, translate=True)
     # Relationship between models
     hotel_ids = fields.Many2many(

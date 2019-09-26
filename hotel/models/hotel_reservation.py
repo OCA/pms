@@ -139,7 +139,7 @@ class HotelReservation(models.Model):
         required=True)
     service_ids = fields.One2many(
         'hotel.service',
-        'ser_room_line')
+        'reservation_id')
     pricelist_id = fields.Many2one(
         'product.pricelist',
         related='folio_id.pricelist_id')
@@ -680,7 +680,7 @@ class HotelReservation(models.Model):
                         'product_id': product.id,
                         'is_board_service': True,
                         'folio_id': self.folio_id.id,
-                        'ser_room_line': self.id,
+                        'reservation_id': self.id,
                     }
                     line = self.env['hotel.service'].new(res)
                     res.update(
@@ -920,7 +920,7 @@ class HotelReservation(models.Model):
                             dfrom=real_checkin,
                             days=service_days_diff,
                             per_person=service.product_id.per_person,
-                            persons=service.ser_room_line.adults,
+                            persons=service.reservation_id.adults,
                             old_line_days=service.service_line_ids,
                             consumed_on=service.product_id.consumed_on,
                         ))
@@ -943,9 +943,10 @@ class HotelReservation(models.Model):
         # Yes?, then, this is share folio ;)
         for record in self:
             if record.folio_id:
-                record.shared_folio = len(record.folio_id.reservation_ids) > 1 or \
-                    any(record.folio_id.service_ids.filtered(
-                        lambda x: x.ser_room_line.id != record.id))
+                record.shared_folio = \
+                    len(record.folio_id.reservation_ids) > 1 \
+                    or any(record.folio_id.service_ids.filtered(
+                        lambda x: x.reservation_id.id != record.id))
 
     @api.multi
     def compute_board_services(self, vals):

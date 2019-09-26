@@ -62,7 +62,7 @@
                 <field name="folio_id" invisible="1"/>
                 <field name="company_id" invisible="1"/>
                 <field name="hotel_id" invisible="1"/>
-                <field name="ser_room_line"
+                <field name="reservation_id"
                     attrs = "{'required': [('per_day','=',True)]}" />
                 <field name="product_id"
                     domain="[('sale_ok', '=', True)]"

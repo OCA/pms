@@ -25,7 +25,8 @@ class HotelRoomTypeRestrictionItem(models.Model):
 
     _sql_constraints = [('room_type_registry_unique',
                          'unique(restriction_id, room_type_id, date)',
-                         'Only can exists one restriction in the same day for the same room type!')]
+                         'Only can exists one restriction in the same \
+                         day for the same room type!')]
 
     # Constraints and onchanges
     @api.multi

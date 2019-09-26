@@ -250,7 +250,7 @@
                                     type="action" icon="fa-coffee"/>
                             <group string="Reservation Services" name="reservation_services">
                                 <field name="service_ids"
-                                       context="{'default_ser_room_line': active_id, 'default_folio_id': folio_id, 'form_view_ref':'hotel.hotel_service_view_form'}"
+                                       context="{'default_reservation_id': active_id, 'default_folio_id': folio_id, 'form_view_ref':'hotel.hotel_service_view_form'}"
                                        nolabel="1">
                                     <!-- If charge this view with tree_view_ref, its !crash! (field not found) when open reservation form from folio form... ¿?-->
                                     <tree string="Services" editable="bottom"
@@ -264,7 +264,7 @@
                                             attrs="{'invisible':[('is_board_service','=', False)]}" />
                                         <field name="per_day" invisible="1" readonly="1"/>
                                         <field name="folio_id" invisible="1"/>
-                                        <field name="ser_room_line" invisible="1"
+                                        <field name="reservation_id" invisible="1"
                                             attrs = "{'required': [('per_day','=',True)]}" />
                                         <field name="product_id"
                                             domain="[('sale_ok', '=', True)]"

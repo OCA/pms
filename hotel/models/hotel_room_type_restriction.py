@@ -15,11 +15,19 @@ class HotelRoomTypeRestriction(models.Model):
 
     # Fields declaration
     name = fields.Char('Restriction Plan Name', required=True)
-    hotel_id = fields.Many2one('hotel.property', 'Hotel', ondelete='restrict',
-                               default=_get_default_hotel)
-    item_ids = fields.One2many('hotel.room.type.restriction.item',
-                               'restriction_id', string='Restriction Items',
-                               copy=True)
-    active = fields.Boolean('Active', default=True,
-                            help='If unchecked, it will allow you to hide the '
-                                 'restriction plan without removing it.')
+    hotel_id = fields.Many2one(
+        'hotel.property',
+        'Hotel',
+        required=True,
+        ondelete='restrict',
+        default=_get_default_hotel)
+    item_ids = fields.One2many(
+        'hotel.room.type.restriction.item',
+        'restriction_id',
+        string='Restriction Items',
+        copy=True)
+    active = fields.Boolean(
+        'Active',
+        default=True,
+        help='If unchecked, it will allow you to hide the '
+        'restriction plan without removing it.')

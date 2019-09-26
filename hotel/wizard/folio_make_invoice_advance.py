@@ -294,8 +294,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
             for service in folio.service_ids.filtered(
                     lambda x: x.is_board_service == False and \
                     x.qty_to_invoice != 0 and \
-                    (x.ser_room_line.id in self.reservation_ids.ids or \
-                    not x.ser_room_line.id)):
+                    (x.reservation_id.id in self.reservation_ids.ids or \
+                    not x.reservation_id.id)):
                 invoice_lines[service.id] = {
                     'description': service.name,
                     'product_id': service.product_id.id,

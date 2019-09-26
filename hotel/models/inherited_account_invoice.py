@@ -10,12 +10,13 @@ class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
     # Field Declarations
-    from_folio = fields.Boolean(
-        compute='_computed_folio_origin')
     folio_ids = fields.Many2many(
         comodel_name='hotel.folio',
         compute='_computed_folio_origin')
-    hotel_id = fields.Many2one('hotel.property')
+    hotel_id = fields.Many2one(
+        'hotel.property')
+    from_folio = fields.Boolean(
+        compute='_computed_folio_origin')
     outstanding_folios_debits_widget = fields.Text(
         compute='_get_outstanding_folios_JSON')
     has_folios_outstanding = fields.Boolean(
@@ -93,7 +94,8 @@ class AccountInvoice(models.Model):
                         else:
                             amount_to_show = line.company_id.currency_id.\
                                 with_context(date=line.date).\
-                                compute(abs(line.amount_residual), self.currency_id)
+                                compute(abs(line.amount_residual),
+                                        self.currency_id)
                         if float_is_zero(
                                 amount_to_show,
                                 precision_rounding=self.currency_id.rounding
