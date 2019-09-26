@@ -18,7 +18,6 @@ class HotelRoomTypeRestriction(models.Model):
     hotel_id = fields.Many2one(
         'hotel.property',
         'Hotel',
-        required=True,
         ondelete='restrict',
         default=_get_default_hotel)
     item_ids = fields.One2many(
