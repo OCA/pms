@@ -15,7 +15,7 @@
     </record>
 
     <menuitem id="hotel_calendar_menu" name="Hotel Calendar" sequence="10"
-        web_icon="hotel_calendar,static/description/icon_calendar.png"
+        web_icon="hotel_calendar,static/description/icon.png"
         action="action_hotel_calendar"  />
 
     <menuitem id="hotel_calendar_management_menu" name="Hotel Calendar Management" sequence="20"
