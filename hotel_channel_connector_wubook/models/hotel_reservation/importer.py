@@ -179,6 +179,9 @@ class HotelReservationImporter(Component):
             rate_id = brday['rate_id']
             # TODO: Review different pricelist in the different booked rooms (folio in Odoo)
 
+        # Get the special offer rate id if any or the rate_id sent by Wubook / OTAs included in the roomdays
+        rate_id = book.get('ancillary', {}).get('wubook_special_rate_id', rate_id)
+
         parity_rate_id = self.env['channel.backend'].search([
             ('id', '=', self.backend_record.id)
         ]).wubook_parity_pricelist_id
