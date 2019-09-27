@@ -19,7 +19,7 @@ and ``account_cancel``. Ensure yourself to have all them in your addons list.
 
 Configuration
 -------------
-You will find the hotel calendar in `Settings > Users & Companies > Hotels > Your Hotel.
+You will find the hotel settings in `Settings > Users & Companies > Hotels > Your Hotel.
 
 This module required additional configuration for company, accounting, invoicing and user privileges.
 
