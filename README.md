@@ -11,18 +11,11 @@ You will find modules for:
  - Connect your hotel with a channel manager for booking though Online Travel Agencies, such as, Booking.com, Expedia, Hotelbeds, ...
  - Revenue management tools for daily pricing and availability strategies.
 
-Installation
-------------
-To install this module, you need to:
 
- 
-Configuration
--------------
-To configure this module, you need to:
-
-Usage
------
-To use this module, you need to:
+Bug Tracker
+-----------
+Bugs are tracked on GitHub Issues. In case of trouble, please check there if your issue has already been reported. 
+If you spotted it first, help us smashing it by providing a detailed and welcomed feedback here.
 
 Contributing
 ------------
