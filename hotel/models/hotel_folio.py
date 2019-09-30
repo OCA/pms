@@ -256,7 +256,6 @@ class HotelFolio(models.Model):
         'Prepaid Warning Days',
         help='Margin in days to create a notice if a payment \
                 advance has not been recorded')
-    client_order_ref = fields.Char(string='Customer Reference', copy=False)
     note = fields.Text('Terms and conditions')
     sequence = fields.Integer(string='Sequence', default=10)
 
