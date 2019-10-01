@@ -470,8 +470,8 @@ HotelCalendar.prototype = {
   _calcReservationCellLimits: function(/*HReservationObject*/reservation, /*Int?*/nbed, /*Bool?*/notCheck) {
     var limits = new HLimit();
     if (!reservation.startDate || !reservation.endDate ||
-        (!reservation.startDate.isBetween(this.options.startDate, this._endDate, 'day', '()') &&
-         !reservation.endDate.isBetween(this.options.startDate, this._endDate, 'day', '()') &&
+        (!reservation.startDate.isBetween(this.options.startDate, this._endDate, 'day', '[]') &&
+         !reservation.endDate.isBetween(this.options.startDate, this._endDate, 'day', '[]') &&
          !reservation.startDate.isBefore(this.options.startDate, 'day', '()') &&
          !reservation.endDate.isAfter(this._endDate, 'day', '()'))) {
       return limits;
