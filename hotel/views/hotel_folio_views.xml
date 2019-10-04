@@ -339,7 +339,7 @@
             'default_model': 'hotel.folio',
             'default_res_id': active_id,
             'default_use_template': True,
-            'default_template_id': ref('hotel.mail_template_hotel_reservation'),
+            'default_template_id': ref('hotel.email_template_reservation'),
             'default_composition_mode': 'comment',
             'force_send': True,
             'mark_so_as_sent': True,

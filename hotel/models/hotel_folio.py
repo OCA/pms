@@ -611,7 +611,7 @@ class HotelFolio(models.Model):
         try:
             template_id = ir_model_data.get_object_reference(
                 'hotel',
-                'mail_template_hotel_reservation')[1]
+                'email_template_reservation')[1]
         except ValueError:
             template_id = False
         try:

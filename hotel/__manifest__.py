@@ -20,7 +20,8 @@
         'sale_stock',
         'account_payment_return',
         'partner_firstname',
-        'account_cancel'
+        'account_cancel',
+        'email_template_qweb'
     ],
     'data': [
         'security/hotel_security.xml',
@@ -33,6 +34,7 @@
         'data/email_template_exit.xml',
         'report/hotel_folio.xml',
         'report/hotel_folio_templates.xml',
+        'templates/hotel_email_template.xml',
         'wizard/massive_changes.xml',
         'wizard/massive_price_reservation_days.xml',
         'wizard/service_on_day.xml',
