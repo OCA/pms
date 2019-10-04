@@ -23,6 +23,13 @@
             <field name="company_id" ref="base.main_company"/>
             <field name="default_pricelist_id" ref="product.list0"/>
             <field name="default_restriction_id" ref="main_hotel_room_type_restriction"/>
+            <field name="street">Rua Street Demo, s/n</field>
+            <field name="city">Roomdoo city</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="zip">15703</field>
+            <field name="phone">+34 123 456 879</field>
+            <field name="email">roomdoo@hoteldemo.roomdoo.com</field>
+            <field name="website">https://www.roomdoo.com</field>
         </record>
 
         <record model="res.users" id="base.user_root">
