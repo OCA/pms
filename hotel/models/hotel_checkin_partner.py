@@ -213,7 +213,7 @@ class HotelCheckinPartner(models.Model):
             self.with_context(tz=tz_hotel),
             datetime.datetime.strptime(fields.Date.today(),
                                        DEFAULT_SERVER_DATE_FORMAT))
-        default_arrival_hour = self.env.user.hotel_id.arrival_hour
+        default_arrival_hour = self.env.user.hotel_id.default_arrival_hour
         if self.reservation_id.checkin < today.strftime(
                 DEFAULT_SERVER_DATE_FORMAT):
             return default_arrival_hour
@@ -231,7 +231,7 @@ class HotelCheckinPartner(models.Model):
             self.with_context(tz=tz_hotel),
             datetime.datetime.strptime(fields.Date.today(),
                                        DEFAULT_SERVER_DATE_FORMAT))
-        default_departure_hour = self.env.user.hotel_id.departure_hour
+        default_departure_hour = self.env.user.hotel_id.default_departure_hour
         if self.reservation_id.checkout < today.strftime(
                 DEFAULT_SERVER_DATE_FORMAT):
             return default_departure_hour
