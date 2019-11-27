@@ -19,11 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp import models, fields, api
+from openerp import models, fields
 
 
-class Inherit_res_company(models.Model):
-    _inherit = 'res.company'
+class InheritHotelProperty(models.Model):
+    _inherit = 'hotel.property'
 
-    precode = fields.Char('Characters before the door code', default='')
-    postcode = fields.Char('Characters after the code', default='')
+    precode = fields.Char('Characters before the door code', default=' ')
+    postcode = fields.Char('Characters after the code', default=' ')

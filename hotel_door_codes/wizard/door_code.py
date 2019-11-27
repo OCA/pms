@@ -18,38 +18,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import datetime
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, timedelta
 from odoo import api, fields, models, _
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class DoorCodeWizard(models.TransientModel):
     _name = 'door_code'
+    _description = 'Door Code Generator'
 
-    @api.model
+    # Default methods
+    @api.multi
     def _get_default_date_start(self):
         return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-    date_start = fields.Date("Inicio periodo",
-                             default=_get_default_date_start)
-    date_end = fields.Date("Fin del periodo",
-                           default=_get_default_date_start)
-    door_code = fields.Html(u'Código para la puerta')
-
-    @api.multi
-    def doorcode4(self, fecha):
-        # Calculate de Door Code... need a date in String format "%Y-%m-%d"
-        compan = self.env.user.company_id
-        d = datetime.strptime(fecha, DEFAULT_SERVER_DATE_FORMAT)
-        dia_semana = datetime.weekday(d)  # Dias a restar y ponerlo en lunes
-        d = d - timedelta(days=dia_semana)
-        dtxt = d.strftime('%s.%%06d') % d.microsecond
-        dtxt = compan.precode + dtxt[4:8] + compan.postcode
-        return dtxt
+    # Fields declaration
+    date_start = fields.Date(
+        "Start of the period",
+        default=_get_default_date_start)
+    date_end = fields.Date(
+        "End of period",
+        default=_get_default_date_start)
+    door_code = fields.Html("Door code")
 
     @api.multi
     def check_code(self):
+        reservation = self.env['hotel.reservation']
+
         entrada = datetime.strptime(
             self.date_start, DEFAULT_SERVER_DATE_FORMAT)
         if datetime.weekday(entrada) == 0:
@@ -58,21 +53,25 @@ class DoorCodeWizard(models.TransientModel):
             self.date_end, DEFAULT_SERVER_DATE_FORMAT)
         if datetime.weekday(salida) == 0:
             salida = salida - timedelta(days=1)
-        codes = (u'Código de entrada: ' +
+        codes = (_('Entry Code: ') +
                  '<strong><span style="font-size: 2em;">' +
-                 self.doorcode4(self.date_start) +
+                 reservation.doorcode4(self.date_start) +
                  '</span></strong>')
         while entrada <= salida:
             if datetime.weekday(entrada) == 0:
                 codes += ("<br>" +
-                          u'Cambiará el Lunes ' +
+                          _('It will change on ') +
                           datetime.strftime(entrada, "%d-%m-%Y") +
-                          ' a: <strong><span style="font-size: 2em;">' +
-                          self.doorcode4(datetime.strftime(
+                          _(' to:') +
+                          '<strong><span style="font-size: 2em;">' +
+                          reservation.doorcode4(datetime.strftime(
                               entrada, "%Y-%m-%d")) +
                           '</span></strong>')
             entrada = entrada + timedelta(days=1)
 
         return self.write({
-             'door_code': codes
+             'door_code': codes,
+             'name': 'Ya te digo',
+             'clear_breadcrumb': True,
+             'target': 'current',
              })

@@ -3,7 +3,7 @@
     <data>
         <menuitem
           id="menu_hotel_door_code"
-          name="Codigos para la Puerta"
+          name="Check door codes"
           parent="hotel.hotel_reports_menu"
           action="door_code_act"
           groups="hotel.group_hotel_user,hotel.group_hotel_manager"

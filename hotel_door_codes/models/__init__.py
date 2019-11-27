@@ -19,5 +19,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import inherit_res_company
+from . import inherit_hotel_property
 from . import inherit_hotel_reservation

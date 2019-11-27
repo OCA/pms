@@ -2,7 +2,7 @@
 <odoo>
   <data>
     <record model="ir.ui.view" id="hotel_door_code_view">
-      <field name="name">door_code.view</field>
+      <field name="name">Door codes</field>
       <field name="model">door_code</field>
       <field name="arch" type="xml">
         <form string="Door Code Generator" >

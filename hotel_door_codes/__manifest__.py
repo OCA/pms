@@ -21,21 +21,22 @@
 
 {
     'name': 'Hotel Door Codes',
-    'version': '2.1',
+    'version': '3.0',
     'author': "Jose Luis Algara Toledo <osotranquilo@gmail.com>",
     'website': 'https://www.aldahotels.com',
     'category': 'hotel code',
     'summary': "Generate Hotel door codes, in Pseudo random system",
-    'description': "Hotel Door Codes",
+    'description': "Hotel Door Codes. Now multihotel",
     'depends': [
-        'hotel', 'hotel_l10n_es'
+        'hotel',
+        # 'hotel_l10n_es'
     ],
     'data': [
         'wizard/door_code.xml',
         'data/menus.xml',
-        'views/inherit_res_company.xml',
+        'views/inherit_hotel_property.xml',
         'views/inherit_hotel_reservation.xml',
-        'views/inherit_report_viajero.xml',
+        # 'views/inherit_report_viajero.xml',
     ],
     'qweb': [],
     'test': [
