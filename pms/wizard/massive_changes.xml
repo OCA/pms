@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<odoo>
+
+	<record model="ir.ui.view" id="view_pms_massive_changes_wizard">
+		<field name="name">pms.wizard.massive.changes</field>
+		<field name="model">pms.wizard.massive.changes</field>
+		<field name="arch" type="xml">
+			<form string="Massive Changes" >
+					<group>
+						<field name="pms_property_id" readonly="1" />
+						<field name="section" required="1" />
+						<field name="applied_on" required="1" />
+						<field name="room_type_ids" widget="many2many_tags"
+							   attrs="{'invisible':[('applied_on', '!=', '1')], 'required':[('applied_on', '=', '1')]}"
+							   options="{'no_create': True,'no_open': True}"
+						/>
+					</group>
+					<group colspan="8" col="8">
+						<field name="date_start" required="1"  colspan="4"/>
+						<field name="date_end" required="1" colspan="4" />
+						<field name="dmo" />
+						<field name="dtu" />
+						<field name="dwe" />
+						<field name="dth" />
+						<field name="dfr" />
+						<field name="dsa" />
+						<field name="dsu" />
+					</group>
+					<!-- Restriction Fields -->
+					<group col="8" attrs="{'invisible':[('section', '!=', 'restrictions')]}">
+						<field name="restriction_id"
+							   attrs="{'required':[('section', '=', 'restrictions')]}"
+							   options="{'no_create': True,'no_open': True}"
+							   colspan="8"
+						/>
+						<field colspan="2" name="change_min_stay" />
+						<field colspan="2" name="min_stay" attrs="{'readonly':[('change_min_stay', '=', False)]}" />
+						<field colspan="2" name="change_max_stay" />
+						<field colspan="2" name="max_stay" attrs="{'readonly':[('change_max_stay', '=', False)]}" />
+						<field colspan="2" name="change_min_stay_arrival" />
+						<field colspan="2" name="min_stay_arrival" attrs="{'readonly':[('change_min_stay_arrival', '=', False)]}" />
+						<field colspan="2" name="change_max_stay_arrival" />
+						<field colspan="2" name="max_stay_arrival" attrs="{'readonly':[('change_max_stay_arrival', '=', False)]}" />
+						<field colspan="2" name="change_closed" />
+						<field colspan="6" name="closed" attrs="{'readonly':[('change_closed', '=', False)]}" />
+						<field colspan="2" name="change_closed_departure" />
+						<field colspan="6" name="closed_departure" attrs="{'readonly':[('change_closed_departure', '=', False)]}" />
+						<field colspan="2" name="change_closed_arrival" />
+						<field colspan="6" name="closed_arrival" attrs="{'readonly':[('change_closed_arrival', '=', False)]}" />
+
+					</group>
+					<!-- Pricelist Fields -->
+					<group attrs="{'invisible':[('section', '!=', 'prices')]}">
+						<field name="pricelist_id"
+							   attrs="{'required':[('section', '=', 'prices')]}"
+							   options="{'no_create': True,'no_open': True}"
+						/>
+						<field name="price" attrs="{'required':[('section', '=', 'prices')]}"/>
+					</group>
+				<footer>
+					<button name="massive_change" string="Massive Change" type="object"
+						class="oe_highlight" />
+					<button name="massive_change_close" string="Massive Change &amp; Close" type="object"
+						class="oe_highlight" />
+					or
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_pms_massive_change" model="ir.actions.act_window">
+		<field name="name">Massive Change</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">pms.wizard.massive.changes</field>
+		<field name="view_id" ref="view_pms_massive_changes_wizard"/>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>

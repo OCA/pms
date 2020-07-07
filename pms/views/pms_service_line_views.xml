@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record model="ir.ui.view" id="pms_service_line_view_form">
+        <field name="name">pms.service.line.form</field>
+        <field name="model">pms.service.line</field>
+        <field name="arch" type="xml">
+            <form string="Service Line">
+                <group>
+                    <field name="product_id" />
+                    <field name="day_qty"/>
+                    <field name="date" />
+                    <field name="price_unit" />
+                    <field name="pms_property_id" invisible="1"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_service_line_view_tree">
+        <field name="name">pms.service.line.tree</field>
+        <field name="model">pms.service.line</field>
+        <field name="arch" type="xml">
+            <tree string="Service By Day">
+                <field name="product_id" />
+                <field name="day_qty"/>
+                <field name="date" />
+                <field name="pms_property_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_service_line_report_view_tree">
+        <field name="name">pms.service.line.report.tree</field>
+        <field name="model">pms.service.line</field>
+        <field name="arch" type="xml">
+            <tree string="Service By Day">
+                <field name="product_id" />
+                <field name="date" />
+                <field name="day_qty"/>
+                <field name="price_unit" />
+                <field name="service_id" />
+                <field name="room_id" />
+                <field name="tax_ids" invisible="1"/>
+                <field name="discount" />
+                <field name="price_total" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search Views -->
+
+    <record model="ir.ui.view" id="pms_service_line_view_search">
+        <field name="name">pms.service.line.search</field>
+        <field name="model">pms.service.line</field>
+        <field name="arch" type="xml">
+            <search string="Services By Day">
+                <field name="service_id" />
+                <filter string="Today"
+                            domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"
+                            help="Current Booking" />
+                <filter string="Tomorrow"
+                            domain="[('date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"
+                             />
+                <filter string="Next 7 days"
+                            domain="[('date', '&gt;', context_today().strftime('%Y-%m-%d')),
+                                ('date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"
+                             />
+                <group expand="0" string="Group By">
+                    <filter string="By Month" name="date_by_month"
+                                context="{'group_by':'date', 'default_order': 'date asc'}"/>
+                    <filter string="By Week" name="date_by_week"
+                            context="{'group_by':'date:week', 'default_order': 'date'}"/>
+                    <filter string="By Day" name="date_by_week"
+                            context="{'group_by':'date:day', 'default_order': 'date'}"/>
+                    <filter string="Product" name="product_id"
+                            context="{'group_by':'product_id', 'default_order': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for service line from Form Folio/Reservation-->
+    <record model="ir.actions.act_window" id="action_pms_service_line_form">
+        <field name="name">Services</field>
+        <field name="res_model">pms.service.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+<!--
+    <menuitem name="Services as Products" id="menu_open_pms_service_line_form"
+        action="action_pms_service_line_form" sequence="8"
+        parent="pms.menu_pms_service" />
+-->
+
+    <act_window
+        id="action_service_line"
+        name="Services By Day"
+        res_model="pms.service.line"
+        view_mode="tree,form"
+        view_id = "pms.pms_service_line_report_view_tree" />
+
+    <menuitem
+        id="menu_pms_service_line"
+        name="Services by Day"
+        parent="pms.pms_reports_menu"
+        sequence="30"
+        action="action_service_line" />
+
+</odoo>
