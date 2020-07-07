@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<odoo>
+
+	<record model="ir.ui.view" id="view_pms_split_reservation_wizard">
+		<field name="name">pms.wizard.split.reservation</field>
+		<field name="model">pms.wizard.split.reservation</field>
+		<field name="arch" type="xml">
+			<form string="Split Reservation" >
+				<!-- Common Fields -->
+				<group>
+					<field name="nights" required="1" />
+				</group>
+				<footer>
+					<button name="split_reservation" string="Split" type="object"
+						class="oe_highlight" />
+					or
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_pms_split_reservation" model="ir.actions.act_window">
+		<field name="name">Split Reservation</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">pms.wizard.split.reservation</field>
+		<field name="view_id" ref="view_pms_split_reservation_wizard"/>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<odoo>
+
+	<record model="ir.ui.view" id="service_on_day_view_form">
+		<field name="name">service.on.day.view.form</field>
+		<field name="model">service.on.day</field>
+		<field name="arch" type="xml">
+			<form string="Service on Day" >
+				<group>
+					<field name="product_id" />
+          <field name="date" />
+					<field name="product_qty" />
+				</group>
+				<footer>
+					<button name="set_service" string="Set Service" type="object"
+						class="oe_highlight" />
+					or
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_service_on_day" model="ir.actions.act_window">
+		<field name="name">Service on Day</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">service.on.day</field>
+		<field name="view_id" ref="service_on_day_view_form"/>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>

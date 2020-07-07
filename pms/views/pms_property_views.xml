@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pms_property_views_form" model="ir.ui.view">
+        <field name="name">pms_property_views_form</field>
+        <field name="model">pms.property</field>
+        <field name="arch" type="xml">
+            <form string="Property Configuration">
+                <sheet>
+                    <label for="name" class="oe_edit_only"/>
+                    <h1>
+                        <field name="name" class="oe_inline" />
+                    </h1>
+                    <field name="company_id" class="oe_inline" />
+                    <notebook>
+                        <page string="General Information" name="property_general">
+                            <group>
+                            </group>
+                        </page>
+                        <page string="Settings" name="property_settings">
+                            <group colspan="4" col="4" string="Price and Restriction Plans">
+                                <field name="default_pricelist_id" required="True" />
+                                <field name="default_restriction_id" required="True" />
+                            </group>
+                            <group string="Timezone">
+                                <field name="tz" widget="timezone_mismatch"/>
+                            </group>
+                            <group colspan="4" col="4" string="Check-in hours">
+                                <field name="default_arrival_hour" />
+                                <field name="default_departure_hour"  />
+                            </group>
+                            <group colspan="4" col="4" string="Cancellation policies">
+                                <field name="default_cancel_policy_days" />
+                                <field name="default_cancel_policy_percent"  />
+                            </group>
+                        </page>
+                        <page string="Rooms" name="property_rooms">
+                            <group>
+                                <field name="room_type_ids"/>
+                                <field name="room_ids"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pms_property_views_tree" model="ir.ui.view">
+        <field name="name">pms_property_views_tree</field>
+        <field name="model">pms.property</field>
+        <field name="arch" type="xml">
+            <tree string="Property settings summary">
+                <field name="name"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- actions -->
+
+    <record id="pms_property_action" model="ir.actions.act_window">
+        <field name="name">pmss</field>
+        <field name="res_model">pms.property</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- menus -->
+
+    <menuitem action="pms_property_action" id="pms_property_menu" parent="base.menu_users" sequence="10"/>
+
+</odoo>
