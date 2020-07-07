@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pms_partner_reservations" model="ir.actions.act_window">
+        <field name="name">Reservations</field>
+            <field name="res_model">pms.reservation</field>
+        <field name="domain">[('partner_id', '=',active_id)]</field>
+    </record>
+
+    <record id="pms_partner_folios" model="ir.actions.act_window">
+        <field name="name">Folios</field>
+            <field name="res_model">pms.folio</field>
+        <field name="domain">[('partner_id', '=',active_id)]</field>
+    </record>
+
+    <record id="res_partner_view_form" model="ir.ui.view">
+        <field name="name">res.partner.view.form </field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+
+            <xpath expr='//div[@name="button_box"]' position='inside'>
+                <button class="oe_stat_button" type="action" icon="fa-bed"
+                    name="%(pms.pms_partner_reservations)d"
+                    help="Reservations related with this contact">
+                    <field string="Reservations" name="reservations_count" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" type="action" icon="fa-file"
+                    name="%(pms.pms_partner_folios)d"
+                    help="Folios related with this contact">
+                    <field string="Folios" name="folios_count" widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="is_tour_operator" attrs="{'invisible': [('company_type','!=','company')]}"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <menuitem name="Customers" id="menu_pms_customer"
+        action="base.action_partner_form" sequence="500"
+        parent="menu_all_folio"/>
+
+</odoo>
