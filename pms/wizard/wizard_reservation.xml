@@ -1,0 +1,120 @@
+<?xml version="1.0" ?>
+<odoo>
+
+	<record model="ir.ui.view" id="pms_folio_wizard">
+		<field name="name">pms.folio.wizard</field>
+		<field name="model">pms.folio.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Reservation Wizard" >
+				<sheet>
+					<group>
+              <group>
+                  <field name="checkin" required="1" />
+                  <field name="checkout" required="1" />
+									<field name="partner_id"/>
+									<field name="mobile" required="1" />
+									<field name="email" required="1" />
+									<field name="company_id" invisible="1" />
+              </group>
+              <group>
+                  <field name="call_center" invisible="1" />
+                  <field name="channel_type" required="1" force_save="1" attrs="{'readonly':[('call_center','=',True)]}"/>
+                  <field name="pricelist_id"/>
+									<field name="internal_comment"/>
+									<field name="credit_card_details" />
+									<field name="date_order" invisible="1" />
+              </group>
+					</group>
+                    <group>
+                        <field name="room_type_wizard_ids" nolabel="1"
+                                attrs="{'invisible': [('autoassign','=',False)]}">
+                            <tree editable="bottom" create="false" delete="false"
+                            decoration-danger="max_rooms &lt; rooms_num"
+                            decoration-muted="can_confirm == False"
+                            decoration-success="max_rooms &gt;= rooms_num and rooms_num &gt; 0">
+                                <field name="min_stay" />
+                                <field name="max_rooms" />
+																<field name="folio_wizard_id" invisible="1"/>
+                                <field name="room_type_id" string="Room Type" force_save="1" readonly="1"/>
+                                <field name="rooms_num" force_save="1" attrs="{'readonly': [('can_confirm', '=', False)]}" />
+																<field name="board_service_room_id"
+																			 attrs="{'readonly': [('rooms_num', '=', 0)]}"
+						                           options="{'no_create': True,'no_open': True}" />
+                                <field name="checkin" widget="date" />
+                                <field name="checkout" widget="date" />
+                                <field name="discount" force_save="1" attrs="{'readonly': [('can_confirm','=',False)]}"/>
+                                <field name="price" force_save="1" attrs="{'readonly': [('can_confirm','=',False)]}"/>
+                                <field name="total_price" />
+                                <field name="can_confirm" invisible="1" />
+                            </tree>
+                        </field>
+                    </group>
+                    <label for="autoassign" attrs="{'invisible': [('autoassign','=', False)]}"/>
+                    <field name="autoassign" attrs="{'invisible': [('autoassign','=', False)]}"/>
+                    <field name="confirm" invisible="1"/>
+                    <group colspan="2" class="oe_subtotal_footer">
+                        <field name="total"/>
+                    </group>
+					<group>
+						<field name="reservation_wizard_ids" colspan="4" string="Room Lines"
+							nolabel="1" attrs="{'invisible': [('autoassign','=',True)]}">
+							<tree string="Room Line" delete="false" editable="buttom">
+								<field name="room_id" string="Room No" options="{'no_create': True}"/>
+								<field name="room_type_id" options="{'no_create': True}" />
+								<field name="folio_wizard_id" invisible = "1" />
+								<field name="checkin" />
+								<field name="checkout" />
+								<field name="nights" />
+								<field name="adults" />
+								<field name="children" />
+								<field name="board_service_room_id" domain="[
+												('pms_room_type_id', '=', room_type_id)
+												]" />
+								<field name="product_ids" widget="many2many_tags"  domain="[
+												('sale_ok', '=', True)
+												]"
+												options="{'no_create': True}" />
+                <field name="discount" />
+								<field name="price" />
+								<field name="partner_id" invisible = "1" />
+                <field name="to_assign" invisible="1" />
+							</tree>
+						</field>
+					</group>
+          <group string="Articles" name="articles">
+						<field name="service_wizard_ids" colspan="4" string="Services"
+							nolabel="1" >
+							<tree string="Services" editable="buttom">
+								<field name="product_id" string="Service" options="{'no_create': True}"
+                                    domain="[('sale_ok', '=', True),
+																						 ('per_day', '=', False),
+																						 ('per_person', '=', False)]"/>
+								<field name="folio_wizard_id" invisible = "0" />
+								<field name="product_uom_qty" />
+								<field name="price_unit" />
+								<field name="discount" />
+								<field name="tax_ids" widget="many2many_tags"/>
+								<field name="price_total" />
+							</tree>
+						</field>
+					</group>
+              <footer>
+                  <button name="create_folio" string="Create Reservations" type="object"
+													class="oe_highlight" />
+              </footer>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="open_wizard_reservations" model="ir.actions.act_window">
+		<field name="name">Reservation Wizard</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">pms.folio.wizard</field>
+		<field name="view_id" ref="pms.pms_folio_wizard"/>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>
