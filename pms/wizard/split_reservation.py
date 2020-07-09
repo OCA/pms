@@ -10,10 +10,11 @@ from openerp.tools import (
 
 class SplitReservationWizard(models.TransientModel):
     _name = 'pms.wizard.split.reservation'
+    _description = 'Split Reservation'
 
     nights = fields.Integer('Nights', default=1, min=1)
 
-    
+
     def split_reservation(self):
         reservation_id = self.env['pms.reservation'].browse(
             self.env.context.get('active_id'))

@@ -60,13 +60,15 @@
     <!-- actions -->
 
     <record id="pms_property_action" model="ir.actions.act_window">
-        <field name="name">pmss</field>
+        <field name="name">Properties</field>
         <field name="res_model">pms.property</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <!-- menus -->
 
-    <menuitem action="pms_property_action" id="pms_property_menu" parent="base.menu_users" sequence="10"/>
+    <menuitem action="pms_property_action" id="pms_property_menu"
+              parent="base.menu_users" sequence="10"
+              name = "Properties"/>
 
 </odoo>
