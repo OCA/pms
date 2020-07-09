@@ -59,7 +59,7 @@
                         attrs="{'invisible':[('splitted', '=', False)]}"
                     />
                     <button name="open_master" string="Open Master" type="object" class="oe_highlight" icon="fa-file" attrs="{'invisible':['|',['parent_reservation', '=', False]]}" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,booking,done" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,booking,done"/>
                 </header>
 
                 <sheet>
@@ -74,12 +74,14 @@
                             <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
                    </div>
                    <field name="shared_folio" invisible="1"/>
-                    <div class="oe_button_box" attrs="{'invisible': [('folio_id','=',False)]}">
+                    <div class="oe_button_box" name="button_box" attrs="{'invisible': [('folio_id','=',False)]}">
                         <button type="object" class="oe_stat_button"
                             icon="fa-file"
                             name="open_folio">
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_text"><field name="folio_id" readonly="1" nolabel="1"/></span>
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">
+                                    <field name="folio_id" readonly="1" nolabel="1"/>
+                                </span>
                             </div>
                         </button>
                         <button type="action" class="oe_stat_button"
@@ -87,7 +89,7 @@
                             attrs="{'invisible': ['|', ('partner_id','=',False), ('reservation_type','in',('out'))]}"
                             name="%(open_pms_reservation_form_tree_all)d"
                             context="{'search_default_partner_id': partner_id}">
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Books</span>
                             </div>
                         </button>
@@ -96,7 +98,7 @@
                             icon="fa-money"
                             name="action_pay_folio"
                             attrs="{'invisible': ['|',('folio_pending_amount','&lt;=',0)]}">
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="folio_pending_amount" nolabel="1"
                                     widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -107,7 +109,7 @@
                         <button type="object" class="oe_stat_button" id="invoice_button"
                             icon="fa-pencil-square-o" name="open_invoices_reservation"
                             attrs="{'invisible': [('invoice_count','&lt;=',0)]}">
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="invoice_count"/>
                                 </span>
@@ -118,7 +120,7 @@
                             icon="fa-chain-broken"
                             name="open_master"
                             attrs="{'invisible':[('splitted','=',False)]}">
-                            <div class="o_form_field o_stat_info">
+                            <div class="o_field_widget o_stat_info">
                                 <span><field name="parent_reservation"
                                 nolabel="1" readonly="1"/></span>
                                 <span class="o_stat_text">Splitted!</span>
@@ -160,11 +162,13 @@
                             attrs="{'invisible': [('reservation_type','not in',('out'))]}"/>
                     </h1>
                     <h3>
-                        From <span class="fa fa-sign-in" style="margin: 5px;"/>
-                            <field name="checkin" style="margin-right: 10px;"/>
-                        to
-                        <span class="fa fa-sign-out" style="margin-right: 5px;"/>
-                        <field name="checkout" />
+                        <group>
+                            <div class="o_row">
+                                <field name="checkin" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'checkout'}"/>
+                                <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
+                                <field name="checkout" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'checkin'}"/>
+                            </div>
+                        </group>
                     </h3>
                      <field name="out_service_description" placeholder="Out service description"
                         attrs="{'invisible':[('reservation_type','not in',('out'))]}"/>

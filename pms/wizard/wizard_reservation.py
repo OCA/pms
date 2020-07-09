@@ -9,12 +9,12 @@ from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, fields, api, _
-import odoo.addons.decimal_precision as dp
 _logger = logging.getLogger(__name__)
 
 
 class FolioWizard(models.TransientModel):
     _name = 'pms.folio.wizard'
+    _description = 'Wizard for reservation groups'
 
     @api.model
     def _get_default_center_user(self):
@@ -159,7 +159,7 @@ class FolioWizard(models.TransientModel):
                     }))
         self.reservation_wizard_ids = cmds
 
-    
+
     @api.onchange('checkin', 'checkout')
     def onchange_checks(self):
         '''
@@ -213,7 +213,7 @@ class FolioWizard(models.TransientModel):
                 total += line.price
         self.total = total
 
-    
+
     def create_folio(self):
         self.ensure_one()
         if not self.partner_id:
@@ -275,8 +275,9 @@ class FolioWizard(models.TransientModel):
 
 class PmsRoomTypeWizards(models.TransientModel):
     _name = 'pms.room.type.wizard'
+    _description = 'Virtual Room Type to Reserve Groups'
 
-    
+
     def _get_default_checkin(self):
         return self.folio_wizard_id.checkin
 
@@ -303,7 +304,7 @@ class PmsRoomTypeWizards(models.TransientModel):
     board_service_room_id = fields.Many2one('pms.board.service.room.type',
                                             string="Board Service")
 
-    
+
     @api.onchange('rooms_num')
     def domain_board_service(self):
         for line in self:
@@ -317,7 +318,7 @@ class PmsRoomTypeWizards(models.TransientModel):
             domain_boardservice = [('id', 'in', board_service_room_ids)]
             return {'domain': {'board_service_room_id': domain_boardservice}}
 
-    
+
     def _can_confirm(self):
         for record in self:
             date_start = fields.Date.from_string(record.checkin)
@@ -434,6 +435,7 @@ class PmsRoomTypeWizards(models.TransientModel):
 
 class ReservationWizard(models.TransientModel):
     _name = 'pms.reservation.wizard'
+    _description = 'Virtual Reservation to Groups'
     _rec_name = 'room_id'
 
     room_id = fields.Many2one('pms.room',
@@ -458,14 +460,14 @@ class ReservationWizard(models.TransientModel):
     board_service_room_id = fields.Many2one('pms.board.service.room.type',
                                             string="Board Service")
 
-    
+
     def _compute_assign(self):
         for rec in self:
             user = self.env['res.users'].browse(self.env.uid)
             if user.has_group('pms.group_pms_call'):
                 rec.to_assign = True
 
-    
+
     @api.onchange('room_id')
     def onchange_room_id(self):
         for line in self:
@@ -483,7 +485,7 @@ class ReservationWizard(models.TransientModel):
                     raise ValidationError(_("This room is occupied!, please, \
                         choice other room or change the reservation date"))
 
-    
+
     @api.onchange('checkin', 'checkout', 'room_type_id',
                   'discount', 'board_service_room_id', 'product_ids')
     def onchange_dates(self):
@@ -574,6 +576,7 @@ class ReservationWizard(models.TransientModel):
 
 class ServiceWizard(models.TransientModel):
     _name = 'pms.service.wizard'
+    _description = 'Virtual Service for Groups'
 
     product_id = fields.Many2one('product.product',
                                  string="Service")
@@ -581,7 +584,7 @@ class ServiceWizard(models.TransientModel):
     folio_wizard_id = fields.Many2one('pms.folio.wizard')
     discount = fields.Float('discount')
     price_unit = fields.Float('Unit Price', required=True,
-                              digits=dp.get_precision('Product Price'),
+                              digits=('Product Price'),
                               default=0.0)
     price_total = fields.Float(compute='_compute_amount', string='Total',
                                readonly=True, store=True)
@@ -589,7 +592,7 @@ class ServiceWizard(models.TransientModel):
                                domain=['|', ('active', '=', False),
                                        ('active', '=', True)])
     product_uom_qty = fields.Float(string='Quantity',
-                                   digits=dp.get_precision('Product Unit of Measure'),
+                                   digits=('Product Unit of Measure'),
                                    required=True,
                                    default=1.0)
 

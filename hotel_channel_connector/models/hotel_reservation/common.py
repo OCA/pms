@@ -6,8 +6,6 @@ from odoo.exceptions import UserError
 from odoo.addons.queue_job.job import job
 from odoo.addons.component.core import Component
 from odoo.addons.component_event import skip_if
-from odoo.addons import decimal_precision as dp
-
 
 class ChannelHotelReservation(models.Model):
     _name = 'channel.hotel.reservation'
@@ -34,7 +32,7 @@ class ChannelHotelReservation(models.Model):
                                       default=False)
 
     channel_total_amount = fields.Monetary(string='Channel Total Amount',
-                                           readonly=True, digits=dp.get_precision('Product Price'))
+                                           readonly=True, digits=('Product Price'))
 
     # Inherit binding constrain becouse two reservations can have
     # the same external_id
@@ -72,20 +70,20 @@ class ChannelHotelReservation(models.Model):
             return importer.fetch_bookings(dfrom, dto)
 
     @job(default_channel='root.channel')
-    
+
     def cancel_reservation(self):
         with self.backend_id.work_on(self._name) as work:
             exporter = work.component(usage='hotel.reservation.exporter')
             return exporter.cancel_reservation(self)
 
     @job(default_channel='root.channel')
-    
+
     def mark_booking(self):
         with self.backend_id.work_on(self._name) as work:
             exporter = work.component(usage='hotel.reservation.exporter')
             return exporter.mark_booking(self)
 
-    
+
     def unlink(self):
         vals = []
         for record in self:
@@ -116,7 +114,7 @@ class ChannelHotelReservation(models.Model):
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
-    
+
     def _set_access_for_channel_fields(self):
         for record in self:
             user = self.env['res.users'].browse(self.env.uid)
@@ -215,7 +213,7 @@ class HotelReservation(models.Model):
 
         return reservation_id
 
-    
+
     def write(self, vals):
         if self._context.get('connector_no_export', True) and \
                 (vals.get('checkin') or vals.get('checkout') or
@@ -267,7 +265,7 @@ class HotelReservation(models.Model):
             res = super().write(vals)
         return res
 
-    
+
     def generate_copy_values(self, checkin=False, checkout=False):
         self.ensure_one()
         res = super().generate_copy_values(checkin=checkin, checkout=checkout)
@@ -282,7 +280,7 @@ class HotelReservation(models.Model):
         })
         return res
 
-    
+
     def action_reservation_checkout(self):
         for record in self:
             if record.state != 'cancelled':
@@ -299,7 +297,7 @@ class HotelReservation(models.Model):
 
         return (json_reservs, json_tooltips)
 
-    
+
     def mark_as_readed(self):
         self.write({'to_assign': False})
 

@@ -7,7 +7,6 @@ from odoo.tools import (
     float_compare,
     DEFAULT_SERVER_DATE_FORMAT)
 from datetime import timedelta
-from odoo.addons import decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class PmsService(models.Model):
     _description = 'Services and its charges'
 
     # Default methods
-    
+
     def name_get(self):
         result = []
         for rec in self:
@@ -123,22 +122,22 @@ class PmsService(models.Model):
     price_unit = fields.Float(
         'Unit Price',
         required=True,
-        digits=dp.get_precision('Product Price'), default=0.0)
+        digits=('Product Price'), default=0.0)
     discount = fields.Float(
         string='Discount (%)',
-        digits=dp.get_precision('Discount'), default=0.0)
+        digits=('Discount'), default=0.0)
     qty_to_invoice = fields.Float(
         compute='_get_to_invoice_qty',
         string='To Invoice',
         store=True,
         readonly=True,
-        digits=dp.get_precision('Product Unit of Measure'))
+        digits=('Product Unit of Measure'))
     qty_invoiced = fields.Float(
         compute='_get_invoice_qty',
         string='Invoiced',
         store=True,
         readonly=True,
-        digits=dp.get_precision('Product Unit of Measure'))
+        digits=('Product Unit of Measure'))
     price_subtotal = fields.Monetary(
         string='Subtotal',
         readonly=True,
@@ -337,7 +336,7 @@ class PmsService(models.Model):
         record.update(vals)
 
     # Action methods
-    
+
     def open_service_ids(self):
         action = self.env.ref('pms.action_pms_services_form').read()[0]
         action['views'] = [
@@ -387,7 +386,7 @@ class PmsService(models.Model):
         record = super(PmsService, self).create(vals)
         return record
 
-    
+
     def write(self, vals):
         # If you write product, We must check if its necesary create or delete
         # service lines
@@ -439,7 +438,7 @@ class PmsService(models.Model):
                         line[field], line)
         return res
 
-    
+
     def compute_lines_out_vals(self, vals):
         """
         Compute if It is necesary service days in write/create
@@ -453,7 +452,7 @@ class PmsService(models.Model):
                 return True
         return False
 
-    
+
     def _compute_tax_ids(self):
         for record in self:
             # If company_id is set, always filter taxes by the company
@@ -466,7 +465,7 @@ class PmsService(models.Model):
                 lambda r: not record.company_id or
                 r.company_id == origin.company_id)
 
-    
+
     def _get_display_price(self, product):
         folio = self.folio_id or self.env.context.get('default_folio_id')
         reservation = self.reservation_id or self.env.context.get(
@@ -499,7 +498,7 @@ class PmsService(models.Model):
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
-    
+
     def _compute_price_unit(self):
         self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')

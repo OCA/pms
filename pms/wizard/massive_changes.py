@@ -8,6 +8,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 class MassiveChangesWizard(models.TransientModel):
     _name = 'pms.wizard.massive.changes'
+    _description = 'Massive Changes'
 
     # Default methods
     @api.model
@@ -91,7 +92,7 @@ class MassiveChangesWizard(models.TransientModel):
         self.date_end = self.date_start
 
     # Action methods
-    
+
     def _get_restrictions_values(self, record):
         self.ensure_one()
         vals = {}
@@ -208,7 +209,7 @@ class MassiveChangesWizard(models.TransientModel):
         elif record.section == 'prices':
             self._save_prices(ndate, room_types, record)
 
-    
+
     def _do_massive_change(self):
         pms_room_type_obj = self.env['pms.room.type']
         for record in self:
@@ -230,20 +231,20 @@ class MassiveChangesWizard(models.TransientModel):
                 self._save(ndate, room_types, record)
         return True
 
-    
+
     def massive_change(self):
         self._do_massive_change()
         return {
             "type": "ir.actions.do_nothing",
         }
 
-    
+
     def massive_change_close(self):
         self._do_massive_change()
         return True
 
     # TODO: method deprecated and not used anywhere
-    
+
     def is_valid_date(self, chkdate):
         self.ensure_one()
         wday = chkdate.timetuple()[6]

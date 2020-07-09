@@ -6,6 +6,7 @@ from odoo.exceptions import ValidationError
 
 class PmsRoomTypeRestrictionItem(models.Model):
     _name = 'pms.room.type.restriction.item'
+    _description = 'Reservation restriction by day'
 
     # Field Declarations
     restriction_id = fields.Many2one('pms.room.type.restriction',
@@ -29,7 +30,7 @@ class PmsRoomTypeRestrictionItem(models.Model):
                          day for the same room type!')]
 
     # Constraints and onchanges
-    
+
     @api.constrains('min_stay', 'min_stay_arrival', 'max_stay',
                     'max_stay_arrival')
     def _check_min_stay(self):

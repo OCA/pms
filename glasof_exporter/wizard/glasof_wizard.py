@@ -174,7 +174,7 @@ class GlassofExporterWizard(models.TransientModel):
             else:
                 firstname = inv.partner_id.firstname or ''
                 lastname = inv.partner_id.lastname or ''
-                
+
             worksheet.write(nrow, 0, inv.number)
             worksheet.write(nrow, 1, inv.date_invoice, xls_cell_format_date)
             worksheet.write(nrow, 2, '')
@@ -209,7 +209,7 @@ class GlassofExporterWizard(models.TransientModel):
             worksheet.write(nrow, 21, 'S')
             worksheet.write(nrow, 22, '')
             if inv.type == 'out_refund':
-                worksheet.write(nrow, 23, inv.origin)
+                worksheet.write(nrow, 23, inv.invoice_origin)
             else:
                 worksheet.write(nrow, 23, '')
             worksheet.write(nrow, 24, '')
@@ -242,7 +242,7 @@ class GlassofExporterWizard(models.TransientModel):
             'xls_invoices_binary': base64.encodestring(file_data.read()),
         }
 
-    
+
     def export(self):
         towrite = {}
         if self.export_journals:

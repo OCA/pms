@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 
 class PmsServiceLine(models.Model):
     _name = "pms.service.line"
+    _description = "Service by day"
     _order = "date"
 
     # Fields declaration

@@ -58,13 +58,16 @@
             <search string="Services By Day">
                 <field name="service_id" />
                 <filter string="Today"
-                            domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"
-                            help="Current Booking" />
+                        name="today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"
+                        help="Current Booking" />
                 <filter string="Tomorrow"
-                            domain="[('date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"
-                             />
+                        name="tomorrow"
+                        domain="[('date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"
+                        />
                 <filter string="Next 7 days"
-                            domain="[('date', '&gt;', context_today().strftime('%Y-%m-%d')),
+                        name="next_7_days"
+                        domain="[('date', '&gt;', context_today().strftime('%Y-%m-%d')),
                                 ('date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"
                              />
                 <group expand="0" string="Group By">

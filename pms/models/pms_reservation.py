@@ -11,7 +11,6 @@ from odoo.tools import (
     DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT)
 from odoo import models, fields, api, _
-from odoo.addons import decimal_precision as dp
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -301,24 +300,24 @@ class PmsReservation(models.Model):
         string='To Invoice',
         store=True,
         readonly=True,
-        digits=dp.get_precision('Product Unit of Measure'))
+        digits=('Product Unit of Measure'))
     qty_invoiced = fields.Float(
         compute='_get_invoice_qty',
         string='Invoiced',
         store=True,
         readonly=True,
-        digits=dp.get_precision('Product Unit of Measure'))
+        digits=('Product Unit of Measure'))
     price_subtotal = fields.Monetary(
         string='Subtotal',
         readonly=True,
         store=True,
-        digits=dp.get_precision('Product Price'),
+        digits=('Product Price'),
         compute='_compute_amount_reservation')
     price_total = fields.Monetary(
         string='Total',
         readonly=True,
         store=True,
-        digits=dp.get_precision('Product Price'),
+        digits=('Product Price'),
         compute='_compute_amount_reservation')
     price_tax = fields.Float(
         string='Taxes',
@@ -329,17 +328,17 @@ class PmsReservation(models.Model):
         string='Services Total',
         readonly=True,
         store=True,
-        digits=dp.get_precision('Product Price'),
+        digits=('Product Price'),
         compute='_compute_amount_room_services')
     price_room_services_set = fields.Monetary(
         string='Room Services Total',
         readonly=True,
         store=True,
-        digits=dp.get_precision('Product Price'),
+        digits=('Product Price'),
         compute='_compute_amount_set')
     discount = fields.Float(
         string='Discount (€)',
-        digits=dp.get_precision('Discount'),
+        digits=('Discount'),
         compute='_compute_discount',
         store=True)
 
@@ -419,10 +418,11 @@ class PmsReservation(models.Model):
     def _compute_localizator(self):
         for record in self:
             if record.folio_id:
+                #TODO: Review Datetime type no char v13
                 localizator = re.sub("[^0-9]", "", record.folio_id.name)
-                checkout = int(re.sub("[^0-9]", "", record.checkout))
-                checkin = int(re.sub("[^0-9]", "", record.checkin))
-                localizator += str((checkin + checkout) % 99)
+                # checkout = int(re.sub("[^0-9]", "", record.checkout))
+                # checkin = int(re.sub("[^0-9]", "", record.checkin))
+                # localizator += str((checkin + checkout) % 99)
                 record.localizator = localizator
 
     @api.depends('service_ids.price_total')
@@ -512,7 +512,7 @@ class PmsReservation(models.Model):
                    reservation period: %s ') % occupied_name
                 raise ValidationError(warning_msg)
 
-    
+
     @api.constrains('checkin_partner_ids')
     def _max_checkin_partner_ids(self):
         for record in self:
@@ -554,7 +554,7 @@ class PmsReservation(models.Model):
         }
         self.update(values)
 
-    
+
     @api.onchange('pricelist_id')
     def onchange_pricelist_id(self):
         values = {'reservation_type': self.env['pms.folio'].
@@ -569,7 +569,7 @@ class PmsReservation(models.Model):
             self.update({'partner_id':
                          self.env.user.company_id.partner_id.id})
 
-    
+
     @api.onchange('checkin_partner_ids')
     def onchange_checkin_partner_ids(self):
         for record in self:
@@ -640,7 +640,7 @@ class PmsReservation(models.Model):
         for service in services:
             service.onchange_product_id()
 
-    
+
     @api.onchange('checkin', 'checkout', 'room_id')
     def onchange_room_availabiltiy_domain(self):
         self.ensure_one()
@@ -704,7 +704,7 @@ class PmsReservation(models.Model):
                 service.price_unit = service._compute_price_unit()
 
     # Action methods
-    
+
     def open_invoices_reservation(self):
         invoices = self.folio_id.mapped('move_ids')
         action = self.env.ref('account.action_move_out_invoice_type').read()[0]
@@ -721,7 +721,7 @@ class PmsReservation(models.Model):
                                  'default_folio_id': self.folio_id.id}
         return action
 
-    
+
     def create_invoice(self):
         action = self.env.ref(
             'pms.action_view_folio_advance_payment_inv').read()[0]
@@ -729,7 +729,7 @@ class PmsReservation(models.Model):
                              'default_folio_id': self.folio_id.id}
         return action
 
-    
+
     def open_folio(self):
         action = self.env.ref(
             'pms.open_pms_folio1_form_tree_all').read()[0]
@@ -741,7 +741,7 @@ class PmsReservation(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
         return action
 
-    
+
     def open_reservation_form(self):
         action = self.env.ref(
             'pms.open_pms_reservation_form_tree_all').read()[0]
@@ -750,12 +750,12 @@ class PmsReservation(models.Model):
         action['res_id'] = self.id
         return action
 
-    
+
     def action_pay_folio(self):
         self.ensure_one()
         return self.folio_id.action_pay()
 
-    
+
     def action_pay_reservation(self):
         self.ensure_one()
         partner = self.partner_id.id
@@ -795,7 +795,7 @@ class PmsReservation(models.Model):
         return super(PmsReservation, self).name_search(
             name='', args=args, operator='ilike', limit=limit)
 
-    
+
     def name_get(self):
         result = []
         for res in self:
@@ -853,7 +853,7 @@ class PmsReservation(models.Model):
             record.confirm()
         return record
 
-    
+
     def write(self, vals):
         if self.notify_update(vals):
             vals.update({
@@ -937,7 +937,7 @@ class PmsReservation(models.Model):
         return record
 
     # Business methods
-    
+
     def _computed_shared(self):
         # Has this reservation more charges associates in folio?,
         # Yes?, then, this is share folio ;)
@@ -948,7 +948,7 @@ class PmsReservation(models.Model):
                     or any(record.folio_id.service_ids.filtered(
                         lambda x: x.reservation_id.id != record.id))
 
-    
+
     def compute_board_services(self, vals):
         """
         We must compute service_ids when we have a board_service_id without
@@ -963,7 +963,7 @@ class PmsReservation(models.Model):
             return True
         return False
 
-    
+
     def compute_qty_service_day(self, vals):
         """
         Compute if it is necesary calc price in write/create
@@ -1047,7 +1047,7 @@ class PmsReservation(models.Model):
                              subtype='mt_comment', body=msg)
         return True
 
-    
+
     def notify_update(self, vals):
         if 'checkin' in vals or \
                 'checkout' in vals or \
@@ -1058,12 +1058,12 @@ class PmsReservation(models.Model):
             return True
         return False
 
-    
+
     def overbooking_button(self):
         self.ensure_one()
         self.overbooking = not self.overbooking
 
-    
+
     def generate_copy_values(self, checkin=False, checkout=False):
         self.ensure_one()
         return {
@@ -1091,7 +1091,7 @@ class PmsReservation(models.Model):
     STATE WORKFLOW -----------------------------------------------------
     """
 
-    
+
     def confirm(self):
         '''
         @param self: object pointer
@@ -1130,7 +1130,7 @@ class PmsReservation(models.Model):
                 splitted_reservs.confirm()
         return True
 
-    
+
     def button_done(self):
         '''
         @param self: object pointer
@@ -1139,7 +1139,7 @@ class PmsReservation(models.Model):
             record.action_reservation_checkout()
         return True
 
-    
+
     def action_cancel(self):
         for record in self:
             cancel_reason = 'intime' if self._context.get(
@@ -1166,7 +1166,7 @@ class PmsReservation(models.Model):
                 splitted_reservs.action_cancel()
             record.folio_id.compute_amount()
 
-    
+
     def compute_cancelation_reason(self):
         self.ensure_one()
         pricelist = self.pricelist_id
@@ -1184,7 +1184,7 @@ class PmsReservation(models.Model):
                 return 'intime'
         return False
 
-    
+
     def draft(self):
         for record in self:
             record.state = 'draft'
@@ -1207,7 +1207,7 @@ class PmsReservation(models.Model):
     """
     PRICE PROCESS ------------------------------------------------------
     """
-    
+
     def compute_price_out_vals(self, vals):
         """
         Compute if It is necesary calc price in write/create
@@ -1220,7 +1220,7 @@ class PmsReservation(models.Model):
             return True
         return False
 
-    
+
     def _compute_cancelled_discount(self):
         self.ensure_one()
         pricelist = self.pricelist_id
@@ -1378,7 +1378,7 @@ class PmsReservation(models.Model):
     CHECKIN/OUT PROCESS ------------------------------------------------
     """
 
-    
+
     def _compute_checkin_partner_count(self):
         _logger.info('_compute_checkin_partner_count')
         for record in self:
@@ -1392,14 +1392,14 @@ class PmsReservation(models.Model):
                 record.checkin_partner_pending_count = 0
 
     # https://www.odoo.com/es_ES/forum/ayuda-1/question/calculated-fields-in-search-filter-possible-118501
-    
+
     def _search_checkin_partner_pending(self, operator, value):
         self.ensure_one()
         recs = self.search([]).filtered(
             lambda x: x.checkin_partner_pending_count > 0)
         return [('id', 'in', [x.id for x in recs])] if recs else []
 
-    
+
     def action_reservation_checkout(self):
         for record in self:
             record.state = 'done'
@@ -1421,7 +1421,7 @@ class PmsReservation(models.Model):
                     splitted_reservs.update({'state': 'done'})
         return True
 
-    
+
     def action_checks(self):
         self.ensure_one()
         action = self.env.ref(
@@ -1437,7 +1437,7 @@ class PmsReservation(models.Model):
     RESERVATION SPLITTED -----------------------------------------------
     """
 
-    
+
     def split(self, nights):
         for record in self:
             date_start_dt = fields.Date.from_string(record.checkin)
@@ -1490,7 +1490,7 @@ class PmsReservation(models.Model):
             })
         return True
 
-    
+
     def unify(self):
         self.ensure_one()
         if not self.splitted:
@@ -1570,7 +1570,7 @@ class PmsReservation(models.Model):
         })
         return True
 
-    
+
     def open_master(self):
         self.ensure_one()
         if not self.parent_reservation:
@@ -1586,15 +1586,15 @@ class PmsReservation(models.Model):
     MAILING PROCESS
     """
 
-    
+
     def send_reservation_mail(self):
         return self.folio_id.send_reservation_mail()
 
-    
+
     def send_exit_mail(self):
         return self.folio_id.send_exit_mail()
 
-    
+
     def send_cancel_mail(self):
         return self.folio_id.send_cancel_mail()
 
@@ -1602,7 +1602,7 @@ class PmsReservation(models.Model):
     INVOICING PROCESS
     """
 
-    
+
     def _compute_tax_ids(self):
         for record in self:
             # If company_id is set, always filter taxes by the company
@@ -1613,7 +1613,7 @@ class PmsReservation(models.Model):
                 lambda r: not record.company_id or
                 r.company_id == folio.company_id)
 
-    
+
     def set_call_center_user(self):
         user = self.env['res.users'].browse(self.env.uid)
         return user.has_group('pms.group_pms_call')

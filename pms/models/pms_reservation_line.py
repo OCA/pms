@@ -2,16 +2,16 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models, fields, api, _
-from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 
 
 class PmsReservationLine(models.Model):
     _name = "pms.reservation.line"
+    _description = "Reservations by day"
     _order = "date"
 
     # Default Methods ang Gets
-    
+
     def name_get(self):
         result = []
         for res in self:
@@ -44,13 +44,13 @@ class PmsReservationLine(models.Model):
     state = fields.Selection(related='reservation_id.state')
     price = fields.Float(
         string='Price',
-        digits=dp.get_precision('Product Price'))
+        digits=('Product Price'))
     cancel_discount = fields.Float(
         string='Cancel Discount (%)',
-        digits=dp.get_precision('Discount'), default=0.0)
+        digits=('Discount'), default=0.0)
     discount = fields.Float(
         string='Discount (%)',
-        digits=dp.get_precision('Discount'), default=0.0)
+        digits=('Discount'), default=0.0)
 
     # Constraints and onchanges
     @api.constrains('date')
