@@ -45,13 +45,13 @@ class KellysWizard(models.TransientModel):
         required=True,
         help='Establece el orden en el que se imprimira el listado')
 
-    @api.multi
+    
     def calculate_report(self):
         self.habitaciones = self.calculalimpiar(
             datetime.strptime(self.date_start, "%Y-%m-%d"))
         return
 
-    @api.multi
+    
     def calculalimpiar(self, fechalimpieza=datetime.now()):
         dates = datetime.strftime(fechalimpieza, "%Y-%m-%d")
         grids = self.env['hotel.room'].search([], order='sequence ASC')
@@ -113,7 +113,7 @@ class KellysWizard(models.TransientModel):
                      }).id)
         return self.env['kellysrooms'].search([('id', 'in', listid)])
 
-    @api.multi
+    
     def print_rooms_report(self):
         rooms = self.env['kellysrooms'].search([('id', 'in',
                                                  self.habitaciones.ids)],

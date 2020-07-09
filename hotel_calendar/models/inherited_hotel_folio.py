@@ -7,7 +7,7 @@ class HotelFolio(models.Model):
     _inherit = 'hotel.folio'
 
     # ORM overrides
-    @api.multi
+    
     def write(self, vals):
         ret = super(HotelFolio, self).write(vals)
         fields_to_check = ('reservation_ids', 'service_ids', 'pending_amount')
@@ -17,7 +17,7 @@ class HotelFolio(models.Model):
                 record.reservation_ids.send_bus_notification('write', 'noshow')
         return ret
 
-    @api.multi
+    
     def unlink(self):
         for record in self:
             record.reservation_ids.send_bus_notification('unlink', 'warn',
@@ -25,7 +25,7 @@ class HotelFolio(models.Model):
         return super(HotelFolio, self).unlink()
 
     # Business methods
-    @api.multi
+    
     def compute_amount(self):
         ret = super(HotelFolio, self).compute_amount()
         with self.env.norecompute():

@@ -24,7 +24,7 @@ from openerp import models, api
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
-    @api.multi
+    
     def print_all_checkins(self):
         checkins = self.env['hotel.checkin.partner']
         for record in self:

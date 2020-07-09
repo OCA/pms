@@ -60,7 +60,7 @@ class HotelCalendarManagement(models.TransientModel):
         }
         return vals
 
-    @api.multi
+    
     def save_changes(self, pricelist_id, restriction_id, pricelist,
                      restrictions, availability={}):
         res = super(HotelCalendarManagement, self).save_changes(

@@ -87,7 +87,7 @@ class ChannelHotelRoomType(models.Model):
                 raise ValidationError(_("OTA's capacity can't be greater than room type capacity"))
 
 
-    @api.multi
+    
     @api.constrains('channel_short_code')
     def _check_channel_short_code(self):
         for record in self:
@@ -95,7 +95,7 @@ class ChannelHotelRoomType(models.Model):
                 raise ValidationError(_("Chanel short code can't be longer than 4 characters"))
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def create_room(self):
         self.ensure_one()
         if not self.external_id:
@@ -104,7 +104,7 @@ class ChannelHotelRoomType(models.Model):
                 exporter.create_room(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def modify_room(self):
         self.ensure_one()
         if self.external_id:
@@ -113,7 +113,7 @@ class ChannelHotelRoomType(models.Model):
                 exporter.modify_room(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def delete_room(self):
         self.ensure_one()
         if self.external_id:
@@ -145,7 +145,7 @@ class HotelRoomType(models.Model):
                     _("You can not archive a room type with active rooms.") + " " +
                     _("Please, change the %s room(s) to other room type.") % str(record.total_rooms_count))
 
-    @api.multi
+    
     def get_restrictions(self, date, restriction_plan_id):
         self.ensure_one()
         restriction = self.env['hotel.room.type.restriction.item'].search([
@@ -155,7 +155,7 @@ class HotelRoomType(models.Model):
         ], limit=1)
         return restriction
 
-    @api.multi
+    
     def open_channel_bind_ids(self):
         channel_bind_ids = self.mapped('channel_bind_ids')
         action = self.env.ref('hotel_channel_connector.channel_hotel_room_type_action').read()[0]
@@ -176,12 +176,12 @@ class HotelRoomType(models.Model):
                 'default_total_rooms_count': self.total_rooms_count}
         return action
 
-    @api.multi
+    
     def disconnect_channel_bind_ids(self):
         # TODO: multichannel rooms is not implemented
         self.channel_bind_ids.with_context({'connector_no_export': True}).unlink()
 
-    @api.multi
+    
     def write(self, vals):
         if 'active' in vals and vals.get('active') is False:
             self.channel_bind_ids.unlink()

@@ -9,7 +9,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class HotelRoom(models.Model):
     _inherit = 'hotel.room'
 
-    @api.multi
+    
     def write(self, vals):
         """
         Update default availability for segmentation management

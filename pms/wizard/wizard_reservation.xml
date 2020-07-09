@@ -112,7 +112,6 @@
 		<field name="type">ir.actions.act_window</field>
 		<field name="res_model">pms.folio.wizard</field>
 		<field name="view_id" ref="pms.pms_folio_wizard"/>
-		<field name="view_type">form</field>
 		<field name="view_mode">form</field>
 		<field name="target">new</field>
 	</record>

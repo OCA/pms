@@ -103,13 +103,13 @@
             <search string="Checkin Detail">
                 <field name="partner_id" />
                 <field name="reservation_id" />
-                <filter string="On Board"
-                            domain="[('state','in',['booking'])]"
+                <filter string="On Board" name="on_board"
+                            domain="[('state','=','booking')]"
                             help="Current Booking" />
-                <filter string="To enter"
+                <filter string="To enter" name="to_enter"
                             domain="[('state', '=', 'draft')]"
                              />
-                <filter string="Out"
+                <filter string="Out" name="out"
                             domain="[('state', '=', 'done')]"
                              />
                 <filter string="Checkins Tomorrow" name="enter_tomorrow"

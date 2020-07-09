@@ -55,7 +55,7 @@ class HotelCheckinPartner(models.Model):
             vals.pop('lastname')
         return super(HotelCheckinPartner, self).create(vals)
 
-    @api.multi
+    
     def write(self, vals):
         for record in self:
             if not vals.get('partner_id') and not record.partner_id:
@@ -71,7 +71,7 @@ class HotelCheckinPartner(models.Model):
                 vals.pop('lastname')
         return super(HotelCheckinPartner, self).write(vals)
 
-    @api.multi
+    
     def action_on_board(self):
         self.check_required_fields()
         return super(HotelCheckinPartner, self).action_on_board()
@@ -107,7 +107,7 @@ class HotelCheckinPartner(models.Model):
                 if partner:
                     record.update({'partner_id': partner})
 
-    @api.multi
+    
     def check_required_fields(self):
         for record in self:
             missing_fields = []

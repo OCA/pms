@@ -28,7 +28,7 @@ class Inherit_hotel_reservation(models.Model):
     _inherit = 'hotel.reservation'
 
     # Default methods
-    @api.multi
+    
     def _compute_door_codes(self):
         for res in self:
             entrada = datetime.strptime(
@@ -63,7 +63,7 @@ class Inherit_hotel_reservation(models.Model):
     box_number = fields.Integer('Box Number')
     box_code = fields.Char('Box code')
 
-    @api.multi
+    
     def doorcode4(self, fecha):
         # Calculate de Door Code... need a date in String format "%Y-%m-%d"
         compan = self.env.user.hotel_id

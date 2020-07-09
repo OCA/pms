@@ -14,7 +14,7 @@ class HotelCalendarManagement(models.TransientModel):
     _name = 'hotel.calendar.management'
 
     # Business methods
-    @api.multi
+    
     def get_hcalendar_settings(self):
         return {
             'eday_week': self.env.user.hotel_id.pms_end_day_week,

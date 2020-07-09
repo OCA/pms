@@ -4,22 +4,22 @@
 from odoo import fields, models
 
 
-class AccountInvoiceLine(models.Model):
-    _inherit = 'account.invoice.line'
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
 
     # Fields declaration
     reservation_ids = fields.Many2many(
         'pms.reservation',
-        'reservation_invoice_rel',
-        'invoice_line_id', 'reservation_id',
+        'reservation_move_rel',
+        'move_line_id', 'reservation_id',
         string='Reservations', readonly=True, copy=False)
     service_ids = fields.Many2many(
         'pms.service',
-        'service_line_invoice_rel',
-        'invoice_line_id', 'service_id',
+        'service_line_move_rel',
+        'move_line_id', 'service_id',
         string='Services', readonly=True, copy=False)
     reservation_line_ids = fields.Many2many(
         'pms.reservation.line',
-        'reservation_line_invoice_rel',
-        'invoice_line_id', 'reservation_line_id',
+        'reservation_line_move_rel',
+        'move_line_id', 'reservation_line_id',
         string='Reservation Lines', readonly=True, copy=False)

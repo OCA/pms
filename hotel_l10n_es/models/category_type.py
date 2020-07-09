@@ -28,7 +28,7 @@ class TourismCategory(models.Model):
     name = fields.Char('Category', required=True)
     category_type = fields.Char('Category type', required=True)
 
-    @api.multi
+    
     def name_get(self):
         data = []
         for record in self:

@@ -20,7 +20,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                               ondelete='cascade')
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def create_plan(self):
         self.ensure_one()
         if not self.external_id:
@@ -29,7 +29,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                 exporter.create_rplan(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def update_plan_name(self):
         self.ensure_one()
         if self.external_id:
@@ -38,7 +38,7 @@ class ChannelHotelRoomTypeRestriction(models.Model):
                 exporter.rename_rplan(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def delete_plan(self):
         self.ensure_one()
         if self.external_id:
@@ -62,7 +62,7 @@ class HotelRoomTypeRestriction(models.Model):
         inverse_name='odoo_id',
         string='Hotel Channel Connector Bindings')
 
-    @api.multi
+    
     @api.depends('name')
     def name_get(self):
         room_type_restriction_obj = self.env['hotel.room.type.restriction']
@@ -80,7 +80,7 @@ class HotelRoomTypeRestriction(models.Model):
                 names.append((name[0], name[1]))
         return names
 
-    @api.multi
+    
     def open_channel_bind_ids(self):
         channel_bind_ids = self.mapped('channel_bind_ids')
         action = self.env.ref('hotel_channel_connector.channel_hotel_room_type_restriction_action').read()[0]
@@ -98,12 +98,12 @@ class HotelRoomTypeRestriction(models.Model):
             }
         return action
 
-    @api.multi
+    
     def disconnect_channel_bind_ids(self):
         # TODO: multichannel rooms is not implemented
         self.channel_bind_ids.with_context({'connector_no_export': True}).unlink()
 
-    @api.multi
+    
     def write(self, vals):
         if 'active' in vals and vals.get('active') is False:
             self.channel_bind_ids.unlink()

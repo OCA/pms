@@ -7,7 +7,7 @@ from odoo import models, api, _
 class MassivePriceChangeWizard(models.TransientModel):
     _inherit = 'hotel.wizard.massive.price.reservation.days'
 
-    @api.multi
+    
     def massive_price_change_days(self):
         self.ensure_one()
         hotel_reservation_obj = self.env['hotel.reservation']

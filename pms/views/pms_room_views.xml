@@ -201,7 +201,6 @@
     <record model="ir.actions.act_window" id="action_pms_room_form">
         <field name="name">pms Room</field>
         <field name="res_model">pms.room</field>
-        <field name="view_type">form</field>
         <!-- <field name="context">{'default_isroom':1,'default_rental':1}
         </field> -->
         <field name="view_id" ref="pms_room_view_tree" />
@@ -236,7 +235,6 @@
     <!-- <record id="action_room_cate" model="ir.actions.act_window">
         <field name="name">Category Items</field>
         <field name="res_model">product.product</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">['|','|',('isroom','=',True), ('iscategid' , '=', True), ('isservice', '=', True)]</field>
         <field name="context">{'search_default_categ_id':active_id, 'default_categ_id':active_id}</field>

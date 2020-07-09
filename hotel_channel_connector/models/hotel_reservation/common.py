@@ -72,20 +72,20 @@ class ChannelHotelReservation(models.Model):
             return importer.fetch_bookings(dfrom, dto)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def cancel_reservation(self):
         with self.backend_id.work_on(self._name) as work:
             exporter = work.component(usage='hotel.reservation.exporter')
             return exporter.cancel_reservation(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def mark_booking(self):
         with self.backend_id.work_on(self._name) as work:
             exporter = work.component(usage='hotel.reservation.exporter')
             return exporter.mark_booking(self)
 
-    @api.multi
+    
     def unlink(self):
         vals = []
         for record in self:
@@ -116,7 +116,7 @@ class ChannelHotelReservation(models.Model):
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
-    @api.multi
+    
     def _set_access_for_channel_fields(self):
         for record in self:
             user = self.env['res.users'].browse(self.env.uid)
@@ -215,7 +215,7 @@ class HotelReservation(models.Model):
 
         return reservation_id
 
-    @api.multi
+    
     def write(self, vals):
         if self._context.get('connector_no_export', True) and \
                 (vals.get('checkin') or vals.get('checkout') or
@@ -267,7 +267,7 @@ class HotelReservation(models.Model):
             res = super().write(vals)
         return res
 
-    @api.multi
+    
     def generate_copy_values(self, checkin=False, checkout=False):
         self.ensure_one()
         res = super().generate_copy_values(checkin=checkin, checkout=checkout)
@@ -282,7 +282,7 @@ class HotelReservation(models.Model):
         })
         return res
 
-    @api.multi
+    
     def action_reservation_checkout(self):
         for record in self:
             if record.state != 'cancelled':
@@ -299,7 +299,7 @@ class HotelReservation(models.Model):
 
         return (json_reservs, json_tooltips)
 
-    @api.multi
+    
     def mark_as_readed(self):
         self.write({'to_assign': False})
 

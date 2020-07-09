@@ -31,7 +31,6 @@
 		<field name="type">ir.actions.act_window</field>
 		<field name="res_model">pms.wizard.massive.price.reservation.days</field>
 		<field name="view_id" ref="view_pms_massive_price_change_wizard"/>
-		<field name="view_type">form</field>
 		<field name="view_mode">form</field>
 		<field name="target">new</field>
 	</record>

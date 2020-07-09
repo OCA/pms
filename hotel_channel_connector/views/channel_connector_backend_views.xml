@@ -205,7 +205,6 @@
     <record id="action_channel_backend" model="ir.actions.act_window">
         <field name="name">Hotel Channel Backends</field>
         <field name="res_model">channel.backend</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="channel_backend_view_tree"/>
     </record>

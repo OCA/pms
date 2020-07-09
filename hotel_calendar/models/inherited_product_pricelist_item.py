@@ -37,7 +37,7 @@ class ProductPricelistItem(models.Model):
             })
         return res
 
-    @api.multi
+    
     def write(self, vals):
         # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         pricelist_default_id = self.env['ir.default'].sudo().get(
@@ -77,7 +77,7 @@ class ProductPricelistItem(models.Model):
                     })
         return ret_vals
 
-    @api.multi
+    
     def unlink(self):
         # TODO: refactoring res.config.settings', 'default_pricelist_id' by the current hotel.property.pricelist_id
         pricelist_default_id = self.env['ir.default'].sudo().get(

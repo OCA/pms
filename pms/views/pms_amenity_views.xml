@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!--===== Room Amenities ===== -->
-    <!-- Form view of pms room amenities -->
     <record id="pms_amenity_view_form" model="ir.ui.view">
         <field name="name">pms.amenity.form</field>
         <field name="model">pms.amenity</field>
@@ -64,7 +62,6 @@
         </field>
     </record>
 
-    <!-- Search view of pms room amenities -->
     <record model="ir.ui.view" id="pms_amenity_search">
         <field name="name">pms.room_amenity_search</field>
         <field name="model">pms.amenity</field>
@@ -83,7 +80,6 @@
         </field>
     </record>
 
-    <!-- Tree view of pms room amenities -->
     <record model="ir.ui.view" id="pms_amenity_view_list">
         <field name="name">pms.room_amenity_list</field>
         <field name="model">pms.amenity</field>
@@ -96,11 +92,9 @@
         </field>
     </record>
 
-    <!-- Action for pms room amenities -->
     <record model="ir.actions.act_window" id="action_pms_room_amenity_view_form">
         <field name="name">Room Amenities</field>
         <field name="res_model">pms.amenity</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="pms_amenity_view_list" />
     </record>

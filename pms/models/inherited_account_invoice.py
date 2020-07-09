@@ -6,8 +6,8 @@ import json
 from odoo.tools import float_is_zero
 
 
-class AccountInvoice(models.Model):
-    _inherit = 'account.invoice'
+class AccountMove(models.Model):
+    _inherit = 'account.move'
 
     # Field Declarations
     folio_ids = fields.Many2many(
@@ -23,20 +23,20 @@ class AccountInvoice(models.Model):
         compute='_get_outstanding_folios_JSON')
 
     # Compute and Search methods
-    @api.multi
+    
     def _computed_folio_origin(self):
         for inv in self:
-            folios = inv.mapped('invoice_line_ids.reservation_ids.folio_id')
-            folios |= inv.mapped('invoice_line_ids.service_ids.folio_id')
+            folios = inv.mapped('move_line_ids.reservation_ids.folio_id')
+            folios |= inv.mapped('move_line_ids.service_ids.folio_id')
             if folios:
                 inv.from_folio = True
                 inv.folio_ids = [(6, 0, folios.ids)]
 
     # Action methods
-    @api.multi
+    
     def action_folio_payments(self):
         self.ensure_one()
-        sales = self.mapped('invoice_line_ids.sale_line_ids.order_id')
+        sales = self.mapped('move_line_ids.sale_line_ids.order_id')
         folios = self.env['pms.folio'].search([
             ('order_id.id', 'in', sales.ids)
             ])
@@ -54,8 +54,8 @@ class AccountInvoice(models.Model):
         }
 
     # Business methods
-    @api.one
     def _get_outstanding_folios_JSON(self):
+        self.ensure_one()
         self.outstanding_folios_debits_widget = json.dumps(False)
         if self.from_folio:
             payment_ids = self.folio_ids.mapped('payment_ids.id')
@@ -82,7 +82,7 @@ class AccountInvoice(models.Model):
                 info = {'title': '',
                         'outstanding': True,
                         'content': [],
-                        'invoice_id': self.id}
+                        'move_id': self.id}
                 lines = self.env['account.move.line'].search(domain)
                 currency_id = self.currency_id
                 if len(lines) != 0:

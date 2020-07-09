@@ -5,7 +5,6 @@
         <field name="name">Hotel Calendar</field>
         <field name="res_model">hotel.reservation</field>
         <field name="view_mode">pms</field>
-        <field name="view_type">form</field>
     </record>
 
     <record id="action_hotel_calendar_management" model="ir.actions.act_window">

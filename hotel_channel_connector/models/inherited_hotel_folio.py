@@ -28,7 +28,7 @@ class HotelFolio(models.Model):
             importer = work.component(usage='channel.importer')
             importer.fetch_new_bookings()
 
-    @api.multi
+    
     def action_confirm(self):
         for rec in self:
             rec.reservation_ids.write({
@@ -36,7 +36,7 @@ class HotelFolio(models.Model):
             })
         return super().action_confirm()
 
-    @api.multi
+    
     def get_grouped_reservations_json(self, state, import_all=False):
         super().get_grouped_reservations_json(state, import_all=import_all)
         self.ensure_one()

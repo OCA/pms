@@ -39,7 +39,6 @@ class PoliceWizard(models.TransientModel):
     log_police = fields.Char()
     error_partner = fields.Many2one('res.partner')
 
-    @api.one
     def generate_file(self):
         company = self.env.user.company_id
         if company.police_number is not False and company.property_name is not False:

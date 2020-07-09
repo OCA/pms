@@ -29,7 +29,7 @@ class CodeIne(models.Model):
     name = fields.Char('Place', required=True)
     code = fields.Char('Code', required=True)
 
-    @api.multi
+    
     def name_get(self):
         data = []
         for record in self:

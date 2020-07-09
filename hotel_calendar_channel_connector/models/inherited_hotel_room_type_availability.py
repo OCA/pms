@@ -25,7 +25,7 @@ class HotelRoomTypeAvailability(models.Model):
         )
         return res
 
-    @api.multi
+    
     def write(self, vals):
         ret_vals = super(HotelRoomTypeAvailability, self).write(vals)
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
@@ -35,7 +35,7 @@ class HotelRoomTypeAvailability(models.Model):
             )
         return ret_vals
 
-    @api.multi
+    
     def unlink(self):
         # Construct dictionary with relevant info of removed records
         unlink_vals = []

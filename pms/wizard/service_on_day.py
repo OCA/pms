@@ -18,7 +18,7 @@ class ServiceOnDay(models.TransientModel):
     product_qty = fields.Integer('Quantity', default=1)
     date = fields.Date('Date', default=_get_default_date)
 
-    @api.multi
+    
     def set_service(self):
         self.ensure_one()
         pms_reservation_obj = self.env['pms.reservation']

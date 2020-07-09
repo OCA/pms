@@ -68,7 +68,6 @@ class Wizard(models.TransientModel):
     adr_screen = fields.Char()
     rev_screen = fields.Char()
 
-    @api.one
     def generate_file(self):
         _logger.warning("Start Export INE XML file")
         last_day = calendar.monthrange(self.ine_year, self.ine_month)[1]

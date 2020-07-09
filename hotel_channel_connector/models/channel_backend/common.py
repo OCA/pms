@@ -53,12 +53,12 @@ class ChannelBackend(models.Model):
                               'backend_id',
                               string="OTA's")
 
-    @api.multi
+    
     def generate_key(self):
         for record in self:
             record.security_token = binascii.hexlify(os.urandom(16)).decode()
 
-    @api.multi
+    
     def synchronize_push_urls(self):
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
         base_url = base_url.replace("http://", "https://")
@@ -66,7 +66,7 @@ class ChannelBackend(models.Model):
         for record in self:
             channel_ota_info_obj.push_activation(record, base_url)
 
-    @api.multi
+    
     def import_reservations(self):
         channel_hotel_reservation_obj = self.env['channel.hotel.reservation']
         for backend in self:
@@ -80,7 +80,7 @@ class ChannelBackend(models.Model):
                                               title="Import Reservations")
         return True
 
-    @api.multi
+    
     def import_reservations_range(self):
         channel_hotel_reservation_obj = self.env['channel.hotel.reservation']
         for backend in self:
@@ -97,7 +97,7 @@ class ChannelBackend(models.Model):
                                               title="Import Reservations")
         return True
 
-    @api.multi
+    
     def import_reservation(self):
         channel_hotel_reservation_obj = self.env['channel.hotel.reservation']
         for backend in self:
@@ -110,7 +110,7 @@ class ChannelBackend(models.Model):
                     title="Import Reservations")
         return True
 
-    @api.multi
+    
     def import_rooms(self):
         channel_hotel_room_type_obj = self.env['channel.hotel.room.type']
         for backend in self:
@@ -124,7 +124,7 @@ class ChannelBackend(models.Model):
                                               title="Import Rooms")
         return True
 
-    @api.multi
+    
     def import_otas_info(self):
         channel_ota_info_obj = self.env['channel.ota.info']
         for backend in self:
@@ -134,7 +134,7 @@ class ChannelBackend(models.Model):
                                           title="Import OTA's")
         return True
 
-    @api.multi
+    
     def import_availability(self):
         channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
         for backend in self:
@@ -147,7 +147,7 @@ class ChannelBackend(models.Model):
                                              title="Import Availability")
         return True
 
-    @api.multi
+    
     def push_availability(self):
         channel_hotel_room_type_avail_obj = self.env['channel.hotel.room.type.availability']
         for backend in self:
@@ -157,7 +157,7 @@ class ChannelBackend(models.Model):
                                              title="Export Availability")
         return True
 
-    @api.multi
+    
     def import_restriction_plans(self):
         channel_hotel_room_type_restr_obj = self.env['channel.hotel.room.type.restriction']
         for backend in self:
@@ -171,7 +171,7 @@ class ChannelBackend(models.Model):
                                               title="Import Restrictions")
         return True
 
-    @api.multi
+    
     def import_restriction_values(self):
         channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
         for backend in self:
@@ -185,7 +185,7 @@ class ChannelBackend(models.Model):
                                              title="Import Restrictions")
         return True
 
-    @api.multi
+    
     def push_restriction(self):
         channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
         for backend in self:
@@ -195,7 +195,7 @@ class ChannelBackend(models.Model):
                                              title="Export Restrictions")
         return True
 
-    @api.multi
+    
     def import_pricelist_plans(self):
         channel_product_pricelist_obj = self.env['channel.product.pricelist']
         for backend in self:
@@ -209,7 +209,7 @@ class ChannelBackend(models.Model):
                                               title="Import Pricelists")
         return True
 
-    @api.multi
+    
     def import_pricelist_values(self):
         channel_product_pricelist_item_obj = self.env['channel.product.pricelist.item']
         for backend in self:
@@ -223,7 +223,7 @@ class ChannelBackend(models.Model):
                                              title="Import Pricelists")
         return True
 
-    @api.multi
+    
     def push_pricelist(self):
         channel_product_pricelist_item_obj = self.env['channel.product.pricelist.item']
         for backend in self:
@@ -233,7 +233,7 @@ class ChannelBackend(models.Model):
                                              title="Export Pricelists")
         return True
 
-    @api.multi
+    
     def close_online_sales(self):
         channel_hotel_restr_item_obj = self.env['channel.hotel.room.type.restriction.item']
         for backend in self:
@@ -243,7 +243,7 @@ class ChannelBackend(models.Model):
                                              title="Export Restrictions")
         return True
 
-    @api.multi
+    
     def channel_availability_watchdog(self):
         # search all availability to the future TODO: It not prepared for multiple backends
         availabilities = self.env['hotel.room.type.availability'].search([

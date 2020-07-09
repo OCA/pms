@@ -10,14 +10,14 @@ class HotelRoomTypeClass(models.Model):
 
     _locked_codes = ('1', '2', '3', '4', '5', '6', '7', '8')
 
-    @api.multi
+    
     def write(self, vals):
         for record in self:
             if record.code_class in self._locked_codes:
                 raise ValidationError(_("Can't modify channel room type class"))
         return super(HotelRoomTypeClass, self).write(vals)
 
-    @api.multi
+    
     def unlink(self):
         for record in self:
             if record.code_class in self._locked_codes:

@@ -37,17 +37,17 @@ class HotelChannelConnectorIssue(models.Model):
             title=_("Oops! %s Issue Reported!!") % issue_id.section)
         return issue_id
 
-    @api.multi
+    
     def mark_readed(self):
         for record in self:
             record.to_read = False
 
-    @api.multi
+    
     def toggle_to_read(self):
         for record in self:
             record.to_read = not record.to_read
 
-    @api.multi
+    
     def mark_as_read(self):
         reserv_ids = []
         for record in self:

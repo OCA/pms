@@ -45,7 +45,6 @@
 		<field name="type">ir.actions.act_window</field>
 		<field name="res_model">glasof.exporter.wizard</field>
 		<field name="view_id" ref="view_glasof_exporter_wizard"/>
-		<field name="view_type">form</field>
 		<field name="view_mode">form</field>
 		<field name="target">new</field>
 	</record>

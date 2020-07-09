@@ -19,7 +19,7 @@ class HotelReservation(models.Model):
                                      store=True)
 
     # TODO: Add the following method into _compute_color
-    @api.multi
+    
     def _generate_color(self):
         self.ensure_one()
         company_id = self.env.user.company_id
@@ -77,14 +77,14 @@ class HotelReservation(models.Model):
                                              _("Reservation Created"))
         return reservation_id
 
-    @api.multi
+    
     def write(self, vals):
         _logger.info("RESERV WRITE")
         ret = super(HotelReservation, self).write(vals)
         self.send_bus_notification('write', 'noshow')
         return ret
 
-    @api.multi
+    
     def unlink(self):
         self.send_bus_notification('unlink',
                                    'warn',
@@ -429,7 +429,7 @@ class HotelReservation(models.Model):
             'show_num_rooms': self.env.user.hotel_id.pms_show_num_rooms,
         }
 
-    @api.multi
+    
     def generate_bus_values(self, naction, ntype, ntitle=''):
         self.ensure_one()
         return {
@@ -475,7 +475,7 @@ class HotelReservation(models.Model):
                          if service.product_id.show_in_calendar] or False,
         }
 
-    @api.multi
+    
     def send_bus_notification(self, naction, ntype, ntitle=''):
         hotel_cal_obj = self.env['bus.hotel.calendar']
         for record in self:

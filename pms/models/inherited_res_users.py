@@ -22,6 +22,6 @@ class ResUsers(models.Model):
         'pms.property',
         'pms_property_users_rel',
         'user_id',
-        'property_id',
+        'pms_property_id',
         string='Properties',
         default=_get_default_pms_property)

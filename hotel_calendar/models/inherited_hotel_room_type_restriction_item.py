@@ -28,7 +28,7 @@ class HotelRoomTypeRestrictionItem(models.Model):
             })
         return res
 
-    @api.multi
+    
     def write(self, vals):
         ret_vals = super(HotelRoomTypeRestrictionItem, self).write(vals)
         bus_hotel_calendar_obj = self.env['bus.hotel.calendar']
@@ -48,7 +48,7 @@ class HotelRoomTypeRestrictionItem(models.Model):
             })
         return ret_vals
 
-    @api.multi
+    
     def unlink(self):
         default_restriction_id = self.env.user.hotel_id.default_restriction_id.id
         # Construct dictionary with relevant info of removed records

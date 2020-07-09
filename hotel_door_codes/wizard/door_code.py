@@ -28,7 +28,7 @@ class DoorCodeWizard(models.TransientModel):
     _description = 'Door Code Generator'
 
     # Default methods
-    @api.multi
+    
     def _get_default_date_start(self):
         return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
 
@@ -41,7 +41,7 @@ class DoorCodeWizard(models.TransientModel):
         default=_get_default_date_start)
     door_code = fields.Html("Door code")
 
-    @api.multi
+    
     def check_code(self):
         reservation = self.env['hotel.reservation']
 

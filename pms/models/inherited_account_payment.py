@@ -20,7 +20,7 @@ class AccountPayment(models.Model):
     save_journal_id = fields.Integer()
 
     # Compute and Search methods
-    @api.multi
+    
     @api.depends('state')
     def _compute_folio_amount(self):
         # FIXME: Finalize method
@@ -52,7 +52,7 @@ class AccountPayment(models.Model):
 
     # Action methods
     """WIP"""
-    @api.multi
+    
     def return_payment_folio(self):
         journal = self.journal_id
         partner = self.partner_id
@@ -81,7 +81,7 @@ class AccountPayment(models.Model):
         return_pay.action_confirm()
 
     # Business methods
-    @api.multi
+    
     def modify(self):
         self.cancel()
         vals = {
@@ -109,7 +109,7 @@ class AccountPayment(models.Model):
                         self.save_journal_id).name, self.journal_id.name)
             self.folio_id.message_post(subject=_('Payment'), body=msg)
 
-    @api.multi
+    
     def delete(self):
         msg = False
         if self.folio_id:
@@ -121,7 +121,7 @@ class AccountPayment(models.Model):
         if msg:
             self.folio_id.message_post(subject=_('Payment Deleted'), body=msg)
 
-    @api.multi
+    
     def post(self):
         rec = super(AccountPayment, self).post()
         if rec and not self._context.get("ignore_notification_post", False):
@@ -133,11 +133,11 @@ class AccountPayment(models.Model):
                                  pay.communication, pay.journal_id.name)
                     pay.folio_id.message_post(subject=_('Payment'), body=msg)
 
-    @api.multi
+    
     def modify_payment(self):
         self.ensure_one()
         view_form_id = self.env.ref('pms.account_payment_view_form_folio').id
-        # invoices = self.mapped('invoice_ids.id')
+        # moves = self.mapped('move_ids.id')
         return{
             'name': _('Payment'),
             'view_type': 'form',

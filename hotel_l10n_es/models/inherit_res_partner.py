@@ -91,7 +91,7 @@ class ResPartner(models.Model):
         duplicated_fields = ['vat', 'document_number']
         return duplicated_fields
 
-    @api.multi
+    
     def write(self, vals):
         if vals.get('vat') and not self._context.get(
                 "ignore_vat_update", False):
@@ -198,7 +198,7 @@ class ResPartner(models.Model):
                         "The Document Number %s already exists in another "
                         "partner.") % record.document_number)
 
-    @api.multi
+    
     def open_main_partner(self):
         self.ensure_one()
         action = self.env.ref('base.action_partner_form').read()[0]
@@ -439,7 +439,7 @@ class ResPartner(models.Model):
             reverse=True,
         )
 
-    @api.multi
+    
     def _compute_models(self):
         """ Compute the different models needed by the system if you want to exclude some partners. """
         model_mapping = {}

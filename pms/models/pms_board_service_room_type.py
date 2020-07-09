@@ -13,7 +13,7 @@ class PmsBoardServiceRoomType(models.Model):
     _description = 'Board Service included in Room'
 
     # Default Methods ang Gets
-    @api.multi
+    
     def name_get(self):
         result = []
         for res in self:
@@ -100,7 +100,7 @@ class PmsBoardServiceRoomType(models.Model):
                          can't repeat without pricelist"))
 
     # Action methods
-    @api.multi
+    
     def open_board_lines_form(self):
         action = self.env.ref(
             'pms.action_pms_board_service_room_type_view').read()[0]
@@ -111,7 +111,6 @@ class PmsBoardServiceRoomType(models.Model):
         return action
 
     # ORM Overrides
-    @api.model_cr
     def init(self):
         self._cr.execute(
             'SELECT indexname FROM pg_indexes WHERE indexname = %s',
@@ -131,7 +130,7 @@ class PmsBoardServiceRoomType(models.Model):
             )
         return super(PmsBoardServiceRoomType, self).create(vals)
 
-    @api.multi
+    
     def write(self, vals):
         if 'pms_board_service_id' in vals:
             vals.update(

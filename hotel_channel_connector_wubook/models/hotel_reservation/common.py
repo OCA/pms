@@ -51,7 +51,7 @@ class ChannelHotelReservation(models.Model):
 class HotelReservation(models.Model):
     _inherit = 'hotel.reservation'
 
-    @api.multi
+    
     def action_cancel(self):
         for record in self:
             # Can't cancel in Odoo
@@ -63,7 +63,7 @@ class HotelReservation(models.Model):
 
         return super(HotelReservation, self).action_cancel()
 
-    @api.multi
+    
     def confirm(self):
         for record in self:
             if record.is_from_ota:

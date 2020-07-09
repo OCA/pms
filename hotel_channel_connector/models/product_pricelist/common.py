@@ -22,7 +22,7 @@ class ChannelProductPricelist(models.Model):
                               ondelete='cascade')
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def create_plan(self):
         self.ensure_one()
         if not self.external_id:
@@ -31,7 +31,7 @@ class ChannelProductPricelist(models.Model):
                 exporter.create_plan(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def create_vplan(self):
         self.ensure_one()
         if not self.external_id:
@@ -40,7 +40,7 @@ class ChannelProductPricelist(models.Model):
                 exporter.create_vplan(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def modify_vplan(self):
         self.ensure_one()
         if self.external_id:
@@ -49,7 +49,7 @@ class ChannelProductPricelist(models.Model):
                 exporter.modify_vplan(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def update_plan_name(self):
         self.ensure_one()
         if self.external_id:
@@ -58,7 +58,7 @@ class ChannelProductPricelist(models.Model):
                 exporter.update_plan_name(self)
 
     @job(default_channel='root.channel')
-    @api.multi
+    
     def delete_plan(self):
         self.ensure_one()
         if self.external_id:
@@ -103,7 +103,7 @@ class ProductPricelist(models.Model):
                    for item in record.item_ids):
                 record.is_virtual_plan = False
 
-    @api.multi
+    
     @api.depends('name')
     def name_get(self):
         pricelist_obj = self.env['product.pricelist']
@@ -121,7 +121,7 @@ class ProductPricelist(models.Model):
                 names.append((name[0], name[1]))
         return names
 
-    @api.multi
+    
     def open_channel_bind_ids(self):
         channel_bind_ids = self.mapped('channel_bind_ids')
         action = self.env.ref('hotel_channel_connector.channel_product_pricelist_action').read()[0]
@@ -140,12 +140,12 @@ class ProductPricelist(models.Model):
             }
         return action
 
-    @api.multi
+    
     def disconnect_channel_bind_ids(self):
         # TODO: multichannel rooms is not implemented
         self.channel_bind_ids.with_context({'connector_no_export': True}).unlink()
 
-    @api.multi
+    
     def write(self, vals):
         if 'active' in vals and vals.get('active') is False:
             self.channel_bind_ids.unlink()

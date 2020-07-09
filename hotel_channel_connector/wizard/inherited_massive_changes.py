@@ -63,13 +63,13 @@ class MassiveChangesWizard(models.TransientModel):
                     'mail_create_nosubscribe': True,
                 }).create(vals)
 
-    @api.multi
+    
     def massive_change(self):
         res = super(MassiveChangesWizard, self).massive_change()
         self.env['channel.backend'].cron_push_changes()
         return res
 
-    @api.multi
+    
     def massive_change_close(self):
         res = super(MassiveChangesWizard, self).massive_change_close()
         self.env['channel.backend'].cron_push_changes()

@@ -242,7 +242,7 @@ class GlassofExporterWizard(models.TransientModel):
             'xls_invoices_binary': base64.encodestring(file_data.read()),
         }
 
-    @api.multi
+    
     def export(self):
         towrite = {}
         if self.export_journals:

@@ -40,7 +40,7 @@ class TestHotelWubook(TestHotel):
     def _init_mock_hotel(cls):
         super(TestHotelWubook, cls)._init_mock_hotel()
 
-        @api.multi
+        
         def wubook_ommit(self, *args, **kwargs):
             return True
 

@@ -91,7 +91,7 @@ class MassiveChangesWizard(models.TransientModel):
         self.date_end = self.date_start
 
     # Action methods
-    @api.multi
+    
     def _get_restrictions_values(self, record):
         self.ensure_one()
         vals = {}
@@ -208,7 +208,7 @@ class MassiveChangesWizard(models.TransientModel):
         elif record.section == 'prices':
             self._save_prices(ndate, room_types, record)
 
-    @api.multi
+    
     def _do_massive_change(self):
         pms_room_type_obj = self.env['pms.room.type']
         for record in self:
@@ -230,20 +230,20 @@ class MassiveChangesWizard(models.TransientModel):
                 self._save(ndate, room_types, record)
         return True
 
-    @api.multi
+    
     def massive_change(self):
         self._do_massive_change()
         return {
             "type": "ir.actions.do_nothing",
         }
 
-    @api.multi
+    
     def massive_change_close(self):
         self._do_massive_change()
         return True
 
     # TODO: method deprecated and not used anywhere
-    @api.multi
+    
     def is_valid_date(self, chkdate):
         self.ensure_one()
         wday = chkdate.timetuple()[6]

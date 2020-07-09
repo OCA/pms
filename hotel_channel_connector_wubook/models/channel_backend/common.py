@@ -35,7 +35,7 @@ class ChannelBackend(models.Model):
                                                  default=_get_default_wubook_parity)
 
     @contextmanager
-    @api.multi
+    
     def work_on(self, model_name, **kwargs):
         self.ensure_one()
         wubook_login = WuBookLogin(

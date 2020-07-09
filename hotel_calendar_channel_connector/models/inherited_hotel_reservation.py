@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 class HotelReservation(models.Model):
     _inherit = "hotel.reservation"
 
-    @api.multi
+    
     def _hcalendar_reservation_data(self, reservations):
         vals = super(HotelReservation, self)._hcalendar_reservation_data(reservations)
         # TODO: Improve performance by doing a SQL as in get_hcalendar_reservations_data()
@@ -35,7 +35,7 @@ class HotelReservation(models.Model):
             # REVIEW: What happens if the reservation is splitted and no parent with channel_bind_ids ¿?
         return vals
 
-    @api.multi
+    
     def generate_bus_values(self, naction, ntype, ntitle=''):
         self.ensure_one()
         vals = super(HotelReservation, self).generate_bus_values(naction, ntype, ntitle)
@@ -50,7 +50,7 @@ class HotelReservation(models.Model):
             })
         return vals
 
-    @api.multi
+    
     def confirm(self):
         for record in self:
             if record.to_assign:

@@ -52,7 +52,6 @@
   <record model="ir.actions.act_window" id="room_type_restriction_action">
     <field name="name">Reservation restrictions</field>
     <field name="res_model">pms.room.type.restriction</field>
-    <field name="view_type">form</field>
     <field name="view_mode">tree,form</field>
   </record>
 
