@@ -5,13 +5,14 @@ from openerp import models, fields, api
 
 class MassivePriceChangeWizard(models.TransientModel):
     _name = 'pms.wizard.massive.price.reservation.days'
+    _description = 'Massive Price Changes'
 
     new_price = fields.Float('New Price', default=1, min=1)
     change_price = fields.Boolean('Change Prices', default=False)
     new_discount  = fields.Float('New Discount', default=0, min=1)
     change_discount = fields.Boolean('Change Discounts', default=False)
 
-    
+
     def massive_price_change_days(self):
         self.ensure_one()
         pms_reservation_obj = self.env['pms.reservation']

@@ -28,6 +28,7 @@ class IrHttp(models.AbstractModel):
             user.company_id = user.pms_property_id.company_id
             res['company_id'] = user.pms_property_id.company_id.id
         else:
+            return res #TODO Review method
             raise MissingError(
                 _("Wrong property and company access settings for this user. "
                   "Please review property and company for user %s") % user.name)

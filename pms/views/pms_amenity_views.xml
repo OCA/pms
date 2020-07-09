@@ -8,7 +8,7 @@
             <form string="Room Amenities">
                 <sheet>
                     <h1>
-                        <label string="Amenity" />
+                        <label for="name" string="Amenity" />
                         <field name="name" select="1" />
                     </h1>
                     <group>
@@ -16,7 +16,7 @@
                     </group>
                     <notebook>
                         <page string="Information">
-                            <group colspan="4" col="4">                                
+                            <group colspan="4" col="4">
                                 <field name="pms_property_ids" widget="many2many_tags"
                                   options="{'no_create': True,'no_open': True}"/>
                                 <field name="room_amenity_type_id" select="2" string="Amenity Type" />

@@ -20,7 +20,9 @@
         'mail',
         'account_payment_return',
         'partner_firstname',
-        'email_template_qweb'
+        'email_template_qweb',
+        'sales_team',
+        'sale'
     ],
     'data': [
         'security/pms_security.xml',

@@ -7,6 +7,7 @@ from odoo.tools import (
 
 class ServiceOnDay(models.TransientModel):
     _name = 'service.on.day'
+    _description = 'Set service for today'
 
     def _get_default_date(self):
         tz_property = self.env.user.pms_property_id.tz
@@ -18,7 +19,7 @@ class ServiceOnDay(models.TransientModel):
     product_qty = fields.Integer('Quantity', default=1)
     date = fields.Date('Date', default=_get_default_date)
 
-    
+
     def set_service(self):
         self.ensure_one()
         pms_reservation_obj = self.env['pms.reservation']

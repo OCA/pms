@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="pms_management_menu" name="pms Management"
+    <menuitem id="pms_management_menu" name="PMS Management"
         sequence="8" web_icon="pms,static/description/icon.png"
         groups="pms.group_pms_user,pms.group_pms_call"/>
 
