@@ -3,7 +3,6 @@
 import time
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from odoo import api, fields, models, _
-import odoo.addons.decimal_precision as dp
 from odoo.exceptions import UserError, ValidationError
 from datetime import timedelta
 
@@ -85,7 +84,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
     product_id = fields.Many2one('product.product', string="Product",
                                  domain=[('type', '=', 'service')], default=_default_product_id)
     amount = fields.Float('Down Payment Amount',
-                          digits=dp.get_precision('Account'),
+                          digits=('Account'),
                           help="The amount to be invoiced in advance, taxes excluded.")
     deposit_account_id = fields.Many2one("account.account", string="Income Account",
                                          domain=[('deprecated', '=', False)],
@@ -106,7 +105,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             return {'value': {'amount': 0}}
         return {}
 
-    
+
     def _create_invoice(self, folio, service, amount):
         inv_obj = self.env['account.invoice']
         ir_property_obj = self.env['ir.property']
@@ -142,7 +141,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
         invoice = inv_obj.create({
             'name': folio.client_order_ref or folio.name,
-            'origin': folio.name,
+            'invoice_origin': folio.name,
             'type': 'out_invoice',
             'reference': False,
             'folio_ids': [(6, 0, [folio.id])], #REVIEW: Folio_ids is a computed field, Why need this value?
@@ -150,7 +149,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'partner_id': folio.partner_invoice_id.id,
             'invoice_line_ids': [(0, 0, {
                 'name': name,
-                'origin': folio.name,
+                'invoice_origin': folio.name,
                 'account_id': account_id,
                 'price_unit': amount,
                 'quantity': 1.0,
@@ -172,7 +171,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         invoice.compute_taxes()
         invoice.message_post_with_view(
             'mail.message_origin_link',
-            values={'self': invoice, 'origin': folio},
+            values={'self': invoice, 'invoice_origin': folio},
             subtype_id=self.env.ref('mail.mt_note').id)
         return invoice
 
@@ -201,7 +200,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 invoice.assign_outstanding_credit(line.id)
         return True
 
-    
+
     def create_invoices(self):
         inv_obj = self.env['account.invoice']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -270,7 +269,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         invoice.compute_taxes()
         self._validate_invoices(invoice)
         invoice.message_post_with_view('mail.message_origin_link',
-            values={'self': invoice, 'origin': folios},
+            values={'self': invoice, 'invoice_origin': folios},
             subtype_id=self.env.ref('mail.mt_note').id)
         if self._context.get('open_invoices', False):
             return folios.open_invoices_folio()
@@ -394,7 +393,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         #         raise UserError(_('All Folios must hace the same pricelist'))
         invoice_vals = {
             'name': self.folio_ids[0].client_order_ref or '',
-            'origin': origin,
+            'invoice_origin': origin,
             'type': 'out_invoice',
             'account_id': self.partner_invoice_id.property_account_receivable_id.id,
             'partner_id': self.partner_invoice_id.id,
@@ -427,7 +426,7 @@ class LineAdvancePaymentInv(models.TransientModel):
     price_room = fields.Float(compute='_compute_price_room')
     discount = fields.Float(
         string='Discount (%)',
-        digits=dp.get_precision('Discount'), default=0.0)
+        digits=('Discount'), default=0.0)
     to_invoice = fields.Boolean('To Invoice')
     description = fields.Text('Description')
     description_dates =  fields.Text('Range')
@@ -474,7 +473,7 @@ class LineAdvancePaymentInv(models.TransientModel):
                     ((fields.Date.from_string(record.reservation_line_ids[-1].date)) + \
                         timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-    
+
     def invoice_line_create(self, invoice_id, qty):
         """ Create an invoice line.
             :param invoice_id: integer
@@ -496,7 +495,7 @@ class LineAdvancePaymentInv(models.TransientModel):
             account = fpos.map_account(account)
         vals = {
             'sequence': origin.sequence,
-            'origin': origin.name,
+            'invoice_origin': origin.name,
             'account_id': account.id,
             'price_unit': self.price_unit,
             'quantity': self.qty,

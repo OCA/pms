@@ -1,8 +1,6 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
-from odoo.addons import decimal_precision as dp
-
 
 class PmsBoardServiceRoomTypeLine(models.Model):
     _name = 'pms.board.service.room.type.line'
@@ -20,5 +18,4 @@ class PmsBoardServiceRoomTypeLine(models.Model):
         required=True,
         readonly=True)
     # TODO def default_amount "amount of service"
-    amount = fields.Float('Amount', digits=dp.get_precision(
-        'Product Price'), default=0.0)
+    amount = fields.Float('Amount', digits=('Product Price'), default=0.0)

@@ -4,17 +4,6 @@
     <data noupdate="0">
 
         <!-- Scheduler For To Inform Guest About Reservation Before 24 Hours -->
-        <record model="ir.cron" id="Guest_reservation_reminder_24hrs">
-            <field name="name">Inform Guest About Reservation Before 24 Hours</field>
-            <field name="interval_number">1</field>
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False" />
-            <field name="model_id" ref="model_pms_reservation" />
-            <field name="code">model.reservation_reminder_24hrs()</field>
-        </record>
-
-        <!-- Scheduler For To Inform Guest About Reservation Before 24 Hours -->
         <record model="ir.cron" id="autocheckout_reservations">
             <field name="name">Automatic Checkout on past reservations</field>
             <field name="interval_number">1</field>
@@ -26,7 +15,7 @@
             <field name="model_id" ref="model_pms_reservation" />
             <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"/>
             <field name="code">model.autocheckout()</field>
-            
+
         </record>
 
     </data>

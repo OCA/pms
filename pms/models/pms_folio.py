@@ -282,7 +282,7 @@ class PmsFolio(models.Model):
             move_ids = folio.reservation_ids.mapped('move_line_ids').\
                 mapped('move_id').filtered(lambda r: r.type in [
                     'out_invoice', 'out_refund'])
-            invoice_ids |= folio.service_ids.mapped('move_line_ids').mapped(
+            invoice_ids = folio.service_ids.mapped('move_line_ids').mapped(
                 'move_id').filtered(lambda r: r.type in [
                     'out_invoice', 'out_refund'])
             # TODO: Search for invoices which have been 'cancelled'
@@ -290,7 +290,7 @@ class PmsFolio(models.Model):
             # use like as origin may contains multiple references
             # (e.g. 'SO01, SO02')
             refunds = invoice_ids.search([
-                ('origin', 'like', folio.name),
+                ('invoice_origin', 'like', folio.name),
                 ('company_id', '=', folio.company_id.id)]).filtered(
                     lambda r: r.type in ['out_invoice', 'out_refund'])
             invoice_ids |= refunds.filtered(
@@ -301,8 +301,8 @@ class PmsFolio(models.Model):
                 for inv in invoice_ids:
                     refund_ids += refund_ids.search([
                         ('type', '=', 'out_refund'),
-                        ('origin', '=', inv.number),
-                        ('origin', '!=', False),
+                        ('invoice_origin', '=', inv.number),
+                        ('invoice_origin', '!=', False),
                         ('journal_id', '=', inv.journal_id.id)])
             # Ignore the status of the deposit product
             deposit_product_id = self.env['sale.advance.payment.inv'].\
@@ -331,7 +331,7 @@ class PmsFolio(models.Model):
 
             folio.update({
                 'invoice_count': len(set(move_ids.ids + refund_ids.ids)),
-                'invoice_ids': move_ids.ids + refund_ids.ids,
+                'move_ids': move_ids.ids + refund_ids.ids,
                 'invoice_status': invoice_status
             })
 
@@ -357,7 +357,7 @@ class PmsFolio(models.Model):
 
     @api.depends('amount_total', 'payment_ids', 'return_ids',
                  'reservation_type', 'state')
-    
+
     def compute_amount(self):
         acc_pay_obj = self.env['account.payment']
         for record in self:
@@ -466,7 +466,7 @@ class PmsFolio(models.Model):
             self.has_checkout_to_send = False
 
     # Constraints and onchanges
-    
+
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         """
@@ -484,7 +484,7 @@ class PmsFolio(models.Model):
             })
             return
 
-        addr = self.partner_id.address_get(['move'])
+        addr = self.partner_id.address_get(['invoice'])
         pricelist = self.partner_id.property_product_pricelist and \
             self.partner_id.property_product_pricelist.id or \
             self.env.user.pms_property_id.default_pricelist_id.id
@@ -506,7 +506,7 @@ class PmsFolio(models.Model):
             values['team_id'] = self.partner_id.team_id.id
         self.update(values)
 
-    
+
     @api.onchange('pricelist_id')
     def onchange_pricelist_id(self):
         values = {'reservation_type': self.env['pms.folio'].
@@ -517,7 +517,7 @@ class PmsFolio(models.Model):
         self.update(values)
 
     # Action methods
-    
+
     def action_pay(self):
         self.ensure_one()
         partner = self.partner_id.id
@@ -541,7 +541,7 @@ class PmsFolio(models.Model):
             'target': 'new',
         }
 
-    
+
     def open_moves_folio(self):
         invoices = self.mapped('move_ids')
         action = self.env.ref('account.action_move_out_invoice_type').read()[0]
@@ -555,7 +555,7 @@ class PmsFolio(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
         return action
 
-    
+
     def action_return_payments(self):
         self.ensure_one()
         return_move_ids = []
@@ -582,7 +582,7 @@ class PmsFolio(models.Model):
             'domain': [('id', 'in', return_move_ids)],
         }
 
-    
+
     def action_checks(self):
         self.ensure_one()
         rooms = self.mapped('reservation_ids.id')
@@ -596,7 +596,7 @@ class PmsFolio(models.Model):
             'target': 'new',
         }
 
-    
+
     def send_reservation_mail(self):
         '''
         This function opens a window to compose an email,
@@ -642,7 +642,7 @@ class PmsFolio(models.Model):
             'force_send': True
         }
 
-    
+
     def send_exit_mail(self):
         '''
         This function opens a window to compose an email,
@@ -688,7 +688,7 @@ class PmsFolio(models.Model):
             'force_send': True
         }
 
-    
+
     def send_cancel_mail(self):
         '''
         This function opens a window to compose an email,
@@ -773,14 +773,14 @@ class PmsFolio(models.Model):
         else:
             return 'normal'
 
-    
+
     def action_done(self):
         reservation_ids = self.mapped('reservation_ids')
         for line in reservation_ids:
             if line.state == "booking":
                 line.action_reservation_checkout()
 
-    
+
     def action_cancel(self):
         for folio in self:
             for reservation in folio.reservation_ids.filtered(
@@ -791,7 +791,7 @@ class PmsFolio(models.Model):
             })
         return True
 
-    
+
     def action_confirm(self):
         for folio in self.filtered(lambda folio: folio.partner_id not in
                                    folio.message_partner_ids):
@@ -814,7 +814,7 @@ class PmsFolio(models.Model):
     CHECKIN/OUT PROCESS
     """
 
-    
+
     def _compute_checkin_partner_count(self):
         for record in self:
             if record.reservation_type == 'normal' and record.reservation_ids:
@@ -830,7 +830,7 @@ class PmsFolio(models.Model):
                 record.checkin_partner_pending_count = sum(
                     mapped_checkin_partner_count)
 
-    
+
     def get_grouped_reservations_json(self, state, import_all=False):
         self.ensure_one()
         info_grouped = []
@@ -873,7 +873,7 @@ class PmsFolio(models.Model):
                              reverse=True),
                       key=lambda k: k['room_type']['id'])
 
-    
+
     def _get_tax_amount_by_group(self):
         self.ensure_one()
         res = {}

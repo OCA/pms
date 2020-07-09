@@ -1,7 +1,6 @@
 # Copyright 2017  Dario
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models, _
-from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 
 
@@ -13,7 +12,7 @@ class PmsBoardServiceRoomType(models.Model):
     _description = 'Board Service included in Room'
 
     # Default Methods ang Gets
-    
+
     def name_get(self):
         result = []
         for res in self:
@@ -58,7 +57,7 @@ class PmsBoardServiceRoomType(models.Model):
         required=True)
     amount = fields.Float(
         'Amount',
-        digits=dp.get_precision('Product Price'),
+        digits=('Product Price'),
         compute='_compute_board_amount',
         store=True)
 
@@ -100,7 +99,7 @@ class PmsBoardServiceRoomType(models.Model):
                          can't repeat without pricelist"))
 
     # Action methods
-    
+
     def open_board_lines_form(self):
         action = self.env.ref(
             'pms.action_pms_board_service_room_type_view').read()[0]
@@ -130,7 +129,7 @@ class PmsBoardServiceRoomType(models.Model):
             )
         return super(PmsBoardServiceRoomType, self).create(vals)
 
-    
+
     def write(self, vals):
         if 'pms_board_service_id' in vals:
             vals.update(

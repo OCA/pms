@@ -430,7 +430,7 @@
         <!-- pms.room.type    -->
 
         <record id="demo_pms_room_type_0" model="pms.room.type">
-            <field name="pms_id" ref="pms.demo_pms_property"/>
+            <field name="pms_property_id" ref="pms.demo_pms_property"/>
             <field name="name">Economic</field>
             <field name="code_type">ECO</field>
             <field name="list_price">21.00</field>
@@ -440,7 +440,7 @@
 
         </record>
         <record id="demo_pms_room_type_1" model="pms.room.type">
-            <field name="pms_id" ref="pms.demo_pms_property"/>
+            <field name="pms_property_id" ref="pms.demo_pms_property"/>
             <field name="name">Single</field>
             <field name="code_type">SNG</field>
             <field name="list_price">20.00</field>

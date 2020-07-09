@@ -7,6 +7,7 @@ class PmsRoomTypeRestriction(models.Model):
     """ The room type restriction is used as a daily restriction plan for room types
      and therefore is related only with one property. """
     _name = 'pms.room.type.restriction'
+    _description = 'Reservation restriction plan'
 
     # Default methods
     @api.model
