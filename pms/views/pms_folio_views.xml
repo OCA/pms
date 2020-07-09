@@ -3,10 +3,10 @@
 
     <act_window id="action_view_folio_advance_payment_inv"
         name="Invoice Folio"
-        src_model="pms.folio"
+        binding_model="pms.folio"
         res_model="folio.advance.payment.inv"
-        key2="client_action_multi" target="new"
-        view_mode="form" multi="True"/>
+        target="new"
+        view_mode="form" />
 
     <record model="ir.ui.view" id="pms_folio_view_form">
         <field name="name">pms.folio.form</field>
@@ -114,7 +114,7 @@
                         </group>
                      </group>
                     <group invisible="1">
-                        <field name="invoice_ids" invisible="1"/>
+                        <field name="move_ids" invisible="1"/>
                         <field name="invoice_status" invisible="1" />
                         <field name="currency_id" invisible="1"/>
                         <field name="refund_amount" invisible="1" />
@@ -300,11 +300,11 @@
                     domain="[('pending_amount', '&gt;', 0)]" />
                 <group expand="0" string="Group By">
                     <filter string="Customer" icon="terp-stock_symbol-selection"
-                        context="{'group_by':'partner_id'}" />
+                        name="group_customer" context="{'group_by':'partner_id'}" />
                     <filter string="Invoice Contact"
-                        context="{'group_by':'partner_invoice_id'}" />
+                        name="group_invoice_contact" context="{'group_by':'partner_invoice_id'}" />
                     <filter string="Tour Operator" domain="[]"
-                        context="{'group_by':'tour_operator_id'}"/>
+                        name="group_tour_operator" context="{'group_by':'tour_operator_id'}"/>
                 </group>
             </search>
         </field>
@@ -323,12 +323,9 @@
 
     <act_window name="Send Confirm Mail"
         res_model="mail.compose.message"
-        src_model="pms.folio"
+        binding_model="pms.folio"
         view_mode="form"
-        multi="False"
-        view_type="form"
         target="new"
-        key2="client_action_multi"
         id="action_view_folio_send_confirm_mail"
         context="{
             'default_model': 'pms.folio',
@@ -343,7 +340,6 @@
     <record model="ir.actions.act_window" id="open_pms_folio1_form_tree_all">
         <field name="name">Folio</field>
         <field name="res_model">pms.folio</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph</field>
     </record>
 

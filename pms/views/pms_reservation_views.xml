@@ -3,7 +3,6 @@
     <record model="ir.actions.act_window" id="open_pms_reservation_form_tree_all">
         <field name="name">Reservation</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form,graph,pivot</field>
         <field name="context">{'from_room': True}</field>
     </record>
@@ -557,18 +556,18 @@
                 <field name="folio_id" />
                 <field name="tour_operator_id" />
                 <filter string="My Reservations"
-                            domain="[('create_uid', '=', uid)]"
+                        name="my_reservations" domain="[('create_uid', '=', uid)]"
                              />
                 <filter string="Cancelled"
-                            domain="[('state', '=', 'cancelled')]"
+                        name="cancelled" domain="[('state', '=', 'cancelled')]"
                              />
-                <filter string="On Board"
+                <filter string="On Board" name="on_board"
                             domain="[('state','in',['booking'])]"
                             help="Current Booking" />
-                <filter string="To enter"
+                <filter string="To enter" name="to_enter"
                             domain="[('state', '=', 'confirm')]"
                              />
-                <filter string="Overbookings"
+                <filter string="Overbookings" name="overbookings"
                             domain="[('overbooking', '=', 'True')]"
                              />
                 <filter string="Reservations to 7 days" name="next_res_week"
@@ -583,52 +582,52 @@
                         domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=30)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
                         help="Show all reservations for which date enter is before than aprox. 1 month"/>
-                <filter string="To Assign"
+                <filter string="To Assign" name="to_assign"
                             domain="[('to_assign','=',True)]"
                             />
                 <separator/>
-                <filter string="Call Center"
+                <filter string="Call Center" name="call_center"
                             domain="[('channel_type', '=', 'call')]"
                              />
-                <filter string="Web"
+                <filter string="Web" name="web"
                             domain="[('channel_type', '=', 'web')]"
                              />
-                <filter string="Door"
+                <filter string="Door" name="door"
                             domain="[('channel_type', '=', 'door')]"
                              />
-                <filter string="Mail"
+                <filter string="Mail" name="mail"
                             domain="[('channel_type', '=', 'mail')]"
                              />
-                <filter string="Phone"
+                <filter string="Phone" name="phone"
                             domain="[('channel_type', '=', 'phone')]"
                              />
                 <separator/>
-                <filter string="Still to be paid"
+                <filter string="Still to be paid" name="still_to_be_paid"
                             domain="[('folio_id.pending_amount','&gt;',0)]"
                              />
-                <filter string="Late Payment"
+                <filter string="Late Payment" name="late_payment"
                             domain="[('folio_id.pending_amount','&gt;',0),('state','in',['done'])]"
                             />
-                <filter string="Lates and NoShows"
+                <filter string="Lates and NoShows" name="lates_and_noshows"
                             domain="[('cancelled_reason','in',['late','noshow'])]"
                             />
                 <separator/>
-                <filter string="Staff"
+                <filter string="Staff" name="staff"
                             domain="[('reservation_type','in',['staff'])]"
                             />
-                <filter string="Out of Service"
+                <filter string="Out of Service" name="out_of_service"
                             domain="[('reservation_type','in',['dontsell'])]"
                             />
                 <group expand="0" string="Group By">
                     <!-- <filter string="Room Type" domain="[]"
                         context="{'group_by':'room_type_id'}"/> -->
-                    <filter string="Room Type" domain="[]"
+                    <filter string="Room Type" domain="[]" name="room_type"
                         context="{'group_by':'room_type_id'}"/>
-                    <filter string="Creation Date" domain="[]"
+                    <filter string="Creation Date" domain="[]" name="creation_date"
                         context="{'group_by':'create_date'}" />
-                    <filter string="Checkin Date" domain="[]"
+                    <filter string="Checkin Date" domain="[]" name="checkin_date"
                         context="{'group_by':'checkin'}" />
-                    <filter string="Created By" domain="[]"
+                    <filter string="Created By" domain="[]" name="created_by"
                         context="{'group_by':'create_uid'}" />
                 </group>
             </search>

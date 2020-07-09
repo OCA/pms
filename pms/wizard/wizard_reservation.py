@@ -159,7 +159,7 @@ class FolioWizard(models.TransientModel):
                     }))
         self.reservation_wizard_ids = cmds
 
-    @api.multi
+    
     @api.onchange('checkin', 'checkout')
     def onchange_checks(self):
         '''
@@ -213,7 +213,7 @@ class FolioWizard(models.TransientModel):
                 total += line.price
         self.total = total
 
-    @api.multi
+    
     def create_folio(self):
         self.ensure_one()
         if not self.partner_id:
@@ -276,7 +276,7 @@ class FolioWizard(models.TransientModel):
 class PmsRoomTypeWizards(models.TransientModel):
     _name = 'pms.room.type.wizard'
 
-    @api.multi
+    
     def _get_default_checkin(self):
         return self.folio_wizard_id.checkin
 
@@ -303,7 +303,7 @@ class PmsRoomTypeWizards(models.TransientModel):
     board_service_room_id = fields.Many2one('pms.board.service.room.type',
                                             string="Board Service")
 
-    @api.multi
+    
     @api.onchange('rooms_num')
     def domain_board_service(self):
         for line in self:
@@ -317,7 +317,7 @@ class PmsRoomTypeWizards(models.TransientModel):
             domain_boardservice = [('id', 'in', board_service_room_ids)]
             return {'domain': {'board_service_room_id': domain_boardservice}}
 
-    @api.multi
+    
     def _can_confirm(self):
         for record in self:
             date_start = fields.Date.from_string(record.checkin)
@@ -458,14 +458,14 @@ class ReservationWizard(models.TransientModel):
     board_service_room_id = fields.Many2one('pms.board.service.room.type',
                                             string="Board Service")
 
-    @api.multi
+    
     def _compute_assign(self):
         for rec in self:
             user = self.env['res.users'].browse(self.env.uid)
             if user.has_group('pms.group_pms_call'):
                 rec.to_assign = True
 
-    @api.multi
+    
     @api.onchange('room_id')
     def onchange_room_id(self):
         for line in self:
@@ -483,7 +483,7 @@ class ReservationWizard(models.TransientModel):
                     raise ValidationError(_("This room is occupied!, please, \
                         choice other room or change the reservation date"))
 
-    @api.multi
+    
     @api.onchange('checkin', 'checkout', 'room_type_id',
                   'discount', 'board_service_room_id', 'product_ids')
     def onchange_dates(self):

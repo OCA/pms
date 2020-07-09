@@ -54,7 +54,6 @@
     <record model="ir.actions.act_window" id="action_pms_cancelation_rule">
         <field name="name">Cancelation Rules</field>
         <field name="res_model">pms.cancelation.rule</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
 

@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <odoo>
 
-    <record id="invoice_form" model="ir.ui.view">
-        <field name="model">account.invoice</field>
-        <field name="inherit_id" ref="account.invoice_form" />
+    <record id="move_form" model="ir.ui.view">
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='date_invoice']" position="after">
+            <xpath expr="//field[@name='invoice_date']" position="after">
                  <field name="folio_ids" widget="many2many_tags"/>
                  <field name="from_folio" invisible="1" />
                  <field name="pms_property_id" invisible="1"/>
             </xpath>
-            <xpath expr="//button[@name='%(account.action_account_invoice_payment)d']" position="attributes">
+            <xpath expr="//button[@name='action_invoice_register_payment']" position="attributes">
                 <attribute name="attrs">{'invisible': ['|',('from_folio','=',True)]}</attribute>
             </xpath>
-            <xpath expr="//field[@name='outstanding_credits_debits_widget']" position="before">
+            <xpath expr="//field[@name='invoice_outstanding_credits_debits_widget']" position="before">
               <field name="outstanding_folios_debits_widget" colspan="2" nolabel="1" widget="payment" attrs="{'invisible': [('state', 'not in', 'open')]}"/>
             </xpath>
         </field>
