@@ -102,7 +102,6 @@
     <record model="ir.actions.act_window" id="action_pms_shared_room_form">
         <field name="name">Shared Room</field>
         <field name="res_model">pms.shared.room</field>
-        <field name="view_type">form</field>
         <!-- <field name="context">{'default_isroom':1,'default_rental':1}
         </field> -->
         <field name="view_id" ref="pms_shared_room_view_tree" />

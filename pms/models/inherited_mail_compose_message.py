@@ -7,7 +7,7 @@ from odoo import api, models
 class MailComposeMessage(models.TransientModel):
     _inherit = 'mail.compose.message'
 
-    @api.multi
+    
     def send_mail(self, auto_commit=False):
         if self._context.get('default_model') == 'pms.folio' and \
                 self._context.get('default_res_id') and \

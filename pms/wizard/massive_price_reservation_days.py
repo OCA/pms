@@ -11,7 +11,7 @@ class MassivePriceChangeWizard(models.TransientModel):
     new_discount  = fields.Float('New Discount', default=0, min=1)
     change_discount = fields.Boolean('Change Discounts', default=False)
 
-    @api.multi
+    
     def massive_price_change_days(self):
         self.ensure_one()
         pms_reservation_obj = self.env['pms.reservation']

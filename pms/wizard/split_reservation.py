@@ -13,7 +13,7 @@ class SplitReservationWizard(models.TransientModel):
 
     nights = fields.Integer('Nights', default=1, min=1)
 
-    @api.multi
+    
     def split_reservation(self):
         reservation_id = self.env['pms.reservation'].browse(
             self.env.context.get('active_id'))
