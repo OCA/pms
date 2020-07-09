@@ -67,7 +67,7 @@ class PmsRoom(models.Model):
                       of another property."))
         return super().create(vals)
 
-    @api.multi
+    
     def write(self, vals):
         for record in self:
             if vals.get('pms_property_id', record.pms_property_id.id) != record.pms_property_id.id:
@@ -86,7 +86,7 @@ class PmsRoom(models.Model):
         return super().write(vals)
 
     # Business methods
-    @api.multi
+    
     def get_capacity(self, extra_bed=0):
         if not self.shared_room_id:
             return self.capacity + extra_bed

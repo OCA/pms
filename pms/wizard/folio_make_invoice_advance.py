@@ -106,7 +106,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             return {'value': {'amount': 0}}
         return {}
 
-    @api.multi
+    
     def _create_invoice(self, folio, service, amount):
         inv_obj = self.env['account.invoice']
         ir_property_obj = self.env['ir.property']
@@ -201,7 +201,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 invoice.assign_outstanding_credit(line.id)
         return True
 
-    @api.multi
+    
     def create_invoices(self):
         inv_obj = self.env['account.invoice']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -474,7 +474,7 @@ class LineAdvancePaymentInv(models.TransientModel):
                     ((fields.Date.from_string(record.reservation_line_ids[-1].date)) + \
                         timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
-    @api.multi
+    
     def invoice_line_create(self, invoice_id, qty):
         """ Create an invoice line.
             :param invoice_id: integer

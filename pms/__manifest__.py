@@ -4,7 +4,7 @@
 {
     'name': 'pms',
     'summary': "A property management system",
-    'version': '11.0.2.0.0',
+    'version': '13.0.1.0.0',
     'development_status': 'Beta',
     'category': 'Generic Modules/Property Management System',
     'website': 'https://github.com/hootel/hootel',
@@ -13,14 +13,13 @@
               'Jose Luis Algara, '
               'Pablo Quesada ',
     'license': "AGPL-3",
-    'application': False,
+    'application': True,
     'installable': True,
     'depends': [
         'base',
         'mail',
         'account_payment_return',
         'partner_firstname',
-        'account_cancel',
         'email_template_qweb'
     ],
     'data': [

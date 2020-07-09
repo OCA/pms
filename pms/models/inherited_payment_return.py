@@ -17,7 +17,7 @@ class PaymentReturn(models.Model):
         related='folio_id.pms_property_id')
 
     # Business methods
-    @api.multi
+    
     def action_confirm(self):
         pay = super(PaymentReturn, self).action_confirm()
         if pay:

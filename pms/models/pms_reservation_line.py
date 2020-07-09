@@ -11,7 +11,7 @@ class PmsReservationLine(models.Model):
     _order = "date"
 
     # Default Methods ang Gets
-    @api.multi
+    
     def name_get(self):
         result = []
         for res in self:
@@ -27,11 +27,11 @@ class PmsReservationLine(models.Model):
         ondelete='cascade',
         required=True,
         copy=False)
-    invoice_line_ids = fields.Many2many(
-        'account.invoice.line',
-        'reservation_line_invoice_rel',
+    move_line_ids = fields.Many2many(
+        'account.move.line',
+        'reservation_line_move_rel',
         'reservation_line_id',
-        'invoice_line_id',
+        'move_line_id',
         string='Invoice Lines',
         readonly=True,
         copy=False)

@@ -22,8 +22,7 @@
 
     <record model="ir.actions.act_window" id="action_pms_board_service_room_type_view">
         <field name="name">Board Service</field>
-        <field name="res_model">board.service.room.type</field>
-        <field name="view_type">form</field>
+        <field name="res_model">pms.board.service.room.type</field>
         <field name="view_mode">form</field>
     </record>
 

@@ -17,7 +17,7 @@ class PmsService(models.Model):
     _description = 'Services and its charges'
 
     # Default methods
-    @api.multi
+    
     def name_get(self):
         result = []
         for rec in self:
@@ -77,12 +77,12 @@ class PmsService(models.Model):
         'account.tax',
         string='Taxes',
         domain=['|', ('active', '=', False), ('active', '=', True)])
-    invoice_line_ids = fields.Many2many(
-        'account.invoice.line',
-        'service_line_invoice_rel',
+    move_line_ids = fields.Many2many(
+        'account.move.line',
+        'service_line_move_rel',
         'service_id',
-        'invoice_line_id',
-        string='Invoice Lines',
+        'move_line_id',
+        string='move Lines',
         copy=False)
     analytic_tag_ids = fields.Many2many(
         'account.analytic.tag',
@@ -102,7 +102,7 @@ class PmsService(models.Model):
     # Non-stored related field to allow portal user to
     # see the image of the product he has ordered
     product_image = fields.Binary(
-        'Product Image', related="product_id.image",
+        'Product Image', related="product_id.image_1024",
         store=False, related_sudo=True)
     invoice_status = fields.Selection([
         ('invoiced', 'Fully Invoiced'),
@@ -169,8 +169,8 @@ class PmsService(models.Model):
             else:
                 line.qty_to_invoice = 0
 
-    @api.depends('invoice_line_ids.invoice_id.state',
-                 'invoice_line_ids.quantity')
+    @api.depends('move_line_ids.move_id.state',
+                 'move_line_ids.quantity')
     def _get_invoice_qty(self):
         """
         Compute the quantity invoiced. If case of a refund,
@@ -183,13 +183,13 @@ class PmsService(models.Model):
         """
         for line in self:
             qty_invoiced = 0.0
-            for invoice_line in line.invoice_line_ids:
-                if invoice_line.invoice_id.state != 'cancel':
-                    if invoice_line.invoice_id.type == 'out_invoice':
+            for invoice_line in line.move_line_ids:
+                if invoice_line.move_id.state != 'cancel':
+                    if invoice_line.move_id.type == 'out_invoice':
                         qty_invoiced += invoice_line.uom_id._compute_quantity(
                             invoice_line.quantity, line.product_id.uom_id)
-                    elif invoice_line.invoice_id.type == 'out_refund':
-                        qty_invoiced -= invoice_line.uom_id._compute_quantity(
+                    elif invoice_line.move_id.type == 'out_refund':
+                        qty_invoiced -= move_line.uom_id._compute_quantity(
                             invoice_line.quantity, line.product_id.uom_id)
             line.qty_invoiced = qty_invoiced
 
@@ -337,7 +337,7 @@ class PmsService(models.Model):
         record.update(vals)
 
     # Action methods
-    @api.multi
+    
     def open_service_ids(self):
         action = self.env.ref('pms.action_pms_services_form').read()[0]
         action['views'] = [
@@ -387,7 +387,7 @@ class PmsService(models.Model):
         record = super(PmsService, self).create(vals)
         return record
 
-    @api.multi
+    
     def write(self, vals):
         # If you write product, We must check if its necesary create or delete
         # service lines
@@ -439,7 +439,7 @@ class PmsService(models.Model):
                         line[field], line)
         return res
 
-    @api.multi
+    
     def compute_lines_out_vals(self, vals):
         """
         Compute if It is necesary service days in write/create
@@ -453,7 +453,7 @@ class PmsService(models.Model):
                 return True
         return False
 
-    @api.multi
+    
     def _compute_tax_ids(self):
         for record in self:
             # If company_id is set, always filter taxes by the company
@@ -466,7 +466,7 @@ class PmsService(models.Model):
                 lambda r: not record.company_id or
                 r.company_id == origin.company_id)
 
-    @api.multi
+    
     def _get_display_price(self, product):
         folio = self.folio_id or self.env.context.get('default_folio_id')
         reservation = self.reservation_id or self.env.context.get(
@@ -499,7 +499,7 @@ class PmsService(models.Model):
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
-    @api.multi
+    
     def _compute_price_unit(self):
         self.ensure_one()
         folio = self.folio_id or self.env.context.get('default_folio_id')

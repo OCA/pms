@@ -29,7 +29,7 @@ class PmsRoomTypeRestrictionItem(models.Model):
                          day for the same room type!')]
 
     # Constraints and onchanges
-    @api.multi
+    
     @api.constrains('min_stay', 'min_stay_arrival', 'max_stay',
                     'max_stay_arrival')
     def _check_min_stay(self):

@@ -111,7 +111,7 @@ class PmsCheckinPartner(models.Model):
         track_visibility='onchange')
 
     # Constraints and onchanges
-    @api.multi
+    
     @api.constrains('exit_date', 'enter_date')
     def _check_exit_date(self):
         for record in self:
@@ -133,7 +133,7 @@ class PmsCheckinPartner(models.Model):
                 _('Departure date, is prior to arrival. Check it now. %s') %
                 date_out)
 
-    @api.multi
+    
     @api.onchange('partner_id')
     def _check_partner_id(self):
         for record in self:
@@ -152,7 +152,7 @@ class PmsCheckinPartner(models.Model):
                         _('This guest is already registered in the room'))
 
     # Action methods
-    @api.multi
+    
     def action_on_board(self):
         for record in self:
             if record.reservation_id.checkin > fields.Date.today():
@@ -185,7 +185,7 @@ class PmsCheckinPartner(models.Model):
             "type": "ir.actions.do_nothing",
         }
 
-    @api.multi
+    
     def action_done(self):
         for record in self:
             if record.state == 'booking':

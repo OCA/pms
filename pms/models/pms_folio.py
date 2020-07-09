@@ -113,8 +113,8 @@ class PmsFolio(models.Model):
     checkin_partner_ids = fields.One2many(
         'pms.checkin.partner',
         'folio_id')
-    invoice_ids = fields.Many2many(
-        'account.invoice',
+    move_ids = fields.Many2many(
+        'account.move',
         string='Invoices',
         compute='_get_invoiced',
         readonly=True,
@@ -279,14 +279,14 @@ class PmsFolio(models.Model):
         refund is not directly linked to the Folio.
         """
         for folio in self:
-            invoice_ids = folio.reservation_ids.mapped('invoice_line_ids').\
-                mapped('invoice_id').filtered(lambda r: r.type in [
+            move_ids = folio.reservation_ids.mapped('move_line_ids').\
+                mapped('move_id').filtered(lambda r: r.type in [
                     'out_invoice', 'out_refund'])
-            invoice_ids |= folio.service_ids.mapped('invoice_line_ids').mapped(
-                'invoice_id').filtered(lambda r: r.type in [
+            invoice_ids |= folio.service_ids.mapped('move_line_ids').mapped(
+                'move_id').filtered(lambda r: r.type in [
                     'out_invoice', 'out_refund'])
             # TODO: Search for invoices which have been 'cancelled'
-            # (filter_refund = 'modify' in 'account.invoice.refund')
+            # (filter_refund = 'modify' in 'account.move.refund')
             # use like as origin may contains multiple references
             # (e.g. 'SO01, SO02')
             refunds = invoice_ids.search([
@@ -296,7 +296,7 @@ class PmsFolio(models.Model):
             invoice_ids |= refunds.filtered(
                 lambda r: folio.id in r.folio_ids.ids)
             # Search for refunds as well
-            refund_ids = self.env['account.invoice'].browse()
+            refund_ids = self.env['account.move'].browse()
             if invoice_ids:
                 for inv in invoice_ids:
                     refund_ids += refund_ids.search([
@@ -330,8 +330,8 @@ class PmsFolio(models.Model):
                 invoice_status = 'no'
 
             folio.update({
-                'invoice_count': len(set(invoice_ids.ids + refund_ids.ids)),
-                'invoice_ids': invoice_ids.ids + refund_ids.ids,
+                'invoice_count': len(set(move_ids.ids + refund_ids.ids)),
+                'invoice_ids': move_ids.ids + refund_ids.ids,
                 'invoice_status': invoice_status
             })
 
@@ -357,7 +357,7 @@ class PmsFolio(models.Model):
 
     @api.depends('amount_total', 'payment_ids', 'return_ids',
                  'reservation_type', 'state')
-    @api.multi
+    
     def compute_amount(self):
         acc_pay_obj = self.env['account.payment']
         for record in self:
@@ -466,7 +466,7 @@ class PmsFolio(models.Model):
             self.has_checkout_to_send = False
 
     # Constraints and onchanges
-    @api.multi
+    
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         """
@@ -478,13 +478,13 @@ class PmsFolio(models.Model):
         """
         if not self.partner_id:
             self.update({
-                'partner_invoice_id': False,
+                'partner_move_id': False,
                 'payment_term_id': False,
                 'fiscal_position_id': False,
             })
             return
 
-        addr = self.partner_id.address_get(['invoice'])
+        addr = self.partner_id.address_get(['move'])
         pricelist = self.partner_id.property_product_pricelist and \
             self.partner_id.property_product_pricelist.id or \
             self.env.user.pms_property_id.default_pricelist_id.id
@@ -506,7 +506,7 @@ class PmsFolio(models.Model):
             values['team_id'] = self.partner_id.team_id.id
         self.update(values)
 
-    @api.multi
+    
     @api.onchange('pricelist_id')
     def onchange_pricelist_id(self):
         values = {'reservation_type': self.env['pms.folio'].
@@ -517,7 +517,7 @@ class PmsFolio(models.Model):
         self.update(values)
 
     # Action methods
-    @api.multi
+    
     def action_pay(self):
         self.ensure_one()
         partner = self.partner_id.id
@@ -541,31 +541,31 @@ class PmsFolio(models.Model):
             'target': 'new',
         }
 
-    @api.multi
-    def open_invoices_folio(self):
-        invoices = self.mapped('invoice_ids')
-        action = self.env.ref('account.action_invoice_tree1').read()[0]
+    
+    def open_moves_folio(self):
+        invoices = self.mapped('move_ids')
+        action = self.env.ref('account.action_move_out_invoice_type').read()[0]
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]
         elif len(invoices) == 1:
             action['views'] = [
-                (self.env.ref('account.invoice_form').id, 'form')]
+                (self.env.ref('account.view_move_form').id, 'form')]
             action['res_id'] = invoices.ids[0]
         else:
             action = {'type': 'ir.actions.act_window_close'}
         return action
 
-    @api.multi
+    
     def action_return_payments(self):
         self.ensure_one()
         return_move_ids = []
         acc_pay_obj = self.env['account.payment']
         payments = acc_pay_obj.search([
             '|',
-            ('invoice_ids', 'in', self.invoice_ids.ids),
+            ('move_ids', 'in', self.move_ids.ids),
             ('folio_id', '=', self.id)
         ])
-        return_move_ids += self.invoice_ids.filtered(
+        return_move_ids += self.move_ids.filtered(
             lambda invoice: invoice.type == 'out_refund').mapped(
                 'payment_move_line_ids.move_id.id')
         return_lines = self.env['payment.return.line'].search([
@@ -582,7 +582,7 @@ class PmsFolio(models.Model):
             'domain': [('id', 'in', return_move_ids)],
         }
 
-    @api.multi
+    
     def action_checks(self):
         self.ensure_one()
         rooms = self.mapped('reservation_ids.id')
@@ -596,7 +596,7 @@ class PmsFolio(models.Model):
             'target': 'new',
         }
 
-    @api.multi
+    
     def send_reservation_mail(self):
         '''
         This function opens a window to compose an email,
@@ -642,7 +642,7 @@ class PmsFolio(models.Model):
             'force_send': True
         }
 
-    @api.multi
+    
     def send_exit_mail(self):
         '''
         This function opens a window to compose an email,
@@ -688,7 +688,7 @@ class PmsFolio(models.Model):
             'force_send': True
         }
 
-    @api.multi
+    
     def send_cancel_mail(self):
         '''
         This function opens a window to compose an email,
@@ -773,14 +773,14 @@ class PmsFolio(models.Model):
         else:
             return 'normal'
 
-    @api.multi
+    
     def action_done(self):
         reservation_ids = self.mapped('reservation_ids')
         for line in reservation_ids:
             if line.state == "booking":
                 line.action_reservation_checkout()
 
-    @api.multi
+    
     def action_cancel(self):
         for folio in self:
             for reservation in folio.reservation_ids.filtered(
@@ -791,7 +791,7 @@ class PmsFolio(models.Model):
             })
         return True
 
-    @api.multi
+    
     def action_confirm(self):
         for folio in self.filtered(lambda folio: folio.partner_id not in
                                    folio.message_partner_ids):
@@ -814,7 +814,7 @@ class PmsFolio(models.Model):
     CHECKIN/OUT PROCESS
     """
 
-    @api.multi
+    
     def _compute_checkin_partner_count(self):
         for record in self:
             if record.reservation_type == 'normal' and record.reservation_ids:
@@ -830,7 +830,7 @@ class PmsFolio(models.Model):
                 record.checkin_partner_pending_count = sum(
                     mapped_checkin_partner_count)
 
-    @api.multi
+    
     def get_grouped_reservations_json(self, state, import_all=False):
         self.ensure_one()
         info_grouped = []
@@ -873,7 +873,7 @@ class PmsFolio(models.Model):
                              reverse=True),
                       key=lambda k: k['room_type']['id'])
 
-    @api.multi
+    
     def _get_tax_amount_by_group(self):
         self.ensure_one()
         res = {}
