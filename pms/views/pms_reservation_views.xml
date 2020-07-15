@@ -61,18 +61,17 @@
                     <button name="open_master" string="Open Master" type="object" class="oe_highlight" icon="fa-file" attrs="{'invisible':['|',['parent_reservation', '=', False]]}" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,booking,done"/>
                 </header>
-
-                <sheet>
-                   <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
+                <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
                         attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}">
                             This reservation has other reservantions and/or services in the folio, you can check it in the
                             <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
-                   </div>
-                   <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                        attrs="{'invisible': [('splitted','=',False)]}">
-                            This reservation is part of splitted reservation!, you can check it in the
-                            <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
-                   </div>
+                </div>
+                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
+                    attrs="{'invisible': [('splitted','=',False)]}">
+                        This reservation is part of splitted reservation!, you can check it in the
+                        <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
+                </div>
+                <sheet>
                    <field name="shared_folio" invisible="1"/>
                     <div class="oe_button_box" name="button_box" attrs="{'invisible': [('folio_id','=',False)]}">
                         <button type="object" class="oe_stat_button"

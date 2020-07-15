@@ -191,7 +191,7 @@ class PmsReservation(models.Model):
         ('booking', 'On Board'),
         ('done', 'Out'),
         ('cancelled', 'Cancelled')],
-                             string='State',
+                             string='Status',
                              readonly=True,
                              default=lambda *a: 'draft',
                              copy=False,
@@ -223,8 +223,8 @@ class PmsReservation(models.Model):
                                  help="Default Departure Hour (HH:MM)")
     partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
     partner_invoice_name = fields.Char(related="partner_invoice_id.name")
-    partner_invoice_street = fields.Char(related="partner_invoice_id.street")
-    partner_invoice_street2 = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_street = fields.Char(related="partner_invoice_id.street", string="Street")
+    partner_invoice_street2 = fields.Char(related="partner_invoice_id.street", string="Street2")
     partner_invoice_zip = fields.Char(related="partner_invoice_id.zip")
     partner_invoice_city = fields.Char(related="partner_invoice_id.city")
     partner_invoice_email = fields.Char(related="partner_invoice_id.email")
@@ -320,7 +320,7 @@ class PmsReservation(models.Model):
         digits=('Product Price'),
         compute='_compute_amount_reservation')
     price_tax = fields.Float(
-        string='Taxes',
+        string='Taxes Amount',
         readonly=True,
         store=True,
         compute='_compute_amount_reservation')
