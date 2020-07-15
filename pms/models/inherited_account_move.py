@@ -23,20 +23,20 @@ class AccountMove(models.Model):
         compute='_get_outstanding_folios_JSON')
 
     # Compute and Search methods
-    
+
     def _computed_folio_origin(self):
         for inv in self:
-            folios = inv.mapped('move_line_ids.reservation_ids.folio_id')
-            folios |= inv.mapped('move_line_ids.service_ids.folio_id')
+            folios = inv.mapped('invoice_line_ids.reservation_ids.folio_id')
+            folios |= inv.mapped('invoice_line_ids.service_ids.folio_id')
             if folios:
                 inv.from_folio = True
                 inv.folio_ids = [(6, 0, folios.ids)]
 
     # Action methods
-    
+
     def action_folio_payments(self):
         self.ensure_one()
-        sales = self.mapped('move_line_ids.sale_line_ids.order_id')
+        sales = self.mapped('invoice_line_ids.sale_line_ids.order_id')
         folios = self.env['pms.folio'].search([
             ('order_id.id', 'in', sales.ids)
             ])

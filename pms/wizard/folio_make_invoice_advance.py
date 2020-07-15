@@ -161,14 +161,14 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 'account_analytic_id': folio.analytic_account_id.id or False,
             })],
             'currency_id': folio.pricelist_id.currency_id.id,
-            'payment_term_id': folio.payment_term_id.id,
+            'invoice_payment_term_id': folio.payment_term_id.id,
             'fiscal_position_id': folio.fiscal_position_id.id \
                 or folio.partner_id.property_account_position_id.id,
             'team_id': folio.team_id.id,
             'user_id': folio.user_id.id,
             'comment': folio.note,
         })
-        invoice.compute_taxes()
+        #invoice.compute_taxes() #TODO: Review method (view sales module)
         invoice.message_post_with_view(
             'mail.message_origin_link',
             values={'self': invoice, 'invoice_origin': folio},
@@ -202,7 +202,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
 
     def create_invoices(self):
-        inv_obj = self.env['account.invoice']
+        inv_obj = self.env['account.move']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         folios = self.folio_ids
 
@@ -253,7 +253,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                 })
                 del context
                 invoice = self._create_invoice(folio, service_line, amount)
-        invoice.compute_taxes()
+        #invoice.compute_taxes() #TODO: Review Method
         if not invoice.invoice_line_ids:
             raise UserError(_('There is no invoiceable line.'))
         # If invoice is negative, do a refund invoice instead
@@ -266,7 +266,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             line._set_additional_fields(invoice)
         # Necessary to force computation of taxes. In account_invoice, they are triggered
         # by onchanges, which are not triggered when doing a create.
-        invoice.compute_taxes()
+        #invoice.compute_taxes() TODO: REVIEW method
         self._validate_invoices(invoice)
         invoice.message_post_with_view('mail.message_origin_link',
             values={'self': invoice, 'invoice_origin': folios},
@@ -376,7 +376,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         a clean extension chain).
         """
 
-        journal_id = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
+        journal_id = self.env['account.move'].default_get(['journal_id'])['journal_id']
         if not journal_id:
             raise UserError(_('Please define an accounting sales journal for this company.'))
         origin = ' '.join(self.folio_ids.mapped('name'))
@@ -395,16 +395,15 @@ class FolioAdvancePaymentInv(models.TransientModel):
             'name': self.folio_ids[0].client_order_ref or '',
             'invoice_origin': origin,
             'type': 'out_invoice',
-            'account_id': self.partner_invoice_id.property_account_receivable_id.id,
             'partner_id': self.partner_invoice_id.id,
             'journal_id': journal_id,
             'currency_id': currency.id,
-            'payment_term_id': payment_term.id,
+            'invoice_payment_term_id': payment_term.id,
             'fiscal_position_id': fiscal_position.id or self.partner_invoice_id.property_account_position_id.id,
             'company_id': company.id,
             'user_id': user and user.id,
             'team_id': team.id,
-            'comment': self.folio_ids[0].note
+            'narration': self.folio_ids[0].note
         }
         return invoice_vals
 
@@ -478,11 +477,10 @@ class LineAdvancePaymentInv(models.TransientModel):
         """ Create an invoice line.
             :param invoice_id: integer
             :param qty: float quantity to invoice
-            :returns recordset of account.invoice.line created
+            :returns recordset of account.move.line created
         """
         self.ensure_one()
-        invoice_lines = self.env['account.invoice.line']
-        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        invoice_lines = self.env['account.move.line']
         origin = self.reservation_id if self.reservation_id.id else self.service_id
         product = self.product_id
         account = product.property_account_income_id or product.categ_id.property_account_income_categ_id
@@ -496,28 +494,27 @@ class LineAdvancePaymentInv(models.TransientModel):
         vals = {
             'sequence': origin.sequence,
             'invoice_origin': origin.name,
-            'account_id': account.id,
             'price_unit': self.price_unit,
             'quantity': self.qty,
             'discount': self.discount,
             'uom_id': product.uom_id.id,
             'product_id': product.id or False,
             'invoice_line_tax_ids': [(6, 0, origin.tax_ids.ids)],
-            'account_analytic_id': self.folio_id.analytic_account_id.id,
+            'account_analytic_id': self.folio_id.analytic_account_id.id or False,
             'analytic_tag_ids': [(6, 0, origin.analytic_tag_ids.ids)]
         }
         if self.reservation_id:
             vals.update({
                 'name': self.description + ' (' + self.description_dates + ')',
-                'invoice_id': invoice_id,
+                'move_id': invoice_id,
                 'reservation_ids': [(6, 0, [origin.id])],
                 'reservation_line_ids': [(6, 0, self.reservation_line_ids.ids)]
             })
         elif self.service_id:
             vals.update({
                 'name': self.description,
-                'invoice_id': invoice_id,
+                'move_id': invoice_id,
                 'service_ids': [(6, 0, [origin.id])]
             })
-        invoice_lines |= self.env['account.invoice.line'].create(vals)
+        invoice_lines |= self.env['account.move.line'].create(vals)
         return invoice_lines

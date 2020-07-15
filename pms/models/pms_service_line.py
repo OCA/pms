@@ -52,7 +52,7 @@ class PmsServiceLine(models.Model):
         readonly=True,
         store=True)
     cancel_discount = fields.Float(
-        'Discount', compute='_compute_cancel_discount')
+        'Discount cancel', compute='_compute_cancel_discount')
 
     # Compute and Search methods
     @api.depends('day_qty', 'service_id.price_total')

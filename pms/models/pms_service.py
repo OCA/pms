@@ -149,7 +149,7 @@ class PmsService(models.Model):
         store=True,
         compute='_compute_amount_service')
     price_tax = fields.Float(
-        string='Taxes',
+        string='Taxes Amount',
         readonly=True,
         store=True,
         compute='_compute_amount_service')

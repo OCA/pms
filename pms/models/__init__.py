@@ -16,7 +16,7 @@ from . import pms_amenity
 from . import pms_amenity_type
 from . import pms_room_type
 from . import pms_service
-from . import inherited_account_invoice
+from . import inherited_account_move
 from . import inherited_product_template
 from . import inherited_res_company
 from . import inherited_account_payment
@@ -33,5 +33,5 @@ from . import pms_service_line
 from . import pms_board_service
 from . import pms_board_service_room_type_line
 from . import pms_board_service_line
-from . import inherited_account_invoice_line
+from . import inherited_account_move_line
 from . import pms_cancelation_rule
