@@ -80,7 +80,7 @@ class FolioWizard(models.TransientModel):
     autoassign = fields.Boolean('Autoassign', default="1")
     company_id = fields.Many2one('res.company',
                                  'Company',
-                                 default=lambda self: self.env['res.company']._company_default_get('pms.folio.wizard'))
+                                 default=lambda self: self.env.company)
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),

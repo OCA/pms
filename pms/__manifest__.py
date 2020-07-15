@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
-    'name': 'pms',
+    'name': 'PMS (Property Management System)',
     'summary': "A property management system",
     'version': '13.0.1.0.0',
     'development_status': 'Beta',
@@ -57,7 +57,7 @@
         'views/pms_room_views.xml',
         'views/pms_room_closure_reason_views.xml',
         'views/inherited_account_payment_views.xml',
-        'views/inherited_account_invoice_views.xml',
+        'views/inherited_account_move_views.xml',
         'views/inherited_res_users_views.xml',
         'views/pms_room_type_class_views.xml',
         'views/pms_room_type_restriction_views.xml',

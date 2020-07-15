@@ -7,7 +7,6 @@ from openerp.exceptions import ValidationError
 
 class HotelChannelConnectorIssue(models.Model):
     _name = 'hotel.channel.connector.issue'
-    _old_name = 'wubook.issue'
 
     backend_id = fields.Many2one('channel.backend',
                                  'Backend',
@@ -23,11 +22,11 @@ class HotelChannelConnectorIssue(models.Model):
         ('room', 'Room'),
         ('avail', 'Availability')], required=True)
     to_read = fields.Boolean("To Read", default=True)
-    internal_message = fields.Char("Internal Message", old_name='message')
+    internal_message = fields.Char("Internal Message")
     date_start = fields.Date("From", readonly=True)
     date_end = fields.Date("To", readonly=True)
-    channel_object_id = fields.Char("Channel Object ID", old_name='wid', readonly=True)
-    channel_message = fields.Char("Channel Message", old_name='wmessage', readonly=True)
+    channel_object_id = fields.Char("Channel Object ID", readonly=True)
+    channel_message = fields.Char("Channel Message", readonly=True)
 
     @api.model
     def create(self, vals):
@@ -37,17 +36,17 @@ class HotelChannelConnectorIssue(models.Model):
             title=_("Oops! %s Issue Reported!!") % issue_id.section)
         return issue_id
 
-    
+
     def mark_readed(self):
         for record in self:
             record.to_read = False
 
-    
+
     def toggle_to_read(self):
         for record in self:
             record.to_read = not record.to_read
 
-    
+
     def mark_as_read(self):
         reserv_ids = []
         for record in self:

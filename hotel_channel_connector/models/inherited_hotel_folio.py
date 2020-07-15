@@ -15,10 +15,9 @@ class HotelFolio(models.Model):
             record.has_channel_reservations = any(channel_reservations)
 
     customer_notes = fields.Text("Channel Customer Notes",
-                                 readonly=True, old_name='wcustomer_notes')
+                                 readonly=True)
     has_channel_reservations = fields.Boolean(compute=_has_channel_reservations,
-                                              store=False,
-                                              old_name='whas_wubook_reservations')
+                                              store=False)
     unconfirmed_channel_price = fields.Boolean(default=False)
 
     @job(default_channel='root.channel')
@@ -28,7 +27,7 @@ class HotelFolio(models.Model):
             importer = work.component(usage='channel.importer')
             importer.fetch_new_bookings()
 
-    
+
     def action_confirm(self):
         for rec in self:
             rec.reservation_ids.write({
@@ -36,7 +35,7 @@ class HotelFolio(models.Model):
             })
         return super().action_confirm()
 
-    
+
     def get_grouped_reservations_json(self, state, import_all=False):
         super().get_grouped_reservations_json(state, import_all=import_all)
         self.ensure_one()

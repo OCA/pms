@@ -17,8 +17,7 @@ class ChannelHotelRoomTypeRestrictionItem(models.Model):
                               string='Hotel Virtual Room Restriction',
                               required=True,
                               ondelete='cascade')
-    channel_pushed = fields.Boolean("Channel Pushed", readonly=True, default=False,
-                                    old_name='wpushed')
+    channel_pushed = fields.Boolean("Channel Pushed", readonly=True, default=False)
 
     @job(default_channel='root.channel')
     @api.model
