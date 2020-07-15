@@ -64,8 +64,7 @@ class PmsFolio(models.Model):
     company_id = fields.Many2one(
         'res.company',
         'Company',
-        default=lambda self: self.env['res.company']._company_default_get(
-            'pms.folio'))
+        default=lambda self: self.env.company)
     analytic_account_id = fields.Many2one(
         'account.analytic.account',
         'Analytic Account',
@@ -133,7 +132,6 @@ class PmsFolio(models.Model):
         related="partner_invoice_id.country_id")
     fiscal_position_id = fields.Many2one(
         'account.fiscal.position',
-        oldname='fiscal_position',
         string='Fiscal Position')
     closure_reason_id = fields.Many2one(
         'room.closure.reason')
@@ -143,7 +141,7 @@ class PmsFolio(models.Model):
         ondelete='restrict')
     team_id = fields.Many2one(
         'crm.team',
-        string='Sales Channel',
+        string='Sales Team',
         ondelete='restrict',
         change_default=True,
         default=_get_default_team)
@@ -235,9 +233,9 @@ class PmsFolio(models.Model):
         readonly=True,
         default='no')
     partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
-    partner_invoice_name = fields.Char(related="partner_invoice_id.name")
-    partner_invoice_street = fields.Char(related="partner_invoice_id.street")
-    partner_invoice_street2 = fields.Char(related="partner_invoice_id.street")
+    partner_invoice_name = fields.Char(related="partner_invoice_id.name", string="Partner Name")
+    partner_invoice_street = fields.Char(related="partner_invoice_id.street", string="Street")
+    partner_invoice_street2 = fields.Char(related="partner_invoice_id.street", string="Street2")
     partner_invoice_zip = fields.Char(related="partner_invoice_id.zip")
     partner_invoice_city = fields.Char(related="partner_invoice_id.city")
     partner_invoice_email = fields.Char(related="partner_invoice_id.email")
