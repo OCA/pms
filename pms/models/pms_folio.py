@@ -476,7 +476,7 @@ class PmsFolio(models.Model):
         """
         if not self.partner_id:
             self.update({
-                'partner_move_id': False,
+                'partner_invoice_id': False,
                 'payment_term_id': False,
                 'fiscal_position_id': False,
             })
