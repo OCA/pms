@@ -26,6 +26,8 @@ class AccountMove(models.Model):
 
     def _computed_folio_origin(self):
         for inv in self:
+            inv.from_folio = False
+            inv.folio_ids = False
             folios = inv.mapped('invoice_line_ids.reservation_ids.folio_id')
             folios |= inv.mapped('invoice_line_ids.service_ids.folio_id')
             if folios:

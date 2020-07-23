@@ -304,11 +304,11 @@ class FolioAdvancePaymentInv(models.TransientModel):
                     'service_id': service.id,
                     }
             for reservation in folio.reservation_ids.filtered(
-                    lambda x: x.id in self.reservation_ids.ids and
+                    lambda x: x._origin.id in self.reservation_ids.ids and
                     x.invoice_status == 'to invoice'):
                 board_service = reservation.board_service_room_id
                 for day in reservation.reservation_line_ids.filtered(
-                        lambda x: not x.invoice_line_ids).sorted('date'):
+                        lambda x: not x.move_line_ids).sorted('date'):
                     extra_price = 0
                     if board_service:
                         services = reservation.service_ids.filtered(
@@ -452,6 +452,7 @@ class LineAdvancePaymentInv(models.TransientModel):
                 })
 
     def _compute_price_room(self):
+        self.price_room = False
         for record in self:
             if record.reservation_id:
                 record.price_room = record.reservation_line_ids[0].price
@@ -468,8 +469,8 @@ class LineAdvancePaymentInv(models.TransientModel):
                 if not record.reservation_line_ids:
                     raise UserError(_('If you want drop the line, use the trash icon'))
                 record.qty = len(record.reservation_line_ids)
-                record.description_dates = record.reservation_line_ids[0].date + ' - ' + \
-                    ((fields.Date.from_string(record.reservation_line_ids[-1].date)) + \
+                record.description_dates = (record.reservation_line_ids[0].date).strftime(DEFAULT_SERVER_DATE_FORMAT) + ' - ' + \
+                    ((record.reservation_line_ids[-1].date) + \
                         timedelta(days=1)).strftime(DEFAULT_SERVER_DATE_FORMAT)
 
 

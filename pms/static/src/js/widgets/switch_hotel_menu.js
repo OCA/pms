@@ -13,7 +13,7 @@ var SwitchPmsMenu = Widget.extend({
     template: 'pms.SwitchPmsMenu',
     willStart: function() {
         this.isMobile = config.device.isMobile;
-        if (!session.user_pmss) {
+        if (!session.user_pms) {
             return $.Deferred().reject();
         }
         return this._super();

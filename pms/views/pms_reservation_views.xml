@@ -443,23 +443,23 @@
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="to_print" invisible="1"/>
-                <button icon="fa fa-1x fa-chain-broken"
+                <button icon="fa-chain-broken"
                     type="object"
                     class="oe_stat_button"
                     name="open_master"
                     attrs="{'invisible':[('splitted','=', False)]}" />
-                <button icon="fa fa-2x fa-angellist"
+                <button icon="fa-angellist"
                     attrs="{'invisible':['|',('folio_pending_amount','&gt;',0),('state' ,'!=', 'done')]}"
                     type="object"
                     name="open_folio" />
                 <field name="state" />
                 <button type="object" class="oe_stat_button"
-                    icon="fa fa-2x fa-file"
+                    icon="fa-file"
                     name="open_folio"
                 />
                 <field name="folio_id"/>
                 <button type="object" class="oe_stat_button"
-                    icon="fa fa-2x fa-user-plus"
+                    icon="fa-user-plus"
                     name="action_checks"
                     context="{'partner_id': partner_id,'enter_date': checkin,
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
@@ -467,7 +467,7 @@
                 />
                 <field name="room_id" options="{'no_create': True,'no_open': True}" />
                 <button type="action" class="oe_stat_button"
-                    icon="fa fa-2x fa-list-ul"
+                    icon="fa-list-ul"
                     name="%(open_pms_reservation_form_tree_all)d"
                     context="{'search_default_partner_id': partner_id}"
                 />
@@ -490,7 +490,7 @@
                 <field name="price_total" />
                 <field name="folio_pending_amount" string="Folio Pending Amount"/>
                 <button type="object" class="oe_stat_button"
-                    icon="fa fa-3x fa-money"
+                    icon="fa-money"
                     name="action_pay_folio"
                     attrs="{'invisible':[('folio_pending_amount','=',0)]}"
                 />

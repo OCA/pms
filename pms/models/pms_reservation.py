@@ -810,7 +810,7 @@ class PmsReservation(models.Model):
         vals.update(self._prepare_add_missing_fields(vals))
         if 'folio_id' in vals and 'channel_type' not in vals:
             folio = self.env["pms.folio"].browse(vals['folio_id'])
-            vals.update({'channel_type': folio.channel_type})
+            vasls.update({'channel_type': folio.channel_type})
         elif 'partner_id' in vals:
             folio_vals = {'partner_id': int(vals.get('partner_id')),
                           'channel_type': vals.get('channel_type')}
