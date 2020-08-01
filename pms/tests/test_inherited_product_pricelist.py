@@ -1,6 +1,7 @@
-from .common import TestHotel
 from odoo import fields
 from odoo.exceptions import ValidationError
+
+from .common import TestHotel
 
 
 class TestInheritedProductPricelist(TestHotel):
@@ -17,11 +18,13 @@ class TestInheritedProductPricelist(TestHotel):
             self.list0.hotel_ids = False
 
         # create a valid record using a daily pricelist
-        test_result = self.env['product.pricelist'].create({
-            'name': 'Test Daily Pricelist',
-            'hotel_ids': [(4, self.demo_hotel_property.id)]
-        })
-        self.assertEqual(test_result.pricelist_type, 'daily')
+        test_result = self.env["product.pricelist"].create(
+            {
+                "name": "Test Daily Pricelist",
+                "hotel_ids": [(4, self.demo_hotel_property.id)],
+            }
+        )
+        self.assertEqual(test_result.pricelist_type, "daily")
         self.assertEqual(test_result.hotel_ids, self.demo_hotel_property)
 
     def test_pricelist_by_hotel(self):

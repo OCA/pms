@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
@@ -21,12 +20,13 @@
 #
 ##############################################################################
 from datetime import timedelta
-from .common import TestHotel
+
 from odoo.addons.hotel import date_utils
+
+from .common import TestHotel
 
 
 class TestHotelReservations(TestHotel):
-
     def test_cancel_folio(self):
         now_utc_dt = date_utils.now()
 
@@ -39,17 +39,18 @@ class TestHotelReservations(TestHotel):
             org_reserv_start_utc_dt,
             org_reserv_end_utc_dt,
             self.hotel_room_double_200,
-            "Reservation Test #1")
+            "Reservation Test #1",
+        )
         reservation_b = self.create_reservation(
             self.user_hotel_manager,
             folio,
             org_reserv_start_utc_dt,
             org_reserv_end_utc_dt,
             self.hotel_room_simple_100,
-            "Reservation Test #2")
-        self.assertEqual(len(folio.reservation_ids), 2, 'Invalid room lines count')
+            "Reservation Test #2",
+        )
+        self.assertEqual(len(folio.reservation_ids), 2, "Invalid room lines count")
         folio.action_cancel()
-        self.assertEqual(folio.state, 'cancel', 'Invalid folio state')
+        self.assertEqual(folio.state, "cancel", "Invalid folio state")
         for rline in folio.reservation_ids:
-            self.assertEqual(rline.state, 'cancelled',
-                             'Invalid reservation state')
+            self.assertEqual(rline.state, "cancelled", "Invalid reservation state")

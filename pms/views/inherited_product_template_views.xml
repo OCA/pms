@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="product_template_view_form" model="ir.ui.view">
         <field name="name">view.product.template.form.inherited</field>
         <field name="model">product.template</field>
@@ -10,8 +9,11 @@
                 <page string="Service">
                     <group colspan="4">
                         <group>
-                            <field name="pms_property_ids" widget="many2many_tags"
-                                          options="{'no_create': True,'no_open': True}"/>
+                            <field
+                                name="pms_property_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
+                            />
                             <field name="is_extra_bed" />
                             <field name="daily_limit" />
                             <field name="show_in_calendar" />
@@ -19,13 +21,15 @@
                         <group>
                             <field name="per_day" />
                             <field name="per_person" />
-                            <field name="consumed_on" widget="radio"
-                              attrs="{'invisible': [('per_day','!=',True)]}"/>
+                            <field
+                                name="consumed_on"
+                                widget="radio"
+                                attrs="{'invisible': [('per_day','!=',True)]}"
+                            />
                         </group>
                     </group>
                 </page>
             </xpath>
         </field>
     </record>
-
 </odoo>
