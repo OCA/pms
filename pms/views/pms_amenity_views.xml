@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="pms_amenity_view_form" model="ir.ui.view">
         <field name="name">pms.amenity.form</field>
         <field name="model">pms.amenity</field>
@@ -17,9 +16,16 @@
                     <notebook>
                         <page string="Information">
                             <group colspan="4" col="4">
-                                <field name="pms_property_ids" widget="many2many_tags"
-                                  options="{'no_create': True,'no_open': True}"/>
-                                <field name="room_amenity_type_id" select="2" string="Amenity Type" />
+                                <field
+                                    name="pms_property_ids"
+                                    widget="many2many_tags"
+                                    options="{'no_create': True,'no_open': True}"
+                                />
+                                <field
+                                    name="room_amenity_type_id"
+                                    select="2"
+                                    string="Amenity Type"
+                                />
                                 <!-- <field name="categ_id" select="1"
                                     domain="[('isamenitytype','=',True)]" /> -->
                             </group>
@@ -61,7 +67,6 @@
             </form>
         </field>
     </record>
-
     <record model="ir.ui.view" id="pms_amenity_search">
         <field name="name">pms.room_amenity_search</field>
         <field name="model">pms.amenity</field>
@@ -79,7 +84,6 @@
             </search>
         </field>
     </record>
-
     <record model="ir.ui.view" id="pms_amenity_view_list">
         <field name="name">pms.room_amenity_list</field>
         <field name="model">pms.amenity</field>
@@ -91,23 +95,26 @@
             </tree>
         </field>
     </record>
-
     <record model="ir.actions.act_window" id="action_pms_room_amenity_view_form">
         <field name="name">Room Amenities</field>
         <field name="res_model">pms.amenity</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="pms_amenity_view_list" />
     </record>
-
-    <menuitem id="menu_amenity" name="Amenity"
-        parent="pms.pms_configuration_menu" sequence="2" />
-
-    <menuitem name="Amenities" id="menu_action_pms_room_amenity_view_form"
-        action="action_pms_room_amenity_view_form" sequence="2"
-        parent="pms.menu_amenity" />
-
+    <menuitem
+        id="menu_amenity"
+        name="Amenity"
+        parent="pms.pms_configuration_menu"
+        sequence="2"
+    />
+    <menuitem
+        name="Amenities"
+        id="menu_action_pms_room_amenity_view_form"
+        action="action_pms_room_amenity_view_form"
+        sequence="2"
+        parent="pms.menu_amenity"
+    />
     <!-- Amenities Categories -->
-
     <!-- <record model="ir.actions.act_window" id="pms_ty_category_action">
         <field name="name">Amenities by Category</field>
         <field name="type">ir.actions.act_window</field>
@@ -116,15 +123,12 @@
         <field name="view_type">tree</field>
         <field name="view_id" ref="product_category_tree_view" />
     </record> -->
-
     <!--record id="ir_amenities_category_open" ref="model_product_category">
         <field eval="'tree_but_open'" name="key2"/>
         <field eval="'product.category'" name="model"/>
         <field name="name">Amenities</field>
         <field eval="'ir.actions.act_window,%d'%action_room_cate" name="value"/>
     </record-->
-
     <!-- <menuitem name="Amenities by Type" id="menu_pms_ty_category_action"
         action="pms_ty_category_action" sequence="4" parent="pms.menu_amenity" /> -->
-
 </odoo>

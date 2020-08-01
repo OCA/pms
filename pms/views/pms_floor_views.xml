@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record model="ir.ui.view" id="pms_floor_view_form">
         <field name="name">pms.floor.form</field>
         <field name="model">pms.floor</field>
@@ -10,14 +9,16 @@
                     <group>
                         <field name="name" colspan="1" />
                         <field name="sequence" select="1" />
-                        <field name="pms_property_ids" widget="many2many_tags"
-                                      options="{'no_create': True,'no_open': True}"/>
+                        <field
+                            name="pms_property_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True,'no_open': True}"
+                        />
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
-
     <record model="ir.ui.view" id="pms_floor_view_tree">
         <field name="name">pms.floor.tree</field>
         <field name="model">pms.floor</field>
@@ -28,15 +29,16 @@
             </tree>
         </field>
     </record>
-
     <record model="ir.actions.act_window" id="open_pms_floor_form_tree">
         <field name="name">Floor Structure</field>
         <field name="res_model">pms.floor</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem name="Ubitacions" id="menu_open_pms_floor_form_tree"
-        action="open_pms_floor_form_tree" sequence="21"
-        parent="pms.configuration_others" />
-
+    <menuitem
+        name="Ubitacions"
+        id="menu_open_pms_floor_form_tree"
+        action="open_pms_floor_form_tree"
+        sequence="21"
+        parent="pms.configuration_others"
+    />
 </odoo>

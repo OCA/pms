@@ -19,36 +19,36 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from .common import TestHotel
 from odoo.exceptions import ValidationError
+
+from .common import TestHotel
 
 
 class TestHotelRoom(TestHotel):
-
     def test_rooms_by_hotel(self):
         # A room cannot be created in a room type of another hotel
         with self.assertRaises(ValidationError):
-            record = self.env['hotel.room'].sudo().create({
-                'name': 'Test Room',
-                'hotel_id': self.demo_hotel_property.id,
-                'room_type_id': self.room_type_0.id,
-            })
+            record = (
+                self.env["hotel.room"]
+                .sudo()
+                .create(
+                    {
+                        "name": "Test Room",
+                        "hotel_id": self.demo_hotel_property.id,
+                        "room_type_id": self.room_type_0.id,
+                    }
+                )
+            )
         # A room cannot be changed to another hotel
         with self.assertRaises(ValidationError):
-            self.room_0.sudo().write({
-                'hotel_id': self.demo_room_type_0.hotel_id.id
-            })
+            self.room_0.sudo().write({"hotel_id": self.demo_room_type_0.hotel_id.id})
 
     def test_rooms_by_room_type(self):
         # A room cannot be changed to a room type of another hotel
         with self.assertRaises(ValidationError):
-            self.room_0.sudo().write({
-                'room_type_id': self.demo_room_type_1.id
-            })
+            self.room_0.sudo().write({"room_type_id": self.demo_room_type_1.id})
 
     def test_check_capacity(self):
         # The capacity of the room must be greater than 0
         with self.assertRaises(ValidationError):
-            self.room_0.sudo().write({
-                'capacity': 0
-            })
+            self.room_0.sudo().write({"capacity": 0})

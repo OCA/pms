@@ -1,6 +1,6 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, models, fields
+from odoo import api, fields, models
 
 
 class PmsBoardService(models.Model):
