@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record model="ir.actions.act_window" id="open_pms_reservation_form_tree_all">
         <field name="name">Reservation</field>
@@ -6,8 +6,7 @@
         <field name="view_mode">tree,form,graph,pivot</field>
         <field name="context">{'from_room': True}</field>
     </record>
-
-   <record model="ir.ui.view" id="pms_reservation_view_form">
+    <record model="ir.ui.view" id="pms_reservation_view_form">
         <field name="name">pms.reservation.form</field>
         <field name="model">pms.reservation</field>
         <field name="priority">20</field>
@@ -15,274 +14,561 @@
             <form string="Reservation">
                 <header>
                     <field name="splitted" invisible="True" />
-                    <field name="tax_ids" invisible="1"/>
+                    <field name="tax_ids" invisible="1" />
                     <field name="parent_reservation" invisible="True" />
                     <field name="has_confirmed_reservations_to_send" invisible="1" />
                     <field name="has_cancelled_reservations_to_send" invisible="1" />
                     <field name="has_checkout_to_send" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
-                    <button name="create_invoice"
-                        string="Create Invoice" type="object" class="btn-primary" states="sale"
+                    <button
+                        name="create_invoice"
+                        string="Create Invoice"
+                        type="object"
+                        class="btn-primary"
+                        states="sale"
                         attrs="{'invisible': ['|','|',
                            ('state', '=', 'draft'), ('reservation_type','not in',('normal')),
-                           ('invoice_status','!=', 'to invoice')]}" />
-                    <button name="send_reservation_mail" type="object" string="Send Confirmation Email"
-                       attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}"/>
-                    <button name="send_cancel_mail" type="object" string="Send Cancel Email"
-                       attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}" />
-                    <button name="send_exit_mail" type="object" string="Send Exit Email"
-                       attrs="{'invisible': [('has_checkout_to_send', '=', False)]}" />
-                    <button name="confirm" string="Confirm" class="oe_highlight"
+                           ('invoice_status','!=', 'to invoice')]}"
+                    />
+                    <button
+                        name="send_reservation_mail"
+                        type="object"
+                        string="Send Confirmation Email"
+                        attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}"
+                    />
+                    <button
+                        name="send_cancel_mail"
+                        type="object"
+                        string="Send Cancel Email"
+                        attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}"
+                    />
+                    <button
+                        name="send_exit_mail"
+                        type="object"
+                        string="Send Exit Email"
+                        attrs="{'invisible': [('has_checkout_to_send', '=', False)]}"
+                    />
+                    <button
+                        name="confirm"
+                        string="Confirm"
+                        class="oe_highlight"
                         type="object"
                         attrs="{'invisible':[('state','not in',('draft','cancelled'))]}"
                     />
-                    <button name="action_cancel" string="Cancel Reservation"
+                    <button
+                        name="action_cancel"
+                        string="Cancel Reservation"
                         type="object"
                         attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('confirm','booking'))]}"
                     />
-                    <button name="action_reservation_checkout" string="Done"
+                    <button
+                        name="action_reservation_checkout"
+                        string="Done"
                         states="booking"
                         type="object"
                     />
-                    <button name="draft" string="Set to Draft"
-                        states="cancelled" class="oe_highlight"
+                    <button
+                        name="draft"
+                        string="Set to Draft"
+                        states="cancelled"
+                        class="oe_highlight"
                         type="object"
                     />
-                    <button name="%(action_pms_split_reservation)d" string="Split"
+                    <button
+                        name="%(action_pms_split_reservation)d"
+                        string="Split"
                         type="action"
                         icon="fa-cut"
                         attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('draft','confirm','booking'))]}"
                     />
-                    <button name="unify" string="Unify"
+                    <button
+                        name="unify"
+                        string="Unify"
                         type="object"
                         icon="fa-compress"
                         attrs="{'invisible':[('splitted', '=', False)]}"
                     />
-                    <button name="open_master" string="Open Master" type="object" class="oe_highlight" icon="fa-file" attrs="{'invisible':['|',['parent_reservation', '=', False]]}" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,booking,done"/>
+                    <button
+                        name="open_master"
+                        string="Open Master"
+                        type="object"
+                        class="oe_highlight"
+                        icon="fa-file"
+                        attrs="{'invisible':['|',['parent_reservation', '=', False]]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,confirm,booking,done"
+                    />
                 </header>
-                <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
-                        attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}">
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}"
+                >
                             This reservation has other reservantions and/or services in the folio, you can check it in the
-                            <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
+                            <bold>
+                        <button
+                            class="alert-link"
+                            type="object"
+                            name="open_folio"
+                            string="Folio Form"
+                        />
+                    </bold>
                 </div>
-                <div class="alert alert-warning" role="alert" style="margin-bottom:0px;"
-                    attrs="{'invisible': [('splitted','=',False)]}">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('splitted','=',False)]}"
+                >
                         This reservation is part of splitted reservation!, you can check it in the
-                        <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
+                        <bold>
+                        <button
+                            class="alert-link"
+                            type="object"
+                            name="open_folio"
+                            string="Folio Form"
+                        />
+                    </bold>
                 </div>
                 <sheet>
-                   <field name="shared_folio" invisible="1"/>
-                    <div class="oe_button_box" name="button_box" attrs="{'invisible': [('folio_id','=',False)]}">
-                        <button type="object" class="oe_stat_button"
+                    <field name="shared_folio" invisible="1" />
+                    <div
+                        class="oe_button_box"
+                        name="button_box"
+                        attrs="{'invisible': [('folio_id','=',False)]}"
+                    >
+                        <button
+                            type="object"
+                            class="oe_stat_button"
                             icon="fa-file"
-                            name="open_folio">
+                            name="open_folio"
+                        >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">
-                                    <field name="folio_id" readonly="1" nolabel="1"/>
+                                    <field name="folio_id" readonly="1" nolabel="1" />
                                 </span>
                             </div>
                         </button>
-                        <button type="action" class="oe_stat_button"
+                        <button
+                            type="action"
+                            class="oe_stat_button"
                             icon="fa-list-ul"
                             attrs="{'invisible': ['|', ('partner_id','=',False), ('reservation_type','in',('out'))]}"
                             name="%(open_pms_reservation_form_tree_all)d"
-                            context="{'search_default_partner_id': partner_id}">
+                            context="{'search_default_partner_id': partner_id}"
+                        >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Books</span>
                             </div>
                         </button>
-                        <button type="object" class="oe_stat_button"
+                        <button
+                            type="object"
+                            class="oe_stat_button"
                             id="payment_smart_button"
                             icon="fa-money"
                             name="action_pay_folio"
-                            attrs="{'invisible': ['|',('folio_pending_amount','&lt;=',0)]}">
+                            attrs="{'invisible': ['|',('folio_pending_amount','&lt;=',0)]}"
+                        >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
-                                    <field name="folio_pending_amount" nolabel="1"
-                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field
+                                        name="folio_pending_amount"
+                                        nolabel="1"
+                                        widget="monetary"
+                                        options="{'currency_field': 'currency_id'}"
+                                    />
                                 </span>
                                 <span class="o_stat_text">Pending Payment</span>
                             </div>
                         </button>
-                        <button type="object" class="oe_stat_button" id="invoice_button"
-                            icon="fa-pencil-square-o" name="open_invoices_reservation"
-                            attrs="{'invisible': [('invoice_count','&lt;=',0)]}">
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            id="invoice_button"
+                            icon="fa-pencil-square-o"
+                            name="open_invoices_reservation"
+                            attrs="{'invisible': [('invoice_count','&lt;=',0)]}"
+                        >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
-                                    <field name="invoice_count"/>
+                                    <field name="invoice_count" />
                                 </span>
                                 <span class="o_stat_text">Invoices</span>
                             </div>
-                         </button>
-                        <button type="object" class="oe_stat_button"
+                        </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
                             icon="fa-chain-broken"
                             name="open_master"
-                            attrs="{'invisible':[('splitted','=',False)]}">
+                            attrs="{'invisible':[('splitted','=',False)]}"
+                        >
                             <div class="o_field_widget o_stat_info">
-                                <span><field name="parent_reservation"
-                                nolabel="1" readonly="1"/></span>
+                                <span>
+                                    <field
+                                        name="parent_reservation"
+                                        nolabel="1"
+                                        readonly="1"
+                                    />
+                                </span>
                                 <span class="o_stat_text">Splitted!</span>
                             </div>
                         </button>
-                        <button type="object" class="oe_stat_button"
+                        <button
+                            type="object"
+                            class="oe_stat_button"
                             icon="fa-users"
                             name="action_checks"
                             attrs="{'invisible': ['|', ('checkin_partner_pending_count','&lt;=',0),
-                                ('parent_reservation','!=',False)]}">
+                                ('parent_reservation','!=',False)]}"
+                        >
                             <div class="o_form_field o_stat_info">
-                              <span class="o_stat_value"><field name="checkin_partner_pending_count"
-                               widget="statinfo" nolabel="1"/></span>
-                              <span class="o_stat_text">Pending Checks</span>
+                                <span class="o_stat_value">
+                                    <field
+                                        name="checkin_partner_pending_count"
+                                        widget="statinfo"
+                                        nolabel="1"
+                                    />
+                                </span>
+                                <span class="o_stat_text">Pending Checks</span>
                             </div>
                         </button>
                     </div>
-                    <span class="label label-danger" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}">Cancelled Reservation!</span>
-                    <span class="label label-warning" attrs="{'invisible': [('overbooking', '=', False)]}">OverBooking!</span>
-                    <field name="pms_property_id" invisible="0"/>
+                    <span
+                        class="label label-danger"
+                        attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
+                    >Cancelled Reservation!</span>
+                    <span
+                        class="label label-warning"
+                        attrs="{'invisible': [('overbooking', '=', False)]}"
+                    >OverBooking!</span>
+                    <field name="pms_property_id" invisible="0" />
                     <h1>
-                        <field name="room_id" select="1"
-                          nolabel="1" options="{'no_create': True,'no_open': True}" placeholder="Room"
-                          style="margin-right: 30px;" required='1'/>
-                        <field name="partner_id" default_focus="1"
+                        <field
+                            name="room_id"
+                            select="1"
+                            nolabel="1"
+                            options="{'no_create': True,'no_open': True}"
+                            placeholder="Room"
+                            style="margin-right: 30px;"
+                            required='1'
+                        />
+                        <field
+                            name="partner_id"
+                            default_focus="1"
                             placeholder="Lastname, Firstname"
                             attrs="{'readonly':[('folio_id','!=',False)],
                             'invisible':[('reservation_type','in',('out'))]}"
-                            required="1"/>
-                        <field name="closure_reason_id" default_focus="1"
+                            required="1"
+                        />
+                        <field
+                            name="closure_reason_id"
+                            default_focus="1"
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Closure Reason"
-                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"/>
-                         <span class="fa fa-user" style="margin-left:20px;"
-                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"/>
-                         <span class="fa fa-black-tie" style="margin-left:20px; color: #C67;"
-                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"/>
-                         <span class="fa fa-ban" style="margin-left:20px; color: #9C4747;"
-                            attrs="{'invisible': [('reservation_type','not in',('out'))]}"/>
+                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                        />
+                        <span
+                            class="fa fa-user"
+                            style="margin-left:20px;"
+                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"
+                        />
+                        <span
+                            class="fa fa-black-tie"
+                            style="margin-left:20px; color: #C67;"
+                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
+                        />
+                        <span
+                            class="fa fa-ban"
+                            style="margin-left:20px; color: #9C4747;"
+                            attrs="{'invisible': [('reservation_type','not in',('out'))]}"
+                        />
                     </h1>
                     <h3>
                         <group>
                             <div class="o_row">
-                                <field name="checkin" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'checkout'}"/>
-                                <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
-                                <field name="checkout" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'checkin'}"/>
+                                <field
+                                    name="checkin"
+                                    widget="daterange"
+                                    nolabel="1"
+                                    class="oe_inline"
+                                    options="{'related_end_date': 'checkout'}"
+                                />
+                                <i
+                                    class="fa fa-long-arrow-right mx-2"
+                                    aria-label="Arrow icon"
+                                    title="Arrow"
+                                />
+                                <field
+                                    name="checkout"
+                                    widget="daterange"
+                                    nolabel="1"
+                                    class="oe_inline"
+                                    options="{'related_start_date': 'checkin'}"
+                                />
                             </div>
                         </group>
                     </h3>
-                     <field name="out_service_description" placeholder="Out service description"
-                        attrs="{'invisible':[('reservation_type','not in',('out'))]}"/>
-                     <group col="8">
-                        <group colspan="2" col="3"  string="General Info" name="contact_details" >
-                            <field name="email" colspan="2" nolabel="1" placeholder="email" widget="email"
+                    <field
+                        name="out_service_description"
+                        placeholder="Out service description"
+                        attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                    />
+                    <group col="8">
+                        <group
+                            colspan="2"
+                            col="3"
+                            string="General Info"
+                            name="contact_details"
+                        >
+                            <field
+                                name="email"
+                                colspan="2"
+                                nolabel="1"
+                                placeholder="email"
+                                widget="email"
                                 force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                        'readonly': [('partner_id', '!=', False),
-                                                   ('email','!=', False)]}"/>
-                            <field name="mobile" colspan="2" nolabel="1" placeholder="mobile" widget="phone"
+                                                   ('email','!=', False)]}"
+                            />
+                            <field
+                                name="mobile"
+                                colspan="2"
+                                nolabel="1"
+                                placeholder="mobile"
+                                widget="phone"
                                 force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                        'readonly': [('partner_id', '!=', False),
-                                                   ('mobile','!=', False)]}"/>
-                            <field name="phone" colspan="2" nolabel="1" placeholder="phone" widget="phone"
+                                                   ('mobile','!=', False)]}"
+                            />
+                            <field
+                                name="phone"
+                                colspan="2"
+                                nolabel="1"
+                                placeholder="phone"
+                                widget="phone"
                                 force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                  'required': [('channel_type','in',('door','mail','phone')),
                                               ('mobile','=','')],
                                  'readonly': [('partner_id', '!=', False),
                                              ('phone','!=', False)]}"
-                                />
-                            <field placeholder="Partner Notes" colspan="2" nolabel="1" name="partner_internal_comment" string="Partner Note"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
-                            <field nolabel="1" colspan="2" placeholder="Description in Guest Documents" name="name"/>
-                            <field name="nights"/>
-                            <field placeholder="Arrival Hour" name="arrival_hour"/>
-                            <field placeholder="Departure Hour" name="departure_hour"/>
+                            />
+                            <field
+                                placeholder="Partner Notes"
+                                colspan="2"
+                                nolabel="1"
+                                name="partner_internal_comment"
+                                string="Partner Note"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                nolabel="1"
+                                colspan="2"
+                                placeholder="Description in Guest Documents"
+                                name="name"
+                            />
+                            <field name="nights" />
+                            <field placeholder="Arrival Hour" name="arrival_hour" />
+                            <field placeholder="Departure Hour" name="departure_hour" />
                         </group>
-                        <group colspan="2" col="3" string="Reservation Details" name="reservation_details">
-                            <field name="pricelist_id"
-                              attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
-                            <field name="tour_operator_id"
-                                    options="{'no_create': True,'no_open': True}" />
-                            <field name="cancelled_reason" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"/>
-                            <field name="adults" attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
-                            <field name="children" attrs="{'invisible': [('reservation_type','in',('out'))]}"/>
-                            <field name="qty_invoiced" invisible="1"/>
-                            <field name="qty_to_invoice" invisible="1"/>
-                            <field name="room_type_id" on_change="1" options="{'no_create': True,'no_open': True}"
-                                attrs="{'readonly':[('state','not in',('draft'))]}"/>
-                                <!-- TODO: How to filter to avoid show False (generic) pricelist board when exist a specific pricelist board¿? -->
-                            <field name="board_service_room_id" domain="[
+                        <group
+                            colspan="2"
+                            col="3"
+                            string="Reservation Details"
+                            name="reservation_details"
+                        >
+                            <field
+                                name="pricelist_id"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="tour_operator_id"
+                                options="{'no_create': True,'no_open': True}"
+                            />
+                            <field
+                                name="cancelled_reason"
+                                attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
+                            />
+                            <field
+                                name="adults"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="children"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                            />
+                            <field name="qty_invoiced" invisible="1" />
+                            <field name="qty_to_invoice" invisible="1" />
+                            <field
+                                name="room_type_id"
+                                on_change="1"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'readonly':[('state','not in',('draft'))]}"
+                            />
+                            <!-- TODO: How to filter to avoid show False (generic) pricelist board when exist a specific pricelist board¿? -->
+                            <field
+                                name="board_service_room_id"
+                                domain="[
                                     ('pms_room_type_id', '=', room_type_id),
                                     ('pricelist_id', 'in', [pricelist_id, False])]"
-                                    options="{'no_create': True,'no_open': True}"
-                                    attrs="{'invisible': ['|',('reservation_type','in',('out')),('parent_reservation','!=',False)]}" />
-                            <field name="folio_internal_comment" colspan="2" nolabel="1" placeholder="Reservation Notes"/>
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible': ['|',('reservation_type','in',('out')),('parent_reservation','!=',False)]}"
+                            />
+                            <field
+                                name="folio_internal_comment"
+                                colspan="2"
+                                nolabel="1"
+                                placeholder="Reservation Notes"
+                            />
                         </group>
-                        <group colspan="2" col="3" class="oe_subtotal_footer" style="margin-right: 20px; !important" name="reservation_total" string="Amounts">
-                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">
-                                <label for="price_room_services_set" string="Reservation Total"/>
+                        <group
+                            colspan="2"
+                            col="3"
+                            class="oe_subtotal_footer"
+                            style="margin-right: 20px; !important"
+                            name="reservation_total"
+                            string="Amounts"
+                        >
+                            <div
+                                class="oe_subtotal_footer_separator oe_inline o_td_label"
+                            >
+                                <label
+                                    for="price_room_services_set"
+                                    string="Reservation Total"
+                                />
                             </div>
-                            <field name="price_room_services_set" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary"/>
-                            <field name="discount" string="Discount Room" widget="monetary"/>
-                            <field name="price_subtotal" invisible="1"/>
-                            <field name="price_services" string="Only Services" widget="monetary"/>
-                            <field name="price_total" string="Only Room" widget="monetary"/>
-                            <field name="state" invisible="1"/>
-                            <field name="invoice_status" invisible="1"/>
-                            <field name="currency_id" invisible="1"/>
-                           <field name="preconfirm" attrs="{'invisible':[('folio_id', '!=', False)]}" />
-                            <field name="credit_card_details" nolabel="1" placeholder="Credit Card Details" colspan="2" attrs="{'invisible':[('folio_id','!=',False),('folio_pending_amount','&lt;=',0)]}"/>
+                            <field
+                                name="price_room_services_set"
+                                nolabel="1"
+                                class="oe_subtotal_footer_separator"
+                                widget="monetary"
+                            />
+                            <field
+                                name="discount"
+                                string="Discount Room"
+                                widget="monetary"
+                            />
+                            <field name="price_subtotal" invisible="1" />
+                            <field
+                                name="price_services"
+                                string="Only Services"
+                                widget="monetary"
+                            />
+                            <field
+                                name="price_total"
+                                string="Only Room"
+                                widget="monetary"
+                            />
+                            <field name="state" invisible="1" />
+                            <field name="invoice_status" invisible="1" />
+                            <field name="currency_id" invisible="1" />
+                            <field
+                                name="preconfirm"
+                                attrs="{'invisible':[('folio_id', '!=', False)]}"
+                            />
+                            <field
+                                name="credit_card_details"
+                                nolabel="1"
+                                placeholder="Credit Card Details"
+                                colspan="2"
+                                attrs="{'invisible':[('folio_id','!=',False),('folio_pending_amount','&lt;=',0)]}"
+                            />
                         </group>
-                     </group>
+                    </group>
                     <group invisible="1">
-                        <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
-                        <field name="pms_property_id" invisible="1"/>
+                        <field
+                            name="company_id"
+                            options="{'no_create': True}"
+                            groups="base.group_multi_company"
+                        />
+                        <field name="pms_property_id" invisible="1" />
                         <!-- <field name="check_rooms" invisible="1"/> -->
-                        <field name="checkin_partner_pending_count" invisible="1"/>
+                        <field name="checkin_partner_pending_count" invisible="1" />
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
                     </group>
                     <notebook>
-                        <page name="services" string="Services"
-                                attrs="{'invisible': ['|',('reservation_type','in',('out')),
-                                                      ('parent_reservation','!=',False)]}">
-                            <button name="%(action_service_on_day)d" string="Service on Day"
-                                    type="action" icon="fa-coffee"/>
-                            <group string="Reservation Services" name="reservation_services">
-                                <field name="service_ids"
-                                       context="{'default_reservation_id': active_id, 'default_folio_id': folio_id, 'form_view_ref':'pms.pms_service_view_form'}"
-                                       nolabel="1">
+                        <page
+                            name="services"
+                            string="Services"
+                            attrs="{'invisible': ['|',('reservation_type','in',('out')),
+                                                      ('parent_reservation','!=',False)]}"
+                        >
+                            <button
+                                name="%(action_service_on_day)d"
+                                string="Service on Day"
+                                type="action"
+                                icon="fa-coffee"
+                            />
+                            <group
+                                string="Reservation Services"
+                                name="reservation_services"
+                            >
+                                <field
+                                    name="service_ids"
+                                    context="{'default_reservation_id': active_id, 'default_folio_id': folio_id, 'form_view_ref':'pms.pms_service_view_form'}"
+                                    nolabel="1"
+                                >
                                     <!-- If charge this view with tree_view_ref, its !crash! (field not found) when open reservation form from folio form... ¿?-->
-                                    <tree string="Services" editable="bottom"
-                                            decoration-success="is_board_service == True">
+                                    <tree
+                                        string="Services"
+                                        editable="bottom"
+                                        decoration-success="is_board_service == True"
+                                    >
                                         <field name="is_board_service" invisible="1" />
-                                        <field name="company_id" invisible="0"/>
-                                        <field name="pms_property_id" invisible="0"/>
-                                        <button type="object" class="oe_stat_button"
+                                        <field name="company_id" invisible="0" />
+                                        <field name="pms_property_id" invisible="0" />
+                                        <button
+                                            type="object"
+                                            class="oe_stat_button"
                                             icon="fa fa-1x fa-bed"
                                             name="open_service_ids"
-                                            attrs="{'invisible':[('is_board_service','=', False)]}" />
-                                        <field name="per_day" invisible="1" readonly="1"/>
-                                        <field name="folio_id" invisible="1"/>
-                                        <field name="reservation_id" invisible="1"
-                                            attrs = "{'required': [('per_day','=',True)]}" />
-                                        <field name="product_id"
+                                            attrs="{'invisible':[('is_board_service','=', False)]}"
+                                        />
+                                        <field
+                                            name="per_day"
+                                            invisible="1"
+                                            readonly="1"
+                                        />
+                                        <field name="folio_id" invisible="1" />
+                                        <field
+                                            name="reservation_id"
+                                            invisible="1"
+                                            attrs="{'required': [('per_day','=',True)]}"
+                                        />
+                                        <field
+                                            name="product_id"
                                             domain="[('sale_ok', '=', True)]"
-                                            options="{'no_create': True,'no_open': True}" />
-                                        <field name="name"/>
-                                        <field name="product_qty" attrs="{'readonly': [('per_day','=',True)]}" force_save="1"/>
-                                        <button type="object" class="oe_stat_button"
+                                            options="{'no_create': True,'no_open': True}"
+                                        />
+                                        <field name="name" />
+                                        <field
+                                            name="product_qty"
+                                            attrs="{'readonly': [('per_day','=',True)]}"
+                                            force_save="1"
+                                        />
+                                        <button
+                                            type="object"
+                                            class="oe_stat_button"
                                             icon="fa fa-2x fa-bars"
                                             name="open_service_ids"
-                                            attrs="{'invisible': [('per_day','=',False)]}"/>
-                                        <field name="days_qty" invisible="1"/>
+                                            attrs="{'invisible': [('per_day','=',False)]}"
+                                        />
+                                        <field name="days_qty" invisible="1" />
                                         <field name="price_unit" />
                                         <field name="discount" />
-                                        <field name="tax_ids" widget="many2many_tags"/>
+                                        <field name="tax_ids" widget="many2many_tags" />
                                         <field name="price_subtotal" />
                                         <field name="price_tax" />
                                         <field name="price_total" />
                                         <field name="service_line_ids" invisible="1">
-                                            <tree string="Days" >
+                                            <tree string="Days">
                                                 <field name="date" />
                                                 <field name="day_qty" />
                                             </tree>
@@ -291,30 +577,47 @@
                                 </field>
                             </group>
                         </page>
-                        <page name="days" string="Day Pricing"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}">
-                            <button name="%(action_pms_massive_price_change_reservation_days)d" string="Massive Day Prices"
-                                    type="action" icon="fa-bolt"/>
+                        <page
+                            name="days"
+                            string="Day Pricing"
+                            attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                        >
+                            <button
+                                name="%(action_pms_massive_price_change_reservation_days)d"
+                                string="Massive Day Prices"
+                                type="action"
+                                icon="fa-bolt"
+                            />
                             <field name="reservation_line_ids" nolabel="1">
                                 <tree create="false" delete="false" editable="bottom">
-                                    <field name="date" readonly="1" force_save="1"/>
+                                    <field name="date" readonly="1" force_save="1" />
                                     <field name="price" />
                                     <field name="discount" />
-                                    <field name="cancel_discount"
-                                       attrs="{'column_invisible': [('parent.state','!=','cancelled')]}" />
+                                    <field
+                                        name="cancel_discount"
+                                        attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
+                                    />
                                 </tree>
                             </field>
                         </page>
-                        <page name="persons" string="Persons"
-                              attrs="{'invisible': ['|',('reservation_type','in',('out')),
-                                                    ('parent_reservation','!=',False)]}">
+                        <page
+                            name="persons"
+                            string="Persons"
+                            attrs="{'invisible': ['|',('reservation_type','in',('out')),
+                                                    ('parent_reservation','!=',False)]}"
+                        >
                             <group colspan="2" cols="6">
-                                <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
-                                        options="{'no_create': True,'no_open': True}" />
-                                 <field name="customer_sleep_here" />
+                                <field
+                                    name="segmentation_ids"
+                                    widget="many2many_tags"
+                                    placeholder="Segmentation..."
+                                    options="{'no_create': True,'no_open': True}"
+                                />
+                                <field name="customer_sleep_here" />
                             </group>
-                            <field name="checkin_partner_ids"
-                                   context="{
+                            <field
+                                name="checkin_partner_ids"
+                                context="{
                                     'checkin_partner_ids': checkin_partner_ids,
                                     'include_customer': customer_sleep_here,
                                     'default_reservation_id': id,
@@ -323,13 +626,18 @@
                                     }"
                             />
                         </page>
-                        <page name="invoicing" string="Invoicing"
-                              attrs="{'invisible': ['|',('reservation_type','in',('out')),
-                                                    ('parent_reservation','!=',False)]}">
+                        <page
+                            name="invoicing"
+                            string="Invoicing"
+                            attrs="{'invisible': ['|',('reservation_type','in',('out')),
+                                                    ('parent_reservation','!=',False)]}"
+                        >
                             <group>
-                               <field name="partner_parent_id" />
-                               <field name="partner_invoice_id"
-                                       string="Contact Invoiced"/>
+                                <field name="partner_parent_id" />
+                                <field
+                                    name="partner_invoice_id"
+                                    string="Contact Invoiced"
+                                />
                             </group>
                             <group>
                                 <group>
@@ -337,14 +645,43 @@
                                     <field name="partner_invoice_email" />
                                 </group>
                                 <group>
-                                    <label for="partner_invoice_street" string="Address"/>
+                                    <label
+                                        for="partner_invoice_street"
+                                        string="Address"
+                                    />
                                     <div class="o_address_format">
-                                        <field name="partner_invoice_street" placeholder="Street..." class="o_address_street"/>
-                                        <field name="partner_invoice_street2" placeholder="Street 2..." class="o_address_street"/>
-                                        <field name="partner_invoice_city" placeholder="City" class="o_address_city"/>
-                                        <field name="partner_invoice_state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
-                                        <field name="partner_invoice_zip" placeholder="ZIP" class="o_address_zip"/>
-                                        <field name="partner_invoice_country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                        <field
+                                            name="partner_invoice_street"
+                                            placeholder="Street..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="partner_invoice_street2"
+                                            placeholder="Street 2..."
+                                            class="o_address_street"
+                                        />
+                                        <field
+                                            name="partner_invoice_city"
+                                            placeholder="City"
+                                            class="o_address_city"
+                                        />
+                                        <field
+                                            name="partner_invoice_state_id"
+                                            class="o_address_state"
+                                            placeholder="State"
+                                            options='{"no_open": True}'
+                                        />
+                                        <field
+                                            name="partner_invoice_zip"
+                                            placeholder="ZIP"
+                                            class="o_address_zip"
+                                        />
+                                        <field
+                                            name="partner_invoice_country_id"
+                                            placeholder="Country"
+                                            class="o_address_country"
+                                            options='{"no_open": True, "no_create": True}'
+                                        />
                                     </div>
                                 </group>
                                 <group>
@@ -357,69 +694,109 @@
                                 <field name="overbooking" />
                             </group>
                             <group>
-                                <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
+                                <field
+                                    name="channel_type"
+                                    attrs="{'required':[('reservation_type','not in',('staff','out'))]}"
+                                />
                                 <field name="reservation_type" />
                             </group>
                         </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="activity_ids" widget="mail_activity"/>
-                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity" />
+                    <field name="message_ids" widget="mail_thread" />
                 </div>
             </form>
         </field>
     </record>
-
     <!-- Form view Checkin Partners from reservation -->
-
-   <record model="ir.ui.view" id="pms_reservation_checkin_view_form">
+    <record model="ir.ui.view" id="pms_reservation_checkin_view_form">
         <field name="name">pms.reservation.checkin.form</field>
         <field name="model">pms.reservation</field>
         <field name="priority">100</field>
         <field name="arch" type="xml">
-            <form string="Reservation" >
+            <form string="Reservation">
                 <field name="reservation_type" invisible="1" />
                 <field name="splitted" invisible="1" />
-                <field name="state" invisible="1"/>
+                <field name="state" invisible="1" />
                 <field name="overbooking" invisible="1" />
                 <field name="folio_id" invisible="1" />
                 <field name="adults" invisible="1" />
                 <field name="children" invisible="1" />
-                <div class="alert alert-info" role="alert" style="margin-bottom:0px;"
-                     attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}">
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}"
+                >
                          This reservation has other reservantions and/or services in the folio, you can check it in the
-                         <bold><button class="alert-link" type="object" name="open_folio" string="Folio Form"/></bold>
+                         <bold>
+                        <button
+                            class="alert-link"
+                            type="object"
+                            name="open_folio"
+                            string="Folio Form"
+                        />
+                    </bold>
                 </div>
-                <field name="shared_folio" invisible="1"/>
+                <field name="shared_folio" invisible="1" />
                 <sheet>
-                    <span class="label label-danger" attrs="{'invisible': [('state', 'not in', ('cancelled'))]}">Cancelled Reservation!</span>
-                    <span class="label label-warning" attrs="{'invisible': [('overbooking', '=', False)]}">OverBooking!</span>
+                    <span
+                        class="label label-danger"
+                        attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
+                    >Cancelled Reservation!</span>
+                    <span
+                        class="label label-warning"
+                        attrs="{'invisible': [('overbooking', '=', False)]}"
+                    >OverBooking!</span>
                     <h2>
-                        <field name="room_id" readonly="1" nolabel="1"
-                            options="{'no_create': True,'no_open': True}" style="margin-right: 30px;" />
-                        <field name="partner_id" readonly="1" options="{'no_open': True}"/>
-                        <span class="fa fa-user" style="margin-left:20px;"
-                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"/>
-                        <span class="fa fa-black-tie" style="margin-left:20px; color: #C67;"
-                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"/>
-
+                        <field
+                            name="room_id"
+                            readonly="1"
+                            nolabel="1"
+                            options="{'no_create': True,'no_open': True}"
+                            style="margin-right: 30px;"
+                        />
+                        <field
+                            name="partner_id"
+                            readonly="1"
+                            options="{'no_open': True}"
+                        />
+                        <span
+                            class="fa fa-user"
+                            style="margin-left:20px;"
+                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"
+                        />
+                        <span
+                            class="fa fa-black-tie"
+                            style="margin-left:20px; color: #C67;"
+                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
+                        />
                         <h3>
-                            From <span class="fa fa-sign-in" style="margin: 5px;"/>
-                                <field name="checkin" style="margin-right: 10px;"
-                                    readonly="1" />
+                            From <span class="fa fa-sign-in" style="margin: 5px;" />
+                                <field
+                                name="checkin"
+                                style="margin-right: 10px;"
+                                readonly="1"
+                            />
                             to
-                            <span class="fa fa-sign-out" style="margin-right: 5px;"/>
-                            <field name="checkout" readonly="1"  />
+                            <span class="fa fa-sign-out" style="margin-right: 5px;" />
+                            <field name="checkout" readonly="1" />
                         </h3>
                     </h2>
                     <group>
-                        <field name="segmentation_ids" widget="many2many_tags" placeholder="Segmentation..."
-                                options="{'no_create': True,'no_open': True}" />
+                        <field
+                            name="segmentation_ids"
+                            widget="many2many_tags"
+                            placeholder="Segmentation..."
+                            options="{'no_create': True,'no_open': True}"
+                        />
                     </group>
-                    <field name="checkin_partner_ids"
-                           context="{
+                    <field
+                        name="checkin_partner_ids"
+                        context="{
                             'default_reservation_id': id,
                             'reservation_id': id,
                             'tree_view_ref':'pms.pms_checkin_partner_reservation_view_tree',
@@ -429,36 +806,44 @@
             </form>
         </field>
     </record>
-
-
     <record model="ir.ui.view" id="pms_reservation_view_tree">
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
-            <tree string="Reservation"
-               decoration-danger="folio_pending_amount &gt; 0 and checkin &lt;= current_date and not overbooking"
-               decoration-muted="state == 'cancelled' and folio_pending_amount &gt; 0 and not overbooking"
-               decoration-success="folio_pending_amount == 0 and checkout &lt;= current_date and not overbooking"
-               decoration-warning="overbooking">
+            <tree
+                string="Reservation"
+                decoration-danger="folio_pending_amount &gt; 0 and checkin &lt;= current_date and not overbooking"
+                decoration-muted="state == 'cancelled' and folio_pending_amount &gt; 0 and not overbooking"
+                decoration-success="folio_pending_amount == 0 and checkout &lt;= current_date and not overbooking"
+                decoration-warning="overbooking"
+            >
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
-                <field name="to_print" invisible="1"/>
-                <button icon="fa-chain-broken"
+                <field name="to_print" invisible="1" />
+                <button
+                    icon="fa-chain-broken"
                     type="object"
                     class="oe_stat_button"
                     name="open_master"
-                    attrs="{'invisible':[('splitted','=', False)]}" />
-                <button icon="fa-angellist"
+                    attrs="{'invisible':[('splitted','=', False)]}"
+                />
+                <button
+                    icon="fa-angellist"
                     attrs="{'invisible':['|',('folio_pending_amount','&gt;',0),('state' ,'!=', 'done')]}"
                     type="object"
-                    name="open_folio" />
+                    name="open_folio"
+                />
                 <field name="state" />
-                <button type="object" class="oe_stat_button"
+                <button
+                    type="object"
+                    class="oe_stat_button"
                     icon="fa-file"
                     name="open_folio"
                 />
-                <field name="folio_id"/>
-                <button type="object" class="oe_stat_button"
+                <field name="folio_id" />
+                <button
+                    type="object"
+                    class="oe_stat_button"
                     icon="fa-user-plus"
                     name="action_checks"
                     context="{'partner_id': partner_id,'enter_date': checkin,
@@ -466,39 +851,42 @@
                     attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}"
                 />
                 <field name="room_id" options="{'no_create': True,'no_open': True}" />
-                <button type="action" class="oe_stat_button"
+                <button
+                    type="action"
+                    class="oe_stat_button"
                     icon="fa-list-ul"
                     name="%(open_pms_reservation_form_tree_all)d"
                     context="{'search_default_partner_id': partner_id}"
                 />
-                <field name="partner_id"/>
+                <field name="partner_id" />
                 <field name="parent_reservation" invisible="1" />
                 <field name="room_type_id" string="Reserved Unit Type" />
                 <field name="nights" />
-                <field name="adults" string="Persons"/>
-                <field name="checkin" widget="date"/>
-                <field name="checkout"  widget="date"/>
-                <field name="create_date"/>
+                <field name="adults" string="Persons" />
+                <field name="checkin" widget="date" />
+                <field name="checkout" widget="date" />
+                <field name="create_date" />
                 <field name="overbooking" invisible="1" />
-                <field name="last_updated_res" string="Updated on"/>
-                <field name="checkin_partner_ids" invisible ="1"/>
-                <field name="to_assign" invisible="1"/>
-                <field name="checkin_partner_pending_count" invisible="1"/>
+                <field name="last_updated_res" string="Updated on" />
+                <field name="checkin_partner_ids" invisible="1" />
+                <field name="to_assign" invisible="1" />
+                <field name="checkin_partner_pending_count" invisible="1" />
                 <field name="discount" />
-                <field name="tax_ids" invisible="1"/>
-                <field name="price_subtotal" invisible="1"/>
+                <field name="tax_ids" invisible="1" />
+                <field name="price_subtotal" invisible="1" />
                 <field name="price_total" />
-                <field name="folio_pending_amount" string="Folio Pending Amount"/>
-                <button type="object" class="oe_stat_button"
+                <field name="folio_pending_amount" string="Folio Pending Amount" />
+                <button
+                    type="object"
+                    class="oe_stat_button"
                     icon="fa-money"
                     name="action_pay_folio"
                     attrs="{'invisible':[('folio_pending_amount','=',0)]}"
                 />
-                <field name="create_uid"/>
+                <field name="create_uid" />
             </tree>
         </field>
     </record>
-
     <!-- Tree editable BOTTOM view of reservation -->
     <record model="ir.ui.view" id="pms_reservation_view_bottom_tree">
         <field name="name">pms.reservation.tree</field>
@@ -515,10 +903,13 @@
                 <attribute name="invisible">0</attribute>
             </xpath>
             <xpath expr="//field[@name='state']" position="before">
-               <button type="object" class="oe_stat_button"
-                  icon="fa fa-2x fa-suitcase"
-                  name="open_reservation_form"
-                  help="Open Reservation Room Detail"/>
+                <button
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa fa-2x fa-suitcase"
+                    name="open_reservation_form"
+                    help="Open Reservation Room Detail"
+                />
             </xpath>
             <xpath expr="//field[@name='folio_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -529,7 +920,10 @@
             <xpath expr="//button[@name='open_folio'][2]" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
-            <xpath expr="//button[@name='%(open_pms_reservation_form_tree_all)d']" position="attributes">
+            <xpath
+                expr="//button[@name='%(open_pms_reservation_form_tree_all)d']"
+                position="attributes"
+            >
                 <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="attributes">
@@ -538,18 +932,17 @@
             <xpath expr="//field[@name='folio_pending_amount']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
-             <xpath expr="//field[@name='create_uid']" position="attributes">
+            <xpath expr="//field[@name='create_uid']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//field[@name='create_date']" position="attributes">
-               <attribute name="invisible">True</attribute>
-           </xpath>
-           <xpath expr="//field[@name='last_updated_res']" position="attributes">
-             <attribute name="invisible">True</attribute>
-          </xpath>
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='last_updated_res']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
         </field>
     </record>
-
     <record model="ir.ui.view" id="pms_reservation_view_search">
         <field name="name">pms.reservation.search</field>
         <field name="model">pms.reservation</field>
@@ -558,86 +951,147 @@
                 <field name="partner_id" />
                 <field name="folio_id" />
                 <field name="tour_operator_id" />
-                <filter string="My Reservations"
-                        name="my_reservations" domain="[('create_uid', '=', uid)]"
-                             />
-                <filter string="Cancelled"
-                        name="cancelled" domain="[('state', '=', 'cancelled')]"
-                             />
-                <filter string="On Board" name="on_board"
-                            domain="[('state','in',['booking'])]"
-                            help="Current Booking" />
-                <filter string="To enter" name="to_enter"
-                            domain="[('state', '=', 'confirm')]"
-                             />
-                <filter string="Overbookings" name="overbookings"
-                            domain="[('overbooking', '=', 'True')]"
-                             />
-                <filter string="Reservations to 7 days" name="next_res_week"
-                        domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                <filter
+                    string="My Reservations"
+                    name="my_reservations"
+                    domain="[('create_uid', '=', uid)]"
+                />
+                <filter
+                    string="Cancelled"
+                    name="cancelled"
+                    domain="[('state', '=', 'cancelled')]"
+                />
+                <filter
+                    string="On Board"
+                    name="on_board"
+                    domain="[('state','in',['booking'])]"
+                    help="Current Booking"
+                />
+                <filter
+                    string="To enter"
+                    name="to_enter"
+                    domain="[('state', '=', 'confirm')]"
+                />
+                <filter
+                    string="Overbookings"
+                    name="overbookings"
+                    domain="[('overbooking', '=', 'True')]"
+                />
+                <filter
+                    string="Reservations to 7 days"
+                    name="next_res_week"
+                    domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
-                        help="Show all reservations for which date enter is before than 7 days"/>
-                <filter string="Reservations to 14 days" name="next_res_2week"
-                        domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
+                    help="Show all reservations for which date enter is before than 7 days"
+                />
+                <filter
+                    string="Reservations to 14 days"
+                    name="next_res_2week"
+                    domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
-                        help="Show all reservations for which date enter is before than 14 days"/>
-                <filter string="Reservations to 1 month" name="next_res_week"
-                        domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=30)).strftime('%Y-%m-%d')),
+                    help="Show all reservations for which date enter is before than 14 days"
+                />
+                <filter
+                    string="Reservations to 1 month"
+                    name="next_res_week"
+                    domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=30)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
-                        help="Show all reservations for which date enter is before than aprox. 1 month"/>
-                <filter string="To Assign" name="to_assign"
-                            domain="[('to_assign','=',True)]"
-                            />
-                <separator/>
-                <filter string="Call Center" name="call_center"
-                            domain="[('channel_type', '=', 'call')]"
-                             />
-                <filter string="Web" name="web"
-                            domain="[('channel_type', '=', 'web')]"
-                             />
-                <filter string="Door" name="door"
-                            domain="[('channel_type', '=', 'door')]"
-                             />
-                <filter string="Mail" name="mail"
-                            domain="[('channel_type', '=', 'mail')]"
-                             />
-                <filter string="Phone" name="phone"
-                            domain="[('channel_type', '=', 'phone')]"
-                             />
-                <separator/>
-                <filter string="Still to be paid" name="still_to_be_paid"
-                            domain="[('folio_id.pending_amount','&gt;',0)]"
-                             />
-                <filter string="Late Payment" name="late_payment"
-                            domain="[('folio_id.pending_amount','&gt;',0),('state','in',['done'])]"
-                            />
-                <filter string="Lates and NoShows" name="lates_and_noshows"
-                            domain="[('cancelled_reason','in',['late','noshow'])]"
-                            />
-                <separator/>
-                <filter string="Staff" name="staff"
-                            domain="[('reservation_type','in',['staff'])]"
-                            />
-                <filter string="Out of Service" name="out_of_service"
-                            domain="[('reservation_type','in',['dontsell'])]"
-                            />
+                    help="Show all reservations for which date enter is before than aprox. 1 month"
+                />
+                <filter
+                    string="To Assign"
+                    name="to_assign"
+                    domain="[('to_assign','=',True)]"
+                />
+                <separator />
+                <filter
+                    string="Call Center"
+                    name="call_center"
+                    domain="[('channel_type', '=', 'call')]"
+                />
+                <filter
+                    string="Web"
+                    name="web"
+                    domain="[('channel_type', '=', 'web')]"
+                />
+                <filter
+                    string="Door"
+                    name="door"
+                    domain="[('channel_type', '=', 'door')]"
+                />
+                <filter
+                    string="Mail"
+                    name="mail"
+                    domain="[('channel_type', '=', 'mail')]"
+                />
+                <filter
+                    string="Phone"
+                    name="phone"
+                    domain="[('channel_type', '=', 'phone')]"
+                />
+                <separator />
+                <filter
+                    string="Still to be paid"
+                    name="still_to_be_paid"
+                    domain="[('folio_id.pending_amount','&gt;',0)]"
+                />
+                <filter
+                    string="Late Payment"
+                    name="late_payment"
+                    domain="[('folio_id.pending_amount','&gt;',0),('state','in',['done'])]"
+                />
+                <filter
+                    string="Lates and NoShows"
+                    name="lates_and_noshows"
+                    domain="[('cancelled_reason','in',['late','noshow'])]"
+                />
+                <separator />
+                <filter
+                    string="Staff"
+                    name="staff"
+                    domain="[('reservation_type','in',['staff'])]"
+                />
+                <filter
+                    string="Out of Service"
+                    name="out_of_service"
+                    domain="[('reservation_type','in',['dontsell'])]"
+                />
                 <group expand="0" string="Group By">
                     <!-- <filter string="Room Type" domain="[]"
                         context="{'group_by':'room_type_id'}"/> -->
-                    <filter string="Room Type" domain="[]" name="room_type"
-                        context="{'group_by':'room_type_id'}"/>
-                    <filter string="Creation Date" domain="[]" name="creation_date"
-                        context="{'group_by':'create_date'}" />
-                    <filter string="Checkin Date" domain="[]" name="checkin_date"
-                        context="{'group_by':'checkin'}" />
-                    <filter string="Created By" domain="[]" name="created_by"
-                        context="{'group_by':'create_uid'}" />
+                    <filter
+                        string="Room Type"
+                        domain="[]"
+                        name="room_type"
+                        context="{'group_by':'room_type_id'}"
+                    />
+                    <filter
+                        string="Creation Date"
+                        domain="[]"
+                        name="creation_date"
+                        context="{'group_by':'create_date'}"
+                    />
+                    <filter
+                        string="Checkin Date"
+                        domain="[]"
+                        name="checkin_date"
+                        context="{'group_by':'checkin'}"
+                    />
+                    <filter
+                        string="Created By"
+                        domain="[]"
+                        name="created_by"
+                        context="{'group_by':'create_uid'}"
+                    />
                 </group>
             </search>
         </field>
     </record>
-
-    <menuitem name="Reservation Rooms" id="menu_open_pms_reservation_form_tree_all"
-        action="open_pms_reservation_form_tree_all" sequence="10" parent="menu_all_folio"/>
-
+    <menuitem
+        name="Reservation Rooms"
+        id="menu_open_pms_reservation_form_tree_all"
+        action="open_pms_reservation_form_tree_all"
+        sequence="10"
+        parent="menu_all_folio"
+    />
 </odoo>

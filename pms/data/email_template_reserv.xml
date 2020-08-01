@@ -1,15 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE xml>
 <odoo>
-  <data noupdate="1">
-    <!-- Email Template For PMS Reservation -->
-    <record id="mail_template_pms_reservation" model="mail.template">
-      <field name="name">Confirm Reservation-Send by Email</field>
-      <field name="subject">Confirmación de los detalles de su reserva en ${object.company_id.property_name}</field>
-      <field name="partner_to">${(object.partner_id.id or '')}</field>
-      <field name="model_id" ref="pms.model_pms_folio"/>
-      <field name="auto_delete" eval="True" />
-      <field name="body_html"><![CDATA[
+    <data noupdate="1">
+        <!-- Email Template For PMS Reservation -->
+        <record id="mail_template_pms_reservation" model="mail.template">
+            <field name="name">Confirm Reservation-Send by Email</field>
+            <field
+                name="subject"
+            >Confirmación de los detalles de su reserva en ${object.company_id.property_name}</field>
+            <field name="partner_to">${(object.partner_id.id or '')}</field>
+            <field name="model_id" ref="pms.model_pms_folio" />
+            <field name="auto_delete" eval="True" />
+            <field
+                name="body_html"
+            ><![CDATA[
           <style type="text/css">
               /*Global Styles*/
               .marco {
@@ -1037,6 +1041,6 @@
               </div>
 ]]>
       </field>
-    </record>
-  </data>
+        </record>
+    </data>
 </odoo>

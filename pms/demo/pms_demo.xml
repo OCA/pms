@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
-
-    <!-- pms.floor -->
-
+        <!-- pms.floor -->
         <record id="pms_floor_0" model="pms.floor">
             <field name="name">Ground Floor</field>
         </record>
@@ -13,9 +11,7 @@
         <record id="pms_floor_2" model="pms.floor">
             <field name="name">Second Floor</field>
         </record>
-
-    <!-- pms.amenity.type -->
-
+        <!-- pms.amenity.type -->
         <record id="pms_amenity_type_0" model="pms.amenity.type">
             <field name="name">Toiletries</field>
         </record>
@@ -25,146 +21,141 @@
         <record id="pms_amenity_type_2" model="pms.amenity.type">
             <field name="name">Kitchen facilities</field>
         </record>
-
-    <!-- pms.amenity -->
-
+        <!-- pms.amenity -->
         <record id="pms_amenity_0" model="pms.amenity">
             <field name="name">Shampoo and Soap</field>
-            <field name="room_amenity_type_id" ref="pms_amenity_type_0"/>
+            <field name="room_amenity_type_id" ref="pms_amenity_type_0" />
         </record>
         <record id="pms_amenity_1" model="pms.amenity">
             <field name="name">High-quality Shampoo and Soap Essential Herbs</field>
-            <field name="room_amenity_type_id" ref="pms_amenity_type_0"/>
+            <field name="room_amenity_type_id" ref="pms_amenity_type_0" />
         </record>
         <record id="pms_amenity_2" model="pms.amenity">
             <field name="name">Hair Dryer</field>
-            <field name="room_amenity_type_id" ref="pms_amenity_type_0"/>
+            <field name="room_amenity_type_id" ref="pms_amenity_type_0" />
         </record>
         <record id="pms_amenity_3" model="pms.amenity">
             <field name="name">High speed Wired Internet access</field>
-            <field name="room_amenity_type_id" ref="pms_amenity_type_1"/>
+            <field name="room_amenity_type_id" ref="pms_amenity_type_1" />
         </record>
         <record id="pms_amenity_4" model="pms.amenity">
             <field name="name">Wi-Fi</field>
-            <field name="room_amenity_type_id" ref="pms_amenity_type_1"/>
+            <field name="room_amenity_type_id" ref="pms_amenity_type_1" />
         </record>
         <record id="pms_amenity_5" model="pms.amenity">
             <field name="name">Microwave oven</field>
-            <field name="room_amenity_type_id" ref="pms_amenity_type_2"/>
+            <field name="room_amenity_type_id" ref="pms_amenity_type_2" />
         </record>
         <record id="pms_amenity_6" model="pms.amenity">
             <field name="name">Half-sized Refrigerator</field>
-            <field name="room_amenity_type_id" ref="pms_amenity_type_2"/>
+            <field name="room_amenity_type_id" ref="pms_amenity_type_2" />
         </record>
-
-    <!-- pms.room.type.class -->
-
+        <!-- pms.room.type.class -->
         <record id="pms_room_type_class_0" model="pms.room.type.class">
             <field name="name">Room</field>
         </record>
         <record id="pms_room_type_class_1" model="pms.room.type.class">
             <field name="name">Conference</field>
         </record>
-
-    <!-- pms.room.type    -->
-
+        <!-- pms.room.type    -->
         <record id="pms_room_type_0" model="pms.room.type">
             <field name="name">Economic</field>
             <field name="code_type">ECO</field>
             <field name="list_price">21.00</field>
-            <field name="class_id" ref="pms_room_type_class_0"/>
-            <field name="room_amenity_ids"
-                   eval="[(4, ref('pms_amenity_0'))]"/>
-
+            <field name="class_id" ref="pms_room_type_class_0" />
+            <field name="room_amenity_ids" eval="[(4, ref('pms_amenity_0'))]" />
         </record>
         <record id="pms_room_type_1" model="pms.room.type">
             <field name="name">Single</field>
             <field name="code_type">SNG</field>
             <field name="list_price">20.00</field>
-            <field name="class_id" ref="pms_room_type_class_0"/>
-            <field name="room_amenity_ids"
-                   eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"/>
+            <field name="class_id" ref="pms_room_type_class_0" />
+            <field
+                name="room_amenity_ids"
+                eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"
+            />
         </record>
         <record id="pms_room_type_2" model="pms.room.type">
             <field name="name">Double</field>
             <field name="code_type">DBL</field>
             <field name="list_price">25.00</field>
-            <field name="class_id" ref="pms_room_type_class_0"/>
-            <field name="room_amenity_ids"
-                   eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"/>
+            <field name="class_id" ref="pms_room_type_class_0" />
+            <field
+                name="room_amenity_ids"
+                eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"
+            />
         </record>
         <record id="pms_room_type_3" model="pms.room.type">
             <field name="name">Triple</field>
             <field name="code_type">TRP</field>
             <field name="list_price">35.00</field>
-            <field name="class_id" ref="pms_room_type_class_0"/>
-            <field name="room_amenity_ids"
-                   eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"/>
+            <field name="class_id" ref="pms_room_type_class_0" />
+            <field
+                name="room_amenity_ids"
+                eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"
+            />
         </record>
-
         <record id="pms_room_type_4" model="pms.room.type">
             <field name="name">Conference Room</field>
             <field name="code_type">CFR</field>
             <field name="list_price">80.00</field>
-            <field name="class_id" ref="pms_room_type_class_1"/>
-            <field name="room_amenity_ids"
-                   eval="[(4, ref('pms_amenity_3')), (4, ref('pms_amenity_4'))]"/>
+            <field name="class_id" ref="pms_room_type_class_1" />
+            <field
+                name="room_amenity_ids"
+                eval="[(4, ref('pms_amenity_3')), (4, ref('pms_amenity_4'))]"
+            />
         </record>
-
-    <!-- pms.room -->
-
+        <!-- pms.room -->
         <record id="pms_room_0" model="pms.room">
             <field name="name">Economic-101</field>
-            <field name="room_type_id" ref="pms_room_type_0"/>
-            <field name="floor_id" ref="pms_floor_1"/>
+            <field name="room_type_id" ref="pms_room_type_0" />
+            <field name="floor_id" ref="pms_floor_1" />
             <field name="capacity">2</field>
         </record>
         <record id="pms_room_1" model="pms.room">
             <field name="name">Single-101</field>
-            <field name="room_type_id" ref="pms_room_type_1"/>
-            <field name="floor_id" ref="pms_floor_1"/>
+            <field name="room_type_id" ref="pms_room_type_1" />
+            <field name="floor_id" ref="pms_floor_1" />
             <field name="capacity">1</field>
         </record>
         <record id="pms_room_2" model="pms.room">
             <field name="name">Single-102</field>
-            <field name="room_type_id" ref="pms_room_type_1"/>
-            <field name="floor_id" ref="pms_floor_1"/>
+            <field name="room_type_id" ref="pms_room_type_1" />
+            <field name="floor_id" ref="pms_floor_1" />
             <field name="capacity">1</field>
         </record>
         <record id="pms_room_3" model="pms.room">
             <field name="name">Single-103</field>
-            <field name="room_type_id" ref="pms_room_type_1"/>
-            <field name="floor_id" ref="pms_floor_1"/>
+            <field name="room_type_id" ref="pms_room_type_1" />
+            <field name="floor_id" ref="pms_floor_1" />
             <field name="capacity">1</field>
         </record>
         <record id="pms_room_4" model="pms.room">
             <field name="name">Double-201</field>
-            <field name="room_type_id" ref="pms_room_type_2"/>
-            <field name="floor_id" ref="pms_floor_2"/>
+            <field name="room_type_id" ref="pms_room_type_2" />
+            <field name="floor_id" ref="pms_floor_2" />
             <field name="capacity">2</field>
             <field name="extra_beds_allowed">1</field>
         </record>
         <record id="pms_room_5" model="pms.room">
             <field name="name">Double-202</field>
-            <field name="room_type_id" ref="pms_room_type_2"/>
-            <field name="floor_id" ref="pms_floor_2"/>
+            <field name="room_type_id" ref="pms_room_type_2" />
+            <field name="floor_id" ref="pms_floor_2" />
             <field name="capacity">2</field>
         </record>
         <record id="pms_room_6" model="pms.room">
             <field name="name">Triple-203</field>
-            <field name="room_type_id" ref="pms_room_type_3"/>
-            <field name="floor_id" ref="pms_floor_2"/>
+            <field name="room_type_id" ref="pms_room_type_3" />
+            <field name="floor_id" ref="pms_floor_2" />
             <field name="capacity">3</field>
         </record>
         <record id="pms_room_7" model="pms.room">
             <field name="name">Open Talk Away Room</field>
-            <field name="room_type_id" ref="pms_room_type_4"/>
-            <field name="floor_id" ref="pms_floor_0"/>
+            <field name="room_type_id" ref="pms_room_type_4" />
+            <field name="floor_id" ref="pms_floor_0" />
             <field name="capacity">1</field>
         </record>
-
-    <!-- product.product for pms services -->
-
+        <!-- product.product for pms services -->
         <record id="pms_service_0" model="product.product">
             <field name="name">Breakfast Buffet</field>
             <field name="list_price">5.0</field>
@@ -173,7 +164,6 @@
             <field name="per_day">True</field>
             <field name="per_person">True</field>
         </record>
-
         <record id="pms_service_1" model="product.product">
             <field name="name">Extra Bed</field>
             <field name="list_price">15.0</field>
@@ -185,7 +175,6 @@
             <field name="is_extra_bed">True</field>
             <field name="show_in_calendar">True</field>
         </record>
-
         <record id="pms_service_3" model="product.product">
             <field name="name">Late Check-out</field>
             <field name="list_price">10.0</field>
@@ -194,7 +183,6 @@
             <field name="per_day">False</field>
             <field name="per_person">False</field>
         </record>
-
         <record id="pms_service_4" model="product.product">
             <field name="name">Lunch</field>
             <field name="list_price">15.0</field>
@@ -203,7 +191,6 @@
             <field name="per_day">True</field>
             <field name="per_person">True</field>
         </record>
-
         <record id="pms_service_5" model="product.product">
             <field name="name">Dinner</field>
             <field name="list_price">20.0</field>
@@ -212,7 +199,6 @@
             <field name="per_day">True</field>
             <field name="per_person">True</field>
         </record>
-
         <record id="pms_service_6" model="product.product">
             <field name="name">Free Bar</field>
             <field name="list_price">40.0</field>
@@ -221,116 +207,94 @@
             <field name="per_day">True</field>
             <field name="per_person">True</field>
         </record>
-
-    <!-- pms.board.service -->
-
+        <!-- pms.board.service -->
         <record id="pms_board_service_0" model="pms.board.service">
             <field name="name">BreakFast</field>
-            <field name="board_service_line_ids"
-                   eval="[(5, 0), (0, 0, {
+            <field
+                name="board_service_line_ids"
+                eval="[(5, 0), (0, 0, {
                     'product_id': ref('pms_service_0'),
-                    'amount': 3})]"/>
+                    'amount': 3})]"
+            />
             <field name="price_type">fixed</field>
         </record>
-
         <record id="pms_board_service_1" model="pms.board.service">
             <field name="name">Half Board</field>
-            <field name="board_service_line_ids"
-                   eval="[(5, 0), (0, 0, {
+            <field
+                name="board_service_line_ids"
+                eval="[(5, 0), (0, 0, {
                     'product_id': ref('pms_service_0'),
                     'amount': 3}),
                     (0, 0, {'product_id': ref('pms_service_5'),
                     'amount': 8})
-                    ]"/>
+                    ]"
+            />
             <field name="price_type">fixed</field>
         </record>
-
         <record id="pms_board_service_2" model="pms.board.service">
             <field name="name">FullBoard</field>
-            <field name="board_service_line_ids"
-                   eval="[(5, 0), (0, 0, {
+            <field
+                name="board_service_line_ids"
+                eval="[(5, 0), (0, 0, {
                     'product_id': ref('pms_service_0'),
                     'amount': 3}),
                     (0, 0, {'product_id': ref('pms_service_4'),
                     'amount': 8}),
                     (0, 0, {'product_id': ref('pms_service_5'),
                     'amount': 8})
-                    ]"/>
+                    ]"
+            />
             <field name="price_type">fixed</field>
         </record>
-
-    <!-- pms.board.service.room.type -->
-
+        <!-- pms.board.service.room.type -->
         <!--Room 0 Economic-->
-
-        <record id="pms_board_service_room_0"
-                model="pms.board.service.room.type">
-            <field name="pms_board_service_id"
-                    ref="pms_board_service_0"/>
-            <field name="pms_room_type_id"
-                    ref="pms_room_type_0"/>
+        <record id="pms_board_service_room_0" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_0" />
+            <field name="pms_room_type_id" ref="pms_room_type_0" />
             <field name="price_type">fixed</field>
         </record>
-
-        <record id="pms_board_service_room_1"
-                model="pms.board.service.room.type">
-            <field name="pms_board_service_id"
-                    ref="pms_board_service_1"/>
-            <field name="pms_room_type_id"
-                    ref="pms_room_type_0"/>
+        <record id="pms_board_service_room_1" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_1" />
+            <field name="pms_room_type_id" ref="pms_room_type_0" />
             <field name="price_type">fixed</field>
         </record>
-
-        <record id="pms_board_service_room_2"
-                model="pms.board.service.room.type">
-            <field name="pms_board_service_id"
-                    ref="pms_board_service_1"/>
-            <field name="pms_room_type_id"
-                    ref="pms_room_type_0"/>
-            <field name="pricelist_id"
-                    ref="product.list0"/>
+        <record id="pms_board_service_room_2" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_1" />
+            <field name="pms_room_type_id" ref="pms_room_type_0" />
+            <field name="pricelist_id" ref="product.list0" />
             <field name="price_type">fixed</field>
         </record>
-
-                            <!--Room 3 Triple-->
-
-        <record id="pms_board_service_room_3"
-                model="pms.board.service.room.type">
-            <field name="pms_board_service_id"
-                    ref="pms_board_service_0"/>
-            <field name="pms_room_type_id"
-                    ref="pms_room_type_3"/>
+        <!--Room 3 Triple-->
+        <record id="pms_board_service_room_3" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_0" />
+            <field name="pms_room_type_id" ref="pms_room_type_3" />
             <field name="price_type">fixed</field>
         </record>
-
-        <record id="pms_board_service_room_4"
-                model="pms.board.service.room.type">
-            <field name="pms_board_service_id"
-                    ref="pms_board_service_2"/>
-            <field name="pms_room_type_id"
-                    ref="pms_room_type_3"/>
+        <record id="pms_board_service_room_4" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_2" />
+            <field name="pms_room_type_id" ref="pms_room_type_3" />
             <field name="price_type">fixed</field>
         </record>
-
-    <!-- room.closure.reason -->
-
+        <!-- room.closure.reason -->
         <record id="pms_room_closure_reason_0" model="room.closure.reason">
             <field name="name">Maintenance</field>
-            <field name="description">Used for closing of rooms which require a maintenance. You can specify the reason in the own reservation.</field>
+            <field
+                name="description"
+            >Used for closing of rooms which require a maintenance. You can specify the reason in the own reservation.</field>
         </record>
-
         <record id="pms_room_closure_reason_1" model="room.closure.reason">
             <field name="name">VIP Privacy</field>
-            <field name="description">Used for closing of rooms for extra privacy.</field>
+            <field
+                name="description"
+            >Used for closing of rooms for extra privacy.</field>
         </record>
-
-    <!-- pms.folio -->
-
+        <!-- pms.folio -->
         <!-- reservation of 1 economic room for 1 person -->
         <record id="pms_folio_0" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_27"/>
-            <field name="reservation_ids"
-                   eval="[(5, 0), (0, 0, {
+            <field name="partner_id" ref="base.res_partner_address_27" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('pms_room_type_0'),
                     'checkin': DateTime.today().strftime('%Y-%m-%d'),
@@ -338,27 +302,31 @@
                     'adults': 2,
                     'state': 'confirm',
                     'board_service_room_id': ref('pms_board_service_room_1'),
-                    })]"/>
+                    })]"
+            />
         </record>
         <!-- reservation of 1 triple room for 3 people on behalf on the company -->
         <record id="pms_folio_1" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12"/>
-            <field name="reservation_ids"
-                   eval="[(5, 0), (0, 0, {
+            <field name="partner_id" ref="base.res_partner_12" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('pms_room_type_3'),
                     'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 3,
                     'board_service_room_id': ref('pms_board_service_room_3'),
-                    })]"/>
+                    })]"
+            />
         </record>
         <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
         <!-- TODO: The third reservation is marked from State: Cancelled to Pending Entry at Folio creation -->
         <record id="pms_folio_2" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_10"/>
-            <field name="reservation_ids"
-                   eval="[(5, 0),
+            <field name="partner_id" ref="base.res_partner_address_10" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('pms_room_type_1'),
@@ -382,27 +350,31 @@
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 1,
                     'state': 'cancelled',
-                    })]"/>
+                    })]"
+            />
         </record>
         <!-- reservation of the conference room for 1 day on behalf of a company -->
         <record id="pms_folio_3" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12"/>
-            <field name="reservation_ids"
-                   eval="[(5, 0), (0, 0, {
+            <field name="partner_id" ref="base.res_partner_12" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('pms_room_type_4'),
                     'checkin': (DateTime.today() + timedelta(days=3)).strftime('%Y-%m-%d'),
                     'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
                     'adults': 1,
                     'state': 'confirm',
-                    })]"/>
+                    })]"
+            />
         </record>
         <!-- out of service room -->
         <record id="pms_folio_4" model="pms.folio">
-            <field name="partner_id" ref="main_pms_property"/>
+            <field name="partner_id" ref="main_pms_property" />
             <field name="reservation_type">out</field>
-            <field name="reservation_ids"
-                   eval="[(5, 0), (0, 0, {
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('pms_room_type_1'),
                     'checkin': DateTime.today().strftime('%Y-%m-%d'),
@@ -412,42 +384,38 @@
                     'reservation_type': 'out',
                     'closure_reason_id': ref('pms_room_closure_reason_0'),
                     'out_service_description': 'Change of lighting',
-                    })]"/>
+                    })]"
+            />
         </record>
-
         <!-- Multi pms Demo -->
         <record id="demo_pms_room_type_restriction" model="pms.room.type.restriction">
             <field name="name">Restriction Plan Demo</field>
         </record>
-
         <record id="demo_pms_property" model="pms.property">
             <field name="name">My pms Demo</field>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="default_pricelist_id" ref="product.list0"/>
-            <field name="default_restriction_id" ref="demo_pms_room_type_restriction"/>
+            <field name="company_id" ref="base.main_company" />
+            <field name="default_pricelist_id" ref="product.list0" />
+            <field name="default_restriction_id" ref="demo_pms_room_type_restriction" />
         </record>
-
         <!-- pms.room.type    -->
-
         <record id="demo_pms_room_type_0" model="pms.room.type">
-            <field name="pms_property_id" ref="pms.demo_pms_property"/>
+            <field name="pms_property_id" ref="pms.demo_pms_property" />
             <field name="name">Economic</field>
             <field name="code_type">ECO</field>
             <field name="list_price">21.00</field>
-            <field name="class_id" ref="pms_room_type_class_0"/>
-            <field name="room_amenity_ids"
-                   eval="[(4, ref('pms_amenity_0'))]"/>
-
+            <field name="class_id" ref="pms_room_type_class_0" />
+            <field name="room_amenity_ids" eval="[(4, ref('pms_amenity_0'))]" />
         </record>
         <record id="demo_pms_room_type_1" model="pms.room.type">
-            <field name="pms_property_id" ref="pms.demo_pms_property"/>
+            <field name="pms_property_id" ref="pms.demo_pms_property" />
             <field name="name">Single</field>
             <field name="code_type">SNG</field>
             <field name="list_price">20.00</field>
-            <field name="class_id" ref="pms_room_type_class_0"/>
-            <field name="room_amenity_ids"
-                   eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"/>
+            <field name="class_id" ref="pms_room_type_class_0" />
+            <field
+                name="room_amenity_ids"
+                eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"
+            />
         </record>
-
     </data>
 </odoo>

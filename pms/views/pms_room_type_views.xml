@@ -1,51 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record model="ir.ui.view" id="pms_room_type_view_form">
         <field name="name">pms.room_type.form</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
             <form string="Property Room Type">
                 <sheet>
-                  <div class="oe_button_box" name="button_box">
-                      <button name="toggle_active" type="object"
-                              class="oe_stat_button" icon="fa-archive">
-                          <field name="active" widget="boolean_button"
-                              options='{"terminology": "archive"}'/>
-                      </button>
-                  </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="toggle_active"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                        >
+                            <field
+                                name="active"
+                                widget="boolean_button"
+                                options='{"terminology": "archive"}'
+                            />
+                        </button>
+                    </div>
                     <group colspan="4">
-                      <group>
-                        <field name="name" />
-                        <field name="code_type" />
-                        <field name="class_id" />
-                      </group>
-                      <group>
-                          <field name="pms_property_id" invisible="0"/>
-                          <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
-                      </group>
+                        <group>
+                            <field name="name" />
+                            <field name="code_type" />
+                            <field name="class_id" />
+                        </group>
+                        <group>
+                            <field name="pms_property_id" invisible="0" />
+                            <field
+                                name="list_price"
+                                widget='monetary'
+                                options="{'currency_field': 'currency_id', 'field_digits': True}"
+                            />
+                        </group>
                     </group>
                     <group colspan="2">
                         <group name="room_ids_group">
                             <field name="shared_room" />
-                            <field name="room_ids" widget="many2many_tags"/>
-                            <field name="total_rooms_count"/>
+                            <field name="room_ids" widget="many2many_tags" />
+                            <field name="total_rooms_count" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Board Services">
                             <separator string="Board Services" />
-                            <field name="board_service_room_type_ids" colspan="4" nolabel="1"
-                                    context="{'default_pms_room_type_id':id}">
+                            <field
+                                name="board_service_room_type_ids"
+                                colspan="4"
+                                nolabel="1"
+                                context="{'default_pms_room_type_id':id}"
+                            >
                                 <tree editable="bottom">
-                                    <field name="pms_room_type_id" invisible="1"/>
+                                    <field name="pms_room_type_id" invisible="1" />
                                     <field name="pms_board_service_id" />
                                     <field name="price_type" />
                                     <field name="amount" />
                                     <field name="pricelist_id" />
-                                    <button type="object" class="oe_stat_button"
-                                        id="go_board_lines" icon="fa fa-2x fa-bars"
-                                        name="open_board_lines_form"/>
+                                    <button
+                                        type="object"
+                                        class="oe_stat_button"
+                                        id="go_board_lines"
+                                        icon="fa fa-2x fa-bars"
+                                        name="open_board_lines_form"
+                                    />
                                 </tree>
                             </field>
                         </page>
@@ -58,32 +76,37 @@
             </form>
         </field>
     </record>
-
     <record model="ir.ui.view" id="pms_room_type_view_tree">
         <field name="name">pms.room_type.tree</field>
         <field name="model">pms.room.type</field>
         <field name="arch" type="xml">
             <tree string=" Property Room Type">
-                <field name="sequence" widget="handle"/>
+                <field name="sequence" widget="handle" />
                 <field name="pms_property_id" />
                 <field name="name" />
-                <field name="code_type"/>
-                <field name="list_price"/>
-                <field name="room_ids"/>
-                <field name="total_rooms_count"/>
+                <field name="code_type" />
+                <field name="list_price" />
+                <field name="room_ids" />
+                <field name="total_rooms_count" />
             </tree>
         </field>
     </record>
-
     <record model="ir.actions.act_window" id="open_pms_room_type_form_tree">
         <field name="name">Room Type</field>
         <field name="res_model">pms.room.type</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem id="menu_pms_room" name="Room"
-        parent="pms.pms_configuration_menu" sequence="2" />
-    <menuitem name="Room Types" id="menu_open_pms_room_type_form_tree"
-        action="open_pms_room_type_form_tree" sequence="6"
-        parent="pms.menu_pms_room" />
-
+    <menuitem
+        id="menu_pms_room"
+        name="Room"
+        parent="pms.pms_configuration_menu"
+        sequence="2"
+    />
+    <menuitem
+        name="Room Types"
+        id="menu_open_pms_room_type_form_tree"
+        action="open_pms_room_type_form_tree"
+        sequence="6"
+        parent="pms.menu_pms_room"
+    />
 </odoo>
