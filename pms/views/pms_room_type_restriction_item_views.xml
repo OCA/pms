@@ -1,44 +1,41 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <odoo>
-
-  <record id="room_type_restriction_item_view_form" model="ir.ui.view">
-    <field name="name">pms.room.type.restriction.item.form</field>
-    <field name="model">pms.room.type.restriction.item</field>
-    <field name="arch" type="xml">
-      <form string="Restrictions">
-        <group>
-          <field name="room_type_id" required="True"/>
-        </group>
-        <group>
-          <field name="date"/>
-        </group>
-        <group>
-          <group>
-            <field name="min_stay"/>
-            <field name="min_stay_arrival"/>
-            <field name="max_stay"/>
-          </group>
-          <group>
-            <field name="closed"/>
-            <field name="closed_departure"/>
-            <field name="closed_arrival"/>
-          </group>
-        </group>
-      </form>
-    </field>
-  </record>
-
-  <record id="room_type_restriction_item_view_tree" model="ir.ui.view">
-    <field name="name">pms.room.type.restriction.item.tree</field>
-    <field name="model">pms.room.type.restriction.item</field>
-    <field name="arch" type="xml">
-      <tree string="Restrictions">
-        <field name="room_type_id"/>
-        <field name="date"/>
-        <field name="min_stay"/>
-        <field name="closed"/>
-      </tree>
-    </field>
-  </record>
-
+    <record id="room_type_restriction_item_view_form" model="ir.ui.view">
+        <field name="name">pms.room.type.restriction.item.form</field>
+        <field name="model">pms.room.type.restriction.item</field>
+        <field name="arch" type="xml">
+            <form string="Restrictions">
+                <group>
+                    <field name="room_type_id" required="True" />
+                </group>
+                <group>
+                    <field name="date" />
+                </group>
+                <group>
+                    <group>
+                        <field name="min_stay" />
+                        <field name="min_stay_arrival" />
+                        <field name="max_stay" />
+                    </group>
+                    <group>
+                        <field name="closed" />
+                        <field name="closed_departure" />
+                        <field name="closed_arrival" />
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="room_type_restriction_item_view_tree" model="ir.ui.view">
+        <field name="name">pms.room.type.restriction.item.tree</field>
+        <field name="model">pms.room.type.restriction.item</field>
+        <field name="arch" type="xml">
+            <tree string="Restrictions">
+                <field name="room_type_id" />
+                <field name="date" />
+                <field name="min_stay" />
+                <field name="closed" />
+            </tree>
+        </field>
+    </record>
 </odoo>

@@ -1,27 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
-    <menuitem id="pms_management_menu" name="PMS Management"
-        sequence="8" web_icon="pms,static/description/icon.png"
-        groups="pms.group_pms_user,pms.group_pms_call"/>
-
-    <menuitem id="pms_configuration_menu" name="Configuration"
-        sequence="20" parent="pms_management_menu"
-        groups="pms.group_pms_user"/>
-
-     <menuitem id="pms_reports_menu" name="Reports"
-        sequence="15" parent="pms_management_menu"
-        groups="pms.group_pms_user"/>
-
-    <menuitem id="menu_account_finance_xls_reports" name="XLS Reports"
-        parent="pms.pms_reports_menu" sequence="50"/>
-
-    <menuitem id="configuration_others" name="Configuration"
-        parent="pms.pms_configuration_menu" sequence="10"
-        groups="pms.group_pms_manager" />
-
-    <menuitem id="pms_massive_change" name="Massive Changes"
+    <menuitem
+        id="pms_management_menu"
+        name="PMS Management"
+        sequence="8"
+        web_icon="pms,static/description/icon.png"
+        groups="pms.group_pms_user,pms.group_pms_call"
+    />
+    <menuitem
+        id="pms_configuration_menu"
+        name="Configuration"
+        sequence="20"
+        parent="pms_management_menu"
+        groups="pms.group_pms_user"
+    />
+    <menuitem
+        id="pms_reports_menu"
+        name="Reports"
+        sequence="15"
+        parent="pms_management_menu"
+        groups="pms.group_pms_user"
+    />
+    <menuitem
+        id="menu_account_finance_xls_reports"
+        name="XLS Reports"
+        parent="pms.pms_reports_menu"
+        sequence="50"
+    />
+    <menuitem
+        id="configuration_others"
+        name="Configuration"
+        parent="pms.pms_configuration_menu"
+        sequence="10"
+        groups="pms.group_pms_manager"
+    />
+    <menuitem
+        id="pms_massive_change"
+        name="Massive Changes"
         parent="pms.configuration_others"
-        sequence="10" action="action_pms_massive_change"/>
-
+        sequence="10"
+        action="action_pms_massive_change"
+    />
 </odoo>

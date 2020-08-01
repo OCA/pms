@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <data noupdate="0">
-
         <!-- Scheduler For To Inform Guest About Reservation Before 24 Hours -->
         <record model="ir.cron" id="autocheckout_reservations">
             <field name="name">Automatic Checkout on past reservations</field>
@@ -13,11 +11,11 @@
             <field name="doall" eval="False" />
             <field name="state">code</field>
             <field name="model_id" ref="model_pms_reservation" />
-            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"/>
+            <field
+                name="nextcall"
+                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"
+            />
             <field name="code">model.autocheckout()</field>
-
         </record>
-
     </data>
-
 </odoo>
