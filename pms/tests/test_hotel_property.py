@@ -1,6 +1,7 @@
-from .common import TestHotel
 from odoo import fields
 from odoo.exceptions import ValidationError
+
+from .common import TestHotel
 
 
 class TestHotelProperty(TestHotel):

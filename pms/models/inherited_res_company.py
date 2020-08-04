@@ -1,14 +1,14 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models, fields
+from odoo import fields, models
 
 
 class ResCompany(models.Model):
-    _inherit = 'res.company'
+    _inherit = "res.company"
 
     # Fields declaration
-    pms_property_ids = fields.One2many('pms.property', 'company_id', 'Properties')
+    pms_property_ids = fields.One2many("pms.property", "company_id", "Properties")
     # TODO: need extra explanation or remove otherwise
     # additional_hours = fields.Integer('Additional Hours',
     #                                   help="Provide the min hours value for \

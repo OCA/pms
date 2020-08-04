@@ -1,68 +1,84 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record model="ir.ui.view" id="pms_shared_room_view_form">
-      <field name="name">pms.shared.room.form</field>
-      <field name="model">pms.shared.room</field>
-      <field name="arch" type="xml">
-        <form string="Shared Room">
-          <sheet>
-            <div class="oe_button_box" name="button_box">
-                <button name="toggle_active" type="object"
-                        class="oe_stat_button" icon="fa-archive">
-                    <field name="active" widget="boolean_button"
-                        options='{"terminology": "archive"}'/>
-                </button>
-            </div>
-            <div class="oe_title">
-              <label for="name" string="Name" />
-              <h1>
-                <field name="name" />
-              </h1>
-            </div>
-            <notebook>
-              <page name="information_pms_shared_shared_room" string="Information">
-                <group colspan="4" col="4">
-                  <field name="floor_id" string="Ubication" />
-                  <field name="room_type_id" string="Room Type" />
-                  <field name="beds" />
-                  <field name="sequence" />
-                </group>
-                <group>
-                     <field name="bed_ids" />
-                </group>
-             </page>
-              <page string="Descriptions">
-                <group>
-                    <field name="description_sale" colspan="2" string="Name in reports"/>
-                </group>
-              </page>
-            </notebook>
-          </sheet>
-        </form>
-      </field>
+        <field name="name">pms.shared.room.form</field>
+        <field name="model">pms.shared.room</field>
+        <field name="arch" type="xml">
+            <form string="Shared Room">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="toggle_active"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                        >
+                            <field
+                                name="active"
+                                widget="boolean_button"
+                                options='{"terminology": "archive"}'
+                            />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Name" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <notebook>
+                        <page
+                            name="information_pms_shared_shared_room"
+                            string="Information"
+                        >
+                            <group colspan="4" col="4">
+                                <field name="floor_id" string="Ubication" />
+                                <field name="room_type_id" string="Room Type" />
+                                <field name="beds" />
+                                <field name="sequence" />
+                            </group>
+                            <group>
+                                <field name="bed_ids" />
+                            </group>
+                        </page>
+                        <page string="Descriptions">
+                            <group>
+                                <field
+                                    name="description_sale"
+                                    colspan="2"
+                                    string="Name in reports"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
     </record>
-
     <record model="ir.ui.view" id="pms_shared_shared_room_view_kanban">
         <field name="name">pms.shared.room.kanban</field>
         <field name="model">pms.shared.room</field>
         <field name="type">kanban</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" >
+            <kanban class="o_kanban_mobile">
                 <attribute name="group_create">false</attribute>
-                <field name="id"/>
-                <field name="name"/>
+                <field name="id" />
+                <field name="name" />
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_global_click">
                             <div class="oe_kanban_details">
                                 <ul>
                                     <li class="mb4">
-                                        <strong><field name="name"/></strong>
+                                        <strong>
+                                            <field name="name" />
+                                        </strong>
                                     </li>
-                                    <li class="mb4">Room Type: <field name="room_type_id"/></li>
+                                    <li class="mb4">Room Type: <field
+                                            name="room_type_id"
+                                        /></li>
                                     <li class="badge mb4">
-                                        <strong>Beds <field name="beds"/></strong>
+                                        <strong>Beds <field name="beds" /></strong>
                                     </li>
                                 </ul>
                             </div>
@@ -72,7 +88,6 @@
             </kanban>
         </field>
     </record>
-
     <record model="ir.ui.view" id="pms_shared_shared_room_view_search">
         <field name="name">pms.shared.room.search</field>
         <field name="model">pms.shared.room</field>
@@ -84,7 +99,6 @@
             </search>
         </field>
     </record>
-
     <record model="ir.ui.view" id="pms_shared_room_view_tree">
         <field name="name">pms.shared.room.tree</field>
         <field name="model">pms.shared.room</field>
@@ -97,8 +111,6 @@
             </tree>
         </field>
     </record>
-
-
     <record model="ir.actions.act_window" id="action_pms_shared_room_form">
         <field name="name">Shared Room</field>
         <field name="res_model">pms.shared.room</field>
@@ -107,8 +119,11 @@
         <field name="view_id" ref="pms_shared_room_view_tree" />
         <field name="view_mode">kanban,tree,form</field>
     </record>
-
-    <menuitem name="Shared Rooms" id="menu_open_pms_shared_room_form" action="action_pms_shared_room_form"
-        sequence="5" parent="pms.menu_pms_room" />
-
+    <menuitem
+        name="Shared Rooms"
+        id="menu_open_pms_shared_room_form"
+        action="action_pms_shared_room_form"
+        sequence="5"
+        parent="pms.menu_pms_room"
+    />
 </odoo>

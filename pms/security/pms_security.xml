@@ -1,22 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <data noupdate="0">
         <!--Group for pms user -->
         <record id="group_pms_user" model="res.groups">
             <field name="name">Property Management / User</field>
         </record>
-
         <!--Group for pms manager -->
         <record id="group_pms_manager" model="res.groups">
             <field name="name">Property Management/ Manager</field>
-            <field name="implied_ids" eval="[(4, ref('pms.group_pms_user'))]"/>
+            <field name="implied_ids" eval="[(4, ref('pms.group_pms_user'))]" />
         </record>
-
         <!--Group for pms user -->
         <record id="group_pms_call" model="res.groups">
             <field name="name">Property Management / CallCenter</field>
         </record>
     </data>
-    
 </odoo>
