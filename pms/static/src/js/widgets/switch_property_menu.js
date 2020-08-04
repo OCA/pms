@@ -9,7 +9,7 @@ odoo.define('web.SwitchPmsMenu', function(require) {
     
     var config = require('web.config');
     var core = require('web.core');
-    var session = require('web.session');
+    var session = require('pms.session');
     var SystrayMenu = require('web.SystrayMenu');
     var Widget = require('web.Widget');
     
