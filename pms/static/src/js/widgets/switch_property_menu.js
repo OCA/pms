@@ -18,10 +18,10 @@ odoo.define('web.SwitchPmsMenu', function(require) {
     var SwitchPmsMenu = Widget.extend({
         template: 'SwitchPmsMenu',
         events: {
-            'click .dropdown-item[data-menu] div.log_into': '_onSwitchPmsPropertyClick',
-            'keydown .dropdown-item[data-menu] div.log_into': '_onSwitchPmsPropertyClick',
-            'click .dropdown-item[data-menu] div.toggle_pms_property': '_onTogglePmsPropertyClick',
-            'keydown .dropdown-item[data-menu] div.toggle_pms_property': '_onTogglePmsPropertyClick',
+            'click .dropdown-item[data-menu] div.pms_log_into': '_onSwitchPmsPropertyClick',
+            'keydown .dropdown-item[data-menu] div.pms_log_into': '_onSwitchPmsPropertyClick',
+            'click .dropdown-item[data-menu] div.pms_toggle_property': '_onTogglePmsPropertyClick',
+            'keydown .dropdown-item[data-menu] div.pms_toggle_property': '_onTogglePmsPropertyClick',
         },
         /**
          * @override
