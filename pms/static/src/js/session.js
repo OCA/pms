@@ -9,7 +9,6 @@ odoo.define('pms.session', function (require) {
         // TODO: require test and debug
         setPmsProperties: function (pms_main_property_id, pms_property_ids) {
             var hash = $.bbq.getState()
-            debugger;
             hash.pms_pids = pms_property_ids.sort(function(a, b) {
                 if (a === pms_main_property_id) {
                     return -1;
