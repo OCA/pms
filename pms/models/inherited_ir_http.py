@@ -15,7 +15,11 @@ class IrHttp(models.AbstractModel):
         user = request.env.user
         res.update({
             # current_pms_property should be default_property
-            "user_pms_properties": {'current_pms_property': (user.pms_property_id.id, user.pms_property_id.name), 'allowed_pms_properties': [(property.id, property.name) for property in user.pms_property_ids]},
+            "user_pms_properties": {
+                'current_pms_property': (user.pms_property_id.id, user.pms_property_id.name), 
+                # TODO: filter all properties based on the current set of active companies
+                'allowed_pms_properties': [(property.id, property.name) for property in user.pms_property_ids]
+                },
             "display_switch_pms_property_menu": user.has_group('base.group_multi_company') and len(user.pms_property_ids) > 1,
         })
         # TODO: This user context update should be placed in other function ¿? 
