@@ -3,6 +3,8 @@ odoo.define('pms.AbstractWebClient', function (require) {
     
     var AbstractWebClient = require('web.AbstractWebClient');
     var session = require('web.session');
+    var utils = require('web.utils');
+
 
     return AbstractWebClient.include({
         start: function () {
