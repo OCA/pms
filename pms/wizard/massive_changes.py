@@ -51,7 +51,7 @@ class MassiveChangesWizard(models.TransientModel):
     dsa = fields.Boolean("Saturday", default=True)
     dsu = fields.Boolean("Sunday", default=True)
     applied_on = fields.Selection(
-        [("0", "Global"), ("1", "Room Type"),], string="Applied On", default="0"
+        [("0", "Global"), ("1", "Room Type"),], string="Applied On", default="0",
     )
 
     # Restriction fields

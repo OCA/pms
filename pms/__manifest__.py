@@ -8,10 +8,11 @@
     "development_status": "Beta",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/hootel/hootel",
-    "author": "Darío Lodeiros, "
-    "Alexandre Díaz, "
+    "author": "Dario Lodeiros, "
+    "Alexadre Diaz, "
+    "Pablo Quesada, "
     "Jose Luis Algara, "
-    "Pablo Quesada ",
+    "Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": True,
     "installable": True,

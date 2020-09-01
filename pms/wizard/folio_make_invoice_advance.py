@@ -591,10 +591,10 @@ class LineAdvancePaymentInv(models.TransientModel):
                 )
 
     def invoice_line_create(self, invoice_id, qty):
-        """ Create an invoice line.
-            :param invoice_id: integer
-            :param qty: float quantity to invoice
-            :returns recordset of account.move.line created
+        """Create an invoice line.
+        :param invoice_id: integer
+        :param qty: float quantity to invoice
+        :returns recordset of account.move.line created
         """
         self.ensure_one()
         invoice_lines = self.env["account.move.line"]
