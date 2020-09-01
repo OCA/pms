@@ -1,5 +1,3 @@
-.. [ This file must be max 2-3 paragraphs, and is required. ]
-
 This module is an all-in-one property management system (PMS) focused on medium-sized hotels
 for managing every aspect of your property's daily operations.
 

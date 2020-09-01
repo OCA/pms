@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 
 
 class ProductPricelist(models.Model):
-    """ Before creating a 'daily' pricelist, you need to consider the following:
+    """Before creating a 'daily' pricelist, you need to consider the following:
     A pricelist marked as daily is used as a daily rate plan for room types and
     therefore is related only with one property.
     """
@@ -22,7 +22,6 @@ class ProductPricelist(models.Model):
     pricelist_type = fields.Selection(
         [("daily", "Daily Plan")], string="Pricelist Type", default="daily"
     )
-    is_staff = fields.Boolean("Is Staff")
 
     # Constraints and onchanges
     @api.constrains("pricelist_type", "pms_property_ids")

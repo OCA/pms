@@ -18,8 +18,7 @@ class PmsBoardServiceRoomType(models.Model):
         for res in self:
             if res.pricelist_id:
                 name = u"{} ({})".format(
-                    res.pms_board_service_id.name,
-                    res.pricelist_id.name,
+                    res.pms_board_service_id.name, res.pricelist_id.name,
                 )
             else:
                 name = u"{} ({})".format(res.pms_board_service_id.name, _("Generic"))

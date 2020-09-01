@@ -1,1 +1,4 @@
-.. authors are taken from the __manifest__.py file
+* Dario Lodeiros <dario@commitsun.com>
+* Alexandre Díaz
+* Pablo Quesada
+* Jose Luis Algara

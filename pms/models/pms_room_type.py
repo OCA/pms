@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 
 
 class PmsRoomType(models.Model):
-    """ Before creating a 'room type', you need to consider the following:
+    """Before creating a 'room type', you need to consider the following:
     With the term 'room type' is meant a sales type of residential accommodation: for
     example, a Double Room, a Economic Room, an Apartment, a Tent, a Caravan...
     """
@@ -92,6 +92,7 @@ class PmsRoomType(models.Model):
         capacities = self.room_ids.mapped("capacity")
         return min(capacities) if any(capacities) else 0
 
+    # TODO: Change name method by rooms_available()
     @api.model
     def check_availability_room_type(self, dfrom, dto, room_type_id=False, notthis=[]):
         """
@@ -102,7 +103,7 @@ class PmsRoomType(models.Model):
         reservations_rooms = reservations.mapped("room_id.id")
         free_rooms = self.env["pms.room"].search(
             [("id", "not in", reservations_rooms), ("id", "not in", notthis)]
-        )
+        )  # TODO: Review if with the new caché V13 We need notthis []¿?
         if room_type_id:
             rooms_linked = (
                 self.env["pms.room.type"].search([("id", "=", room_type_id)]).room_ids
@@ -145,20 +146,21 @@ class PmsRoomType(models.Model):
             {"partner_id": partner_id if partner_id else False, "discount": discount,}
         )
         rate_vals = {}
-        for room_type in room_types:
-            vals.update({"room_type_id": room_type.id})
-            room_vals = self.env["pms.reservation"].prepare_reservation_lines(
-                date_from,
-                days,
-                pricelist_id=pricelist_id,
-                vals=vals,
-                update_old_prices=False,
-            )
-            rate_vals.update(
-                {
-                    room_type.id: [
-                        item[2] for item in room_vals["reservation_line_ids"] if item[2]
-                    ]
-                }
-            )
+        # TODO: Now it is computed field, We need other way to return rates
+        # for room_type in room_types:
+        #     vals.update({"room_type_id": room_type.id})
+        #     room_vals = self.env["pms.reservation"].prepare_reservation_lines(
+        #         date_from,
+        #         days,
+        #         pricelist_id=pricelist_id,
+        #         vals=vals,
+        #         update_old_prices=False,
+        #     )
+        #     rate_vals.update(
+        #         {
+        #             room_type.id: [
+        #                 item[2] for item in room_vals["reservation_line_ids"] if item[2]
+        #             ]
+        #         }
+        #     )
         return rate_vals
