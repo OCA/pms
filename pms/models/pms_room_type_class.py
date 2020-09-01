@@ -5,7 +5,7 @@ from odoo import fields, models
 
 
 class PmsRoomTypeClass(models.Model):
-    """ Before creating a 'room type_class', you need to consider the following:
+    """Before creating a 'room type_class', you need to consider the following:
     With the term 'room type class' is meant a physical class of
     residential accommodation: for example, a Room, a Bed, an Apartment,
     a Tent, a Caravan...

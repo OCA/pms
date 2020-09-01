@@ -569,15 +569,6 @@ class PmsFolio(models.Model):
             values["team_id"] = self.partner_id.team_id.id
         self.update(values)
 
-    @api.onchange("pricelist_id")
-    def onchange_pricelist_id(self):
-        values = {
-            "reservation_type": self.env["pms.folio"].calcule_reservation_type(
-                self.pricelist_id.is_staff, self.reservation_type
-            )
-        }
-        self.update(values)
-
     # Action methods
 
     def action_pay(self):
