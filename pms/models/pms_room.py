@@ -7,10 +7,10 @@ from odoo.exceptions import ValidationError
 
 
 class PmsRoom(models.Model):
-    """ The rooms for lodging can be for sleeping, usually called rooms,
-     and also for speeches (conference rooms), parking,
-     relax with cafe con leche, spa...
-     """
+    """The rooms for lodging can be for sleeping, usually called rooms,
+    and also for speeches (conference rooms), parking,
+    relax with cafe con leche, spa...
+    """
 
     _name = "pms.room"
     _description = "Property Room"

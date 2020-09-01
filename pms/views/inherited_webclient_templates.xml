@@ -3,9 +3,15 @@
     <data>
         <template id="assets_backend" name="pms assets" inherit_id="web.assets_backend">
             <xpath expr="//script[last()]" position="after">
-                <script type="text/javascript" src="/pms/static/src/js/session.js"></script>
-                <script type="text/javascript" src="/pms/static/src/js/inherited_abstract_web_client.js"></script>
-                <script type="text/javascript" src="/pms/static/src/js/widgets/switch_property_menu.js"></script>
+                <script type="text/javascript" src="/pms/static/src/js/session.js" />
+                <script
+                    type="text/javascript"
+                    src="/pms/static/src/js/inherited_abstract_web_client.js"
+                />
+                <script
+                    type="text/javascript"
+                    src="/pms/static/src/js/widgets/switch_property_menu.js"
+                />
             </xpath>
         </template>
     </data>

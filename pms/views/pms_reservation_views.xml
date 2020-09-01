@@ -246,7 +246,6 @@
                         class="label label-warning"
                         attrs="{'invisible': [('overbooking', '=', False)]}"
                     >OverBooking!</span>
-                    <field name="pms_property_id" invisible="0" />
                     <h1>
                         <field
                             name="room_id"
@@ -384,6 +383,8 @@
                             string="Reservation Details"
                             name="reservation_details"
                         >
+                            <field name="pms_property_id" />
+                            <field name="allowed_room_ids" invisible="1" />
                             <field
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
@@ -406,6 +407,7 @@
                             />
                             <field name="qty_invoiced" invisible="1" />
                             <field name="qty_to_invoice" invisible="1" />
+                            <field name="allowed_room_ids" invisible="1" />
                             <field
                                 name="room_type_id"
                                 on_change="1"
@@ -742,6 +744,7 @@
                     </bold>
                 </div>
                 <field name="shared_folio" invisible="1" />
+                <field name="allowed_room_ids" invisible="1" />
                 <sheet>
                     <span
                         class="label label-danger"
@@ -850,6 +853,7 @@
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
                     attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}"
                 />
+                <field name="allowed_room_ids" invisible="1" />
                 <field name="room_id" options="{'no_create': True,'no_open': True}" />
                 <button
                     type="action"
