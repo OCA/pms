@@ -16,13 +16,7 @@
                             <field name="company_id" invisible="1" />
                         </group>
                         <group>
-                            <field name="call_center" invisible="1" />
-                            <field
-                                name="channel_type"
-                                required="1"
-                                force_save="1"
-                                attrs="{'readonly':[('call_center','=',True)]}"
-                            />
+                            <field name="channel_type" required="1" force_save="1" />
                             <field name="pricelist_id" />
                             <field name="internal_comment" />
                             <field name="credit_card_details" />

@@ -260,8 +260,7 @@
                             name="partner_id"
                             default_focus="1"
                             placeholder="Lastname, Firstname"
-                            attrs="{'readonly':[('folio_id','!=',False)],
-                            'invisible':[('reservation_type','in',('out'))]}"
+                            attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             required="1"
                         />
                         <field
@@ -529,7 +528,7 @@
                                         <button
                                             type="object"
                                             class="oe_stat_button"
-                                            icon="fa fa-1x fa-bed"
+                                            icon="fa-1x fa-bed"
                                             name="open_service_ids"
                                             attrs="{'invisible':[('is_board_service','=', False)]}"
                                         />
@@ -558,11 +557,10 @@
                                         <button
                                             type="object"
                                             class="oe_stat_button"
-                                            icon="fa fa-2x fa-bars"
+                                            icon="fa-2x fa-bars"
                                             name="open_service_ids"
                                             attrs="{'invisible': [('per_day','=',False)]}"
                                         />
-                                        <field name="days_qty" invisible="1" />
                                         <field name="price_unit" />
                                         <field name="discount" />
                                         <field name="tax_ids" widget="many2many_tags" />
@@ -592,6 +590,7 @@
                             />
                             <field name="reservation_line_ids" nolabel="1">
                                 <tree create="false" delete="false" editable="bottom">
+                                    <field name="id" />
                                     <field name="date" readonly="1" force_save="1" />
                                     <field name="price" />
                                     <field name="discount" />
@@ -768,24 +767,24 @@
                             options="{'no_open': True}"
                         />
                         <span
-                            class="fa fa-user"
+                            class="fa-user"
                             style="margin-left:20px;"
                             attrs="{'invisible': [('reservation_type','not in',('normal'))]}"
                         />
                         <span
-                            class="fa fa-black-tie"
+                            class="fa-black-tie"
                             style="margin-left:20px; color: #C67;"
                             attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
                         />
                         <h3>
-                            From <span class="fa fa-sign-in" style="margin: 5px;" />
+                            From <span class="fa-sign-in" style="margin: 5px;" />
                                 <field
                                 name="checkin"
                                 style="margin-right: 10px;"
                                 readonly="1"
                             />
                             to
-                            <span class="fa fa-sign-out" style="margin-right: 5px;" />
+                            <span class="fa-sign-out" style="margin-right: 5px;" />
                             <field name="checkout" readonly="1" />
                         </h3>
                     </h2>
@@ -910,7 +909,7 @@
                 <button
                     type="object"
                     class="oe_stat_button"
-                    icon="fa fa-2x fa-suitcase"
+                    icon="fa-2x fa-suitcase"
                     name="open_reservation_form"
                     help="Open Reservation Room Detail"
                 />
@@ -1008,11 +1007,6 @@
                     domain="[('to_assign','=',True)]"
                 />
                 <separator />
-                <filter
-                    string="Call Center"
-                    name="call_center"
-                    domain="[('channel_type', '=', 'call')]"
-                />
                 <filter
                     string="Web"
                     name="web"

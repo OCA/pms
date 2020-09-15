@@ -28,7 +28,6 @@
                             force_save="1"
                         />
                     </group>
-                    <field name="days_qty" invisible="1" />
                     <field name="price_unit" invisible="1" />
                     <field name="discount" invisible="1" />
                     <field name="tax_ids" widget="many2many_tags" invisible="1" />
@@ -89,7 +88,6 @@
                     name="open_service_ids"
                     attrs="{'invisible': [('per_day','=',False)]}"
                 />
-                <field name="days_qty" invisible="1" />
                 <field name="price_unit" />
                 <field name="discount" />
                 <field name="tax_ids" widget="many2many_tags" />
