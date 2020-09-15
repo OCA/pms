@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from datetime import timedelta
 
 
 class PmsRoomType(models.Model):
@@ -99,7 +100,7 @@ class PmsRoomType(models.Model):
         Check the max availability for an specific
         type of room in a range of dates
         """
-        reservations = self.env["pms.reservation"].get_reservations(dfrom, dto)
+        reservations = self.env["pms.reservation"].get_reservations(dfrom, dto - timedelta(1))
         reservations_rooms = reservations.mapped("room_id.id")
         free_rooms = self.env["pms.room"].search(
             [("id", "not in", reservations_rooms), ("id", "not in", notthis)]

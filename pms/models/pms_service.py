@@ -42,7 +42,9 @@ class PmsService(models.Model):
         return False
 
     # Fields declaration
-    name = fields.Char("Service description", required=True)
+    name = fields.Char(
+        "Service description", compute="_compute_name", store=True, readonly=False,
+    )
     product_id = fields.Many2one(
         "product.product", "Service", ondelete="restrict", required=True
     )
@@ -52,7 +54,13 @@ class PmsService(models.Model):
     reservation_id = fields.Many2one(
         "pms.reservation", "Room", default=_default_reservation_id
     )
-    service_line_ids = fields.One2many("pms.service.line", "service_id")
+    service_line_ids = fields.One2many(
+        "pms.service.line",
+        "service_id",
+        compute="_compute_service_line_ids",
+        store=True,
+        readonly=False,
+    )
     company_id = fields.Many2one(
         related="folio_id.company_id", string="Company", store=True, readonly=True
     )
@@ -62,6 +70,9 @@ class PmsService(models.Model):
     tax_ids = fields.Many2many(
         "account.tax",
         string="Taxes",
+        compute="_compute_tax_ids",
+        store=True,
+        readonly=False,
         domain=["|", ("active", "=", False), ("active", "=", True)],
     )
     move_line_ids = fields.Many2many(
@@ -79,8 +90,12 @@ class PmsService(models.Model):
     sequence = fields.Integer(string="Sequence", default=10)
     state = fields.Selection(related="folio_id.state")
     per_day = fields.Boolean(related="product_id.per_day", related_sudo=True)
-    product_qty = fields.Integer("Quantity", default=1)
-    days_qty = fields.Integer(compute="_compute_days_qty", store=True)
+    product_qty = fields.Integer(
+        "Quantity",
+        compute="_compute_product_qty",
+        store=True,
+        readonly=False,
+    )
     is_board_service = fields.Boolean()
     to_print = fields.Boolean("Print", help="Print in Folio Report")
     # Non-stored related field to allow portal user to
@@ -111,7 +126,11 @@ class PmsService(models.Model):
         string="Sales Channel",
     )
     price_unit = fields.Float(
-        "Unit Price", required=True, digits=("Product Price"), default=0.0
+        "Unit Price",
+        digits=("Product Price"),
+        compute="_compute_price_unit",
+        store=True,
+        readonly=False,
     )
     discount = fields.Float(string="Discount (%)", digits=("Discount"), default=0.0)
     qty_to_invoice = fields.Float(
@@ -142,6 +161,206 @@ class PmsService(models.Model):
     )
 
     # Compute and Search methods
+    @api.depends("product_id")
+    def _compute_name(self):
+        self.name = False
+        for service in self.filtered("product_id"):
+            product = service.product_id.with_context(
+                lang=service.folio_id.partner_id.lang,
+                partner=service.folio_id.partner_id.id,
+            )
+            title = False
+            message = False
+            warning = {}
+            if product.sale_line_warn != "no-message":
+                title = _("Warning for %s") % product.name
+                message = product.sale_line_warn_msg
+                warning["title"] = title
+                warning["message"] = message
+                result = {"warning": warning}
+                if product.sale_line_warn == "block":
+                    self.product_id = False
+                    return result
+            name = product.name_get()[0][1]
+            if product.description_sale:
+                name += "\n" + product.description_sale
+            service.name = name
+
+    @api.depends("reservation_id.checkin", "reservation_id.checkout", "product_id")
+    def _compute_service_line_ids(self):
+        for service in self.filtered("product_id"):
+            day_qty = 1
+            if service.reservation_id and service.product_id:
+                reservation = service.reservation_id
+                product = service.product_id
+                consumed_on = product.consumed_on
+                if product.per_day:
+                    lines = []
+                    day_qty = service._service_day_qty()
+                    days_diff = (reservation.checkout - reservation.checkin).days
+                    for i in range(0, days_diff):
+                        if consumed_on == "after":
+                            i += 1
+                        idate = reservation.checkin + timedelta(days=i)
+                        old_line = service._search_old_lines(idate)
+                        if idate in [line.date for line in service.service_line_ids]:
+                        #REVIEW: If the date is already cached (otherwise double the date)
+                            pass
+                        elif not old_line:
+                            lines.append(
+                                (0, False, {
+                                    "date": idate,
+                                    "day_qty": day_qty,
+                                    })
+                            )
+                        else:
+                            lines.append((4, old_line.id))
+                    move_day = 0
+                    if consumed_on == "after":
+                        move_day = 1
+                    service.service_line_ids -= service.service_line_ids.filtered_domain(
+                        [
+                            "|",
+                            ("date", "<", reservation.checkin + timedelta(move_day)),
+                            ("date", ">=", reservation.checkout + timedelta(move_day)),
+                        ]
+                    )
+                    _logger.info(service)
+                    _logger.info(lines)
+                    service.service_line_ids = lines
+                else:
+                    # TODO: Review (business logic refact) no per_day logic service
+                    if not service.service_line_ids:
+                        service.service_line_ids = [(
+                            0,
+                            False,
+                            {
+                                "date": fields.Date.today(),
+                                "day_qty": day_qty,
+                            },
+                        )]
+            else:
+                # TODO: Service without reservation(room) but with folio¿?
+                # example: tourist tour in group
+                if not service.service_line_ids:
+                    service.service_line_ids = [(
+                            0,
+                            False,
+                            {
+                                "date": fields.Date.today(),
+                                "day_qty": day_qty,
+                            },
+                        )]
+
+    def _search_old_lines(self, date):
+        self.ensure_one()
+        old_lines = self.env['pms.service.line']
+        if isinstance(self._origin.id, int):
+            old_line = self._origin.service_line_ids.filtered(
+                lambda r: r.date == date
+                )
+            return old_line
+        return False
+
+
+    @api.depends("product_id")
+    def _compute_tax_ids(self):
+        for service in self:
+            service.tax_ids = service.product_id.taxes_id.filtered(
+                lambda r: not service.company_id or r.company_id == service.company_id
+            )
+
+    @api.depends("service_line_ids", "service_line_ids.day_qty")
+    def _compute_product_qty(self):
+        self.product_qty = 0
+        for service in self.filtered("service_line_ids"):
+            qty = sum(service.service_line_ids.mapped("day_qty"))
+            service.product_qty = qty
+
+    @api.depends("product_id", "service_line_ids", "reservation_id.pricelist_id")
+    def _compute_price_unit(self):
+        for service in self:
+            folio = service.folio_id
+            reservation = service.reservation_id
+            origin = reservation if reservation else folio
+            if origin:
+                if service._recompute_price():
+                    partner = origin.partner_id
+                    pricelist = origin.pricelist_id
+                    if reservation and service.is_board_service:
+                        board_room_type = reservation.board_service_room_id
+                        if board_room_type.price_type == "fixed":
+                            service.price_unit = (
+                                self.env["pms.board.service.room.type.line"]
+                                .search(
+                                    [
+                                        (
+                                            "pms_board_service_room_type_id",
+                                            "=",
+                                            board_room_type.id,
+                                        ),
+                                        ("product_id", "=", service.product_id.id),
+                                    ]
+                                )
+                                .amount
+                            )
+                        else:
+                            service.price_unit = (
+                                reservation.price_total
+                                * self.env["pms.board.service.room.type.line"]
+                                .search(
+                                    [
+                                        (
+                                            "pms_board_service_room_type_id",
+                                            "=",
+                                            board_room_type.id,
+                                        ),
+                                        ("product_id", "=", service.product_id.id),
+                                    ]
+                                )
+                                .amount
+                            ) / 100
+                    else:
+                        product = service.product_id.with_context(
+                            lang=partner.lang,
+                            partner=partner.id,
+                            quantity=service.product_qty,
+                            date=folio.date_order if folio else fields.Date.today(),
+                            pricelist=pricelist.id,
+                            uom=service.product_id.uom_id.id,
+                            fiscal_position=False,
+                        )
+                        service.price_unit = self.env[
+                            "account.tax"
+                        ]._fix_tax_included_price_company(
+                            service._get_display_price(product),
+                            product.taxes_id,
+                            service.tax_ids,
+                            origin.company_id,
+                        )
+                else:
+                    service.price_unit = service._origin.price_unit
+            else:
+                service.price_unit = 0
+
+    def _recompute_price(self):
+        #REVIEW: Conditional to avoid overriding already calculated prices,
+        # I'm not sure it's the best way
+        self.ensure_one()
+        #folio/reservation origin service
+        folio_origin = self._origin.folio_id
+        reservation_origin = self._origin.reservation_id
+        origin = reservation_origin if reservation_origin else folio_origin
+        #folio/reservation new service
+        folio_new = self.folio_id
+        reservation_new = self.reservation_id
+        new = reservation_new if reservation_new else folio_new
+        price_fields = ["pricelist_id", "reservation_type"]
+        if any(origin[field] != new[field] for field in price_fields) or \
+                self._origin.price_unit == 0:
+            return True
+        return False
+
     @api.depends("qty_invoiced", "product_qty", "folio_id.state")
     def _get_to_invoice_qty(self):
         """
@@ -204,7 +423,8 @@ class PmsService(models.Model):
             "Product Unit of Measure"
         )
         for line in self:
-            if line.folio_id.state in ("draft"):
+            state = line.folio_id.state or "draft"
+            if state in ("draft"):
                 line.invoice_status = "no"
             elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
                 line.invoice_status = "to invoice"
@@ -220,24 +440,16 @@ class PmsService(models.Model):
 
     @api.depends("product_qty", "discount", "price_unit", "tax_ids")
     def _compute_amount_service(self):
-        """
-        Compute the amounts of the service line.
-        """
-        for record in self:
-            folio = record.folio_id or self.env["pms.folio"].browse(
-                self.env.context.get("default_folio_id")
-            )
-            reservation = record.reservation_id or self.env.context.get(
-                "reservation_id"
-            )
+        for service in self:
+            folio = service.folio_id
+            reservation = service.reservation_id
             currency = folio.currency_id if folio else reservation.currency_id
-            product = record.product_id
-            price = record.price_unit * (1 - (record.discount or 0.0) * 0.01)
-            taxes = record.tax_ids.compute_all(
-                price, currency, record.product_qty, product=product
+            product = service.product_id
+            price = service.price_unit * (1 - (service.discount or 0.0) * 0.01)
+            taxes = service.tax_ids.compute_all(
+                price, currency, service.product_qty, product=product
             )
-
-            record.update(
+            service.update(
                 {
                     "price_tax": sum(
                         t.get("amount", 0.0) for t in taxes.get("taxes", [])
@@ -247,92 +459,7 @@ class PmsService(models.Model):
                 }
             )
 
-    @api.depends("service_line_ids.day_qty")
-    def _compute_days_qty(self):
-        for record in self:
-            if record.per_day:
-                qty = sum(record.service_line_ids.mapped("day_qty"))
-                vals = {"days_qty": qty, "product_qty": qty}
-            else:
-                vals = {"days_qty": 0}
-            record.update(vals)
-
-    # Constraints and onchanges
-    @api.onchange("product_id")
-    def onchange_product_id(self):
-        """
-        Compute the default quantity according to the
-        configuration of the selected product, in per_day
-        product configuration, the qty is autocalculated and
-        readonly based on service_ids qty
-        """
-        if not self.product_id:
-            return
-        vals = {}
-        vals["product_qty"] = 1.0
-        for record in self:
-            if record.per_day and record.reservation_id:
-                product = record.product_id
-                if self.env.context.get("default_reservation_id"):
-                    reservation = self.env["pms.reservation"].browse(
-                        self.env.context.get("default_reservation_id")
-                    )
-                else:
-                    reservation = record.reservation_id
-                if reservation.splitted:
-                    checkin = reservation.real_checkin
-                    checkout = reservation.real_checkout
-                else:
-                    checkin = reservation.checkin
-                    checkout = reservation.checkout
-                checkin_dt = fields.Date.from_string(checkin)
-                checkout_dt = fields.Date.from_string(checkout)
-                nights = abs((checkout_dt - checkin_dt).days)
-                vals.update(
-                    record.prepare_service_ids(
-                        dfrom=checkin,
-                        days=nights,
-                        per_person=product.per_person,
-                        persons=reservation.adults,
-                        old_line_days=record.service_line_ids,
-                        consumed_on=product.consumed_on,
-                    )
-                )
-                if record.product_id.daily_limit > 0:
-                    for day in record.service_line_ids:
-                        day.no_free_resources()
-        """
-        Description and warnings
-        """
-        product = self.product_id.with_context(
-            lang=self.folio_id.partner_id.lang, partner=self.folio_id.partner_id.id
-        )
-        title = False
-        message = False
-        warning = {}
-        if product.sale_line_warn != "no-message":
-            title = _("Warning for %s") % product.name
-            message = product.sale_line_warn_msg
-            warning["title"] = title
-            warning["message"] = message
-            result = {"warning": warning}
-            if product.sale_line_warn == "block":
-                self.product_id = False
-                return result
-
-        name = product.name_get()[0][1]
-        if product.description_sale:
-            name += "\n" + product.description_sale
-        vals["name"] = name
-        """
-        Compute tax and price unit
-        """
-        self._compute_tax_ids()
-        vals["price_unit"] = self._compute_price_unit()
-        record.update(vals)
-
     # Action methods
-
     def open_service_ids(self):
         action = self.env.ref("pms.action_pms_services_form").read()[0]
         action["views"] = [(self.env.ref("pms.pms_service_view_form").id, "form")]
@@ -355,119 +482,9 @@ class PmsService(models.Model):
             name="", args=args, operator="ilike", limit=limit
         )
 
-    @api.model
-    def create(self, vals):
-        vals.update(self._prepare_add_missing_fields(vals))
-        if self.compute_lines_out_vals(vals):
-            reservation = self.env["pms.reservation"].browse(vals["reservation_id"])
-            product = self.env["product.product"].browse(vals["product_id"])
-            if reservation.splitted:
-                checkin = reservation.real_checkin
-                checkout = reservation.real_checkout
-            else:
-                checkin = reservation.checkin
-                checkout = reservation.checkout
-            checkin_dt = fields.Date.from_string(checkin)
-            checkout_dt = fields.Date.from_string(checkout)
-            nights = abs((checkout_dt - checkin_dt).days)
-            vals.update(
-                self.prepare_service_ids(
-                    dfrom=checkin,
-                    days=nights,
-                    per_person=product.per_person,
-                    persons=reservation.adults,
-                    old_day_lines=False,
-                    consumed_on=product.consumed_on,
-                )
-            )
-        record = super(PmsService, self).create(vals)
-        return record
-
-    def write(self, vals):
-        # If you write product, We must check if its necesary create or delete
-        # service lines
-        if vals.get("product_id"):
-            product = self.env["product.product"].browse(vals.get("product_id"))
-            if not product.per_day:
-                vals.update({"service_line_ids": [(5, 0, 0)]})
-            else:
-                for record in self:
-                    reservations = self.env["pms.reservation"]
-                    reservation = (
-                        reservations.browse(vals["reservation_id"])
-                        if "reservation_id" in vals
-                        else record.reservation_id
-                    )
-                    if reservation.splitted:
-                        checkin = reservation.real_checkin
-                        checkout = reservation.real_checkout
-                    else:
-                        checkin = reservation.checkin
-                        checkout = reservation.checkout
-                    checkin_dt = fields.Date.from_string(checkin)
-                    checkout_dt = fields.Date.from_string(checkout)
-                    nights = abs((checkout_dt - checkin_dt).days)
-                    record.update(
-                        record.prepare_service_ids(
-                            dfrom=checkin,
-                            days=nights,
-                            per_person=product.per_person,
-                            persons=reservation.adults,
-                            old_line_days=self.service_line_ids,
-                            consumed_on=product.consumed_on,
-                        )
-                    )
-        res = super(PmsService, self).write(vals)
-        return res
-
-    # Business methods
-    @api.model
-    def _prepare_add_missing_fields(self, values):
-        """ Deduce missing required fields from the onchange """
-        res = {}
-        onchange_fields = ["price_unit", "tax_ids", "name"]
-        if values.get("product_id"):
-            line = self.new(values)
-            if any(f not in values for f in onchange_fields):
-                line.onchange_product_id()
-            for field in onchange_fields:
-                if field not in values:
-                    res[field] = line._fields[field].convert_to_write(line[field], line)
-        return res
-
-    def compute_lines_out_vals(self, vals):
-        """
-        Compute if It is necesary service days in write/create
-        """
-        if not vals:
-            vals = {}
-        if "product_id" in vals:
-            product = (
-                self.env["product.product"].browse(vals["product_id"])
-                if "product_id" in vals
-                else self.product_id
-            )
-            if product.per_day and "service_line_ids" not in vals:
-                return True
-        return False
-
-    def _compute_tax_ids(self):
-        for record in self:
-            # If company_id is set, always filter taxes by the company
-            folio = record.folio_id or self.env["pms.folio"].browse(
-                self.env.context.get("default_folio_id")
-            )
-            reservation = record.reservation_id or self.env.context.get(
-                "reservation_id"
-            )
-            origin = folio if folio else reservation
-            record.tax_ids = record.product_id.taxes_id.filtered(
-                lambda r: not record.company_id or r.company_id == origin.company_id
-            )
-
     def _get_display_price(self, product):
-        folio = self.folio_id or self.env.context.get("default_folio_id")
-        reservation = self.reservation_id or self.env.context.get("reservation_id")
+        folio = self.folio_id
+        reservation = self.reservation_id
         origin = folio if folio else reservation
         if origin.pricelist_id.discount_policy == "with_discount":
             return product.with_context(pricelist=origin.pricelist_id.id).price
@@ -501,90 +518,13 @@ class PmsService(models.Model):
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
-    def _compute_price_unit(self):
+    # Businness Methods
+    def _service_day_qty(self):
         self.ensure_one()
-        folio = self.folio_id or self.env.context.get("default_folio_id")
-        reservation = self.reservation_id or self.env.context.get("reservation_id")
-        origin = reservation if reservation else folio
-        if origin:
-            partner = origin.partner_id
-            pricelist = origin.pricelist_id
-            if reservation and self.is_board_service:
-                board_room_type = reservation.board_service_room_id
-                if board_room_type.price_type == "fixed":
-                    return (
-                        self.env["pms.board.service.room.type.line"]
-                        .search(
-                            [
-                                (
-                                    "pms_board_service_room_type_id",
-                                    "=",
-                                    board_room_type.id,
-                                ),
-                                ("product_id", "=", self.product_id.id),
-                            ]
-                        )
-                        .amount
-                    )
-                else:
-                    return (
-                        reservation.price_total
-                        * self.env["pms.board.service.room.type.line"]
-                        .search(
-                            [
-                                (
-                                    "pms_board_service_room_type_id",
-                                    "=",
-                                    board_room_type.id,
-                                ),
-                                ("product_id", "=", self.product_id.id),
-                            ]
-                        )
-                        .amount
-                    ) / 100
-            else:
-                product = self.product_id.with_context(
-                    lang=partner.lang,
-                    partner=partner.id,
-                    quantity=self.product_qty,
-                    date=folio.date_order if folio else fields.Date.today(),
-                    pricelist=pricelist.id,
-                    uom=self.product_id.uom_id.id,
-                    fiscal_position=False,
-                )
-                return self.env["account.tax"]._fix_tax_included_price_company(
-                    self._get_display_price(product),
-                    product.taxes_id,
-                    self.tax_ids,
-                    origin.company_id,
-                )
-
-    @api.model
-    def prepare_service_ids(self, **kwargs):
-        """
-        Prepare line and respect the old manual changes on lines
-        """
-        cmds = [(5, 0, 0)]
-        old_line_days = kwargs.get("old_line_days")
-        consumed_on = (
-            kwargs.get("consumed_on") if kwargs.get("consumed_on") else "before"
-        )
-        total_qty = 0
-        day_qty = 1
-        # WARNING: Change adults in reservation NOT update qty service!!
-        if kwargs.get("per_person"):
-            day_qty = kwargs.get("persons")
-        for i in range(0, kwargs.get("days")):
-            if consumed_on == "after":
-                i += 1
-            idate = (
-                fields.Date.from_string(kwargs.get("dfrom")) + timedelta(days=i)
-            ).strftime(DEFAULT_SERVER_DATE_FORMAT)
-            if not old_line_days or idate not in old_line_days.mapped("date"):
-                cmds.append((0, False, {"date": idate, "day_qty": day_qty}))
-                total_qty = total_qty + day_qty
-            else:
-                old_line = old_line_days.filtered(lambda r: r.date == idate)
-                cmds.append((4, old_line.id))
-                total_qty = total_qty + old_line.day_qty
-        return {"service_line_ids": cmds, "product_qty": total_qty}
+        qty = self.product_qty if len(self.service_line_ids) == 1 else 0
+        if not self.reservation_id:
+            return qty
+        # TODO: Pass per_person to service line from product default_per_person
+        if self.product_id.per_person:
+            qty = self.reservation_id.adults
+        return qty
