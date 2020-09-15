@@ -89,7 +89,6 @@ class FolioWizard(models.TransientModel):
     room_type_wizard_ids = fields.One2many(
         "pms.room.type.wizard", "folio_wizard_id", string="Room Types"
     )
-    call_center = fields.Boolean(default=_get_default_center_user)
 
     def assign_rooms(self):
         self.assign = True
@@ -270,7 +269,8 @@ class FolioWizard(models.TransientModel):
                         "board_service_room_id": line.board_service_room_id.id,
                         "to_assign": line.to_assign,
                         "service_ids": services_room,
-                        "pricelist_id": self.pricelist_id.id,  # REVIEW: Create folio with reservations dont respect the pricelist_id on folio dict
+                        # REVIEW: Create folio with reservations dont respect the pricelist_id on folio dict
+                        "pricelist_id": self.pricelist_id.id,
                     },
                 )
             )

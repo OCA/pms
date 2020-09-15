@@ -2,11 +2,11 @@
 <odoo>
     <data noupdate="1">
         <!-- pms.users -->
-        <record id="base.user_admin" model="res.users">
+        <record id="base.user_root" model="res.users">
             <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
         </record>
-        <record id="base.user_demo" model="res.users">
-            <field name="groups_id" eval="[(4,ref('pms.group_pms_user'))]" />
+        <record id="base.user_admin" model="res.users">
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
         </record>
         <!-- Basic pms  -->
         <record id="main_pms_room_type_restriction" model="pms.room.type.restriction">
