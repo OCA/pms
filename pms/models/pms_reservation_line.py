@@ -3,6 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class PmsReservationLine(models.Model):
@@ -64,7 +66,7 @@ class PmsReservationLine(models.Model):
 
     # Compute and Search methods
     @api.depends(
-        "date",
+        "reservation_id",
         "reservation_id.pricelist_id",
         "reservation_id.room_type_id",
         "reservation_id.reservation_type",
@@ -72,24 +74,43 @@ class PmsReservationLine(models.Model):
     def _compute_price(self):
         for line in self:
             reservation = line.reservation_id
-            room_type_id = reservation.room_type_id.id
-            product = self.env["pms.room.type"].browse(room_type_id).product_id
-            partner = self.env["res.partner"].browse(reservation.partner_id.id)
-            product = product.with_context(
-                lang=partner.lang,
-                partner=partner.id,
-                quantity=1,
-                date=line.date,
-                pricelist=reservation.pricelist_id.id,
-                uom=product.uom_id.id,
-            )
-            line.price = self.env["account.tax"]._fix_tax_included_price_company(
-                line._get_display_price(product),
-                product.taxes_id,
-                line.reservation_id.tax_ids,
-                line.reservation_id.company_id,
-            )
-            # TODO: Out of service 0 amount
+            if not reservation.room_type_id or not reservation.pricelist_id:
+                line.price = 0
+            elif line._recompute_price():
+                room_type_id = reservation.room_type_id.id
+                product = self.env["pms.room.type"].browse(room_type_id).product_id
+                partner = self.env["res.partner"].browse(reservation.partner_id.id)
+                product = product.with_context(
+                    lang=partner.lang,
+                    partner=partner.id,
+                    quantity=1,
+                    date=line.date,
+                    pricelist=reservation.pricelist_id.id,
+                    uom=product.uom_id.id,
+                )
+                line.price = self.env["account.tax"]._fix_tax_included_price_company(
+                    line._get_display_price(product),
+                    product.taxes_id,
+                    line.reservation_id.tax_ids,
+                    line.reservation_id.company_id,
+                )
+                _logger.info(line.price)
+                # TODO: Out of service 0 amount
+            else:
+                line.price = line._origin.price
+
+    def _recompute_price(self):
+        #REVIEW: Conditional to avoid overriding already calculated prices,
+        # I'm not sure it's the best way
+        self.ensure_one()
+        origin = self._origin.reservation_id
+        new = self.reservation_id
+        price_fields = ["pricelist_id", "room_type_id", "reservation_type"]
+        if any(origin[field] != new[field] for field in price_fields) or \
+                self._origin.price == 0:
+            return True
+        return False
+
 
     # TODO: Refact method and allowed cancelled single days
     @api.depends("reservation_id.cancelled_reason")
@@ -201,3 +222,4 @@ class PmsReservationLine(models.Model):
             )
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
+

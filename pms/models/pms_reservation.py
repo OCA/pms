@@ -23,6 +23,9 @@ class PmsReservation(models.Model):
     _order = "last_updated_res desc, name"
 
     # Default Methods ang Gets
+    def _default_pricelist_id(self):
+        return self.env.user.pms_property_id.default_pricelist_id.id
+
     def _get_default_checkin(self):
         folio = False
         if "folio_id" in self._context:
@@ -91,11 +94,7 @@ class PmsReservation(models.Model):
 
     # Fields declaration
     name = fields.Text(
-        "Reservation Description",
-        required=True,
-        compute="_compute_name",
-        store=True,
-        readonly=False,
+        "Reservation Description", compute="_compute_name", store=True, readonly=False,
     )
     room_id = fields.Many2one(
         "pms.room",
@@ -119,7 +118,6 @@ class PmsReservation(models.Model):
     room_type_id = fields.Many2one(
         "pms.room.type",
         string="Room Type",
-        required=True,
         track_visibility="onchange",
         compute="_compute_room_type_id",
         store=True,
@@ -137,7 +135,6 @@ class PmsReservation(models.Model):
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",
-        required=True,
         help="Invoice address for current sales order.",
         compute="_compute_partner_invoice_id",
         store=True,
@@ -162,11 +159,17 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
-    service_ids = fields.One2many("pms.service", "reservation_id")
+    service_ids = fields.One2many(
+        "pms.service",
+        "reservation_id",
+        compute="_compute_service_ids",
+        store=True,
+        readonly=False,
+    )
     pricelist_id = fields.Many2one(
         "product.pricelist",
         string="Pricelist",
-        required=True,
+        default=_default_pricelist_id,
         ondelete="restrict",
         compute="_compute_pricelist_id",
         store=True,
@@ -181,7 +184,6 @@ class PmsReservation(models.Model):
         related="pricelist_id.currency_id",
         string="Currency",
         readonly=True,
-        required=True,
     )
     tax_ids = fields.Many2many(
         "account.tax",
@@ -245,8 +247,8 @@ class PmsReservation(models.Model):
     out_service_description = fields.Text("Cause of out of service")
     checkin = fields.Date("Check In", required=True, default=_get_default_checkin)
     checkout = fields.Date("Check Out", required=True, default=_get_default_checkout)
-    real_checkin = fields.Date("From", required=True, track_visibility="onchange")
-    real_checkout = fields.Date("To", required=True, track_visibility="onchange")
+    real_checkin = fields.Date("From", compute="_compute_real_checkin", store=True,)
+    real_checkout = fields.Date("To", compute="_compute_real_checkout", store=True,)
     arrival_hour = fields.Char(
         "Arrival Hour",
         default=_get_default_arrival_hour,
@@ -306,7 +308,10 @@ class PmsReservation(models.Model):
         string="Sales Channel",
         default="door",
     )
-    last_updated_res = fields.Datetime("Last Updated")
+    # TODO: Review functionality of last_update_res
+    last_updated_res = fields.Datetime(
+        "Last Updated", compute="_compute_last_updated_res", store=True, readonly=False,
+    )
     folio_pending_amount = fields.Monetary(related="folio_id.pending_amount")
     shared_folio = fields.Boolean(compute="_computed_shared")
     # Used to notify is the reservation folio has other reservations/services
@@ -320,8 +325,10 @@ class PmsReservation(models.Model):
         string="Internal Folio Notes", related="folio_id.internal_comment"
     )
     preconfirm = fields.Boolean("Auto confirm to Save", default=True)
-    to_send = fields.Boolean("To Send", default=True)
-    call_center = fields.Boolean(default="set_call_center_user")
+    # TODO: to_send in this module?¿
+    to_send = fields.Boolean(
+        "To Send", default=True, compute="_compute_to_send", store=True, readonly=False,
+    )
     has_confirmed_reservations_to_send = fields.Boolean(
         related="folio_id.has_confirmed_reservations_to_send", readonly=True
     )
@@ -400,7 +407,7 @@ class PmsReservation(models.Model):
     )
 
     # Compute and Search methods
-    @api.depends("checkin", "checkin", "room_type_id")
+    @api.depends("checkin", "checkout", "room_type_id")
     def _compute_name(self):
         for reservation in self:
             if (
@@ -417,6 +424,8 @@ class PmsReservation(models.Model):
                     + " - "
                     + checkout_str
                 )
+            else:
+                reservation.name = "/"
 
     @api.depends("adults", "room_type_id")
     def _compute_room_id(self):
@@ -428,6 +437,7 @@ class PmsReservation(models.Model):
         for reservation in reservations_no_room:
             if reservation.room_type_id:
                 reservation.room_id = reservation._autoassign()
+                # TODO: check_split reservation
                 if not reservation.room_id:
                     raise UserError(
                         _("%s: No rooms available") % (self.room_type_id.name)
@@ -495,7 +505,7 @@ class PmsReservation(models.Model):
             cmds = []
             days_diff = (reservation.checkout - reservation.checkin).days
             for i in range(0, days_diff):
-                idate = fields.Date.from_string(reservation.checkin) + timedelta(days=i)
+                idate = reservation.checkin + timedelta(days=i)
                 old_line = reservation.reservation_line_ids.filtered(
                     lambda r: r.date == idate
                 )
@@ -504,11 +514,33 @@ class PmsReservation(models.Model):
             reservation.reservation_line_ids -= reservation.reservation_line_ids.filtered_domain(
                 [
                     "|",
-                    ("date", ">", reservation.checkout),
+                    ("date", ">=", reservation.checkout),
                     ("date", "<", reservation.checkin),
                 ]
             )
             reservation.reservation_line_ids = cmds
+
+    @api.depends("board_service_room_id")
+    def _compute_service_ids(self):
+        for reservation in self:
+            board_services = []
+            old_board_lines = reservation.service_ids.filtered_domain(
+                [("is_board_service", "=", True),]
+                )
+            if reservation.board_service_room_id:
+                board = self.env["pms.board.service.room.type"].browse(
+                    reservation.board_service_room_id.id
+                )
+                for line in board.board_service_line_ids:
+                    res = {
+                        "product_id": line.product_id.id,
+                        "is_board_service": True,
+                        "folio_id": reservation.folio_id.id,
+                        "reservation_id": reservation.id,
+                    }
+                    board_services.append((0, False, res))
+                reservation.service_ids -= old_board_lines
+                reservation.service_ids = board_services
 
     @api.depends("partner_id")
     def _compute_pricelist_id(self):
@@ -531,6 +563,77 @@ class PmsReservation(models.Model):
                     # TODO: Notification if the room capacity is higher than adults?
                 else:
                     reservation.adults = reservation.room_id.capacity
+
+    @api.depends("checkin")
+    def _compute_real_checkin(self):
+        for reservation in self:
+            reservation.real_checkin = reservation.checkin
+            if reservation.splitted:
+                master_reservation = reservation.parent_reservation or reservation
+                reservation.real_checkin = master_reservation.checkin
+                splitted_reservations = self.env["pms.reservation"].search(
+                    [
+                        ("splitted", "=", True),
+                        ("folio_id", "=", self.folio_id.id),
+                        "|",
+                        ("parent_reservation", "=", master_reservation.id),
+                        ("id", "=", master_reservation.id),
+                    ]
+                )
+                for split in splitted_reservations:
+                    if reservation.real_checkin > split.checkin:
+                        reservation.real_checkin = split.checkin
+
+    @api.depends("checkout")
+    def _compute_real_checkout(self):
+        for reservation in self:
+            reservation.real_checkout = reservation.checkout
+            if reservation.splitted:
+                master_reservation = reservation.parent_reservation or reservation
+                reservation.real_checkout = master_reservation.checkout
+                splitted_reservations = self.env["pms.reservation"].search(
+                    [
+                        ("splitted", "=", True),
+                        ("folio_id", "=", self.folio_id.id),
+                        "|",
+                        ("parent_reservation", "=", master_reservation.id),
+                        ("id", "=", master_reservation.id),
+                    ]
+                )
+                for split in splitted_reservations:
+                    if reservation.real_checkout < split.checkout:
+                        reservation.real_checkout = split.checkout
+
+    @api.depends("splitted", "checkout")
+    def _compute_real_checkin(self):
+        for reservation in self:
+            if reservation.splitted:
+                master_reservation = reservation.parent_reservation or reservation
+                first_checkin = master_reservation.checkin
+                splitted_reservations = self.env["pms.reservation"].search(
+                    [
+                        ("splitted", "=", True),
+                        ("folio_id", "=", self.folio_id.id),
+                        "|",
+                        ("parent_reservation", "=", master_reservation.id),
+                        ("id", "=", master_reservation.id),
+                    ]
+                )
+                for split in splitted_reservations:
+                    if first_checkin > split.checkin:
+                        reservation.real_checkin = split.checkin
+
+    @api.depends("checkin", "checkout", "state")
+    def _compute_to_send(self):
+        for reservation in self:
+            reservation.to_send = True
+
+    @api.depends(
+        "checkin", "checkout", "discount", "state", "room_type_id", "to_assign"
+    )
+    def _compute_last_updated_res(self):
+        for reservation in self:
+            reservation.last_updated_res = fields.Datetime.now()
 
     @api.depends("state", "qty_to_invoice", "qty_invoiced")
     def _compute_invoice_status(self):
@@ -729,47 +832,6 @@ class PmsReservation(models.Model):
 
     # self._compute_tax_ids() TODO: refact
 
-    @api.onchange("checkin", "checkout")
-    def onchange_update_service_per_day(self):
-        _logger.info("----------ONCHANGE4-----------")
-        services = self.service_ids.filtered(lambda r: r.per_day is True)
-        for service in services:
-            service.onchange_product_id()
-
-    @api.onchange("board_service_room_id")
-    def onchange_board_service(self):
-        _logger.info("----------ONCHANGE1-----------")
-        if self.board_service_room_id:
-            board_services = [(5, 0, 0)]
-            for line in self.board_service_room_id.board_service_line_ids:
-                product = line.product_id
-                if product.per_day:
-                    res = {
-                        "product_id": product.id,
-                        "is_board_service": True,
-                        "folio_id": self.folio_id.id,
-                        "reservation_id": self.id,
-                    }
-                    line = self.env["pms.service"].new(res)
-                    res.update(self.env["pms.service"]._prepare_add_missing_fields(res))
-                    res.update(
-                        self.env["pms.service"].prepare_service_ids(
-                            dfrom=self.checkin,
-                            days=self.nights,
-                            per_person=product.per_person,
-                            persons=self.adults,
-                            old_line_days=False,
-                            consumed_on=product.consumed_on,
-                        )
-                    )
-                    board_services.append((0, False, res))
-            other_services = self.service_ids.filtered(lambda r: not r.is_board_service)
-            self.update({"service_ids": board_services})
-            self.service_ids |= other_services
-            for service in self.service_ids.filtered(lambda r: r.is_board_service):
-                service._compute_tax_ids()
-                service.price_unit = service._compute_price_unit()
-
     # Action methods
 
     def open_invoices_reservation(self):
@@ -864,10 +926,15 @@ class PmsReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        vals.update(self._prepare_add_missing_fields(vals))
         if "folio_id" in vals and "channel_type" not in vals:
             folio = self.env["pms.folio"].browse(vals["folio_id"])
-            vals.update({"channel_type": folio.channel_type})
+            channel_type = (
+                vals["channel_type"] if "channel_type" in vals else folio.channel_type
+            )
+            partner_id = (
+                vals["partner_id"] if "partner_id" in vals else folio.partner_id.id
+            )
+            vals.update({"channel_type": channel_type, "partner_id": partner_id})
         elif "partner_id" in vals:
             folio_vals = {
                 "partner_id": int(vals.get("partner_id")),
@@ -883,96 +950,9 @@ class PmsReservation(models.Model):
                     "channel_type": vals.get("channel_type"),
                 }
             )
-        if vals.get("service_ids"):
-            for service in vals["service_ids"]:
-                if service[2]:
-                    service[2]["folio_id"] = folio.id
-        vals.update(
-            {"last_updated_res": fields.Datetime.now(),}
-        )
-        if (
-            "checkin" in vals
-            and "checkout" in vals
-            and "real_checkin" not in vals
-            and "real_checkout" not in vals
-        ):
-            vals["real_checkin"] = vals["checkin"]
-            vals["real_checkout"] = vals["checkout"]
         record = super(PmsReservation, self).create(vals)
         if record.preconfirm:
             record.confirm()
-        return record
-
-    def write(self, vals):
-        if self.notify_update(vals):
-            vals.update({"last_updated_res": fields.Datetime.now()})
-        for record in self:
-            checkin = vals["checkin"] if "checkin" in vals else record.checkin
-            checkout = vals["checkout"] if "checkout" in vals else record.checkout
-            if not record.splitted and not vals.get("splitted", False):
-                if "checkin" in vals:
-                    vals["real_checkin"] = vals["checkin"]
-                if "checkout" in vals:
-                    vals["real_checkout"] = vals["checkout"]
-
-            real_checkin = (
-                vals["real_checkin"] if "real_checkin" in vals else record.real_checkin
-            )
-            real_checkout = (
-                vals["real_checkout"]
-                if "real_checkout" in vals
-                else record.real_checkout
-            )
-
-            days_diff = (
-                fields.Date.from_string(checkout) - fields.Date.from_string(checkin)
-            ).days
-            if self.compute_board_services(vals):
-                record.service_ids.filtered(
-                    lambda r: r.is_board_service is True
-                ).unlink()
-                board_services = []
-                board = self.env["pms.board.service.room.type"].browse(
-                    vals["board_service_room_id"]
-                )
-                for line in board.board_service_line_ids:
-                    res = {
-                        "product_id": line.product_id.id,
-                        "is_board_service": True,
-                        "folio_id": vals.get("folio_id"),
-                        "reservation_id": self.id,
-                    }
-                    res.update(self.env["pms.service"]._prepare_add_missing_fields(res))
-                    board_services.append((0, False, res))
-                # REVIEW: Why I need add manually the old IDs if
-                # board service is (0,0,(-)) ¿?¿?¿
-                record.update(
-                    {"service_ids": [(6, 0, record.service_ids.ids)] + board_services}
-                )
-            if record.compute_qty_service_day(vals):
-                service_days_diff = (
-                    fields.Date.from_string(real_checkout)
-                    - fields.Date.from_string(real_checkin)
-                ).days
-                for service in record.service_ids:
-                    if service.product_id.per_day:
-                        service.update(
-                            service.prepare_service_ids(
-                                dfrom=real_checkin,
-                                days=service_days_diff,
-                                per_person=service.product_id.per_person,
-                                persons=service.reservation_id.adults,
-                                old_line_days=service.service_line_ids,
-                                consumed_on=service.product_id.consumed_on,
-                            )
-                        )
-            if (
-                ("checkin" in vals and record.checkin != vals["checkin"])
-                or ("checkout" in vals and record.checkout != vals["checkout"])
-                or ("state" in vals and record.state != vals["state"])
-            ):
-                record.update({"to_send": True})
-        record = super(PmsReservation, self).write(vals)
         return record
 
     # Business methods
@@ -987,59 +967,6 @@ class PmsReservation(models.Model):
                         lambda x: x.reservation_id.id != record.id
                     )
                 )
-
-    def compute_board_services(self, vals):
-        """
-        We must compute service_ids when we have a board_service_id without
-        service_ids associated to reservation
-        """
-        if "board_service_room_id" in vals:
-            if "service_ids" in vals:
-                for service in vals["service_ids"]:
-                    if (
-                        "is_board_service" in service[2]
-                        and service[2]["is_board_service"] is True
-                    ):
-                        return False
-            return True
-        return False
-
-    def compute_qty_service_day(self, vals):
-        """
-        Compute if it is necesary calc price in write/create
-        """
-        self.ensure_one()
-        if not vals:
-            vals = {}
-        if "service_ids" in vals:
-            return False
-        if (
-            ("checkin" in vals and self.checkin != vals["checkin"])
-            or ("checkout" in vals and self.checkout != vals["checkout"])
-            or ("adults" in vals and self.checkout != vals["adults"])
-        ):
-            return True
-        return False
-
-    @api.model
-    def _prepare_add_missing_fields(self, values):
-        """ Deduce missing required fields from the onchange """
-        res = {}
-        onchange_fields = ["tax_ids", "currency_id", "service_ids"]
-        if values.get("room_type_id"):
-            if not values.get("reservation_type"):
-                values["reservation_type"] = "normal"
-            line = self.new(values)
-            for field in onchange_fields:
-                if field == "service_ids":
-                    if self.compute_board_services(values):
-                        line.onchange_board_service()
-                        res[field] = line._fields[field].convert_to_write(
-                            line[field], line
-                        )
-                if field not in values:
-                    res[field] = line._fields[field].convert_to_write(line[field], line)
-        return res
 
     def _autoassign(self):
         self.ensure_one()
@@ -1068,18 +995,6 @@ class PmsReservation(models.Model):
             msg = _("No checkin was made for this reservation")
             res.message_post(subject=_("No Checkins!"), subtype="mt_comment", body=msg)
         return True
-
-    def notify_update(self, vals):
-        if (
-            "checkin" in vals
-            or "checkout" in vals
-            or "discount" in vals
-            or "state" in vals
-            or "room_type_id" in vals
-            or "to_assign" in vals
-        ):
-            return True
-        return False
 
     def overbooking_button(self):
         self.ensure_one()
@@ -1360,7 +1275,6 @@ class PmsReservation(models.Model):
                         )
                     )
                     reservation_lines[0].append((2, rline.id, False))
-
             parent_res = record.parent_reservation or record
             vals.update(
                 {
@@ -1435,7 +1349,7 @@ class PmsReservation(models.Model):
             raise ValidationError(
                 _(
                     "This reservation can't be unified: They \
-                                    all need to be in the same room"
+                    all need to be in the same nº room and room type"
                 )
             )
 
@@ -1518,7 +1432,3 @@ class PmsReservation(models.Model):
             record.tax_ids = product.taxes_id.filtered(
                 lambda r: not record.company_id or r.company_id == folio.company_id
             )
-
-    def set_call_center_user(self):
-        user = self.env["res.users"].browse(self.env.uid)
-        return user.has_group("pms.group_pms_call")

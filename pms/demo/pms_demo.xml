@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
+        <!-- users -->
+        <record id="base.user_demo" model="res.users">
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_user'))]" />
+        </record>
         <!-- pms.floor -->
         <record id="pms_floor_0" model="pms.floor">
             <field name="name">Ground Floor</field>
@@ -377,8 +381,8 @@
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': 1,
                     'room_type_id': ref('pms_room_type_1'),
-                    'checkin': DateTime.today().strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
+                    'checkin': (DateTime.today() + timedelta(days=5)).strftime('%Y-%m-%d'),
+                    'checkout': (DateTime.today() + timedelta(days=7)).strftime('%Y-%m-%d'),
                     'adults': 1,
                     'state': 'confirm',
                     'reservation_type': 'out',
@@ -400,7 +404,7 @@
         <!-- pms.room.type    -->
         <record id="demo_pms_room_type_0" model="pms.room.type">
             <field name="pms_property_id" ref="pms.demo_pms_property" />
-            <field name="name">Economic</field>
+            <field name="name">Prop. Demo Economic</field>
             <field name="code_type">ECO</field>
             <field name="list_price">21.00</field>
             <field name="class_id" ref="pms_room_type_class_0" />
@@ -408,7 +412,7 @@
         </record>
         <record id="demo_pms_room_type_1" model="pms.room.type">
             <field name="pms_property_id" ref="pms.demo_pms_property" />
-            <field name="name">Single</field>
+            <field name="name">Prop. Demo Single</field>
             <field name="code_type">SNG</field>
             <field name="list_price">20.00</field>
             <field name="class_id" ref="pms_room_type_class_0" />
