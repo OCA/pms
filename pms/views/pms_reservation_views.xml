@@ -887,6 +887,7 @@
                     attrs="{'invisible':[('folio_pending_amount','=',0)]}"
                 />
                 <field name="create_uid" />
+                <field name="company_id" />
             </tree>
         </field>
     </record>
