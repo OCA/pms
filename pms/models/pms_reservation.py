@@ -109,7 +109,7 @@ class PmsReservation(models.Model):
     room_id = fields.Many2one(
         "pms.room",
         string="Room",
-        track_visibility="onchange",
+        tracking=True,
         ondelete="restrict",
         compute="_compute_room_id",
         store=True,
@@ -125,7 +125,7 @@ class PmsReservation(models.Model):
     folio_id = fields.Many2one(
         "pms.folio",
         string="Folio",
-        track_visibility="onchange",
+        tracking=True,
         ondelete="restrict",
     )
     board_service_room_id = fields.Many2one(
@@ -135,7 +135,7 @@ class PmsReservation(models.Model):
     room_type_id = fields.Many2one(
         "pms.room.type",
         string="Room Type",
-        track_visibility="onchange",
+        tracking=True,
         # required=True,
         compute="_compute_room_type_id",
         store=True,
@@ -143,7 +143,7 @@ class PmsReservation(models.Model):
     )
     partner_id = fields.Many2one(
         "res.partner",
-        track_visibility="onchange",
+        tracking=True,
         ondelete="restrict",
         compute="_compute_partner_id",
         store=True,
@@ -223,7 +223,7 @@ class PmsReservation(models.Model):
     adults = fields.Integer(
         "Adults",
         size=64,
-        track_visibility="onchange",
+        tracking=True,
         help="List of adults there in guest list. ",
         compute="_compute_adults",
         store=True,
@@ -233,10 +233,10 @@ class PmsReservation(models.Model):
         "Children",
         size=64,
         readonly=False,
-        track_visibility="onchange",
+        tracking=True,
         help="Number of children there in guest list.",
     )
-    to_assign = fields.Boolean("To Assign", track_visibility="onchange")
+    to_assign = fields.Boolean("To Assign", tracking=True)
     state = fields.Selection(
         [
             ("draft", "Pre-reservation"),
@@ -248,7 +248,7 @@ class PmsReservation(models.Model):
         string="Status",
         default=lambda *a: "draft",
         copy=False,
-        track_visibility="onchange",
+        tracking=True,
         readonly=True,
     )
     reservation_type = fields.Selection(
@@ -264,7 +264,7 @@ class PmsReservation(models.Model):
     cancelled_reason = fields.Selection(
         [("late", "Late"), ("intime", "In time"), ("noshow", "No Show")],
         string="Cause of cancelled",
-        track_visibility="onchange",
+        tracking=True,
     )
     out_service_description = fields.Text("Cause of out of service")
     checkin = fields.Date("Check In", required=True, default=_get_default_checkin)
@@ -358,14 +358,12 @@ class PmsReservation(models.Model):
         string="Subtotal",
         readonly=True,
         store=True,
-        digits=("Product Price"),
         compute="_compute_amount_reservation",
     )
     price_total = fields.Monetary(
         string="Total",
         readonly=True,
         store=True,
-        digits=("Product Price"),
         compute="_compute_amount_reservation",
     )
     price_tax = fields.Float(
@@ -378,14 +376,12 @@ class PmsReservation(models.Model):
         string="Services Total",
         readonly=True,
         store=True,
-        digits=("Product Price"),
         compute="_compute_amount_room_services",
     )
     price_room_services_set = fields.Monetary(
         string="Room Services Total",
         readonly=True,
         store=True,
-        digits=("Product Price"),
         compute="_compute_amount_set",
     )
     discount = fields.Float(
