@@ -3,13 +3,14 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class PmsFolio(models.Model):
     _name = "pms.folio"
     _description = "PMS Folio"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
-    _order = "id"
+    _order = "date_order"
 
     # Default Methods ang Gets
     @api.model
@@ -23,10 +24,6 @@ class PmsFolio(models.Model):
         if folio.partner_id.id == folio.partner_invoice_id.id:
             return False
         return True
-
-    @api.model
-    def _get_default_team(self):
-        return self.env["crm.team"]._get_default_team_id()
 
     @api.model
     def _get_default_pms_property(self):
@@ -58,7 +55,10 @@ class PmsFolio(models.Model):
         "include in main Invoice.",
     )
     company_id = fields.Many2one(
-        "res.company", "Company", default=lambda self: self.env.company
+        "res.company",
+        "Company",
+        required=True,
+        default=lambda self: self.env.company,
     )
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
@@ -79,9 +79,10 @@ class PmsFolio(models.Model):
     pricelist_id = fields.Many2one(
         "product.pricelist",
         string="Pricelist",
-        required=True,
         ondelete="restrict",
-        states={"draft": [("readonly", False)], "sent": [("readonly", False)]},
+        compute="_compute_pricelist_id",
+        store=True,
+        readonly=False,
         help="Pricelist for current folio.",
     )
     user_id = fields.Many2one(
@@ -90,7 +91,9 @@ class PmsFolio(models.Model):
         index=True,
         ondelete="restrict",
         track_visibility="onchange",
-        default=lambda self: self.env.user,
+        compute="_compute_user_id",
+        store=True,
+        readonly=False,
     )
     tour_operator_id = fields.Many2one(
         "res.partner",
@@ -100,7 +103,14 @@ class PmsFolio(models.Model):
     )
     payment_ids = fields.One2many("account.payment", "folio_id", readonly=True)
     return_ids = fields.One2many("payment.return", "folio_id", readonly=True)
-    payment_term_id = fields.Many2one("account.payment.term", string="Payment Terms")
+    payment_term_id = fields.Many2one(
+        "account.payment.term",
+        string="Payment Terms",
+        ondelete="restrict",
+        compute="_compute_payment_term_id",
+        store=True,
+        readonly=False,
+        help="Pricelist for current folio.",)
     checkin_partner_ids = fields.One2many("pms.checkin.partner", "folio_id")
     move_ids = fields.Many2many(
         "account.move",
@@ -112,9 +122,10 @@ class PmsFolio(models.Model):
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",
-        required=True,
-        states={"done": [("readonly", True)]},
-        help="Invoice address for current sales order.",
+        compute="_compute_partner_invoice_id",
+        store=True,
+        readonly=False,
+        help="Invoice address for current group.",
     )
     partner_parent_id = fields.Many2one(related="partner_id.parent_id")
     partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
@@ -132,8 +143,9 @@ class PmsFolio(models.Model):
         "crm.team",
         string="Sales Team",
         ondelete="restrict",
-        change_default=True,
-        default=_get_default_team,
+        compute="_compute_team_id",
+        store=True,
+        readonly=False,
     )
     client_order_ref = fields.Char(string="Customer Reference", copy=False)
     reservation_type = fields.Selection(
@@ -280,10 +292,45 @@ class PmsFolio(models.Model):
         help="Margin in days to create a notice if a payment \
                 advance has not been recorded",
     )
-    note = fields.Text("Terms and conditions")
     sequence = fields.Integer(string="Sequence", default=10)
 
     # Compute and Search methods
+    @api.depends("partner_id")
+    def _compute_pricelist_id(self):
+        for folio in self:
+            pricelist_id = (
+                folio.partner_id.property_product_pricelist
+                and folio.partner_id.property_product_pricelist.id
+                or self.env.user.pms_property_id.default_pricelist_id.id
+            )
+            if folio.pricelist_id.id != pricelist_id:
+                # TODO: Warning change de pricelist?
+                folio.pricelist_id = pricelist_id
+    @api.depends("partner_id")
+    def _compute_user_id(self):
+        for folio in self:
+            folio.user_id = folio.partner_id.user_id.id or self.env.uid,
+
+    @api.depends("partner_id")
+    def _compute_partner_invoice_id(self):
+        self.partner_invoice_id = False
+        for folio in self:
+            addr = folio.partner_id.address_get(["invoice"])
+            folio.partner_invoice_id = addr["invoice"]
+
+    @api.depends("partner_id")
+    def _compute_payment_term_id(self):
+        self.payment_term_id = False
+        for folio in self:
+            folio.payment_term_id = self.partner_id.property_payment_term_id \
+                and self.partner_id.property_payment_term_id.id or False
+
+    @api.depends("partner_id")
+    def _compute_team_id(self):
+        for folio in self:
+            folio.team_id = self.partner_id.team_id.id or \
+                self.env["crm.team"]._get_default_team_id()
+
     @api.depends(
         "state", "reservation_ids.invoice_status", "service_ids.invoice_status"
     )
@@ -303,7 +350,7 @@ class PmsFolio(models.Model):
         directly from existing invoices. This is necessary since such a
         refund is not directly linked to the Folio.
         """
-        for folio in self:
+        for folio in self.filtered("pricelist_id"):
             move_ids = (
                 folio.reservation_ids.mapped("move_line_ids")
                 .mapped("move_id")
@@ -384,7 +431,7 @@ class PmsFolio(models.Model):
         """
         Compute the total amounts of the SO.
         """
-        for record in self:
+        for record in self.filtered("pricelist_id"):
             amount_untaxed = amount_tax = 0.0
             amount_untaxed = sum(record.reservation_ids.mapped("price_subtotal")) + sum(
                 record.service_ids.mapped("price_subtotal")
@@ -520,54 +567,6 @@ class PmsFolio(models.Model):
             self.has_checkout_to_send = has_to_send
         else:
             self.has_checkout_to_send = False
-
-    # Constraints and onchanges
-
-    @api.onchange("partner_id")
-    def onchange_partner_id(self):
-        """
-        Update the following fields when the partner is changed:
-        - Pricelist
-        - Payment terms
-        - Invoice address
-        - Delivery address
-        """
-        if not self.partner_id:
-            self.update(
-                {
-                    "partner_invoice_id": False,
-                    "payment_term_id": False,
-                    "fiscal_position_id": False,
-                }
-            )
-            return
-
-        addr = self.partner_id.address_get(["invoice"])
-        pricelist = (
-            self.partner_id.property_product_pricelist
-            and self.partner_id.property_product_pricelist.id
-            or self.env.user.pms_property_id.default_pricelist_id.id
-        )
-        values = {
-            "pricelist_id": pricelist,
-            "payment_term_id": self.partner_id.property_payment_term_id
-            and self.partner_id.property_payment_term_id.id
-            or False,
-            "partner_invoice_id": addr["invoice"],
-            "user_id": self.partner_id.user_id.id or self.env.uid,
-        }
-
-        if (
-            self.env["ir.config_parameter"].sudo().get_param("sale.use_sale_note")
-            and self.env.user.company_id.sale_note
-        ):
-            values["note"] = self.with_context(
-                lang=self.partner_id.lang
-            ).env.user.company_id.sale_note
-
-        if self.partner_id.team_id:
-            values["team_id"] = self.partner_id.team_id.id
-        self.update(values)
 
     # Action methods
 
@@ -793,34 +792,10 @@ class PmsFolio(models.Model):
                 vals["name"] = self.env["ir.sequence"].next_by_code("pms.folio") or _(
                     "New"
                 )
-        vals.update(self._prepare_add_missing_fields(vals))
         result = super(PmsFolio, self).create(vals)
         return result
 
     # Business methods
-    @api.model
-    def _prepare_add_missing_fields(self, values):
-        """ Deduce missing required fields from the onchange """
-        res = {}
-        onchange_fields = ["partner_invoice_id", "pricelist_id", "payment_term_id"]
-        if values.get("partner_id"):
-            line = self.new(values)
-            if any(f not in values for f in onchange_fields):
-                line.onchange_partner_id()
-            for field in onchange_fields:
-                if field not in values:
-                    res[field] = line._fields[field].convert_to_write(line[field], line)
-        return res
-
-    @api.model
-    def calcule_reservation_type(self, is_staff, current_type):
-        if current_type == "out":
-            return "out"
-        elif is_staff:
-            return "staff"
-        else:
-            return "normal"
-
     def action_done(self):
         reservation_ids = self.mapped("reservation_ids")
         for line in reservation_ids:

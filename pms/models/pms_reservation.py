@@ -21,11 +21,9 @@ class PmsReservation(models.Model):
     _description = "Reservation"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
     _order = "last_updated_res desc, name"
+    _check_company_auto = True
 
     # Default Methods ang Gets
-    def _default_pricelist_id(self):
-        return self.env.user.pms_property_id.default_pricelist_id.id
-
     def _get_default_checkin(self):
         folio = False
         if "folio_id" in self._context:
@@ -135,7 +133,7 @@ class PmsReservation(models.Model):
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",
-        help="Invoice address for current sales order.",
+        help="Invoice address for current reservation.",
         compute="_compute_partner_invoice_id",
         store=True,
         readonly=False,
@@ -169,7 +167,6 @@ class PmsReservation(models.Model):
     pricelist_id = fields.Many2one(
         "product.pricelist",
         string="Pricelist",
-        default=_default_pricelist_id,
         ondelete="restrict",
         compute="_compute_pricelist_id",
         store=True,
@@ -450,6 +447,8 @@ class PmsReservation(models.Model):
         for reservation in self:
             if reservation.room_id and not reservation.room_type_id:
                 reservation.room_type_id = reservation.room_id.room_type_id.id
+            else:
+                reservation.room_type_id = False
 
     @api.depends("checkin", "checkout", "overbooking", "state", "room_id")
     def _compute_allowed_room_ids(self):
@@ -489,6 +488,10 @@ class PmsReservation(models.Model):
         for reservation in self:
             if reservation.reservation_type == "out":
                 reservation.partner_id = self.env.user.pms_property_id.partner_id.id
+            if reservation.folio_id:
+                reservation.partner_id = reservation.folio_id.partner_id
+            else:
+                reservation.partner_id = False
 
     @api.depends("partner_id")
     def _compute_partner_invoice_id(self):
@@ -545,11 +548,14 @@ class PmsReservation(models.Model):
     @api.depends("partner_id")
     def _compute_pricelist_id(self):
         for reservation in self:
-            pricelist_id = (
-                reservation.partner_id.property_product_pricelist
-                and reservation.partner_id.property_product_pricelist.id
-                or self.env.user.pms_property_id.default_pricelist_id.id
-            )
+            if reservation.folio_id:
+                pricelist_id = reservation.folio_id.pricelist_id.id
+            else:
+                pricelist_id = (
+                    reservation.partner_id.property_product_pricelist
+                    and reservation.partner_id.property_product_pricelist.id
+                    or self.env.user.pms_property_id.default_pricelist_id.id
+                )
             if reservation.pricelist_id.id != pricelist_id:
                 # TODO: Warning change de pricelist?
                 reservation.pricelist_id = pricelist_id
@@ -563,6 +569,8 @@ class PmsReservation(models.Model):
                     # TODO: Notification if the room capacity is higher than adults?
                 else:
                     reservation.adults = reservation.room_id.capacity
+            else:
+                reservation.adults = 0
 
     @api.depends("checkin")
     def _compute_real_checkin(self):
@@ -756,6 +764,14 @@ class PmsReservation(models.Model):
                         ),
                         "price_total": taxes["total_included"],
                         "price_subtotal": taxes["total_excluded"],
+                    }
+                )
+            else:
+                record.update(
+                    {
+                        "price_tax": 0,
+                        "price_total": 0,
+                        "price_subtotal": 0,
                     }
                 )
 
