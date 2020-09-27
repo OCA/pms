@@ -180,9 +180,6 @@
                             />
                         </group>
                         <div class="oe_clear" />
-                        <group>
-                            <field name="note" />
-                        </group>
                     </group>
                     <group invisible="1">
                         <field name="move_ids" invisible="1" />
