@@ -45,14 +45,12 @@ class PmsFolio(models.Model):
 
     # Fields declaration
     name = fields.Char(
-        String="Folio Number", readonly=True, index=True, default=lambda self: _("New")
+        string="Folio Number", readonly=True, index=True, default=lambda self: _("New")
     )
     pms_property_id = fields.Many2one(
         "pms.property", default=_get_default_pms_property, required=True
     )
-    partner_id = fields.Many2one(
-        "res.partner", track_visibility="onchange", ondelete="restrict"
-    )
+    partner_id = fields.Many2one("res.partner", tracking=True, ondelete="restrict")
     reservation_ids = fields.One2many(
         "pms.reservation",
         "folio_id",
@@ -109,7 +107,7 @@ class PmsFolio(models.Model):
         string="Salesperson",
         index=True,
         ondelete="restrict",
-        track_visibility="onchange",
+        tracking=True,
         compute="_compute_user_id",
         store=True,
         readonly=False,
@@ -201,7 +199,7 @@ class PmsFolio(models.Model):
         readonly=True,
         copy=False,
         index=True,
-        track_visibility="onchange",
+        tracking=True,
         default="draft",
     )
     # Partner fields for being used directly in the Folio views---------
@@ -224,7 +222,7 @@ class PmsFolio(models.Model):
     invoices_paid = fields.Monetary(
         compute="_compute_amount",
         store=True,
-        track_visibility="onchange",
+        tracking=True,
         string="Payments",
     )
     amount_untaxed = fields.Monetary(
@@ -232,7 +230,7 @@ class PmsFolio(models.Model):
         store=True,
         readonly=True,
         compute="_compute_amount_all",
-        track_visibility="onchange",
+        tracking=True,
     )
     amount_tax = fields.Monetary(
         string="Taxes", store=True, readonly=True, compute="_compute_amount_all"
@@ -242,7 +240,7 @@ class PmsFolio(models.Model):
         store=True,
         readonly=True,
         compute="_compute_amount_all",
-        track_visibility="always",
+        tracking=True,
     )
     # Checkin Fields-----------------------------------------------------
     booking_pending = fields.Integer(

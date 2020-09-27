@@ -24,24 +24,28 @@ class PmsRoomTypeAvailability(models.Model):
     room_type_id = fields.Many2one(
         "pms.room.type", "Room Type", required=True, ondelete="cascade"
     )
-    date = fields.Date("Date", required=True, track_visibility="always")
+    date = fields.Date(
+        "Date",
+        required=True,
+        tracking=True,
+    )
     quota = fields.Integer(
         "Quota",
         default=_default_quota,
-        track_visibility="always",
+        tracking=True,
         help="Generic Quota assigned.",
     )
     max_avail = fields.Integer(
         "Max. Availability",
         default=-1,
         readonly=True,
-        track_visibility="always",
+        tracking=True,
         help="Maximum simultaneous availability on own Booking Engine.",
     )
     no_web = fields.Boolean(
         "No Web",
         default=False,
-        track_visibility="onchange",
+        tracking=True,
         help="Set zero availability to the own Booking Engine "
         "even when the availability is positive,",
     )

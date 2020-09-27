@@ -105,7 +105,7 @@ class PmsCheckinPartner(models.Model):
         string="State",
         readonly=True,
         default=lambda *a: "draft",
-        track_visibility="onchange",
+        tracking=True,
     )
 
     # Constraints and onchanges
