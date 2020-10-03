@@ -53,7 +53,7 @@
                                         <t t-esc="r.room_type_id.name" />
                                     </td>
                                     <td>
-                                        <t t-esc="r.real_checkin" />
+                                        <t t-esc="r.checkin" />
                                     </td>
                                     <td>
                                         <t t-esc="r.nights" />

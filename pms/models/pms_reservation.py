@@ -244,8 +244,6 @@ class PmsReservation(models.Model):
     out_service_description = fields.Text("Cause of out of service")
     checkin = fields.Date("Check In", required=True, default=_get_default_checkin)
     checkout = fields.Date("Check Out", required=True, default=_get_default_checkout)
-    real_checkin = fields.Date("From", compute="_compute_real_checkin", store=True,)
-    real_checkout = fields.Date("To", compute="_compute_real_checkout", store=True,)
     arrival_hour = fields.Char(
         "Arrival Hour",
         default=_get_default_arrival_hour,
@@ -460,12 +458,12 @@ class PmsReservation(models.Model):
                     )
                     return
                 rooms_available = (
-                    self.env["pms.room.type"].check_availability_room_type(
-                        dfrom=reservation.checkin,
-                        dto=reservation.checkout,
+                    self.env["pms.room.type.availability"].rooms_available(
+                        checkin=reservation.checkin,
+                        checkout=reservation.checkout,
                         room_type_id=False,  # Allow chosen any available room
+                        current_lines=reservation.reservation_line_ids.ids,
                     )
-                    + self.room_id
                 )
                 if (
                     reservation.room_id
@@ -571,65 +569,6 @@ class PmsReservation(models.Model):
                     reservation.adults = reservation.room_id.capacity
             else:
                 reservation.adults = 0
-
-    @api.depends("checkin")
-    def _compute_real_checkin(self):
-        for reservation in self:
-            reservation.real_checkin = reservation.checkin
-            if reservation.splitted:
-                master_reservation = reservation.parent_reservation or reservation
-                reservation.real_checkin = master_reservation.checkin
-                splitted_reservations = self.env["pms.reservation"].search(
-                    [
-                        ("splitted", "=", True),
-                        ("folio_id", "=", self.folio_id.id),
-                        "|",
-                        ("parent_reservation", "=", master_reservation.id),
-                        ("id", "=", master_reservation.id),
-                    ]
-                )
-                for split in splitted_reservations:
-                    if reservation.real_checkin > split.checkin:
-                        reservation.real_checkin = split.checkin
-
-    @api.depends("checkout")
-    def _compute_real_checkout(self):
-        for reservation in self:
-            reservation.real_checkout = reservation.checkout
-            if reservation.splitted:
-                master_reservation = reservation.parent_reservation or reservation
-                reservation.real_checkout = master_reservation.checkout
-                splitted_reservations = self.env["pms.reservation"].search(
-                    [
-                        ("splitted", "=", True),
-                        ("folio_id", "=", self.folio_id.id),
-                        "|",
-                        ("parent_reservation", "=", master_reservation.id),
-                        ("id", "=", master_reservation.id),
-                    ]
-                )
-                for split in splitted_reservations:
-                    if reservation.real_checkout < split.checkout:
-                        reservation.real_checkout = split.checkout
-
-    @api.depends("splitted", "checkout")
-    def _compute_real_checkin(self):
-        for reservation in self:
-            if reservation.splitted:
-                master_reservation = reservation.parent_reservation or reservation
-                first_checkin = master_reservation.checkin
-                splitted_reservations = self.env["pms.reservation"].search(
-                    [
-                        ("splitted", "=", True),
-                        ("folio_id", "=", self.folio_id.id),
-                        "|",
-                        ("parent_reservation", "=", master_reservation.id),
-                        ("id", "=", master_reservation.id),
-                    ]
-                )
-                for split in splitted_reservations:
-                    if first_checkin > split.checkin:
-                        reservation.real_checkin = split.checkin
 
     @api.depends("checkin", "checkout", "state")
     def _compute_to_send(self):
@@ -987,9 +926,9 @@ class PmsReservation(models.Model):
     def _autoassign(self):
         self.ensure_one()
         room_chosen = False
-        rooms_available = self.env["pms.room.type"].check_availability_room_type(
-            dfrom=self.checkin,
-            dto=self.checkout,
+        rooms_available = self.env["pms.room.type.availability"].rooms_available(
+            checkin=self.checkin,
+            checkout=self.checkout,
             room_type_id=self.room_type_id.id or False,
         )
         if rooms_available:
@@ -1035,8 +974,6 @@ class PmsReservation(models.Model):
             "splitted": self.splitted,
             "room_type_id": self.room_type_id.id,
             "room_id": self.room_id.id,
-            "real_checkin": self.real_checkin,
-            "real_checkout": self.real_checkout,
         }
 
     def confirm(self):
@@ -1119,7 +1056,7 @@ class PmsReservation(models.Model):
             tz_property = self.env.user.pms_property_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_property))
             days_diff = (
-                fields.Date.from_string(self.real_checkin)
+                fields.Date.from_string(self.checkin)
                 - fields.Date.from_string(today)
             ).days
             if days_diff < 0:
@@ -1148,29 +1085,6 @@ class PmsReservation(models.Model):
                     ]
                 )
                 splitted_reservs.draft()
-
-    @api.model
-    def get_reservations(self, dfrom, dto):
-        """
-        @param dfrom: range date from
-        @param dto: range date to (NO CHECKOUT, only night)
-        @return: array with the reservations _confirmed_ between both
-            dates `dfrom` and `dto`
-        """
-        domain = self._get_domain_reservations_occupation(dfrom, dto)
-        # _logger.info(domain)
-        return self.env["pms.reservation"].search(domain)
-
-    @api.model
-    def _get_domain_reservations_occupation(self, dfrom, dto):
-        domain = [
-            ("reservation_line_ids.date", ">=", dfrom),
-            ("reservation_line_ids.date", "<=", dto),
-            ("state", "!=", "cancelled"),
-            ("overbooking", "=", False),
-            ("reselling", "=", False),
-        ]
-        return domain
 
     # INFO: This function is not in use and should include `dto` in the search
     @api.model
@@ -1252,182 +1166,9 @@ class PmsReservation(models.Model):
         action["target"] = "new"
         return action
 
-    def split(self, nights):
-        for record in self:
-            date_start_dt = fields.Date.from_string(record.checkin)
-            date_end_dt = fields.Date.from_string(record.checkout)
-            date_diff = abs((date_end_dt - date_start_dt).days)
-            new_start_date_dt = date_start_dt + timedelta(days=date_diff - nights)
-            if nights >= date_diff or nights < 1:
-                raise ValidationError(
-                    _(
-                        "Invalid Nights! Max is \
-                                        '%d'"
-                    )
-                    % (date_diff - 1)
-                )
-
-            vals = record.generate_copy_values(
-                new_start_date_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                date_end_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-            )
-            # Days Price
-            reservation_lines = [[], []]
-            for rline in record.reservation_line_ids:
-                rline_dt = fields.Date.from_string(rline.date)
-                if rline_dt >= new_start_date_dt:
-                    reservation_lines[1].append(
-                        (
-                            0,
-                            False,
-                            {
-                                "date": rline.date,
-                                "price": rline.price,
-                                "cancel_discount": rline.cancel_discount,
-                                "discount": rline.discount,
-                                "move_line_ids": rline.move_line_ids,
-                                "state": rline.state,
-                            },
-                        )
-                    )
-                    reservation_lines[0].append((2, rline.id, False))
-            parent_res = record.parent_reservation or record
-            vals.update(
-                {
-                    "splitted": True,
-                    "parent_reservation": parent_res.id,
-                    "room_type_id": parent_res.room_type_id.id,
-                    "state": parent_res.state,
-                    "reservation_line_ids": reservation_lines[1],
-                    "preconfirm": False,
-                }
-            )
-            reservation_copy = (
-                self.env["pms.reservation"]
-                .with_context({"ignore_avail_restrictions": True})
-                .create(vals)
-            )
-            if not reservation_copy:
-                raise ValidationError(
-                    _(
-                        "Unexpected error copying record. \
-                                            Can't split reservation!"
-                    )
-                )
-            record.write(
-                {
-                    "checkout": new_start_date_dt.strftime(
-                        DEFAULT_SERVER_DATETIME_FORMAT
-                    ),
-                    "splitted": True,
-                    "reservation_line_ids": reservation_lines[0],
-                }
-            )
-        return True
-
     def unify(self):
-        self.ensure_one()
-        if not self.splitted:
-            raise ValidationError(_("This reservation can't be unified"))
-
-        master_reservation = self.parent_reservation or self
-
-        splitted_reservs = self.env["pms.reservation"].search(
-            [
-                ("splitted", "=", True),
-                ("folio_id", "=", self.folio_id.id),
-                "|",
-                ("parent_reservation", "=", master_reservation.id),
-                ("id", "=", master_reservation.id),
-            ]
-        )
-        self.unify_books(splitted_reservs)
-
-        self_is_master = master_reservation == self
-        if not self_is_master:
-            return {"type": "ir.actions.act_window_close"}
-
-    @api.model
-    def unify_ids(self, reserv_ids):
-        splitted_reservs = self.env[self._name].browse(reserv_ids)
-        self.unify_books(splitted_reservs)
-
-    @api.model
-    def unify_books(self, splitted_reservs):
-        parent_reservation = (
-            splitted_reservs[0].parent_reservation or splitted_reservs[0]
-        )
-        room_type_ids = splitted_reservs.mapped("room_type_id.id")
-        if len(room_type_ids) > 1 or (
-            len(room_type_ids) == 1
-            and parent_reservation.room_type_id.id != room_type_ids[0]
-        ):
-            raise ValidationError(
-                _(
-                    "This reservation can't be unified: They \
-                    all need to be in the same nº room and room type"
-                )
-            )
-
-        # Search checkout
-        last_checkout = splitted_reservs[0].checkout
-        first_checkin = splitted_reservs[0].checkin
-        master_reservation = splitted_reservs[0]
-        for reserv in splitted_reservs:
-            if last_checkout < reserv.checkout:
-                last_checkout = reserv.checkout
-            if first_checkin > reserv.checkin:
-                first_checkin = reserv.checkin
-                master_reservation = reserv
-
-        # Agrupate reservation lines
-        reservation_line_ids = splitted_reservs.mapped("reservation_line_ids")
-        reservation_line_ids.sorted(key=lambda r: r.date)
-        rlines = [(5, False, False)]
-        for rline in reservation_line_ids:
-            rlines.append(
-                (
-                    0,
-                    False,
-                    {
-                        "date": rline.date,
-                        "price": rline.price,
-                        "cancel_discount": rline.cancel_discount,
-                        "discount": rline.discount,
-                        "move_line_ids": rline.move_line_ids,
-                        "state": rline.state,
-                    },
-                )
-            )
-
-        # Unify
-        osplitted_reservs = splitted_reservs - master_reservation
-        osplitted_reservs.sudo().unlink()
-
-        _logger.info("========== UNIFY")
-        _logger.info(master_reservation.real_checkin)
-        _logger.info(first_checkin)
-        _logger.info(master_reservation.real_checkout)
-        _logger.info(last_checkout)
-
-        master_reservation.write(
-            {
-                "checkout": last_checkout,
-                "splitted": master_reservation.real_checkin != first_checkin
-                or master_reservation.real_checkout != last_checkout,
-                "reservation_line_ids": rlines,
-            }
-        )
+        #TODO
         return True
-
-    def open_master(self):
-        self.ensure_one()
-        if not self.parent_reservation:
-            raise ValidationError(_("This is the parent reservation"))
-        action = self.env.ref("pms.open_pms_reservation_form_tree_all").read()[0]
-        action["views"] = [(self.env.ref("pms.pms_reservation_view_form").id, "form")]
-        action["res_id"] = self.parent_reservation.id
-        return action
 
     def send_reservation_mail(self):
         return self.folio_id.send_reservation_mail()
