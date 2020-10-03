@@ -20,7 +20,7 @@ class ResPartner(models.Model):
     )
     folios_count = fields.Integer("Folios", compute="_compute_folios_count")
     unconfirmed = fields.Boolean("Unconfirmed", default=True)
-    is_tour_operator = fields.Boolean("Is Tour Operator")
+    is_agency = fields.Boolean("Is Agency")
 
     # Compute and Search methods
     def _compute_reservations_count(self):
