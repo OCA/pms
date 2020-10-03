@@ -30,6 +30,15 @@ class PmsReservationLine(models.Model):
         required=True,
         copy=False,
     )
+    room_id = fields.Many2one(
+        "pms.room",
+        string="Room",
+        ondelete="restrict",
+        compute="_compute_room_id",
+        store=True,
+        readonly=False,
+        domain="[('id', 'in', reservation_id.allowed_room_ids)]",
+    )
     move_line_ids = fields.Many2many(
         "account.move.line",
         "reservation_line_move_rel",
@@ -63,8 +72,27 @@ class PmsReservationLine(models.Model):
         readonly=False,
     )
     discount = fields.Float(string="Discount (%)", digits=("Discount"), default=0.0)
+    occupies_availability = fields.Boolean(
+        string = "Occupies",
+        compute="_compute_occupies_availability",
+        store=True,
+        help="This record is taken into account to calculate availability")
 
     # Compute and Search methods
+    @api.depends(
+        "reservation_id.adults",
+        "reservation_id.room_type_id",
+        "reservation_id.room_id")
+    def _compute_room_id(self):
+        lines_no_room = self.filtered_domain([("room_id", "=", False)])
+        lines_with_room = self - lines_no_room
+        for line in lines_no_room:
+            if line.reservation_id.room_id:
+                line.room_id = line.reservation_id.room_id
+                # TODO: check_split reservation
+            # TODO: Allow with confirmation message to
+            # change de room if the user change the room_type?
+
     @api.depends(
         "reservation_id",
         "reservation_id.pricelist_id",
@@ -99,6 +127,15 @@ class PmsReservationLine(models.Model):
             else:
                 line.price = line._origin.price
 
+    @api.depends("reservation_id.state", "reservation_id.overbooking")
+    def _compute_occupies_availability(self):
+        for line in self:
+            if line.reservation_id.state == "cancelled" or \
+                    line.reservation_id.overbooking == True:
+                line.occupies_availability = False
+            else:
+                line.occupies_availability = True
+
     def _recompute_price(self):
         #REVIEW: Conditional to avoid overriding already calculated prices,
         # I'm not sure it's the best way
@@ -131,10 +168,10 @@ class PmsReservationLine(models.Model):
             #         and pricelist.cancelation_rule_id
             #     ):
             #         date_start_dt = fields.Date.from_string(
-            #             reservation.real_checkin or reservation.checkin
+            #             reservation.checkin
             #         )
             #         date_end_dt = fields.Date.from_string(
-            #             reservation.real_checkout or reservation.checkout
+            #             reservation.checkout
             #         )
             #         days = abs((date_end_dt - date_start_dt).days)
             #         rule = pricelist.cancelation_rule_id
@@ -153,7 +190,7 @@ class PmsReservationLine(models.Model):
             #         elif reservation.cancelled_reason == "intime":
             #             discount = 100
 
-            #         checkin = reservation.real_checkin or reservation.checkin
+            #         checkin = reservation.checkin
             #         dates = []
             #         for i in range(0, days):
             #             dates.append(

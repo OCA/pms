@@ -57,6 +57,14 @@ class PmsRoomType(models.Model):
     total_rooms_count = fields.Integer(compute="_compute_total_rooms", store=True)
     active = fields.Boolean("Active", default=True)
     sequence = fields.Integer("Sequence", default=0)
+    default_max_avail = fields.Integer("Max. Availability", default=-1,
+                                       help="Maximum simultaneous availability on own Booking Engine "
+                                            "given no availability rules. "
+                                            "Use `-1` for using maximum simultaneous availability.")
+    default_quota = fields.Integer("Default Quota", default=-1,
+                                   help="Quota assigned to the own Booking Engine given no availability rules. "
+                                        "Use `-1` for managing no quota.")
+
 
     _sql_constraints = [
         (
@@ -92,25 +100,6 @@ class PmsRoomType(models.Model):
         self.ensure_one()
         capacities = self.room_ids.mapped("capacity")
         return min(capacities) if any(capacities) else 0
-
-    # TODO: Change name method by rooms_available()
-    @api.model
-    def check_availability_room_type(self, dfrom, dto, room_type_id=False, notthis=[]):
-        """
-        Check the max availability for an specific
-        type of room in a range of dates
-        """
-        reservations = self.env["pms.reservation"].get_reservations(dfrom, dto - timedelta(1))
-        reservations_rooms = reservations.mapped("room_id.id")
-        free_rooms = self.env["pms.room"].search(
-            [("id", "not in", reservations_rooms), ("id", "not in", notthis)]
-        )  # TODO: Review if with the new caché V13 We need notthis []¿?
-        if room_type_id:
-            rooms_linked = (
-                self.env["pms.room.type"].search([("id", "=", room_type_id)]).room_ids
-            )
-            free_rooms = free_rooms & rooms_linked
-        return free_rooms.sorted(key=lambda r: r.sequence)
 
     @api.model
     def get_rate_room_types(self, **kwargs):
