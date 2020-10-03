@@ -380,7 +380,7 @@ class PmsRoomTypeWizards(models.TransientModel):
                 [("room_type_id", "=", res.room_type_id.id)]
             )
             real_max = len(
-                res.room_type_id.check_availability_room_type(
+                self.env["pms.room.type.availability"].rooms_available(
                     res.checkin,
                     (
                         fields.Date.from_string(res.checkout) - timedelta(days=1)

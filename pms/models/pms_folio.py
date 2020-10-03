@@ -857,12 +857,12 @@ class PmsFolio(models.Model):
                 and not rline.parent_reservation
                 and rline.state == state
             ):
-                dates = (rline.real_checkin, rline.real_checkout)
+                dates = (rline.checkin, rline.checkout)
                 vals = {
                     "num": len(
                         self.reservation_ids.filtered(
-                            lambda r: r.real_checkin == dates[0]
-                            and r.real_checkout == dates[1]
+                            lambda r: r.checkin == dates[0]
+                            and r.checkout == dates[1]
                             and r.room_type_id.id == rline.room_type_id.id
                             and (r.to_send or import_all)
                             and not r.parent_reservation
