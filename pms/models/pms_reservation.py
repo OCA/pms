@@ -425,23 +425,13 @@ class PmsReservation(models.Model):
             else:
                 reservation.name = "/"
 
-    @api.depends("adults", "room_type_id")
+    @api.depends("reservation_line_ids","reservation_line_ids.room_id")
     def _compute_room_id(self):
-        reservations_no_room = self.filtered_domain([("room_id", "=", False)])
-        reservations_with_room = self - reservations_no_room
-        for reservation in reservations_with_room:
-            if reservation.adults:
-                reservation._check_adults()
-        for reservation in reservations_no_room:
-            if reservation.room_type_id:
-                reservation.room_id = reservation._autoassign()
-                # TODO: check_split reservation
-                if not reservation.room_id:
-                    raise UserError(
-                        _("%s: No rooms available") % (self.room_type_id.name)
-                    )
-            # TODO: Allow with confirmation message to
-            # change de room if the user change the room_type?
+        _logger.info("COMPUTE_ROOM_ID")
+        for reservation in self:
+            _logger.info("room_id: ")
+            reservation.room_id = reservation.reservation_line_ids[0].room_id
+            _logger.info(reservation.room_id)
 
     @api.depends("room_id")
     def _compute_room_type_id(self):
@@ -468,20 +458,6 @@ class PmsReservation(models.Model):
                         current_lines=reservation.reservation_line_ids.ids,
                     )
                 )
-                if (
-                    reservation.room_id
-                    and reservation.room_id.id not in rooms_available.ids
-                ):
-                    room_name = reservation.room_id.name
-                    warning_msg = (
-                        _(
-                            "You tried to change/confirm \
-                            reservation with room those already reserved in this \
-                            reservation period: %s "
-                        )
-                        % room_name
-                    )
-                    raise ValidationError(warning_msg)
                 reservation.allowed_room_ids = rooms_available
 
     @api.depends("reservation_type")
@@ -563,15 +539,16 @@ class PmsReservation(models.Model):
 
     @api.depends("room_id")
     def _compute_adults(self):
+        _logger.info("COMPUTE_ADULTS")
         for reservation in self:
+            _logger.info("adults")
             if reservation.room_id:
-                if reservation.adults:
-                    reservation._check_adults()
-                    # TODO: Notification if the room capacity is higher than adults?
-                else:
+                if reservation.adults == 0:
                     reservation.adults = reservation.room_id.capacity
             else:
                 reservation.adults = 0
+            _logger.info(reservation.room_id)
+            _logger.info(reservation.adults)
 
     @api.depends("checkin", "checkout", "state")
     def _compute_to_send(self):
@@ -724,21 +701,9 @@ class PmsReservation(models.Model):
                     }
                 )
 
-    # Constraints and onchanges
-    @api.constrains("adults")
-    def _check_adults(self):
-        for record in self:
-            extra_bed = record.service_ids.filtered(
-                lambda r: r.product_id.is_extra_bed is True
-            )
-            if record.adults > record.room_id.get_capacity(len(extra_bed)):
-                raise ValidationError(_("Persons can't be higher than room capacity"))
-            if record.adults == 0:
-                raise ValidationError(_("Reservation has no adults"))
-
     # TODO: Use default values on checkin /checkout is empty
     @api.constrains(
-        "reservation_line_ids.date", "state", "room_id", "overbooking", "reselling"
+        "checkin", "checkout", "state", "room_id", "overbooking", "reselling"
     )
     def check_dates(self):
         """
@@ -746,16 +711,16 @@ class PmsReservation(models.Model):
         Checkout date should be greater than the checkin date.
         3.-Check the reservation dates are not occuped
         """
-        _logger.info("check_dates")
-        if fields.Date.from_string(self.checkin) >= fields.Date.from_string(
-            self.checkout
-        ):
-            raise ValidationError(
-                _(
-                    "Room line Check In Date Should be \
-                less than the Check Out Date!"
+        for record in self:
+            if fields.Date.from_string(record.checkin) >= fields.Date.from_string(
+                record.checkout
+            ):
+                raise ValidationError(
+                    _(
+                        "Room line Check In Date Should be \
+                    less than the Check Out Date!"
+                    )
                 )
-            )
 
     @api.constrains("checkin_partner_ids")
     def _max_checkin_partner_ids(self):
