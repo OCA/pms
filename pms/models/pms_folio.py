@@ -95,11 +95,11 @@ class PmsFolio(models.Model):
         store=True,
         readonly=False,
     )
-    tour_operator_id = fields.Many2one(
+    agency_id = fields.Many2one(
         "res.partner",
-        "Tour Operator",
+        "Agency",
         ondelete="restrict",
-        domain=[("is_tour_operator", "=", True)],
+        domain=[("is_agency", "=", True)],
     )
     payment_ids = fields.One2many("account.payment", "folio_id", readonly=True)
     return_ids = fields.One2many("payment.return", "folio_id", readonly=True)
@@ -155,17 +155,11 @@ class PmsFolio(models.Model):
     )
     channel_type = fields.Selection(
         [
-            ("door", "Door"),
-            ("mail", "Mail"),
-            ("phone", "Phone"),
-            ("call", "Call Center"),
-            ("web", "Web"),
-            ("agency", "Agencia"),
-            ("operator", "Tour operador"),
-            ("virtualdoor", "Virtual Door"),
+            ("direct", "Direct"),
+            ("agency", "Agency"),
         ],
         "Sales Channel",
-        default="door",
+        default="direct",
     )
     date_order = fields.Datetime(
         string="Order Date",
