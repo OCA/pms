@@ -496,19 +496,35 @@
                     </group>
                     <notebook>
                         <page
-                            name="services"
-                            string="Services"
-                            attrs="{'invisible': ['|',('reservation_type','in',('out')),
-                                                      ('parent_reservation','!=',False)]}"
+                            name="detail"
+                            string="Detail"
                         >
                             <button
-                                name="%(action_service_on_day)d"
-                                string="Service on Day"
+                                name="%(action_pms_massive_price_change_reservation_days)d"
+                                string="Massive Day Prices"
                                 type="action"
-                                icon="fa-coffee"
+                                icon="fa-bolt"
                             />
+                            <field name="reservation_line_ids" nolabel="1">
+                                <tree create="false" delete="false" editable="bottom">
+                                    <field name="room_id" />
+                                    <field name="date" readonly="1" force_save="1" />
+                                    <field name="price" />
+                                    <field name="discount" />
+                                    <field
+                                        name="cancel_discount"
+                                        attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
+                                    />
+                                </tree>
+                            </field>
+                            <button
+                                    name="%(action_service_on_day)d"
+                                    string="Service on Day"
+                                    type="action"
+                                    icon="fa-coffee"
+                                />
                             <group
-                                string="Reservation Services"
+                                string="Services"
                                 name="reservation_services"
                             >
                                 <field
@@ -576,30 +592,6 @@
                                     </tree>
                                 </field>
                             </group>
-                        </page>
-                        <page
-                            name="days"
-                            string="Day Pricing"
-                            attrs="{'invisible': [('reservation_type','in',('out'))]}"
-                        >
-                            <button
-                                name="%(action_pms_massive_price_change_reservation_days)d"
-                                string="Massive Day Prices"
-                                type="action"
-                                icon="fa-bolt"
-                            />
-                            <field name="reservation_line_ids" nolabel="1">
-                                <tree create="false" delete="false" editable="bottom">
-                                    <field name="id" />
-                                    <field name="date" readonly="1" force_save="1" />
-                                    <field name="price" />
-                                    <field name="discount" />
-                                    <field
-                                        name="cancel_discount"
-                                        attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
-                                    />
-                                </tree>
-                            </field>
                         </page>
                         <page
                             name="persons"
