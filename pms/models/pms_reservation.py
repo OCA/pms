@@ -234,6 +234,11 @@ class PmsReservation(models.Model):
     reservation_type = fields.Selection(
         related="folio_id.reservation_type", default=lambda *a: "normal"
     )
+    splitted = fields.Boolean(
+        "Splitted",
+        compute="_compute_splitted",
+        store=True,
+        )
     invoice_count = fields.Integer(related="folio_id.invoice_count")
     credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
@@ -284,8 +289,6 @@ class PmsReservation(models.Model):
         string="Include customer",
         help="Indicates if the customer sleeps in this room",
     )
-    # check_rooms = fields.Boolean('Check Rooms')
-    splitted = fields.Boolean("Splitted", default=False)
     overbooking = fields.Boolean("Is Overbooking", default=False)
     reselling = fields.Boolean("Is Reselling", default=False)
     nights = fields.Integer("Nights", compute="_computed_nights", store=True)
@@ -448,7 +451,7 @@ class PmsReservation(models.Model):
             else:
                 reservation.room_type_id = False
 
-    @api.depends("checkin", "checkout", "overbooking", "state", "room_id")
+    @api.depends("reservation_line_ids.date", "overbooking", "state", "room_id")
     def _compute_allowed_room_ids(self):
         for reservation in self:
             if reservation.checkin and reservation.checkout:
@@ -582,6 +585,14 @@ class PmsReservation(models.Model):
         for reservation in self:
             reservation.last_updated_res = fields.Datetime.now()
 
+    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
+    def _compute_splitted(self):
+        for reservation in self:
+            if len(reservation.reservation_line_ids.mapped("room_id")) > 1:
+                reservation.splitted = True
+            else:
+                reservation.splitted = False
+
     @api.depends("state", "qty_to_invoice", "qty_invoiced")
     def _compute_invoice_status(self):
         """
@@ -648,11 +659,10 @@ class PmsReservation(models.Model):
                 )
             line.qty_invoiced = qty_invoiced
 
-    @api.depends("checkin", "checkout")
+    @api.depends("reservation_line_ids")
     def _computed_nights(self):
         for res in self:
-            if res.checkin and res.checkout:
-                res.nights = (res.checkout - res.checkin).days
+            res.nights = len(res.reservation_line_ids)
 
     @api.depends("folio_id", "checkin", "checkout")
     def _compute_localizator(self):
@@ -728,7 +738,7 @@ class PmsReservation(models.Model):
 
     # TODO: Use default values on checkin /checkout is empty
     @api.constrains(
-        "checkin", "checkout", "state", "room_id", "overbooking", "reselling"
+        "reservation_line_ids.date", "state", "room_id", "overbooking", "reselling"
     )
     def check_dates(self):
         """
@@ -746,31 +756,6 @@ class PmsReservation(models.Model):
                 less than the Check Out Date!"
                 )
             )
-        if (
-            not self.overbooking
-            and self.state not in ("cancelled")
-            and not self._context.get("ignore_avail_restrictions", False)
-        ):
-            occupied = self.env["pms.reservation"].get_reservations(
-                self.checkin,
-                (fields.Date.from_string(self.checkout) - timedelta(days=1)).strftime(
-                    DEFAULT_SERVER_DATE_FORMAT
-                ),
-            )
-            occupied = occupied.filtered(
-                lambda r: r.room_id.id == self.room_id.id and r.id != self.id
-            )
-            occupied_name = ", ".join(str(x.folio_id.name) for x in occupied)
-            if occupied:
-                warning_msg = (
-                    _(
-                        "You tried to change/confirm \
-                   reservation with room those already reserved in this \
-                   reservation period: %s "
-                    )
-                    % occupied_name
-                )
-                raise ValidationError(warning_msg)
 
     @api.constrains("checkin_partner_ids")
     def _max_checkin_partner_ids(self):
@@ -933,6 +918,9 @@ class PmsReservation(models.Model):
         )
         if rooms_available:
             room_chosen = rooms_available[0]
+        else:
+            #We can split reserve night on multi rooms
+            room_chosen = False
         return room_chosen
 
     @api.model
