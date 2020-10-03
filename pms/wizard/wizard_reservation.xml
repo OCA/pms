@@ -126,7 +126,6 @@
                                 <field name="discount" />
                                 <field name="price" />
                                 <field name="partner_id" invisible="1" />
-                                <field name="to_assign" invisible="1" />
                             </tree>
                         </field>
                     </group>

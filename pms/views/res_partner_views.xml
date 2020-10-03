@@ -42,7 +42,7 @@
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="company_type" invisible="1" />
                 <field
-                    name="is_tour_operator"
+                    name="is_agency"
                     attrs="{'invisible': [('company_type','!=','company')]}"
                 />
             </xpath>

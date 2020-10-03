@@ -51,8 +51,8 @@ class FolioAdvancePaymentInv(models.TransientModel):
     @api.model
     def _get_default_partner_invoice(self):
         folios = self._get_default_folio()
-        if folios[0].tour_operator_id:
-            return folios[0].tour_operator_id
+        if folios[0].agency:
+            return folios[0].agency
         return folios[0].partner_invoice_id
 
     @api.model

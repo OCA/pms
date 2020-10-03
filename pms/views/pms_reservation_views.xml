@@ -389,7 +389,7 @@
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
                             <field
-                                name="tour_operator_id"
+                                name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
                             />
                             <field
@@ -946,7 +946,7 @@
             <search string="Reservation Detail">
                 <field name="partner_id" />
                 <field name="folio_id" />
-                <field name="tour_operator_id" />
+                <field name="agency_id" />
                 <filter
                     string="My Reservations"
                     name="my_reservations"
