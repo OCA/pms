@@ -37,7 +37,6 @@ class PmsReservationLine(models.Model):
         compute="_compute_room_id",
         store=True,
         readonly=False,
-        domain="[('id', 'in', reservation_id.allowed_room_ids)]",
     )
     move_line_ids = fields.Many2many(
         "account.move.line",
@@ -77,6 +76,14 @@ class PmsReservationLine(models.Model):
         compute="_compute_occupies_availability",
         store=True,
         help="This record is taken into account to calculate availability")
+
+    _sql_constraints = [
+        (
+            "rule_availability",
+            "EXCLUDE (room_id WITH =, date WITH =) WHERE (occupies_availability = True)",
+            "Room Occupied"
+        ),
+    ]
 
     # Compute and Search methods
     @api.depends(
