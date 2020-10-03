@@ -67,25 +67,6 @@ class PmsRoomTypeAvailability(models.Model):
         return free_rooms.sorted(key=lambda r: r.sequence)
 
     @api.model
-    def room_types_available(self, checkin, checkout, room_type_id=False, current_lines=False):
-        domain = self._get_domain_reservations_occupation(
-            dfrom=checkin,
-            dto=checkout - timedelta(1),
-            current_lines=current_lines,
-        )
-        reservation_lines = self.env['pms.reservation.line'].search(domain)
-        reservations_rooms = reservation_lines.mapped("room_id.id")
-        free_rooms = self.env["pms.room"].search(
-            [("id", "not in", reservations_rooms)]
-        )
-        if room_type_id:
-            rooms_linked = (
-                self.env["pms.room.type"].search([("id", "=", room_type_id)]).room_ids
-            )
-            free_rooms = free_rooms & rooms_linked
-        return free_rooms.sorted(key=lambda r: r.sequence)
-
-    @api.model
     def _get_domain_reservations_occupation(self, dfrom, dto, current_lines=False):
         domain = [
             ("date", ">=", dfrom),

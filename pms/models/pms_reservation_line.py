@@ -3,6 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from datetime import timedelta
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -88,17 +90,31 @@ class PmsReservationLine(models.Model):
     # Compute and Search methods
     @api.depends(
         "reservation_id.adults",
-        "reservation_id.room_type_id",
-        "reservation_id.room_id")
+        "reservation_id.room_type_id",)
     def _compute_room_id(self):
-        lines_no_room = self.filtered_domain([("room_id", "=", False)])
-        lines_with_room = self - lines_no_room
-        for line in lines_no_room:
-            if line.reservation_id.room_id:
-                line.room_id = line.reservation_id.room_id
-                # TODO: check_split reservation
-            # TODO: Allow with confirmation message to
-            # change de room if the user change the room_type?
+        for line in self:
+            if line.reservation_id.room_type_id:
+                preferred_room = line.reservation_id.room_id
+                rooms_available = self.env["pms.room.type.availability"].rooms_available(
+                    checkin=line.date,
+                    checkout=line.date + timedelta(1),
+                    room_type_id=self.reservation_id.room_type_id.id or False,
+                    current_lines=line._origin.id,
+                )
+                if rooms_available:
+                    if preferred_room.id in rooms_available.ids:
+                        room_chosen = preferred_room
+                    else:
+                        room_chosen = rooms_available[0]
+                    line.room_id = room_chosen
+                else:
+                    line.room_id = False
+                    raise ValidationError(
+                            _("%s: No rooms available") % (self.reservation_id.room_type_id.name)
+                        )
+                line._check_adults()
+            else:
+                line.room_id = False
 
     @api.depends(
         "reservation_id",
@@ -267,3 +283,13 @@ class PmsReservationLine(models.Model):
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
+    @api.constrains("reservation_id.adults", "room_id")
+    def _check_adults(self):
+        for record in self.filtered("room_id"):
+            extra_bed = record.reservation_id.service_ids.filtered(
+                lambda r: r.product_id.is_extra_bed is True
+            )
+            if record.reservation_id.adults > record.room_id.get_capacity(len(extra_bed)):
+                raise ValidationError(_("Persons can't be higher than room capacity"))
+            #if record.reservation_id.adults == 0:
+            #    raise ValidationError(_("Reservation has no adults"))
