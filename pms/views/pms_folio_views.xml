@@ -148,7 +148,7 @@
                                 attrs="{'required':[('reservation_type','=','normal')]}"
                             />
                             <field
-                                name="tour_operator_id"
+                                name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
                             />
                         </group>
@@ -437,7 +437,7 @@
             <search string="Tables Detail">
                 <field name="partner_id" />
                 <field name="partner_invoice_id" />
-                <field name="tour_operator_id" />
+                <field name="agency_id" />
                 <filter
                     name="to_invoice"
                     string="To invoice"
@@ -463,8 +463,8 @@
                     <filter
                         string="Tour Operator"
                         domain="[]"
-                        name="group_tour_operator"
-                        context="{'group_by':'tour_operator_id'}"
+                        name="group_agency"
+                        context="{'group_by':'agency_id'}"
                     />
                 </group>
             </search>

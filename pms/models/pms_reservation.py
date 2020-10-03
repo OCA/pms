@@ -129,7 +129,7 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
-    tour_operator_id = fields.Many2one(related="folio_id.tour_operator_id")
+    agency_id = fields.Many2one(related="folio_id.agency_id")
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",
@@ -294,17 +294,11 @@ class PmsReservation(models.Model):
     nights = fields.Integer("Nights", compute="_computed_nights", store=True)
     channel_type = fields.Selection(
         [
-            ("door", "Door"),
-            ("mail", "Mail"),
-            ("phone", "Phone"),
-            ("call", "Call Center"),
-            ("web", "Web"),
-            ("agency", "Agencia"),
-            ("operator", "Tour operador"),
-            ("virtualdoor", "Virtual Door"),
+            ("direct", "Direct"),
+            ("agency", "Agency"),
         ],
         string="Sales Channel",
-        default="door",
+        default="direct",
     )
     # TODO: Review functionality of last_update_res
     last_updated_res = fields.Datetime(
@@ -938,8 +932,6 @@ class PmsReservation(models.Model):
         user = self.env["res.users"].browse(self.env.uid)
         for record in self:
             vals = {}
-            if user.has_group("pms.group_pms_call"):
-                vals.update({"channel_type": "call"})
             if record.checkin_partner_ids:
                 vals.update({"state": "booking"})
             else:

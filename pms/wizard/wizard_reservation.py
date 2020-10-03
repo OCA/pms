@@ -17,11 +17,6 @@ class FolioWizard(models.TransientModel):
     _description = "Wizard for reservation groups"
 
     @api.model
-    def _get_default_center_user(self):
-        user = self.env["res.users"].browse(self.env.uid)
-        return user.has_group("pms.group_pms_call")
-
-    @api.model
     def _get_default_checkin(self):
         folio = False
         if "folio_id" in self._context:
@@ -42,12 +37,6 @@ class FolioWizard(models.TransientModel):
         if folio and folio.reservation_ids:
             return folio.reservation_ids[0].checkout
         return fields.Date.today()
-
-    @api.model
-    def _get_default_channel_type(self):
-        user = self.env["res.users"].browse(self.env.uid)
-        if user.has_group("pms.group_pms_call"):
-            return "phone"
 
     @api.model
     def _get_default_pricelist(self):
@@ -82,9 +71,8 @@ class FolioWizard(models.TransientModel):
         "res.company", "Company", default=lambda self: self.env.company
     )
     channel_type = fields.Selection(
-        [("door", "Door"), ("mail", "Mail"), ("phone", "Phone"), ("call", "Call")],
+        [("direct", "Direct"), ("ota", "Ota"), ("agency", "Agency")],
         string="Sales Channel",
-        default=_get_default_channel_type,
     )
     room_type_wizard_ids = fields.One2many(
         "pms.room.type.wizard", "folio_wizard_id", string="Room Types"
@@ -402,7 +390,7 @@ class PmsRoomTypeWizards(models.TransientModel):
                     ).min_stay
                     if date_min_days > min_stay:
                         min_stay = date_min_days
-                if user.has_group("pms.group_pms_call"):
+                if not user.has_group("pms.group_pms_manager"):
                     max_avail = real_max
                     restriction = False
                     if avail_restrictions:
@@ -507,17 +495,10 @@ class ReservationWizard(models.TransientModel):
     price = fields.Float(string="Total")
     partner_id = fields.Many2one(related="folio_wizard_id.partner_id")
     discount = fields.Float("discount")
-    to_assign = fields.Boolean(compute="_compute_assign")
     product_ids = fields.Many2many("product.product", string="Products")
     board_service_room_id = fields.Many2one(
         "pms.board.service.room.type", string="Board Service"
     )
-
-    def _compute_assign(self):
-        for rec in self:
-            user = self.env["res.users"].browse(self.env.uid)
-            if user.has_group("pms.group_pms_call"):
-                rec.to_assign = True
 
     @api.onchange("room_id")
     def onchange_room_id(self):
