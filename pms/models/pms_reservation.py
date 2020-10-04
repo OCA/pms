@@ -234,11 +234,7 @@ class PmsReservation(models.Model):
     reservation_type = fields.Selection(
         related="folio_id.reservation_type", default=lambda *a: "normal"
     )
-    splitted = fields.Boolean(
-        "Splitted",
-        compute="_compute_splitted",
-        store=True,
-        )
+    splitted = fields.Boolean("Splitted", compute="_compute_splitted", store=True,)
     invoice_count = fields.Integer(related="folio_id.invoice_count")
     credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
@@ -293,10 +289,7 @@ class PmsReservation(models.Model):
     reselling = fields.Boolean("Is Reselling", default=False)
     nights = fields.Integer("Nights", compute="_computed_nights", store=True)
     channel_type = fields.Selection(
-        [
-            ("direct", "Direct"),
-            ("agency", "Agency"),
-        ],
+        [("direct", "Direct"), ("agency", "Agency"),],
         string="Sales Channel",
         default="direct",
     )
@@ -419,20 +412,17 @@ class PmsReservation(models.Model):
             else:
                 reservation.name = "/"
 
-    @api.depends("reservation_line_ids","reservation_line_ids.room_id")
+    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_room_id(self):
-        _logger.info("COMPUTE_ROOM_ID")
         for reservation in self:
-            _logger.info("room_id: ")
             reservation.room_id = reservation.reservation_line_ids[0].room_id
-            _logger.info(reservation.room_id)
 
     @api.depends("room_id")
     def _compute_room_type_id(self):
         for reservation in self:
             if reservation.room_id and not reservation.room_type_id:
                 reservation.room_type_id = reservation.room_id.room_type_id.id
-            else:
+            elif not reservation.room_type_id:
                 reservation.room_type_id = False
 
     @api.depends("reservation_line_ids.date", "overbooking", "state", "room_id")
@@ -444,13 +434,13 @@ class PmsReservation(models.Model):
                         [("active", "=", True)]
                     )
                     return
-                rooms_available = (
-                    self.env["pms.room.type.availability"].rooms_available(
-                        checkin=reservation.checkin,
-                        checkout=reservation.checkout,
-                        room_type_id=False,  # Allow chosen any available room
-                        current_lines=reservation.reservation_line_ids.ids,
-                    )
+                rooms_available = self.env[
+                    "pms.room.type.availability"
+                ].rooms_available(
+                    checkin=reservation.checkin,
+                    checkout=reservation.checkout,
+                    room_type_id=False,  # Allow chosen any available room
+                    current_lines=reservation.reservation_line_ids.ids,
                 )
                 reservation.allowed_room_ids = rooms_available
 
@@ -500,7 +490,7 @@ class PmsReservation(models.Model):
             board_services = []
             old_board_lines = reservation.service_ids.filtered_domain(
                 [("is_board_service", "=", True),]
-                )
+            )
             if reservation.board_service_room_id:
                 board = self.env["pms.board.service.room.type"].browse(
                     reservation.board_service_room_id.id
@@ -533,16 +523,14 @@ class PmsReservation(models.Model):
 
     @api.depends("room_id")
     def _compute_adults(self):
-        _logger.info("COMPUTE_ADULTS")
         for reservation in self:
-            _logger.info("adults")
             if reservation.room_id:
                 if reservation.adults == 0:
                     reservation.adults = reservation.room_id.capacity
-            else:
+            elif reservation.adults == False:
                 reservation.adults = 0
-            _logger.info(reservation.room_id)
-            _logger.info(reservation.adults)
+
+    # REVIEW: Adult not computed with room_type set
 
     @api.depends("checkin", "checkout", "state")
     def _compute_to_send(self):
@@ -688,11 +676,7 @@ class PmsReservation(models.Model):
                 )
             else:
                 record.update(
-                    {
-                        "price_tax": 0,
-                        "price_total": 0,
-                        "price_subtotal": 0,
-                    }
+                    {"price_tax": 0, "price_total": 0, "price_subtotal": 0,}
                 )
 
     # TODO: Use default values on checkin /checkout is empty
@@ -878,7 +862,7 @@ class PmsReservation(models.Model):
         if rooms_available:
             room_chosen = rooms_available[0]
         else:
-            #We can split reserve night on multi rooms
+            # We can split reserve night on multi rooms
             room_chosen = False
         return room_chosen
 
@@ -1001,8 +985,7 @@ class PmsReservation(models.Model):
             tz_property = self.env.user.pms_property_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_property))
             days_diff = (
-                fields.Date.from_string(self.checkin)
-                - fields.Date.from_string(today)
+                fields.Date.from_string(self.checkin) - fields.Date.from_string(today)
             ).days
             if days_diff < 0:
                 return "noshow"
@@ -1112,7 +1095,7 @@ class PmsReservation(models.Model):
         return action
 
     def unify(self):
-        #TODO
+        # TODO
         return True
 
     def send_reservation_mail(self):
