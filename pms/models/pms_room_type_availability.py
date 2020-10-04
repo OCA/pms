@@ -2,16 +2,16 @@
 # Copyright 2017  Dario Lodeiros
 # Copyright 2018  Pablo Quesada
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
 from datetime import timedelta
 
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PmsRoomTypeAvailability(models.Model):
     _name = "pms.room.type.availability"
     _description = "Availability"
-    _inherit = 'mail.thread'
+    _inherit = "mail.thread"
 
     @api.model
     def _default_max_avail(self):
@@ -22,20 +22,30 @@ class PmsRoomTypeAvailability(models.Model):
         return self.room_type_id.default_quota
 
     # Fields declaration
-    room_type_id = fields.Many2one('pms.room.type', 'Room Type',
-                                   required=True,
-                                   ondelete='cascade')
-    date = fields.Date('Date', required=True, track_visibility='always')
-    quota = fields.Integer("Quota", default=_default_quota,
-                           track_visibility='always',
-                           help="Generic Quota assigned.")
-    max_avail = fields.Integer("Max. Availability", default=-1, readonly=True,
-                               track_visibility='always',
-                               help="Maximum simultaneous availability on own Booking Engine.")
-    no_web = fields.Boolean('No Web', default=False,
-                            track_visibility='onchange',
-                            help="Set zero availability to the own Booking Engine "
-                                 "even when the availability is positive,")
+    room_type_id = fields.Many2one(
+        "pms.room.type", "Room Type", required=True, ondelete="cascade"
+    )
+    date = fields.Date("Date", required=True, track_visibility="always")
+    quota = fields.Integer(
+        "Quota",
+        default=_default_quota,
+        track_visibility="always",
+        help="Generic Quota assigned.",
+    )
+    max_avail = fields.Integer(
+        "Max. Availability",
+        default=-1,
+        readonly=True,
+        track_visibility="always",
+        help="Maximum simultaneous availability on own Booking Engine.",
+    )
+    no_web = fields.Boolean(
+        "No Web",
+        default=False,
+        track_visibility="onchange",
+        help="Set zero availability to the own Booking Engine "
+        "even when the availability is positive,",
+    )
 
     _sql_constraints = [
         (
@@ -48,17 +58,15 @@ class PmsRoomTypeAvailability(models.Model):
 
     # Business Methods
     @api.model
-    def rooms_available(self, checkin, checkout, room_type_id=False, current_lines=False):
+    def rooms_available(
+        self, checkin, checkout, room_type_id=False, current_lines=False
+    ):
         domain = self._get_domain_reservations_occupation(
-            dfrom=checkin,
-            dto=checkout - timedelta(1),
-            current_lines=current_lines,
+            dfrom=checkin, dto=checkout - timedelta(1), current_lines=current_lines,
         )
-        reservation_lines = self.env['pms.reservation.line'].search(domain)
+        reservation_lines = self.env["pms.reservation.line"].search(domain)
         reservations_rooms = reservation_lines.mapped("room_id.id")
-        free_rooms = self.env["pms.room"].search(
-            [("id", "not in", reservations_rooms)]
-        )
+        free_rooms = self.env["pms.room"].search([("id", "not in", reservations_rooms)])
         if room_type_id:
             rooms_linked = (
                 self.env["pms.room.type"].search([("id", "=", room_type_id)]).room_ids
@@ -68,10 +76,12 @@ class PmsRoomTypeAvailability(models.Model):
 
     @api.model
     def _get_domain_reservations_occupation(self, dfrom, dto, current_lines=False):
+        if current_lines and not isinstance(current_lines, list):
+            current_lines = [current_lines]
         domain = [
             ("date", ">=", dfrom),
             ("date", "<=", dto),
             ("occupies_availability", "=", True),
-            ("id","not in", current_lines),
+            ("id", "not in", current_lines),
         ]
         return domain
