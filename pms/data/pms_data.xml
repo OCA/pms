@@ -31,5 +31,11 @@
             <field name="pms_property_id" ref="main_pms_property" />
             <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
         </record>
+        <record model="res.users" id="base.user_admin">
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+        </record>
     </data>
 </odoo>
