@@ -94,6 +94,7 @@ class PmsReservation(models.Model):
     name = fields.Text(
         "Reservation Description", compute="_compute_name", store=True, readonly=False,
     )
+    priority = fields.Integer(compute="_compute_priority", store="True", index=True)
     room_id = fields.Many2one(
         "pms.room",
         string="Room",
@@ -293,6 +294,15 @@ class PmsReservation(models.Model):
         string="Sales Channel",
         default="direct",
     )
+    subchannel_direct = fields.Selection([
+        ("door", "Door"),
+        ("mail", "Mail"),
+        ("phone", "Phone"),
+        ],
+        string="Direct Channel",
+    )
+    origin = fields.Char("Origin", compute="_compute_origin", store=True)
+    detail_origin = fields.Char("Detail Origin", compute="_compute_detail_origin", store=True)
     # TODO: Review functionality of last_update_res
     last_updated_res = fields.Datetime(
         "Last Updated", compute="_compute_last_updated_res", store=True, readonly=False,
@@ -411,6 +421,11 @@ class PmsReservation(models.Model):
                 )
             else:
                 reservation.name = "/"
+
+    @api.depends("checkin")
+    def _compute_priority(self):
+        #TODO: Logic priority (100 by example)
+        self.priority = 100
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_room_id(self):
@@ -1052,6 +1067,20 @@ class PmsReservation(models.Model):
             else:
                 record.checkin_partner_count = 0
                 record.checkin_partner_pending_count = 0
+
+    @api.depends("channel_type", "subchannel_direct")
+    def _compute_origin(self):
+        for reservation in self:
+            if reservation.channel_type == "direct":
+                reservation.origin = reservation.subchannel_direct
+            elif reservation.channel_type == "agency":
+                reservation.origin = reservation.agency_id.name
+
+    @api.depends("origin")
+    def _compute_detail_origin(self):
+        for reservation in self:
+            if reservation.channel_type in ["direct","agency"]:
+                reservation.detail_origin = reservation.sudo().create_uid.name
 
     # https://www.odoo.com/es_ES/forum/ayuda-1/question/calculated-fields-in-search-filter-possible-118501
 
