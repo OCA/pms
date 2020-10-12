@@ -33,7 +33,6 @@
                 name="domain_force"
             >['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
         </record>
-
         <!-- Property Rules -->
         <!--<record id="pms_folio_property_rule" model="ir.rule">
             <field name="name">PMS Folio Company Rule</field>
