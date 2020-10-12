@@ -46,6 +46,11 @@ class PmsFolio(models.Model):
         states={"done": [("readonly", True)]},
         help="Room reservation detail.",
     )
+    number_of_rooms = fields.Integer(
+        "Number of Rooms",
+        compute="_compute_number_of_rooms",
+        store="True",
+    )
     service_ids = fields.One2many(
         "pms.service",
         "folio_id",
@@ -289,6 +294,13 @@ class PmsFolio(models.Model):
     sequence = fields.Integer(string="Sequence", default=10)
 
     # Compute and Search methods
+    @api.depends("reservation_ids", "reservation_ids.state")
+    def _compute_number_of_rooms(self):
+        for folio in self:
+            folio.number_of_rooms = len(folio.reservation_ids.filtered(
+                lambda a: a.state != "cancelled"
+                ))
+
     @api.depends("partner_id")
     def _compute_pricelist_id(self):
         for folio in self:
@@ -300,6 +312,7 @@ class PmsFolio(models.Model):
             if folio.pricelist_id.id != pricelist_id:
                 # TODO: Warning change de pricelist?
                 folio.pricelist_id = pricelist_id
+
     @api.depends("partner_id")
     def _compute_user_id(self):
         for folio in self:
