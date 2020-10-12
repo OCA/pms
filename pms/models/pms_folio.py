@@ -232,7 +232,6 @@ class PmsFolio(models.Model):
         "Checkin Pending", compute="_compute_checkin_partner_count"
     )
     # Invoice Fields-----------------------------------------------------
-    invoice_count = fields.Integer(compute="_get_invoiced")
     invoice_status = fields.Selection(
         [
             ("invoiced", "Fully Invoiced"),
@@ -386,7 +385,6 @@ class PmsFolio(models.Model):
 
             folio.update(
                 {
-                    "invoice_count": len(set(move_ids.ids + refund_ids.ids)),
                     "move_ids": move_ids.ids + refund_ids.ids,
                     "invoice_status": invoice_status,
                 }
