@@ -166,24 +166,6 @@ class PmsCheckinPartner(models.Model):
             record.update(vals)
             if record.reservation_id.state == "confirm":
                 record.reservation_id.state = "booking"
-                if record.reservation_id.splitted:
-                    master_reservation = (
-                        record.reservation_id.parent_reservation
-                        or record.reservation_id
-                    )
-                    splitted_reservs = self.env["pms.reservation"].search(
-                        [
-                            ("splitted", "=", True),
-                            "|",
-                            ("parent_reservation", "=", master_reservation.id),
-                            ("id", "=", master_reservation.id),
-                            ("folio_id", "=", record.folio_id.id),
-                            ("id", "!=", record.id),
-                            ("state", "=", "confirm"),
-                        ]
-                    )
-                    if splitted_reservs:
-                        splitted_reservs.update({"state": "booking"})
         return {
             "type": "ir.actions.do_nothing",
         }

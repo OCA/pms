@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <act_window
-        id="action_view_folio_advance_payment_inv"
-        name="Invoice Folio"
-        binding_model="pms.folio"
-        res_model="folio.advance.payment.inv"
-        target="new"
-        view_mode="form"
-    />
     <record model="ir.ui.view" id="pms_folio_view_form">
         <field name="name">pms.folio.form</field>
         <field name="model">pms.folio</field>
         <field name="arch" type="xml">
             <form string="Folio">
-                <header>
-                    <!-- <field name="has_confirmed_reservations_to_send" invisible="1" /> -->
-                    <!-- <field name="has_cancelled_reservations_to_send" invisible="1" /> -->
-                    <!-- <field name="has_checkout_to_send" invisible="1" /> -->
+                <header>out_to_send" invisible="1" /> -->
                     <button
                         name="action_confirm"
                         states="draft"
@@ -24,21 +13,6 @@
                         class="btn-primary"
                         type="object"
                     />
-                    <!-- <button name="send_reservation_mail" type="object" string="Send Confirmation Email"
-                       attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}" class="oe_highlight"/> -->
-                    <!-- <button name="send_cancel_mail" type="object" string="Send Cancel Email"
-                       attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}" class="oe_highlight"/> -->
-                    <!-- <button name="send_exit_mail" type="object" string="Send Exit Email"
-                       attrs="{'invisible': [('has_checkout_to_send', '=', False)]}" class="oe_highlight"/> -->
-                    <button
-                        name="%(pms.action_view_folio_advance_payment_inv)d"
-                        string="Create Invoice"
-                        type="action"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'confirm')]}"
-                    />
-                    <!-- <button name="action_cancel_draft" states="cancel,sale" string="Set to Draft"
-                        type="object" icon="fa-undo" class="oe_highlight" /> -->
                     <button
                         name="action_cancel"
                         string="Cancel Folio"
@@ -51,7 +25,6 @@
                         string="Set to Done"
                         help="If a Folio is done, you cannot modify it manually anymore. However, you will still be able to invoice. This is used to freeze the Folio."
                     />
-                    <!-- <button name="print_quotation" string="Print" type="object" states="sent,sale"/> -->
                     <field
                         name="state"
                         select="2"
@@ -226,79 +199,10 @@
                                   these are the billing information associated with the booking client or the company (if a company is assigned). If you want to bill an independent contact, you can select it in the billing assistant
                             </div>
                             <group>
-                                <field name="partner_parent_id" />
                                 <field
                                     name="partner_invoice_id"
                                     string="Contact Invoiced"
                                 />
-                            </group>
-                            <group>
-                                <group>
-                                    <field
-                                        name="partner_invoice_vat"
-                                        attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                           ('partner_invoice_vat','!=', False)]}"
-                                    />
-                                    <field
-                                        name="partner_invoice_email"
-                                        attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                           ('partner_invoice_email','!=', False)]}"
-                                    />
-                                </group>
-                                <group>
-                                    <label
-                                        for="partner_invoice_street"
-                                        string="Address"
-                                    />
-                                    <div class="o_address_format">
-                                        <field
-                                            name="partner_invoice_street"
-                                            placeholder="Street..."
-                                            class="o_address_street"
-                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                                        ('partner_invoice_street','!=', False)]}"
-                                        />
-                                        <field
-                                            name="partner_invoice_street2"
-                                            placeholder="Street 2..."
-                                            class="o_address_street"
-                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                                        ('partner_invoice_street2','!=', False)]}"
-                                        />
-                                        <field
-                                            name="partner_invoice_city"
-                                            placeholder="City"
-                                            class="o_address_city"
-                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                                        ('partner_invoice_city','!=', False)]}"
-                                        />
-                                        <field
-                                            name="partner_invoice_state_id"
-                                            class="o_address_state"
-                                            placeholder="State"
-                                            options='{"no_open": True}'
-                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                                        ('partner_invoice_state_id','!=', False)]}"
-                                        />
-                                        <field
-                                            name="partner_invoice_zip"
-                                            placeholder="ZIP"
-                                            class="o_address_zip"
-                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                                        ('partner_invoice_zip','!=', False)]}"
-                                        />
-                                        <field
-                                            name="partner_invoice_country_id"
-                                            placeholder="Country"
-                                            class="o_address_country"
-                                            options='{"no_open": True, "no_create": True}'
-                                            attrs="{'readonly': [('partner_invoice_id', '!=', False),
-                                                        ('partner_invoice_country_id','!=', False)]}"
-                                        />
-                                    </div>
-                                </group>
-                                <group>
-                                </group>
                             </group>
                         </page>
                         <page

@@ -7896,7 +7896,6 @@ msgstr "Precio de venta"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_channel_type
-#: model:ir.model.fields,field_description:hotel.field_hotel_folio_team_id
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_wizard_channel_type
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_channel_type
 #: model:ir.model.fields,field_description:hotel.field_hotel_service_channel_type

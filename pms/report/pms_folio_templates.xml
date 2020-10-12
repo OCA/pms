@@ -90,7 +90,7 @@
                     <tbody class="sale_tbody">
                         <!-- Lines associated -->
                         <t t-foreach="doc.reservation_ids" t-as="l">
-                            <t t-if="l.to_print == True and l.price_total > 0">
+                            <t t-if="l.price_total > 0">
                                 <tr>
                                     <td>
                                         <span t-field="l.name" />
@@ -132,7 +132,7 @@
                             </t>
                         </t>
                         <t t-foreach="doc.service_ids" t-as="l">
-                            <t t-if="l.to_print == True and l.price_total > 0">
+                            <t t-if="l.price_total > 0">
                                 <tr>
                                     <td>
                                         <span t-field="l.name" />

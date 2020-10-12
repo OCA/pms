@@ -94,7 +94,6 @@ class PmsService(models.Model):
         "Quantity", compute="_compute_product_qty", store=True, readonly=False,
     )
     is_board_service = fields.Boolean()
-    to_print = fields.Boolean("Print", help="Print in Folio Report")
     # Non-stored related field to allow portal user to
     # see the image of the product he has ordered
     product_image = fields.Binary(

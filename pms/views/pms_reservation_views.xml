@@ -15,39 +15,7 @@
                 <header>
                     <field name="splitted" invisible="True" />
                     <field name="tax_ids" invisible="1" />
-                    <field name="parent_reservation" invisible="True" />
-                    <field name="has_confirmed_reservations_to_send" invisible="1" />
-                    <field name="has_cancelled_reservations_to_send" invisible="1" />
-                    <field name="has_checkout_to_send" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
-                    <button
-                        name="create_invoice"
-                        string="Create Invoice"
-                        type="object"
-                        class="btn-primary"
-                        states="sale"
-                        attrs="{'invisible': ['|','|',
-                           ('state', '=', 'draft'), ('reservation_type','not in',('normal')),
-                           ('invoice_status','!=', 'to invoice')]}"
-                    />
-                    <button
-                        name="send_reservation_mail"
-                        type="object"
-                        string="Send Confirmation Email"
-                        attrs="{'invisible': [('has_confirmed_reservations_to_send', '=', False)]}"
-                    />
-                    <button
-                        name="send_cancel_mail"
-                        type="object"
-                        string="Send Cancel Email"
-                        attrs="{'invisible': [('has_cancelled_reservations_to_send', '=', False)]}"
-                    />
-                    <button
-                        name="send_exit_mail"
-                        type="object"
-                        string="Send Exit Email"
-                        attrs="{'invisible': [('has_checkout_to_send', '=', False)]}"
-                    />
                     <button
                         name="confirm"
                         string="Confirm"
@@ -73,28 +41,6 @@
                         states="cancelled"
                         class="oe_highlight"
                         type="object"
-                    />
-                    <button
-                        name="%(action_pms_split_reservation)d"
-                        string="Split"
-                        type="action"
-                        icon="fa-cut"
-                        attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('draft','confirm','booking'))]}"
-                    />
-                    <button
-                        name="unify"
-                        string="Unify"
-                        type="object"
-                        icon="fa-compress"
-                        attrs="{'invisible':[('splitted', '=', False)]}"
-                    />
-                    <button
-                        name="open_master"
-                        string="Open Master"
-                        type="object"
-                        class="oe_highlight"
-                        icon="fa-file"
-                        attrs="{'invisible':['|',['parent_reservation', '=', False]]}"
                     />
                     <field
                         name="state"
@@ -203,28 +149,9 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-chain-broken"
-                            name="open_master"
-                            attrs="{'invisible':[('splitted','=',False)]}"
-                        >
-                            <div class="o_field_widget o_stat_info">
-                                <span>
-                                    <field
-                                        name="parent_reservation"
-                                        nolabel="1"
-                                        readonly="1"
-                                    />
-                                </span>
-                                <span class="o_stat_text">Splitted!</span>
-                            </div>
-                        </button>
-                        <button
-                            type="object"
-                            class="oe_stat_button"
                             icon="fa-users"
                             name="action_checks"
-                            attrs="{'invisible': ['|', ('checkin_partner_pending_count','&lt;=',0),
-                                ('parent_reservation','!=',False)]}"
+                            attrs="{'invisible': [('checkin_partner_pending_count','&lt;=',0)]}"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -420,7 +347,7 @@
                                     ('pms_room_type_id', '=', room_type_id),
                                     ('pricelist_id', 'in', [pricelist_id, False])]"
                                 options="{'no_create': True,'no_open': True}"
-                                attrs="{'invisible': ['|',('reservation_type','in',('out')),('parent_reservation','!=',False)]}"
+                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
                             <field
                                 name="folio_internal_comment"
@@ -496,12 +423,6 @@
                     </group>
                     <notebook>
                         <page name="detail" string="Detail">
-                            <button
-                                name="%(action_pms_massive_price_change_reservation_days)d"
-                                string="Massive Day Prices"
-                                type="action"
-                                icon="fa-bolt"
-                            />
                             <field name="reservation_line_ids" nolabel="1">
                                 <tree create="false" delete="false" editable="bottom">
                                     <field name="room_id" />
@@ -514,12 +435,6 @@
                                     />
                                 </tree>
                             </field>
-                            <button
-                                name="%(action_service_on_day)d"
-                                string="Service on Day"
-                                type="action"
-                                icon="fa-coffee"
-                            />
                             <group string="Services" name="reservation_services">
                                 <field
                                     name="service_ids"
@@ -590,8 +505,7 @@
                         <page
                             name="persons"
                             string="Persons"
-                            attrs="{'invisible': ['|',('reservation_type','in',('out')),
-                                                    ('parent_reservation','!=',False)]}"
+                            attrs="{'invisible': [('reservation_type','in',('out'))]}"
                         >
                             <group colspan="2" cols="6">
                                 <field
@@ -600,13 +514,11 @@
                                     placeholder="Segmentation..."
                                     options="{'no_create': True,'no_open': True}"
                                 />
-                                <field name="customer_sleep_here" />
                             </group>
                             <field
                                 name="checkin_partner_ids"
                                 context="{
                                     'checkin_partner_ids': checkin_partner_ids,
-                                    'include_customer': customer_sleep_here,
                                     'default_reservation_id': id,
                                     'reservation_id': id,
                                     'tree_view_ref':'pms.pms_checkin_partner_reservation_view_tree',
@@ -616,63 +528,13 @@
                         <page
                             name="invoicing"
                             string="Invoicing"
-                            attrs="{'invisible': ['|',('reservation_type','in',('out')),
-                                                    ('parent_reservation','!=',False)]}"
+                            attrs="{'invisible': [('reservation_type','in',('out'))]}"
                         >
                             <group>
-                                <field name="partner_parent_id" />
                                 <field
                                     name="partner_invoice_id"
                                     string="Contact Invoiced"
                                 />
-                            </group>
-                            <group>
-                                <group>
-                                    <field name="partner_invoice_vat" />
-                                    <field name="partner_invoice_email" />
-                                </group>
-                                <group>
-                                    <label
-                                        for="partner_invoice_street"
-                                        string="Address"
-                                    />
-                                    <div class="o_address_format">
-                                        <field
-                                            name="partner_invoice_street"
-                                            placeholder="Street..."
-                                            class="o_address_street"
-                                        />
-                                        <field
-                                            name="partner_invoice_street2"
-                                            placeholder="Street 2..."
-                                            class="o_address_street"
-                                        />
-                                        <field
-                                            name="partner_invoice_city"
-                                            placeholder="City"
-                                            class="o_address_city"
-                                        />
-                                        <field
-                                            name="partner_invoice_state_id"
-                                            class="o_address_state"
-                                            placeholder="State"
-                                            options='{"no_open": True}'
-                                        />
-                                        <field
-                                            name="partner_invoice_zip"
-                                            placeholder="ZIP"
-                                            class="o_address_zip"
-                                        />
-                                        <field
-                                            name="partner_invoice_country_id"
-                                            placeholder="Country"
-                                            class="o_address_country"
-                                            options='{"no_open": True, "no_create": True}'
-                                        />
-                                    </div>
-                                </group>
-                                <group>
-                                </group>
                             </group>
                         </page>
                         <page name="others" string="Others">
@@ -807,14 +669,6 @@
             >
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
-                <field name="to_print" invisible="1" />
-                <button
-                    icon="fa-chain-broken"
-                    type="object"
-                    class="oe_stat_button"
-                    name="open_master"
-                    attrs="{'invisible':[('splitted','=', False)]}"
-                />
                 <button
                     icon="fa-angellist"
                     attrs="{'invisible':['|',('folio_pending_amount','&gt;',0),('state' ,'!=', 'done')]}"
@@ -836,7 +690,7 @@
                     name="action_checks"
                     context="{'partner_id': partner_id,'enter_date': checkin,
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
-                    attrs="{'invisible':['|','|', ('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0),('parent_reservation','!=',False)]}"
+                    attrs="{'invisible':['|',('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0)]}"
                 />
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="room_id" options="{'no_create': True,'no_open': True}" />
@@ -848,7 +702,6 @@
                     context="{'search_default_partner_id': partner_id}"
                 />
                 <field name="partner_id" />
-                <field name="parent_reservation" invisible="1" />
                 <field name="room_type_id" string="Reserved Unit Type" />
                 <field name="nights" />
                 <field name="adults" string="Persons" />
@@ -890,9 +743,6 @@
                 <attribute name="delete">false</attribute>
                 <attribute name="string">Rooms</attribute>
             </tree>
-            <xpath expr="//field[@name='to_print']" position="attributes">
-                <attribute name="invisible">0</attribute>
-            </xpath>
             <xpath expr="//field[@name='state']" position="before">
                 <button
                     type="object"
