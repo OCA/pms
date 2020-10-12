@@ -30,7 +30,7 @@ class PmsFolio(models.Model):
 
     @api.model
     def _get_default_pms_property(self):
-        return self.env.user.pms_property_id
+        return self.env.user.pms_property_id #TODO: Change by property env variable (like company)
 
     # Fields declaration
     name = fields.Char(
@@ -128,7 +128,6 @@ class PmsFolio(models.Model):
         readonly=False,
         help="Invoice address for current group.",
     )
-    partner_parent_id = fields.Many2one(related="partner_id.parent_id")
     partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
     partner_invoice_country_id = fields.Many2one(
         related="partner_invoice_id.country_id"
@@ -139,14 +138,6 @@ class PmsFolio(models.Model):
     closure_reason_id = fields.Many2one("room.closure.reason")
     segmentation_ids = fields.Many2many(
         "res.partner.category", string="Segmentation", ondelete="restrict"
-    )
-    team_id = fields.Many2one(
-        "crm.team",
-        string="Sales Team",
-        ondelete="restrict",
-        compute="_compute_team_id",
-        store=True,
-        readonly=False,
     )
     client_order_ref = fields.Char(string="Customer Reference", copy=False)
     reservation_type = fields.Selection(
@@ -254,28 +245,6 @@ class PmsFolio(models.Model):
         readonly=True,
         default="no",
     )
-    partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
-    partner_invoice_name = fields.Char(
-        related="partner_invoice_id.name", string="Partner Name"
-    )
-    partner_invoice_street = fields.Char(
-        related="partner_invoice_id.street", string="Street"
-    )
-    partner_invoice_street2 = fields.Char(
-        related="partner_invoice_id.street", string="Street2"
-    )
-    partner_invoice_zip = fields.Char(related="partner_invoice_id.zip")
-    partner_invoice_city = fields.Char(related="partner_invoice_id.city")
-    partner_invoice_email = fields.Char(related="partner_invoice_id.email")
-    partner_invoice_lang = fields.Selection(related="partner_invoice_id.lang")
-    # WorkFlow Mail Fields-----------------------------------------------
-    has_confirmed_reservations_to_send = fields.Boolean(
-        compute="_compute_has_confirmed_reservations_to_send"
-    )
-    has_cancelled_reservations_to_send = fields.Boolean(
-        compute="_compute_has_cancelled_reservations_to_send"
-    )
-    has_checkout_to_send = fields.Boolean(compute="_compute_has_checkout_to_send")
     # Generic Fields-----------------------------------------------------
     internal_comment = fields.Text(string="Internal Folio Notes")
     cancelled_reason = fields.Text("Cause of cancelled")
@@ -326,14 +295,6 @@ class PmsFolio(models.Model):
                 self.partner_id.property_payment_term_id
                 and self.partner_id.property_payment_term_id.id
                 or False
-            )
-
-    @api.depends("partner_id")
-    def _compute_team_id(self):
-        for folio in self:
-            folio.team_id = (
-                self.partner_id.team_id.id
-                or self.env["crm.team"]._get_default_team_id()
             )
 
     @api.depends(
@@ -490,89 +451,6 @@ class PmsFolio(models.Model):
                 }
                 record.update(vals)
 
-    @api.depends("reservation_ids")
-    def _compute_has_confirmed_reservations_to_send(self):
-        has_to_send = False
-        if self.reservation_type != "out":
-            for rline in self.reservation_ids:
-                if rline.splitted:
-                    master_reservation = rline.parent_reservation or rline
-                    has_to_send = (
-                        self.env["pms.reservation"].search_count(
-                            [
-                                ("splitted", "=", True),
-                                ("folio_id", "=", self.id),
-                                ("to_send", "=", True),
-                                ("state", "in", ("confirm", "booking")),
-                                "|",
-                                ("parent_reservation", "=", master_reservation.id),
-                                ("id", "=", master_reservation.id),
-                            ]
-                        )
-                        > 0
-                    )
-                elif rline.to_send and rline.state in ("confirm", "booking"):
-                    has_to_send = True
-                    break
-            self.has_confirmed_reservations_to_send = has_to_send
-        else:
-            self.has_confirmed_reservations_to_send = False
-
-    @api.depends("reservation_ids")
-    def _compute_has_cancelled_reservations_to_send(self):
-        has_to_send = False
-        if self.reservation_type != "out":
-            for rline in self.reservation_ids:
-                if rline.splitted:
-                    master_reservation = rline.parent_reservation or rline
-                    has_to_send = (
-                        self.env["pms.reservation"].search_count(
-                            [
-                                ("splitted", "=", True),
-                                ("folio_id", "=", self.id),
-                                ("to_send", "=", True),
-                                ("state", "=", "cancelled"),
-                                "|",
-                                ("parent_reservation", "=", master_reservation.id),
-                                ("id", "=", master_reservation.id),
-                            ]
-                        )
-                        > 0
-                    )
-                elif rline.to_send and rline.state == "cancelled":
-                    has_to_send = True
-                    break
-            self.has_cancelled_reservations_to_send = has_to_send
-        else:
-            self.has_cancelled_reservations_to_send = False
-
-    @api.depends("reservation_ids")
-    def _compute_has_checkout_to_send(self):
-        has_to_send = True
-        if self.reservation_type != "out":
-            for rline in self.reservation_ids:
-                if rline.splitted:
-                    master_reservation = rline.parent_reservation or rline
-                    nreservs = self.env["pms.reservation"].search_count(
-                        [
-                            ("splitted", "=", True),
-                            ("folio_id", "=", self.id),
-                            ("to_send", "=", True),
-                            ("state", "=", "done"),
-                            "|",
-                            ("parent_reservation", "=", master_reservation.id),
-                            ("id", "=", master_reservation.id),
-                        ]
-                    )
-                    if nreservs != len(self.reservation_ids):
-                        has_to_send = False
-                elif not rline.to_send or rline.state != "done":
-                    has_to_send = False
-                    break
-            self.has_checkout_to_send = has_to_send
-        else:
-            self.has_checkout_to_send = False
-
     # Action methods
 
     def action_pay(self):
@@ -647,144 +525,6 @@ class PmsFolio(models.Model):
             "target": "new",
         }
 
-    def send_reservation_mail(self):
-        """
-        This function opens a window to compose an email,
-        template message loaded by default.
-        @param self: object pointer
-        """
-        # Debug Stop -------------------
-        # import wdb; wdb.set_trace()
-        # Debug Stop -------------------
-        self.ensure_one()
-        ir_model_data = self.env["ir.model.data"]
-        try:
-            template_id = ir_model_data.get_object_reference(
-                "pms", "email_template_reservation"
-            )[1]
-        except ValueError:
-            template_id = False
-        try:
-            compose_form_id = ir_model_data.get_object_reference(
-                "mail", "email_compose_message_wizard_form"
-            )[1]
-        except ValueError:
-            compose_form_id = False
-        ctx = dict()
-        ctx.update(
-            {
-                "default_model": "pms.folio",
-                "default_res_id": self._ids[0],
-                "default_use_template": bool(template_id),
-                "default_template_id": template_id,
-                "default_composition_mode": "comment",
-                "force_send": True,
-                "mark_so_as_sent": True,
-            }
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "mail.compose.message",
-            "views": [(compose_form_id, "form")],
-            "view_id": compose_form_id,
-            "target": "new",
-            "context": ctx,
-            "force_send": True,
-        }
-
-    def send_exit_mail(self):
-        """
-        This function opens a window to compose an email,
-        template message loaded by default.
-        @param self: object pointer
-        """
-        # Debug Stop -------------------
-        # import wdb; wdb.set_trace()
-        # Debug Stop -------------------
-        self.ensure_one()
-        ir_model_data = self.env["ir.model.data"]
-        try:
-            template_id = ir_model_data.get_object_reference(
-                "pms", "mail_template_pms_exit"
-            )[1]
-        except ValueError:
-            template_id = False
-        try:
-            compose_form_id = ir_model_data.get_object_reference(
-                "mail", "email_compose_message_wizard_form"
-            )[1]
-        except ValueError:
-            compose_form_id = False
-        ctx = dict()
-        ctx.update(
-            {
-                "default_model": "pms.reservation",
-                "default_res_id": self._ids[0],
-                "default_use_template": bool(template_id),
-                "default_template_id": template_id,
-                "default_composition_mode": "comment",
-                "force_send": True,
-                "mark_so_as_sent": True,
-            }
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "mail.compose.message",
-            "views": [(compose_form_id, "form")],
-            "view_id": compose_form_id,
-            "target": "new",
-            "context": ctx,
-            "force_send": True,
-        }
-
-    def send_cancel_mail(self):
-        """
-        This function opens a window to compose an email,
-        template message loaded by default.
-        @param self: object pointer
-        """
-        self.ensure_one()
-        ir_model_data = self.env["ir.model.data"]
-        try:
-            template_id = ir_model_data.get_object_reference(
-                "pms", "mail_template_pms_cancel"
-            )[1]
-        except ValueError:
-            template_id = False
-        try:
-            compose_form_id = ir_model_data.get_object_reference(
-                "mail", "email_compose_message_wizard_form"
-            )[1]
-        except ValueError:
-            compose_form_id = False
-        ctx = dict()
-        ctx.update(
-            {
-                "default_model": "pms.reservation",
-                "default_res_id": self._ids[0],
-                "default_use_template": bool(template_id),
-                "default_template_id": template_id,
-                "default_composition_mode": "comment",
-                "force_send": True,
-                "mark_so_as_sent": True,
-            }
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "mail.compose.message",
-            "views": [(compose_form_id, "form")],
-            "view_id": compose_form_id,
-            "target": "new",
-            "context": ctx,
-            "force_send": True,
-        }
-
     # ORM Overrides
     @api.model
     def create(self, vals):
@@ -842,7 +582,7 @@ class PmsFolio(models.Model):
         for record in self:
             if record.reservation_type == "normal" and record.reservation_ids:
                 filtered_reservs = record.reservation_ids.filtered(
-                    lambda x: x.state != "cancelled" and not x.parent_reservation
+                    lambda x: x.state != "cancelled"
                 )
                 mapped_checkin_partner = filtered_reservs.mapped(
                     "checkin_partner_ids.id"
@@ -852,54 +592,6 @@ class PmsFolio(models.Model):
                     lambda x: (x.adults + x.children) - len(x.checkin_partner_ids)
                 )
                 record.checkin_partner_pending_count = sum(mapped_checkin_partner_count)
-
-    def get_grouped_reservations_json(self, state, import_all=False):
-        self.ensure_one()
-        info_grouped = []
-        for rline in self.reservation_ids:
-            if (
-                (import_all or rline.to_send)
-                and not rline.parent_reservation
-                and rline.state == state
-            ):
-                dates = (rline.checkin, rline.checkout)
-                vals = {
-                    "num": len(
-                        self.reservation_ids.filtered(
-                            lambda r: r.checkin == dates[0]
-                            and r.checkout == dates[1]
-                            and r.room_type_id.id == rline.room_type_id.id
-                            and (r.to_send or import_all)
-                            and not r.parent_reservation
-                            and r.state == rline.state
-                        )
-                    ),
-                    "room_type": {
-                        "id": rline.room_type_id.id,
-                        "name": rline.room_type_id.name,
-                    },
-                    "checkin": dates[0],
-                    "checkout": dates[1],
-                    "nights": len(rline.reservation_line_ids),
-                    "adults": rline.adults,
-                    "childrens": rline.children,
-                }
-                founded = False
-                for srline in info_grouped:
-                    if (
-                        srline["num"] == vals["num"]
-                        and srline["room_type"]["id"] == vals["room_type"]["id"]
-                        and srline["checkin"] == vals["checkin"]
-                        and srline["checkout"] == vals["checkout"]
-                    ):
-                        founded = True
-                        break
-                if not founded:
-                    info_grouped.append(vals)
-        return sorted(
-            sorted(info_grouped, key=lambda k: k["num"], reverse=True),
-            key=lambda k: k["room_type"]["id"],
-        )
 
     def _get_tax_amount_by_group(self):
         self.ensure_one()

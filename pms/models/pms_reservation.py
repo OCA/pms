@@ -28,9 +28,7 @@ class PmsReservation(models.Model):
         if folio and folio.reservation_ids:
             return folio.reservation_ids[0].checkin
         else:
-            tz_property = self.env.user.pms_property_id.tz
-            today = fields.Date.context_today(self.with_context(tz=tz_property))
-            return fields.Date.from_string(today).strftime(DEFAULT_SERVER_DATE_FORMAT)
+            return fields.Date.today()
 
     def _get_default_checkout(self):
         folio = False
@@ -41,11 +39,7 @@ class PmsReservation(models.Model):
         if folio and folio.reservation_ids:
             return folio.reservation_ids[0].checkout
         else:
-            tz_property = self.env.user.pms_property_id.tz
-            today = fields.Date.context_today(self.with_context(tz=tz_property))
-            return (fields.Date.from_string(today) + timedelta(days=1)).strftime(
-                DEFAULT_SERVER_DATE_FORMAT
-            )
+            return fields.Date.today() + timedelta(1)
 
     def _get_default_arrival_hour(self):
         folio = False
@@ -70,6 +64,17 @@ class PmsReservation(models.Model):
             return folio.reservation_ids[0].departure_hour
         else:
             return default_departure_hour
+
+    def _get_default_segmentation(self):
+        folio = False
+        segmentation_ids = False
+        if "folio_id" in self._context:
+            folio = self.env["pms.folio"].search(
+                [("id", "=", self._context["folio_id"])]
+            )
+        if folio and folio.segmentation_ids:
+            segmentation_ids = folio.segmentation_ids
+        return segmentation_ids
 
     @api.model
     def _default_diff_invoicing(self):
@@ -134,11 +139,6 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
-    partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
-    partner_invoice_country_id = fields.Many2one(
-        related="partner_invoice_id.country_id"
-    )
-    partner_parent_id = fields.Many2one(related="partner_id.parent_id")
     closure_reason_id = fields.Many2one(related="folio_id.closure_reason_id")
     company_id = fields.Many2one(
         related="folio_id.company_id", string="Company", store=True, readonly=True
@@ -170,8 +170,12 @@ class PmsReservation(models.Model):
     )
     # TODO: Warning Mens to update pricelist
     checkin_partner_ids = fields.One2many("pms.checkin.partner", "reservation_id")
-    parent_reservation = fields.Many2one("pms.reservation", string="Parent Reservation")
-    segmentation_ids = fields.Many2many(related="folio_id.segmentation_ids")
+    segmentation_ids = fields.Many2many(
+        "res.partner.category",
+        string="Segmentation",
+        ondelete="restrict",
+        default=_get_default_segmentation,
+    )
     currency_id = fields.Many2one(
         "res.currency",
         related="pricelist_id.currency_id",
@@ -251,18 +255,6 @@ class PmsReservation(models.Model):
         default=_get_default_departure_hour,
         help="Default Departure Hour (HH:MM)",
     )
-    partner_invoice_vat = fields.Char(related="partner_invoice_id.vat")
-    partner_invoice_name = fields.Char(related="partner_invoice_id.name")
-    partner_invoice_street = fields.Char(
-        related="partner_invoice_id.street", string="Street"
-    )
-    partner_invoice_street2 = fields.Char(
-        related="partner_invoice_id.street", string="Street2"
-    )
-    partner_invoice_zip = fields.Char(related="partner_invoice_id.zip")
-    partner_invoice_city = fields.Char(related="partner_invoice_id.city")
-    partner_invoice_email = fields.Char(related="partner_invoice_id.email")
-    partner_invoice_lang = fields.Selection(related="partner_invoice_id.lang")
     # TODO: As checkin_partner_count is a computed field, it can't not
     # be used in a domain filer Non-stored field
     # pms.reservation.checkin_partner_count cannot be searched
@@ -275,11 +267,6 @@ class PmsReservation(models.Model):
         "Checkin Pending Num",
         compute="_compute_checkin_partner_count",
         search="_search_checkin_partner_pending",
-    )
-    customer_sleep_here = fields.Boolean(
-        default=True,
-        string="Include customer",
-        help="Indicates if the customer sleeps in this room",
     )
     overbooking = fields.Boolean("Is Overbooking", default=False)
     reselling = fields.Boolean("Is Reselling", default=False)
@@ -314,20 +301,6 @@ class PmsReservation(models.Model):
         string="Internal Folio Notes", related="folio_id.internal_comment"
     )
     preconfirm = fields.Boolean("Auto confirm to Save", default=True)
-    # TODO: to_send in this module?¿
-    to_send = fields.Boolean(
-        "To Send", default=True, compute="_compute_to_send", store=True, readonly=False,
-    )
-    has_confirmed_reservations_to_send = fields.Boolean(
-        related="folio_id.has_confirmed_reservations_to_send", readonly=True
-    )
-    has_cancelled_reservations_to_send = fields.Boolean(
-        related="folio_id.has_cancelled_reservations_to_send", readonly=True
-    )
-    has_checkout_to_send = fields.Boolean(
-        related="folio_id.has_checkout_to_send", readonly=True
-    )
-    to_print = fields.Boolean("Print", help="Print in Folio Report", default=True)
     invoice_status = fields.Selection(
         [
             ("invoiced", "Fully Invoiced"),
@@ -423,7 +396,7 @@ class PmsReservation(models.Model):
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_room_id(self):
-        for reservation in self:
+        for reservation in self.filtered("reservation_line_ids"):
             reservation.room_id = reservation.reservation_line_ids[0].room_id
 
     @api.depends("room_id")
@@ -530,6 +503,7 @@ class PmsReservation(models.Model):
                 # TODO: Warning change de pricelist?
                 reservation.pricelist_id = pricelist_id
 
+    #REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
     @api.depends("room_id")
     def _compute_adults(self):
         for reservation in self:
@@ -538,8 +512,6 @@ class PmsReservation(models.Model):
                     reservation.adults = reservation.room_id.capacity
             elif reservation.adults == False:
                 reservation.adults = 0
-
-    # REVIEW: Adult not computed with room_type set
 
     @api.depends("checkin", "checkout", "state")
     def _compute_to_send(self):
@@ -726,30 +698,6 @@ class PmsReservation(models.Model):
 
     # Action methods
 
-    def open_invoices_reservation(self):
-        invoices = self.folio_id.mapped("move_ids")
-        action = self.env.ref("account.action_move_out_invoice_type").read()[0]
-        if len(invoices) > 1:
-            action["domain"] = [("id", "in", invoices.ids)]
-        elif len(invoices) == 1:
-            action["views"] = [(self.env.ref("account.view_move_form").id, "form")]
-            action["res_id"] = invoices.ids[0]
-        else:
-            action = self.env.ref("pms.action_view_folio_advance_payment_inv").read()[0]
-            action["context"] = {
-                "default_reservation_id": self.id,
-                "default_folio_id": self.folio_id.id,
-            }
-        return action
-
-    def create_invoice(self):
-        action = self.env.ref("pms.action_view_folio_advance_payment_inv").read()[0]
-        action["context"] = {
-            "default_reservation_id": self.id,
-            "default_folio_id": self.folio_id.id,
-        }
-        return action
-
     def open_folio(self):
         action = self.env.ref("pms.open_pms_folio1_form_tree_all").read()[0]
         if self.folio_id:
@@ -904,7 +852,6 @@ class PmsReservation(models.Model):
             "checkin": checkin or self.checkin,
             "checkout": checkout or self.checkout,
             "folio_id": self.folio_id.id,
-            "parent_reservation": self.parent_reservation.id,
             "state": self.state,
             "overbooking": self.overbooking,
             "reselling": self.reselling,
@@ -933,23 +880,6 @@ class PmsReservation(models.Model):
             record.reservation_line_ids.update({"cancel_discount": 0})
             if record.folio_id.state != "confirm":
                 record.folio_id.action_confirm()
-
-            if record.splitted:
-                master_reservation = record.parent_reservation or record
-                splitted_reservs = pms_reserv_obj.search(
-                    [
-                        ("splitted", "=", True),
-                        "|",
-                        ("parent_reservation", "=", master_reservation.id),
-                        ("id", "=", master_reservation.id),
-                        ("folio_id", "=", record.folio_id.id),
-                        ("id", "!=", record.id),
-                        ("state", "not in", ("confirm", "booking")),
-                    ]
-                )
-                if master_reservation.checkin_partner_ids:
-                    record.update({"state": "booking"})
-                splitted_reservs.confirm()
         return True
 
     def button_done(self):
@@ -971,20 +901,6 @@ class PmsReservation(models.Model):
                 _logger.info("Modified Reservation - No Penalty")
             record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
             # record._compute_cancelled_discount()
-            if record.splitted:
-                master_reservation = record.parent_reservation or record
-                splitted_reservs = self.env["pms.reservation"].search(
-                    [
-                        ("splitted", "=", True),
-                        "|",
-                        ("parent_reservation", "=", master_reservation.id),
-                        ("id", "=", master_reservation.id),
-                        ("folio_id", "=", record.folio_id.id),
-                        ("id", "!=", record.id),
-                        ("state", "!=", "cancelled"),
-                    ]
-                )
-                splitted_reservs.action_cancel()
             record.folio_id.compute_amount()
 
     def compute_cancelation_reason(self):
@@ -1008,20 +924,6 @@ class PmsReservation(models.Model):
         for record in self:
             record.state = "draft"
             record.reservation_line_ids.update({"cancel_discount": 0})
-            if record.splitted:
-                master_reservation = record.parent_reservation or record
-                splitted_reservs = self.env["pms.reservation"].search(
-                    [
-                        ("splitted", "=", True),
-                        "|",
-                        ("parent_reservation", "=", master_reservation.id),
-                        ("id", "=", master_reservation.id),
-                        ("folio_id", "=", record.folio_id.id),
-                        ("id", "!=", record.id),
-                        ("state", "!=", "draft"),
-                    ]
-                )
-                splitted_reservs.draft()
 
     # INFO: This function is not in use and should include `dto` in the search
     @api.model
@@ -1090,21 +992,6 @@ class PmsReservation(models.Model):
                 record.checkin_partner_ids.filtered(
                     lambda check: check.state == "booking"
                 ).action_done()
-            if record.splitted:
-                master_reservation = record.parent_reservation or record
-                splitted_reservs = self.env["pms.reservation"].search(
-                    [
-                        ("splitted", "=", True),
-                        "|",
-                        ("parent_reservation", "=", master_reservation.id),
-                        ("id", "=", master_reservation.id),
-                        ("folio_id", "=", record.folio_id.id),
-                        ("id", "!=", record.id),
-                        ("state", "not in", ("cancelled", "done")),
-                    ]
-                )
-                if splitted_reservs:
-                    splitted_reservs.update({"state": "done"})
         return True
 
     def action_checks(self):

@@ -34,11 +34,4 @@
         sequence="10"
         groups="pms.group_pms_manager"
     />
-    <menuitem
-        id="pms_massive_change"
-        name="Massive Changes"
-        parent="pms.configuration_others"
-        sequence="10"
-        action="action_pms_massive_change"
-    />
 </odoo>
