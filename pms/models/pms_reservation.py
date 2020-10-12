@@ -221,7 +221,7 @@ class PmsReservation(models.Model):
         [
             ("draft", "Pre-reservation"),
             ("confirm", "Pending Entry"),
-            ("booking", "On Board"),
+            ("onboard", "On Board"),
             ("done", "Out"),
             ("cancelled", "Cancelled"),
         ],
@@ -833,7 +833,7 @@ class PmsReservation(models.Model):
         )
         for res in reservations:
             res.action_reservation_checkout()
-        res_without_checkin = reservations.filtered(lambda r: r.state != "booking")
+        res_without_checkin = reservations.filtered(lambda r: r.state != "onboard")
         for res in res_without_checkin:
             msg = _("No checkin was made for this reservation")
             res.message_post(subject=_("No Checkins!"), subtype="mt_comment", body=msg)
@@ -873,7 +873,7 @@ class PmsReservation(models.Model):
         for record in self:
             vals = {}
             if record.checkin_partner_ids:
-                vals.update({"state": "booking"})
+                vals.update({"state": "onboard"})
             else:
                 vals.update({"state": "confirm"})
             record.write(vals)
@@ -990,7 +990,7 @@ class PmsReservation(models.Model):
             record.state = "done"
             if record.checkin_partner_ids:
                 record.checkin_partner_ids.filtered(
-                    lambda check: check.state == "booking"
+                    lambda check: check.state == "onboard"
                 ).action_done()
         return True
 

@@ -98,7 +98,7 @@ class PmsCheckinPartner(models.Model):
     state = fields.Selection(
         [
             ("draft", "Pending Entry"),
-            ("booking", "On Board"),
+            ("onboard", "On Board"),
             ("done", "Out"),
             ("cancelled", "Cancelled"),
         ],
@@ -160,19 +160,19 @@ class PmsCheckinPartner(models.Model):
                 raise models.ValidationError(_("It is not yet checkin day!"))
             hour = record._get_arrival_hour()
             vals = {
-                "state": "booking",
+                "state": "onboard",
                 "arrival_hour": hour,
             }
             record.update(vals)
             if record.reservation_id.state == "confirm":
-                record.reservation_id.state = "booking"
+                record.reservation_id.state = "onboard"
         return {
             "type": "ir.actions.do_nothing",
         }
 
     def action_done(self):
         for record in self:
-            if record.state == "booking":
+            if record.state == "onboard":
                 hour = record._get_departure_hour()
                 vals = {
                     "state": "done",
