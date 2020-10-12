@@ -134,21 +134,6 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            id="invoice_button"
-                            icon="fa-pencil-square-o"
-                            name="open_invoices_reservation"
-                            attrs="{'invisible': [('invoice_count','&lt;=',0)]}"
-                        >
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value">
-                                    <field name="invoice_count" />
-                                </span>
-                                <span class="o_stat_text">Invoices</span>
-                            </div>
-                        </button>
-                        <button
-                            type="object"
-                            class="oe_stat_button"
                             icon="fa-users"
                             name="action_checks"
                             attrs="{'invisible': [('checkin_partner_pending_count','&lt;=',0)]}"
