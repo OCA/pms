@@ -529,7 +529,7 @@
                                                                     <div class="h2" style="font-family: sans-serif; font-size: 18px; font-weight: bold; color: #45C2B1; padding: 0 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">Información de la
                                                                           habitación</div>
                                                                       % set room_type_ids = object.reservation_ids.filtered('to_send').mapped('room_type_id.id')
-                                                                      % set room_types = user.env['hotel.room.type'].browse(room_type_ids)
+                                                                      % set room_types = user.env['pms.room.type'].browse(room_type_ids)
                                                                       % for room_type in room_types:
 
                                                                       % if room_type.product_id.name:
