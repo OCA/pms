@@ -4,6 +4,10 @@
         <!-- users -->
         <record id="base.user_demo" model="res.users">
             <field name="groups_id" eval="[(4,ref('pms.group_pms_user'))]" />
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
         </record>
         <!-- pms.floor -->
         <record id="pms_floor_0" model="pms.floor">
@@ -291,105 +295,6 @@
             <field
                 name="description"
             >Used for closing of rooms for extra privacy.</field>
-        </record>
-        <!-- pms.folio -->
-        <!-- reservation of 1 economic room for 1 person -->
-        <record id="pms_folio_0" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_27" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': 1,
-                    'room_type_id': ref('pms_room_type_0'),
-                    'checkin': DateTime.today().strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
-                    'adults': 2,
-                    'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_1'),
-                    })]"
-            />
-        </record>
-        <!-- reservation of 1 triple room for 3 people on behalf on the company -->
-        <record id="pms_folio_1" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': 1,
-                    'room_type_id': ref('pms_room_type_3'),
-                    'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-                    'adults': 3,
-                    'board_service_room_id': ref('pms_board_service_room_3'),
-                    })]"
-            />
-        </record>
-        <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
-        <!-- TODO: The third reservation is marked from State: Cancelled to Pending Entry at Folio creation -->
-        <record id="pms_folio_2" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_10" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0),
-                    (0, 0, {
-                    'pricelist_id': 1,
-                    'room_type_id': ref('pms_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-                    'adults': 1,
-                    'state': 'confirm',
-                    }),
-                    (0, 0, {
-                    'pricelist_id': 1,
-                    'room_type_id': ref('pms_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-                    'adults': 1,
-                    'state': 'confirm',
-                    }),
-                    (0, 0, {
-                    'pricelist_id': 1,
-                    'room_type_id': ref('pms_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=2)).strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-                    'adults': 1,
-                    'state': 'cancelled',
-                    })]"
-            />
-        </record>
-        <!-- reservation of the conference room for 1 day on behalf of a company -->
-        <record id="pms_folio_3" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': 1,
-                    'room_type_id': ref('pms_room_type_4'),
-                    'checkin': (DateTime.today() + timedelta(days=3)).strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=4)).strftime('%Y-%m-%d'),
-                    'adults': 1,
-                    'state': 'confirm',
-                    })]"
-            />
-        </record>
-        <!-- out of service room -->
-        <record id="pms_folio_4" model="pms.folio">
-            <field name="partner_id" ref="main_pms_property" />
-            <field name="reservation_type">out</field>
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': 1,
-                    'room_type_id': ref('pms_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=5)).strftime('%Y-%m-%d'),
-                    'checkout': (DateTime.today() + timedelta(days=7)).strftime('%Y-%m-%d'),
-                    'adults': 1,
-                    'state': 'confirm',
-                    'reservation_type': 'out',
-                    'closure_reason_id': ref('pms_room_closure_reason_0'),
-                    'out_service_description': 'Change of lighting',
-                    })]"
-            />
         </record>
         <!-- Multi pms Demo -->
         <record id="demo_pms_room_type_restriction" model="pms.room.type.restriction">

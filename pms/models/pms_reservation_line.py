@@ -1,11 +1,12 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+import logging
 from datetime import timedelta
 
-import logging
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+
 _logger = logging.getLogger(__name__)
 
 
@@ -74,28 +75,31 @@ class PmsReservationLine(models.Model):
     )
     discount = fields.Float(string="Discount (%)", digits=("Discount"), default=0.0)
     occupies_availability = fields.Boolean(
-        string = "Occupies",
+        string="Occupies",
         compute="_compute_occupies_availability",
         store=True,
-        help="This record is taken into account to calculate availability")
+        help="This record is taken into account to calculate availability",
+    )
 
     _sql_constraints = [
         (
             "rule_availability",
             "EXCLUDE (room_id WITH =, date WITH =) WHERE (occupies_availability = True)",
-            "Room Occupied"
+            "Room Occupied",
         ),
     ]
 
     # Compute and Search methods
     @api.depends(
-        "reservation_id.adults",
-        "reservation_id.room_type_id",)
+        "reservation_id.adults", "reservation_id.room_type_id",
+    )
     def _compute_room_id(self):
         for line in self:
             if line.reservation_id.room_type_id:
                 preferred_room = line.reservation_id.room_id
-                rooms_available = self.env["pms.room.type.availability"].rooms_available(
+                rooms_available = self.env[
+                    "pms.room.type.availability"
+                ].rooms_available(
                     checkin=line.date,
                     checkout=line.date + timedelta(1),
                     room_type_id=self.reservation_id.room_type_id.id or False,
@@ -110,8 +114,9 @@ class PmsReservationLine(models.Model):
                 else:
                     line.room_id = False
                     raise ValidationError(
-                            _("%s: No rooms available") % (self.reservation_id.room_type_id.name)
-                        )
+                        _("%s: No rooms available")
+                        % (self.reservation_id.room_type_id.name)
+                    )
                 line._check_adults()
             else:
                 line.room_id = False
@@ -153,24 +158,27 @@ class PmsReservationLine(models.Model):
     @api.depends("reservation_id.state", "reservation_id.overbooking")
     def _compute_occupies_availability(self):
         for line in self:
-            if line.reservation_id.state == "cancelled" or \
-                    line.reservation_id.overbooking == True:
+            if (
+                line.reservation_id.state == "cancelled"
+                or line.reservation_id.overbooking == True
+            ):
                 line.occupies_availability = False
             else:
                 line.occupies_availability = True
 
     def _recompute_price(self):
-        #REVIEW: Conditional to avoid overriding already calculated prices,
+        # REVIEW: Conditional to avoid overriding already calculated prices,
         # I'm not sure it's the best way
         self.ensure_one()
         origin = self._origin.reservation_id
         new = self.reservation_id
         price_fields = ["pricelist_id", "room_type_id", "reservation_type"]
-        if any(origin[field] != new[field] for field in price_fields) or \
-                self._origin.price == 0:
+        if (
+            any(origin[field] != new[field] for field in price_fields)
+            or self._origin.price == 0
+        ):
             return True
         return False
-
 
     # TODO: Refact method and allowed cancelled single days
     @api.depends("reservation_id.cancelled_reason")
@@ -289,7 +297,9 @@ class PmsReservationLine(models.Model):
             extra_bed = record.reservation_id.service_ids.filtered(
                 lambda r: r.product_id.is_extra_bed is True
             )
-            if record.reservation_id.adults > record.room_id.get_capacity(len(extra_bed)):
+            if record.reservation_id.adults > record.room_id.get_capacity(
+                len(extra_bed)
+            ):
                 raise ValidationError(_("Persons can't be higher than room capacity"))
-            #if record.reservation_id.adults == 0:
+            # if record.reservation_id.adults == 0:
             #    raise ValidationError(_("Reservation has no adults"))

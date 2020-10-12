@@ -2,9 +2,12 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
 import logging
+
+from odoo import _, api, fields, models
+
 _logger = logging.getLogger(__name__)
+
 
 class PmsFolio(models.Model):
     _name = "pms.folio"
@@ -47,9 +50,7 @@ class PmsFolio(models.Model):
         help="Room reservation detail.",
     )
     number_of_rooms = fields.Integer(
-        "Number of Rooms",
-        compute="_compute_number_of_rooms",
-        store="True",
+        "Number of Rooms", compute="_compute_number_of_rooms", store="True",
     )
     service_ids = fields.One2many(
         "pms.service",
@@ -60,10 +61,7 @@ class PmsFolio(models.Model):
         "include in main Invoice.",
     )
     company_id = fields.Many2one(
-        "res.company",
-        "Company",
-        required=True,
-        default=lambda self: self.env.company,
+        "res.company", "Company", required=True, default=lambda self: self.env.company,
     )
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
@@ -101,10 +99,7 @@ class PmsFolio(models.Model):
         readonly=False,
     )
     agency_id = fields.Many2one(
-        "res.partner",
-        "Agency",
-        ondelete="restrict",
-        domain=[("is_agency", "=", True)],
+        "res.partner", "Agency", ondelete="restrict", domain=[("is_agency", "=", True)],
     )
     payment_ids = fields.One2many("account.payment", "folio_id", readonly=True)
     return_ids = fields.One2many("payment.return", "folio_id", readonly=True)
@@ -115,7 +110,8 @@ class PmsFolio(models.Model):
         compute="_compute_payment_term_id",
         store=True,
         readonly=False,
-        help="Pricelist for current folio.",)
+        help="Pricelist for current folio.",
+    )
     checkin_partner_ids = fields.One2many("pms.checkin.partner", "folio_id")
     move_ids = fields.Many2many(
         "account.move",
@@ -159,10 +155,7 @@ class PmsFolio(models.Model):
         default=lambda *a: "normal",
     )
     channel_type = fields.Selection(
-        [
-            ("direct", "Direct"),
-            ("agency", "Agency"),
-        ],
+        [("direct", "Direct"), ("agency", "Agency"),],
         "Sales Channel",
         default="direct",
     )
@@ -297,9 +290,9 @@ class PmsFolio(models.Model):
     @api.depends("reservation_ids", "reservation_ids.state")
     def _compute_number_of_rooms(self):
         for folio in self:
-            folio.number_of_rooms = len(folio.reservation_ids.filtered(
-                lambda a: a.state != "cancelled"
-                ))
+            folio.number_of_rooms = len(
+                folio.reservation_ids.filtered(lambda a: a.state != "cancelled")
+            )
 
     @api.depends("partner_id")
     def _compute_pricelist_id(self):
@@ -316,7 +309,7 @@ class PmsFolio(models.Model):
     @api.depends("partner_id")
     def _compute_user_id(self):
         for folio in self:
-            folio.user_id = folio.partner_id.user_id.id or self.env.uid,
+            folio.user_id = (folio.partner_id.user_id.id or self.env.uid,)
 
     @api.depends("partner_id")
     def _compute_partner_invoice_id(self):
@@ -329,14 +322,19 @@ class PmsFolio(models.Model):
     def _compute_payment_term_id(self):
         self.payment_term_id = False
         for folio in self:
-            folio.payment_term_id = self.partner_id.property_payment_term_id \
-                and self.partner_id.property_payment_term_id.id or False
+            folio.payment_term_id = (
+                self.partner_id.property_payment_term_id
+                and self.partner_id.property_payment_term_id.id
+                or False
+            )
 
     @api.depends("partner_id")
     def _compute_team_id(self):
         for folio in self:
-            folio.team_id = self.partner_id.team_id.id or \
-                self.env["crm.team"]._get_default_team_id()
+            folio.team_id = (
+                self.partner_id.team_id.id
+                or self.env["crm.team"]._get_default_team_id()
+            )
 
     @api.depends(
         "state", "reservation_ids.invoice_status", "service_ids.invoice_status"
