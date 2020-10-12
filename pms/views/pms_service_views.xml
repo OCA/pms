@@ -54,7 +54,6 @@
                 decoration-success="is_board_service == True"
             >
                 <field name="is_board_service" invisible="1" />
-                <field name="to_print" />
                 <button
                     type="object"
                     class="oe_stat_button"
