@@ -188,69 +188,72 @@ class PmsService(models.Model):
 
     @api.depends("reservation_id.checkin", "reservation_id.checkout", "product_id")
     def _compute_service_line_ids(self):
-        for service in self.filtered("product_id"):
-            day_qty = 1
-            if service.reservation_id and service.product_id:
-                reservation = service.reservation_id
-                product = service.product_id
-                consumed_on = product.consumed_on
-                if product.per_day:
-                    lines = []
-                    day_qty = service._service_day_qty()
-                    days_diff = (reservation.checkout - reservation.checkin).days
-                    for i in range(0, days_diff):
+        for service in self:
+            if service.product_id:
+                day_qty = 1
+                if service.reservation_id and service.product_id:
+                    reservation = service.reservation_id
+                    product = service.product_id
+                    consumed_on = product.consumed_on
+                    if product.per_day:
+                        lines = []
+                        day_qty = service._service_day_qty()
+                        days_diff = (reservation.checkout - reservation.checkin).days
+                        for i in range(0, days_diff):
+                            if consumed_on == "after":
+                                i += 1
+                            idate = reservation.checkin + timedelta(days=i)
+                            old_line = service._search_old_lines(idate)
+                            if idate in [line.date for line in service.service_line_ids]:
+                            #REVIEW: If the date is already cached (otherwise double the date)
+                                pass
+                            elif not old_line:
+                                lines.append(
+                                    (0, False, {
+                                        "date": idate,
+                                        "day_qty": day_qty,
+                                        })
+                                )
+                            else:
+                                lines.append((4, old_line.id))
+                        move_day = 0
                         if consumed_on == "after":
-                            i += 1
-                        idate = reservation.checkin + timedelta(days=i)
-                        old_line = service._search_old_lines(idate)
-                        if idate in [line.date for line in service.service_line_ids]:
-                        #REVIEW: If the date is already cached (otherwise double the date)
-                            pass
-                        elif not old_line:
-                            lines.append(
-                                (0, False, {
-                                    "date": idate,
+                            move_day = 1
+                        service.service_line_ids -= service.service_line_ids.filtered_domain(
+                            [
+                                "|",
+                                ("date", "<", reservation.checkin + timedelta(move_day)),
+                                ("date", ">=", reservation.checkout + timedelta(move_day)),
+                            ]
+                        )
+                        _logger.info(service)
+                        _logger.info(lines)
+                        service.service_line_ids = lines
+                    else:
+                        # TODO: Review (business logic refact) no per_day logic service
+                        if not service.service_line_ids:
+                            service.service_line_ids = [(
+                                0,
+                                False,
+                                {
+                                    "date": fields.Date.today(),
                                     "day_qty": day_qty,
-                                    })
-                            )
-                        else:
-                            lines.append((4, old_line.id))
-                    move_day = 0
-                    if consumed_on == "after":
-                        move_day = 1
-                    service.service_line_ids -= service.service_line_ids.filtered_domain(
-                        [
-                            "|",
-                            ("date", "<", reservation.checkin + timedelta(move_day)),
-                            ("date", ">=", reservation.checkout + timedelta(move_day)),
-                        ]
-                    )
-                    _logger.info(service)
-                    _logger.info(lines)
-                    service.service_line_ids = lines
+                                },
+                            )]
                 else:
-                    # TODO: Review (business logic refact) no per_day logic service
+                    # TODO: Service without reservation(room) but with folio¿?
+                    # example: tourist tour in group
                     if not service.service_line_ids:
                         service.service_line_ids = [(
-                            0,
-                            False,
-                            {
-                                "date": fields.Date.today(),
-                                "day_qty": day_qty,
-                            },
-                        )]
+                                0,
+                                False,
+                                {
+                                    "date": fields.Date.today(),
+                                    "day_qty": day_qty,
+                                },
+                            )]
             else:
-                # TODO: Service without reservation(room) but with folio¿?
-                # example: tourist tour in group
-                if not service.service_line_ids:
-                    service.service_line_ids = [(
-                            0,
-                            False,
-                            {
-                                "date": fields.Date.today(),
-                                "day_qty": day_qty,
-                            },
-                        )]
+                service.service_line_ids = False
 
     def _search_old_lines(self, date):
         self.ensure_one()
@@ -273,6 +276,7 @@ class PmsService(models.Model):
     @api.depends("service_line_ids", "service_line_ids.day_qty")
     def _compute_product_qty(self):
         self.product_qty = 0
+        _logger.info("B")
         for service in self.filtered("service_line_ids"):
             qty = sum(service.service_line_ids.mapped("day_qty"))
             service.product_qty = qty
