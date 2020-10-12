@@ -544,7 +544,7 @@ class PmsFolio(models.Model):
     def action_done(self):
         reservation_ids = self.mapped("reservation_ids")
         for line in reservation_ids:
-            if line.state == "booking":
+            if line.state == "onboard":
                 line.action_reservation_checkout()
 
     def action_cancel(self):

@@ -27,12 +27,12 @@
                         name="action_cancel"
                         string="Cancel Reservation"
                         type="object"
-                        attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('confirm','booking'))]}"
+                        attrs="{'invisible':['|',('folio_id', '=', False),('state','not in',('confirm','onboard'))]}"
                     />
                     <button
                         name="action_reservation_checkout"
                         string="Done"
-                        states="booking"
+                        states="onboard"
                         type="object"
                     />
                     <button
@@ -45,7 +45,7 @@
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,confirm,booking,done"
+                        statusbar_visible="draft,confirm,onboard,done"
                     />
                 </header>
                 <div
@@ -690,7 +690,7 @@
                     name="action_checks"
                     context="{'partner_id': partner_id,'enter_date': checkin,
                         'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
-                    attrs="{'invisible':['|',('state','not in',('confirm','booking')),('checkin_partner_pending_count','=', 0)]}"
+                    attrs="{'invisible':['|',('state','not in',('confirm','onboard')),('checkin_partner_pending_count','=', 0)]}"
                 />
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="room_id" options="{'no_create': True,'no_open': True}" />
@@ -805,7 +805,7 @@
                 <filter
                     string="On Board"
                     name="on_board"
-                    domain="[('state','in',['booking'])]"
+                    domain="[('state','in',['onboard'])]"
                     help="Current Booking"
                 />
                 <filter

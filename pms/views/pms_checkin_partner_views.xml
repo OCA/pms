@@ -51,7 +51,7 @@
                 decoration-danger="state == 'draft'"
                 decoration-info="state == 'done'"
                 decoration-muted="state == 'cancelled'"
-                decoration-success="state == 'booking'"
+                decoration-success="state == 'onboard'"
             >
                 <button
                     type="object"
@@ -82,7 +82,7 @@
                 create="false"
                 decoration-danger="state == 'draft'"
                 decoration-muted="state == 'cancelled' or state =='done'"
-                decoration-success="state == 'booking'"
+                decoration-success="state == 'onboard'"
             >
                 <button
                     type="object"
@@ -117,7 +117,7 @@
                 <filter
                     string="On Board"
                     name="on_board"
-                    domain="[('state','=','booking')]"
+                    domain="[('state','=','onboard')]"
                     help="Current Booking"
                 />
                 <filter
@@ -144,7 +144,7 @@
                     string="On Board Tomorrow"
                     name="next_res_2week"
                     domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
-                        ('state', 'in', ['confirm','booking'])]"
+                        ('state', 'in', ['confirm','onboard'])]"
                     help="Show all checkins for Tomorrow"
                 />
                 <group expand="0" string="Group By">
