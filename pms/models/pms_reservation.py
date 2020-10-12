@@ -235,7 +235,7 @@ class PmsReservation(models.Model):
         related="folio_id.reservation_type", default=lambda *a: "normal"
     )
     splitted = fields.Boolean("Splitted", compute="_compute_splitted", store=True,)
-    invoice_count = fields.Integer(related="folio_id.invoice_count")
+
     credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
         [("late", "Late"), ("intime", "In time"), ("noshow", "No Show")],
