@@ -72,6 +72,6 @@
         "views/webclient_templates.xml",
         "wizard/folio_make_invoice_advance_views.xml",
     ],
-    "demo": ["demo/pms_demo.xml"],
+    "demo": ["demo/pms_master_data.xml", "demo/pms_reservation.xml"],
     "qweb": ["static/src/xml/pms_base_templates.xml",],
 }

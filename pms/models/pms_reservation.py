@@ -5,13 +5,8 @@ import logging
 from datetime import timedelta
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-from odoo.tools import (
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT,
-    float_compare,
-    float_is_zero,
-)
+from odoo.exceptions import ValidationError
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_compare, float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -290,19 +285,18 @@ class PmsReservation(models.Model):
     reselling = fields.Boolean("Is Reselling", default=False)
     nights = fields.Integer("Nights", compute="_computed_nights", store=True)
     channel_type = fields.Selection(
-        [("direct", "Direct"), ("agency", "Agency"),],
+        selection=[("direct", "Direct"), ("agency", "Agency"),],
         string="Sales Channel",
         default="direct",
     )
-    subchannel_direct = fields.Selection([
-        ("door", "Door"),
-        ("mail", "Mail"),
-        ("phone", "Phone"),
-        ],
+    subchannel_direct = fields.Selection(
+        selection=[("door", "Door"), ("mail", "Mail"), ("phone", "Phone"),],
         string="Direct Channel",
     )
     origin = fields.Char("Origin", compute="_compute_origin", store=True)
-    detail_origin = fields.Char("Detail Origin", compute="_compute_detail_origin", store=True)
+    detail_origin = fields.Char(
+        "Detail Origin", compute="_compute_detail_origin", store=True
+    )
     # TODO: Review functionality of last_update_res
     last_updated_res = fields.Datetime(
         "Last Updated", compute="_compute_last_updated_res", store=True, readonly=False,
@@ -424,7 +418,7 @@ class PmsReservation(models.Model):
 
     @api.depends("checkin")
     def _compute_priority(self):
-        #TODO: Logic priority (100 by example)
+        # TODO: Logic priority (100 by example)
         self.priority = 100
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
@@ -1079,7 +1073,7 @@ class PmsReservation(models.Model):
     @api.depends("origin")
     def _compute_detail_origin(self):
         for reservation in self:
-            if reservation.channel_type in ["direct","agency"]:
+            if reservation.channel_type in ["direct", "agency"]:
                 reservation.detail_origin = reservation.sudo().create_uid.name
 
     # https://www.odoo.com/es_ES/forum/ayuda-1/question/calculated-fields-in-search-filter-possible-118501

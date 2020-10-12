@@ -1,9 +1,10 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from datetime import timedelta
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from datetime import timedelta
 
 
 class PmsRoomType(models.Model):
@@ -57,14 +58,19 @@ class PmsRoomType(models.Model):
     total_rooms_count = fields.Integer(compute="_compute_total_rooms", store=True)
     active = fields.Boolean("Active", default=True)
     sequence = fields.Integer("Sequence", default=0)
-    default_max_avail = fields.Integer("Max. Availability", default=-1,
-                                       help="Maximum simultaneous availability on own Booking Engine "
-                                            "given no availability rules. "
-                                            "Use `-1` for using maximum simultaneous availability.")
-    default_quota = fields.Integer("Default Quota", default=-1,
-                                   help="Quota assigned to the own Booking Engine given no availability rules. "
-                                        "Use `-1` for managing no quota.")
-
+    default_max_avail = fields.Integer(
+        "Max. Availability",
+        default=-1,
+        help="Maximum simultaneous availability on own Booking Engine "
+        "given no availability rules. "
+        "Use `-1` for using maximum simultaneous availability.",
+    )
+    default_quota = fields.Integer(
+        "Default Quota",
+        default=-1,
+        help="Quota assigned to the own Booking Engine given no availability rules. "
+        "Use `-1` for managing no quota.",
+    )
 
     _sql_constraints = [
         (

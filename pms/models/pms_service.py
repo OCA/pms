@@ -91,10 +91,7 @@ class PmsService(models.Model):
     state = fields.Selection(related="folio_id.state")
     per_day = fields.Boolean(related="product_id.per_day", related_sudo=True)
     product_qty = fields.Integer(
-        "Quantity",
-        compute="_compute_product_qty",
-        store=True,
-        readonly=False,
+        "Quantity", compute="_compute_product_qty", store=True, readonly=False,
     )
     is_board_service = fields.Boolean()
     to_print = fields.Boolean("Print", help="Print in Folio Report")
@@ -204,15 +201,14 @@ class PmsService(models.Model):
                                 i += 1
                             idate = reservation.checkin + timedelta(days=i)
                             old_line = service._search_old_lines(idate)
-                            if idate in [line.date for line in service.service_line_ids]:
-                            #REVIEW: If the date is already cached (otherwise double the date)
+                            if idate in [
+                                line.date for line in service.service_line_ids
+                            ]:
+                                # REVIEW: If the date is already cached (otherwise double the date)
                                 pass
                             elif not old_line:
                                 lines.append(
-                                    (0, False, {
-                                        "date": idate,
-                                        "day_qty": day_qty,
-                                        })
+                                    (0, False, {"date": idate, "day_qty": day_qty,})
                                 )
                             else:
                                 lines.append((4, old_line.id))
@@ -222,8 +218,16 @@ class PmsService(models.Model):
                         service.service_line_ids -= service.service_line_ids.filtered_domain(
                             [
                                 "|",
-                                ("date", "<", reservation.checkin + timedelta(move_day)),
-                                ("date", ">=", reservation.checkout + timedelta(move_day)),
+                                (
+                                    "date",
+                                    "<",
+                                    reservation.checkin + timedelta(move_day),
+                                ),
+                                (
+                                    "date",
+                                    ">=",
+                                    reservation.checkout + timedelta(move_day),
+                                ),
                             ]
                         )
                         _logger.info(service)
@@ -232,39 +236,34 @@ class PmsService(models.Model):
                     else:
                         # TODO: Review (business logic refact) no per_day logic service
                         if not service.service_line_ids:
-                            service.service_line_ids = [(
-                                0,
-                                False,
-                                {
-                                    "date": fields.Date.today(),
-                                    "day_qty": day_qty,
-                                },
-                            )]
+                            service.service_line_ids = [
+                                (
+                                    0,
+                                    False,
+                                    {"date": fields.Date.today(), "day_qty": day_qty,},
+                                )
+                            ]
                 else:
                     # TODO: Service without reservation(room) but with folio¿?
                     # example: tourist tour in group
                     if not service.service_line_ids:
-                        service.service_line_ids = [(
+                        service.service_line_ids = [
+                            (
                                 0,
                                 False,
-                                {
-                                    "date": fields.Date.today(),
-                                    "day_qty": day_qty,
-                                },
-                            )]
+                                {"date": fields.Date.today(), "day_qty": day_qty,},
+                            )
+                        ]
             else:
                 service.service_line_ids = False
 
     def _search_old_lines(self, date):
         self.ensure_one()
-        old_lines = self.env['pms.service.line']
+        old_lines = self.env["pms.service.line"]
         if isinstance(self._origin.id, int):
-            old_line = self._origin.service_line_ids.filtered(
-                lambda r: r.date == date
-                )
+            old_line = self._origin.service_line_ids.filtered(lambda r: r.date == date)
             return old_line
         return False
-
 
     @api.depends("product_id")
     def _compute_tax_ids(self):
@@ -348,20 +347,22 @@ class PmsService(models.Model):
                 service.price_unit = 0
 
     def _recompute_price(self):
-        #REVIEW: Conditional to avoid overriding already calculated prices,
+        # REVIEW: Conditional to avoid overriding already calculated prices,
         # I'm not sure it's the best way
         self.ensure_one()
-        #folio/reservation origin service
+        # folio/reservation origin service
         folio_origin = self._origin.folio_id
         reservation_origin = self._origin.reservation_id
         origin = reservation_origin if reservation_origin else folio_origin
-        #folio/reservation new service
+        # folio/reservation new service
         folio_new = self.folio_id
         reservation_new = self.reservation_id
         new = reservation_new if reservation_new else folio_new
         price_fields = ["pricelist_id", "reservation_type"]
-        if any(origin[field] != new[field] for field in price_fields) or \
-                self._origin.price_unit == 0:
+        if (
+            any(origin[field] != new[field] for field in price_fields)
+            or self._origin.price_unit == 0
+        ):
             return True
         return False
 

@@ -34,47 +34,6 @@ class TestHotel(common.SavepointCase):
     def _init_mock_hotel(cls):
         return True
 
-    def create_folio(self, creator, partner):
-        # Create Folio
-        folio = (
-            self.env["hotel.folio"].sudo(creator).create({"partner_id": partner.id,})
-        )
-        self.assertTrue(folio, "Can't create folio")
-        return folio
-
-    def create_reservation(
-        self, creator, folio, checkin, checkout, room, resname, adults=1, children=0
-    ):
-        # Create Reservation (Special Room)
-        reservation = (
-            self.env["hotel.reservation"]
-            .sudo(creator)
-            .create(
-                {
-                    "name": resname,
-                    "adults": adults,
-                    "children": children,
-                    "checkin": checkin.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                    "checkout": checkout.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                    "folio_id": folio.id,
-                    "room_type_id": room.price_room_type.id,
-                    "product_id": room.product_id.id,
-                }
-            )
-        )
-        self.assertTrue(reservation, "Hotel Calendar can't create a new reservation!")
-
-        # Create Reservation Lines + Update Reservation Price
-        # days_diff = date_utils.date_diff(checkin, checkout, hours=False)
-        # res = reservation.sudo(creator).prepare_reservation_lines(
-        #     checkin.strftime(DEFAULT_SERVER_DATETIME_FORMAT), days_diff)
-        # reservation.sudo(creator).write({
-        #     'reservation_lines': res['commands'],
-        #     'price_unit': res['total_price'],
-        # })
-
-        return reservation
-
     @classmethod
     def setUpClass(cls):
         super(TestHotel, cls).setUpClass()
@@ -82,24 +41,24 @@ class TestHotel(common.SavepointCase):
         cls._init_mock_hotel()
 
         # Create Tests Records
-        cls.main_hotel_property = cls.env.ref("hotel.main_hotel_property")
-        cls.demo_hotel_property = cls.env.ref("hotel.demo_hotel_property")
+        cls.main_hotel_property = cls.env.ref("pms.main_pms_property")
+        cls.demo_hotel_property = cls.env.ref("pms.demo_pms_property")
 
-        cls.room_type_0 = cls.env.ref("hotel.hotel_room_type_0")
-        cls.room_type_1 = cls.env.ref("hotel.hotel_room_type_1")
-        cls.room_type_2 = cls.env.ref("hotel.hotel_room_type_2")
-        cls.room_type_3 = cls.env.ref("hotel.hotel_room_type_3")
+        cls.room_type_0 = cls.env.ref("pms.pms_room_type_0")
+        cls.room_type_1 = cls.env.ref("pms.pms_room_type_1")
+        cls.room_type_2 = cls.env.ref("pms.pms_room_type_2")
+        cls.room_type_3 = cls.env.ref("pms.pms_room_type_3")
 
-        cls.demo_room_type_0 = cls.env.ref("hotel.demo_hotel_room_type_0")
-        cls.demo_room_type_1 = cls.env.ref("hotel.demo_hotel_room_type_1")
+        cls.demo_room_type_0 = cls.env.ref("pms.demo_pms_room_type_0")
+        cls.demo_room_type_1 = cls.env.ref("pms.demo_pms_room_type_1")
 
-        cls.room_0 = cls.env.ref("hotel.hotel_room_0")
-        cls.room_1 = cls.env.ref("hotel.hotel_room_1")
-        cls.room_2 = cls.env.ref("hotel.hotel_room_2")
-        cls.room_3 = cls.env.ref("hotel.hotel_room_3")
-        cls.room_4 = cls.env.ref("hotel.hotel_room_4")
-        cls.room_5 = cls.env.ref("hotel.hotel_room_5")
-        cls.room_6 = cls.env.ref("hotel.hotel_room_6")
+        cls.room_0 = cls.env.ref("pms.pms_room_0")
+        cls.room_1 = cls.env.ref("pms.pms_room_1")
+        cls.room_2 = cls.env.ref("pms.pms_room_2")
+        cls.room_3 = cls.env.ref("pms.pms_room_3")
+        cls.room_4 = cls.env.ref("pms.pms_room_4")
+        cls.room_5 = cls.env.ref("pms.pms_room_5")
+        cls.room_6 = cls.env.ref("pms.pms_room_6")
 
         cls.list0 = cls.env.ref("product.list0")
         cls.list1 = cls.env["product.pricelist"].create(

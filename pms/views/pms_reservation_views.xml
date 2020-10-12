@@ -495,10 +495,7 @@
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
                     </group>
                     <notebook>
-                        <page
-                            name="detail"
-                            string="Detail"
-                        >
+                        <page name="detail" string="Detail">
                             <button
                                 name="%(action_pms_massive_price_change_reservation_days)d"
                                 string="Massive Day Prices"
@@ -518,15 +515,12 @@
                                 </tree>
                             </field>
                             <button
-                                    name="%(action_service_on_day)d"
-                                    string="Service on Day"
-                                    type="action"
-                                    icon="fa-coffee"
-                                />
-                            <group
-                                string="Services"
-                                name="reservation_services"
-                            >
+                                name="%(action_service_on_day)d"
+                                string="Service on Day"
+                                type="action"
+                                icon="fa-coffee"
+                            />
+                            <group string="Services" name="reservation_services">
                                 <field
                                     name="service_ids"
                                     context="{'default_reservation_id': active_id, 'default_folio_id': folio_id, 'form_view_ref':'pms.pms_service_view_form'}"
@@ -863,6 +857,7 @@
                 <field name="create_date" />
                 <field name="overbooking" invisible="1" />
                 <field name="last_updated_res" string="Updated on" />
+                <field name="origin" />
                 <field name="checkin_partner_ids" invisible="1" />
                 <field name="to_assign" invisible="1" />
                 <field name="checkin_partner_pending_count" invisible="1" />
