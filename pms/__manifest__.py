@@ -32,7 +32,7 @@
         "data/pms_sequence.xml",
         "report/pms_folio.xml",
         "report/pms_folio_templates.xml",
-        "templates/pms_email_template.xml",
+        #"templates/pms_email_template.xml",
         "views/general.xml",
         "data/menus.xml",
         "views/pms_amenity_views.xml",

@@ -26,10 +26,10 @@ class PaymentReturn(models.Model):
                 folios_line = self.env["pms.folio"].browse(
                     payments.mapped("folio_id.id")
                 )
-                for folio in folios_line:
-                    if self.id not in folio.return_ids.ids:
-                        folio.update({"return_ids": [(4, self.id)]})
-                    msg = _("Return of %s registered") % (line.amount)
-                    folio.message_post(subject=_("Payment Return"), body=msg)
+                # for folio in folios_line:
+                #     if self.id not in folio.return_ids.ids:
+                #         folio.update({"return_ids": [(4, self.id)]})
+                #     msg = _("Return of %s registered") % (line.amount)
+                #     folio.message_post(subject=_("Payment Return"), body=msg)
                 folios += folios_line
             folios.compute_amount()
