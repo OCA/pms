@@ -413,8 +413,9 @@ class PmsFolio(models.Model):
                 }
             )
 
+    #TODO: Add return_ids to depends
     @api.depends(
-        "amount_total", "payment_ids", "return_ids", "reservation_type", "state"
+        "amount_total", "payment_ids", "reservation_type", "state"
     )
     def compute_amount(self):
         acc_pay_obj = self.env["account.payment"]
