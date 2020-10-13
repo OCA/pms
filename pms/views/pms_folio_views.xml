@@ -200,11 +200,11 @@
                                 options="{'no_create': True}"
                             />
                         </page>
-                        <page
+                        <!-- <page
                             name="returns"
                             string="Retun Payments"
                             attrs="{'invisible': [('refund_amount','&lt;=',0)]}"
-                        >
+                        > -->
                             <field name="return_ids" options="{'no_create': True}" />
                         </page>
                         <page string="Other data" invisible="1">
