@@ -167,33 +167,33 @@
                     <filter
                         string="Checkin by Month"
                         name="checkin_by_month"
-                        context="{'group_by':'checkin', 'default_order': 'checkin asc'}"
+                        context="{'group_by':'enter_date', 'default_order': 'enter_date asc'}"
                     />
                     <filter
                         string="Checkin by Week"
                         name="checkin_by_week"
-                        context="{'group_by':'checkin:week', 'default_order': 'checkin'}"
+                        context="{'group_by':'enter_date:week', 'default_order': 'enter_date'}"
                     />
                     <filter
                         string="Checkin by Day"
                         name="checkin_by_week"
-                        context="{'group_by':'checkin:day', 'default_order': 'checkin'}"
+                        context="{'group_by':'enter_date:day', 'default_order': 'enter_date'}"
                     />
                     <separator />
                     <filter
                         string="Checkout by Month"
                         name="checkout_by_month"
-                        context="{'group_by':'checkout', 'default_order': 'checkout asc'}"
+                        context="{'group_by':'exit_date', 'default_order': 'exit_date asc'}"
                     />
                     <filter
                         string="Checkout by Week"
                         name="checkout_by_week"
-                        context="{'group_by':'checkout:week', 'default_order': 'checkout'}"
+                        context="{'group_by':'exit_date:week', 'default_order': 'exit_date'}"
                     />
                     <filter
                         string="Checkout by Day"
                         name="checkout_by_week"
-                        context="{'group_by':'checkout:day', 'default_order': 'checkout'}"
+                        context="{'group_by':'exit_date:day', 'default_order': 'exit_date'}"
                     />
                     <separator />
                 </group>
