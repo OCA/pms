@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import ir_http
-from . import payment_return
+#from . import payment_return
 from . import pms_board_service_room_type
 from . import pms_property
 from . import res_users
