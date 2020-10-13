@@ -55,32 +55,32 @@ class AccountPayment(models.Model):
     # Action methods
     """WIP"""
 
-    def return_payment_folio(self):
-        journal = self.journal_id
-        partner = self.partner_id
-        amount = self.amount
-        reference = self.communication
-        account_move_lines = self.move_line_ids.filtered(
-            lambda x: (x.account_id.internal_type == "receivable")
-        )
-        return_line_vals = {
-            "move_line_ids": [(6, False, [x.id for x in account_move_lines])],
-            "partner_id": partner.id,
-            "amount": amount,
-            "reference": reference,
-        }
-        return_vals = {
-            "journal_id": journal.id,
-            "line_ids": [(0, 0, return_line_vals)],
-        }
-        return_pay = self.env["payment.return"].create(return_vals)
-        if self.save_amount:
-            self.amount = self.save_amount
-        if self.save_date:
-            self.payment_date = self.save_date
-        if self.save_journal_id:
-            self.journal_id = self.env["account.journal"].browse(self.save_journal_id)
-        return_pay.action_confirm()
+    # def return_payment_folio(self):
+    #     journal = self.journal_id
+    #     partner = self.partner_id
+    #     amount = self.amount
+    #     reference = self.communication
+    #     account_move_lines = self.move_line_ids.filtered(
+    #         lambda x: (x.account_id.internal_type == "receivable")
+    #     )
+    #     return_line_vals = {
+    #         "move_line_ids": [(6, False, [x.id for x in account_move_lines])],
+    #         "partner_id": partner.id,
+    #         "amount": amount,
+    #         "reference": reference,
+    #     }
+    #     return_vals = {
+    #         "journal_id": journal.id,
+    #         "line_ids": [(0, 0, return_line_vals)],
+    #     }
+    #     return_pay = self.env["payment.return"].create(return_vals)
+    #     if self.save_amount:
+    #         self.amount = self.save_amount
+    #     if self.save_date:
+    #         self.payment_date = self.save_date
+    #     if self.save_journal_id:
+    #         self.journal_id = self.env["account.journal"].browse(self.save_journal_id)
+    #     return_pay.action_confirm()
 
     # Business methods
 

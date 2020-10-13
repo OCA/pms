@@ -19,10 +19,9 @@
     "depends": [
         "base",
         "mail",
-        "account_payment_return",
-        "partner_firstname",
-        "email_template_qweb",
-        "sales_team",
+        #"account_payment_return",
+        # "partner_firstname",
+        #"email_template_qweb",
         "sale",
     ],
     "data": [

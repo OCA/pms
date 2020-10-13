@@ -102,7 +102,7 @@ class PmsFolio(models.Model):
         "res.partner", "Agency", ondelete="restrict", domain=[("is_agency", "=", True)],
     )
     payment_ids = fields.One2many("account.payment", "folio_id", readonly=True)
-    return_ids = fields.One2many("payment.return", "folio_id", readonly=True)
+    # return_ids = fields.One2many("payment.return", "folio_id", readonly=True)
     payment_term_id = fields.Many2one(
         "account.payment.term",
         string="Payment Terms",
@@ -195,9 +195,9 @@ class PmsFolio(models.Model):
     pending_amount = fields.Monetary(
         compute="compute_amount", store=True, string="Pending in Folio"
     )
-    refund_amount = fields.Monetary(
-        compute="compute_amount", store=True, string="Payment Returns"
-    )
+    # refund_amount = fields.Monetary(
+    #     compute="compute_amount", store=True, string="Payment Returns"
+    # )
     invoices_paid = fields.Monetary(
         compute="compute_amount",
         store=True,
@@ -423,20 +423,20 @@ class PmsFolio(models.Model):
                 vals = {
                     "pending_amount": 0,
                     "invoices_paid": 0,
-                    "refund_amount": 0,
+                    # "refund_amount": 0,
                 }
                 record.update(vals)
             else:
                 total_inv_refund = 0
                 payments = acc_pay_obj.search([("folio_id", "=", record.id)])
                 total_paid = sum(pay.amount for pay in payments)
-                return_lines = self.env["payment.return.line"].search(
-                    [
-                        ("move_line_ids", "in", payments.mapped("move_line_ids.id")),
-                        ("return_id.state", "=", "done"),
-                    ]
-                )
-                total_inv_refund = sum(pay_return.amount for pay_return in return_lines)
+                # return_lines = self.env["payment.return.line"].search(
+                #     [
+                #         ("move_line_ids", "in", payments.mapped("move_line_ids.id")),
+                #         ("return_id.state", "=", "done"),
+                #     ]
+                # )
+                # total_inv_refund = sum(pay_return.amount for pay_return in return_lines)
                 total = record.amount_total
                 # REVIEW: Must We ignored services in cancelled folios
                 # pending amount?
@@ -445,7 +445,7 @@ class PmsFolio(models.Model):
                 vals = {
                     "pending_amount": total - total_paid + total_inv_refund,
                     "invoices_paid": total_paid,
-                    "refund_amount": total_inv_refund,
+                    # "refund_amount": total_inv_refund,
                 }
                 record.update(vals)
 
@@ -486,29 +486,29 @@ class PmsFolio(models.Model):
             action = {"type": "ir.actions.act_window_close"}
         return action
 
-    def action_return_payments(self):
-        self.ensure_one()
-        return_move_ids = []
-        acc_pay_obj = self.env["account.payment"]
-        payments = acc_pay_obj.search(
-            ["|", ("move_ids", "in", self.move_ids.ids), ("folio_id", "=", self.id)]
-        )
-        return_move_ids += self.move_ids.filtered(
-            lambda invoice: invoice.type == "out_refund"
-        ).mapped("payment_move_line_ids.move_id.id")
-        return_lines = self.env["payment.return.line"].search(
-            [("move_line_ids", "in", payments.mapped("move_line_ids.id")),]
-        )
-        return_move_ids += return_lines.mapped("return_id.move_id.id")
+    # def action_return_payments(self):
+    #     self.ensure_one()
+    #     return_move_ids = []
+    #     acc_pay_obj = self.env["account.payment"]
+    #     payments = acc_pay_obj.search(
+    #         ["|", ("move_ids", "in", self.move_ids.ids), ("folio_id", "=", self.id)]
+    #     )
+    #     return_move_ids += self.move_ids.filtered(
+    #         lambda invoice: invoice.type == "out_refund"
+    #     ).mapped("payment_move_line_ids.move_id.id")
+    #     return_lines = self.env["payment.return.line"].search(
+    #         [("move_line_ids", "in", payments.mapped("move_line_ids.id")),]
+    #     )
+    #     return_move_ids += return_lines.mapped("return_id.move_id.id")
 
-        return {
-            "name": _("Returns"),
-            "view_type": "form",
-            "view_mode": "tree,form",
-            "res_model": "account.move",
-            "type": "ir.actions.act_window",
-            "domain": [("id", "in", return_move_ids)],
-        }
+    #     return {
+    #         "name": _("Returns"),
+    #         "view_type": "form",
+    #         "view_mode": "tree,form",
+    #         "res_model": "account.move",
+    #         "type": "ir.actions.act_window",
+    #         "domain": [("id", "in", return_move_ids)],
+    #     }
 
     def action_checks(self):
         self.ensure_one()

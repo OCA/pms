@@ -279,7 +279,7 @@
                             </tbody>
                         </table>
                     </span>
-                    <span t-if="doc.return_ids">
+                    <!-- <span t-if="doc.return_ids">
                         <table style="width:80%;">
                             <thead>
                                 <tr>
@@ -302,7 +302,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </span>
+                    </span> -->
                 </div>
                 <p t-field="doc.note" />
                 <p t-if="doc.payment_term_id.note">

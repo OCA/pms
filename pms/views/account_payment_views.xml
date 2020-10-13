@@ -40,13 +40,13 @@
                         class="oe_edit_only btn-primary"
                         attrs="{'invisible': [('state','=','draft')]}"
                     />
-                    <button
+                    <!-- <button
                         string="Return"
                         name="return_payment_folio"
                         type="object"
                         class="oe_edit_only btn-primary"
                         attrs="{'invisible': [('state','=','draft')]}"
-                    />
+                    /> -->
                     <button
                         string="Delete"
                         name="delete"
