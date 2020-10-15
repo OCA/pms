@@ -45,7 +45,6 @@
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,confirm,onboard,done"
                     />
                 </header>
                 <div
@@ -280,7 +279,6 @@
                             name="reservation_details"
                         >
                             <field name="pms_property_id" />
-                            <field name="allowed_room_ids" invisible="1" />
                             <field
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
@@ -364,7 +362,6 @@
                                 string="Only Room"
                                 widget="monetary"
                             />
-                            <field name="state" invisible="1" />
                             <field name="invoice_status" invisible="1" />
                             <field name="currency_id" invisible="1" />
                             <field
@@ -632,54 +629,31 @@
         <field name="arch" type="xml">
             <tree
                 string="Reservation"
-                decoration-danger="folio_pending_amount &gt; 0 and checkin &lt;= current_date and not overbooking"
-                decoration-muted="state == 'cancelled' and folio_pending_amount &gt; 0 and not overbooking"
-                decoration-success="folio_pending_amount == 0 and checkout &lt;= current_date and not overbooking"
-                decoration-warning="overbooking"
+                multi_edit="1" sample="1"
+                class="o_sale_order"
             >
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
-                <button
-                    icon="fa-angellist"
-                    attrs="{'invisible':['|',('folio_pending_amount','&gt;',0),('state' ,'!=', 'done')]}"
-                    type="object"
-                    name="open_folio"
-                />
-                <field name="state" />
                 <button
                     type="object"
                     class="oe_stat_button"
                     icon="fa-file"
                     name="open_folio"
                 />
+                <field name="checkin" widget="remaining_days" optional="show" attrs="{'invisible': [['state', '=', 'done']]}" />
                 <field name="folio_id" />
-                <button
-                    type="object"
-                    class="oe_stat_button"
-                    icon="fa-user-plus"
-                    name="action_checks"
-                    context="{'partner_id': partner_id,'enter_date': checkin,
-                        'exit_date': checkout,'reservation_id': id, 'hidden_checkin_partner': True, 'edit_checkin_partner': True }"
-                    attrs="{'invisible':['|',('state','not in',('confirm','onboard')),('checkin_partner_pending_count','=', 0)]}"
-                />
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="room_id" options="{'no_create': True,'no_open': True}" />
-                <button
-                    type="action"
-                    class="oe_stat_button"
-                    icon="fa-list-ul"
-                    name="%(open_pms_reservation_form_tree_all)d"
-                    context="{'search_default_partner_id': partner_id}"
-                />
                 <field name="partner_id" />
                 <field name="room_type_id" string="Reserved Unit Type" />
                 <field name="nights" />
                 <field name="adults" string="Persons" />
-                <field name="checkin" widget="date" />
                 <field name="checkout" widget="date" />
                 <field name="create_date" />
                 <field name="overbooking" invisible="1" />
                 <field name="last_updated_res" string="Updated on" />
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="create_uid" optional="show" widget="many2one_avatar_user"/>
                 <field name="origin" />
                 <field name="checkin_partner_ids" invisible="1" />
                 <field name="to_assign" invisible="1" />
@@ -689,15 +663,8 @@
                 <field name="price_subtotal" invisible="1" />
                 <field name="price_total" />
                 <field name="folio_pending_amount" string="Folio Pending Amount" />
-                <button
-                    type="object"
-                    class="oe_stat_button"
-                    icon="fa-money"
-                    name="action_pay_folio"
-                    attrs="{'invisible':[('folio_pending_amount','=',0)]}"
-                />
-                <field name="create_uid" />
                 <field name="company_id" />
+                <field name="state" decoration-success="state == 'done'" decoration-info="state == 'confirm'" warning-info="state == 'onboard'" widget="badge" optional="show"/>
             </tree>
         </field>
     </record>
@@ -725,7 +692,7 @@
             <xpath expr="//field[@name='folio_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//button[@name='open_folio'][1]" position="attributes">
+            <!-- <xpath expr="//button[@name='open_folio'][1]" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//button[@name='open_folio'][2]" position="attributes">
@@ -736,7 +703,7 @@
                 position="attributes"
             >
                 <attribute name="invisible">True</attribute>
-            </xpath>
+            </xpath> -->
             <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
