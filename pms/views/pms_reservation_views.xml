@@ -117,7 +117,7 @@
                             id="payment_smart_button"
                             icon="fa-money"
                             name="action_pay_folio"
-                            attrs="{'invisible': ['|',('folio_pending_amount','&lt;=',0)]}"
+                            attrs="{'invisible': [('folio_pending_amount','&lt;=',0)]}"
                         >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
@@ -181,21 +181,6 @@
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Closure Reason"
                             attrs="{'invisible':[('reservation_type','not in',('out'))]}"
-                        />
-                        <span
-                            class="fa fa-user"
-                            style="margin-left:20px;"
-                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"
-                        />
-                        <span
-                            class="fa fa-black-tie"
-                            style="margin-left:20px; color: #C67;"
-                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
-                        />
-                        <span
-                            class="fa fa-ban"
-                            style="margin-left:20px; color: #9C4747;"
-                            attrs="{'invisible': [('reservation_type','not in',('out'))]}"
                         />
                     </h1>
                     <h3>
@@ -538,9 +523,9 @@
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" />
-                    <field name="activity_ids" widget="mail_activity" />
-                    <field name="message_ids" widget="mail_thread" />
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
                 </div>
             </form>
         </field>

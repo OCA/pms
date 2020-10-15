@@ -10,14 +10,6 @@
                 <field name="pms_property_id" invisible="1" />
             </xpath>
             <xpath
-                expr="//button[@name='action_invoice_register_payment']"
-                position="attributes"
-            >
-                <attribute
-                    name="attrs"
-                >{'invisible': ['|',('from_folio','=',True)]}</attribute>
-            </xpath>
-            <xpath
                 expr="//field[@name='invoice_outstanding_credits_debits_widget']"
                 position="before"
             >

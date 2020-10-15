@@ -5,7 +5,7 @@
         <field name="model">pms.folio</field>
         <field name="arch" type="xml">
             <form string="Folio">
-                <header>out_to_send" invisible="1" /> -->
+                <header>
                     <button
                         name="action_confirm"
                         states="draft"
@@ -61,14 +61,12 @@
                     <h1>
                         <field
                             name="partner_id"
-                            default_focus="1"
                             placeholder="Guest"
                             attrs="{'invisible':[('reservation_type','in',('out'))]}"
                         />
                         <field
                             name="closure_reason_id"
                             placeholder="Closure reason"
-                            default_focus="1"
                             attrs="{'invisible':[('reservation_type','not in',('out'))]}"
                         />
                     </h1>
@@ -142,7 +140,7 @@
                         <field name="move_ids" invisible="1" />
                         <field name="invoice_status" invisible="1" />
                         <field name="currency_id" invisible="1" />
-                        <field name="refund_amount" invisible="1" />
+                        <!--<field name="refund_amount" invisible="1" />-->
                         <field name="invoices_paid" invisible="1" />
                     </group>
                     <notebook colspan="4" col="1">
@@ -200,13 +198,13 @@
                                 options="{'no_create': True}"
                             />
                         </page>
-                        <!-- <page
+                         <!-- <page
                             name="returns"
                             string="Retun Payments"
                             attrs="{'invisible': [('refund_amount','&lt;=',0)]}"
-                        > -->
+                        >
                             <field name="return_ids" options="{'no_create': True}" />
-                        </page>
+                        </page> -->
                         <page string="Other data" invisible="1">
                             <group>
                                 <field name="user_id" />
@@ -230,9 +228,9 @@
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" />
-                    <field name="activity_ids" widget="mail_activity" />
-                    <field name="message_ids" widget="mail_thread" />
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
                 </div>
             </form>
         </field>
@@ -270,7 +268,7 @@
                 <field name="reservation_ids" />
                 <field name="service_ids" />
                 <field name="pending_amount" />
-                <field name="refund_amount" />
+                <!-- <field name="refund_amount" /> -->
                 <field name="invoices_paid" />
                 <field name="booking_pending" />
                 <field name="checkin_partner_count" />
@@ -367,7 +365,7 @@
         </field>
     </record>
     <!-- Add create invoice merge folio -->
-    <act_window
+    <!-- <act_window
         name="Send Confirm Mail"
         res_model="mail.compose.message"
         binding_model="pms.folio"
@@ -383,7 +381,7 @@
             'force_send': True,
             'mark_so_as_sent': True,
         }"
-    />
+    /> -->
     <record model="ir.actions.act_window" id="open_pms_folio1_form_tree_all">
         <field name="name">Folio</field>
         <field name="res_model">pms.folio</field>
