@@ -198,7 +198,7 @@
                                 options="{'no_create': True}"
                             />
                         </page>
-                         <!-- <page
+                        <!-- <page
                             name="returns"
                             string="Retun Payments"
                             attrs="{'invisible': [('refund_amount','&lt;=',0)]}"
@@ -228,9 +228,9 @@
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
                 </div>
             </form>
         </field>
