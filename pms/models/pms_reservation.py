@@ -807,6 +807,8 @@ class PmsReservation(models.Model):
                         lambda x: x.reservation_id.id != record.id
                     )
                 )
+            else:
+                record.shared_folio = False
 
     def _autoassign(self):
         self.ensure_one()
