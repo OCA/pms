@@ -102,7 +102,7 @@ class PmsReservationLine(models.Model):
                 ].rooms_available(
                     checkin=line.date,
                     checkout=line.date + timedelta(1),
-                    room_type_id=self.reservation_id.room_type_id.id or False,
+                    room_type_id=line.reservation_id.room_type_id.id or False,
                     current_lines=line._origin.id,
                 )
                 if rooms_available:
@@ -115,7 +115,7 @@ class PmsReservationLine(models.Model):
                     line.room_id = False
                     raise ValidationError(
                         _("%s: No rooms available")
-                        % (self.reservation_id.room_type_id.name)
+                        % (line.reservation_id.room_type_id.name)
                     )
                 line._check_adults()
             else:
