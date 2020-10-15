@@ -5,7 +5,7 @@
     "name": "PMS (Property Management System)",
     "summary": "A property management system",
     "version": "14.0.1.0.0",
-    "development_status": "Beta",
+    "development_status": "Alpha",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/hootel/hootel",
     "author": "Dario Lodeiros, "
