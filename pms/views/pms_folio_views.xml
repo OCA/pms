@@ -40,7 +40,7 @@
                             id="payment_smart_button"
                             icon="fa-money"
                             name="action_pay"
-                            attrs="{'invisible': ['|',('pending_amount','&lt;=',0)]}"
+                            attrs="{'invisible': [('pending_amount','&lt;=',0)]}"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -249,6 +249,7 @@
                 <field name="name" />
                 <field name="partner_id" select="1" />
                 <field name="date_order" select="1" />
+                <field name="create_uid" optional="show" widget="many2one_avatar_user"/>
                 <field name="reservation_ids" widget="many2many_tags" />
                 <field name="amount_total" sum="Total amount" />
                 <field name="pending_amount" sum="Total debt" />
