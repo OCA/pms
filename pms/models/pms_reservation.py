@@ -15,7 +15,7 @@ class PmsReservation(models.Model):
     _name = "pms.reservation"
     _description = "Reservation"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
-    _order = "last_updated_res desc, name"
+    _order = "priority desc, name"
     _check_company_auto = True
 
     # Default Methods ang Gets
@@ -43,6 +43,7 @@ class PmsReservation(models.Model):
 
     def _get_default_arrival_hour(self):
         folio = False
+        #TODO: Change by property env variable (like company)
         default_arrival_hour = self.env.user.pms_property_id.default_arrival_hour
         if "folio_id" in self._context:
             folio = self.env["pms.folio"].search(
@@ -55,6 +56,7 @@ class PmsReservation(models.Model):
 
     def _get_default_departure_hour(self):
         folio = False
+        #TODO: Change by property env variable (like company)
         default_departure_hour = self.env.user.pms_property_id.default_departure_hour
         if "folio_id" in self._context:
             folio = self.env["pms.folio"].search(
@@ -64,6 +66,11 @@ class PmsReservation(models.Model):
             return folio.reservation_ids[0].departure_hour
         else:
             return default_departure_hour
+
+    @api.model
+    def _get_default_pms_property(self):
+        #TODO: Change by property env variable (like company)
+        return self.env.user.pms_property_id
 
     def _get_default_segmentation(self):
         folio = False
@@ -92,7 +99,11 @@ class PmsReservation(models.Model):
 
     # Fields declaration
     name = fields.Text(
-        "Reservation Description", compute="_compute_name", store=True, readonly=False,
+        "Reservation Description",
+        compute="_compute_name",
+        store=True,
+        readonly=False,
+        #required=True,
     )
     priority = fields.Integer(compute="_compute_priority", store="True", index=True)
     room_id = fields.Many2one(
@@ -103,13 +114,14 @@ class PmsReservation(models.Model):
         compute="_compute_room_id",
         store=True,
         readonly=False,
+        #required=True,
         domain="[('id', 'in', allowed_room_ids)]",
     )
     allowed_room_ids = fields.Many2many(
         "pms.room", string="Allowed Rooms", compute="_compute_allowed_room_ids",
     )
     folio_id = fields.Many2one(
-        "pms.folio", string="Folio", track_visibility="onchange", ondelete="cascade",
+        "pms.folio", string="Folio", track_visibility="onchange", ondelete="restrict",
     )
     board_service_room_id = fields.Many2one(
         "pms.board.service.room.type", string="Board Service",
@@ -118,6 +130,7 @@ class PmsReservation(models.Model):
         "pms.room.type",
         string="Room Type",
         track_visibility="onchange",
+        required=True,
         compute="_compute_room_type_id",
         store=True,
         readonly=False,
@@ -144,7 +157,7 @@ class PmsReservation(models.Model):
         related="folio_id.company_id", string="Company", store=True, readonly=True
     )
     pms_property_id = fields.Many2one(
-        "pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
+        "pms.property", default=_get_default_pms_property, #required=True
     )
     reservation_line_ids = fields.One2many(
         "pms.reservation.line",
@@ -284,10 +297,6 @@ class PmsReservation(models.Model):
     detail_origin = fields.Char(
         "Detail Origin", compute="_compute_detail_origin", store=True
     )
-    # TODO: Review functionality of last_update_res
-    last_updated_res = fields.Datetime(
-        "Last Updated", compute="_compute_last_updated_res", store=True, readonly=False,
-    )
     folio_pending_amount = fields.Monetary(related="folio_id.pending_amount")
     shared_folio = fields.Boolean(compute="_computed_shared")
     # Used to notify is the reservation folio has other reservations/services
@@ -371,6 +380,7 @@ class PmsReservation(models.Model):
     # Compute and Search methods
     @api.depends("checkin", "checkout", "room_type_id")
     def _compute_name(self):
+        _logger.info("CALCULO NOMBRE-------------------")
         for reservation in self:
             if (
                 reservation.room_type_id
@@ -388,6 +398,8 @@ class PmsReservation(models.Model):
                 )
             else:
                 reservation.name = "/"
+            _logger.info("RESERVA")
+            _logger.info(reservation.name)
 
     @api.depends("checkin")
     def _compute_priority(self):
@@ -430,7 +442,7 @@ class PmsReservation(models.Model):
     def _compute_partner_id(self):
         for reservation in self:
             if reservation.reservation_type == "out":
-                reservation.partner_id = self.env.user.pms_property_id.partner_id.id
+                reservation.partner_id = reservation.pms_property_id.partner_id.id
             if reservation.folio_id:
                 reservation.partner_id = reservation.folio_id.partner_id
             else:
@@ -512,18 +524,6 @@ class PmsReservation(models.Model):
                     reservation.adults = reservation.room_id.capacity
             elif reservation.adults == False:
                 reservation.adults = 0
-
-    @api.depends("checkin", "checkout", "state")
-    def _compute_to_send(self):
-        for reservation in self:
-            reservation.to_send = True
-
-    @api.depends(
-        "checkin", "checkout", "discount", "state", "room_type_id", "to_assign"
-    )
-    def _compute_last_updated_res(self):
-        for reservation in self:
-            reservation.last_updated_res = fields.Datetime.now()
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_splitted(self):
@@ -686,6 +686,20 @@ class PmsReservation(models.Model):
         for record in self:
             if len(record.checkin_partner_ids) > record.adults + record.children:
                 raise models.ValidationError(_("The room already is completed"))
+
+    @api.constrains("reservation_type", "partner_id")
+    def _check_partner_reservation(self):
+        for reservation in self:
+            if reservation.reservation_type == "out" and \
+                    reservation.partner_id != reservation.pms_property_id.partner_id.id:
+                raise models.ValidationError(_("The partner on out reservations must be a property partner"))
+
+    @api.constrains("closure_reason_id", "reservation_type")
+    def _check_partner_reservation(self):
+        for reservation in self:
+            if reservation.closure_reason_id and \
+                    reservation.reservation_type != 'out':
+                raise models.ValidationError(_("Only the out reservations can has a clousure reason"))
 
     # @api.onchange("checkin_partner_ids")
     # def onchange_checkin_partner_ids(self):
@@ -1009,15 +1023,6 @@ class PmsReservation(models.Model):
     def unify(self):
         # TODO
         return True
-
-    def send_reservation_mail(self):
-        return self.folio_id.send_reservation_mail()
-
-    def send_exit_mail(self):
-        return self.folio_id.send_exit_mail()
-
-    def send_cancel_mail(self):
-        return self.folio_id.send_cancel_mail()
 
     def _compute_tax_ids(self):
         for record in self:

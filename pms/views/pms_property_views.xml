@@ -28,6 +28,9 @@
                             <group string="Timezone">
                                 <field name="tz" widget="timezone_mismatch" />
                             </group>
+                            <group string="Sequences">
+                                <field name="folio_sequence_id" />
+                            </group>
                             <group colspan="4" col="4" string="Check-in hours">
                                 <field name="default_arrival_hour" />
                                 <field name="default_departure_hour" />
