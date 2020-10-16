@@ -147,8 +147,9 @@ class PmsFolio(models.Model):
     )
     channel_type = fields.Selection(
         [("direct", "Direct"), ("agency", "Agency"),],
-        "Sales Channel",
-        default="direct",
+        string="Sales Channel",
+        compute="_compute_channel_type",
+        store=True,
     )
     date_order = fields.Datetime(
         string="Order Date",
@@ -285,6 +286,14 @@ class PmsFolio(models.Model):
         for folio in self:
             addr = folio.partner_id.address_get(["invoice"])
             folio.partner_invoice_id = addr["invoice"]
+
+    @api.depends("agency_id")
+    def _compute_channel_type(self):
+        for folio in self:
+            if folio.agency_id:
+                folio.channel_type = 'agency'
+            else:
+                folio.channel_type = 'direct'
 
     @api.depends("partner_id")
     def _compute_payment_term_id(self):
@@ -527,15 +536,13 @@ class PmsFolio(models.Model):
     # ORM Overrides
     @api.model
     def create(self, vals):
+        #TODO: Make sequence from property, not company
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
-            if "company_id" in vals:
-                vals["name"] = self.env["ir.sequence"].with_context(
-                    force_company=vals["company_id"]
-                ).next_by_code("pms.folio") or _("New")
-            else:
-                vals["name"] = self.env["ir.sequence"].next_by_code("pms.folio") or _(
-                    "New"
-                )
+            #TODO: change for property env variable
+            pms_property_id = self.env.user.pms_property_id.id if "pms_property_id" not in vals else vals["pms_property_id"]
+            vals["name"] = self.env["ir.sequence"].search([
+                ('pms_property_id', '=', pms_property_id)
+            ]).next_by_code("pms.folio") or _("New")
         result = super(PmsFolio, self).create(vals)
         return result
 
