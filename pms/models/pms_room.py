@@ -16,6 +16,16 @@ class PmsRoom(models.Model):
     _description = "Property Room"
     _order = "sequence, room_type_id, name"
 
+    # Defaults and Gets
+    def name_get(self):
+        result = []
+        for room in self:
+            name = room.name
+            if room.room_type_id:
+                name += ' [%s]' % room.room_type_id.code_type
+            result.append((room.id, name))
+        return result
+
     # Fields declaration
     name = fields.Char("Room Name", required=True)
     pms_property_id = fields.Many2one(
@@ -54,7 +64,7 @@ class PmsRoom(models.Model):
                 raise ValidationError(
                     _(
                         "The capacity of the \
-                                        room must be greater than 0."
+                        room must be greater than 0."
                     )
                 )
 

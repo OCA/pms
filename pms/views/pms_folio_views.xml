@@ -150,14 +150,14 @@
                                 colspan="4"
                                 string="Room Line"
                                 nolabel="1"
-                                context="{'from_folio':True,'reservation_ids':reservation_ids,'folio_id': id,'tree_view_ref':'pms.pms_reservation_view_bottom_tree', 'form_view_ref':'pms.pms_reservation_view_form'}"
+                                context="{'reservation_ids':reservation_ids,'folio_id': id,'tree_view_ref':'pms.pms_reservation_view_bottom_tree', 'form_view_ref':'pms.pms_reservation_view_form'}"
                             />
                         </page>
                         <page string="Services">
                             <separator string="Service Lines" colspan="4" />
                             <field
                                 name="service_ids"
-                                context="{'from_room':False,'folio_id': id,'tree_view_ref':'pms.pms_service_view_tree', 'form_view_ref':'pms.pms_service_view_form'}"
+                                context="{'folio_id': id,'tree_view_ref':'pms.pms_service_view_tree', 'form_view_ref':'pms.pms_service_view_form'}"
                                 nolabel="1"
                             />
                         </page>
@@ -249,7 +249,11 @@
                 <field name="name" />
                 <field name="partner_id" select="1" />
                 <field name="date_order" select="1" />
-                <field name="create_uid" optional="show" widget="many2one_avatar_user"/>
+                <field
+                    name="create_uid"
+                    optional="show"
+                    widget="many2one_avatar_user"
+                />
                 <field name="reservation_ids" widget="many2many_tags" />
                 <field name="amount_total" sum="Total amount" />
                 <field name="pending_amount" sum="Total debt" />

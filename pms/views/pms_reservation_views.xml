@@ -4,7 +4,6 @@
         <field name="name">Reservation</field>
         <field name="res_model">pms.reservation</field>
         <field name="view_mode">tree,form,graph,pivot</field>
-        <field name="context">{'from_room': True}</field>
     </record>
     <record model="ir.ui.view" id="pms_reservation_view_form">
         <field name="name">pms.reservation.form</field>
@@ -576,7 +575,7 @@
                             options="{'no_create': True,'no_open': True}"
                             style="margin-right: 30px;"
                         />
-                        <field
+                        <!-- <field
                             name="partner_id"
                             readonly="1"
                             options="{'no_open': True}"
@@ -590,7 +589,7 @@
                             class="fa-black-tie"
                             style="margin-left:20px; color: #C67;"
                             attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
-                        />
+                        /> -->
                         <h3>
                             From <span class="fa-sign-in" style="margin: 5px;" />
                                 <field
@@ -634,37 +633,34 @@
             >
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
+                <field name="room_id" options="{'no_create': True,'no_open': True}" />
+                <field name="checkin" widget="daterange" class="oe_inline" options="{'related_end_date': 'checkout'}"/>
+                <field name="checkout" widget="date" />
+                <field name="nights" />
                 <button
                     type="object"
                     class="oe_stat_button"
                     icon="fa-file"
                     name="open_folio"
                 />
-                <field name="checkin" widget="remaining_days" optional="show" attrs="{'invisible': [['state', '=', 'done']]}" />
-                <field name="folio_id" />
+                <field name="folio_id" decoration-bf="1"/>
                 <field name="allowed_room_ids" invisible="1" />
-                <field name="room_id" options="{'no_create': True,'no_open': True}" />
                 <field name="partner_id" />
-                <field name="room_type_id" string="Reserved Unit Type" />
-                <field name="nights" />
+                <field name="room_type_id" invisible="1" />
                 <field name="adults" string="Persons" />
-                <field name="checkout" widget="date" />
-                <field name="create_date" />
                 <field name="overbooking" invisible="1" />
-                <field name="last_updated_res" string="Updated on" />
                 <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="create_uid" optional="show" widget="many2one_avatar_user"/>
                 <field name="origin" />
                 <field name="checkin_partner_ids" invisible="1" />
                 <field name="to_assign" invisible="1" />
                 <field name="checkin_partner_pending_count" invisible="1" />
-                <field name="discount" />
                 <field name="tax_ids" invisible="1" />
                 <field name="price_subtotal" invisible="1" />
                 <field name="price_total" />
                 <field name="folio_pending_amount" string="Folio Pending Amount" />
                 <field name="company_id" />
-                <field name="state" decoration-success="state == 'done'" decoration-info="state == 'confirm'" warning-info="state == 'onboard'" widget="badge" optional="show"/>
+                <field name="state" decoration-success="state == 'done'" decoration-info="state == 'confirm'" widget="badge" optional="show"/>
             </tree>
         </field>
     </record>
@@ -711,12 +707,6 @@
                 <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//field[@name='create_uid']" position="attributes">
-                <attribute name="invisible">True</attribute>
-            </xpath>
-            <xpath expr="//field[@name='create_date']" position="attributes">
-                <attribute name="invisible">True</attribute>
-            </xpath>
-            <xpath expr="//field[@name='last_updated_res']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
         </field>
