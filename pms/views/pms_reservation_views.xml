@@ -847,6 +847,11 @@
                         context="{'group_by':'create_uid'}"
                     />
                 </group>
+                <searchpanel>
+                    <field name="room_type_id" string="Room Type" enable_counters="1" />
+                    <field name="pricelist_id" string="Pricelist" enable_counters="1"/>
+                    <field name="state" string="State" enable_counters="1" select="multi" />
+                </searchpanel>
             </search>
         </field>
     </record>
