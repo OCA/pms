@@ -24,6 +24,7 @@
             <field name="phone">+34 123 456 879</field>
             <field name="email">commitsun@hootel.com</field>
             <field name="website">https://www.commitsun.com</field>
+            <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
         </record>
         <record model="res.users" id="base.user_root">
             <field name="company_id" ref="base.main_company" />
