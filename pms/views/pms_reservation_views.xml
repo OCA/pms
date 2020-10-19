@@ -659,7 +659,7 @@
                 <field name="price_subtotal" invisible="1" />
                 <field name="price_total" />
                 <field name="folio_pending_amount" string="Folio Pending Amount" />
-                <field name="company_id" />
+                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1" />
                 <field name="state" decoration-success="state == 'done'" decoration-info="state == 'confirm'" widget="badge" optional="show"/>
             </tree>
         </field>
