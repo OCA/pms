@@ -16,6 +16,15 @@ class PmsFolio(models.Model):
     _order = "date_order"
 
     # Default Methods ang Gets
+    def name_get(self):
+        result = []
+        for folio in self:
+            name = folio.name
+            if len(folio.reservation_ids) > 1:
+                name += ' (%s)' % len(folio.reservation_ids)
+            result.append((folio.id, name))
+        return result
+
     @api.model
     def _default_diff_invoicing(self):
         """
