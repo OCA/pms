@@ -130,7 +130,7 @@ class PmsReservation(models.Model):
         "pms.room.type",
         string="Room Type",
         track_visibility="onchange",
-        required=True,
+        #required=True,
         compute="_compute_room_type_id",
         store=True,
         readonly=False,
