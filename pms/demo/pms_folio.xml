@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <!-- pms.folio -->
+        <!-- reservation of 1 economic room for 1 person -->
+        <record id="pms_folio_0" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_27" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('pms_room_type_0'),
+                    'checkin': DateTime.today(),
+                    'checkout': (DateTime.today() + timedelta(days=2)),
+                    'adults': 2,
+                    'state': 'confirm',
+                    'board_service_room_id': ref('pms_board_service_room_1'),
+                    })]"
+            />
+        </record>
+        <!-- reservation of 1 triple room for 3 people on behalf on the company -->
+        <record id="pms_folio_1" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_12" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('pms_room_type_3'),
+                    'checkin': (DateTime.today() + timedelta(days=2)),
+                    'checkout': (DateTime.today() + timedelta(days=4)),
+                    'adults': 3,
+                    'board_service_room_id': ref('pms_board_service_room_3'),
+                    })]"
+            />
+        </record>
+        <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
+        <!-- TODO: The third reservation is marked from State: Cancelled to Pending Entry at Folio creation -->
+        <record id="pms_folio_2" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_10" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0),
+                    (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('pms_room_type_1'),
+                    'checkin': (DateTime.today() + timedelta(days=2)),
+                    'checkout': (DateTime.today() + timedelta(days=4)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    }),
+                    (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('pms_room_type_1'),
+                    'checkin': (DateTime.today() + timedelta(days=2)),
+                    'checkout': (DateTime.today() + timedelta(days=4)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    }),
+                    (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('pms_room_type_1'),
+                    'checkin': (DateTime.today() + timedelta(days=2)),
+                    'checkout': (DateTime.today() + timedelta(days=4)),
+                    'adults': 1,
+                    'state': 'cancelled',
+                    })]"
+            />
+        </record>
+        <!-- reservation of the conference room for 1 day on behalf of a company -->
+        <record id="pms_folio_3" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_12" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('pms_room_type_4'),
+                    'checkin': (DateTime.today() + timedelta(days=3)),
+                    'checkout': (DateTime.today() + timedelta(days=4)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    })]"
+            />
+        </record>
+        <!-- out of service room -->
+        <record id="pms_folio_4" model="pms.folio">
+            <field name="partner_id" ref="main_pms_property" />
+            <field name="reservation_type">out</field>
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': 1,
+                    'room_type_id': ref('pms_room_type_1'),
+                    'checkin': (DateTime.today() + timedelta(days=5)),
+                    'checkout': (DateTime.today() + timedelta(days=7)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    'reservation_type': 'out',
+                    'closure_reason_id': ref('pms_room_closure_reason_0'),
+                    'out_service_description': 'Change of lighting',
+                    })]"
+            />
+        </record>
+    </data>
+</odoo>
