@@ -398,7 +398,6 @@ class PmsReservation(models.Model):
     # Compute and Search methods
     @api.depends("checkin", "checkout", "room_type_id")
     def _compute_name(self):
-        _logger.info("CALCULO NOMBRE-------------------")
         for reservation in self:
             if (
                 reservation.room_type_id
@@ -416,8 +415,6 @@ class PmsReservation(models.Model):
                 )
             else:
                 reservation.name = "/"
-            _logger.info("RESERVA")
-            _logger.info(reservation.name)
 
     @api.depends("checkin")
     def _compute_priority(self):
@@ -426,7 +423,9 @@ class PmsReservation(models.Model):
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_room_id(self):
-        for reservation in self.filtered("reservation_line_ids"):
+        for reservation in self.filtered(
+            lambda r: r.reservation_line_ids and not r.room_id
+        ):
             reservation.room_id = reservation.reservation_line_ids[0].room_id
 
     @api.depends("room_id")
@@ -719,28 +718,29 @@ class PmsReservation(models.Model):
             if len(record.checkin_partner_ids) > record.adults + record.children:
                 raise models.ValidationError(_("The room already is completed"))
 
-    @api.constrains("reservation_type", "partner_id")
-    def _check_partner_reservation(self):
-        for reservation in self:
-            if (
-                reservation.reservation_type == "out"
-                and reservation.partner_id != reservation.pms_property_id.partner_id.id
-            ):
-                raise models.ValidationError(
-                    _("The partner on out reservations must be a property partner")
-                )
+    # @api.constrains("reservation_type", "partner_id")
+    # def _check_partner_reservation(self):
+    #     for reservation in self:
+    #         if (
+    #             reservation.reservation_type == "out"
+    #             and reservation.partner_id.id != \
+    #                   reservation.pms_property_id.partner_id.id
+    #         ):
+    #             raise models.ValidationError(
+    #                 _("The partner on out reservations must be a property partner")
+    #             )
 
-    @api.constrains("closure_reason_id", "reservation_type")
-    def _check_clousure_reservation(self):
-        for reservation in self:
-            if reservation.closure_reason_id and reservation.reservation_type != "out":
-                raise models.ValidationError(
-                    _("Only the out reservations can has a clousure reason")
-                )
+    # @api.constrains("closure_reason_id", "reservation_type")
+    # def _check_clousure_reservation(self):
+    #     for reservation in self:
+    #         if reservation.closure_reason_id and \
+    #               reservation.reservation_type != "out":
+    #             raise models.ValidationError(
+    #                 _("Only the out reservations can has a clousure reason")
+    #             )
 
     # @api.onchange("checkin_partner_ids")
     # def onchange_checkin_partner_ids(self):
-    #     _logger.info("----------ONCHANGE2-----------")
     #     for record in self:
     #         if len(record.checkin_partner_ids) > record.adults + record.children:
     #             raise models.ValidationError(_("The room already is completed"))
@@ -917,10 +917,6 @@ class PmsReservation(models.Model):
         }
 
     def confirm(self):
-        """
-        @param self: object pointer
-        """
-        _logger.info("confirm")
         for record in self:
             vals = {}
             if record.checkin_partner_ids:
@@ -1002,7 +998,6 @@ class PmsReservation(models.Model):
         return reservations_dates
 
     def _compute_checkin_partner_count(self):
-        _logger.info("_compute_checkin_partner_count")
         for record in self:
             if record.reservation_type != "out":
                 record.checkin_partner_count = len(record.checkin_partner_ids)
