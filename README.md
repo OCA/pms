@@ -15,7 +15,11 @@ All-in-One Property Management System (PMS) focused on medium-sizeations.
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | summary
+--- | --- | ---
+[pms](pms/) | 14.0.1.0.0 | A property management system
 
 [//]: # (end addons)
 
