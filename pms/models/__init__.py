@@ -4,7 +4,8 @@
 
 from . import ir_http
 from . import ir_sequence
-#from . import payment_return
+
+# from . import payment_return
 from . import pms_board_service_room_type
 from . import pms_property
 from . import res_users
@@ -28,7 +29,8 @@ from . import pms_reservation_line
 from . import pms_checkin_partner
 from . import product_pricelist
 from . import res_partner
-from . import mail_compose_message
+
+# from . import mail_compose_message
 from . import pms_room_type_class
 from . import pms_room_closure_reason
 from . import pms_service_line

@@ -10,7 +10,9 @@ class AccountPayment(models.Model):
     # Fields declaration
     folio_id = fields.Many2one("pms.folio", string="Folio")
     amount_total_folio = fields.Float(
-        compute="_compute_folio_amount", store=True, string="Total amount in folio",
+        compute="_compute_folio_amount",
+        store=True,
+        string="Total amount in folio",
     )
     save_amount = fields.Monetary(string="onchange_amount")
     save_date = fields.Date()
@@ -53,8 +55,6 @@ class AccountPayment(models.Model):
             self.save_date = self._origin.payment_date
 
     # Action methods
-    """WIP"""
-
     # def return_payment_folio(self):
     #     journal = self.journal_id
     #     partner = self.partner_id
@@ -129,17 +129,14 @@ class AccountPayment(models.Model):
         if rec and not self._context.get("ignore_notification_post", False):
             for pay in self:
                 if pay.folio_id:
-                    msg = (
-                        _(
-                            "Payment of %s %s registered from %s \
+                    msg = _(
+                        "Payment of %s %s registered from %s \
                             using %s payment method"
-                        )
-                        % (
-                            pay.amount,
-                            pay.currency_id.symbol,
-                            pay.communication,
-                            pay.journal_id.name,
-                        )
+                    ) % (
+                        pay.amount,
+                        pay.currency_id.symbol,
+                        pay.communication,
+                        pay.journal_id.name,
                     )
                     pay.folio_id.message_post(subject=_("Payment"), body=msg)
 

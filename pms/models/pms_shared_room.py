@@ -33,7 +33,10 @@ class PmsSharedRoom(models.Model):
         help="At which floor the room is located.",
     )
     bed_ids = fields.One2many(
-        "pms.room", "shared_room_id", readonly=True, ondelete="restrict",
+        "pms.room",
+        "shared_room_id",
+        readonly=True,
+        ondelete="restrict",
     )
     active = fields.Boolean("Active", default=True)
     sequence = fields.Integer("Sequence", required=True)
@@ -85,29 +88,39 @@ class PmsSharedRoom(models.Model):
     @api.constrains("active")
     def _constrain_active(self):
         self.bed_ids.write(
-            {"active": self.active,}
+            {
+                "active": self.active,
+            }
         )
 
     @api.constrains("room_type_id")
     def _constrain_room_type_id(self):
         self.bed_ids.write(
-            {"room_type_id": self.room_type_id.id,}
+            {
+                "room_type_id": self.room_type_id.id,
+            }
         )
 
     @api.constrains("floor_id")
     def _constrain_floor_id(self):
         self.bed_ids.write(
-            {"floor_id": self.floor_id.id,}
+            {
+                "floor_id": self.floor_id.id,
+            }
         )
 
     @api.constrains("sequence")
     def _constrain_sequence(self):
         self.bed_ids.write(
-            {"sequence": self.sequence,}
+            {
+                "sequence": self.sequence,
+            }
         )
 
     @api.constrains("descrition_sale")
     def _constrain_descrition_sale(self):
         self.bed_ids.write(
-            {"description_sale": self.descrition_sale,}
+            {
+                "description_sale": self.descrition_sale,
+            }
         )

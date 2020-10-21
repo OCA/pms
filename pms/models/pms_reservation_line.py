@@ -84,14 +84,16 @@ class PmsReservationLine(models.Model):
     _sql_constraints = [
         (
             "rule_availability",
-            "EXCLUDE (room_id WITH =, date WITH =) WHERE (occupies_availability = True)",
+            "EXCLUDE (room_id WITH =, date WITH =) \
+            WHERE (occupies_availability = True)",
             "Room Occupied",
         ),
     ]
 
     # Compute and Search methods
     @api.depends(
-        "reservation_id.adults", "reservation_id.room_type_id",
+        "reservation_id.adults",
+        "reservation_id.room_type_id",
     )
     def _compute_room_id(self):
         for line in self:
@@ -160,7 +162,7 @@ class PmsReservationLine(models.Model):
         for line in self:
             if (
                 line.reservation_id.state == "cancelled"
-                or line.reservation_id.overbooking == True
+                or line.reservation_id.overbooking
             ):
                 line.occupies_availability = False
             else:

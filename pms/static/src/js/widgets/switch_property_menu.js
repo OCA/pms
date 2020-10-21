@@ -1,4 +1,4 @@
-odoo.define("web.SwitchPmsMenu", function(require) {
+odoo.define("web.SwitchPmsMenu", function (require) {
     "use strict";
 
     /**
@@ -8,12 +8,12 @@ odoo.define("web.SwitchPmsMenu", function(require) {
      */
 
     var config = require("web.config");
-    var core = require("web.core");
+    // Var core = require("web.core");
     var session = require("pms.session");
     var SystrayMenu = require("web.SystrayMenu");
     var Widget = require("web.Widget");
 
-    var _t = core._t;
+    // Var _t = core._t;
 
     var SwitchPmsMenu = Widget.extend({
         template: "SwitchPmsMenu",
@@ -30,7 +30,7 @@ odoo.define("web.SwitchPmsMenu", function(require) {
         /**
          * @override
          */
-        init: function() {
+        init: function () {
             this._super.apply(this, arguments);
             this.isMobile = config.device.isMobile;
             this._onSwitchPmsPropertyClick = _.debounce(
@@ -43,13 +43,13 @@ odoo.define("web.SwitchPmsMenu", function(require) {
         /**
          * @override
          */
-        willStart: function() {
+        willStart: function () {
             var self = this;
             this.allowed_pms_property_ids = String(
                 session.user_context.allowed_pms_property_ids
             )
                 .split(",")
-                .map(function(id) {
+                .map(function (id) {
                     return parseInt(id);
                 });
             this.user_pms_properties =
@@ -57,7 +57,7 @@ odoo.define("web.SwitchPmsMenu", function(require) {
             this.current_pms_property = this.allowed_pms_property_ids[0];
             this.current_pms_property_name = _.find(
                 session.user_pms_properties.allowed_pms_properties,
-                function(pms_property) {
+                function (pms_property) {
                     return pms_property[0] === self.current_pms_property;
                 }
             )[1];
@@ -72,7 +72,7 @@ odoo.define("web.SwitchPmsMenu", function(require) {
          * @private
          * @param {MouseEvent|KeyEvent} ev
          */
-        _onSwitchPmsPropertyClick: function(ev) {
+        _onSwitchPmsPropertyClick: function (ev) {
             if (
                 ev.type == "keydown" &&
                 ev.which != $.ui.keyCode.ENTER &&
@@ -122,7 +122,7 @@ odoo.define("web.SwitchPmsMenu", function(require) {
          * @private
          * @param {MouseEvent|KeyEvent} ev
          */
-        _onTogglePmsPropertyClick: function(ev) {
+        _onTogglePmsPropertyClick: function (ev) {
             if (
                 ev.type == "keydown" &&
                 ev.which != $.ui.keyCode.ENTER &&

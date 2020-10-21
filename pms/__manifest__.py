@@ -19,9 +19,9 @@
     "depends": [
         "base",
         "mail",
-        #"account_payment_return",
+        # "account_payment_return",
         # "partner_firstname",
-        #"email_template_qweb",
+        # "email_template_qweb",
         "sale",
     ],
     "data": [
@@ -32,7 +32,7 @@
         "data/pms_data.xml",
         "report/pms_folio.xml",
         "report/pms_folio_templates.xml",
-        #"templates/pms_email_template.xml",
+        # "templates/pms_email_template.xml",
         "views/general.xml",
         "data/menus.xml",
         "views/pms_amenity_views.xml",
@@ -61,8 +61,14 @@
         "views/product_pricelist_views.xml",
         "views/product_template_views.xml",
         "views/webclient_templates.xml",
-        "views/ir_sequence_views.xml"
+        "views/ir_sequence_views.xml",
     ],
-    "demo": ["demo/pms_master_data.xml", "demo/pms_folio.xml"],
-    "qweb": ["static/src/xml/pms_base_templates.xml",],
+    "demo": [
+        "demo/pms_master_data.xml",
+        "demo/pms_folio.xml",
+        "demo/pms_reservation.xml",
+    ],
+    "qweb": [
+        "static/src/xml/pms_base_templates.xml",
+    ],
 }

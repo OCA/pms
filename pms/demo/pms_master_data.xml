@@ -286,15 +286,16 @@
         <!-- room.closure.reason -->
         <record id="pms_room_closure_reason_0" model="room.closure.reason">
             <field name="name">Maintenance</field>
-            <field
-                name="description"
-            >Used for closing of rooms which require a maintenance. You can specify the reason in the own reservation.</field>
+            <field name="description">
+                Used for closing of rooms which require a maintenance. You can specify
+                the reason in the own reservation.
+            </field>
         </record>
         <record id="pms_room_closure_reason_1" model="room.closure.reason">
             <field name="name">VIP Privacy</field>
-            <field
-                name="description"
-            >Used for closing of rooms for extra privacy.</field>
+            <field name="description">
+                Used for closing of rooms for extra privacy.
+            </field>
         </record>
         <!-- Multi pms Demo -->
         <record id="demo_pms_room_type_restriction" model="pms.room.type.restriction">

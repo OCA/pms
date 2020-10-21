@@ -22,7 +22,7 @@ class PmsRoom(models.Model):
         for room in self:
             name = room.name
             if room.room_type_id:
-                name += ' [%s]' % room.room_type_id.code_type
+                name += " [%s]" % room.room_type_id.code_type
             result.append((room.id, name))
         return result
 
