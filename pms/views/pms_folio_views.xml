@@ -178,7 +178,10 @@
                                 role="alert"
                                 style="margin-bottom:0px;"
                             >
-                                  these are the billing information associated with the booking client or the company (if a company is assigned). If you want to bill an independent contact, you can select it in the billing assistant
+                                these are the billing information associated with the
+                                booking client or the company (if a company is
+                                assigned). If you want to bill an independent contact,
+                                you can select it in the billing assistant
                             </div>
                             <group>
                                 <field
@@ -366,6 +369,7 @@
         <field name="model">pms.folio</field>
         <field name="arch" type="xml">
             <graph type="bar">
+
             </graph>
         </field>
     </record>

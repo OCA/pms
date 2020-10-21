@@ -20,11 +20,8 @@
 #
 ##############################################################################
 import logging
-from datetime import timedelta
 
-from odoo import api, fields
 from odoo.tests import common
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 _logger = logging.getLogger(__name__)
 
