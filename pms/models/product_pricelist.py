@@ -1,7 +1,6 @@
 # Copyright 2017  Alexandre Díaz, Pablo Quesada, Darío Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
 
 class ProductPricelist(models.Model):
@@ -24,31 +23,31 @@ class ProductPricelist(models.Model):
     )
 
     # Constraints and onchanges
-    @api.constrains("pricelist_type", "pms_property_ids")
-    def _check_pricelist_type_property_ids(self):
-        for record in self:
-            if record.pricelist_type == "daily" and len(record.pms_property_ids) != 1:
-                raise ValidationError(
-                    _(
-                        "A daily pricelist is used as a daily Rate Plan "
-                        "for room types and therefore must be related with "
-                        "one and only one property."
-                    )
-                )
+    # @api.constrains("pricelist_type", "pms_property_ids")
+    # def _check_pricelist_type_property_ids(self):
+    #     for record in self:
+    #         if record.pricelist_type == "daily" and len(record.pms_property_ids) != 1:
+    #             raise ValidationError(
+    #                 _(
+    #                     "A daily pricelist is used as a daily Rate Plan "
+    #                     "for room types and therefore must be related with "
+    #                     "one and only one property."
+    #                 )
+    #             )
 
-            if record.pricelist_type == "daily" and len(record.pms_property_ids) == 1:
-                pms_property_id = (
-                    self.env["pms.property"].search(
-                        [("default_pricelist_id", "=", record.id)]
-                    )
-                    or None
-                )
-                if pms_property_id and pms_property_id != record.pms_property_ids:
-                    raise ValidationError(
-                        _("Relationship mismatch.")
-                        + " "
-                        + _(
-                            "This pricelist is used as default in a "
-                            "different property."
-                        )
-                    )
+    #         if record.pricelist_type == "daily" and len(record.pms_property_ids) == 1:
+    #             pms_property_id = (
+    #                 self.env["pms.property"].search(
+    #                     [("default_pricelist_id", "=", record.id)]
+    #                 )
+    #                 or None
+    #             )
+    #             if pms_property_id and pms_property_id != record.pms_property_ids:
+    #                 raise ValidationError(
+    #                     _("Relationship mismatch.")
+    #                     + " "
+    #                     + _(
+    #                         "This pricelist is used as default in a "
+    #                         "different property."
+    #                     )
+    #                 )
