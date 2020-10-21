@@ -68,11 +68,11 @@
                                 <!-- <field name="uom_id" invisible="1" /> -->
                             </group>
                             <group>
-              		<!-- <field name="sale_price_type" /> -->
-              		<!--field name="price_room_type_domain" invisible="1" /-->
-          			  <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
-                  <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
-                </group>
+                                <!-- <field name="sale_price_type" /> -->
+                                <!--field name="price_room_type_domain" invisible="1" /-->
+                                <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
+                                <!-- <field name="price_room_type" domain="[('room_ids.id', '=', active_id)]" attrs="{'invisible':[('sale_price_type', '!=', 'room_type')], 'required': [('sale_price_type', '=', 'room_type')]}" /> -->
+                            </group>
                             <newline />
                             <!-- <separator colspan='4' string="Customer Taxes" /> -->
                             <!-- <field name="taxes_id" colspan="4" nolabel='1'
@@ -119,13 +119,15 @@
                                             <field name="name" />
                                         </strong>
                                     </li>
-                                    <li class="mb4">Room Type: <field
-                                            name="room_type_id"
-                                        /></li>
+                                    <li class="mb4">
+                                        Room Type:
+                                        <field name="room_type_id" />
+                                    </li>
                                     <li class="badge mb4">
-                                        <strong>Capacity <field
-                                                name="capacity"
-                                            /></strong>
+                                        <strong>
+                                            Capacity
+                                            <field name="capacity" />
+                                        </strong>
                                     </li>
                                 </ul>
                             </div>

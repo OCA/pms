@@ -1,0 +1,13 @@
+# Do NOT update manually; changes here will be overwritten by Copier
+_commit: v1.0.2
+_src_path: https://github.com/OCA/oca-addons-repo-template.git
+dependency_installation_mode: OCA
+include_wkhtmltopdf: false
+odoo_version: 14.0
+rebel_module_groups: []
+repo_description:
+  All-in-One Property Management System (PMS) focused on medium-sizeations.
+repo_name: Property Management System
+repo_slug: pms
+travis_apt_packages: []
+travis_apt_sources: []

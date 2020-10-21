@@ -2,8 +2,7 @@
 # Copyright 2019  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, models
-from odoo.exceptions import MissingError
+from odoo import models
 from odoo.http import request
 
 
@@ -21,7 +20,8 @@ class IrHttp(models.AbstractModel):
                         user.pms_property_id.id,
                         user.pms_property_id.name,
                     ),
-                    # TODO: filter all properties based on the current set of active companies
+                    # TODO: filter all properties based on
+                    # the current set of active companies
                     "allowed_pms_properties": [
                         (property.id, property.name)
                         for property in user.pms_property_ids

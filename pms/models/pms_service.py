@@ -5,7 +5,7 @@ import logging
 from datetime import timedelta
 
 from odoo import _, api, fields, models
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_compare, float_is_zero
+from odoo.tools import float_compare, float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -43,7 +43,10 @@ class PmsService(models.Model):
 
     # Fields declaration
     name = fields.Char(
-        "Service description", compute="_compute_name", store=True, readonly=False,
+        "Service description",
+        compute="_compute_name",
+        store=True,
+        readonly=False,
     )
     product_id = fields.Many2one(
         "product.product", "Service", ondelete="restrict", required=True
@@ -91,7 +94,10 @@ class PmsService(models.Model):
     state = fields.Selection(related="folio_id.state")
     per_day = fields.Boolean(related="product_id.per_day", related_sudo=True)
     product_qty = fields.Integer(
-        "Quantity", compute="_compute_product_qty", store=True, readonly=False,
+        "Quantity",
+        compute="_compute_product_qty",
+        store=True,
+        readonly=False,
     )
     is_board_service = fields.Boolean()
     # Non-stored related field to allow portal user to
@@ -130,14 +136,14 @@ class PmsService(models.Model):
     )
     discount = fields.Float(string="Discount (%)", digits=("Discount"), default=0.0)
     qty_to_invoice = fields.Float(
-        compute="_get_to_invoice_qty",
+        compute="_compute_get_to_invoice_qty",
         string="To Invoice",
         store=True,
         readonly=True,
         digits=("Product Unit of Measure"),
     )
     qty_invoiced = fields.Float(
-        compute="_get_invoice_qty",
+        compute="_compute_get_invoice_qty",
         string="Invoiced",
         store=True,
         readonly=True,
@@ -203,31 +209,41 @@ class PmsService(models.Model):
                             if idate in [
                                 line.date for line in service.service_line_ids
                             ]:
-                                # REVIEW: If the date is already cached (otherwise double the date)
+                                # REVIEW: If the date is already
+                                # cached (otherwise double the date)
                                 pass
                             elif not old_line:
                                 lines.append(
-                                    (0, False, {"date": idate, "day_qty": day_qty,})
+                                    (
+                                        0,
+                                        False,
+                                        {
+                                            "date": idate,
+                                            "day_qty": day_qty,
+                                        },
+                                    )
                                 )
                             else:
                                 lines.append((4, old_line.id))
                         move_day = 0
                         if consumed_on == "after":
                             move_day = 1
-                        service.service_line_ids -= service.service_line_ids.filtered_domain(
-                            [
-                                "|",
-                                (
-                                    "date",
-                                    "<",
-                                    reservation.checkin + timedelta(move_day),
-                                ),
-                                (
-                                    "date",
-                                    ">=",
-                                    reservation.checkout + timedelta(move_day),
-                                ),
-                            ]
+                        service.service_line_ids -= (
+                            service.service_line_ids.filtered_domain(
+                                [
+                                    "|",
+                                    (
+                                        "date",
+                                        "<",
+                                        reservation.checkin + timedelta(move_day),
+                                    ),
+                                    (
+                                        "date",
+                                        ">=",
+                                        reservation.checkout + timedelta(move_day),
+                                    ),
+                                ]
+                            )
                         )
                         _logger.info(service)
                         _logger.info(lines)
@@ -239,7 +255,10 @@ class PmsService(models.Model):
                                 (
                                     0,
                                     False,
-                                    {"date": fields.Date.today(), "day_qty": day_qty,},
+                                    {
+                                        "date": fields.Date.today(),
+                                        "day_qty": day_qty,
+                                    },
                                 )
                             ]
                 else:
@@ -250,7 +269,10 @@ class PmsService(models.Model):
                             (
                                 0,
                                 False,
-                                {"date": fields.Date.today(), "day_qty": day_qty,},
+                                {
+                                    "date": fields.Date.today(),
+                                    "day_qty": day_qty,
+                                },
                             )
                         ]
             else:
@@ -258,7 +280,6 @@ class PmsService(models.Model):
 
     def _search_old_lines(self, date):
         self.ensure_one()
-        old_lines = self.env["pms.service.line"]
         if isinstance(self._origin.id, int):
             old_line = self._origin.service_line_ids.filtered(lambda r: r.date == date)
             return old_line
@@ -366,7 +387,7 @@ class PmsService(models.Model):
         return False
 
     @api.depends("qty_invoiced", "product_qty", "folio_id.state")
-    def _get_to_invoice_qty(self):
+    def _compute_get_to_invoice_qty(self):
         """
         Compute the quantity to invoice. If the invoice policy is order,
         the quantity to invoice is calculated from the ordered quantity.
@@ -379,7 +400,7 @@ class PmsService(models.Model):
                 line.qty_to_invoice = 0
 
     @api.depends("move_line_ids.move_id.state", "move_line_ids.quantity")
-    def _get_invoice_qty(self):
+    def _compute_get_invoice_qty(self):
         """
         Compute the quantity invoiced. If case of a refund,
         the quantity invoiced is decreased. Note that this is the case only
@@ -398,7 +419,7 @@ class PmsService(models.Model):
                             invoice_line.quantity, line.product_id.uom_id
                         )
                     elif invoice_line.move_id.type == "out_refund":
-                        qty_invoiced -= move_line.uom_id._compute_quantity(
+                        qty_invoiced -= invoice_line.uom_id._compute_quantity(
                             invoice_line.quantity, line.product_id.uom_id
                         )
             line.qty_invoiced = qty_invoiced
@@ -412,7 +433,7 @@ class PmsService(models.Model):
           This is also hte default value if the conditions of no other
           status is met.
         - to invoice: we refer to the quantity to invoice of the line.
-          Refer to method `_get_to_invoice_qty()` for more information on
+          Refer to method `_compute_get_to_invoice_qty()` for more information on
           how this quantity is calculated.
         - upselling: this is possible only for a product invoiced on ordered
           quantities for which we delivered more than expected.

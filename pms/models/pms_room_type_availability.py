@@ -4,8 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 
 
 class PmsRoomTypeAvailability(models.Model):
@@ -62,7 +61,9 @@ class PmsRoomTypeAvailability(models.Model):
         self, checkin, checkout, room_type_id=False, current_lines=False
     ):
         domain = self._get_domain_reservations_occupation(
-            dfrom=checkin, dto=checkout - timedelta(1), current_lines=current_lines,
+            dfrom=checkin,
+            dto=checkout - timedelta(1),
+            current_lines=current_lines,
         )
         reservation_lines = self.env["pms.reservation.line"].search(domain)
         reservations_rooms = reservation_lines.mapped("room_id.id")

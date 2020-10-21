@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 import json
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.tools import float_is_zero
 
 
@@ -12,18 +12,20 @@ class AccountMove(models.Model):
 
     # Field Declarations
     folio_ids = fields.Many2many(
-        comodel_name="pms.folio", compute="_computed_folio_origin"
+        comodel_name="pms.folio", compute="_compute_folio_origin"
     )
     pms_property_id = fields.Many2one("pms.property")
-    from_folio = fields.Boolean(compute="_computed_folio_origin")
+    from_folio = fields.Boolean(compute="_compute_folio_origin")
     outstanding_folios_debits_widget = fields.Text(
-        compute="_get_outstanding_folios_JSON"
+        compute="_compute_get_outstanding_folios_JSON"
     )
-    has_folios_outstanding = fields.Boolean(compute="_get_outstanding_folios_JSON")
+    has_folios_outstanding = fields.Boolean(
+        compute="_compute_get_outstanding_folios_JSON"
+    )
 
     # Compute and Search methods
 
-    def _computed_folio_origin(self):
+    def _compute_folio_origin(self):
         for inv in self:
             inv.from_folio = False
             inv.folio_ids = False
@@ -53,7 +55,7 @@ class AccountMove(models.Model):
         }
 
     # Business methods
-    def _get_outstanding_folios_JSON(self):
+    def _compute_get_outstanding_folios_JSON(self):
         self.ensure_one()
         self.outstanding_folios_debits_widget = json.dumps(False)
         if self.from_folio:

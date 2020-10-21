@@ -19,14 +19,16 @@
                             t-field="doc.partner_id"
                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
                         />
-                        <p t-if="doc.partner_id.vat"><t
-                                t-esc="doc.company_id.country_id.vat_label or 'TIN'"
-                            />: <span t-field="doc.partner_id.vat" /></p>
+                        <p t-if="doc.partner_id.vat">
+                            <t t-esc="doc.company_id.country_id.vat_label or 'TIN'" />
+                            :
+                            <span t-field="doc.partner_id.vat" />
+                        </p>
                     </div>
                 </div>
                 <h2>
-                    <span t-if="doc.state not in ['draft','sent']">Order # </span>
-                    <span t-if="doc.state in ['draft','sent']">Quotation # </span>
+                    <span t-if="doc.state not in ['draft','sent']">Order #</span>
+                    <span t-if="doc.state in ['draft','sent']">Quotation #</span>
                     <span t-field="doc.name" />
                 </h2>
                 <div class="row mt32 mb32" id="informations">
@@ -75,16 +77,22 @@
                                 t-if="display_discount"
                                 class="text-right"
                                 groups="sale.group_discount_per_so_line"
-                            >Disc.(%)</th>
+                            >
+                                Disc.(%)
+                            </th>
                             <th class="text-right">Taxes</th>
                             <th
                                 class="text-right"
                                 groups="sale.group_show_price_subtotal"
-                            >Amount</th>
+                            >
+                                Amount
+                            </th>
                             <th
                                 class="text-right price_tax_included"
                                 groups="sale.group_show_price_total"
-                            >Total Price</th>
+                            >
+                                Total Price
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="sale_tbody">
@@ -182,7 +190,7 @@
                                 class="table table-condensed"
                                 style="min-width: 200px;max-width: 350px;"
                             >
-                            <tr
+                                <tr
                                     class="border-black"
                                     style="border-bottom:1px solid #dddddd;"
                                 >
@@ -196,7 +204,8 @@
                                         />
                                     </td>
                                 </tr>
-                            -<t
+                                -
+                                <t
                                     t-foreach="doc._get_tax_amount_by_group()"
                                     t-as="amount_by_group"
                                 >
@@ -206,8 +215,9 @@
                                         >
                                             <td>
                                                 <span t-esc="amount_by_group[0]" />
-                                                <span>&amp;nbsp;<span
-                                                    >on</span>&amp;nbsp;<t
+                                                <span>&amp;nbsp;<span>
+                                                        on
+                                                    </span>&amp;nbsp;<t
                                                         t-esc="amount_by_group[2]"
                                                         t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'
                                                     /></span>
@@ -232,7 +242,7 @@
                                         </t>
                                     </tr>
                                 </t>
-                            <tr class="border-black">
+                                <tr class="border-black">
                                     <td>
                                         <strong>Total</strong>
                                     </td>
@@ -243,7 +253,7 @@
                                         />
                                     </td>
                                 </tr>
-                            <tr class="border-black">
+                                <tr class="border-black">
                                     <td>
                                         <strong>Pending Payment</strong>
                                     </td>
@@ -254,7 +264,7 @@
                                         />
                                     </td>
                                 </tr>
-                        </table>
+                            </table>
                         </div>
                     </div>
                 </div>

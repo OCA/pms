@@ -21,7 +21,7 @@ class PmsFolio(models.Model):
         for folio in self:
             name = folio.name
             if len(folio.reservation_ids) > 1:
-                name += ' (%s)' % len(folio.reservation_ids)
+                name += " (%s)" % len(folio.reservation_ids)
             result.append((folio.id, name))
         return result
 
@@ -39,7 +39,9 @@ class PmsFolio(models.Model):
 
     @api.model
     def _get_default_pms_property(self):
-        return self.env.user.pms_property_id #TODO: Change by property env variable (like company)
+        return (
+            self.env.user.pms_property_id
+        )  # TODO: Change by property env variable (like company)
 
     # Fields declaration
     name = fields.Char(
@@ -59,7 +61,9 @@ class PmsFolio(models.Model):
         help="Room reservation detail.",
     )
     number_of_rooms = fields.Integer(
-        "Number of Rooms", compute="_compute_number_of_rooms", store="True",
+        "Number of Rooms",
+        compute="_compute_number_of_rooms",
+        store="True",
     )
     service_ids = fields.One2many(
         "pms.service",
@@ -70,7 +74,10 @@ class PmsFolio(models.Model):
         "include in main Invoice.",
     )
     company_id = fields.Many2one(
-        "res.company", "Company", required=True, default=lambda self: self.env.company,
+        "res.company",
+        "Company",
+        required=True,
+        default=lambda self: self.env.company,
     )
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
@@ -108,7 +115,10 @@ class PmsFolio(models.Model):
         readonly=False,
     )
     agency_id = fields.Many2one(
-        "res.partner", "Agency", ondelete="restrict", domain=[("is_agency", "=", True)],
+        "res.partner",
+        "Agency",
+        ondelete="restrict",
+        domain=[("is_agency", "=", True)],
     )
     payment_ids = fields.One2many("account.payment", "folio_id", readonly=True)
     # return_ids = fields.One2many("payment.return", "folio_id", readonly=True)
@@ -125,7 +135,7 @@ class PmsFolio(models.Model):
     move_ids = fields.Many2many(
         "account.move",
         string="Invoices",
-        compute="_get_invoiced",
+        compute="_compute_get_invoiced",
         readonly=True,
         copy=False,
     )
@@ -155,7 +165,10 @@ class PmsFolio(models.Model):
         default=lambda *a: "normal",
     )
     channel_type = fields.Selection(
-        [("direct", "Direct"), ("agency", "Agency"),],
+        [
+            ("direct", "Direct"),
+            ("agency", "Agency"),
+        ],
         string="Sales Channel",
         compute="_compute_channel_type",
         store=True,
@@ -203,13 +216,13 @@ class PmsFolio(models.Model):
 
     # Amount Fields------------------------------------------------------
     pending_amount = fields.Monetary(
-        compute="compute_amount", store=True, string="Pending in Folio"
+        compute="_compute_amount", store=True, string="Pending in Folio"
     )
     # refund_amount = fields.Monetary(
-    #     compute="compute_amount", store=True, string="Payment Returns"
+    #     compute="_compute_amount", store=True, string="Payment Returns"
     # )
     invoices_paid = fields.Monetary(
-        compute="compute_amount",
+        compute="_compute_amount",
         store=True,
         track_visibility="onchange",
         string="Payments",
@@ -218,17 +231,17 @@ class PmsFolio(models.Model):
         string="Untaxed Amount",
         store=True,
         readonly=True,
-        compute="_amount_all",
+        compute="_compute_amount_all",
         track_visibility="onchange",
     )
     amount_tax = fields.Monetary(
-        string="Taxes", store=True, readonly=True, compute="_amount_all"
+        string="Taxes", store=True, readonly=True, compute="_compute_amount_all"
     )
     amount_total = fields.Monetary(
         string="Total",
         store=True,
         readonly=True,
-        compute="_amount_all",
+        compute="_compute_amount_all",
         track_visibility="always",
     )
     # Checkin Fields-----------------------------------------------------
@@ -249,7 +262,7 @@ class PmsFolio(models.Model):
             ("no", "Nothing to Invoice"),
         ],
         string="Invoice Status",
-        compute="_get_invoiced",
+        compute="_compute_get_invoiced",
         store=True,
         readonly=True,
         default="no",
@@ -300,9 +313,9 @@ class PmsFolio(models.Model):
     def _compute_channel_type(self):
         for folio in self:
             if folio.agency_id:
-                folio.channel_type = 'agency'
+                folio.channel_type = "agency"
             else:
-                folio.channel_type = 'direct'
+                folio.channel_type = "direct"
 
     @api.depends("partner_id")
     def _compute_payment_term_id(self):
@@ -317,7 +330,7 @@ class PmsFolio(models.Model):
     @api.depends(
         "state", "reservation_ids.invoice_status", "service_ids.invoice_status"
     )
-    def _get_invoiced(self):
+    def _compute_get_invoiced(self):
         """
         Compute the invoice status of a Folio. Possible statuses:
         - no: if the Folio is not in status 'sale' or 'done', we
@@ -409,7 +422,7 @@ class PmsFolio(models.Model):
             )
 
     @api.depends("reservation_ids.price_total", "service_ids.price_total")
-    def _amount_all(self):
+    def _compute_amount_all(self):
         """
         Compute the total amounts of the SO.
         """
@@ -431,11 +444,9 @@ class PmsFolio(models.Model):
                 }
             )
 
-    #TODO: Add return_ids to depends
-    @api.depends(
-        "amount_total", "payment_ids", "reservation_type", "state"
-    )
-    def compute_amount(self):
+    # TODO: Add return_ids to depends
+    @api.depends("amount_total", "payment_ids", "reservation_type", "state")
+    def _compute_amount(self):
         acc_pay_obj = self.env["account.payment"]
         for record in self:
             if record.reservation_type in ("staff", "out"):
@@ -455,7 +466,9 @@ class PmsFolio(models.Model):
                 #         ("return_id.state", "=", "done"),
                 #     ]
                 # )
-                # total_inv_refund = sum(pay_return.amount for pay_return in return_lines)
+                # total_inv_refund = sum(
+                #   pay_return.amount for pay_return in return_lines
+                # )
                 total = record.amount_total
                 # REVIEW: Must We ignored services in cancelled folios
                 # pending amount?
@@ -545,13 +558,17 @@ class PmsFolio(models.Model):
     # ORM Overrides
     @api.model
     def create(self, vals):
-        #TODO: Make sequence from property, not company
+        # TODO: Make sequence from property, not company
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
-            #TODO: change for property env variable
-            pms_property_id = self.env.user.pms_property_id.id if "pms_property_id" not in vals else vals["pms_property_id"]
-            vals["name"] = self.env["ir.sequence"].search([
-                ('pms_property_id', '=', pms_property_id)
-            ]).next_by_code("pms.folio") or _("New")
+            # TODO: change for property env variable
+            pms_property_id = (
+                self.env.user.pms_property_id.id
+                if "pms_property_id" not in vals
+                else vals["pms_property_id"]
+            )
+            vals["name"] = self.env["ir.sequence"].search(
+                [("pms_property_id", "=", pms_property_id)]
+            ).next_by_code("pms.folio") or _("New")
         result = super(PmsFolio, self).create(vals)
         return result
 
@@ -569,7 +586,9 @@ class PmsFolio(models.Model):
             ):
                 reservation.action_cancel()
             self.write(
-                {"state": "cancel",}
+                {
+                    "state": "cancel",
+                }
             )
         return True
 
@@ -589,9 +608,7 @@ class PmsFolio(models.Model):
         # self._create_analytic_account()
         return True
 
-    """
-    CHECKIN/OUT PROCESS
-    """
+    # CHECKIN/OUT PROCESS
 
     def _compute_checkin_partner_count(self):
         for record in self:
@@ -636,6 +653,8 @@ class PmsFolio(models.Model):
                     if t["id"] == tax.id or t["id"] in tax.children_tax_ids.ids:
                         res[group]["amount"] += t["amount"]
                         res[group]["base"] += t["base"]
-        res = sorted(res.items(), key=lambda l: l[0].sequence)
-        res = [(l[0].name, l[1]["amount"], l[1]["base"], len(res)) for l in res]
+        res = sorted(res.items(), key=lambda line: line[0].sequence)
+        res = [
+            (line[0].name, line[1]["amount"], line[1]["base"], len(res)) for line in res
+        ]
         return res

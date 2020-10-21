@@ -53,8 +53,8 @@ class PmsProperty(models.Model):
     default_cancel_policy_days = fields.Integer("Cancellation Days")
     default_cancel_policy_percent = fields.Float("Percent to pay")
     folio_sequence_id = fields.Many2one(
-        'ir.sequence', 'Folio Sequence',
-        check_company=True, copy=False)
+        "ir.sequence", "Folio Sequence", check_company=True, copy=False
+    )
 
     # Constraints and onchanges
     @api.constrains("default_arrival_hour", "default_departure_hour")
