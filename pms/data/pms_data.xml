@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
-        <!-- pms.users -->
-        <record id="base.user_root" model="res.users">
-            <field name="company_id" ref="base.main_company" />
-            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
-            <field name="pms_property_id" ref="main_pms_property" />
-            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
-            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
-        </record>
-        <record id="base.user_admin" model="res.users">
-            <field name="company_id" ref="base.main_company" />
-            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
-            <field name="pms_property_id" ref="main_pms_property" />
-            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
-            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
-        </record>
         <!-- Basic pms  -->
         <record id="main_pms_room_type_restriction" model="pms.room.type.restriction">
             <field name="name">Restriction Plan</field>
@@ -33,6 +18,21 @@
             <field name="email">commitsun@hootel.com</field>
             <field name="website">https://www.commitsun.com</field>
             <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
+        </record>
+        <!-- pms.users -->
+        <record id="base.user_root" model="res.users">
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
+        </record>
+        <record id="base.user_admin" model="res.users">
+            <field name="company_id" ref="base.main_company" />
+            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field name="pms_property_id" ref="main_pms_property" />
+            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+            <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
         </record>
     </data>
 </odoo>
