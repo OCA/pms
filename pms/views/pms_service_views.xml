@@ -112,7 +112,7 @@
                 <field name="product_qty" />
                 <newline />
                 <group expand="0" string="Group By...">
-                <!--    <filter name="categ_id" string="Catagory"
+                    <!--    <filter name="categ_id" string="Catagory"
                         icon="terp-stock_symbol-selection" domain="[]"
                         context="{'group_by':'categ_id'}" /> -->
                 </group>

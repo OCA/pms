@@ -1,4 +1,4 @@
-odoo.define("pms.ListController", function(require) {
+odoo.define("pms.ListController", function (require) {
     "use strict";
     /*
      * Pms
@@ -12,7 +12,7 @@ odoo.define("pms.ListController", function(require) {
     var _t = Core._t;
 
     ListController.include({
-        renderButtons: function() {
+        renderButtons: function () {
             this._super.apply(this, arguments); // Sets this.$buttons
             var self = this;
             if (this.modelName === "pms.reservation") {
@@ -23,7 +23,7 @@ odoo.define("pms.ListController", function(require) {
                 );
                 this.$buttons
                     .find(".oe_open_reservation_wizard")
-                    .on("click", function() {
+                    .on("click", function () {
                         self.do_action("pms.open_wizard_reservations");
                     });
             }

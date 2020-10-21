@@ -5,16 +5,19 @@
             <h1 t-field="object.pms_property_id.name" />
             <div class="row">
                 <div class="col-sm-4">
-                <t t-esc="object.pms_property_id.street" />
-                <t t-if="object.pms_property_id.street2">- <t
-                            t-esc="object.pms_property_id.street2"
-                        /></t> <br />
-                <t t-esc="object.pms_property_id.zip" />
-                <t t-esc="object.pms_property_id.city" />,
-                <t t-esc="object.pms_property_id.state_id.name" /> <br />
-                <t t-esc="object.pms_property_id.country_id.name" />
-
-            </div>
+                    <t t-esc="object.pms_property_id.street" />
+                    <t t-if="object.pms_property_id.street2">
+                        -
+                        <t t-esc="object.pms_property_id.street2" />
+                    </t>
+                    <br />
+                    <t t-esc="object.pms_property_id.zip" />
+                    <t t-esc="object.pms_property_id.city" />
+                    ,
+                    <t t-esc="object.pms_property_id.state_id.name" />
+                    <br />
+                    <t t-esc="object.pms_property_id.country_id.name" />
+                </div>
                 <div class="col-sm-4">
                     <i class="glyphicon glyphicon-phone-alt" />
                     <t t-esc="object.pms_property_id.phone" />
@@ -38,9 +41,10 @@
                                 <th scope="col">Room Type</th>
                                 <th scope="col">Checkin</th>
                                 <th scope="col">Nights</th>
-                                <th scope="col">Price <t
-                                        t-esc="object.currency_id.name"
-                                    /></th>
+                                <th scope="col">
+                                    Price
+                                    <t t-esc="object.currency_id.name" />
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,29 +75,42 @@
         <template id="template_reservation">
             <div class="row" style="padding-top: 20px;">
                 <div class="col-sm-12">
-                    <p>Dear <span t-field="object.partner_id.name" />,<br />
-                    Thank you for your reservation.</p>
-                    <p>Here is your confirmation code: <b t-esc="object.name" />.
-                    Keep this code for any question about your booking order.</p>
+                    <p>
+                        Dear
+                        <span t-field="object.partner_id.name" />
+                        ,
+                        <br />
+                        Thank you for your reservation.
+                    </p>
+                    <p>
+                        Here is your confirmation code:
+                        <b t-esc="object.name" />
+                        .
+                    Keep this code for any question about your booking order.
+                    </p>
                     <p>You can find the reservation details below:</p>
                 </div>
             </div>
             <t t-call="pms.template_reservation_details" />
             <div class="row" style="padding-top: 20px;">
                 <div class="col-sm-12">
-                If you have any questions, please do not hesitate to contact with the property's staff. <br
-                    />
-                Looking forward to seeing you at our property, <br />
-                Best regards.
-            </div>
+                    If you have any questions, please do not hesitate to contact with
+                    the property's staff.
+                    <br />
+                    Looking forward to seeing you at our property,
+                    <br />
+                    Best regards.
+                </div>
             </div>
         </template>
         <template id="template_footer">
             <div class="row" style="padding-top: 20px;">
                 <div class="col-sm-12">
-                Privacy Policy: We use your Personal Information only for managing your reservation. By using the property, you
-                agree to the collection and use of information in accordance with this policy.
-            </div>
+                    Privacy Policy: We use your Personal Information only for managing
+                    your reservation. By using the property, you
+                agree to the collection and use of information in accordance with this
+                    policy.
+                </div>
             </div>
         </template>
         <template
@@ -128,9 +145,9 @@
             <field name="email_to">${(object.email or '')|safe}</field>
             <field name="partner_to">${(object.partner_id.id or '')}</field>
             <field name="lang">${object.partner_id.lang}</field>
-            <field
-                name="subject"
-            >Your reservation ${object.name} has been confirmed by the property staff</field>
+            <field name="subject">
+                Your reservation ${object.name} has been confirmed by the property staff
+            </field>
             <field name="auto_delete" eval="True" />
             <field name="body_type">qweb</field>
             <field name="body_view_id" ref="pms.template_reservation_confirmed" />

@@ -1,7 +1,6 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -51,7 +50,10 @@ class PmsRoomType(models.Model):
         string="Room Type Amenities",
         help="List of Amenities.",
     )
-    code_type = fields.Char("Code", required=True,)
+    code_type = fields.Char(
+        "Code",
+        required=True,
+    )
     shared_room = fields.Boolean(
         "Shared Room", default=False, help="This room type is reservation by beds"
     )
@@ -91,7 +93,10 @@ class PmsRoomType(models.Model):
     def create(self, vals):
         """ Add room types as not purchase services. """
         vals.update(
-            {"purchase_ok": False, "type": "service",}
+            {
+                "purchase_ok": False,
+                "type": "service",
+            }
         )
         return super().create(vals)
 
@@ -119,27 +124,30 @@ class PmsRoomType(models.Model):
         Return Dict Code Room Types: subdict with day, discount, price
         """
         vals = {}
-        room_type_ids = kwargs.get("room_type_ids", False)
-        room_types = (
-            self.env["pms.room.type"].browse(room_type_ids)
-            if room_type_ids
-            else self.env["pms.room.type"].search([])
-        )
+        # room_type_ids = kwargs.get("room_type_ids", False)
+        # room_types = (
+        #     self.env["pms.room.type"].browse(room_type_ids)
+        #     if room_type_ids
+        #     else self.env["pms.room.type"].search([])
+        # )
         date_from = kwargs.get("date_from", False)
         days = kwargs.get("days", False)
         discount = kwargs.get("discount", False)
         if not date_from or not days:
             raise ValidationError(_("Date From and days are mandatory"))
         partner_id = kwargs.get("partner_id", False)
-        partner = self.env["res.partner"].browse(partner_id)
-        pricelist_id = kwargs.get(
-            "pricelist_id",
-            partner.property_product_pricelist.id
-            and partner.property_product_pricelist.id
-            or self.env.user.pms_property_id.default_pricelist_id.id,
-        )
+        # partner = self.env["res.partner"].browse(partner_id)
+        # pricelist_id = kwargs.get(
+        #     "pricelist_id",
+        #     partner.property_product_pricelist.id
+        #     and partner.property_product_pricelist.id
+        #     or self.env.user.pms_property_id.default_pricelist_id.id,
+        # )
         vals.update(
-            {"partner_id": partner_id if partner_id else False, "discount": discount,}
+            {
+                "partner_id": partner_id if partner_id else False,
+                "discount": discount,
+            }
         )
         rate_vals = {}
         # TODO: Now it is computed field, We need other way to return rates
@@ -155,7 +163,9 @@ class PmsRoomType(models.Model):
         #     rate_vals.update(
         #         {
         #             room_type.id: [
-        #                 item[2] for item in room_vals["reservation_line_ids"] if item[2]
+        #                 item[2] for item in room_vals[
+        #                   "reservation_line_ids"
+        #                   ] if item[2]
         #             ]
         #         }
         #     )

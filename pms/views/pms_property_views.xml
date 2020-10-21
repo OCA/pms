@@ -14,6 +14,7 @@
                     <notebook>
                         <page string="General Information" name="property_general">
                             <group>
+
                             </group>
                         </page>
                         <page string="Settings" name="property_settings">

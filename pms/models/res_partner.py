@@ -49,7 +49,10 @@ class ResPartner(models.Model):
             ("mobile", operator, name),
             ("email", operator, name),
         ]
-        partners = self.search(domain + args, limit=limit,)
+        partners = self.search(
+            domain + args,
+            limit=limit,
+        )
         res = partners.name_get()
         if limit:
             limit_rest = limit - len(partners)

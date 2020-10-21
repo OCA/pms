@@ -41,10 +41,7 @@
                         class="oe_highlight"
                         type="object"
                     />
-                    <field
-                        name="state"
-                        widget="statusbar"
-                    />
+                    <field name="state" widget="statusbar" />
                 </header>
                 <div
                     class="alert alert-info"
@@ -52,8 +49,9 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}"
                 >
-                            This reservation has other reservantions and/or services in the folio, you can check it in the
-                            <bold>
+                    This reservation has other reservantions and/or services in the
+                    folio, you can check it in the
+                    <bold>
                         <button
                             class="alert-link"
                             type="object"
@@ -68,8 +66,9 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('splitted','=',False)]}"
                 >
-                        This reservation is part of splitted reservation!, you can check it in the
-                        <bold>
+                    This reservation is part of splitted reservation!, you can check it
+                    in the
+                    <bold>
                         <button
                             class="alert-link"
                             type="object"
@@ -151,11 +150,15 @@
                     <span
                         class="label label-danger"
                         attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
-                    >Cancelled Reservation!</span>
+                    >
+                        Cancelled Reservation!
+                    </span>
                     <span
                         class="label label-warning"
                         attrs="{'invisible': [('overbooking', '=', False)]}"
-                    >OverBooking!</span>
+                    >
+                        OverBooking!
+                    </span>
                     <h1>
                         <field
                             name="room_id"
@@ -526,22 +529,25 @@
             </form>
         </field>
     </record>
-
     <!-- Calendar -->
     <record id="pms_reservation_view_calendar" model="ir.ui.view">
         <field name="name">pms.reservation.view.calendar</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
-            <calendar date_start="checkin" date_stop="checkout"
-                      string="Reservations" quick_add="False"
-                      mode="month" scales="month,year">
-                <field name="partner_id" avatar_field="image_128"/>
-                <field name="room_type_id"/>
-                <field name="room_id"/>
+            <calendar
+                date_start="checkin"
+                date_stop="checkout"
+                string="Reservations"
+                quick_add="False"
+                mode="month"
+                scales="month,year"
+            >
+                <field name="partner_id" avatar_field="image_128" />
+                <field name="room_type_id" />
+                <field name="room_id" />
             </calendar>
         </field>
     </record>
-
     <!-- Form view Checkin Partners from reservation -->
     <record model="ir.ui.view" id="pms_reservation_checkin_view_form">
         <field name="name">pms.reservation.checkin.form</field>
@@ -562,8 +568,9 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}"
                 >
-                         This reservation has other reservantions and/or services in the folio, you can check it in the
-                         <bold>
+                    This reservation has other reservantions and/or services in the
+                    folio, you can check it in the
+                    <bold>
                         <button
                             class="alert-link"
                             type="object"
@@ -578,11 +585,15 @@
                     <span
                         class="label label-danger"
                         attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
-                    >Cancelled Reservation!</span>
+                    >
+                        Cancelled Reservation!
+                    </span>
                     <span
                         class="label label-warning"
                         attrs="{'invisible': [('overbooking', '=', False)]}"
-                    >OverBooking!</span>
+                    >
+                        OverBooking!
+                    </span>
                     <h2>
                         <field
                             name="room_id"
@@ -607,8 +618,9 @@
                             attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
                         /> -->
                         <h3>
-                            From <span class="fa-sign-in" style="margin: 5px;" />
-                                <field
+                            From
+                            <span class="fa-sign-in" style="margin: 5px;" />
+                            <field
                                 name="checkin"
                                 style="margin-right: 10px;"
                                 readonly="1"
@@ -642,15 +654,16 @@
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
-            <tree
-                string="Reservation"
-                multi_edit="1" sample="1"
-                class="o_sale_order"
-            >
+            <tree string="Reservation" multi_edit="1" sample="1" class="o_sale_order">
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="room_id" options="{'no_create': True,'no_open': True}" />
-                <field name="checkin" widget="daterange" class="oe_inline" options="{'related_end_date': 'checkout'}"/>
+                <field
+                    name="checkin"
+                    widget="daterange"
+                    class="oe_inline"
+                    options="{'related_end_date': 'checkout'}"
+                />
                 <field name="checkout" widget="date" />
                 <field name="nights" />
                 <button
@@ -659,14 +672,18 @@
                     icon="fa-file"
                     name="open_folio"
                 />
-                <field name="folio_id" decoration-bf="1"/>
+                <field name="folio_id" decoration-bf="1" />
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="partner_id" />
                 <field name="room_type_id" invisible="1" />
                 <field name="adults" string="Persons" />
                 <field name="overbooking" invisible="1" />
-                <field name="activity_ids" widget="list_activity" optional="show"/>
-                <field name="create_uid" optional="show" widget="many2one_avatar_user"/>
+                <field name="activity_ids" widget="list_activity" optional="show" />
+                <field
+                    name="create_uid"
+                    optional="show"
+                    widget="many2one_avatar_user"
+                />
                 <field name="origin" />
                 <field name="checkin_partner_ids" invisible="1" />
                 <field name="to_assign" invisible="1" />
@@ -675,8 +692,19 @@
                 <field name="price_subtotal" invisible="1" />
                 <field name="price_total" />
                 <field name="folio_pending_amount" string="Folio Pending Amount" />
-                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1" />
-                <field name="state" decoration-success="state == 'done'" decoration-info="state == 'confirm'" widget="badge" optional="show"/>
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="show"
+                    readonly="1"
+                />
+                <field
+                    name="state"
+                    decoration-success="state == 'done'"
+                    decoration-info="state == 'confirm'"
+                    widget="badge"
+                    optional="show"
+                />
             </tree>
         </field>
     </record>
@@ -865,8 +893,13 @@
                 </group>
                 <searchpanel>
                     <field name="room_type_id" string="Room Type" enable_counters="1" />
-                    <field name="pricelist_id" string="Pricelist" enable_counters="1"/>
-                    <field name="state" string="State" enable_counters="1" select="multi" />
+                    <field name="pricelist_id" string="Pricelist" enable_counters="1" />
+                    <field
+                        name="state"
+                        string="State"
+                        enable_counters="1"
+                        select="multi"
+                    />
                 </searchpanel>
             </search>
         </field>

@@ -74,11 +74,15 @@
                                             <field name="name" />
                                         </strong>
                                     </li>
-                                    <li class="mb4">Room Type: <field
-                                            name="room_type_id"
-                                        /></li>
+                                    <li class="mb4">
+                                        Room Type:
+                                        <field name="room_type_id" />
+                                    </li>
                                     <li class="badge mb4">
-                                        <strong>Beds <field name="beds" /></strong>
+                                        <strong>
+                                            Beds
+                                            <field name="beds" />
+                                        </strong>
                                     </li>
                                 </ul>
                             </div>
