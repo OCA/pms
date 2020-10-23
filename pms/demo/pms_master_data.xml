@@ -310,16 +310,16 @@
         <!-- pms.room.type    -->
         <record id="demo_pms_room_type_0" model="pms.room.type">
             <field name="pms_property_ids" eval="[(4, ref('pms.demo_pms_property'))]" />
-            <field name="name">Prop. Demo Economic</field>
-            <field name="code_type">ECO</field>
+            <field name="name">Prop. Demo Suite</field>
+            <field name="code_type">SUI</field>
             <field name="list_price">21.00</field>
             <field name="class_id" ref="pms_room_type_class_0" />
             <field name="room_amenity_ids" eval="[(4, ref('pms_amenity_0'))]" />
         </record>
         <record id="demo_pms_room_type_1" model="pms.room.type">
             <field name="pms_property_ids" eval="[(4, ref('pms.demo_pms_property'))]" />
-            <field name="name">Prop. Demo Single</field>
-            <field name="code_type">SNG</field>
+            <field name="name">Prop. Demo Views</field>
+            <field name="code_type">VIE</field>
             <field name="list_price">20.00</field>
             <field name="class_id" ref="pms_room_type_class_0" />
             <field
