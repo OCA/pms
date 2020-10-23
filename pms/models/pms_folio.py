@@ -136,6 +136,7 @@ class PmsFolio(models.Model):
         compute="_compute_get_invoiced",
         readonly=True,
         copy=False,
+        compute_sudo=True,
     )
     partner_invoice_id = fields.Many2one(
         "res.partner",
@@ -264,6 +265,7 @@ class PmsFolio(models.Model):
         store=True,
         readonly=True,
         default="no",
+        compute_sudo=True,
     )
     # Generic Fields-----------------------------------------------------
     internal_comment = fields.Text(string="Internal Folio Notes")
