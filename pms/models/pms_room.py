@@ -68,46 +68,6 @@ class PmsRoom(models.Model):
                     )
                 )
 
-    # CRUD methods
-    @api.model
-    def create(self, vals):
-        if (
-            vals.get("pms_property_id", self.env.user.pms_property_id.id)
-            != self.env["pms.room.type"].browse(vals["room_type_id"]).pms_property_id.id
-        ):
-            raise ValidationError(
-                _(
-                    "A room cannot be created in a room type \
-                      of another property."
-                )
-            )
-        return super().create(vals)
-
-    def write(self, vals):
-        for record in self:
-            if (
-                vals.get("pms_property_id", record.pms_property_id.id)
-                != record.pms_property_id.id
-            ):
-                raise ValidationError(
-                    _("A room cannot be changed to another property.")
-                    + " "
-                    + _("%s does not belong to %s.") % (record, record.pms_property_id)
-                )
-            room_type_ids = (
-                self.env["pms.room.type"]
-                .search([("pms_property_id", "=", record.pms_property_id.id)])
-                .ids
-            )
-            if vals.get("room_type_id", record.room_type_id.id) not in room_type_ids:
-                raise ValidationError(
-                    _(
-                        "A room cannot be changed to a room type of \
-                      another property or unlinked from a room type."
-                    )
-                )
-        return super().write(vals)
-
     # Business methods
 
     def get_capacity(self, extra_bed=0):

@@ -20,11 +20,9 @@ class PmsSharedRoom(models.Model):
         ondelete="restrict",
         domain=[("shared_room", "=", True)],
     )
-    pms_property_id = fields.Many2one(
+    # TODO: properties relation
+    pms_property_ids = fields.Many2many(
         "pms.property",
-        store=True,
-        readonly=True,
-        related="room_type_id.pms_property_id",
     )
     floor_id = fields.Many2one(
         "pms.floor",
