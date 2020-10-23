@@ -8,7 +8,7 @@ class AccountPayment(models.Model):
     _inherit = "account.payment"
 
     # Fields declaration
-    folio_id = fields.Many2one("pms.folio", string="Folio")
+    folio_id = fields.Many2one("pms.folio", string="Folio Reference")
     amount_total_folio = fields.Float(
         compute="_compute_folio_amount",
         store=True,
@@ -47,12 +47,12 @@ class AccountPayment(models.Model):
             return res
 
     # Constraints and onchanges
-    @api.onchange("amount", "payment_date", "journal_id")
-    def onchange_amount(self):
-        if self._origin:
-            self.save_amount = self._origin.amount
-            self.save_journal_id = self._origin.journal_id.id
-            self.save_date = self._origin.payment_date
+    # @api.onchange("amount", "payment_date", "journal_id")
+    # def onchange_amount(self):
+    #     if self._origin:
+    #         self.save_amount = self._origin.amount
+    #         self.save_journal_id = self._origin.journal_id.id
+    #         self.save_date = self._origin.payment_date
 
     # Action methods
     # def return_payment_folio(self):
