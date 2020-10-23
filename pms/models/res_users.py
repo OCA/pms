@@ -33,7 +33,10 @@ class ResUsers(models.Model):
     def get_active_property_ids(self):
         # TODO: Require performance test and security
         # checks (Review lazy_property decorator?)
-        active_property_ids = list(
-            map(int, request.httprequest.cookies.get("pms_pids", "").split(","))
-        )
+        if request:
+            active_property_ids = list(
+                map(int, request.httprequest.cookies.get("pms_pids", "").split(","))
+            )
+        else:
+            active_property_ids = self.env.user.pms_property_ids.ids
         return active_property_ids
