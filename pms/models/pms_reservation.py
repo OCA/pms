@@ -222,7 +222,6 @@ class PmsReservation(models.Model):
     )
     adults = fields.Integer(
         "Adults",
-        size=64,
         tracking=True,
         help="List of adults there in guest list. ",
         compute="_compute_adults",
@@ -231,7 +230,6 @@ class PmsReservation(models.Model):
     )
     children = fields.Integer(
         "Children",
-        size=64,
         readonly=False,
         tracking=True,
         help="Number of children there in guest list.",
