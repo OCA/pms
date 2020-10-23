@@ -13,6 +13,16 @@
                 <field name="pricelist_type" />
                 <field name="cancelation_rule_id" />
             </xpath>
+            <xpath
+                expr="//field[@name='item_ids']/tree/field[@name='base']"
+                position="after"
+            >
+                <field
+                    name="pms_property_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                />
+            </xpath>
         </field>
     </record>
     <menuitem
