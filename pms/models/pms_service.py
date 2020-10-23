@@ -295,12 +295,17 @@ class PmsService(models.Model):
     @api.depends("service_line_ids", "service_line_ids.day_qty")
     def _compute_product_qty(self):
         self.product_qty = 0
-        _logger.info("B")
         for service in self.filtered("service_line_ids"):
             qty = sum(service.service_line_ids.mapped("day_qty"))
             service.product_qty = qty
 
-    @api.depends("product_id", "service_line_ids", "reservation_id.pricelist_id")
+    @api.depends(
+        "product_id",
+        "service_line_ids",
+        "reservation_id.pricelist_id",
+        "reservation_id.pms_property_id",
+        "pms_property_id",
+    )
     def _compute_price_unit(self):
         for service in self:
             folio = service.folio_id
@@ -352,6 +357,7 @@ class PmsService(models.Model):
                             pricelist=pricelist.id,
                             uom=service.product_id.uom_id.id,
                             fiscal_position=False,
+                            property=service.pms_property_id.id,
                         )
                         service.price_unit = self.env[
                             "account.tax"
@@ -378,7 +384,11 @@ class PmsService(models.Model):
         folio_new = self.folio_id
         reservation_new = self.reservation_id
         new = reservation_new if reservation_new else folio_new
-        price_fields = ["pricelist_id", "reservation_type"]
+        price_fields = [
+            "pricelist_id",
+            "reservation_type",
+            "pms_property_id",
+        ]
         if (
             any(origin[field] != new[field] for field in price_fields)
             or self._origin.price_unit == 0
