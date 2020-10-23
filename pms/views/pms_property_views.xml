@@ -43,7 +43,6 @@
                         </page>
                         <page string="Rooms" name="property_rooms">
                             <group>
-                                <field name="room_type_ids" />
                                 <field name="room_ids" />
                             </group>
                         </page>

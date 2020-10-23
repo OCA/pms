@@ -27,7 +27,7 @@
                             <field name="class_id" />
                         </group>
                         <group>
-                            <field name="pms_property_ids" invisible="1" />
+                            <field name="pms_property_ids" widget="many2many_tags" />
                             <field
                                 name="list_price"
                                 widget='monetary'
@@ -82,7 +82,7 @@
         <field name="arch" type="xml">
             <tree string=" Property Room Type">
                 <field name="sequence" widget="handle" />
-                <field name="pms_property_ids" />
+                <field name="pms_property_ids" widget="many2many_tags" />
                 <field name="name" />
                 <field name="code_type" />
                 <field name="list_price" />
