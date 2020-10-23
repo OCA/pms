@@ -21,7 +21,7 @@ class PmsCancelationRule(models.Model):
     days_intime = fields.Integer(
         "Days Late", help="Maximum number of days for free cancellation before Checkin"
     )
-    penalty_late = fields.Integer("% Penalty Late", defaul="100")
+    penalty_late = fields.Integer("% Penalty Late", default="100")
     apply_on_late = fields.Selection(
         [("first", "First Day"), ("all", "All Days"), ("days", "Specify days")],
         "Late apply on",
