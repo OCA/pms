@@ -36,7 +36,6 @@ class PmsSharedRoom(models.Model):
         "pms.room",
         "shared_room_id",
         readonly=True,
-        ondelete="restrict",
     )
     active = fields.Boolean("Active", default=True)
     sequence = fields.Integer("Sequence", required=True)
