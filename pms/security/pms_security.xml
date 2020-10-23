@@ -34,21 +34,23 @@
             </field>
         </record>
         <!-- Property Rules -->
-        <!--<record id="pms_folio_property_rule" model="ir.rule">
+        <record id="pms_folio_property_rule" model="ir.rule">
             <field name="name">PMS Folio Company Rule</field>
             <field name="model_id" ref="model_pms_folio" />
             <field name="global" eval="True" />
-            <field
-                name="domain_force"
-            >['|',('pms_property_id','=',False),('pms_property_id', 'in', property_ids)]</field>
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.get_active_property_ids())]
+            </field>
         </record>
         <record id="pms_reservation_property_rule" model="ir.rule">
             <field name="name">PMS Reservation Company Rule</field>
             <field name="model_id" ref="model_pms_reservation" />
             <field name="global" eval="True" />
-            <field
-                name="domain_force"
-            >['|',('pms_property_id','=',False),('pms_property_id', 'in', property_ids)]</field>
-        </record>-->
+            <field name="domain_force">
+                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
+                user.get_active_property_ids())]
+            </field>
+        </record>
     </data>
 </odoo>
