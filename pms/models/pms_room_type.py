@@ -17,11 +17,6 @@ class PmsRoomType(models.Model):
     _inherits = {"product.product": "product_id"}
     _order = "sequence, code_type, name"
 
-    # Default methods
-    @api.model
-    def _get_default_pms_property(self):
-        return self.env.user.pms_property_id
-
     # Fields declaration
     product_id = fields.Many2one(
         "product.product",
@@ -30,12 +25,13 @@ class PmsRoomType(models.Model):
         delegate=True,
         ondelete="cascade",
     )
-    pms_property_id = fields.Many2one(
+    pms_property_ids = fields.Many2many(
         "pms.property",
-        "Property",
-        required=True,
+        "pms_property_room_type_rel",
+        "room_type_id",
+        "pms_property_id",
         ondelete="restrict",
-        default=_get_default_pms_property,
+        string="Properties",
     )
     room_ids = fields.One2many("pms.room", "room_type_id", "Rooms")
     class_id = fields.Many2one("pms.room.type.class", "Property Type Class")
@@ -77,8 +73,8 @@ class PmsRoomType(models.Model):
     _sql_constraints = [
         (
             "code_type_pms_unique",
-            "unique(code_type, pms_property_id)",
-            "Room Type Code must be unique by Property!",
+            "unique(code_type)",
+            "Room Type Code must be unique",
         ),
     ]
 

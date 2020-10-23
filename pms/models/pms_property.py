@@ -30,7 +30,6 @@ class PmsProperty(models.Model):
         "user_id",
         string="Accepted Users",
     )
-    room_type_ids = fields.Many2many("pms.room.type", "pms_property_ids", "Room Types")
     room_ids = fields.One2many("pms.room", "pms_property_id", "Rooms")
     default_pricelist_id = fields.Many2one(
         "product.pricelist",
