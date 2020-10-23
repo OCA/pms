@@ -96,7 +96,7 @@ class PmsCheckinPartner(models.Model):
     )
     auto_booking = fields.Boolean("Get in Now", default=False)
     state = fields.Selection(
-        [
+        selection=[
             ("draft", "Pending Entry"),
             ("onboard", "On Board"),
             ("done", "Out"),
