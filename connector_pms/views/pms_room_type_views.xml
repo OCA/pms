@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="pms_room_type_view_form" model="ir.ui.view">
+        <field name="name">pms.room.type.connector.form</field>
+        <field name="model">pms.room.type</field>
+        <field name="inherit_id" ref="pms.pms_room_type_view_form" />
+        <field
+            name="groups_id"
+            eval="[(4, ref('connector.group_connector_manager'))]"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/notebook">
+                <!-- change the invisible attribute to 0 when used
+                     in submodules -->
+                <page string="Connectors" name="connector" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

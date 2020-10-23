@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_channel_backend_manager,channel backend manager,model_channel_backend,connector.group_connector_manager,1,1,1,1
+access_channel_backend_type_manager,channel backend type manager,model_channel_backend_type,connector.group_connector_manager,1,1,1,1
