@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="channel_backend_view_form" model="ir.ui.view">
+        <field name="name">channel.backend.form</field>
+        <field name="model">channel.backend</field>
+        <field name="arch" type="xml">
+            <form string="PMS Backend">
+                <header />
+                <sheet>
+                    <field name="id" invisible="1" />
+                    <div
+                        class="oe_button_box"
+                        name="button_box"
+                        attrs="{'invisible': [('id','=',False)]}"
+                    >
+                        <button
+                            name="channel_config"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-cogs"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Configuration</span>
+                            </div>
+                        </button>
+                    </div>
+                    <label for="name" class="oe_edit_only" />
+                    <h1>
+                        <field name="name" class="oe_inline" />
+                    </h1>
+                    <group>
+                        <field name="pms_property_id" class="oe_inline" />
+                        <field name="user_id" class="oe_inline" />
+                    </group>
+                    <group>
+                        <field name="backend_type_id" class="oe_inline" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="channel_backend_view_tree" model="ir.ui.view">
+        <field name="name">channel.backend.tree</field>
+        <field name="model">channel.backend</field>
+        <field name="arch" type="xml">
+            <tree string="PMS Backend">
+                <field name="name" />
+                <field name="backend_type_id" />
+                <field name="pms_property_id" />
+                <button
+                    name="channel_config"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-cogs"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <record id="channel_backend_action" model="ir.actions.act_window">
+        <field name="name">PMS Backends</field>
+        <field name="res_model">channel.backend</field>
+    </record>
+
+    <menuitem
+        id="channel_backend_menu"
+        name="Backends"
+        sequence="10"
+        parent="channel_menu"
+        action="channel_backend_action"
+    />
+</odoo>
