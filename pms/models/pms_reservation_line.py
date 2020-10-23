@@ -128,11 +128,16 @@ class PmsReservationLine(models.Model):
         "reservation_id.pricelist_id",
         "reservation_id.room_type_id",
         "reservation_id.reservation_type",
+        "reservation_id.pms_property_id",
     )
     def _compute_price(self):
         for line in self:
             reservation = line.reservation_id
-            if not reservation.room_type_id or not reservation.pricelist_id:
+            if (
+                not reservation.room_type_id
+                or not reservation.pricelist_id
+                or not reservation.pms_property_id
+            ):
                 line.price = 0
             elif line._recompute_price():
                 room_type_id = reservation.room_type_id.id
@@ -145,6 +150,7 @@ class PmsReservationLine(models.Model):
                     date=line.date,
                     pricelist=reservation.pricelist_id.id,
                     uom=product.uom_id.id,
+                    property=reservation.pms_property_id.id,
                 )
                 line.price = self.env["account.tax"]._fix_tax_included_price_company(
                     line._get_display_price(product),
@@ -174,7 +180,12 @@ class PmsReservationLine(models.Model):
         self.ensure_one()
         origin = self._origin.reservation_id
         new = self.reservation_id
-        price_fields = ["pricelist_id", "room_type_id", "reservation_type"]
+        price_fields = [
+            "pricelist_id",
+            "room_type_id",
+            "reservation_type",
+            "pms_property_id",
+        ]
         if (
             any(origin[field] != new[field] for field in price_fields)
             or self._origin.price == 0
@@ -274,7 +285,6 @@ class PmsReservationLine(models.Model):
             date=self.date,
             uom=product.uom_id.id,
         )
-
         final_price, rule_id = self.reservation_id.pricelist_id.with_context(
             product_context
         ).get_product_price_rule(product, 1.0, self.reservation_id.partner_id)

@@ -51,3 +51,21 @@ class ProductPricelist(models.Model):
     #                         "different property."
     #                     )
     #                 )
+
+    def _compute_price_rule_get_items(
+        self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
+    ):
+        items = super(ProductPricelist, self)._compute_price_rule_get_items(
+            products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
+        )
+        # Discard the rules with defined properties other than the context,
+        # and we reorder the rules to return the most concrete property rule first
+        if "property" in self._context:
+            return items.filtered(
+                lambda i: not i.pms_property_ids
+                or self._context["property"] in i.pms_property_ids.ids
+            ).sorted(
+                key=lambda s: ((not s.pms_property_ids, s), len(s.pms_property_ids))
+            )
+        else:
+            return items
