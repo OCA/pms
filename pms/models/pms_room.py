@@ -32,7 +32,6 @@ class PmsRoom(models.Model):
         "pms.property",
         store=True,
         readonly=True,
-        domain="[('id', 'in', room_type_id.pms_property_ids)]",
     )
     room_type_id = fields.Many2one(
         "pms.room.type", "Property Room Type", required=True, ondelete="restrict"
