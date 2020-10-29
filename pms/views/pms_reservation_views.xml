@@ -301,6 +301,10 @@
                                 name="children"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
+                            <field
+                                name="children_occupying"
+                                attrs="{'invisible': [('children', '=', 0)]}"
+                            />
                             <field name="qty_invoiced" invisible="1" />
                             <field name="qty_to_invoice" invisible="1" />
                             <field name="allowed_room_ids" invisible="1" />

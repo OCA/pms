@@ -309,8 +309,9 @@ class PmsReservationLine(models.Model):
             extra_bed = record.reservation_id.service_ids.filtered(
                 lambda r: r.product_id.is_extra_bed is True
             )
-            if record.reservation_id.adults > record.room_id.get_capacity(
-                len(extra_bed)
+            if (
+                record.reservation_id.adults + record.reservation_id.children_occupying
+                > record.room_id.get_capacity(len(extra_bed))
             ):
                 raise ValidationError(_("Persons can't be higher than room capacity"))
             # if record.reservation_id.adults == 0:
