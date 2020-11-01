@@ -7,7 +7,7 @@
     "version": "14.0.1.0.0",
     "development_status": "Alpha",
     "category": "Generic Modules/Property Management System",
-    "website": "https://github.com/hootel/hootel",
+    "website": "https://github.com/OCA/pms",
     "author": "Dario Lodeiros, "
     "Alexadre Diaz, "
     "Pablo Quesada, "
