@@ -228,6 +228,10 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
+    children_occupying = fields.Integer(
+        string="Children occupying",
+    )
+
     children = fields.Integer(
         "Children",
         readonly=False,
