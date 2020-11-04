@@ -246,7 +246,7 @@ class PmsReservation(models.Model):
     state = fields.Selection(
         [
             ("draft", "Pre-reservation"),
-            ("confirm", "Pending Entry"),
+            ("confirm", "Pending arrival"),
             ("onboard", "On Board"),
             ("done", "Out"),
             ("cancelled", "Cancelled"),
