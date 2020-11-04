@@ -27,10 +27,8 @@
                                 domain="[('is_company','=', False)]"
                             />
                             <field name="pms_property_id" invisible="1" />
-                            <field name="enter_date" />
-                            <field name="exit_date" />
-                            <field name="arrival_hour" />
-                            <field name="departure_hour" />
+                            <field name="arrival" />
+                            <field name="departure" />
                         </group>
                         <group name="group_left">
                             <field name="reservation_id" />
@@ -56,7 +54,7 @@
                 <button
                     type="object"
                     class="oe_read_only oe_stat_button"
-                    icon="fa fa-2x fa-check-circle"
+                    icon="fa-2x fa-check-circle"
                     name="action_on_board"
                     help="Get in"
                     attrs="{'invisible': [('state','!=','draft')]}"
@@ -65,8 +63,8 @@
                 <field name="partner_id" required="True" />
                 <field name="mobile" />
                 <field name="email" />
-                <field name="enter_date" />
-                <field name="exit_date" />
+                <field name="arrival" />
+                <field name="departure" />
                 <field name="reservation_id" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" invisible="1" />
@@ -99,8 +97,8 @@
                 />
                 <field name="mobile" />
                 <field name="email" />
-                <field name="enter_date" />
-                <field name="exit_date" />
+                <field name="arrival" />
+                <field name="departure" />
                 <field name="reservation_id" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" />
@@ -129,21 +127,21 @@
                 <filter
                     string="Checkins Tomorrow"
                     name="enter_tomorrow"
-                    domain="[('enter_date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
+                    domain="[('arrival', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
                     help="Show all checkins for enter tomorrow"
                 />
                 <filter
                     string="Checkins to 7 days"
                     name="next_res_week"
-                    domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
                     help="Show all reservations for which date enter is before than 7 days"
                 />
                 <filter
                     string="On Board Tomorrow"
                     name="next_res_2week"
-                    domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
+                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
                         ('state', 'in', ['confirm','onboard'])]"
                     help="Show all checkins for Tomorrow"
                 />
@@ -167,33 +165,33 @@
                     <filter
                         string="Checkin by Month"
                         name="checkin_by_month"
-                        context="{'group_by':'enter_date', 'default_order': 'enter_date asc'}"
+                        context="{'group_by':'arrival', 'default_order': 'arrival asc'}"
                     />
                     <filter
                         string="Checkin by Week"
                         name="checkin_by_week"
-                        context="{'group_by':'enter_date:week', 'default_order': 'enter_date'}"
+                        context="{'group_by':'arrival:week', 'default_order': 'arrival'}"
                     />
                     <filter
                         string="Checkin by Day"
                         name="checkin_by_week"
-                        context="{'group_by':'enter_date:day', 'default_order': 'enter_date'}"
+                        context="{'group_by':'arrival:day', 'default_order': 'arrival'}"
                     />
                     <separator />
                     <filter
                         string="Checkout by Month"
                         name="checkout_by_month"
-                        context="{'group_by':'exit_date', 'default_order': 'exit_date asc'}"
+                        context="{'group_by':'departure', 'default_order': 'departure asc'}"
                     />
                     <filter
                         string="Checkout by Week"
                         name="checkout_by_week"
-                        context="{'group_by':'exit_date:week', 'default_order': 'exit_date'}"
+                        context="{'group_by':'departure:week', 'default_order': 'departure'}"
                     />
                     <filter
                         string="Checkout by Day"
                         name="checkout_by_week"
-                        context="{'group_by':'exit_date:day', 'default_order': 'exit_date'}"
+                        context="{'group_by':'departure:day', 'default_order': 'departure'}"
                     />
                     <separator />
                 </group>
