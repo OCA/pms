@@ -35,7 +35,6 @@ class PmsCheckinPartner(models.Model):
     mobile = fields.Char("Mobile", related="partner_id.mobile")
     arrival = fields.Datetime("Enter")
     departure = fields.Datetime("Exit")
-    auto_booking = fields.Boolean("Get in Now", default=False)
     state = fields.Selection(
         selection=[
             ("draft", "Pending arrival"),
@@ -105,11 +104,3 @@ class PmsCheckinPartner(models.Model):
                 }
                 record.update(vals)
         return True
-
-    # ORM Overrides
-    @api.model
-    def create(self, vals):
-        record = super(PmsCheckinPartner, self).create(vals)
-        if vals.get("auto_booking", False):
-            record.action_on_board()
-        return record
