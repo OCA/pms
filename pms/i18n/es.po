@@ -5700,12 +5700,12 @@ msgid "End Date"
 msgstr "Fecha de finalización"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_enter_date
+#: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_arrival
 msgid "Enter Date"
 msgstr "Fecha de entrada"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_exit_date
+#: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_departure
 msgid "Exit Date"
 msgstr "Fecha salida"
 
@@ -6671,7 +6671,7 @@ msgstr "Mail"
 #: model:ir.model.fields,help:hotel.field_hotel_room_type_property_valuation
 msgid ""
 "Manual: The accounting entries to value the inventory are not posted automatically.\n"
-"        Automated: An accounting entry is automatically created to value the inventory when a product enters or leaves the company."
+"        Automated: An accounting arrival is automatically created to value the inventory when a product enters or leaves the company."
 msgstr ""
 "Manual: Los registros contables de valoración del inventario no se publican automáticamente.\n"
 "        Automatizado: Se crea automáticamente un registro contable para evaluar el inventario cuando un producto entra o sale de la empresa."
@@ -7215,7 +7215,7 @@ msgstr "Pagos"
 
 #. module: hotel
 #: selection:hotel.checkin.partner,state:0 selection:hotel.reservation,state:0
-msgid "Pending Entry"
+msgid "Pending arrival"
 msgstr "Por entrar"
 
 #. module: hotel
