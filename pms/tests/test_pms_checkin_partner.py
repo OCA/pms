@@ -27,6 +27,7 @@ class TestPmsCheckinPartner(TestHotel):
             "checkout": "2012-01-17",
             "room_type_id": cls.env.ref("pms.pms_room_type_3").id,
             "partner_id": cls.host1.id,
+            "adults": 3,
             "pms_property_id": cls.env.ref("pms.main_pms_property").id,
         }
         demo_user = cls.env.ref("base.user_demo")
@@ -140,9 +141,17 @@ class TestPmsCheckinPartner(TestHotel):
         )
         # ACT & ASSERT
         with self.assertRaises(ValidationError), self.cr.savepoint():
-            self.env["pms.checkin.partner"].create(
+            self.reservation_1.write(
                 {
-                    "partner_id": host4.id,
-                    "reservation_id": self.reservation_1.id,
+                    "checkin_partner_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "partner_id": host4.id,
+                                "reservation_id": self.reservation_1.id,
+                            },
+                        )
+                    ]
                 }
             )

@@ -5878,11 +5878,6 @@ msgid "Get in"
 msgstr "Entrar"
 
 #. module: hotel
-#: model:ir.model.fields,field_description:hotel.field_hotel_checkin_partner_auto_booking
-msgid "Get in Now"
-msgstr "Entra ahora!"
-
-#. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_room_type_packaging_ids
 msgid "Gives the different ways to package the same product."
 msgstr "Da las diferentes formas de empaquetar el mismo producto."
