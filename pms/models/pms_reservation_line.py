@@ -250,7 +250,10 @@ class PmsReservationLine(models.Model):
                     line.reservation_id.tax_ids,
                     line.reservation_id.company_id,
                 )
+<<<<<<< HEAD
                 # _logger.info(line.price)
+=======
+>>>>>>> [DEL] delete auto_booking field
                 # TODO: Out of service 0 amount
             else:
                 line.price = line._origin.price

@@ -698,7 +698,7 @@ class PmsReservation(models.Model):
                     )
                 )
 
-    @api.constrains("checkin_partner_ids")
+    @api.constrains("checkin_partner_ids", "adults")
     def _max_checkin_partner_ids(self):
         for record in self:
             if len(record.checkin_partner_ids) > record.adults + record.children:

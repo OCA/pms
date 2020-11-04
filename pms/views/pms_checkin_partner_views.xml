@@ -59,7 +59,6 @@
                     help="Get in"
                     attrs="{'invisible': [('state','!=','draft')]}"
                 />
-                <field name="auto_booking" invisible="1" />
                 <field name="partner_id" required="True" />
                 <field name="mobile" />
                 <field name="email" />
