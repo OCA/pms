@@ -155,3 +155,115 @@ class TestPmsCheckinPartner(TestHotel):
                     ]
                 }
             )
+
+    @classmethod
+    def arrange_folio_reservations(cls):
+        # Arrange on one folio with 3 reservations
+        demo_user = cls.env.ref("base.user_demo")
+        cls.host1 = cls.env["res.partner"].create(
+            {
+                "name": "Miguel",
+                "phone": "654667733",
+                "email": "miguel@example.com",
+            }
+        )
+        cls.host2 = cls.env["res.partner"].create(
+            {
+                "name": "Carlos",
+                "phone": "654667733",
+                "email": "carlos@example.com",
+            }
+        )
+        cls.host3 = cls.env["res.partner"].create(
+            {
+                "name": "Enmanuel",
+                "phone": "654667733",
+                "email": "enmanuel@example.com",
+            }
+        )
+        cls.host4 = cls.env["res.partner"].create(
+            {
+                "name": "Enrique",
+                "phone": "654667733",
+                "email": "enrique@example.com",
+            }
+        )
+        folio_vals = {
+            "partner_id": cls.host1.id,
+        }
+        cls.folio_1 = cls.env["pms.folio"].with_user(demo_user).create(folio_vals)
+        reservation1_vals = {
+            "checkin": "2012-01-14",
+            "checkout": "2012-01-17",
+            "room_type_id": cls.env.ref("pms.pms_room_type_3").id,
+            "partner_id": cls.host1.id,
+            "adults": 3,
+            "pms_property_id": cls.env.ref("pms.main_pms_property").id,
+            "folio_id": cls.folio_1.id,
+        }
+        reservation2_vals = {
+            "checkin": "2012-01-14",
+            "checkout": "2012-01-17",
+            "room_type_id": cls.env.ref("pms.pms_room_type_2").id,
+            "partner_id": cls.host1.id,
+            "adults": 2,
+            "pms_property_id": cls.env.ref("pms.main_pms_property").id,
+            "folio_id": cls.folio_1.id,
+        }
+        reservation3_vals = {
+            "checkin": "2012-01-14",
+            "checkout": "2012-01-17",
+            "room_type_id": cls.env.ref("pms.pms_room_type_2").id,
+            "partner_id": cls.host1.id,
+            "adults": 2,
+            "pms_property_id": cls.env.ref("pms.main_pms_property").id,
+            "folio_id": cls.folio_1.id,
+        }
+        cls.reservation_1 = (
+            cls.env["pms.reservation"].with_user(demo_user).create(reservation1_vals)
+        )
+        cls.reservation_2 = (
+            cls.env["pms.reservation"].with_user(demo_user).create(reservation2_vals)
+        )
+        cls.reservation_3 = (
+            cls.env["pms.reservation"].with_user(demo_user).create(reservation3_vals)
+        )
+
+    def test_count_pending_arrival_persons(self):
+
+        # ARRANGE
+        self.arrange_folio_reservations()
+        self.checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.host1.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        self.checkin2 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.host2.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        self.checkin3 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.host3.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+
+        # ACT
+        self.checkin1.action_on_board()
+        self.checkin2.action_on_board()
+
+        # ASSERT
+        self.assertEqual(
+            self.reservation_1.count_pending_arrival,
+            1,
+            "Fail the count pending arrival on reservation",
+        )
+        self.assertEqual(
+            self.reservation_1.checkins_ratio,
+            int(2 * 100 / 3),
+            "Fail the checkins ratio on reservation",
+        )
