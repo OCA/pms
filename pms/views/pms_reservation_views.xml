@@ -131,20 +131,14 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-users"
                             name="action_checks"
-                            attrs="{'invisible': [('checkin_partner_pending_count','&lt;=',0)]}"
+                            attrs="{'invisible': [('state', 'in', ('cancelled','done'))]}"
                         >
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value">
-                                    <field
-                                        name="checkin_partner_pending_count"
-                                        widget="statinfo"
-                                        nolabel="1"
-                                    />
-                                </span>
-                                <span class="o_stat_text">Pending Checks</span>
-                            </div>
+                            <field
+                                name="checkins_ratio"
+                                string="Checkins"
+                                widget="percentpie"
+                            />
                         </button>
                     </div>
                     <span

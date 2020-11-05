@@ -194,6 +194,15 @@ class PmsReservation(models.Model):
     )
     # TODO: Warning Mens to update pricelist
     checkin_partner_ids = fields.One2many("pms.checkin.partner", "reservation_id")
+    count_pending_arrival = fields.Integer(
+        "Reservation Description",
+        compute="_compute_count_pending_arrival",
+        store=True,
+    )
+    checkins_ratio = fields.Integer(
+        string="Pending Arrival Ratio",
+        compute="_compute_checkins_ratio",
+    )
     segmentation_ids = fields.Many2many(
         "res.partner.category",
         string="Segmentation",
@@ -524,6 +533,25 @@ class PmsReservation(models.Model):
             if reservation.pricelist_id.id != pricelist_id:
                 # TODO: Warning change de pricelist?
                 reservation.pricelist_id = pricelist_id
+
+    @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
+    def _compute_count_pending_arrival(self):
+        for reservation in self:
+            reservation.count_pending_arrival = reservation.adults - len(
+                reservation.checkin_partner_ids.filtered(
+                    lambda c: c.state in ("onboard", "done")
+                )
+            )
+
+    @api.depends("count_pending_arrival")
+    def _compute_checkins_ratio(self):
+        self.checkins_ratio = 0
+        for reservation in self.filtered(lambda r: r.adults > 0):
+            reservation.checkins_ratio = (
+                (reservation.adults - reservation.count_pending_arrival)
+                * 100
+                / reservation.adults
+            )
 
     # REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
     @api.depends("preferred_room_id")
