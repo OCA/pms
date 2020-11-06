@@ -20,3 +20,4 @@
 #
 ##############################################################################
 from . import test_pms_reservation
+from . import test_pms_pricelist
