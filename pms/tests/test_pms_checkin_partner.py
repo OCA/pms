@@ -267,3 +267,36 @@ class TestPmsCheckinPartner(TestHotel):
             int(2 * 100 / 3),
             "Fail the checkins ratio on reservation",
         )
+
+    def test_complete_checkin_data(self):
+
+        # ARRANGE
+        self.arrange_folio_reservations()
+
+        # ACT
+        self.checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.host1.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        self.checkin2 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.host2.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        pending_checkin_data = self.reservation_1.pending_checkin_data
+        ratio_checkin_data = self.reservation_1.ratio_checkin_data
+
+        # ASSERT
+        self.assertEqual(
+            pending_checkin_data,
+            1,
+            "Fail the count pending checkin data on reservation",
+        )
+        self.assertEqual(
+            ratio_checkin_data,
+            int(2 * 100 / 3),
+            "Fail the checkins data ratio on reservation",
+        )

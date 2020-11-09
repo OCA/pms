@@ -31,10 +31,12 @@ class PmsCheckinPartner(models.Model):
     pms_property_id = fields.Many2one(
         "pms.property", default=_get_default_pms_property, required=True
     )
+    name = fields.Char("E-mail", related="partner_id.name")
     email = fields.Char("E-mail", related="partner_id.email")
     mobile = fields.Char("Mobile", related="partner_id.mobile")
     arrival = fields.Datetime("Enter")
     departure = fields.Datetime("Exit")
+    completed_data = fields.Boolean(compute="_compute_completed_data", store=True)
     state = fields.Selection(
         selection=[
             ("draft", "Pending arrival"),
@@ -53,6 +55,20 @@ class PmsCheckinPartner(models.Model):
     def _compute_folio_id(self):
         for record in self:
             record.folio_id = record.reservation_id.folio_id
+
+    @api.depends(lambda self: self._checkin_mandatory_fields(), "state")
+    def _compute_completed_data(self):
+        self.completed_data = False
+        for record in self:
+            if any(
+                not getattr(self, field) for field in record._checkin_mandatory_fields()
+            ):
+                record.completed_data = False
+                break
+            record.completed_data = True
+
+    def _checkin_mandatory_fields(self):
+        return ["name"]
 
     # Constraints and onchanges
 
