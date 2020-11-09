@@ -946,7 +946,7 @@ class PmsReservation(models.Model):
                 _logger.info("Modified Reservation - No Penalty")
             record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
             # record._compute_cancelled_discount()
-            record.folio_id.compute_amount()
+            record.folio_id._compute_amount()
 
     def compute_cancelation_reason(self):
         self.ensure_one()
