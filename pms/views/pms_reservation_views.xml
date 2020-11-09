@@ -14,6 +14,7 @@
                 <header>
                     <field name="splitted" invisible="True" />
                     <field name="tax_ids" invisible="1" />
+                    <field name="arrival_today" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
                     <button
                         name="confirm"
@@ -97,18 +98,6 @@
                             </div>
                         </button>
                         <button
-                            type="action"
-                            class="oe_stat_button"
-                            icon="fa-list-ul"
-                            attrs="{'invisible': ['|', ('partner_id','=',False), ('reservation_type','in',('out'))]}"
-                            name="%(open_pms_reservation_form_tree_all)d"
-                            context="{'search_default_partner_id': partner_id}"
-                        >
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Books</span>
-                            </div>
-                        </button>
-                        <button
                             type="object"
                             class="oe_stat_button"
                             id="payment_smart_button"
@@ -132,11 +121,33 @@
                             type="object"
                             class="oe_stat_button"
                             name="action_checks"
-                            attrs="{'invisible': [('state', 'in', ('cancelled','done'))]}"
+                            attrs="{'invisible': [
+                                ('state', '!=', ('onboard')),
+                                ('arrival_today', '=', False),
+                                '|',
+                                ('state', 'in', ('cancelled','done')),
+                            ]}"
                         >
                             <field
                                 name="checkins_ratio"
-                                string="Checkins"
+                                string="On Board"
+                                widget="percentpie"
+                            />
+                        </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            name="action_checks"
+                            attrs="{'invisible': [
+                                ('state', 'not in', ('onboard','confirm')),
+                                ('arrival_today', '=', False),
+                                '|',
+                                ('state', 'in', ('cancelled','done')),
+                            ]}"
+                        >
+                            <field
+                                name="ratio_checkin_data"
+                                string="Checkin Data"
                                 widget="percentpie"
                             />
                         </button>

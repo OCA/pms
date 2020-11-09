@@ -5,7 +5,7 @@ import logging
 from datetime import timedelta
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_compare, float_is_zero
 
 _logger = logging.getLogger(__name__)
@@ -195,13 +195,28 @@ class PmsReservation(models.Model):
     # TODO: Warning Mens to update pricelist
     checkin_partner_ids = fields.One2many("pms.checkin.partner", "reservation_id")
     count_pending_arrival = fields.Integer(
-        "Reservation Description",
+        "Pending Arrival",
         compute="_compute_count_pending_arrival",
         store=True,
     )
     checkins_ratio = fields.Integer(
         string="Pending Arrival Ratio",
         compute="_compute_checkins_ratio",
+    )
+    pending_checkin_data = fields.Integer(
+        "Pending Checkin Data",
+        compute="_compute_pending_checkin_data",
+        store=True,
+    )
+    arrival_today = fields.Boolean(
+        compute="_compute_arrival_today", search="_search_arrival_today"
+    )
+    departure_today = fields.Boolean(
+        compute="_compute_departure_today", search="_search_departure_today"
+    )
+    ratio_checkin_data = fields.Integer(
+        string="Pending Checkin Data Ratio",
+        compute="_compute_ratio_checkin_data",
     )
     segmentation_ids = fields.Many2many(
         "res.partner.category",
@@ -552,6 +567,66 @@ class PmsReservation(models.Model):
                 * 100
                 / reservation.adults
             )
+
+    @api.depends("checkin_partner_ids", "checkin_partner_ids.completed_data")
+    def _compute_pending_checkin_data(self):
+        for reservation in self:
+            reservation.pending_checkin_data = reservation.adults - len(
+                reservation.checkin_partner_ids.filtered(
+                    lambda c: c.state != "cancelled" and c.completed_data
+                )
+            )
+
+    @api.depends("pending_checkin_data")
+    def _compute_ratio_checkin_data(self):
+        self.ratio_checkin_data = 0
+        for reservation in self.filtered(lambda r: r.adults > 0):
+            reservation.ratio_checkin_data = (
+                (reservation.adults - reservation.pending_checkin_data)
+                * 100
+                / reservation.adults
+            )
+
+    def _compute_arrival_today(self):
+        for record in self:
+            record.arrival_today = (
+                True if record.checkin == fields.Date.today() else False
+            )
+            # REVIEW: Late checkin?? (next day)
+
+    def _search_arrival_today(self, operator, value):
+        if operator not in ("=", "!="):
+            raise UserError(_("Invalid domain operator %s", operator))
+
+        if value not in (False, True):
+            raise UserError(_("Invalid domain right operand %s", value))
+
+        searching_for_true = (operator == "=" and value) or (
+            operator == "!=" and not value
+        )
+        today = fields.Date.context_today(self)
+
+        return [("checkin", searching_for_true, today)]
+
+    def _compute_departure_today(self):
+        for record in self:
+            record.departure_today = (
+                True if record.checkout == fields.Date.today() else False
+            )
+
+    def _search_departure_today(self, operator, value):
+        if operator not in ("=", "!="):
+            raise UserError(_("Invalid domain operator %s", operator))
+
+        if value not in (False, True):
+            raise UserError(_("Invalid domain right operand %s", value))
+
+        searching_for_true = (operator == "=" and value) or (
+            operator == "!=" and not value
+        )
+        today = fields.Date.context_today(self)
+
+        return [("checkout", searching_for_true, today)]
 
     # REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
     @api.depends("preferred_room_id")
