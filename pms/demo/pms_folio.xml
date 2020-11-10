@@ -213,7 +213,7 @@
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_1'),
+                    'preferred_room_id': ref('pms_room_1'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
@@ -233,7 +233,6 @@
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
                     'room_type_id': ref('pms_room_type_2'),
-                    'room_id': ref('pms_room_4'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 2,
@@ -303,7 +302,7 @@
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_0'),
+                    'preferred_room_id': ref('pms_room_0'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
@@ -319,7 +318,7 @@
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_7'),
+                    'preferred_room_id': ref('pms_room_7'),
                     'checkin': (DateTime.today() + timedelta(days=21)),
                     'checkout': (DateTime.today() + timedelta(days=22)),
                     'adults': 1,
@@ -370,7 +369,6 @@
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
                     'room_type_id': ref('pms_room_type_2'),
-                    'room_id': ref('pms_room_4'),
                     'checkin': (DateTime.today() + timedelta(days=21)),
                     'checkout': (DateTime.today() + timedelta(days=22)),
                     'adults': 1,
@@ -391,7 +389,7 @@
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_6'),
+                    'preferred_room_id': ref('pms_room_6'),
                     'checkin': (DateTime.today() + timedelta(days=20)),
                     'checkout': (DateTime.today() + timedelta(days=21)),
                     'adults': 3,
@@ -408,7 +406,6 @@
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
                     'room_type_id': ref('pms_room_type_2'),
-                    'room_id': ref('pms_room_4'),
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
@@ -526,7 +523,6 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_5'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
@@ -544,7 +540,7 @@
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_7'),
+                    'preferred_room_id': ref('pms_room_7'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
@@ -563,7 +559,7 @@
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_0'),
+                    'preferred_room_id': ref('pms_room_0'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
@@ -580,7 +576,7 @@
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
                     'room_type_id': ref('pms_room_type_1'),
-                    'room_id': ref('pms_room_1'),
+                    'preferred_room_id': ref('pms_room_1'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
@@ -596,7 +592,7 @@
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_2'),
+                    'preferred_room_id': ref('pms_room_2'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
@@ -614,7 +610,6 @@
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
                     'room_type_id': ref('pms_room_type_2'),
-                    'room_id': ref('pms_room_5'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=31)),
                     'adults': 2,
@@ -637,7 +632,7 @@
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_id': ref('pms_room_7'),
+                    'preferred_room_id': ref('pms_room_7'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=26)),
                     'adults': 1,
@@ -689,7 +684,7 @@
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
                     'room_type_id': ref('pms_room_type_3'),
-                    'room_id': ref('pms_room_6'),
+                    'preferred_room_id': ref('pms_room_6'),
                     'checkin': (DateTime.today() + timedelta(days=29)),
                     'checkout': (DateTime.today() + timedelta(days=30)),
                     'adults': 1,
