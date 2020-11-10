@@ -106,15 +106,11 @@ class PmsReservation(models.Model):
         # required=True,
     )
     priority = fields.Integer(compute="_compute_priority", store="True", index=True)
-    room_id = fields.Many2one(
+    preferred_room_id = fields.Many2one(
         "pms.room",
         string="Room",
         tracking=True,
         ondelete="restrict",
-        compute="_compute_room_id",
-        store=True,
-        readonly=False,
-        # required=True,
         domain="[('id', 'in', allowed_room_ids)]",
     )
     allowed_room_ids = fields.Many2many(
@@ -261,6 +257,13 @@ class PmsReservation(models.Model):
         compute="_compute_splitted",
         store=True,
     )
+
+    rooms = fields.Char(
+        string="Room/s",
+        compute="_compute_rooms",
+        store=True
+    )
+
 
     credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
@@ -419,22 +422,15 @@ class PmsReservation(models.Model):
         # TODO: Logic priority (100 by example)
         self.priority = 100
 
-    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
-    def _compute_room_id(self):
-        for reservation in self.filtered(
-            lambda r: r.reservation_line_ids and not r.room_id
-        ):
-            reservation.room_id = reservation.reservation_line_ids[0].room_id
-
-    @api.depends("room_id")
+    @api.depends("preferred_room_id")
     def _compute_room_type_id(self):
         for reservation in self:
-            if reservation.room_id and not reservation.room_type_id:
-                reservation.room_type_id = reservation.room_id.room_type_id.id
+            if reservation.preferred_room_id and not reservation.room_type_id:
+                reservation.room_type_id = reservation.preferred_room_id.room_type_id.id
             elif not reservation.room_type_id:
                 reservation.room_type_id = False
 
-    @api.depends("reservation_line_ids.date", "overbooking", "state", "room_id")
+    @api.depends("reservation_line_ids.date", "overbooking", "state", "preferred_room_id")
     def _compute_allowed_room_ids(self):
         for reservation in self:
             if reservation.checkin and reservation.checkout:
@@ -541,12 +537,12 @@ class PmsReservation(models.Model):
                 reservation.pricelist_id = pricelist_id
 
     # REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
-    @api.depends("room_id")
+    @api.depends("preferred_room_id")
     def _compute_adults(self):
         for reservation in self:
-            if reservation.room_id:
+            if reservation.preferred_room_id:
                 if reservation.adults == 0:
-                    reservation.adults = reservation.room_id.capacity
+                    reservation.adults = reservation.preferred_room_id.capacity
             elif not reservation.adults:
                 reservation.adults = 0
 
@@ -557,6 +553,8 @@ class PmsReservation(models.Model):
                 reservation.splitted = True
             else:
                 reservation.splitted = False
+                reservation.preferred_room_id = reservation.reservation_line_ids[0].room_id
+
 
     @api.depends("state", "qty_to_invoice", "qty_invoiced")
     def _compute_invoice_status(self):
@@ -691,7 +689,7 @@ class PmsReservation(models.Model):
 
     # TODO: Use default values on checkin /checkout is empty
     @api.constrains(
-        "checkin", "checkout", "state", "room_id", "overbooking", "reselling"
+        "checkin", "checkout", "state", "preferred_room_id", "overbooking", "reselling"
     )
     def check_dates(self):
         """
@@ -800,7 +798,7 @@ class PmsReservation(models.Model):
             args += [
                 "|",
                 ("folio_id.name", operator, name),
-                ("room_id.name", operator, name),
+                ("preferred_room_id.name", operator, name),
             ]
         return super(PmsReservation, self).name_search(
             name="", args=args, operator="ilike", limit=limit
@@ -809,7 +807,7 @@ class PmsReservation(models.Model):
     def name_get(self):
         result = []
         for res in self:
-            name = u"{} ({})".format(res.folio_id.name, res.room_id.name)
+            name = u"{} ({})".format(res.folio_id.name, res.rooms if res.rooms else 'No room')
             result.append((res.id, name))
         return result
 
@@ -911,7 +909,7 @@ class PmsReservation(models.Model):
             "price_subtotal": self.price_subtotal,
             "splitted": self.splitted,
             "room_type_id": self.room_type_id.id,
-            "room_id": self.room_id.id,
+            "preferred_room_id": self.preferred_room_id.id,
         }
 
     def confirm(self):
@@ -1000,8 +998,8 @@ class PmsReservation(models.Model):
             if record.reservation_type != "out":
                 record.checkin_partner_count = len(record.checkin_partner_ids)
                 record.checkin_partner_pending_count = (
-                    record.adults + record.children
-                ) - len(record.checkin_partner_ids)
+                                                           record.adults + record.children
+                                                       ) - len(record.checkin_partner_ids)
             else:
                 record.checkin_partner_count = 0
                 record.checkin_partner_pending_count = 0
@@ -1058,3 +1056,14 @@ class PmsReservation(models.Model):
             record.tax_ids = product.taxes_id.filtered(
                 lambda r: not record.company_id or r.company_id == folio.company_id
             )
+
+    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
+    def _compute_rooms(self):
+        self.rooms = False
+
+        for reservation in self:
+            if reservation.splitted:
+                reservation.rooms = ", ".join([r for r in reservation.reservation_line_ids.mapped('room_id.name')])
+                reservation.preferred_room_id = False
+            else:
+                reservation.rooms = reservation.preferred_room_id.name
