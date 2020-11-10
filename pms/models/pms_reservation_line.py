@@ -2,13 +2,13 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-from datetime import timedelta
+import datetime
+import operator
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
-
 
 class PmsReservationLine(models.Model):
     _name = "pms.reservation.line"
@@ -91,37 +91,97 @@ class PmsReservationLine(models.Model):
     ]
 
     # Compute and Search methods
-    @api.depends(
-        "reservation_id.adults",
-        "reservation_id.room_type_id",
-    )
+    @api.depends("reservation_id.room_type_id")
     def _compute_room_id(self):
-        for line in self:
-            if line.reservation_id.room_type_id:
-                preferred_room = line.reservation_id.room_id
-                rooms_available = self.env[
-                    "pms.room.type.availability"
-                ].rooms_available(
-                    checkin=line.date,
-                    checkout=line.date + timedelta(1),
-                    room_type_id=line.reservation_id.room_type_id.id or False,
-                    current_lines=line._origin.id,
+        for line in self.sorted(key=lambda r: (r.reservation_id, r.date)):
+
+            # if the reservation has a room type and no room id
+            if line.reservation_id.room_type_id and not line.room_id:
+
+                # we get the rooms available for the entire stay
+                rooms_available = self.env[ "pms.room.type.availability"].rooms_available(
+                    checkin=line.reservation_id.checkin,
+                    checkout=line.reservation_id.checkout,
+                    room_type_id=line.reservation_id.room_type_id.id,
+                    current_lines=line._origin.reservation_id.reservation_line_ids.ids,
                 )
+
+                # if there is availability for the entire stay
                 if rooms_available:
-                    if preferred_room.id in rooms_available.ids:
-                        room_chosen = preferred_room
+
+                    # if the reservation has a preferred room
+                    if line.reservation_id.preferred_room_id:
+
+                        # if the preferred room is available
+                        if line.reservation_id.preferred_room_id in rooms_available:
+                            line.room_id = line.reservation_id.preferred_room_id
+
+                        # if the preferred room is NOT available
+                        else:
+                            raise ValidationError(_("%s: No room available.")% (line.reservation_id.preferred_room_id.name))
+
+                    # otherwise we assign the first of those available for the entire stay
                     else:
-                        room_chosen = rooms_available[0]
-                    line.room_id = room_chosen
+                        line.room_id = rooms_available[0]
+                        line.reservation_id.preferred_room_id = line.room_id.id
+
+                # if there is no availability for the entire stay without changing rooms (we assume a split reservation)
                 else:
-                    line.room_id = False
-                    raise ValidationError(
-                        _("%s: No rooms available")
-                        % (line.reservation_id.room_type_id.name)
-                    )
-                line._check_adults()
-            else:
-                line.room_id = False
+                    rooms_ranking = dict()
+
+                    # we go through the rooms of the type
+                    for room in self.env['pms.room'].search([('room_type_id', '=', line.reservation_id.room_type_id.id)]):
+
+                        # we iterate the dates from the date of the line to the checkout
+                        for date_iterator in \
+                            [line.date + datetime.timedelta(days=x) for x in range(0, (line.reservation_id.checkout - line.date).days)]:
+
+                            # if the room is already assigned for a date we go to the next room
+                            if self.env['pms.reservation.line'].search_count([
+                                ('date', '=', date_iterator),
+                                ('room_id', '=', room.id),
+                                ('id', 'not in', line.reservation_id.reservation_line_ids.ids),
+                                ("occupies_availability", "=", True),
+                            ]) > 0:
+                                break
+
+                            # if the room is not assigned for a date we add it to the ranking / update its ranking
+                            else:
+                                rooms_ranking[room.id] = 1 if room.id not in rooms_ranking else rooms_ranking[room.id] + 1
+                    if len(rooms_ranking) == 0:
+                        raise ValidationError(_("%s: No room type available") % (line.reservation_id.room_type_id.name))
+                    else:
+                        # we get the best score in the ranking
+                        best = max(rooms_ranking.values())
+
+                        # we keep the rooms with the best ranking
+                        bests = {key: value for (key, value) in rooms_ranking.items() if value == best}
+
+                        # if there is a tie in the rankings
+                        if len(bests) > 1:
+
+                            # we get the line from last night
+                            date_last_night = line.date + datetime.timedelta(days=-1)
+                            line_past_night = self.env['pms.reservation.line'].search([
+                                ('date', '=', date_last_night),
+                                ('reservation_id', '=', line.reservation_id.id)
+                            ])
+
+                            # if there is the night before and if the room from the night before is in the ranking
+                            if line_past_night and line_past_night.room_id.id in bests:
+                                line.room_id = line_past_night.room_id.id
+
+                            # if the room from the night before is not in the ranking or there is no night before
+                            else:
+                                # At this point we set the room with the best ranking, no matter what it is
+                                line.room_id = list(bests.keys())[0]
+
+                        # if there is no tie in the rankings
+                        else:
+                            # At this point we set the room with the best ranking, no matter what it is
+                            line.room_id = list(bests.keys())[0]
+
+
 
     @api.depends(
         "reservation_id",
@@ -158,7 +218,7 @@ class PmsReservationLine(models.Model):
                     line.reservation_id.tax_ids,
                     line.reservation_id.company_id,
                 )
-                _logger.info(line.price)
+                # _logger.info(line.price)
                 # TODO: Out of service 0 amount
             else:
                 line.price = line._origin.price
