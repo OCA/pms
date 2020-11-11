@@ -443,6 +443,17 @@ class PmsFolio(models.Model):
                     "amount_total": amount_untaxed + amount_tax,
                 }
             )
+    # Check channel type
+    @api.constrains("channel_type")
+    def check_channel_type(self):
+        for record in self:
+            if (record.channel_type == "indirect" and record.partner_id.is_agency != True
+                or record.channel_type == "direct" and record.partner_id.is_agency == True):
+                raise ValidationError(
+                    _(
+                        "Indirect Sale Channel must have an agency associated!"
+                    )
+                )
 
     # TODO: Add return_ids to depends
     @api.depends("amount_total", "payment_ids", "reservation_type", "state")
