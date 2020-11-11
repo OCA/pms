@@ -72,4 +72,5 @@
     "qweb": [
         "static/src/xml/pms_base_templates.xml",
     ],
+    "post_init_hook": "post_init_hook",
 }
