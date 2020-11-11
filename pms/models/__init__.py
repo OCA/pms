@@ -4,6 +4,7 @@
 
 from . import ir_http
 from . import ir_sequence
+from . import ir_config_parameter
 
 # from . import payment_return
 from . import pms_board_service_room_type
