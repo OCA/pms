@@ -344,13 +344,9 @@ class PmsReservation(models.Model):
     reselling = fields.Boolean("Is Reselling", default=False)
     nights = fields.Integer("Nights", compute="_compute_nights", store=True)
     channel_type = fields.Selection(
-        [
-            ("direct","Direct"),
-            ("indirect","Indirect")
-        ],
-        string="Channel type",
+        related="folio_id.channel_type",
         required = True,
-        store=True
+        readonly = True,
     )
     origin = fields.Char("Origin", compute="_compute_origin", store=True)
     detail_origin = fields.Char(
@@ -1007,16 +1003,6 @@ class PmsReservation(models.Model):
     #             )
 
     # self._compute_tax_ids() TODO: refact
-
-    @api.constrains("channel_type")
-    def check_channel_type(self):
-        for record in self:
-            if (record.channel_type == "indirect" and record.partner_id.is_agency != True):
-                raise ValidationError(
-                    _(
-                        "Indirect Sale Channel must have an agency associated!"
-                    )
-                )
 
     # Action methods
 
