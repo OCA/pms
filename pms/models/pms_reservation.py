@@ -148,6 +148,7 @@ class PmsReservation(models.Model):
         readonly=False,
     )
     agency_id = fields.Many2one(related="folio_id.agency_id")
+
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",
@@ -343,20 +344,13 @@ class PmsReservation(models.Model):
     reselling = fields.Boolean("Is Reselling", default=False)
     nights = fields.Integer("Nights", compute="_compute_nights", store=True)
     channel_type = fields.Selection(
-        selection=[
-            ("direct", "Direct"),
-            ("agency", "Agency"),
+        [
+            ("direct","Direct"),
+            ("indirect","Indirect")
         ],
-        string="Sales Channel",
-        default="direct",
-    )
-    subchannel_direct = fields.Selection(
-        selection=[
-            ("door", "Door"),
-            ("mail", "Mail"),
-            ("phone", "Phone"),
-        ],
-        string="Direct Channel",
+        string="Channel type",
+        required = True,
+        store=True
     )
     origin = fields.Char("Origin", compute="_compute_origin", store=True)
     detail_origin = fields.Char(
@@ -1014,6 +1008,16 @@ class PmsReservation(models.Model):
 
     # self._compute_tax_ids() TODO: refact
 
+    @api.constrains("channel_type")
+    def check_channel_type(self):
+        for record in self:
+            if (record.channel_type == "indirect" and record.partner_id.is_agency != True):
+                raise ValidationError(
+                    _(
+                        "Indirect Sale Channel must have an agency associated!"
+                    )
+                )
+
     # Action methods
 
     def open_folio(self):
@@ -1287,20 +1291,6 @@ class PmsReservation(models.Model):
             else:
                 record.checkin_partner_count = 0
                 record.checkin_partner_pending_count = 0
-
-    @api.depends("channel_type", "subchannel_direct")
-    def _compute_origin(self):
-        for reservation in self:
-            if reservation.channel_type == "direct":
-                reservation.origin = reservation.subchannel_direct
-            elif reservation.channel_type == "agency":
-                reservation.origin = reservation.agency_id.name
-
-    @api.depends("origin")
-    def _compute_detail_origin(self):
-        for reservation in self:
-            if reservation.channel_type in ["direct", "agency"]:
-                reservation.detail_origin = reservation.sudo().create_uid.name
 
     def _search_checkin_partner_pending(self, operator, value):
         self.ensure_one()

@@ -50,9 +50,7 @@ class PmsFolio(models.Model):
     pms_property_id = fields.Many2one(
         "pms.property", default=_get_default_pms_property, required=True
     )
-    partner_id = fields.Many2one(
-        "res.partner", compute="_compute_partner_id", tracking=True, ondelete="restrict"
-    )
+    partner_id = fields.Many2one("res.partner", tracking=True, ondelete="restrict")
     reservation_ids = fields.One2many(
         "pms.reservation",
         "folio_id",
@@ -104,13 +102,6 @@ class PmsFolio(models.Model):
         readonly=False,
         help="Pricelist for current folio.",
     )
-    commission = fields.Float(
-        string="Commission",
-        compute="_compute_commission",
-        store=True,
-        readonly=True,
-        default=0,
-    )
     user_id = fields.Many2one(
         "res.users",
         string="Salesperson",
@@ -123,15 +114,9 @@ class PmsFolio(models.Model):
     )
     agency_id = fields.Many2one(
         "res.partner",
-        string="Agency",
+        "Agency",
         ondelete="restrict",
         domain=[("is_agency", "=", True)],
-    )
-    channel_type_id = fields.Many2one(
-        "pms.sale.channel",
-        string="Direct Sale Channel",
-        ondelete="restrict",
-        domain=[("channel_type", "=", "direct")],
     )
     payment_ids = fields.One2many("account.payment", "folio_id", readonly=True)
     # return_ids = fields.One2many("payment.return", "folio_id", readonly=True)
@@ -177,6 +162,15 @@ class PmsFolio(models.Model):
         [("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
         string="Type",
         default=lambda *a: "normal",
+    )
+    channel_type = fields.Selection(
+        [
+            ("direct", "Direct"),
+            ("indirect", "Indirect"),
+        ],
+        string="Sales Channel",
+        compute="_compute_channel_type",
+        store=True,
     )
     date_order = fields.Datetime(
         string="Order Date",
@@ -290,26 +284,17 @@ class PmsFolio(models.Model):
                 folio.reservation_ids.filtered(lambda a: a.state != "cancelled")
             )
 
-    @api.depends("partner_id", "agency_id")
+    @api.depends("partner_id")
     def _compute_pricelist_id(self):
         for folio in self:
-            if folio.partner_id and folio.partner_id.property_product_pricelist:
-                pricelist_id = folio.partner_id.property_product_pricelist.id
-            else:
-                pricelist_id = self.env.user.pms_property_id.default_pricelist_id.id
+            pricelist_id = (
+                folio.partner_id.property_product_pricelist
+                and folio.partner_id.property_product_pricelist.id
+                or self.env.user.pms_property_id.default_pricelist_id.id
+            )
             if folio.pricelist_id.id != pricelist_id:
                 # TODO: Warning change de pricelist?
                 folio.pricelist_id = pricelist_id
-            if folio.agency_id and folio.agency_id.apply_pricelist:
-                pricelist_id = folio.agency_id.property_product_pricelist.id
-
-    @api.depends("agency_id")
-    def _compute_partner_id(self):
-        for folio in self:
-            if folio.agency_id and folio.agency_id.invoice_agency:
-                folio.partner_id = folio.agency_id.id
-            elif not folio.partner_id:
-                folio.partner_id = False
 
     @api.depends("partner_id")
     def _compute_user_id(self):
@@ -323,24 +308,23 @@ class PmsFolio(models.Model):
             addr = folio.partner_id.address_get(["invoice"])
             folio.partner_invoice_id = addr["invoice"]
 
+    @api.depends("agency_id")
+    def _compute_channel_type(self):
+        for folio in self:
+            if folio.agency_id:
+                folio.channel_type = "indirect"
+            else:
+                folio.channel_type = "direct"
+
     @api.depends("partner_id")
     def _compute_payment_term_id(self):
         self.payment_term_id = False
         for folio in self:
             folio.payment_term_id = (
-                folio.partner_id.property_payment_term_id
-                and folio.partner_id.property_payment_term_id.id
+                self.partner_id.property_payment_term_id
+                and self.partner_id.property_payment_term_id.id
                 or False
             )
-
-    @api.depends("reservation_ids")
-    def _compute_commission(self):
-        for folio in self:
-            for reservation in folio.reservation_ids:
-                if reservation.commission_amount != 0:
-                    folio.commission += reservation.commission_amount
-                else:
-                    folio.commission = 0
 
     @api.depends(
         "state", "reservation_ids.invoice_status", "service_ids.invoice_status"
@@ -683,10 +667,3 @@ class PmsFolio(models.Model):
             (line[0].name, line[1]["amount"], line[1]["base"], len(res)) for line in res
         ]
         return res
-
-    # Check that only one sale channel is selected
-    @api.constrains("agency_id", "channel_type_id")
-    def _check_only_one_channel(self):
-        for record in self:
-            if record.agency_id and record.channel_type_id:
-                raise models.ValidationError(_("There must be only one sale channel"))
