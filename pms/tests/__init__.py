@@ -21,3 +21,4 @@
 ##############################################################################
 from . import test_pms_reservation
 from . import test_pms_pricelist
+from . import test_pms_sale_channel

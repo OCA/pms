@@ -166,7 +166,7 @@ class PmsFolio(models.Model):
     channel_type = fields.Selection(
         [
             ("direct", "Direct"),
-            ("agency", "Agency"),
+            ("indirect", "Indirect"),
         ],
         string="Sales Channel",
         compute="_compute_channel_type",
@@ -313,7 +313,7 @@ class PmsFolio(models.Model):
     def _compute_channel_type(self):
         for folio in self:
             if folio.agency_id:
-                folio.channel_type = "agency"
+                folio.channel_type = "indirect"
             else:
                 folio.channel_type = "direct"
 
