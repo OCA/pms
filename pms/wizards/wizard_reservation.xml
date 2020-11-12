@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<odoo>
+	<record id="reservation_wizard" model="ir.ui.view">
+       <field name="name">Reservation Wizard</field>
+       <field name="model">pms.reservation.wizard</field>
+       <field name="arch" type="xml">
+           <form string="Choose The Details">
+               <group>
+                   <field name="options"
+                          string="Suggested rooms to unify the reservation:"
+                          options="{'no_create': True,'no_open': True}"
+                          required="1"
+                          domain="[('id', 'in', allowed_rooms)]"/>
+                   <field name="allowed_rooms" invisible="1"/>
+               </group>
+               <footer>
+                   <button name="unify" string="Unify" type="object" class="oe_highlight"  />
+                   or
+                   <button string="Cancel" class="oe_link" special="cancel"/>
+               </footer>
+           </form>
+        </field>
+    </record>
+</odoo>

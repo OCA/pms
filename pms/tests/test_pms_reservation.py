@@ -377,7 +377,7 @@ class TestPmsReservations(TestHotel):
     @freeze_time("1980-11-01")
     def test_split_reservation06(self):
         """
-        The preferred room_id is not available
+        There's no availability in the preferred_room_id provided
         +------------+------+------+------+----+----+----+
         | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
         +------------+------+------+------+----+----+----+
@@ -419,7 +419,7 @@ class TestPmsReservations(TestHotel):
     @freeze_time("1980-11-01")
     def test_split_reservation07(self):
         """
-        The preferred room_type_id is not available
+        There's no availability
         +------------+------+------+------+----+----+----+
         | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
         +------------+------+------+------+----+----+----+
