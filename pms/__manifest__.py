@@ -63,6 +63,7 @@
         "views/product_template_views.xml",
         "views/webclient_templates.xml",
         "views/ir_sequence_views.xml",
+        "wizards/wizard_reservation.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",

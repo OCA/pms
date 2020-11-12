@@ -106,6 +106,7 @@ class PmsReservation(models.Model):
         # required=True,
     )
     priority = fields.Integer(compute="_compute_priority", store="True", index=True)
+
     preferred_room_id = fields.Many2one(
         "pms.room",
         string="Room",
@@ -787,6 +788,24 @@ class PmsReservation(models.Model):
                 "default_communication": note,
             },
             "target": "new",
+        }
+
+    def open_reservation_wizard(self):
+        rooms_available = self.env["pms.room.type.availability"].rooms_available(
+                checkin=self.checkin,
+                checkout=self.checkout,
+                current_lines=self.reservation_line_ids.ids,
+                )
+        # REVIEW: check capacity room
+        return {
+            'view_type': 'form',
+            'view_mode': 'form',
+            'name': 'Unify the reservation',
+            'res_model': 'pms.reservation.wizard',
+            'target': 'new',
+            'type': 'ir.actions.act_window',
+            'context': {'rooms_available':  rooms_available.ids,
+            }
         }
 
     # ORM Overrides

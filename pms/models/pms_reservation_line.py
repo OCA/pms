@@ -123,7 +123,6 @@ class PmsReservationLine(models.Model):
                     # otherwise we assign the first of those available for the entire stay
                     else:
                         line.room_id = rooms_available[0]
-                        line.reservation_id.preferred_room_id = line.room_id.id
 
                 # if there is no availability for the entire stay without changing rooms (we assume a split reservation)
                 else:

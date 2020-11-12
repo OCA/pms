@@ -66,14 +66,13 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('splitted','=',False)]}"
                 >
-                    This reservation is part of splitted reservation!, you can check it
-                    in the
+                    This reservation is part of splitted reservation, you can try to unify the reservation here
                     <bold>
                         <button
                             class="alert-link"
                             type="object"
-                            name="open_folio"
-                            string="Folio Form"
+                            name="open_reservation_wizard"
+                            string="Unify the reservation"
                         />
                     </bold>
                 </div>
@@ -167,8 +166,10 @@
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Room"
                             style="margin-right: 30px;"
-                            required='1'
+                            attrs="{'invisible': [('splitted','=',True)]}"
+
                         />
+
                         <field
                             name="partner_id"
                             default_focus="1"
