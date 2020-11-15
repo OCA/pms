@@ -193,7 +193,14 @@ class PmsReservation(models.Model):
         readonly=False,
     )
     # TODO: Warning Mens to update pricelist
-    checkin_partner_ids = fields.One2many("pms.checkin.partner", "reservation_id")
+    checkin_partner_ids = fields.One2many(
+        "pms.checkin.partner",
+        "reservation_id",
+        compute="_compute_checkin_partner_ids",
+        store=True,
+        readonly=False,
+        ondelete="restrict",
+    )
     count_pending_arrival = fields.Integer(
         "Pending Arrival",
         compute="_compute_count_pending_arrival",
@@ -549,12 +556,48 @@ class PmsReservation(models.Model):
                 # TODO: Warning change de pricelist?
                 reservation.pricelist_id = pricelist_id
 
+    @api.depends("adults")
+    def _compute_checkin_partner_ids(self):
+        for reservation in self:
+            assigned_checkins = reservation.checkin_partner_ids.filtered(
+                lambda c: c.state in ("precheckin", "onboard", "done")
+            )
+            unassigned_checkins = reservation.checkin_partner_ids.filtered(
+                lambda c: c.state not in ("draft")
+            )
+            leftover_unassigneds_count = (
+                len(assigned_checkins) + len(unassigned_checkins) - reservation.adults
+            )
+            if len(assigned_checkins) > reservation.adults:
+                raise UserError(
+                    _("Remove some of the leftover assigned checkins first")
+                )
+            elif leftover_unassigneds_count > 0:
+                for i in range(0, len(unassigned_checkins)):
+                    unassigned_checkins[i].unlink()
+            elif reservation.adults > len(reservation.checkin_partner_ids):
+                checkins_lst = []
+                count_new_checkins = reservation.adults - len(
+                    reservation.checkin_partner_ids
+                )
+                for _i in range(0, count_new_checkins):
+                    checkins_lst.append(
+                        (
+                            0,
+                            False,
+                            {
+                                "reservation_id": reservation.id,
+                            },
+                        )
+                    )
+                reservation.checkin_partner_ids = checkins_lst
+
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
     def _compute_count_pending_arrival(self):
         for reservation in self:
-            reservation.count_pending_arrival = reservation.adults - len(
+            reservation.count_pending_arrival = len(
                 reservation.checkin_partner_ids.filtered(
-                    lambda c: c.state in ("onboard", "done")
+                    lambda c: c.state in ("draft", "precheckin")
                 )
             )
 
@@ -568,13 +611,11 @@ class PmsReservation(models.Model):
                 / reservation.adults
             )
 
-    @api.depends("checkin_partner_ids", "checkin_partner_ids.completed_data")
+    @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
     def _compute_pending_checkin_data(self):
         for reservation in self:
-            reservation.pending_checkin_data = reservation.adults - len(
-                reservation.checkin_partner_ids.filtered(
-                    lambda c: c.state != "cancelled" and c.completed_data
-                )
+            reservation.pending_checkin_data = len(
+                reservation.checkin_partner_ids.filtered(lambda c: c.state in ("draft"))
             )
 
     @api.depends("pending_checkin_data")
@@ -801,11 +842,13 @@ class PmsReservation(models.Model):
                     )
                 )
 
-    @api.constrains("checkin_partner_ids", "adults")
-    def _max_checkin_partner_ids(self):
-        for record in self:
-            if len(record.checkin_partner_ids) > record.adults + record.children:
-                raise models.ValidationError(_("The room already is completed"))
+    # @api.constrains("checkin_partner_ids", "adults")
+    # def _max_checkin_partner_ids(self):
+    #     for record in self:
+    #         if len(record.checkin_partner_ids) != record.adults:
+    #             raise models.ValidationError(
+    #               _("Reservation Adults and Checkins does not match")
+    #             )
 
     # @api.constrains("reservation_type", "partner_id")
     # def _check_partner_reservation(self):

@@ -32,6 +32,9 @@
                         </group>
                         <group name="group_left">
                             <field name="reservation_id" />
+                            <field name="folio_id" />
+                            <field name="identifier" />
+                            <field name="state" />
                         </group>
                     </group>
                 </sheet>
@@ -57,8 +60,9 @@
                     icon="fa-2x fa-check-circle"
                     name="action_on_board"
                     help="Get in"
-                    attrs="{'invisible': [('state','!=','draft')]}"
+                    attrs="{'invisible': [('state','!=','preconfirm')]}"
                 />
+                <field name="identifier" />
                 <field name="partner_id" required="True" />
                 <field name="mobile" />
                 <field name="email" />
@@ -86,9 +90,10 @@
                     class="oe_stat_button"
                     icon="fa fa-2x fa-check-circle"
                     name="action_on_board"
-                    attrs="{'invisible':[('state','not in', ['draft'])]}"
+                    attrs="{'invisible':[('state','not in', ['preconfirm'])]}"
                     help="Get in"
                 />
+                <field name="identifier" />
                 <field
                     name="partner_id"
                     required="True"
