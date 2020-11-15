@@ -718,8 +718,10 @@
                 />
                 <field
                     name="state"
-                    decoration-success="state == 'done'"
+                    decoration-success="state == 'onboard'"
                     decoration-info="state == 'confirm'"
+                    decoration-danger="state == 'cancelled'"
+                    decoration-primary="state == 'draft'"
                     widget="badge"
                     optional="show"
                 />
