@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 
 from .common import TestHotel
 
+@freeze_time("2012-01-14")
 class TestPmsReservations(TestHotel):
 
     def create_common_scenario(self):
@@ -489,3 +490,22 @@ class TestPmsReservations(TestHotel):
 
         with self.assertRaises(ValidationError):
             r_test.flush()
+
+
+    def test_manage_children_raise(self):
+
+        # ARRANGE
+        PmsReservation = self.env["pms.reservation"]
+
+        # ACT & ASSERT
+        with self.assertRaises(ValidationError), self.cr.savepoint():
+
+            PmsReservation.create(
+                {
+                    "adults": 2,
+                    "children_occupying": 1,
+                    "checkin": datetime.datetime.now(),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                    "room_type_id": self.browse_ref("pms.pms_room_type_0").id,
+                }
+            )

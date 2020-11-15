@@ -225,6 +225,10 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
+    children_occupying = fields.Integer(
+        string="Children occupying",
+    )
+
     children = fields.Integer(
         "Children",
         readonly=False,
@@ -959,7 +963,7 @@ class PmsReservation(models.Model):
                 _logger.info("Modified Reservation - No Penalty")
             record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
             # record._compute_cancelled_discount()
-            record.folio_id.compute_amount()
+            record.folio_id._compute_amount()
 
     def compute_cancelation_reason(self):
         self.ensure_one()
