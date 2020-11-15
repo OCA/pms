@@ -66,14 +66,13 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('splitted','=',False)]}"
                 >
-                    This reservation is part of splitted reservation!, you can check it
-                    in the
+                    This reservation is part of splitted reservation, you can try to unify the reservation here
                     <bold>
                         <button
                             class="alert-link"
                             type="object"
-                            name="open_folio"
-                            string="Folio Form"
+                            name="open_reservation_wizard"
+                            string="Unify the reservation"
                         />
                     </bold>
                 </div>
@@ -161,14 +160,16 @@
                     </span>
                     <h1>
                         <field
-                            name="room_id"
+                            name="preferred_room_id"
                             select="1"
                             nolabel="1"
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Room"
                             style="margin-right: 30px;"
-                            required='1'
+                            attrs="{'invisible': [('splitted','=',True)]}"
+
                         />
+
                         <field
                             name="partner_id"
                             default_focus="1"
@@ -548,10 +549,11 @@
             >
                 <field name="partner_id" avatar_field="image_128" />
                 <field name="room_type_id" />
-                <field name="room_id" />
+                <field name="rooms" />
             </calendar>
         </field>
     </record>
+
     <!-- Form view Checkin Partners from reservation -->
     <record model="ir.ui.view" id="pms_reservation_checkin_view_form">
         <field name="name">pms.reservation.checkin.form</field>
@@ -600,7 +602,7 @@
                     </span>
                     <h2>
                         <field
-                            name="room_id"
+                            name="preferred_room_id"
                             readonly="1"
                             nolabel="1"
                             options="{'no_create': True,'no_open': True}"
@@ -658,10 +660,12 @@
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
-            <tree string="Reservation" multi_edit="1" sample="1" class="o_sale_order">
+            <tree string="Reservation" multi_edit="1" sample="1" class="o_sale_order"
+                decoration-warning="splitted"
+                decoration-bf="splitted">
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
-                <field name="room_id" options="{'no_create': True,'no_open': True}" />
+                <field name="rooms" />
                 <field
                     name="checkin"
                     widget="daterange"
