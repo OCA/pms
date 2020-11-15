@@ -16,9 +16,14 @@ class PmsCheckinPartner(models.Model):
         return self.env.user.pms_property_id
 
     # Fields declaration
+    identifier = fields.Char(
+        "Identifier",
+        compute="_compute_identifier",
+        readonly=False,
+        store=True,
+    )
     partner_id = fields.Many2one(
         "res.partner",
-        required=True,
         domain="[('is_company', '=', False)]",
     )
     reservation_id = fields.Many2one("pms.reservation")
@@ -26,49 +31,67 @@ class PmsCheckinPartner(models.Model):
         "pms.folio",
         compute="_compute_folio_id",
         store=True,
-        readonly=False,
     )
     pms_property_id = fields.Many2one(
         "pms.property", default=_get_default_pms_property, required=True
     )
-    name = fields.Char("E-mail", related="partner_id.name")
+    name = fields.Char("Name", related="partner_id.name")
     email = fields.Char("E-mail", related="partner_id.email")
     mobile = fields.Char("Mobile", related="partner_id.mobile")
     arrival = fields.Datetime("Enter")
     departure = fields.Datetime("Exit")
-    completed_data = fields.Boolean(compute="_compute_completed_data", store=True)
     state = fields.Selection(
         selection=[
-            ("draft", "Pending arrival"),
+            ("draft", "Unkown Guest"),
+            ("precheckin", "Pending arrival"),
             ("onboard", "On Board"),
             ("done", "Out"),
             ("cancelled", "Cancelled"),
         ],
         string="State",
+        compute="_compute_state",
+        store=True,
         readonly=True,
-        default=lambda *a: "draft",
     )
 
     # Compute
+    @api.depends("reservation_id", "folio_id", "reservation_id.room_id")
+    def _compute_identifier(self):
+        for record in self:
+            # TODO: Identifier
+            if record.reservation_id.filtered("room_id"):
+                checkins = record.reservation_id.checkin_partner_ids
+                record.identifier = (
+                    record.reservation_id.room_id.name + "-" + str(len(checkins) - 1)
+                )
+            elif record.folio_id:
+                record.identifier = record.folio_id.name + "-" + str(len(checkins) - 1)
+            else:
+                record.identifier = False
 
     @api.depends("reservation_id", "reservation_id.folio_id")
     def _compute_folio_id(self):
-        for record in self:
+        for record in self.filtered("reservation_id"):
             record.folio_id = record.reservation_id.folio_id
 
-    @api.depends(lambda self: self._checkin_mandatory_fields(), "state")
-    def _compute_completed_data(self):
-        self.completed_data = False
+    @api.depends(lambda self: self._checkin_mandatory_fields(), "reservation_id.state")
+    def _compute_state(self):
         for record in self:
-            if any(
-                not getattr(self, field) for field in record._checkin_mandatory_fields()
-            ):
-                record.completed_data = False
-                break
-            record.completed_data = True
+            if record.reservation_id.state == "cancelled":
+                record.state = "cancelled"
+            elif record.state in ("draft", "cancelled"):
+                if any(
+                    not getattr(self, field)
+                    for field in record._checkin_mandatory_fields()
+                ):
+                    record.state = "draft"
+                else:
+                    record.state = "precheckin"
+            elif not record.state:
+                record.state = "draft"
 
     def _checkin_mandatory_fields(self):
-        return ["name"]
+        return ["name", "email"]
 
     # Constraints and onchanges
 
