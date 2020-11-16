@@ -41,6 +41,51 @@ class TestPmsCheckinPartner(TestHotel):
             }
         )
 
+    def test_auto_create_checkins(self):
+
+        # ACTION
+        self.arrange_single_checkin()
+        checkins_count = len(self.reservation_1.checkin_partner_ids)
+
+        # ASSERT
+        self.assertEqual(
+            checkins_count,
+            3,
+            "the automatic partner checkin was not created successful",
+        )
+
+    def test_auto_unlink_checkins(self):
+
+        # ARRANGE
+        self.arrange_single_checkin()
+
+        # ACTION
+        host2 = self.env["res.partner"].create(
+            {
+                "name": "Carlos",
+                "phone": "654667733",
+                "email": "carlos@example.com",
+            }
+        )
+        self.reservation_1.checkin_partner_ids = [
+            (
+                0,
+                False,
+                {
+                    "partner_id": host2.id,
+                },
+            )
+        ]
+
+        checkins_count = len(self.reservation_1.checkin_partner_ids)
+
+        # ASSERT
+        self.assertEqual(
+            checkins_count,
+            3,
+            "the automatic partner checkin was not updated successful",
+        )
+
     def test_onboard_checkin(self):
 
         # ARRANGE
@@ -288,7 +333,6 @@ class TestPmsCheckinPartner(TestHotel):
         )
         pending_checkin_data = self.reservation_1.pending_checkin_data
         ratio_checkin_data = self.reservation_1.ratio_checkin_data
-
         # ASSERT
         self.assertEqual(
             pending_checkin_data,
