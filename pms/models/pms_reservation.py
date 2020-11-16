@@ -563,7 +563,7 @@ class PmsReservation(models.Model):
                 lambda c: c.state in ("precheckin", "onboard", "done")
             )
             unassigned_checkins = reservation.checkin_partner_ids.filtered(
-                lambda c: c.state not in ("draft")
+                lambda c: c.state in ("draft")
             )
             leftover_unassigneds_count = (
                 len(assigned_checkins) + len(unassigned_checkins) - reservation.adults
@@ -573,8 +573,8 @@ class PmsReservation(models.Model):
                     _("Remove some of the leftover assigned checkins first")
                 )
             elif leftover_unassigneds_count > 0:
-                for i in range(0, len(unassigned_checkins)):
-                    unassigned_checkins[i].unlink()
+                for i in range(0, leftover_unassigneds_count):
+                    unassigned_checkins[i].sudo().unlink()
             elif reservation.adults > len(reservation.checkin_partner_ids):
                 checkins_lst = []
                 count_new_checkins = reservation.adults - len(
@@ -590,7 +590,9 @@ class PmsReservation(models.Model):
                             },
                         )
                     )
-                reservation.checkin_partner_ids = checkins_lst
+                reservation.with_context(
+                    {"auto_create_checkin": True}
+                ).checkin_partner_ids = checkins_lst
 
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
     def _compute_count_pending_arrival(self):
@@ -842,13 +844,25 @@ class PmsReservation(models.Model):
                     )
                 )
 
-    # @api.constrains("checkin_partner_ids", "adults")
-    # def _max_checkin_partner_ids(self):
-    #     for record in self:
-    #         if len(record.checkin_partner_ids) != record.adults:
-    #             raise models.ValidationError(
-    #               _("Reservation Adults and Checkins does not match")
-    #             )
+    @api.constrains("checkin_partner_ids", "adults")
+    def _max_checkin_partner_ids(self):
+        for record in self:
+            if len(record.checkin_partner_ids) > record.adults:
+                raise models.ValidationError(_("The room already is completed"))
+
+    @api.constrains("adults")
+    def _check_adults(self):
+        for record in self:
+            extra_bed = record.service_ids.filtered(
+                lambda r: r.product_id.is_extra_bed is True
+            )
+            for room in record.reservation_line_ids.room_id:
+                if record.adults + record.children_occupying > room.get_capacity(
+                    len(extra_bed)
+                ):
+                    raise ValidationError(
+                        _("Persons can't be higher than room capacity")
+                    )
 
     # @api.constrains("reservation_type", "partner_id")
     # def _check_partner_reservation(self):
@@ -870,12 +884,6 @@ class PmsReservation(models.Model):
     #             raise models.ValidationError(
     #                 _("Only the out reservations can has a clousure reason")
     #             )
-
-    # @api.onchange("checkin_partner_ids")
-    # def onchange_checkin_partner_ids(self):
-    #     for record in self:
-    #         if len(record.checkin_partner_ids) > record.adults + record.children:
-    #             raise models.ValidationError(_("The room already is completed"))
 
     # self._compute_tax_ids() TODO: refact
 

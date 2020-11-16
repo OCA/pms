@@ -497,6 +497,7 @@
                             </group>
                             <field
                                 name="checkin_partner_ids"
+                                options="{'no_create': True, 'no_delete': True}"
                                 context="{
                                     'checkin_partner_ids': checkin_partner_ids,
                                     'default_reservation_id': id,
