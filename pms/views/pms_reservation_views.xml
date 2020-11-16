@@ -66,7 +66,8 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('splitted','=',False)]}"
                 >
-                    This reservation is part of splitted reservation, you can try to unify the reservation here
+                    This reservation is part of splitted reservation, you can try to
+                    unify the reservation here
                     <bold>
                         <button
                             class="alert-link"
@@ -167,9 +168,7 @@
                             placeholder="Room"
                             style="margin-right: 30px;"
                             attrs="{'invisible': [('splitted','=',True)]}"
-
                         />
-
                         <field
                             name="partner_id"
                             default_focus="1"
@@ -553,7 +552,6 @@
             </calendar>
         </field>
     </record>
-
     <!-- Form view Checkin Partners from reservation -->
     <record model="ir.ui.view" id="pms_reservation_checkin_view_form">
         <field name="name">pms.reservation.checkin.form</field>
@@ -660,9 +658,14 @@
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
-            <tree string="Reservation" multi_edit="1" sample="1" class="o_sale_order"
+            <tree
+                string="Reservation"
+                multi_edit="1"
+                sample="1"
+                class="o_sale_order"
                 decoration-warning="splitted"
-                decoration-bf="splitted">
+                decoration-bf="splitted"
+            >
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
