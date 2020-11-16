@@ -243,7 +243,7 @@
                                        'readonly': [('partner_id', '!=', False),
                                                    ('mobile','!=', False)]}"
                             />
-                            <field
+                            <!--<field
                                 name="phone"
                                 colspan="2"
                                 nolabel="1"
@@ -255,7 +255,7 @@
                                               ('mobile','=','')],
                                  'readonly': [('partner_id', '!=', False),
                                              ('phone','!=', False)]}"
-                            />
+                            />-->
                             <field
                                 placeholder="Partner Notes"
                                 colspan="2"
@@ -285,10 +285,12 @@
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
-                            <field
+                            <!--<field
                                 name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
-                            />
+                            />-->
+                            <field name="agency_id"/>
+                            <field name="channel_type_id"/>
                             <field
                                 name="cancelled_reason"
                                 attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
@@ -516,10 +518,10 @@
                                 <field name="overbooking" />
                             </group>
                             <group>
-                                <field
+                                <!--<field
                                     name="channel_type"
                                     attrs="{'required':[('reservation_type','not in',('staff','out'))]}"
-                                />
+                                />-->
                                 <field name="reservation_type" />
                             </group>
                         </page>
@@ -827,7 +829,7 @@
                     domain="[('to_assign','=',True)]"
                 />
                 <separator />
-                <filter
+                <!--<filter
                     string="Web"
                     name="web"
                     domain="[('channel_type', '=', 'web')]"
@@ -846,7 +848,7 @@
                     string="Phone"
                     name="phone"
                     domain="[('channel_type', '=', 'phone')]"
-                />
+                />-->
                 <separator />
                 <filter
                     string="Still to be paid"

@@ -21,6 +21,12 @@ class ResPartner(models.Model):
     folios_count = fields.Integer("Folios", compute="_compute_folios_count")
     unconfirmed = fields.Boolean("Unconfirmed", default=True)
     is_agency = fields.Boolean("Is Agency")
+    sale_channel_id = fields.Many2one(
+        "pms.sale.channel",
+        string="Sale Channel",
+        ondelete = "restrict",
+        domain=[("channel_type","=","indirect")],
+    )
 
     # Compute and Search methods
     def _compute_reservations_count(self):
@@ -64,3 +70,11 @@ class ResPartner(models.Model):
                 name, args=args, operator=operator, limit=limit_rest
             )
         return res
+
+    @api.constrains("is_agency","sale_channel_id")
+    def _check_is_agency(self):
+        for record in self:
+            if record.is_agency and not record.sale_channel_id:
+                 raise models.ValidationError(_("Sale Channel must be entered"))
+            if not record.is_agency and record.sale_channel_id:
+                record.sale_channel_id=None
