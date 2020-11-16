@@ -1,74 +1,72 @@
 import datetime
 
-from _pytest.skipping import Skip
 from freezegun import freeze_time
+
 from odoo import fields
 from odoo.exceptions import ValidationError
 
 from .common import TestHotel
 
-class TestPmsReservations(TestHotel):
 
+@freeze_time("2012-01-14")
+class TestPmsReservations(TestHotel):
     def create_common_scenario(self):
         # create a room type restriction
-        self.room_type_restriction = self.env['pms.room.type.restriction'].create(
-            {
-                'name': 'Restriction plan for TEST'
-            }
+        self.room_type_restriction = self.env["pms.room.type.restriction"].create(
+            {"name": "Restriction plan for TEST"}
         )
 
         # create a property
-        self.property = self.env['pms.property'].create(
+        self.property = self.env["pms.property"].create(
             {
-                'name': 'MY PMS TEST',
-                'company_id': self.env.ref('base.main_company').id,
-                'default_pricelist_id': self.env.ref('product.list0').id,
-                'default_restriction_id': self.room_type_restriction.id,
-            })
-
-        # create room type class
-        self.room_type_class = self.env['pms.room.type.class'].create(
-            {
-                'name': 'Room'
+                "name": "MY PMS TEST",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+                "default_restriction_id": self.room_type_restriction.id,
             }
         )
 
+        # create room type class
+        self.room_type_class = self.env["pms.room.type.class"].create({"name": "Room"})
+
         # create room type
-        self.room_type_double = self.env['pms.room.type'].create(
+        self.room_type_double = self.env["pms.room.type"].create(
             {
-                'pms_property_ids': [self.property.id],
-                'name': 'Double Test',
-                'code_type': 'DBL_Test',
-                'class_id': self.room_type_class.id
+                "pms_property_ids": [self.property.id],
+                "name": "Double Test",
+                "code_type": "DBL_Test",
+                "class_id": self.room_type_class.id,
             }
         )
 
         # create rooms
-        self.room1 = self.env['pms.room'].create(
+        self.room1 = self.env["pms.room"].create(
             {
-                'pms_property_id': self.property.id,
-                'name': 'Double 101',
-                'room_type_id': self.room_type_double.id,
-                'capacity': 2
-            })
+                "pms_property_id": self.property.id,
+                "name": "Double 101",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+            }
+        )
 
-        self.room2 = self.env['pms.room'].create(
+        self.room2 = self.env["pms.room"].create(
             {
-                'pms_property_id': self.property.id,
-                'name': 'Double 102',
-                'room_type_id': self.room_type_double.id,
-                'capacity': 2
-            })
+                "pms_property_id": self.property.id,
+                "name": "Double 102",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+            }
+        )
 
-        self.room3 = self.env['pms.room'].create(
+        self.room3 = self.env["pms.room"].create(
             {
-                'pms_property_id': self.property.id,
-                'name': 'Double 103',
-                'room_type_id': self.room_type_double.id,
-                'capacity': 2
-            })
+                "pms_property_id": self.property.id,
+                "name": "Double 103",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+            }
+        )
         self.demo_user = self.env.ref("base.user_admin")
-
 
     def test_create_reservation(self):
         today = fields.date.today()
@@ -82,9 +80,7 @@ class TestPmsReservations(TestHotel):
             "partner_id": customer.id,
             "pms_property_id": self.main_hotel_property.id,
         }
-        reservation = (
-            self.env["pms.reservation"].create(reservation_vals)
-        )
+        reservation = self.env["pms.reservation"].create(reservation_vals)
 
         self.assertEqual(
             reservation.reservation_line_ids[0].date,
@@ -95,7 +91,7 @@ class TestPmsReservations(TestHotel):
             reservation.reservation_line_ids[-1].date,
             checkout - datetime.timedelta(1),
             "Reservation lines don't end in the correct date",
-            )
+        )
 
     @freeze_time("1980-11-01")
     def test_split_reservation01(self):
@@ -119,12 +115,17 @@ class TestPmsReservations(TestHotel):
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
-                "preferred_room_id": self.room1.id
+                "preferred_room_id": self.room1.id,
             }
         )
         r_test.flush()
-        obtained = all(elem.room_id.id == r_test.reservation_line_ids[0].room_id.id for elem in r_test.reservation_line_ids)
-        self.assertTrue(obtained, "The entire reservation should be allocated in the preferred room")
+        obtained = all(
+            elem.room_id.id == r_test.reservation_line_ids[0].room_id.id
+            for elem in r_test.reservation_line_ids
+        )
+        self.assertTrue(
+            obtained, "The entire reservation should be allocated in the preferred room"
+        )
 
     @freeze_time("1980-11-01")
     def test_split_reservation02(self):
@@ -234,9 +235,11 @@ class TestPmsReservations(TestHotel):
         for line in r_test.reservation_line_ids:
             if last_room != line.room_id.id:
                 last_room = line.room_id.id
-                changes +=1
+                changes += 1
 
-        self.assertEqual(2, changes, "The reservation shouldn't have more than 2 changes")
+        self.assertEqual(
+            2, changes, "The reservation shouldn't have more than 2 changes"
+        )
 
     @freeze_time("1980-11-01")
     def test_split_reservation04(self):
@@ -332,7 +335,9 @@ class TestPmsReservations(TestHotel):
                 last_room = line.room_id
                 changes += 1
 
-        self.assertEqual(3, changes, "The reservation shouldn't be splitted in more than 3 roomss")
+        self.assertEqual(
+            3, changes, "The reservation shouldn't be splitted in more than 3 roomss"
+        )
 
     @freeze_time("1980-11-01")
     def test_split_reservation05(self):
@@ -367,7 +372,7 @@ class TestPmsReservations(TestHotel):
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
-                "preferred_room_id": self.room1.id
+                "preferred_room_id": self.room1.id,
             }
         )
 
@@ -396,7 +401,6 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -406,10 +410,10 @@ class TestPmsReservations(TestHotel):
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
-                "checkin": datetime.datetime.now()  + datetime.timedelta(days=1),
+                "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
-                "preferred_room_id": self.room1.id
+                "preferred_room_id": self.room1.id,
             }
         )
 
@@ -438,15 +442,12 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
         r1.reservation_line_ids[1].room_id = self.room1
         r1.reservation_line_ids[2].room_id = self.room1
         r1.flush()
-
-
 
         r2 = self.env["pms.reservation"].create(
             {
@@ -455,7 +456,6 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-
             }
         )
         r2.reservation_line_ids[0].room_id = self.room2
@@ -489,3 +489,21 @@ class TestPmsReservations(TestHotel):
 
         with self.assertRaises(ValidationError):
             r_test.flush()
+
+    def test_manage_children_raise(self):
+
+        # ARRANGE
+        PmsReservation = self.env["pms.reservation"]
+
+        # ACT & ASSERT
+        with self.assertRaises(ValidationError), self.cr.savepoint():
+
+            PmsReservation.create(
+                {
+                    "adults": 2,
+                    "children_occupying": 1,
+                    "checkin": datetime.datetime.now(),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                    "room_type_id": self.browse_ref("pms.pms_room_type_0").id,
+                }
+            )
