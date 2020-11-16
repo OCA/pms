@@ -55,14 +55,16 @@ class PmsCheckinPartner(models.Model):
     )
 
     # Compute
-    @api.depends("reservation_id", "folio_id", "reservation_id.room_id")
+    @api.depends("reservation_id", "folio_id", "reservation_id.preferred_room_id")
     def _compute_identifier(self):
         for record in self:
             # TODO: Identifier
-            if record.reservation_id.filtered("room_id"):
+            if record.reservation_id.filtered("preferred_room_id"):
                 checkins = record.reservation_id.checkin_partner_ids
                 record.identifier = (
-                    record.reservation_id.room_id.name + "-" + str(len(checkins) - 1)
+                    record.reservation_id.preferred_room_id.name
+                    + "-"
+                    + str(len(checkins) - 1)
                 )
             elif record.folio_id:
                 record.identifier = record.folio_id.name + "-" + str(len(checkins) - 1)
@@ -77,18 +79,18 @@ class PmsCheckinPartner(models.Model):
     @api.depends(lambda self: self._checkin_mandatory_fields(), "reservation_id.state")
     def _compute_state(self):
         for record in self:
+            if not record.state:
+                record.state = "draft"
             if record.reservation_id.state == "cancelled":
                 record.state = "cancelled"
             elif record.state in ("draft", "cancelled"):
                 if any(
-                    not getattr(self, field)
+                    not getattr(record, field)
                     for field in record._checkin_mandatory_fields()
                 ):
                     record.state = "draft"
                 else:
                     record.state = "precheckin"
-            elif not record.state:
-                record.state = "draft"
 
     def _checkin_mandatory_fields(self):
         return ["name", "email"]
@@ -116,6 +118,22 @@ class PmsCheckinPartner(models.Model):
                     raise ValidationError(
                         _("This guest is already registered in the room")
                     )
+
+    # CRUD
+    @api.model
+    def create(self, vals):
+        # The checkin records are created automatically from adult depends
+        # if you try to create one manually, we update one unassigned checkin
+        if not self._context.get("auto_create_checkin"):
+            reservation_id = vals.get("reservation_id")
+            if reservation_id:
+                reservation = self.env["pms.reservation"].browse(reservation_id)
+                draft_checkins = reservation.checkin_partner_ids.filtered(
+                    lambda c: c.state in ("draft")
+                )
+                if len(draft_checkins) > 0 and vals.get("partner_id"):
+                    draft_checkins[0].sudo().unlink()
+        return super(PmsCheckinPartner, self).create(vals)
 
     # Action methods
 
