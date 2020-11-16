@@ -146,8 +146,14 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
-    agency_id = fields.Many2one(related="folio_id.agency_id")
-
+    agency_id = fields.Many2one(
+        related="folio_id.agency_id",
+        readonly=True,
+        )
+    channel_type_id = fields.Many2one(
+        related="folio_id.agency_id",
+        readonly=True,
+        )
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",
@@ -297,11 +303,6 @@ class PmsReservation(models.Model):
     overbooking = fields.Boolean("Is Overbooking", default=False)
     reselling = fields.Boolean("Is Reselling", default=False)
     nights = fields.Integer("Nights", compute="_compute_nights", store=True)
-    channel_type = fields.Selection(
-        related="folio_id.channel_type",
-        required = True,
-        readonly = True,
-    )
     origin = fields.Char("Origin", compute="_compute_origin", store=True)
     detail_origin = fields.Char(
         "Detail Origin", compute="_compute_detail_origin", store=True
