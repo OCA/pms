@@ -39,14 +39,19 @@
                     <field string="Folios" name="folios_count" widget="statinfo" />
                 </button>
             </xpath>
-            <xpath expr="//field[@name='user_id']" position="after">
+            <!--<xpath expr="//field[@name='user_id']" position="after">
                 <field name="company_type" invisible="1" />
                 <field
                     name="is_agency"
                     attrs="{'invisible': [('company_type','!=','company')]}"
                 />
-            </xpath>
+            </xpath>-->
         </field>
+        <field name="is_agency"/>
+        <field
+            name="sale_channel_id"
+            attrs="{'invisible':[('is_agency','=','True')]}"
+        />
     </record>
     <menuitem
         name="Customers"
