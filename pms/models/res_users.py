@@ -1,6 +1,7 @@
 # Copyright 2019 Pablo Quesada
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError
 from odoo.http import request
 
 
@@ -31,12 +32,14 @@ class ResUsers(models.Model):
 
     @api.model
     def get_active_property_ids(self):
-        # TODO: Require performance test and security
+        # TODO: Require performance test and security (dont allow any property id)
         # checks (Review lazy_property decorator?)
-        if request:
+        user_property_ids = self.env.user.pms_property_ids.ids
+        if request and request.httprequest.cookies.get("pms_pids"):
             active_property_ids = list(
                 map(int, request.httprequest.cookies.get("pms_pids", "").split(","))
             )
-        else:
-            active_property_ids = self.env.user.pms_property_ids.ids
-        return active_property_ids
+            if any(pid not in user_property_ids for pid in active_property_ids):
+                raise AccessError(_("Access to unauthorized or invalid properties."))
+            return self.env["pms.property"].browse(active_property_ids).ids
+        return user_property_ids
