@@ -110,7 +110,6 @@ class PmsReservation(models.Model):
     preferred_room_id = fields.Many2one(
         "pms.room",
         string="Room",
-        tracking=True,
         ondelete="restrict",
         domain="[('id', 'in', allowed_room_ids)]",
     )
@@ -297,7 +296,12 @@ class PmsReservation(models.Model):
         store=True,
     )
 
-    rooms = fields.Char(string="Room/s", compute="_compute_rooms", store=True)
+    rooms = fields.Char(
+        string="Room/s",
+        compute="_compute_rooms",
+        store=True,
+        tracking=True,
+    )
 
     credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
