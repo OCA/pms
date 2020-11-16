@@ -259,12 +259,7 @@ class PmsReservation(models.Model):
         store=True,
     )
 
-    rooms = fields.Char(
-        string="Room/s",
-        compute="_compute_rooms",
-        store=True
-    )
-
+    rooms = fields.Char(string="Room/s", compute="_compute_rooms", store=True)
 
     credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
@@ -431,7 +426,9 @@ class PmsReservation(models.Model):
             elif not reservation.room_type_id:
                 reservation.room_type_id = False
 
-    @api.depends("reservation_line_ids.date", "overbooking", "state", "preferred_room_id")
+    @api.depends(
+        "reservation_line_ids.date", "overbooking", "state", "preferred_room_id"
+    )
     def _compute_allowed_room_ids(self):
         for reservation in self:
             if reservation.checkin and reservation.checkout:
@@ -554,8 +551,9 @@ class PmsReservation(models.Model):
                 reservation.splitted = True
             else:
                 reservation.splitted = False
-                reservation.preferred_room_id = reservation.reservation_line_ids[0].room_id
-
+                reservation.preferred_room_id = reservation.reservation_line_ids[
+                    0
+                ].room_id
 
     @api.depends("state", "qty_to_invoice", "qty_invoiced")
     def _compute_invoice_status(self):
@@ -792,20 +790,21 @@ class PmsReservation(models.Model):
 
     def open_reservation_wizard(self):
         rooms_available = self.env["pms.room.type.availability"].rooms_available(
-                checkin=self.checkin,
-                checkout=self.checkout,
-                current_lines=self.reservation_line_ids.ids,
-                )
+            checkin=self.checkin,
+            checkout=self.checkout,
+            current_lines=self.reservation_line_ids.ids,
+        )
         # REVIEW: check capacity room
         return {
-            'view_type': 'form',
-            'view_mode': 'form',
-            'name': 'Unify the reservation',
-            'res_model': 'pms.reservation.wizard',
-            'target': 'new',
-            'type': 'ir.actions.act_window',
-            'context': {'rooms_available':  rooms_available.ids,
-            }
+            "view_type": "form",
+            "view_mode": "form",
+            "name": "Unify the reservation",
+            "res_model": "pms.reservation.wizard",
+            "target": "new",
+            "type": "ir.actions.act_window",
+            "context": {
+                "rooms_available": rooms_available.ids,
+            },
         }
 
     # ORM Overrides
@@ -826,7 +825,9 @@ class PmsReservation(models.Model):
     def name_get(self):
         result = []
         for res in self:
-            name = u"{} ({})".format(res.folio_id.name, res.rooms if res.rooms else 'No room')
+            name = u"{} ({})".format(
+                res.folio_id.name, res.rooms if res.rooms else "No room"
+            )
             result.append((res.id, name))
         return result
 
@@ -1017,8 +1018,8 @@ class PmsReservation(models.Model):
             if record.reservation_type != "out":
                 record.checkin_partner_count = len(record.checkin_partner_ids)
                 record.checkin_partner_pending_count = (
-                                                           record.adults + record.children
-                                                       ) - len(record.checkin_partner_ids)
+                    record.adults + record.children
+                ) - len(record.checkin_partner_ids)
             else:
                 record.checkin_partner_count = 0
                 record.checkin_partner_pending_count = 0
@@ -1082,7 +1083,9 @@ class PmsReservation(models.Model):
 
         for reservation in self:
             if reservation.splitted:
-                reservation.rooms = ", ".join([r for r in reservation.reservation_line_ids.mapped('room_id.name')])
+                reservation.rooms = ", ".join(
+                    [r for r in reservation.reservation_line_ids.mapped("room_id.name")]
+                )
                 reservation.preferred_room_id = False
             else:
                 reservation.rooms = reservation.preferred_room_id.name
