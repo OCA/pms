@@ -91,20 +91,25 @@ class PmsReservationLine(models.Model):
     ]
 
     # Compute and Search methods
-    @api.depends("reservation_id.room_type_id")
+    @api.depends("reservation_id.room_type_id", "reservation_id.preferred_room_id")
     def _compute_room_id(self):
-        for line in self.sorted(key=lambda r: (r.reservation_id, r.date)):
-
-            # if the reservation has a room type and no room id
-            if line.reservation_id.room_type_id and not line.room_id:
-
+        for line in self.filtered("reservation_id.room_type_id").sorted(
+            key=lambda r: (r.reservation_id, r.date)
+        ):
+            reservation = line.reservation_id
+            if reservation.preferred_room_id or not line.room_id:
+                # If reservation has a preferred_room_id We can allow
+                # select room_id regardless room_type_id selected on reservation
+                free_room_select = True if reservation.preferred_room_id else False
                 # we get the rooms available for the entire stay
                 rooms_available = self.env[
                     "pms.room.type.availability"
                 ].rooms_available(
-                    checkin=line.reservation_id.checkin,
-                    checkout=line.reservation_id.checkout,
-                    room_type_id=line.reservation_id.room_type_id.id,
+                    checkin=reservation.checkin,
+                    checkout=reservation.checkout,
+                    room_type_id=reservation.room_type_id.id
+                    if not free_room_select
+                    else False,
                     current_lines=line._origin.reservation_id.reservation_line_ids.ids,
                 )
 
@@ -112,17 +117,17 @@ class PmsReservationLine(models.Model):
                 if rooms_available:
 
                     # if the reservation has a preferred room
-                    if line.reservation_id.preferred_room_id:
+                    if reservation.preferred_room_id:
 
                         # if the preferred room is available
-                        if line.reservation_id.preferred_room_id in rooms_available:
-                            line.room_id = line.reservation_id.preferred_room_id
+                        if reservation.preferred_room_id in rooms_available:
+                            line.room_id = reservation.preferred_room_id
 
                         # if the preferred room is NOT available
                         else:
                             raise ValidationError(
                                 _("%s: No room available.")
-                                % (line.reservation_id.preferred_room_id.name)
+                                % (reservation.preferred_room_id.name)
                             )
 
                     # otherwise we assign the first of those
@@ -137,19 +142,17 @@ class PmsReservationLine(models.Model):
 
                     # we go through the rooms of the type
                     for room in self.env["pms.room"].search(
-                        [("room_type_id", "=", line.reservation_id.room_type_id.id)]
+                        [("room_type_id", "=", reservation.room_type_id.id)]
                     ):
 
                         # we iterate the dates from the date of the line to the checkout
                         for date_iterator in [
                             line.date + datetime.timedelta(days=x)
-                            for x in range(
-                                0, (line.reservation_id.checkout - line.date).days
-                            )
+                            for x in range(0, (reservation.checkout - line.date).days)
                         ]:
                             # if the room is already assigned for
                             # a date we go to the next room
-                            ids = line.reservation_id.reservation_line_ids.ids
+                            ids = reservation.reservation_line_ids.ids
                             if (
                                 self.env["pms.reservation.line"].search_count(
                                     [
@@ -173,7 +176,7 @@ class PmsReservationLine(models.Model):
                     if len(rooms_ranking) == 0:
                         raise ValidationError(
                             _("%s: No room type available")
-                            % (line.reservation_id.room_type_id.name)
+                            % (reservation.room_type_id.name)
                         )
                     else:
                         # we get the best score in the ranking
@@ -194,7 +197,7 @@ class PmsReservationLine(models.Model):
                             line_past_night = self.env["pms.reservation.line"].search(
                                 [
                                     ("date", "=", date_last_night),
-                                    ("reservation_id", "=", line.reservation_id.id),
+                                    ("reservation_id", "=", reservation.id),
                                 ]
                             )
                             # if there is the night before and if the room
