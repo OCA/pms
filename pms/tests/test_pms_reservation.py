@@ -366,17 +366,16 @@ class TestPmsReservations(TestHotel):
         r1.reservation_line_ids[0].room_id = self.room1
         r1.flush()
 
-        r_test = self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.property.id,
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
-                "adults": 2,
-                "preferred_room_id": self.room1.id,
-            }
-        )
-
         with self.assertRaises(ValidationError):
+            r_test = self.env["pms.reservation"].create(
+                {
+                    "pms_property_id": self.property.id,
+                    "checkin": datetime.datetime.now(),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                    "adults": 2,
+                    "preferred_room_id": self.room1.id,
+                }
+            )
             r_test.flush()
 
     @freeze_time("1980-11-01")
@@ -407,17 +406,16 @@ class TestPmsReservations(TestHotel):
         r1.reservation_line_ids[1].room_id = self.room1
         r1.flush()
 
-        r_test = self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.property.id,
-                "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
-                "adults": 2,
-                "preferred_room_id": self.room1.id,
-            }
-        )
-
         with self.assertRaises(ValidationError):
+            r_test = self.env["pms.reservation"].create(
+                {
+                    "pms_property_id": self.property.id,
+                    "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                    "adults": 2,
+                    "preferred_room_id": self.room1.id,
+                }
+            )
             r_test.flush()
 
     @freeze_time("1980-11-01")
@@ -477,17 +475,16 @@ class TestPmsReservations(TestHotel):
         r3.reservation_line_ids[2].room_id = self.room3
         r3.flush()
 
-        r_test = self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.property.id,
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
-                "adults": 2,
-                "room_type_id": self.room_type_double.id,
-            }
-        )
-
         with self.assertRaises(ValidationError):
+            r_test = self.env["pms.reservation"].create(
+                {
+                    "pms_property_id": self.property.id,
+                    "checkin": datetime.datetime.now(),
+                    "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                    "adults": 2,
+                    "room_type_id": self.room_type_double.id,
+                }
+            )
             r_test.flush()
 
     def test_manage_children_raise(self):
