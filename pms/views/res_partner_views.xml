@@ -47,7 +47,7 @@
                 />
             </xpath>-->
         </field>
-        <field name="is_agency"/>
+        <field name="is_agency" />
         <field
             name="sale_channel_id"
             attrs="{'invisible':[('is_agency','=','True')]}"
