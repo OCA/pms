@@ -150,11 +150,11 @@ class PmsReservation(models.Model):
     agency_id = fields.Many2one(
         related="folio_id.agency_id",
         readonly=True,
-        )
+    )
     channel_type_id = fields.Many2one(
-        related="folio_id.agency_id",
+        related="folio_id.channel_type_id",
         readonly=True,
-        )
+    )
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",

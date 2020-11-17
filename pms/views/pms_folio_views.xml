@@ -106,8 +106,8 @@
                                 name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
                             />-->
-                            <field name="agency_id"/>
-                            <field name="channel_type_id"/>
+                            <field name="agency_id" />
+                            <field name="channel_type_id" />
                         </group>
                         <group>
                             <field name="partner_internal_comment" />
