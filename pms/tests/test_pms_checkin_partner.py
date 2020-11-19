@@ -91,15 +91,9 @@ class TestPmsCheckinPartner(TestHotel):
         # ARRANGE
         self.arrange_single_checkin()
 
-        # ACT
-        self.checkin1.action_on_board()
-
-        # ASSERT
-        self.assertEqual(
-            self.checkin1.state,
-            "onboard",
-            "the partner checkin was not successful",
-        )
+        # ACT & ASSERT
+        with self.assertRaises(ValidationError), self.cr.savepoint():
+            self.reservation_1.state = "onboard"
 
     def test_onboard_reservation(self):
 

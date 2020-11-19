@@ -129,7 +129,7 @@ class PmsCheckinPartner(models.Model):
             if reservation_id:
                 reservation = self.env["pms.reservation"].browse(reservation_id)
                 draft_checkins = reservation.checkin_partner_ids.filtered(
-                    lambda c: c.state in ("draft")
+                    lambda c: c.state == "draft"
                 )
                 if len(draft_checkins) > 0 and vals.get("partner_id"):
                     draft_checkins[0].sudo().unlink()
