@@ -567,7 +567,7 @@ class PmsReservation(models.Model):
                 lambda c: c.state in ("precheckin", "onboard", "done")
             )
             unassigned_checkins = reservation.checkin_partner_ids.filtered(
-                lambda c: c.state in ("draft")
+                lambda c: c.state == "draft"
             )
             leftover_unassigneds_count = (
                 len(assigned_checkins) + len(unassigned_checkins) - reservation.adults
@@ -621,7 +621,7 @@ class PmsReservation(models.Model):
     def _compute_pending_checkin_data(self):
         for reservation in self:
             reservation.pending_checkin_data = len(
-                reservation.checkin_partner_ids.filtered(lambda c: c.state in ("draft"))
+                reservation.checkin_partner_ids.filtered(lambda c: c.state == "draft")
             )
 
     @api.depends("pending_checkin_data")
@@ -714,7 +714,7 @@ class PmsReservation(models.Model):
             "Product Unit of Measure"
         )
         for line in self:
-            if line.state in ("draft"):
+            if line.state == "draft":
                 line.invoice_status = "no"
             elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
                 line.invoice_status = "to invoice"
@@ -853,7 +853,9 @@ class PmsReservation(models.Model):
     def _max_checkin_partner_ids(self):
         for record in self:
             if len(record.checkin_partner_ids) > record.adults:
-                raise models.ValidationError(_("The room already is completed"))
+                raise models.ValidationError(
+                    _("The room already is completed (%s)", record.name)
+                )
 
     @api.constrains("adults")
     def _check_adults(self):
@@ -866,8 +868,22 @@ class PmsReservation(models.Model):
                     len(extra_bed)
                 ):
                     raise ValidationError(
-                        _("Persons can't be higher than room capacity")
+                        _(
+                            "Persons can't be higher than room capacity (%s)",
+                            record.name,
+                        )
                     )
+
+    @api.constrains("state")
+    def _check_onboard_reservation(self):
+        for record in self:
+            if (
+                not record.checkin_partner_ids.filtered(lambda c: c.state == "onboard")
+                and record.state == "onboard"
+            ):
+                raise ValidationError(
+                    _("No person from reserve %s has arrived", record.name)
+                )
 
     # @api.constrains("reservation_type", "partner_id")
     # def _check_partner_reservation(self):
@@ -1046,7 +1062,7 @@ class PmsReservation(models.Model):
     def autocheckout(self):
         reservations = self.env["pms.reservation"].search(
             [
-                ("state", "not in", ("done", "cancelled")),
+                ("state", "not in", ["done", "cancelled"]),
                 ("checkout", "<", fields.Date.today()),
             ]
         )
@@ -1085,7 +1101,7 @@ class PmsReservation(models.Model):
     def confirm(self):
         for record in self:
             vals = {}
-            if record.checkin_partner_ids:
+            if record.checkin_partner_ids.filtered(lambda c: c.state == "onboard"):
                 vals.update({"state": "onboard"})
             else:
                 vals.update({"state": "confirm"})
