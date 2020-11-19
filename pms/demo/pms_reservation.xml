@@ -244,7 +244,7 @@
             <field name="room_type_id" ref="pms_room_type_3" />
             <field name="adults">2</field>
             <field name="children">1</field>
-            <field name="state">onboard</field>
+            <field name="state">confirm</field>
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(4)" />
             <field name="board_service_room_id" ref="pms_board_service_room_2" />
