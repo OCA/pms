@@ -38,6 +38,11 @@ class PmsCheckinPartner(models.Model):
     name = fields.Char("Name", related="partner_id.name")
     email = fields.Char("E-mail", related="partner_id.email")
     mobile = fields.Char("Mobile", related="partner_id.mobile")
+    image_128 = fields.Image(related="partner_id.image_128")
+    segmentation_ids = fields.Many2many(
+        related="reservation_id.segmentation_ids",
+        readonly=True,
+    )
     arrival = fields.Datetime("Enter")
     departure = fields.Datetime("Exit")
     state = fields.Selection(
@@ -59,6 +64,7 @@ class PmsCheckinPartner(models.Model):
     def _compute_identifier(self):
         for record in self:
             # TODO: Identifier
+            checkins = []
             if record.reservation_id.filtered("preferred_room_id"):
                 checkins = record.reservation_id.checkin_partner_ids
                 record.identifier = (
@@ -93,7 +99,7 @@ class PmsCheckinPartner(models.Model):
                     record.state = "precheckin"
 
     def _checkin_mandatory_fields(self):
-        return ["name", "email"]
+        return ["name"]
 
     # Constraints and onchanges
 

@@ -24,6 +24,20 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_0" />
             <field name="adults">2</field>
+            <field name="state">onboard</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_address_28'),
+                    'state': 'onboard'
+                    }),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_12'),
+                    'state': 'onboard'
+                    }),
+                ]"
+            />
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(1)" />
             <field name="board_service_room_id" ref="pms_board_service_room_1" />
@@ -58,6 +72,15 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_1" />
             <field name="adults">1</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_address_27'),
+                    'state': 'onboard'
+                    }),
+                ]"
+            />
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(3)" />
             <field name="board_service_room_id" ref="pms_board_service_room_2" />
@@ -67,6 +90,14 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_1" />
             <field name="adults">1</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_address_10'),
+                    }),
+                ]"
+            />
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(3)" />
             <field name="board_service_room_id" ref="pms_board_service_room_0" />
@@ -129,6 +160,13 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_2" />
             <field name="adults">2</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                    (0, 0, {'partner_id': ref('base.res_partner_12')}),
+                    (0, 0, {'partner_id': ref('base.res_partner_18')}),
+                    ]"
+            />
             <field name="checkin" eval="DateTime.today() + timedelta(6)" />
             <field name="checkout" eval="DateTime.today() + timedelta(8)" />
         </record>
@@ -164,6 +202,13 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_2" />
             <field name="adults">2</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                    (0, 0, {'partner_id': ref('base.res_partner_18')}),
+                    (0, 0, {'partner_id': ref('base.res_partner_12')}),
+                    ]"
+            />
             <field name="checkin" eval="DateTime.today() + timedelta(11)" />
             <field name="checkout" eval="DateTime.today() + timedelta(13)" />
         </record>
@@ -217,6 +262,14 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_3" />
             <field name="adults">3</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                    (0, 0, {'partner_id': ref('base.res_partner_10')}),
+                    (0, 0, {'partner_id': ref('base.res_partner_address_10')}),
+                    (0, 0, {'partner_id': ref('base.res_partner_address_18')}),
+                    ]"
+            />
             <field name="checkin" eval="DateTime.today() + timedelta(6)" />
             <field name="checkout" eval="DateTime.today() + timedelta(8)" />
         </record>
@@ -225,6 +278,12 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_3" />
             <field name="adults">1</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                    (0, 0, {'partner_id': ref('base.res_partner_3')}),
+                    ]"
+            />
             <field name="children">2</field>
             <field name="checkin" eval="DateTime.today() + timedelta(10)" />
             <field name="checkout" eval="DateTime.today() + timedelta(11)" />
@@ -235,6 +294,14 @@
             <field name="pricelist_id" ref="product.list0" />
             <field name="room_type_id" ref="pms_room_type_3" />
             <field name="adults">3</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                    (0, 0, {'partner_id': ref('base.res_partner_3')}),
+                    (0, 0, {'partner_id': ref('base.res_partner_address_14')}),
+                    (0, 0, {'partner_id': ref('base.res_partner_address_33')}),
+                    ]"
+            />
             <field name="checkin" eval="DateTime.today() + timedelta(4)" />
             <field name="checkout" eval="DateTime.today() + timedelta(6)" />
         </record>
@@ -244,7 +311,20 @@
             <field name="room_type_id" ref="pms_room_type_3" />
             <field name="adults">2</field>
             <field name="children">1</field>
-            <field name="state">confirm</field>
+            <field name="state">onboard</field>
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_12'),
+                    'state': 'onboard'
+                    }),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_2'),
+                    'state': 'onboard'
+                    }),
+                ]"
+            />
             <field name="checkin" eval="DateTime.today()" />
             <field name="checkout" eval="DateTime.today() + timedelta(4)" />
             <field name="board_service_room_id" ref="pms_board_service_room_2" />
