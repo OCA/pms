@@ -497,12 +497,10 @@
                             </group>
                             <field
                                 name="checkin_partner_ids"
+                                mode="kanban"
                                 options="{'no_create': True, 'no_delete': True}"
                                 context="{
-                                    'checkin_partner_ids': checkin_partner_ids,
-                                    'default_reservation_id': id,
-                                    'reservation_id': id,
-                                    'tree_view_ref':'pms.pms_checkin_partner_reservation_view_tree',
+                                    'kanban_view_ref':'pms.pms_checkin_partner_kanban_view',
                                     }"
                             />
                         </page>

@@ -241,14 +241,11 @@ class PmsFolio(models.Model):
         tracking=True,
     )
     # Checkin Fields-----------------------------------------------------
-    booking_pending = fields.Integer(
-        "Booking pending", compute="_compute_checkin_partner_count"
+    reservation_pending_arrival_ids = fields.One2many(
+        string="Pending Arrival Rooms", compute="_compute_reservations_pending_arrival"
     )
-    checkin_partner_count = fields.Integer(
-        "Checkin counter", compute="_compute_checkin_partner_count"
-    )
-    checkin_partner_pending_count = fields.Integer(
-        "Checkin Pending", compute="_compute_checkin_partner_count"
+    reservations_pending_count = fields.Integer(
+        compute="_compute_reservations_pending_arrival"
     )
     # Invoice Fields-----------------------------------------------------
     invoice_status = fields.Selection(
@@ -431,6 +428,16 @@ class PmsFolio(models.Model):
                     "amount_tax": record.pricelist_id.currency_id.round(amount_tax),
                     "amount_total": amount_untaxed + amount_tax,
                 }
+            )
+
+    @api.depends("reservation_ids", "reservation_ids.state")
+    def _compute_reservations_pending_arrival(self):
+        for record in self:
+            record.reservation_pending_arrival_ids = record.reservation_ids.filtered(
+                lambda r: r.state in ("draft", "precheckin")
+            )
+            record.reservations_pending_count = len(
+                record.reservations_pending_arrival_ids
             )
 
     # TODO: Add return_ids to depends

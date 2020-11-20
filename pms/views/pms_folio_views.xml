@@ -280,9 +280,6 @@
                 <field name="pending_amount" />
                 <!-- <field name="refund_amount" /> -->
                 <field name="invoices_paid" />
-                <field name="booking_pending" />
-                <field name="checkin_partner_count" />
-                <field name="checkin_partner_pending_count" />
                 <field name="partner_internal_comment" />
                 <field name="cancelled_reason" />
                 <field name="prepaid_warning_days" />
@@ -297,27 +294,6 @@
                                 <strong class="oe_partner_heading">
                                     <field name="partner_id" />
                                 </strong>
-                                <ul>
-                                    <li t-if="record.name.raw_value">
-                                        <field name="name" />
-                                    </li>
-                                    <span
-                                        t-if="record.checkin_partner_count.value&gt;0"
-                                        class="badge"
-                                    >
-                                        <i class="fa fa-fw fa-bed" />
-                                        <t t-esc="record.checkin_partner_count.value" />
-                                    </span>
-                                    <span
-                                        t-if="record.checkin_partner_pending_count.value&gt;0"
-                                        class="badge"
-                                    >
-                                        <i class="fa fa-fw fa-user-plus" />
-                                        <t
-                                            t-esc="record.checkin_partner_pending_count.value"
-                                        />
-                                    </span>
-                                </ul>
                                 <div class="oe_kanban_partner_links" />
                             </div>
                         </div>
