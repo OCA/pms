@@ -60,6 +60,7 @@
         "views/res_partner_views.xml",
         "views/product_pricelist_views.xml",
         "views/product_pricelist_item_views.xml",
+        "views/pms_sale_channel.xml",
         "views/product_template_views.xml",
         "views/webclient_templates.xml",
         "views/ir_sequence_views.xml",

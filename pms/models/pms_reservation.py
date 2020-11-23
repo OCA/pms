@@ -999,19 +999,21 @@ class PmsReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        if "folio_id" in vals and "channel_type" not in vals:
+        if "folio_id" in vals and "channel_type_id" not in vals:
             folio = self.env["pms.folio"].browse(vals["folio_id"])
-            channel_type = (
-                vals["channel_type"] if "channel_type" in vals else folio.channel_type
+            channel_type_id = (
+                vals["channel_type_id"]
+                if "channel_type_id" in vals
+                else folio.channel_type_id
             )
             partner_id = (
                 vals["partner_id"] if "partner_id" in vals else folio.partner_id.id
             )
-            vals.update({"channel_type": channel_type, "partner_id": partner_id})
+            vals.update({"channel_type_id": channel_type_id, "partner_id": partner_id})
         elif "partner_id" in vals:
             folio_vals = {
                 "partner_id": int(vals.get("partner_id")),
-                "channel_type": vals.get("channel_type"),
+                "channel_type_id": vals.get("channel_type_id"),
             }
             # Create the folio in case of need
             # (To allow to create reservations direct)
@@ -1020,7 +1022,7 @@ class PmsReservation(models.Model):
                 {
                     "folio_id": folio.id,
                     "reservation_type": vals.get("reservation_type"),
-                    "channel_type": vals.get("channel_type"),
+                    "channel_type_id": vals.get("channel_type_id"),
                 }
             )
         record = super(PmsReservation, self).create(vals)
