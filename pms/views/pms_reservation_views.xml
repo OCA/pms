@@ -294,8 +294,6 @@
                                 name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
                             />-->
-                            <field name="agency_id" />
-                            <field name="channel_type_id" />
                             <field
                                 name="cancelled_reason"
                                 attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
@@ -336,6 +334,8 @@
                                 nolabel="1"
                                 placeholder="Reservation Notes"
                             />
+                            <field name="agency_id" />
+                            <field name="channel_type_id" />
                         </group>
                         <group
                             colspan="2"
