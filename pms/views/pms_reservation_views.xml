@@ -545,12 +545,12 @@
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
             <calendar
-                date_start="checkin"
-                date_stop="checkout"
+                date_start="checkin_datetime"
+                date_stop="checkout_datetime"
                 string="Reservations"
                 quick_add="False"
                 mode="month"
-                scales="month,year"
+                scales="week,month,year"
             >
                 <field name="partner_id" avatar_field="image_128" />
                 <field name="room_type_id" />

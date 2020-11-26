@@ -4,8 +4,12 @@
 
 import time
 
+import pytz
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+from odoo.addons.base.models.res_partner import _tz_get
 
 
 class PmsProperty(models.Model):
@@ -54,6 +58,14 @@ class PmsProperty(models.Model):
     folio_sequence_id = fields.Many2one(
         "ir.sequence", "Folio Sequence", check_company=True, copy=False
     )
+    tz = fields.Selection(
+        _tz_get,
+        string="Timezone",
+        required=True,
+        default=lambda self: self.env.user.tz or "UTC",
+        help="This field is used in order to define \
+         in which timezone the arrival/departure will work.",
+    )
 
     # Constraints and onchanges
     @api.constrains("default_arrival_hour")
@@ -83,3 +95,13 @@ class PmsProperty(models.Model):
                         record.default_departure_hour,
                     )
                 )
+
+    def date_property_timezone(self, date):
+        self.ensure_one()
+        tz_property = self.tz
+        date = pytz.timezone(tz_property).localize(date)
+        date = date.replace(tzinfo=None)
+        date = pytz.timezone(self.env.user.tz).localize(date)
+        date = date.astimezone(pytz.utc)
+        date = date.replace(tzinfo=None)
+        return date
