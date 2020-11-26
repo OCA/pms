@@ -376,7 +376,6 @@ class TestPmsCheckinPartner(TestHotel):
             [("state", "=", "no_checkout")]
         )
         freezer.stop()
-
         # ASSERT
         self.assertEqual(
             len(no_checkout_reservations),
