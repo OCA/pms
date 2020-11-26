@@ -1,8 +1,9 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
 import logging
-from datetime import datetime, time, timedelta
+import time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -39,7 +40,7 @@ class PmsReservation(models.Model):
         if folio and folio.reservation_ids:
             return folio.reservation_ids[0].checkout
         else:
-            return fields.Date.today() + timedelta(1)
+            return fields.Date.today() + datetime.timedelta(1)
 
     def _get_default_arrival_hour(self):
         folio = False
@@ -465,8 +466,8 @@ class PmsReservation(models.Model):
         for reservation in self:
             checkin_hour = int(reservation.arrival_hour[0:2])
             checkin_minut = int(reservation.arrival_hour[3:5])
-            checkin_time = time(checkin_hour, checkin_minut)
-            reservation.checkin_datetime = datetime.combine(
+            checkin_time = datetime.time(checkin_hour, checkin_minut)
+            reservation.checkin_datetime = datetime.datetime.combine(
                 reservation.checkin, checkin_time
             )
 
@@ -475,8 +476,8 @@ class PmsReservation(models.Model):
         for reservation in self:
             checkout_hour = int(reservation.departure_hour[0:2])
             checkout_minut = int(reservation.departure_hour[3:5])
-            checkout_time = time(checkout_hour, checkout_minut)
-            reservation.checkout_datetime = datetime.combine(
+            checkout_time = datetime.time(checkout_hour, checkout_minut)
+            reservation.checkout_datetime = datetime.datetime.combine(
                 reservation.checkout, checkout_time
             )
 
@@ -526,7 +527,7 @@ class PmsReservation(models.Model):
             cmds = []
             days_diff = (reservation.checkout - reservation.checkin).days
             for i in range(0, days_diff):
-                idate = reservation.checkin + timedelta(days=i)
+                idate = reservation.checkin + datetime.timedelta(days=i)
                 old_line = reservation.reservation_line_ids.filtered(
                     lambda r: r.date == idate
                 )
@@ -908,6 +909,28 @@ class PmsReservation(models.Model):
             ):
                 raise ValidationError(
                     _("No person from reserve %s has arrived", record.name)
+                )
+
+    @api.constrains("arrival_hour")
+    def _check_arrival_hour(self):
+        for record in self:
+            try:
+                time.strptime(record.arrival_hour, "%H:%M")
+                return True
+            except ValueError:
+                raise ValidationError(
+                    _("Format Arrival Hour (HH:MM) Error: %s", record.arrival_hour)
+                )
+
+    @api.constrains("departure_hour")
+    def _check_departure_hour(self):
+        for record in self:
+            try:
+                time.strptime(record.departure_hour, "%H:%M")
+                return True
+            except ValueError:
+                raise ValidationError(
+                    _("Format Departure Hour (HH:MM) Error: %s", record.departure_hour)
                 )
 
     # @api.constrains("reservation_type", "partner_id")
