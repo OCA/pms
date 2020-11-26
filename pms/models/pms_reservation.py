@@ -2,7 +2,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -280,6 +280,8 @@ class PmsReservation(models.Model):
             ("onboard", "On Board"),
             ("done", "Out"),
             ("cancelled", "Cancelled"),
+            ("no_show", "No Show"),
+            ("no_checkout", "No Checkout"),
         ],
         string="Status",
         default=lambda *a: "draft",
@@ -648,12 +650,9 @@ class PmsReservation(models.Model):
         if value not in (False, True):
             raise UserError(_("Invalid domain right operand %s", value))
 
-        searching_for_true = (operator == "=" and value) or (
-            operator == "!=" and not value
-        )
         today = fields.Date.context_today(self)
 
-        return [("checkin", searching_for_true, today)]
+        return [("checkin", operator, today)]
 
     def _compute_departure_today(self):
         for record in self:
@@ -1208,13 +1207,60 @@ class PmsReservation(models.Model):
 
     def action_checks(self):
         self.ensure_one()
-        action = self.env.ref("pms.open_pms_reservation_form_tree_all").read()[0]
-        action["views"] = [
-            (self.env.ref("pms.pms_reservation_checkin_view_form").id, "form")
-        ]
-        action["res_id"] = self.id
-        action["target"] = "new"
-        return action
+        tree_id = self.env.ref("pms.pms_checkin_partner_reservation_view_tree").id
+        return {
+            "name": _("Register Partners"),
+            "views": [[tree_id, "tree"]],
+            "res_model": "pms.checkin.partner",
+            "type": "ir.actions.act_window",
+            "context": {
+                "create": False,
+                "edit": True,
+                "popup": True,
+            },
+            "domain": [("reservation_id", "=", self.id), ("state", "=", "draft")],
+            "target": "new",
+        }
+
+    def action_onboard(self):
+        self.ensure_one()
+        kanban_id = self.env.ref("pms.pms_checkin_partner_kanban_view").id
+        return {
+            "name": _("Register Checkins"),
+            "views": [[kanban_id, "kanban"]],
+            "res_model": "pms.checkin.partner",
+            "type": "ir.actions.act_window",
+            "context": {
+                "create": False,
+                "edit": True,
+                "popup": True,
+            },
+            "domain": [("reservation_id", "=", self.id), ("state", "=", "precheckin")],
+            "target": "new",
+        }
+
+    @api.model
+    def auto_no_show(self):
+        no_show_reservations = self.env["pms.reservation"].search(
+            [
+                ("state", "in", ("draft", "confirm")),
+                ("checkin", "<", fields.Date.today()),
+            ]
+        )
+        no_show_reservations.state = "no_show"
+
+    @api.model
+    def auto_no_checkout(self):
+        reservations = self.env["pms.reservation"].search(
+            [("state", "in", ("onboard",))]
+        )
+        for reservation in reservations:
+            checkout_hour = int(reservation.departure_hour[0:2])
+            checkout_minut = int(reservation.departure_hour[3:5])
+            checkout_time = time(checkout_hour, checkout_minut, 00)
+            checkout_datetime = datetime.combine(reservation.checkout, checkout_time)
+            if checkout_datetime <= fields.Datetime.now():
+                reservation.state = "no_checkout"
 
     def unify(self):
         # TODO

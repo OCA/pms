@@ -242,7 +242,9 @@ class PmsFolio(models.Model):
     )
     # Checkin Fields-----------------------------------------------------
     reservation_pending_arrival_ids = fields.One2many(
-        string="Pending Arrival Rooms", compute="_compute_reservations_pending_arrival"
+        comodel_name="pms.checkin.partner",
+        string="Pending Arrival Rooms",
+        compute="_compute_reservations_pending_arrival",
     )
     reservations_pending_count = fields.Integer(
         compute="_compute_reservations_pending_arrival"

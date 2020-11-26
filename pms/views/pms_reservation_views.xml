@@ -120,7 +120,7 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            name="action_checks"
+                            name="action_onboard"
                             attrs="{'invisible': [
                                 ('state', '!=', ('onboard')),
                                 ('arrival_today', '=', False),
@@ -558,108 +558,6 @@
             </calendar>
         </field>
     </record>
-    <!-- Form view Checkin Partners from reservation -->
-    <record model="ir.ui.view" id="pms_reservation_checkin_view_form">
-        <field name="name">pms.reservation.checkin.form</field>
-        <field name="model">pms.reservation</field>
-        <field name="priority">100</field>
-        <field name="arch" type="xml">
-            <form string="Reservation">
-                <field name="reservation_type" invisible="1" />
-                <field name="splitted" invisible="1" />
-                <field name="state" invisible="1" />
-                <field name="overbooking" invisible="1" />
-                <field name="folio_id" invisible="1" />
-                <field name="adults" invisible="1" />
-                <field name="children" invisible="1" />
-                <div
-                    class="alert alert-info"
-                    role="alert"
-                    style="margin-bottom:0px;"
-                    attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}"
-                >
-                    This reservation has other reservantions and/or services in the
-                    folio, you can check it in the
-                    <bold>
-                        <button
-                            class="alert-link"
-                            type="object"
-                            name="open_folio"
-                            string="Folio Form"
-                        />
-                    </bold>
-                </div>
-                <field name="shared_folio" invisible="1" />
-                <field name="allowed_room_ids" invisible="1" />
-                <sheet>
-                    <span
-                        class="label label-danger"
-                        attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
-                    >
-                        Cancelled Reservation!
-                    </span>
-                    <span
-                        class="label label-warning"
-                        attrs="{'invisible': [('overbooking', '=', False)]}"
-                    >
-                        OverBooking!
-                    </span>
-                    <h2>
-                        <field
-                            name="preferred_room_id"
-                            readonly="1"
-                            nolabel="1"
-                            options="{'no_create': True,'no_open': True}"
-                            style="margin-right: 30px;"
-                        />
-                        <!-- <field
-                            name="partner_id"
-                            readonly="1"
-                            options="{'no_open': True}"
-                        />
-                        <span
-                            class="fa-user"
-                            style="margin-left:20px;"
-                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"
-                        />
-                        <span
-                            class="fa-black-tie"
-                            style="margin-left:20px; color: #C67;"
-                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
-                        /> -->
-                        <h3>
-                            From
-                            <span class="fa-sign-in" style="margin: 5px;" />
-                            <field
-                                name="checkin"
-                                style="margin-right: 10px;"
-                                readonly="1"
-                            />
-                            to
-                            <span class="fa-sign-out" style="margin-right: 5px;" />
-                            <field name="checkout" readonly="1" />
-                        </h3>
-                    </h2>
-                    <group>
-                        <field
-                            name="segmentation_ids"
-                            widget="many2many_tags"
-                            placeholder="Segmentation..."
-                            options="{'no_create': True,'no_open': True}"
-                        />
-                    </group>
-                    <field
-                        name="checkin_partner_ids"
-                        context="{
-                            'default_reservation_id': id,
-                            'reservation_id': id,
-                            'tree_view_ref':'pms.pms_checkin_partner_reservation_view_tree',
-                            }"
-                    />
-                </sheet>
-            </form>
-        </field>
-    </record>
     <record model="ir.ui.view" id="pms_reservation_view_tree">
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
@@ -801,7 +699,7 @@
                 <filter
                     string="To enter"
                     name="to_enter"
-                    domain="[('state', '=', 'confirm')]"
+                    domain="[('arrival_today', '=', True),('state', 'in', ('draft','confirm'))]"
                 />
                 <filter
                     string="Overbookings"
