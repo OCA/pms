@@ -49,7 +49,6 @@
         <field name="arch" type="xml">
             <tree
                 editable="bottom"
-                create="1"
                 decoration-danger="state == 'draft'"
                 decoration-info="state == 'done'"
                 decoration-muted="state == 'cancelled'"
@@ -61,7 +60,7 @@
                     icon="fa-2x fa-check-circle"
                     name="action_on_board"
                     help="Get in"
-                    attrs="{'invisible': [('state','!=','preconfirm')]}"
+                    attrs="{'invisible': [('state','!=','precheckin')]}"
                 />
                 <field name="identifier" />
                 <field name="partner_id" required="True" />
@@ -71,7 +70,7 @@
                 <field name="departure" />
                 <field name="reservation_id" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
-                <field name="state" invisible="1" />
+                <field name="state" invisible="0" />
             </tree>
         </field>
     </record>
@@ -114,7 +113,12 @@
         <field name="name">pms.checkin.partner.kanban</field>
         <field name="model">pms.checkin.partner</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="state" class="o_res_partner_kanban" sample="1">
+            <kanban
+                default_group_by="state"
+                class="o_res_partner_kanban"
+                sample="1"
+                create="false"
+            >
                 <field name="id" />
                 <field name="identifier" />
                 <field name="partner_id" />
