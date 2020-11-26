@@ -467,8 +467,11 @@ class PmsReservation(models.Model):
             checkin_hour = int(reservation.arrival_hour[0:2])
             checkin_minut = int(reservation.arrival_hour[3:5])
             checkin_time = datetime.time(checkin_hour, checkin_minut)
-            reservation.checkin_datetime = datetime.datetime.combine(
+            checkin_datetime = datetime.datetime.combine(
                 reservation.checkin, checkin_time
+            )
+            reservation.checkin_datetime = (
+                reservation.pms_property_id.date_property_timezone(checkin_datetime)
             )
 
     @api.depends("checkout", "departure_hour")
@@ -477,8 +480,11 @@ class PmsReservation(models.Model):
             checkout_hour = int(reservation.departure_hour[0:2])
             checkout_minut = int(reservation.departure_hour[3:5])
             checkout_time = datetime.time(checkout_hour, checkout_minut)
-            reservation.checkout_datetime = datetime.datetime.combine(
+            checkout_datetime = datetime.datetime.combine(
                 reservation.checkout, checkout_time
+            )
+            reservation.checkout_datetime = (
+                reservation.pms_property_id.date_property_timezone(checkout_datetime)
             )
 
     @api.depends(
