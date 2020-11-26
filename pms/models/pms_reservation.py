@@ -324,6 +324,12 @@ class PmsReservation(models.Model):
         default=_get_default_departure_hour,
         help="Default Departure Hour (HH:MM)",
     )
+    checkin_datetime = fields.Datetime(
+        "Exact Arrival", compute="_compute_checkin_datetime", store=True
+    )
+    checkout_datetime = fields.Datetime(
+        "Exact Departure", compute="_compute_checkout_datetime", store=True
+    )
     # TODO: As checkin_partner_count is a computed field, it can't not
     # be used in a domain filer Non-stored field
     # pms.reservation.checkin_partner_count cannot be searched
@@ -453,6 +459,26 @@ class PmsReservation(models.Model):
                 reservation.room_type_id = reservation.preferred_room_id.room_type_id.id
             elif not reservation.room_type_id:
                 reservation.room_type_id = False
+
+    @api.depends("checkin", "arrival_hour")
+    def _compute_checkin_datetime(self):
+        for reservation in self:
+            checkin_hour = int(reservation.arrival_hour[0:2])
+            checkin_minut = int(reservation.arrival_hour[3:5])
+            checkin_time = time(checkin_hour, checkin_minut)
+            reservation.checkin_datetime = datetime.combine(
+                reservation.checkin, checkin_time
+            )
+
+    @api.depends("checkout", "departure_hour")
+    def _compute_checkout_datetime(self):
+        for reservation in self:
+            checkout_hour = int(reservation.departure_hour[0:2])
+            checkout_minut = int(reservation.departure_hour[3:5])
+            checkout_time = time(checkout_hour, checkout_minut)
+            reservation.checkout_datetime = datetime.combine(
+                reservation.checkout, checkout_time
+            )
 
     @api.depends(
         "reservation_line_ids.date", "overbooking", "state", "preferred_room_id"
@@ -1241,6 +1267,7 @@ class PmsReservation(models.Model):
 
     @api.model
     def auto_no_show(self):
+        # No show when pass 1 day from checkin day
         no_show_reservations = self.env["pms.reservation"].search(
             [
                 ("state", "in", ("draft", "confirm")),
@@ -1251,16 +1278,14 @@ class PmsReservation(models.Model):
 
     @api.model
     def auto_no_checkout(self):
+        # No checkout when pass checkout hour
         reservations = self.env["pms.reservation"].search(
-            [("state", "in", ("onboard",))]
+            [
+                ("state", "in", ("onboard",)),
+                ("checkout_datetime", "<=", fields.Datetime.now()),
+            ]
         )
-        for reservation in reservations:
-            checkout_hour = int(reservation.departure_hour[0:2])
-            checkout_minut = int(reservation.departure_hour[3:5])
-            checkout_time = time(checkout_hour, checkout_minut, 00)
-            checkout_datetime = datetime.combine(reservation.checkout, checkout_time)
-            if checkout_datetime <= fields.Datetime.now():
-                reservation.state = "no_checkout"
+        reservations.state = "no_checkout"
 
     def unify(self):
         # TODO
