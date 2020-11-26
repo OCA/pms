@@ -82,7 +82,7 @@ class PmsCheckinPartner(models.Model):
         for record in self.filtered("reservation_id"):
             record.folio_id = record.reservation_id.folio_id
 
-    @api.depends(lambda self: self._checkin_mandatory_fields(), "reservation_id.state")
+    @api.depends(lambda self: self._checkin_mandatory_fields(depends=True))
     def _compute_state(self):
         for record in self:
             if not record.state:
@@ -98,7 +98,11 @@ class PmsCheckinPartner(models.Model):
                 else:
                     record.state = "precheckin"
 
-    def _checkin_mandatory_fields(self):
+    @api.model
+    def _checkin_mandatory_fields(self, depends=False):
+        # api.depends need "reservation_id.state" in de lambda function
+        if depends:
+            return ["reservation_id.state", "name"]
         return ["name"]
 
     # Constraints and onchanges
@@ -156,6 +160,22 @@ class PmsCheckinPartner(models.Model):
             record.update(vals)
             if record.reservation_id.state == "confirm":
                 record.reservation_id.state = "onboard"
+        if self._context.get("popup"):
+            self.ensure_one()
+            kanban_id = self.env.ref("pms.pms_checkin_partner_kanban_view").id
+            return {
+                "name": _("Register Checkins"),
+                "views": [[kanban_id, "tree"]],
+                "res_model": "pms.checkin.partner",
+                "type": "ir.actions.act_window",
+                "context": {
+                    "create": False,
+                    "edit": True,
+                    "popup": True,
+                },
+                "domain": [("reservation_id", "=", self.reservation_id.id)],
+                "target": "new",
+            }
 
     def action_done(self):
         for record in self:
