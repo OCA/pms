@@ -338,3 +338,48 @@ class TestPmsCheckinPartner(TestHotel):
             int(2 * 100 / 3),
             "Fail the checkins data ratio on reservation",
         )
+
+    def test_auto_no_show(self):
+
+        # ARRANGE
+        self.arrange_folio_reservations()
+        PmsReservation = self.env["pms.reservation"]
+
+        # ACTION
+        freezer = freeze_time("2012-01-15 10:00:00")
+        freezer.start()
+        PmsReservation.auto_no_show()
+
+        no_show_reservations = PmsReservation.search([("state", "=", "no_show")])
+
+        # ASSERT
+        self.assertEqual(
+            len(no_show_reservations),
+            3,
+            "Reservations not set like No Show",
+        )
+        freezer.stop()
+
+    def test_auto_no_checkout(self):
+
+        # ARRANGE
+        self.arrange_single_checkin()
+        PmsReservation = self.env["pms.reservation"]
+        self.checkin1.action_on_board()
+
+        # ACTION
+        freezer = freeze_time("2012-01-17 12:00:00")
+        freezer.start()
+        PmsReservation.auto_no_checkout()
+
+        no_checkout_reservations = PmsReservation.search(
+            [("state", "=", "no_checkout")]
+        )
+        freezer.stop()
+
+        # ASSERT
+        self.assertEqual(
+            len(no_checkout_reservations),
+            1,
+            "Reservations not set like No checkout",
+        )
