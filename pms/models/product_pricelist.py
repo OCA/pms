@@ -61,11 +61,14 @@ class ProductPricelist(models.Model):
         # Discard the rules with defined properties other than the context,
         # and we reorder the rules to return the most concrete property rule first
         if "property" in self._context:
-            return items.filtered(
+            items_filtered = items.filtered(
                 lambda i: not i.pms_property_ids
                 or self._context["property"] in i.pms_property_ids.ids
-            ).sorted(
-                key=lambda s: ((not s.pms_property_ids, s), len(s.pms_property_ids))
             )
-        else:
-            return items
+            return items_filtered.sorted(
+                key=lambda s: (
+                    (s.applied_on),
+                    ((s.date_end - s.date_start).days),
+                    ((not s.pms_property_ids, s), len(s.pms_property_ids)),
+                )
+            )
