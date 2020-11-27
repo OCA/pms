@@ -160,6 +160,7 @@ class PmsCheckinPartner(models.Model):
             record.update(vals)
             if record.reservation_id.state == "confirm":
                 record.reservation_id.state = "onboard"
+        # keep the checkin reservations popup open to checkin reservation hosts
         if self._context.get("popup"):
             self.ensure_one()
             kanban_id = self.env.ref("pms.pms_checkin_partner_kanban_view").id
@@ -178,12 +179,10 @@ class PmsCheckinPartner(models.Model):
             }
 
     def action_done(self):
-        for record in self:
-            if record.state == "onboard":
-                hour = record._get_departure_hour()
-                vals = {
-                    "state": "done",
-                    "departure_hour": hour,
-                }
-                record.update(vals)
+        for record in self.filtered(lambda c: c.state == "onboard"):
+            vals = {
+                "state": "done",
+                "arrival": fields.Datetime.now(),
+            }
+            record.update(vals)
         return True
