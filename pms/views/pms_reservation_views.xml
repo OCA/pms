@@ -617,8 +617,10 @@
                     name="state"
                     decoration-success="state == 'onboard'"
                     decoration-info="state == 'confirm'"
+                    decoration-primary="state == 'no_checkout'"
                     decoration-danger="state == 'cancelled'"
-                    decoration-primary="state == 'draft'"
+                    decoration-bf="state == 'draft'"
+                    decoration-warning="state == 'no_show'"
                     widget="badge"
                     optional="show"
                 />

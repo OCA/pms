@@ -19,6 +19,9 @@
         <field name="model">pms.checkin.partner</field>
         <field name="arch" type="xml">
             <form create="false">
+                <header>
+                    <field name="state" widget="statusbar" />
+                </header>
                 <sheet>
                     <group name="group_top">
                         <group name="group_left">
@@ -35,7 +38,6 @@
                             <field name="reservation_id" />
                             <field name="folio_id" />
                             <field name="identifier" />
-                            <field name="state" />
                         </group>
                     </group>
                 </sheet>
@@ -161,50 +163,12 @@
                                 <div class="o_kanban_record_top">
                                     <div class="o_kanban_record_headings">
                                         <strong class="o_kanban_record_title">
-                                            <div
-                                                class="float-right"
-                                                t-if="record.state.raw_value == 'onboard'"
-                                                name="state"
-                                            >
-                                                <span
-                                                    class="fa fa-circle text-success"
-                                                    role="img"
-                                                    aria-label="Present"
-                                                    title="Present"
+                                            <div class="float-right">
+                                                <field
                                                     name="state"
-                                                >
-
-                                                </span>
-                                            </div>
-                                            <div
-                                                class="float-right"
-                                                t-if="record.state.raw_value == 'done'"
-                                                name="state"
-                                            >
-                                                <span
-                                                    class="fa fa-circle text-muted"
-                                                    role="img"
-                                                    aria-label="Done"
-                                                    title="Done"
-                                                    name="state"
-                                                >
-
-                                                </span>
-                                            </div>
-                                            <div
-                                                class="float-right"
-                                                t-if="record.state.raw_value == 'precheckin'"
-                                                name="state"
-                                            >
-                                                <span
-                                                    class="fa fa-circle text-warning"
-                                                    role="img"
-                                                    aria-label="Precheckin"
-                                                    title="Precheckin"
-                                                    name="state"
-                                                >
-
-                                                </span>
+                                                    widget="label_selection"
+                                                    options="{'classes': {'draft': 'default', 'precheckin': 'info', 'onboard': 'warning', 'onboard': 'success', 'done': 'secondary'}}"
+                                                />
                                             </div>
                                             <field
                                                 name="name"
