@@ -326,10 +326,12 @@ class PmsReservation(models.Model):
         help="Default Departure Hour (HH:MM)",
     )
     checkin_datetime = fields.Datetime(
-        "Exact Arrival", compute="_compute_checkin_datetime", store=True
+        "Exact Arrival",
+        compute="_compute_checkin_datetime",
     )
     checkout_datetime = fields.Datetime(
-        "Exact Departure", compute="_compute_checkout_datetime", store=True
+        "Exact Departure",
+        compute="_compute_checkout_datetime",
     )
     # TODO: As checkin_partner_count is a computed field, it can't not
     # be used in a domain filer Non-stored field
