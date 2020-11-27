@@ -1290,7 +1290,7 @@ class PmsReservation(models.Model):
                 "edit": True,
                 "popup": True,
             },
-            "domain": [("reservation_id", "=", self.id), ("state", "=", "precheckin")],
+            "domain": [("reservation_id", "=", self.id)],
             "target": "new",
         }
 
