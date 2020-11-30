@@ -26,21 +26,24 @@
                             <field name="name" />
                         </h1>
                     </div>
-                    <div>
+                    <group>
                         <field
                             name="pms_property_id"
                             options="{'no_create': True,'no_open': True}"
                         />
-                        <separator string="Restriction Items" />
-                        <field name="item_ids" nolabel="1">
-                            <tree string="Restriction Items">
-                                <field name="room_type_id" />
-                                <field name="date" />
-                                <field name="min_stay" />
-                                <field name="closed" />
-                            </tree>
-                        </field>
-                    </div>
+                        <field
+                            name="pms_pricelist_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                    </group>
+                    <separator string="Restriction Items" />
+                    <field name="item_ids" nolabel="1">
+                        <tree string="Restriction Items">
+                            <field name="room_type_id" />
+                            <field name="date" />
+                        </tree>
+                    </field>
                 </sheet>
             </form>
         </field>
@@ -51,6 +54,12 @@
         <field name="arch" type="xml">
             <tree string="Restrictions">
                 <field name="name" />
+                <field name="pms_property_id" />
+                <field
+                    name="pms_pricelist_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                />
                 <field name="active" />
             </tree>
         </field>
