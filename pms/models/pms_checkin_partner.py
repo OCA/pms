@@ -110,7 +110,7 @@ class PmsCheckinPartner(models.Model):
     @api.constrains("departure", "arrival")
     def _check_departure(self):
         for record in self:
-            if record.departure and record.arrival < record.departure:
+            if record.departure and record.arrival > record.departure:
                 raise ValidationError(
                     _("Departure date (%s) is prior to arrival on %s")
                     % (record.departure, record.arrival)
@@ -158,7 +158,7 @@ class PmsCheckinPartner(models.Model):
                 "arrival": fields.Datetime.now(),
             }
             record.update(vals)
-            if record.reservation_id.state == "confirm":
+            if record.reservation_id.left_for_checkin:
                 record.reservation_id.state = "onboard"
 
     def action_done(self):

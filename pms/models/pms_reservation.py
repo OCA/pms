@@ -205,19 +205,23 @@ class PmsReservation(models.Model):
         compute="_compute_checkins_ratio",
     )
     pending_checkin_data = fields.Integer(
-        "Pending Checkin Data",
+        "Checkin Data",
         compute="_compute_pending_checkin_data",
         store=True,
     )
-    arrival_today = fields.Boolean(
-        compute="_compute_arrival_today", search="_search_arrival_today"
+    ratio_checkin_data = fields.Integer(
+        string="Pending Checkin Data",
+        compute="_compute_ratio_checkin_data",
+    )
+    ready_for_checkin = fields.Boolean(compute="_compute_ready_for_checkin")
+    left_for_checkin = fields.Boolean(
+        compute="_compute_left_for_checkin", search="_search_left_for_checkin"
+    )
+    checkin_today = fields.Boolean(
+        compute="_compute_checkin_today", search="_search_checkin_today"
     )
     departure_today = fields.Boolean(
         compute="_compute_departure_today", search="_search_departure_today"
-    )
-    ratio_checkin_data = fields.Integer(
-        string="Pending Checkin Data Ratio",
-        compute="_compute_ratio_checkin_data",
     )
     segmentation_ids = fields.Many2many(
         "res.partner.category",
@@ -676,14 +680,56 @@ class PmsReservation(models.Model):
                 / reservation.adults
             )
 
-    def _compute_arrival_today(self):
+    def _compute_left_for_checkin(self):
+        # Reservations still pending entry today
         for record in self:
-            record.arrival_today = (
+            record.left_for_checkin = (
+                True
+                if (
+                    record.state in ["draft", "confirm", "no_show"]
+                    and record.checkin <= fields.Date.today()
+                )
+                else False
+            )
+
+    def _search_left_for_checkin(self, operator, value):
+        if operator not in ("=",):
+            raise UserError(
+                _("Invalid domain operator %s for left of checkin", operator)
+            )
+
+        if value not in (True,):
+            raise UserError(
+                _("Invalid domain right operand %s for left of checkin", value)
+            )
+
+        today = fields.Date.context_today(self)
+        return [
+            ("state", "in", ("draft", "confirm", "no_show")),
+            ("checkin", "<=", today),
+        ]
+
+    def _compute_ready_for_checkin(self):
+        # Reservations with hosts data enought to checkin
+        for record in self:
+            record.ready_for_checkin = (
+                record.left_for_checkin
+                and len(
+                    record.checkin_partner_ids.filtered(
+                        lambda c: c.state == "precheckin"
+                    )
+                )
+                >= 1
+            )
+
+    def _compute_checkin_today(self):
+        for record in self:
+            record.checkin_today = (
                 True if record.checkin == fields.Date.today() else False
             )
             # REVIEW: Late checkin?? (next day)
 
-    def _search_arrival_today(self, operator, value):
+    def _search_checkin_today(self, operator, value):
         if operator not in ("=", "!="):
             raise UserError(_("Invalid domain operator %s", operator))
 
@@ -1169,14 +1215,6 @@ class PmsReservation(models.Model):
             record.reservation_line_ids.update({"cancel_discount": 0})
             if record.folio_id.state != "confirm":
                 record.folio_id.action_confirm()
-        return True
-
-    def button_done(self):
-        """
-        @param self: object pointer
-        """
-        for record in self:
-            record.action_reservation_checkout()
         return True
 
     def action_cancel(self):
