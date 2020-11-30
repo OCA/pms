@@ -14,7 +14,7 @@
                 <header>
                     <field name="splitted" invisible="True" />
                     <field name="tax_ids" invisible="1" />
-                    <field name="arrival_today" invisible="1" />
+                    <field name="checkin_today" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
                     <button
                         name="confirm"
@@ -31,7 +31,7 @@
                     />
                     <button
                         name="action_reservation_checkout"
-                        string="Done"
+                        string="Check Out"
                         states="onboard"
                         type="object"
                     />
@@ -80,11 +80,24 @@
                 </div>
                 <sheet>
                     <field name="shared_folio" invisible="1" />
+                    <field name="left_for_checkin" invisible="1" />
+                    <field name="ready_for_checkin" invisible="1" />
+                    <field name="departure_today" invisible="1" />
                     <div
                         class="oe_button_box"
                         name="button_box"
                         attrs="{'invisible': [('folio_id','=',False)]}"
                     >
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-sign-out"
+                            name="action_reservation_checkout"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Checkout</span>
+                            </div>
+                        </button>
                         <button
                             type="object"
                             class="oe_stat_button"
@@ -122,10 +135,7 @@
                             class="oe_stat_button"
                             name="action_onboard"
                             attrs="{'invisible': [
-                                ('state', '!=', ('onboard')),
-                                ('arrival_today', '=', False),
-                                '|',
-                                ('state', 'in', ('cancelled','done')),
+                                ('ready_for_checkin', '!=', True),
                             ]}"
                         >
                             <field
@@ -139,10 +149,7 @@
                             class="oe_stat_button"
                             name="action_checks"
                             attrs="{'invisible': [
-                                ('state', 'not in', ('onboard','confirm')),
-                                ('arrival_today', '=', False),
-                                '|',
-                                ('state', 'in', ('cancelled','done')),
+                                ('left_for_checkin', '!=', True),
                             ]}"
                         >
                             <field
@@ -571,12 +578,7 @@
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
-                <field
-                    name="checkin"
-                    widget="daterange"
-                    class="oe_inline"
-                    options="{'related_end_date': 'checkout'}"
-                />
+                <field name="checkin" />
                 <field name="checkout" widget="date" />
                 <field name="nights" />
                 <button
@@ -589,7 +591,8 @@
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="partner_id" />
                 <field name="room_type_id" invisible="1" />
-                <field name="adults" string="Persons" />
+                <field name="adults" />
+                <field name="ratio_checkin_data" widget="progressbar" optional="show" />
                 <field name="overbooking" invisible="1" />
                 <field name="activity_ids" widget="list_activity" optional="show" />
                 <field
@@ -699,7 +702,7 @@
                 <filter
                     string="To enter"
                     name="to_enter"
-                    domain="[('arrival_today', '=', True),('state', 'in', ('draft','confirm'))]"
+                    domain="[('left_for_checkin', '=', True)]"
                 />
                 <filter
                     string="Overbookings"
