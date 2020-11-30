@@ -36,14 +36,26 @@ class ResPartner(models.Model):
         pms_reservation_obj = self.env["pms.reservation"]
         for record in self:
             record.reservations_count = pms_reservation_obj.search_count(
-                [("partner_id.id", "=", record.id)]
+                [
+                    (
+                        "partner_id.id",
+                        "=",
+                        record.id if isinstance(record.id, int) else False,
+                    )
+                ]
             )
 
     def _compute_folios_count(self):
         pms_folio_obj = self.env["pms.folio"]
         for record in self:
             record.folios_count = pms_folio_obj.search_count(
-                [("partner_id.id", "=", record.id)]
+                [
+                    (
+                        "partner_id.id",
+                        "=",
+                        record.id if isinstance(record.id, int) else False,
+                    )
+                ]
             )
 
     # ORM Overrides
