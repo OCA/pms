@@ -50,7 +50,9 @@ class PmsFolio(models.Model):
     pms_property_id = fields.Many2one(
         "pms.property", default=_get_default_pms_property, required=True
     )
-    partner_id = fields.Many2one("res.partner", tracking=True, ondelete="restrict")
+    partner_id = fields.Many2one(
+        "res.partner", compute="_compute_partner_id", tracking=True, ondelete="restrict"
+    )
     reservation_ids = fields.One2many(
         "pms.reservation",
         "folio_id",
@@ -101,6 +103,13 @@ class PmsFolio(models.Model):
         store=True,
         readonly=False,
         help="Pricelist for current folio.",
+    )
+    commission = fields.Float(
+        string="Commission",
+        compute="_compute_commission",
+        store=True,
+        readonly=True,
+        default=0,
     )
     user_id = fields.Many2one(
         "res.users",
@@ -281,17 +290,26 @@ class PmsFolio(models.Model):
                 folio.reservation_ids.filtered(lambda a: a.state != "cancelled")
             )
 
-    @api.depends("partner_id")
+    @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
         for folio in self:
-            pricelist_id = (
-                folio.partner_id.property_product_pricelist
-                and folio.partner_id.property_product_pricelist.id
-                or self.env.user.pms_property_id.default_pricelist_id.id
-            )
+            if folio.partner_id and folio.partner_id.property_product_pricelist:
+                pricelist_id = folio.partner_id.property_product_pricelist.id
+            else:
+                pricelist_id = self.env.user.pms_property_id.default_pricelist_id.id
             if folio.pricelist_id.id != pricelist_id:
                 # TODO: Warning change de pricelist?
                 folio.pricelist_id = pricelist_id
+            if folio.agency_id and folio.agency_id.apply_pricelist:
+                pricelist_id = folio.agency_id.property_product_pricelist.id
+
+    @api.depends("agency_id")
+    def _compute_partner_id(self):
+        for folio in self:
+            if folio.agency_id and folio.agency_id.invoice_agency:
+                folio.partner_id = folio.agency_id.id
+            elif not folio.partner_id:
+                folio.partner_id = False
 
     @api.depends("partner_id")
     def _compute_user_id(self):
@@ -310,10 +328,19 @@ class PmsFolio(models.Model):
         self.payment_term_id = False
         for folio in self:
             folio.payment_term_id = (
-                self.partner_id.property_payment_term_id
-                and self.partner_id.property_payment_term_id.id
+                folio.partner_id.property_payment_term_id
+                and folio.partner_id.property_payment_term_id.id
                 or False
             )
+
+    @api.depends("reservation_ids")
+    def _compute_commission(self):
+        for folio in self:
+            for reservation in folio.reservation_ids:
+                if reservation.commission_amount != 0:
+                    folio.commission += reservation.commission_amount
+                else:
+                    folio.commission = 0
 
     @api.depends(
         "state", "reservation_ids.invoice_status", "service_ids.invoice_status"

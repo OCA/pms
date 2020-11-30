@@ -255,19 +255,6 @@
                                        'readonly': [('partner_id', '!=', False),
                                                    ('mobile','!=', False)]}"
                             />
-                            <!--<field
-                                name="phone"
-                                colspan="2"
-                                nolabel="1"
-                                placeholder="phone"
-                                widget="phone"
-                                force_save="1"
-                                attrs="{'invisible': [('reservation_type','in',('out'))],
-                                 'required': [('channel_type','in',('door','mail','phone')),
-                                              ('mobile','=','')],
-                                 'readonly': [('partner_id', '!=', False),
-                                             ('phone','!=', False)]}"
-                            />-->
                             <field
                                 placeholder="Partner Notes"
                                 colspan="2"
@@ -382,6 +369,17 @@
                                 string="Only Room"
                                 widget="monetary"
                             />
+                            <field
+                                name="commission_percent"
+                                string="Commission percent (%)"
+                            >
+                                <field
+                                    name="commission_amount"
+                                    string="Commission Amount"
+                                >
+
+                                </field>
+                            </field>
                             <field name="invoice_status" invisible="1" />
                             <field name="currency_id" invisible="1" />
                             <field
