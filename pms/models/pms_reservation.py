@@ -193,6 +193,17 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
+    commission_percent = fields.Float(
+        string="Commission percent (%)",
+        compute="_compute_commission_percent",
+        store=True,
+        readonly=False,
+    )
+    commission_amount = fields.Float(
+        string="Commission amount",
+        compute="_compute_commission_amount",
+        store=True,
+    )
     # TODO: Warning Mens to update pricelist
     checkin_partner_ids = fields.One2many(
         "pms.checkin.partner",
@@ -510,7 +521,7 @@ class PmsReservation(models.Model):
                 )
                 reservation.allowed_room_ids = rooms_available
 
-    @api.depends("reservation_type")
+    @api.depends("reservation_type", "agency_id")
     def _compute_partner_id(self):
         for reservation in self:
             if reservation.reservation_type == "out":
@@ -519,6 +530,8 @@ class PmsReservation(models.Model):
                 reservation.partner_id = reservation.folio_id.partner_id
             else:
                 reservation.partner_id = False
+            if not reservation.partner_id and reservation.agency_id:
+                reservation.partner_id = reservation.agency_id
 
     @api.depends("partner_id")
     def _compute_partner_invoice_id(self):
@@ -750,6 +763,25 @@ class PmsReservation(models.Model):
         today = fields.Date.context_today(self)
 
         return [("checkout", searching_for_true, today)]
+    @api.depends("agency_id")
+    def _compute_commission_percent(self):
+        for reservation in self:
+            if reservation.agency_id:
+                reservation.commission_percent = (
+                    reservation.agency_id.default_commission
+                )
+            else:
+                reservation.commission_percent = 0
+
+    @api.depends("commission_percent", "price_total")
+    def _compute_commission_amount(self):
+        for reservation in self:
+            if reservation.commission_percent > 0:
+                reservation.commission_amount = (
+                    reservation.price_total * reservation.commission_percent
+                )
+            else:
+                reservation.commission_amount = 0
 
     # REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
     @api.depends("preferred_room_id")
@@ -1096,21 +1128,11 @@ class PmsReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        if "folio_id" in vals and "channel_type_id" not in vals:
+        if "folio_id" in vals:
             folio = self.env["pms.folio"].browse(vals["folio_id"])
-            channel_type_id = (
-                vals["channel_type_id"]
-                if "channel_type_id" in vals
-                else folio.channel_type_id
-            )
-            partner_id = (
-                vals["partner_id"] if "partner_id" in vals else folio.partner_id.id
-            )
-            vals.update({"channel_type_id": channel_type_id, "partner_id": partner_id})
         elif "partner_id" in vals:
             folio_vals = {
                 "partner_id": int(vals.get("partner_id")),
-                "channel_type_id": vals.get("channel_type_id"),
             }
             # Create the folio in case of need
             # (To allow to create reservations direct)
@@ -1119,7 +1141,6 @@ class PmsReservation(models.Model):
                 {
                     "folio_id": folio.id,
                     "reservation_type": vals.get("reservation_type"),
-                    "channel_type_id": vals.get("channel_type_id"),
                 }
             )
         record = super(PmsReservation, self).create(vals)

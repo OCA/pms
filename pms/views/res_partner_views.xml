@@ -39,13 +39,30 @@
                     <field string="Folios" name="folios_count" widget="statinfo" />
                 </button>
             </xpath>
-            <xpath expr="//field[@name='vat']" position="after">
+            <xpath expr="//field[@name='name']" position="after">
                 <field name="is_agency" />
-                <field
-                    name="sale_channel_id"
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page
+                    name="agency"
+                    string="Agency"
                     attrs="{'invisible':[('is_agency','!=',True)]}"
-                    options="{'no_create': True,'no_open': True}"
-                />
+                >
+                    <group>
+                        <field
+                            name="sale_channel_id"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                        <field name="default_commission" />
+                        <!--  <label for="price_discount"/>
+                          <div class="o_row">
+                              <field name="price_discount"/>
+                              <span>%%</span>
+                          </div>-->
+                        <field name="apply_pricelist" />
+                        <field name="invoice_agency" />
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>
