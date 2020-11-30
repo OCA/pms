@@ -40,7 +40,9 @@
                 </button>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
-                <field name="is_agency" />
+                <group>
+                    <field name="is_agency" />
+                </group>
             </xpath>
             <xpath expr="//page[@name='internal_notes']" position="after">
                 <page
