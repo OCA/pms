@@ -27,6 +27,9 @@ class ResPartner(models.Model):
         ondelete="restrict",
         domain=[("channel_type", "=", "indirect")],
     )
+    default_commission = fields.Integer("Commission")
+    apply_pricelist = fields.Boolean("Apply Pricelist")
+    invoice_agency = fields.Boolean("Invoice Agency")
 
     # Compute and Search methods
     def _compute_reservations_count(self):
