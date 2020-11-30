@@ -7,15 +7,20 @@
             <form string="Restrictions">
                 <group>
                     <field name="room_type_id" required="True" />
-                </group>
-                <group>
                     <field name="date" />
                 </group>
                 <group>
                     <group>
                         <field name="min_stay" />
                         <field name="min_stay_arrival" />
+                    </group>
+                    <group>
                         <field name="max_stay" />
+                        <field name="max_stay_arrival" />
+                    </group>
+                    <group>
+                        <field name="quota" />
+                        <field name="max_avail" />
                     </group>
                     <group>
                         <field name="closed" />
