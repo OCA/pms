@@ -683,3 +683,10 @@ class PmsFolio(models.Model):
             (line[0].name, line[1]["amount"], line[1]["base"], len(res)) for line in res
         ]
         return res
+
+    # Check that only one sale channel is selected
+    @api.constrains("agency_id", "channel_type_id")
+    def _check_only_one_channel(self):
+        for record in self:
+            if record.agency_id and record.channel_type_id:
+                raise models.ValidationError(_("There must be only one sale channel"))
