@@ -160,29 +160,12 @@ class PmsCheckinPartner(models.Model):
             record.update(vals)
             if record.reservation_id.state == "confirm":
                 record.reservation_id.state = "onboard"
-        # keep the checkin reservations popup open to checkin reservation hosts
-        if self._context.get("popup"):
-            self.ensure_one()
-            kanban_id = self.env.ref("pms.pms_checkin_partner_kanban_view").id
-            return {
-                "name": _("Register Checkins"),
-                "views": [[kanban_id, "tree"]],
-                "res_model": "pms.checkin.partner",
-                "type": "ir.actions.act_window",
-                "context": {
-                    "create": False,
-                    "edit": True,
-                    "popup": True,
-                },
-                "domain": [("reservation_id", "=", self.reservation_id.id)],
-                "target": "new",
-            }
 
     def action_done(self):
         for record in self.filtered(lambda c: c.state == "onboard"):
             vals = {
                 "state": "done",
-                "arrival": fields.Datetime.now(),
+                "departure": fields.Datetime.now(),
             }
             record.update(vals)
         return True
