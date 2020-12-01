@@ -256,19 +256,6 @@
                                                    ('mobile','!=', False)]}"
                             />
                             <field
-                                name="phone"
-                                colspan="2"
-                                nolabel="1"
-                                placeholder="phone"
-                                widget="phone"
-                                force_save="1"
-                                attrs="{'invisible': [('reservation_type','in',('out'))],
-                                 'required': [('channel_type','in',('door','mail','phone')),
-                                              ('mobile','=','')],
-                                 'readonly': [('partner_id', '!=', False),
-                                             ('phone','!=', False)]}"
-                            />
-                            <field
                                 placeholder="Partner Notes"
                                 colspan="2"
                                 nolabel="1"
@@ -297,10 +284,10 @@
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
-                            <field
+                            <!--<field
                                 name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
-                            />
+                            />-->
                             <field
                                 name="cancelled_reason"
                                 attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
@@ -341,6 +328,8 @@
                                 nolabel="1"
                                 placeholder="Reservation Notes"
                             />
+                            <field name="agency_id" />
+                            <field name="channel_type_id" />
                         </group>
                         <group
                             colspan="2"
@@ -380,6 +369,17 @@
                                 string="Only Room"
                                 widget="monetary"
                             />
+                            <field
+                                name="commission_percent"
+                                string="Commission percent (%)"
+                            >
+                                <field
+                                    name="commission_amount"
+                                    string="Commission Amount"
+                                >
+
+                                </field>
+                            </field>
                             <field name="invoice_status" invisible="1" />
                             <field name="currency_id" invisible="1" />
                             <field
@@ -527,10 +527,10 @@
                                 <field name="overbooking" />
                             </group>
                             <group>
-                                <field
+                                <!--<field
                                     name="channel_type"
                                     attrs="{'required':[('reservation_type','not in',('staff','out'))]}"
-                                />
+                                />-->
                                 <field name="reservation_type" />
                             </group>
                         </page>
@@ -736,7 +736,7 @@
                     domain="[('to_assign','=',True)]"
                 />
                 <separator />
-                <filter
+                <!--<filter
                     string="Web"
                     name="web"
                     domain="[('channel_type', '=', 'web')]"
@@ -755,7 +755,7 @@
                     string="Phone"
                     name="phone"
                     domain="[('channel_type', '=', 'phone')]"
-                />
+                />-->
                 <separator />
                 <filter
                     string="Still to be paid"

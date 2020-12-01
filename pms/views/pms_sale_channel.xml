@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_sale_channel_view_form">
+        <field name="name">pms.sale.channel.form</field>
+        <field name="model">pms.sale.channel</field>
+        <field name="arch" type="xml">
+            <form string="Sale Channel">
+                <sheet>
+                    <group>
+                        <field name="name" colspan="1" />
+                        <field name="channel_type" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_sale_channel_view_tree">
+        <field name="name">pms.sale.channel.tree</field>
+        <field name="model">pms.sale.channel</field>
+        <field name="arch" type="xml">
+            <tree string=" Sale Channel">
+                <field name="name" />
+                <field name="channel_type" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="open_pms_sale_channel_form_tree">
+        <field name="name">Sale Channel</field>
+        <field name="res_model">pms.sale.channel</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        name="Sale Channel"
+        id="menu_open_pms_sale_channel_form_tree"
+        action="open_pms_sale_channel_form_tree"
+        sequence="21"
+        parent="pms.configuration_others"
+    />
+</odoo>

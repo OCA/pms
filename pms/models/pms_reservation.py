@@ -147,7 +147,14 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
-    agency_id = fields.Many2one(related="folio_id.agency_id")
+    agency_id = fields.Many2one(
+        related="folio_id.agency_id",
+        readonly=True,
+    )
+    channel_type_id = fields.Many2one(
+        related="folio_id.channel_type_id",
+        readonly=True,
+    )
     partner_invoice_id = fields.Many2one(
         "res.partner",
         string="Invoice Address",
@@ -185,6 +192,17 @@ class PmsReservation(models.Model):
         compute="_compute_pricelist_id",
         store=True,
         readonly=False,
+    )
+    commission_percent = fields.Float(
+        string="Commission percent (%)",
+        compute="_compute_commission_percent",
+        store=True,
+        readonly=False,
+    )
+    commission_amount = fields.Float(
+        string="Commission amount",
+        compute="_compute_commission_amount",
+        store=True,
     )
     # TODO: Warning Mens to update pricelist
     checkin_partner_ids = fields.One2many(
@@ -342,22 +360,6 @@ class PmsReservation(models.Model):
     overbooking = fields.Boolean("Is Overbooking", default=False)
     reselling = fields.Boolean("Is Reselling", default=False)
     nights = fields.Integer("Nights", compute="_compute_nights", store=True)
-    channel_type = fields.Selection(
-        selection=[
-            ("direct", "Direct"),
-            ("agency", "Agency"),
-        ],
-        string="Sales Channel",
-        default="direct",
-    )
-    subchannel_direct = fields.Selection(
-        selection=[
-            ("door", "Door"),
-            ("mail", "Mail"),
-            ("phone", "Phone"),
-        ],
-        string="Direct Channel",
-    )
     origin = fields.Char("Origin", compute="_compute_origin", store=True)
     detail_origin = fields.Char(
         "Detail Origin", compute="_compute_detail_origin", store=True
@@ -519,7 +521,7 @@ class PmsReservation(models.Model):
                 )
                 reservation.allowed_room_ids = rooms_available
 
-    @api.depends("reservation_type")
+    @api.depends("reservation_type", "agency_id")
     def _compute_partner_id(self):
         for reservation in self:
             if reservation.reservation_type == "out":
@@ -528,6 +530,8 @@ class PmsReservation(models.Model):
                 reservation.partner_id = reservation.folio_id.partner_id
             else:
                 reservation.partner_id = False
+            if not reservation.partner_id and reservation.agency_id:
+                reservation.partner_id = reservation.agency_id
 
     @api.depends("partner_id")
     def _compute_partner_invoice_id(self):
@@ -759,6 +763,26 @@ class PmsReservation(models.Model):
         today = fields.Date.context_today(self)
 
         return [("checkout", searching_for_true, today)]
+
+    @api.depends("agency_id")
+    def _compute_commission_percent(self):
+        for reservation in self:
+            if reservation.agency_id:
+                reservation.commission_percent = (
+                    reservation.agency_id.default_commission
+                )
+            else:
+                reservation.commission_percent = 0
+
+    @api.depends("commission_percent", "price_total")
+    def _compute_commission_amount(self):
+        for reservation in self:
+            if reservation.commission_percent > 0:
+                reservation.commission_amount = (
+                    reservation.price_total * reservation.commission_percent
+                )
+            else:
+                reservation.commission_amount = 0
 
     # REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
     @api.depends("preferred_room_id")
@@ -1105,19 +1129,11 @@ class PmsReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        if "folio_id" in vals and "channel_type" not in vals:
+        if "folio_id" in vals:
             folio = self.env["pms.folio"].browse(vals["folio_id"])
-            channel_type = (
-                vals["channel_type"] if "channel_type" in vals else folio.channel_type
-            )
-            partner_id = (
-                vals["partner_id"] if "partner_id" in vals else folio.partner_id.id
-            )
-            vals.update({"channel_type": channel_type, "partner_id": partner_id})
         elif "partner_id" in vals:
             folio_vals = {
                 "partner_id": int(vals.get("partner_id")),
-                "channel_type": vals.get("channel_type"),
             }
             # Create the folio in case of need
             # (To allow to create reservations direct)
@@ -1126,7 +1142,6 @@ class PmsReservation(models.Model):
                 {
                     "folio_id": folio.id,
                     "reservation_type": vals.get("reservation_type"),
-                    "channel_type": vals.get("channel_type"),
                 }
             )
         record = super(PmsReservation, self).create(vals)
@@ -1287,20 +1302,6 @@ class PmsReservation(models.Model):
             else:
                 record.checkin_partner_count = 0
                 record.checkin_partner_pending_count = 0
-
-    @api.depends("channel_type", "subchannel_direct")
-    def _compute_origin(self):
-        for reservation in self:
-            if reservation.channel_type == "direct":
-                reservation.origin = reservation.subchannel_direct
-            elif reservation.channel_type == "agency":
-                reservation.origin = reservation.agency_id.name
-
-    @api.depends("origin")
-    def _compute_detail_origin(self):
-        for reservation in self:
-            if reservation.channel_type in ["direct", "agency"]:
-                reservation.detail_origin = reservation.sudo().create_uid.name
 
     def _search_checkin_partner_pending(self, operator, value):
         self.ensure_one()
