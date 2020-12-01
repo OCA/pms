@@ -2,10 +2,14 @@
 # Copyright 2019  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import re
+import time
+
+import pytz
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+from odoo.addons.base.models.res_partner import _tz_get
 
 
 class PmsProperty(models.Model):
@@ -54,12 +58,50 @@ class PmsProperty(models.Model):
     folio_sequence_id = fields.Many2one(
         "ir.sequence", "Folio Sequence", check_company=True, copy=False
     )
+    tz = fields.Selection(
+        _tz_get,
+        string="Timezone",
+        required=True,
+        default=lambda self: self.env.user.tz or "UTC",
+        help="This field is used in order to define \
+         in which timezone the arrival/departure will work.",
+    )
 
     # Constraints and onchanges
-    @api.constrains("default_arrival_hour", "default_departure_hour")
-    def _check_hours(self):
-        r = re.compile("[0-2][0-9]:[0-5][0-9]")
-        if not r.match(self.default_arrival_hour):
-            raise ValidationError(_("Invalid arrival hour (Format: HH:mm)"))
-        if not r.match(self.default_departure_hour):
-            raise ValidationError(_("Invalid departure hour (Format: HH:mm)"))
+    @api.constrains("default_arrival_hour")
+    def _check_arrival_hour(self):
+        for record in self:
+            try:
+                time.strptime(record.default_arrival_hour, "%H:%M")
+                return True
+            except ValueError:
+                raise ValidationError(
+                    _(
+                        "Format Arrival Hour (HH:MM) Error: %s",
+                        record.default_arrival_hour,
+                    )
+                )
+
+    @api.constrains("default_departure_hour")
+    def _check_departure_hour(self):
+        for record in self:
+            try:
+                time.strptime(record.default_departure_hour, "%H:%M")
+                return True
+            except ValueError:
+                raise ValidationError(
+                    _(
+                        "Format Departure Hour (HH:MM) Error: %s",
+                        record.default_departure_hour,
+                    )
+                )
+
+    def date_property_timezone(self, date):
+        self.ensure_one()
+        tz_property = self.tz
+        date = pytz.timezone(tz_property).localize(date)
+        date = date.replace(tzinfo=None)
+        date = pytz.timezone(self.env.user.tz).localize(date)
+        date = date.astimezone(pytz.utc)
+        date = date.replace(tzinfo=None)
+        return date

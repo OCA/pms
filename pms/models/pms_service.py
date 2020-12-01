@@ -459,7 +459,7 @@ class PmsService(models.Model):
         )
         for line in self:
             state = line.folio_id.state or "draft"
-            if state in ("draft"):
+            if state == "draft":
                 line.invoice_status = "no"
             elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
                 line.invoice_status = "to invoice"

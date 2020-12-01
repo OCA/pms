@@ -4,7 +4,8 @@
         id="action_checkin_partner"
         name="Action checkin"
         res_model="pms.checkin.partner"
-        view_mode="tree,form"
+        view_mode="kanban,tree,form"
+        domain="[('state', '!=', 'draft')]"
     />
     <menuitem
         id="menu_pms_checkin_partner"
@@ -18,6 +19,9 @@
         <field name="model">pms.checkin.partner</field>
         <field name="arch" type="xml">
             <form create="false">
+                <header>
+                    <field name="state" widget="statusbar" />
+                </header>
                 <sheet>
                     <group name="group_top">
                         <group name="group_left">
@@ -27,13 +31,13 @@
                                 domain="[('is_company','=', False)]"
                             />
                             <field name="pms_property_id" invisible="1" />
-                            <field name="enter_date" />
-                            <field name="exit_date" />
-                            <field name="arrival_hour" />
-                            <field name="departure_hour" />
+                            <field name="arrival" />
+                            <field name="departure" />
                         </group>
                         <group name="group_left">
                             <field name="reservation_id" />
+                            <field name="folio_id" />
+                            <field name="identifier" />
                         </group>
                     </group>
                 </sheet>
@@ -47,7 +51,6 @@
         <field name="arch" type="xml">
             <tree
                 editable="bottom"
-                create="1"
                 decoration-danger="state == 'draft'"
                 decoration-info="state == 'done'"
                 decoration-muted="state == 'cancelled'"
@@ -56,20 +59,20 @@
                 <button
                     type="object"
                     class="oe_read_only oe_stat_button"
-                    icon="fa fa-2x fa-check-circle"
+                    icon="fa-2x fa-check-circle"
                     name="action_on_board"
                     help="Get in"
-                    attrs="{'invisible': [('state','!=','draft')]}"
+                    attrs="{'invisible': [('state','!=','precheckin')]}"
                 />
-                <field name="auto_booking" invisible="1" />
+                <field name="identifier" />
                 <field name="partner_id" required="True" />
                 <field name="mobile" />
                 <field name="email" />
-                <field name="enter_date" />
-                <field name="exit_date" />
+                <field name="arrival" />
+                <field name="departure" />
                 <field name="reservation_id" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
-                <field name="state" invisible="1" />
+                <field name="state" invisible="0" />
             </tree>
         </field>
     </record>
@@ -89,9 +92,10 @@
                     class="oe_stat_button"
                     icon="fa fa-2x fa-check-circle"
                     name="action_on_board"
-                    attrs="{'invisible':[('state','not in', ['draft'])]}"
+                    attrs="{'invisible':[('state','not in', ['preconfirm'])]}"
                     help="Get in"
                 />
+                <field name="identifier" />
                 <field
                     name="partner_id"
                     required="True"
@@ -99,12 +103,138 @@
                 />
                 <field name="mobile" />
                 <field name="email" />
-                <field name="enter_date" />
-                <field name="exit_date" />
+                <field name="arrival" />
+                <field name="departure" />
                 <field name="reservation_id" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" />
             </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="pms_checkin_partner_kanban_view">
+        <field name="name">pms.checkin.partner.kanban</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <kanban
+                default_group_by="state"
+                class="o_res_partner_kanban"
+                sample="1"
+                create="false"
+            >
+                <field name="id" />
+                <field name="identifier" />
+                <field name="partner_id" />
+                <field name="reservation_id" />
+                <field name="folio_id" />
+                <field name="pms_property_id" />
+                <field name="name" />
+                <field name="email" />
+                <field name="mobile" />
+                <field name="arrival" />
+                <field name="departure" />
+                <field name="state" />
+                <field name="image_128" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+                            class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban"
+                        >
+                            <div class="o_kanban_image">
+                                <img
+                                    alt="Contact image"
+                                    t-if="record.image_128.raw_value"
+                                    t-att-src="kanban_image('pms.checkin.partner', 'image_128', record.id.raw_value)"
+                                />
+                                <t t-if="!record.image_128.raw_value">
+                                    <!--TODO: Use npm avatar generation? https://github.com/Ashwinvalento/cartoon-avatar-->
+                                    <img
+                                        alt="Draft"
+                                        t-if="record.state.raw_value === 'draft'"
+                                        t-att-src="&quot;pms/static/description/avatar.png&quot;"
+                                    />
+                                    <img
+                                        alt="Cancelled"
+                                        t-if="record.state.raw_value === 'cancelled'"
+                                        t-att-src="&quot;pms/static/description/avatar.png&quot;"
+                                    />
+                                </t>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <div class="float-right">
+                                                <field
+                                                    name="state"
+                                                    widget="label_selection"
+                                                    options="{'classes': {'draft': 'default', 'precheckin': 'info', 'onboard': 'warning', 'onboard': 'success', 'done': 'secondary'}}"
+                                                />
+                                            </div>
+                                            <field
+                                                name="name"
+                                                placeholder="Hosted's Name"
+                                            />
+                                            <field
+                                                name="reservation_id"
+                                                placeholder="Room Reservation"
+                                            />
+                                        </strong>
+                                        <span
+                                            t-if="record.arrival.raw_value"
+                                            class="o_kanban_record_subtitle"
+                                        >
+                                            <field name="arrival" />
+                                        </span>
+                                        <span
+                                            t-if="record.departure.raw_value"
+                                            class="o_kanban_record_subtitle"
+                                        >
+                                            <field name="departure" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <field
+                                    name="segmentation_ids"
+                                    widget="many2many_tags"
+                                    options="{'color_field': 'color'}"
+                                />
+                                <ul>
+                                    <li
+                                        t-if="record.email.raw_value"
+                                        class="o_kanban_record_subtitle"
+                                    >
+                                        <field name="email" />
+                                    </li>
+                                    <li
+                                        t-if="record.mobile.raw_value"
+                                        class="o_kanban_record_subtitle"
+                                    >
+                                        <field name="mobile" />
+                                    </li>
+                                </ul>
+                                <div class="oe_kanban_bottom_right">
+                                    <a
+                                        name="action_on_board"
+                                        tabindex="-1"
+                                        type="object"
+                                        attrs="{'invisible': [('state', '!=', 'precheckin')]}"
+                                        class="o_project_kanban_box"
+                                    >
+                                        <div>
+                                            <span class="o_label">
+                                                <i
+                                                    class="fa fa-lg fa-play-circle text-success"
+                                                />
+                                                Check-in
+                                            </span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
     <record model="ir.ui.view" id="pms_checkin_partner_view_search">
@@ -129,21 +259,21 @@
                 <filter
                     string="Checkins Tomorrow"
                     name="enter_tomorrow"
-                    domain="[('enter_date', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
+                    domain="[('arrival', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
                     help="Show all checkins for enter tomorrow"
                 />
                 <filter
                     string="Checkins to 7 days"
                     name="next_res_week"
-                    domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
                         ('state', '=', 'confirm')]"
                     help="Show all reservations for which date enter is before than 7 days"
                 />
                 <filter
                     string="On Board Tomorrow"
                     name="next_res_2week"
-                    domain="[('enter_date', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
+                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
                         ('state', 'in', ['confirm','onboard'])]"
                     help="Show all checkins for Tomorrow"
                 />
@@ -167,36 +297,44 @@
                     <filter
                         string="Checkin by Month"
                         name="checkin_by_month"
-                        context="{'group_by':'enter_date', 'default_order': 'enter_date asc'}"
+                        context="{'group_by':'arrival', 'default_order': 'arrival asc'}"
                     />
                     <filter
                         string="Checkin by Week"
                         name="checkin_by_week"
-                        context="{'group_by':'enter_date:week', 'default_order': 'enter_date'}"
+                        context="{'group_by':'arrival:week', 'default_order': 'arrival'}"
                     />
                     <filter
                         string="Checkin by Day"
                         name="checkin_by_week"
-                        context="{'group_by':'enter_date:day', 'default_order': 'enter_date'}"
+                        context="{'group_by':'arrival:day', 'default_order': 'arrival'}"
                     />
                     <separator />
                     <filter
                         string="Checkout by Month"
                         name="checkout_by_month"
-                        context="{'group_by':'exit_date', 'default_order': 'exit_date asc'}"
+                        context="{'group_by':'departure', 'default_order': 'departure asc'}"
                     />
                     <filter
                         string="Checkout by Week"
                         name="checkout_by_week"
-                        context="{'group_by':'exit_date:week', 'default_order': 'exit_date'}"
+                        context="{'group_by':'departure:week', 'default_order': 'departure'}"
                     />
                     <filter
                         string="Checkout by Day"
                         name="checkout_by_week"
-                        context="{'group_by':'exit_date:day', 'default_order': 'exit_date'}"
+                        context="{'group_by':'departure:day', 'default_order': 'departure'}"
                     />
                     <separator />
                 </group>
+                <searchpanel>
+                    <field
+                        name="state"
+                        string="State"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

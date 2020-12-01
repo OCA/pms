@@ -250,7 +250,6 @@ class PmsReservationLine(models.Model):
                     line.reservation_id.tax_ids,
                     line.reservation_id.company_id,
                 )
-                # _logger.info(line.price)
                 # TODO: Out of service 0 amount
             else:
                 line.price = line._origin.price
@@ -395,7 +394,7 @@ class PmsReservationLine(models.Model):
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
-    @api.constrains("reservation_id.adults", "room_id")
+    @api.constrains("room_id")
     def _check_adults(self):
         for record in self.filtered("room_id"):
             extra_bed = record.reservation_id.service_ids.filtered(
