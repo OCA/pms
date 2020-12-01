@@ -372,14 +372,12 @@
                             <field
                                 name="commission_percent"
                                 string="Commission percent (%)"
-                            >
-                                <field
-                                    name="commission_amount"
-                                    string="Commission Amount"
-                                >
-
-                                </field>
-                            </field>
+                            />
+                            <field
+                                name="commission_amount"
+                                string="Commission Amount"
+                                widget="monetary"
+                            />
                             <field name="invoice_status" invisible="1" />
                             <field name="currency_id" invisible="1" />
                             <field
@@ -814,6 +812,7 @@
                 <searchpanel>
                     <field name="room_type_id" string="Room Type" enable_counters="1" />
                     <field name="pricelist_id" string="Pricelist" enable_counters="1" />
+                    <field name="agency_id" string="Channel" enable_counters="1" />
                     <field
                         name="state"
                         string="State"
