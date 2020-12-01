@@ -193,7 +193,6 @@ class PmsReservation(models.Model):
         compute="_compute_checkin_partner_ids",
         store=True,
         readonly=False,
-        ondelete="restrict",
     )
     count_pending_arrival = fields.Integer(
         "Pending Arrival",
@@ -1368,10 +1367,12 @@ class PmsReservation(models.Model):
         reservations = self.env["pms.reservation"].search(
             [
                 ("state", "in", ("onboard",)),
-                ("checkout_datetime", "<=", fields.Datetime.now()),
+                ("checkout", "=", fields.Datetime.today()),
             ]
         )
-        reservations.state = "no_checkout"
+        for reservation in reservations:
+            if reservation.checkout_datetime <= fields.Datetime.now():
+                reservations.state = "no_checkout"
 
     def unify(self):
         # TODO
