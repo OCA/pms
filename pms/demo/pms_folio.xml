@@ -34,7 +34,7 @@
             />
         </record>
         <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
-        <!-- TODO: The third reservation is marked from State: Cancelled to Pending Entry at Folio creation -->
+        <!-- TODO: The third reservation is marked from State: Cancelled to Pending arrival at Folio creation -->
         <record id="pms_folio_2" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
             <field
@@ -344,7 +344,7 @@
             />
         </record>
         <!--Reservation of the conference room whit cancelled-->
-        <!-- TODO: The reservation is marked from State: Cancelled to Pending Entry at Folio creation -->
+        <!-- TODO: The reservation is marked from State: Cancelled to Pending arrival at Folio creation -->
         <record id="pms_folio_15" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_18" />
             <field name="reservation_type">normal</field>
@@ -381,7 +381,7 @@
             />
         </record>
         <!--Reservation of triple room whit draft state-->
-        <!-- TODO: The reservation is marked from State: Pre-reservation to Pending Entry at Folio creation -->
+        <!-- TODO: The reservation is marked from State: Pre-reservation to Pending arrival at Folio creation -->
         <record id="pms_folio_17" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_32" />
             <field name="reservation_type">normal</field>

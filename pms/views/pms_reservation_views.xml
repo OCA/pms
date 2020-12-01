@@ -14,6 +14,7 @@
                 <header>
                     <field name="splitted" invisible="True" />
                     <field name="tax_ids" invisible="1" />
+                    <field name="checkin_today" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
                     <button
                         name="confirm"
@@ -30,7 +31,7 @@
                     />
                     <button
                         name="action_reservation_checkout"
-                        string="Done"
+                        string="Check Out"
                         states="onboard"
                         type="object"
                     />
@@ -79,11 +80,24 @@
                 </div>
                 <sheet>
                     <field name="shared_folio" invisible="1" />
+                    <field name="left_for_checkin" invisible="1" />
+                    <field name="ready_for_checkin" invisible="1" />
+                    <field name="departure_today" invisible="1" />
                     <div
                         class="oe_button_box"
                         name="button_box"
                         attrs="{'invisible': [('folio_id','=',False)]}"
                     >
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-sign-out"
+                            name="action_reservation_checkout"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Checkout</span>
+                            </div>
+                        </button>
                         <button
                             type="object"
                             class="oe_stat_button"
@@ -94,18 +108,6 @@
                                 <span class="o_stat_text">
                                     <field name="folio_id" readonly="1" nolabel="1" />
                                 </span>
-                            </div>
-                        </button>
-                        <button
-                            type="action"
-                            class="oe_stat_button"
-                            icon="fa-list-ul"
-                            attrs="{'invisible': ['|', ('partner_id','=',False), ('reservation_type','in',('out'))]}"
-                            name="%(open_pms_reservation_form_tree_all)d"
-                            context="{'search_default_partner_id': partner_id}"
-                        >
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Books</span>
                             </div>
                         </button>
                         <button
@@ -131,20 +133,30 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-users"
-                            name="action_checks"
-                            attrs="{'invisible': [('checkin_partner_pending_count','&lt;=',0)]}"
+                            name="action_onboard"
+                            attrs="{'invisible': [
+                                ('ready_for_checkin', '!=', True),
+                            ]}"
                         >
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value">
-                                    <field
-                                        name="checkin_partner_pending_count"
-                                        widget="statinfo"
-                                        nolabel="1"
-                                    />
-                                </span>
-                                <span class="o_stat_text">Pending Checks</span>
-                            </div>
+                            <field
+                                name="checkins_ratio"
+                                string="On Board"
+                                widget="percentpie"
+                            />
+                        </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            name="action_checks"
+                            attrs="{'invisible': [
+                                ('left_for_checkin', '!=', True),
+                            ]}"
+                        >
+                            <field
+                                name="ratio_checkin_data"
+                                string="Checkin Data"
+                                widget="percentpie"
+                            />
                         </button>
                     </div>
                     <span
@@ -244,19 +256,6 @@
                                                    ('mobile','!=', False)]}"
                             />
                             <field
-                                name="phone"
-                                colspan="2"
-                                nolabel="1"
-                                placeholder="phone"
-                                widget="phone"
-                                force_save="1"
-                                attrs="{'invisible': [('reservation_type','in',('out'))],
-                                 'required': [('channel_type','in',('door','mail','phone')),
-                                              ('mobile','=','')],
-                                 'readonly': [('partner_id', '!=', False),
-                                             ('phone','!=', False)]}"
-                            />
-                            <field
                                 placeholder="Partner Notes"
                                 colspan="2"
                                 nolabel="1"
@@ -285,10 +284,10 @@
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
-                            <field
+                            <!--<field
                                 name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
-                            />
+                            />-->
                             <field
                                 name="cancelled_reason"
                                 attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
@@ -329,6 +328,8 @@
                                 nolabel="1"
                                 placeholder="Reservation Notes"
                             />
+                            <field name="agency_id" />
+                            <field name="channel_type_id" />
                         </group>
                         <group
                             colspan="2"
@@ -368,6 +369,17 @@
                                 string="Only Room"
                                 widget="monetary"
                             />
+                            <field
+                                name="commission_percent"
+                                string="Commission percent (%)"
+                            >
+                                <field
+                                    name="commission_amount"
+                                    string="Commission Amount"
+                                >
+
+                                </field>
+                            </field>
                             <field name="invoice_status" invisible="1" />
                             <field name="currency_id" invisible="1" />
                             <field
@@ -490,11 +502,10 @@
                             </group>
                             <field
                                 name="checkin_partner_ids"
+                                mode="kanban"
+                                options="{'no_create': True, 'no_delete': True}"
                                 context="{
-                                    'checkin_partner_ids': checkin_partner_ids,
-                                    'default_reservation_id': id,
-                                    'reservation_id': id,
-                                    'tree_view_ref':'pms.pms_checkin_partner_reservation_view_tree',
+                                    'kanban_view_ref':'pms.pms_checkin_partner_kanban_view',
                                     }"
                             />
                         </page>
@@ -516,10 +527,10 @@
                                 <field name="overbooking" />
                             </group>
                             <group>
-                                <field
+                                <!--<field
                                     name="channel_type"
                                     attrs="{'required':[('reservation_type','not in',('staff','out'))]}"
-                                />
+                                />-->
                                 <field name="reservation_type" />
                             </group>
                         </page>
@@ -539,119 +550,17 @@
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
             <calendar
-                date_start="checkin"
-                date_stop="checkout"
+                date_start="checkin_datetime"
+                date_stop="checkout_datetime"
                 string="Reservations"
                 quick_add="False"
                 mode="month"
-                scales="month,year"
+                scales="week,month,year"
             >
                 <field name="partner_id" avatar_field="image_128" />
                 <field name="room_type_id" />
                 <field name="rooms" />
             </calendar>
-        </field>
-    </record>
-    <!-- Form view Checkin Partners from reservation -->
-    <record model="ir.ui.view" id="pms_reservation_checkin_view_form">
-        <field name="name">pms.reservation.checkin.form</field>
-        <field name="model">pms.reservation</field>
-        <field name="priority">100</field>
-        <field name="arch" type="xml">
-            <form string="Reservation">
-                <field name="reservation_type" invisible="1" />
-                <field name="splitted" invisible="1" />
-                <field name="state" invisible="1" />
-                <field name="overbooking" invisible="1" />
-                <field name="folio_id" invisible="1" />
-                <field name="adults" invisible="1" />
-                <field name="children" invisible="1" />
-                <div
-                    class="alert alert-info"
-                    role="alert"
-                    style="margin-bottom:0px;"
-                    attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}"
-                >
-                    This reservation has other reservantions and/or services in the
-                    folio, you can check it in the
-                    <bold>
-                        <button
-                            class="alert-link"
-                            type="object"
-                            name="open_folio"
-                            string="Folio Form"
-                        />
-                    </bold>
-                </div>
-                <field name="shared_folio" invisible="1" />
-                <field name="allowed_room_ids" invisible="1" />
-                <sheet>
-                    <span
-                        class="label label-danger"
-                        attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
-                    >
-                        Cancelled Reservation!
-                    </span>
-                    <span
-                        class="label label-warning"
-                        attrs="{'invisible': [('overbooking', '=', False)]}"
-                    >
-                        OverBooking!
-                    </span>
-                    <h2>
-                        <field
-                            name="preferred_room_id"
-                            readonly="1"
-                            nolabel="1"
-                            options="{'no_create': True,'no_open': True}"
-                            style="margin-right: 30px;"
-                        />
-                        <!-- <field
-                            name="partner_id"
-                            readonly="1"
-                            options="{'no_open': True}"
-                        />
-                        <span
-                            class="fa-user"
-                            style="margin-left:20px;"
-                            attrs="{'invisible': [('reservation_type','not in',('normal'))]}"
-                        />
-                        <span
-                            class="fa-black-tie"
-                            style="margin-left:20px; color: #C67;"
-                            attrs="{'invisible': [('reservation_type','not in',('staff'))]}"
-                        /> -->
-                        <h3>
-                            From
-                            <span class="fa-sign-in" style="margin: 5px;" />
-                            <field
-                                name="checkin"
-                                style="margin-right: 10px;"
-                                readonly="1"
-                            />
-                            to
-                            <span class="fa-sign-out" style="margin-right: 5px;" />
-                            <field name="checkout" readonly="1" />
-                        </h3>
-                    </h2>
-                    <group>
-                        <field
-                            name="segmentation_ids"
-                            widget="many2many_tags"
-                            placeholder="Segmentation..."
-                            options="{'no_create': True,'no_open': True}"
-                        />
-                    </group>
-                    <field
-                        name="checkin_partner_ids"
-                        context="{
-                            'default_reservation_id': id,
-                            'reservation_id': id,
-                            'tree_view_ref':'pms.pms_checkin_partner_reservation_view_tree',
-                            }"
-                    />
-                </sheet>
-            </form>
         </field>
     </record>
     <record model="ir.ui.view" id="pms_reservation_view_tree">
@@ -669,12 +578,7 @@
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
-                <field
-                    name="checkin"
-                    widget="daterange"
-                    class="oe_inline"
-                    options="{'related_end_date': 'checkout'}"
-                />
+                <field name="checkin" />
                 <field name="checkout" widget="date" />
                 <field name="nights" />
                 <button
@@ -687,7 +591,8 @@
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="partner_id" />
                 <field name="room_type_id" invisible="1" />
-                <field name="adults" string="Persons" />
+                <field name="adults" />
+                <field name="ratio_checkin_data" widget="progressbar" optional="show" />
                 <field name="overbooking" invisible="1" />
                 <field name="activity_ids" widget="list_activity" optional="show" />
                 <field
@@ -711,8 +616,12 @@
                 />
                 <field
                     name="state"
-                    decoration-success="state == 'done'"
+                    decoration-success="state == 'onboard'"
                     decoration-info="state == 'confirm'"
+                    decoration-primary="state == 'no_checkout'"
+                    decoration-danger="state == 'cancelled'"
+                    decoration-bf="state == 'draft'"
+                    decoration-warning="state == 'no_show'"
                     widget="badge"
                     optional="show"
                 />
@@ -793,7 +702,7 @@
                 <filter
                     string="To enter"
                     name="to_enter"
-                    domain="[('state', '=', 'confirm')]"
+                    domain="[('left_for_checkin', '=', True)]"
                 />
                 <filter
                     string="Overbookings"
@@ -827,7 +736,7 @@
                     domain="[('to_assign','=',True)]"
                 />
                 <separator />
-                <filter
+                <!--<filter
                     string="Web"
                     name="web"
                     domain="[('channel_type', '=', 'web')]"
@@ -846,7 +755,7 @@
                     string="Phone"
                     name="phone"
                     domain="[('channel_type', '=', 'phone')]"
-                />
+                />-->
                 <separator />
                 <filter
                     string="Still to be paid"
