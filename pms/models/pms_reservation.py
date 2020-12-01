@@ -763,6 +763,7 @@ class PmsReservation(models.Model):
         today = fields.Date.context_today(self)
 
         return [("checkout", searching_for_true, today)]
+
     @api.depends("agency_id")
     def _compute_commission_percent(self):
         for reservation in self:
