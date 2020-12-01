@@ -13,24 +13,21 @@
             <field name="model_id" ref="model_pms_reservation" />
             <field
                 name="nextcall"
-                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 06:00:00')"
+                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"
             />
             <field name="code">model.auto_no_show()</field>
         </record>
         <!-- Set reservation like No Checout if checkout is not confirmed-->
         <record model="ir.cron" id="nocheckout_reservations">
             <field name="name">Automatic No Checkout Reservations</field>
-            <field name="interval_number">1</field>
+            <field name="interval_number">5</field>
             <field name="user_id" ref="base.user_root" />
-            <field name="interval_type">days</field>
+            <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field name="doall" eval="False" />
             <field name="state">code</field>
             <field name="model_id" ref="model_pms_reservation" />
-            <field
-                name="nextcall"
-                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 12:00:00')"
-            />
+            <field name="nextcall" eval="DateTime.now()" />
             <field name="code">model.auto_no_checkout()</field>
         </record>
         <!-- Scheduler For To Inform Guest About Reservation Before 24 Hours -->
