@@ -135,6 +135,7 @@
                                 sum="Total amount"
                                 widget='monetary'
                             />
+                            <field name="commission" widget='monetary' />
                         </group>
                         <div class="oe_clear" />
                     </group>
