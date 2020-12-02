@@ -26,36 +26,22 @@ class TestPmsSaleChannel(TestHotel):
                 }
             )
 
-    def test_partner_as_direct_channel(self):
-        # ARRANGE
-        PmsReservation = self.env["pms.reservation"]
-        partner = self.env.ref("base.res_partner_12")
-        # ACT & ASSERT
-        with self.assertRaises(ValidationError), self.cr.savepoint():
-            PmsReservation.create(
-                {
-                    "checkin": datetime.datetime.now(),
-                    "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
-                    "channel_type_id": partner.id,
-                }
-            )
-
     def test_channel_type_id_only_directs(self):
         # ARRANGE
         PmsReservation = self.env["pms.reservation"]
         PmsSaleChannel = self.env["pms.sale.channel"]
         # ACT
-        saleChannel = PmsSaleChannel.create({"channel_type": "direct"})
+        salechannel = PmsSaleChannel.create({"channel_type": "direct"})
         reservation = PmsReservation.create(
             {
                 "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.datetimedelta(days=3),
-                "channel_type_id": saleChannel.id,
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "channel_type_id": salechannel.id,
             }
         )
         # ASSERT
         self.assertEqual(
-            self.browse_ref(reservation.channel_type_id).channel_type,
+            reservation.channel_type_id.channel_type,
             "direct",
             "Sale channel is not direct",
         )
@@ -63,19 +49,28 @@ class TestPmsSaleChannel(TestHotel):
     def test_agency_id_is_agency(self):
         # ARRANGE
         PmsReservation = self.env["pms.reservation"]
-
+        PmsSaleChannel = self.env["pms.sale.channel"]
+        salechannel = PmsSaleChannel.create(
+            {"name": "Test Indirect", "channel_type": "indirect"}
+        )
         # ACT
-        agency = self.env["res.partner"].create({"name": "partner1", "is_agency": True})
+        agency = self.env["res.partner"].create(
+            {
+                "name": "partner1",
+                "is_agency": True,
+                "sale_channel_id": salechannel.id,
+            }
+        )
         reservation = PmsReservation.create(
             {
                 "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.datetimedelta(days=3),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "agency_id": agency.id,
             }
         )
         # ASSERT
         self.assertEqual(
-            self.browse_ref(reservation.agency_id).is_agency,
+            reservation.agency_id.is_agency,
             True,
             "Agency_id doesn't correspond to an agency",
         )
@@ -90,7 +85,7 @@ class TestPmsSaleChannel(TestHotel):
         )
         # ASSERT
         self.assertEqual(
-            self.browse_ref(agency.sale_channel_id).channel_type,
+            agency.sale_channel_id.channel_type,
             "indirect",
             "An agency should be a indirect channel",
         )
