@@ -43,7 +43,7 @@ class TestPmsFolio(TestHotel):
         )
 
         commission = 0
-        for reservation in folio:
+        for reservation in folio.reservation_ids:
             commission += reservation.commission_amount
 
         # ASSERT
