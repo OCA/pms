@@ -1016,6 +1016,12 @@ class PmsReservation(models.Model):
                     _("Format Departure Hour (HH:MM) Error: %s", record.departure_hour)
                 )
 
+    @api.constrains("agency_id")
+    def _no_agency_as_agency(self):
+        for record in self:
+            if record.agency_id and not record.agency_id.is_agency:
+                raise ValidationError(_("booking agency with wrong configuration: "))
+
     # @api.constrains("reservation_type", "partner_id")
     # def _check_partner_reservation(self):
     #     for reservation in self:
