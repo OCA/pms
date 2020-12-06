@@ -72,3 +72,4 @@ class ProductPricelist(models.Model):
                     ((not s.pms_property_ids, s), len(s.pms_property_ids)),
                 )
             )
+        return items
