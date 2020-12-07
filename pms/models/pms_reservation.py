@@ -111,7 +111,6 @@ class PmsReservation(models.Model):
     preferred_room_id = fields.Many2one(
         "pms.room",
         string="Room",
-        tracking=True,
         ondelete="restrict",
         domain="[('id', 'in', allowed_room_ids)]",
     )
@@ -317,7 +316,12 @@ class PmsReservation(models.Model):
         store=True,
     )
 
-    rooms = fields.Char(string="Room/s", compute="_compute_rooms", store=True)
+    rooms = fields.Char(
+        string="Room/s",
+        compute="_compute_rooms",
+        store=True,
+        tracking=True,
+    )
 
     credit_card_details = fields.Text(related="folio_id.credit_card_details")
     cancelled_reason = fields.Selection(
@@ -799,13 +803,14 @@ class PmsReservation(models.Model):
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_splitted(self):
         for reservation in self:
-            if len(reservation.reservation_line_ids.mapped("room_id")) > 1:
+            room_ids = reservation.reservation_line_ids.mapped("room_id.id")
+            if len(room_ids) > 1:
                 reservation.splitted = True
+                reservation.preferred_room_id = False
             else:
                 reservation.splitted = False
-                reservation.preferred_room_id = reservation.reservation_line_ids[
-                    0
-                ].room_id
+                if room_ids:
+                    reservation.preferred_room_id = room_ids[0]
 
     @api.depends("state", "qty_to_invoice", "qty_invoiced")
     def _compute_invoice_status(self):
