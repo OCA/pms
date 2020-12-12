@@ -24,3 +24,4 @@ from . import test_pms_pricelist
 from . import test_pms_checkin_partner
 from . import test_pms_sale_channel
 from . import test_pms_folio
+from . import test_pms_room_type
