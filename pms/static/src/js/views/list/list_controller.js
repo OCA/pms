@@ -13,7 +13,8 @@ odoo.define("pms.ListController", function (require) {
 
     ListController.include({
         renderButtons: function () {
-            this._super.apply(this, arguments); // Sets this.$buttons
+            // Sets this.$buttons
+            this._super.apply(this, arguments);
             var self = this;
             if (this.modelName === "pms.reservation") {
                 this.$buttons.append(

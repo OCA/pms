@@ -50,7 +50,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
             )
                 .split(",")
                 .map(function (id) {
-                    return parseInt(id);
+                    return parseInt(id, 10);
                 });
             this.user_pms_properties =
                 session.user_pms_properties.allowed_pms_properties;
@@ -74,9 +74,9 @@ odoo.define("web.SwitchPmsMenu", function (require) {
          */
         _onSwitchPmsPropertyClick: function (ev) {
             if (
-                ev.type == "keydown" &&
-                ev.which != $.ui.keyCode.ENTER &&
-                ev.which != $.ui.keyCode.SPACE
+                ev.type === "keydown" &&
+                ev.which !== $.ui.keyCode.ENTER &&
+                ev.which !== $.ui.keyCode.SPACE
             ) {
                 return;
             }
@@ -124,9 +124,9 @@ odoo.define("web.SwitchPmsMenu", function (require) {
          */
         _onTogglePmsPropertyClick: function (ev) {
             if (
-                ev.type == "keydown" &&
-                ev.which != $.ui.keyCode.ENTER &&
-                ev.which != $.ui.keyCode.SPACE
+                ev.type === "keydown" &&
+                ev.which !== $.ui.keyCode.ENTER &&
+                ev.which !== $.ui.keyCode.SPACE
             ) {
                 return;
             }
