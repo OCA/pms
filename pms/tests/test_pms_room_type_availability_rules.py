@@ -10,7 +10,7 @@ from .common import TestHotel
 
 
 @freeze_time("1980-01-01")
-class TestPmsRoomTypeRestriction(TestHotel):
+class TestPmsRoomTypeAvailabilityRules(TestHotel):
     def create_common_scenario(self):
         # product.pricelist
         self.test_pricelist1 = self.env["product.pricelist"].create(
@@ -18,10 +18,12 @@ class TestPmsRoomTypeRestriction(TestHotel):
                 "name": "test pricelist 1",
             }
         )
-        # pms.room.type.restriction
-        self.test_room_type_restriction1 = self.env["pms.room.type.restriction"].create(
+        # pms.room.type.availability
+        self.test_room_type_availability1 = self.env[
+            "pms.room.type.availability"
+        ].create(
             {
-                "name": "Restriction plan for TEST",
+                "name": "Availability plan for TEST",
                 "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
             }
         )
@@ -31,7 +33,7 @@ class TestPmsRoomTypeRestriction(TestHotel):
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.test_pricelist1.id,
-                "default_restriction_id": self.test_room_type_restriction1.id,
+                "default_availability_id": self.test_room_type_availability1.id,
             }
         )
         # pms.room.type.class
@@ -115,7 +117,7 @@ class TestPmsRoomTypeRestriction(TestHotel):
     @Skip
     def test_availability_rooms_all(self):
         # TEST CASE
-        # get availability withouth restrictions
+        # get availability withouth rules
 
         # ARRANGE
         self.create_common_scenario()
@@ -127,7 +129,7 @@ class TestPmsRoomTypeRestriction(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.restriction"].rooms_available(
+        result = self.env["pms.room.type.availability"].rooms_available(
             checkin=checkin,
             checkout=checkout,
         )
@@ -136,13 +138,13 @@ class TestPmsRoomTypeRestriction(TestHotel):
         self.assertTrue(
             obtained,
             "Availability should contain the test rooms"
-            "because there's no  restriction for them.",
+            "because there's no availability rules for them.",
         )
 
     @Skip
     def test_availability_rooms_all_lines(self):
         # TEST CASE
-        # get availability withouth restrictions
+        # get availability withouth rules
         # given reservation lines to not consider
 
         # ARRANGE
@@ -161,7 +163,7 @@ class TestPmsRoomTypeRestriction(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.restriction"].rooms_available(
+        result = self.env["pms.room.type.availability"].rooms_available(
             checkin=checkin,
             checkout=checkout,
             current_lines=test_reservation.reservation_line_ids.ids,
@@ -171,13 +173,13 @@ class TestPmsRoomTypeRestriction(TestHotel):
         self.assertTrue(
             obtained,
             "Availability should contain the test rooms"
-            "because there's no  restriction for them.",
+            "because there's no availability rules for them.",
         )
 
     @Skip
     def test_availability_rooms_room_type(self):
         # TEST CASE
-        # get availability withouth restrictions
+        # get availability withouth rules
         # given a room type
 
         # ARRANGE
@@ -190,7 +192,7 @@ class TestPmsRoomTypeRestriction(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.restriction"].rooms_available(
+        result = self.env["pms.room.type.availability"].rooms_available(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             room_type_id=self.test_room_type_double.id,
@@ -201,30 +203,31 @@ class TestPmsRoomTypeRestriction(TestHotel):
         self.assertTrue(
             obtained,
             "Availability should contain the test rooms"
-            "because there's no  restriction for them.",
+            "because there's no  availability rules for them.",
         )
 
     @Skip
     def test_availability_closed_no_room_type(self):
         # TEST CASE:
         # coverage for 2 points:
-        # 1. without room type, restrictions associated with the pricelist are applied
-        # 2. restriction rule "closed" is taken into account
+        # 1. without room type, availability rules associated
+        #                      with the pricelist are applied
+        # 2. availability rule "closed" is taken into account
 
         # ARRANGE
         self.create_common_scenario()
-        self.test_room_type_restriction1_item1 = self.env[
-            "pms.room.type.restriction.item"
+        self.test_room_type_availability1_item1 = self.env[
+            "pms.room.type.availability.rule"
         ].create(
             {
-                "restriction_id": self.test_room_type_restriction1.id,
+                "availability_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,  # <- (1/2)
             }
         )
         # ACT
-        result = self.env["pms.room.type.restriction"].rooms_available(
+        result = self.env["pms.room.type.availability"].rooms_available(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             # room_type_id=False, # <-  (2/2)
@@ -235,24 +238,24 @@ class TestPmsRoomTypeRestriction(TestHotel):
             self.test_room_type_double,
             result.mapped("room_type_id"),
             "Availability should not contain rooms of a type "
-            "which its restriction rules applies",
+            "which its availability rules applies",
         )
 
     @Skip
-    def test_availability_restrictions(self):
+    def test_availability_rules(self):
         # TEST CASE
-        # the availability should take into acount restriction rules:
+        # the availability should take into acount availability rules:
         # closed_arrival, closed_departure, min_stay, max_stay,
         # min_stay_arrival, max_stay_arrival
 
         # ARRANGE
         self.create_common_scenario()
 
-        self.test_room_type_restriction1_item1 = self.env[
-            "pms.room.type.restriction.item"
+        self.test_room_type_availability1_item1 = self.env[
+            "pms.room.type.availability.rule"
         ].create(
             {
-                "restriction_id": self.test_room_type_restriction1.id,
+                "availability_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=0)).date(),
             }
@@ -364,9 +367,9 @@ class TestPmsRoomTypeRestriction(TestHotel):
             with self.subTest(k=test_case):
 
                 # ACT
-                self.test_room_type_restriction1_item1.write(test_case)
+                self.test_room_type_availability1_item1.write(test_case)
 
-                result = self.env["pms.room.type.restriction"].rooms_available(
+                result = self.env["pms.room.type.availability"].rooms_available(
                     checkin=checkin,
                     checkout=checkout,
                     room_type_id=self.test_room_type_double.id,
@@ -378,23 +381,23 @@ class TestPmsRoomTypeRestriction(TestHotel):
                     self.test_room_type_double,
                     result.mapped("room_type_id"),
                     "Availability should not contain rooms of a type "
-                    "which its restriction rules applies",
+                    "which its availability rules applies",
                 )
 
     @Skip
     @freeze_time("1980-11-01")
-    def test_restriction_on_create_reservation(self):
+    def test_rule_on_create_reservation(self):
         # TEST CASE
-        # a restriction should be applied that would prevent the
+        # an availability rule should be applied that would prevent the
         # creation of reservations
 
         # ARRANGE
         self.create_common_scenario()
-        self.test_room_type_restriction1_item1 = self.env[
-            "pms.room.type.restriction.item"
+        self.test_room_type_availability1_item1 = self.env[
+            "pms.room.type.availability.rule"
         ].create(
             {
-                "restriction_id": self.test_room_type_restriction1.id,
+                "availability_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
@@ -407,7 +410,7 @@ class TestPmsRoomTypeRestriction(TestHotel):
         # ACT & ASSERT
         with self.assertRaises(
             ValidationError,
-            msg="Restriction should be applied that would"
+            msg="Availability rules should be applied that would"
             " prevent the creation of the reservation.",
         ):
             self.env["pms.reservation"].create(
@@ -423,18 +426,18 @@ class TestPmsRoomTypeRestriction(TestHotel):
 
     @Skip
     @freeze_time("1980-11-01")
-    def test_restriction_on_create_splitted_reservation(self):
+    def test_rules_on_create_splitted_reservation(self):
         # TEST CASE
-        # a restriction should be applied that would prevent the
+        # an availability rule should be applied that would prevent the
         # creation of reservations including splitted reservations.
 
         # ARRANGE
         self.create_common_scenario()
-        self.test_room_type_restriction1_item1 = self.env[
-            "pms.room.type.restriction.item"
+        self.test_room_type_availability1_item1 = self.env[
+            "pms.room.type.availability.rule"
         ].create(
             {
-                "restriction_id": self.test_room_type_restriction1.id,
+                "availability_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
@@ -469,7 +472,7 @@ class TestPmsRoomTypeRestriction(TestHotel):
         # ACT & ASSERT
         with self.assertRaises(
             ValidationError,
-            msg="Restriction should be applied that would"
+            msg="Availability rule should be applied that would"
             " prevent the creation of splitted reservation.",
         ):
             self.env["pms.reservation"].create(
@@ -485,19 +488,19 @@ class TestPmsRoomTypeRestriction(TestHotel):
 
     @Skip
     @freeze_time("1980-11-01")
-    def test_restriction_update_quota_on_create_reservation(self):
+    def test_rule_update_quota_on_create_reservation(self):
         # TEST CASE
         # quota rule is changed after creating a reservation
-        # with pricelist linked to a restriction_item that applies
+        # with pricelist linked to a availability plan that applies
 
         # ARRANGE
         self.create_common_scenario()
 
-        self.test_room_type_restriction1_item1 = self.env[
-            "pms.room.type.restriction.item"
+        self.test_room_type_availability1_item1 = self.env[
+            "pms.room.type.availability.rule"
         ].create(
             {
-                "restriction_id": self.test_room_type_restriction1.id,
+                "availability_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": 1,
@@ -530,12 +533,12 @@ class TestPmsRoomTypeRestriction(TestHotel):
             )
 
     @freeze_time("1980-11-01")
-    def test_restriction_update_quota_on_update_reservation(self):
+    def test_rule_update_quota_on_update_reservation(self):
         # TEST CASE
         # quota rule is restored after creating a reservation
-        # with pricelist linked to a restriction_item that applies
+        # with pricelist linked to a availability rule that applies
         # and then modify the pricelist of the reservation and
-        # no restriction applies
+        # no rules applies
 
         # ARRANGE
         self.create_common_scenario()
@@ -545,9 +548,9 @@ class TestPmsRoomTypeRestriction(TestHotel):
                 "name": "test pricelist 2",
             }
         )
-        restriction = self.env["pms.room.type.restriction.item"].create(
+        rule = self.env["pms.room.type.availability.rule"].create(
             {
-                "restriction_id": self.test_room_type_restriction1.id,
+                "availability_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": test_quota,
@@ -569,6 +572,6 @@ class TestPmsRoomTypeRestriction(TestHotel):
         reservation.flush()
         self.assertEqual(
             test_quota,
-            restriction.quota,
+            rule.quota,
             "The quota should be restored after changing the reservation's pricelist",
         )

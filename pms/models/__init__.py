@@ -24,8 +24,7 @@ from . import product_template
 from . import res_company
 from . import account_payment
 from . import pms_room_type_availability
-from . import pms_room_type_restriction
-from . import pms_room_type_restriction_item
+from . import pms_room_type_availability_rule
 from . import pms_reservation_line
 from . import pms_checkin_partner
 from . import product_pricelist

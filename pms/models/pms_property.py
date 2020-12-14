@@ -41,11 +41,11 @@ class PmsProperty(models.Model):
         required=True,
         help="The default pricelist used in this property.",
     )
-    default_restriction_id = fields.Many2one(
-        "pms.room.type.restriction",
-        "Restriction Plan",
+    default_availability_id = fields.Many2one(
+        "pms.room.type.availability",
+        "Availability Plan",
         required=True,
-        help="The default restriction plan used in this property.",
+        help="The default availability plan used in this property.",
     )
     default_arrival_hour = fields.Char(
         "Arrival Hour (GMT)", help="HH:mm Format", default="14:00"

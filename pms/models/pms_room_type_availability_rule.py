@@ -4,15 +4,15 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class PmsRoomTypeRestrictionItem(models.Model):
-    _name = "pms.room.type.restriction.item"
-    _description = "Reservation restriction by day"
+class PmsRoomTypeAvailabilityRule(models.Model):
+    _name = "pms.room.type.availability.rule"
+    _description = "Reservation rule by day"
 
     # Field Declarations
 
-    restriction_id = fields.Many2one(
-        comodel_name="pms.room.type.restriction",
-        string="Restriction Plan",
+    availability_id = fields.Many2one(
+        comodel_name="pms.room.type.availability",
+        string="Availability Plan",
         ondelete="cascade",
         index=True,
     )
@@ -71,8 +71,8 @@ class PmsRoomTypeRestrictionItem(models.Model):
     _sql_constraints = [
         (
             "room_type_registry_unique",
-            "unique(restriction_id, room_type_id, date)",
-            "Only can exists one restriction in the same \
+            "unique(availability_id, room_type_id, date)",
+            "Only can exists one availability rule in the same \
                          day for the same room type!",
         )
     ]
