@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2017 Alexandre Díaz
+     Copyright 2017 Dario Lodeiros
+     Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record model="ir.ui.view" id="pms_room_type_view_form">
         <field name="name">pms.room_type.form</field>
@@ -28,6 +32,7 @@
                         </group>
                         <group>
                             <field name="pms_property_ids" widget="many2many_tags" />
+                            <field name="company_id" />
                             <field
                                 name="list_price"
                                 widget='monetary'
