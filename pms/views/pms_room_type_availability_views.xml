@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <odoo>
-    <record id="room_type_restriction_view_form" model="ir.ui.view">
-        <field name="name">pms.room.type.restriction.form</field>
-        <field name="model">pms.room.type.restriction</field>
+    <record id="room_type_availability_view_form" model="ir.ui.view">
+        <field name="name">pms.room.type.availability.form</field>
+        <field name="model">pms.room.type.availability</field>
         <field name="arch" type="xml">
-            <form string="Restrictions">
+            <form string="Rules">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
@@ -37,9 +37,9 @@
                             options="{'no_create': True,'no_open': True}"
                         />
                     </group>
-                    <separator string="Restriction Items" />
+                    <separator string="Availability Rules" />
                     <field name="item_ids" nolabel="1">
-                        <tree string="Restriction Items">
+                        <tree string="Availability Rules">
                             <field name="room_type_id" />
                             <field name="date" />
                         </tree>
@@ -48,11 +48,11 @@
             </form>
         </field>
     </record>
-    <record id="room_type_restriction_view_tree" model="ir.ui.view">
-        <field name="name">pms.room.type.restriction.tree</field>
-        <field name="model">pms.room.type.restriction</field>
+    <record id="room_type_availability_view_tree" model="ir.ui.view">
+        <field name="name">pms.room.type.availability.tree</field>
+        <field name="model">pms.room.type.availability</field>
         <field name="arch" type="xml">
-            <tree string="Restrictions">
+            <tree string="Availability Plans">
                 <field name="name" />
                 <field name="pms_property_id" />
                 <field
@@ -64,17 +64,17 @@
             </tree>
         </field>
     </record>
-    <!-- Action of reservation restriction -->
-    <record model="ir.actions.act_window" id="room_type_restriction_action">
-        <field name="name">Reservation restrictions</field>
-        <field name="res_model">pms.room.type.restriction</field>
+    <!-- Action of reservation availability plan-->
+    <record model="ir.actions.act_window" id="room_type_availability_action">
+        <field name="name">Reservation Availability Plans</field>
+        <field name="res_model">pms.room.type.availability</field>
         <field name="view_mode">tree,form</field>
     </record>
     <!-- MENUS -->
     <menuitem
-        name="Restrictions"
-        id="reservation_restriction_menu"
-        action="room_type_restriction_action"
+        name="Availability Plans"
+        id="reservation_availability_rules_menu"
+        action="room_type_availability_action"
         sequence="22"
         parent="pms.configuration_others"
     />
