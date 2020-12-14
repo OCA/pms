@@ -15,19 +15,19 @@ class TestPmsPricelistRules(common.TransactionCase):
             {"name": "Category1"}
         )
 
-        self.restriction = self.env["pms.room.type.restriction"].create(
-            {"name": "Restriction1"}
+        self.availability = self.env["pms.room.type.availability"].create(
+            {"name": "Availability 1"}
         )
 
-        self.restriction2 = self.env["pms.room.type.restriction"].create(
-            {"name": "Restriction2"}
+        self.availability2 = self.env["pms.room.type.availability"].create(
+            {"name": "Availability"}
         )
         self.property1 = self.env["pms.property"].create(
             {
                 "name": "Property_1",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "default_restriction_id": self.restriction.id,
+                "default_availability_id": self.availability.id,
             }
         )
 
@@ -36,7 +36,7 @@ class TestPmsPricelistRules(common.TransactionCase):
                 "name": "Property_2",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "default_restriction_id": self.restriction2.id,
+                "default_availability_id": self.availability2.id,
             }
         )
 

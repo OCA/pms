@@ -22,9 +22,9 @@ class ProductPricelist(models.Model):
         [("daily", "Daily Plan")], string="Pricelist Type", default="daily"
     )
 
-    restriction_id = fields.Many2one(
-        comodel_name="pms.room.type.restriction",
-        string="restriction",
+    availability_id = fields.Many2one(
+        comodel_name="pms.room.type.availability",
+        string="Availability Plan",
         ondelete="restrict",
     )
 

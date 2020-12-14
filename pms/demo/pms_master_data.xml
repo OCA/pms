@@ -298,14 +298,17 @@
             </field>
         </record>
         <!-- Multi pms Demo -->
-        <record id="demo_pms_room_type_restriction" model="pms.room.type.restriction">
-            <field name="name">Restriction Plan Demo</field>
+        <record id="demo_pms_room_type_availability" model="pms.room.type.availability">
+            <field name="name">Availability Plan Demo</field>
         </record>
         <record id="demo_pms_property" model="pms.property">
             <field name="name">My pms Demo</field>
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
-            <field name="default_restriction_id" ref="demo_pms_room_type_restriction" />
+            <field
+                name="default_availability_id"
+                ref="demo_pms_room_type_availability"
+            />
         </record>
         <!-- pms.room.type    -->
         <record id="demo_pms_room_type_0" model="pms.room.type">

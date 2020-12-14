@@ -11,9 +11,9 @@ from .common import TestHotel
 @freeze_time("2012-01-14")
 class TestPmsReservations(TestHotel):
     def create_common_scenario(self):
-        # create a room type restriction
-        self.room_type_restriction = self.env["pms.room.type.restriction"].create(
-            {"name": "Restriction plan for TEST"}
+        # create a room type availability
+        self.room_type_availability = self.env["pms.room.type.availability"].create(
+            {"name": "Availability plan for TEST"}
         )
 
         # create a property
@@ -22,7 +22,7 @@ class TestPmsReservations(TestHotel):
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "default_restriction_id": self.room_type_restriction.id,
+                "default_availability_id": self.room_type_availability.id,
             }
         )
 
