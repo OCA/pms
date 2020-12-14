@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <odoo>
-    <record id="room_type_restriction_item_view_form" model="ir.ui.view">
-        <field name="name">pms.room.type.restriction.item.form</field>
-        <field name="model">pms.room.type.restriction.item</field>
+    <record id="room_type_availability_rule_view_form" model="ir.ui.view">
+        <field name="name">pms.room.type.availability.rule.form</field>
+        <field name="model">pms.room.type.availability.rule</field>
         <field name="arch" type="xml">
-            <form string="Restrictions">
+            <form string="Availability Plans">
                 <group>
                     <field name="room_type_id" required="True" />
                     <field name="date" />
@@ -31,11 +31,11 @@
             </form>
         </field>
     </record>
-    <record id="room_type_restriction_item_view_tree" model="ir.ui.view">
-        <field name="name">pms.room.type.restriction.item.tree</field>
-        <field name="model">pms.room.type.restriction.item</field>
+    <record id="room_type_availability_rule_view_tree" model="ir.ui.view">
+        <field name="name">pms.room.type.availability.rule.tree</field>
+        <field name="model">pms.room.type.availability.rule</field>
         <field name="arch" type="xml">
-            <tree string="Restrictions">
+            <tree string="Availability rules">
                 <field name="room_type_id" />
                 <field name="date" />
                 <field name="min_stay" />
