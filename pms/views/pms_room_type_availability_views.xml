@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="room_type_availability_view_form" model="ir.ui.view">
+        <field name="name">pms.room.type.availability.form</field>
+        <field name="model">pms.room.type.availability</field>
+        <field name="arch" type="xml">
+            <form string="Rules">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="toggle_active"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                        >
+                            <field
+                                name="active"
+                                widget="boolean_button"
+                                options='{"terminology": "archive"}'
+                            />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Name" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <field
+                            name="pms_property_id"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                        <field
+                            name="pms_pricelist_ids"
+                            widget="many2many_tags"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                    </group>
+                    <separator string="Availability Rules" />
+                    <field name="item_ids" nolabel="1">
+                        <tree string="Availability Rules">
+                            <field name="room_type_id" />
+                            <field name="date" />
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="room_type_availability_view_tree" model="ir.ui.view">
+        <field name="name">pms.room.type.availability.tree</field>
+        <field name="model">pms.room.type.availability</field>
+        <field name="arch" type="xml">
+            <tree string="Availability Plans">
+                <field name="name" />
+                <field name="pms_property_id" />
+                <field
+                    name="pms_pricelist_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True,'no_open': True}"
+                />
+                <field name="active" />
+            </tree>
+        </field>
+    </record>
+    <!-- Action of reservation availability plan-->
+    <record model="ir.actions.act_window" id="room_type_availability_action">
+        <field name="name">Reservation Availability Plans</field>
+        <field name="res_model">pms.room.type.availability</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <!-- MENUS -->
+    <menuitem
+        name="Availability Plans"
+        id="reservation_availability_rules_menu"
+        action="room_type_availability_action"
+        sequence="22"
+        parent="pms.configuration_others"
+    />
+</odoo>

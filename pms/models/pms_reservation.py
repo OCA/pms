@@ -507,7 +507,11 @@ class PmsReservation(models.Model):
             )
 
     @api.depends(
-        "reservation_line_ids.date", "overbooking", "state", "preferred_room_id"
+        "reservation_line_ids.date",
+        "overbooking",
+        "state",
+        "preferred_room_id",
+        "pricelist_id",
     )
     def _compute_allowed_room_ids(self):
         for reservation in self:
@@ -524,6 +528,7 @@ class PmsReservation(models.Model):
                     checkout=reservation.checkout,
                     room_type_id=False,  # Allow chosen any available room
                     current_lines=reservation.reservation_line_ids.ids,
+                    pricelist=reservation.pricelist_id.id,
                 )
                 reservation.allowed_room_ids = rooms_available
 
@@ -1102,6 +1107,7 @@ class PmsReservation(models.Model):
             checkin=self.checkin,
             checkout=self.checkout,
             current_lines=self.reservation_line_ids.ids,
+            pricelist=self.pricelist_id.id,
         )
         # REVIEW: check capacity room
         return {
@@ -1184,6 +1190,7 @@ class PmsReservation(models.Model):
             checkin=self.checkin,
             checkout=self.checkout,
             room_type_id=self.room_type_id.id or False,
+            pricelist=self.pricelist_id.id,
         )
         if rooms_available:
             room_chosen = rooms_available[0]

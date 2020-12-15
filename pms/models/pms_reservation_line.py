@@ -80,6 +80,12 @@ class PmsReservationLine(models.Model):
         store=True,
         help="This record is taken into account to calculate availability",
     )
+    impacts_quota = fields.Integer(
+        string="Impacts quota",
+        compute="_compute_impact_quota",
+        store=True,
+        readonly=False,
+    )
 
     _sql_constraints = [
         (
@@ -105,14 +111,14 @@ class PmsReservationLine(models.Model):
                 rooms_available = self.env[
                     "pms.room.type.availability"
                 ].rooms_available(
-                    checkin=reservation.checkin,
-                    checkout=reservation.checkout,
+                    checkin=line.reservation_id.checkin,
+                    checkout=line.reservation_id.checkout,
                     room_type_id=reservation.room_type_id.id
                     if not free_room_select
                     else False,
                     current_lines=line._origin.reservation_id.reservation_line_ids.ids,
+                    pricelist=line.reservation_id.pricelist_id.id,
                 )
-
                 # if there is availability for the entire stay
                 if rooms_available:
 
@@ -134,9 +140,20 @@ class PmsReservationLine(models.Model):
                     # available for the entire stay
                     else:
                         line.room_id = rooms_available[0]
+                # check that the reservation cannot be allocated even by dividing it
+                elif not self.env["pms.room.type.availability"].splitted_availability(
+                    checkin=line.reservation_id.checkin,
+                    checkout=line.reservation_id.checkout,
+                    room_type_id=line.reservation_id.room_type_id.id,
+                    current_lines=line._origin.reservation_id.reservation_line_ids.ids,
+                    pricelist=line.reservation_id.pricelist_id,
+                ):
+                    raise ValidationError(
+                        _("%s: No room type available")
+                        % (line.reservation_id.room_type_id.name)
+                    )
 
-                # if there is no availability for the entire stay without
-                # changing rooms (we assume a split reservation)
+                # the reservation can be allocated into several rooms
                 else:
                     rooms_ranking = dict()
 
@@ -173,12 +190,8 @@ class PmsReservationLine(models.Model):
                                     if room.id not in rooms_ranking
                                     else rooms_ranking[room.id] + 1
                                 )
-                    if len(rooms_ranking) == 0:
-                        raise ValidationError(
-                            _("%s: No room type available")
-                            % (reservation.room_type_id.name)
-                        )
-                    else:
+
+                    if len(rooms_ranking) > 0:
                         # we get the best score in the ranking
                         best = max(rooms_ranking.values())
 
@@ -217,6 +230,17 @@ class PmsReservationLine(models.Model):
                             # At this point we set the room with the best ranking,
                             # no matter what it is
                             line.room_id = list(bests.keys())[0]
+
+    @api.depends("reservation_id.room_type_id", "reservation_id.pricelist_id")
+    def _compute_impact_quota(self):
+        for line in self:
+            reservation = line.reservation_id
+            line.impacts_quota = self.env["pms.room.type.availability"].update_quota(
+                pricelist_id=reservation.pricelist_id,
+                room_type_id=reservation.room_type_id,
+                date=line.date,
+                line=line,
+            )
 
     @api.depends(
         "reservation_id",
