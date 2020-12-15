@@ -10,7 +10,7 @@ class PmsCancelationRule(models.Model):
     _description = "Cancelation Rules"
 
     # Fields declaration
-    name = fields.Char("Amenity Name", translate=True, required=True)
+    name = fields.Char(string="Cancelation Rule", translate=True, required=True)
     pricelist_ids = fields.One2many(
         "product.pricelist", "cancelation_rule_id", "Pricelist that use this rule"
     )
