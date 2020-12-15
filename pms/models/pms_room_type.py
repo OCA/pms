@@ -1,5 +1,6 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
+# Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
@@ -70,19 +71,83 @@ class PmsRoomType(models.Model):
         "Use `-1` for managing no quota.",
     )
 
-    _sql_constraints = [
-        (
-            "code_type_pms_unique",
-            "unique(code_type)",
-            "Room Type Code must be unique",
-        ),
-    ]
-
     # Constraints and onchanges
     @api.depends("room_ids", "room_ids.active")
     def _compute_total_rooms(self):
         for record in self:
             record.total_rooms_count = len(record.room_ids)
+
+    @api.model
+    def get_unique_by_code_property(self, code_type, pms_property_id):
+        """
+        :param code_type: room type code
+        :param pms_property_id: property ID
+        :return: one or 0 room types ValidationError if more than one found
+        """
+        company_id = self.env["pms.property"].browse(pms_property_id).company_id.id
+        records = self.search(
+            [
+                "&",
+                ("code_type", "=", code_type),
+                "|",
+                ("pms_property_ids", "in", pms_property_id),
+                "|",
+                "&",
+                ("pms_property_ids", "=", False),
+                ("company_id", "=", company_id),
+                "&",
+                ("pms_property_ids", "=", False),
+                ("company_id", "=", False),
+            ]
+        )
+        res, res_priority = self, -1
+        for rec in records:
+            priority = (rec.pms_property_ids and 2) or (rec.company_id and 1 or 0)
+            if priority > res_priority:
+                res, res_priority = rec, priority
+            elif priority == res_priority:
+                raise ValidationError(
+                    _(
+                        "Integrity error: There's multiple room types "
+                        "with the same code and properties"
+                    )
+                )
+        return res
+
+    @api.constrains("pms_property_ids", "company_id")
+    def _check_property_company_integrity(self):
+        for rec in self:
+            if rec.company_id and rec.pms_property_ids:
+                property_companies = rec.pms_property_ids.mapped("company_id")
+                if len(property_companies) > 1 or rec.company_id != property_companies:
+                    raise ValidationError(
+                        _(
+                            "The company of the properties must match "
+                            "the company on the room type"
+                        )
+                    )
+
+    @api.constrains("code_type", "pms_property_ids", "company_id")
+    def _check_code_property_company_uniqueness(self):
+        msg = _("Already exists another room type with the same code and properties")
+        for rec in self:
+            if not rec.pms_property_ids:
+                if self.search(
+                    [
+                        ("id", "!=", rec.id),
+                        ("code_type", "=", rec.code_type),
+                        ("pms_property_ids", "=", False),
+                        ("company_id", "=", rec.company_id.id),
+                    ]
+                ):
+                    raise ValidationError(msg)
+            else:
+                for pms_property in rec.pms_property_ids:
+                    if (
+                        rec.get_unique_by_code_property(rec.code_type, pms_property.id)
+                        != rec
+                    ):
+                        raise ValidationError(msg)
 
     # ORM Overrides
     @api.model
