@@ -35,7 +35,7 @@
         <field name="view_mode">tree,form</field>
     </record>
     <menuitem
-        name="Ubitacions"
+        name="Ubications"
         id="menu_open_pms_floor_form_tree"
         action="open_pms_floor_form_tree"
         sequence="21"
