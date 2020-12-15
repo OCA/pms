@@ -1,6 +1,5 @@
 import datetime
 
-from _pytest.skipping import Skip
 from freezegun import freeze_time
 
 from odoo import fields
@@ -114,7 +113,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             }
         )
 
-    @Skip
     def test_availability_rooms_all(self):
         # TEST CASE
         # get availability withouth rules
@@ -141,7 +139,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "because there's no availability rules for them.",
         )
 
-    @Skip
     def test_availability_rooms_all_lines(self):
         # TEST CASE
         # get availability withouth rules
@@ -176,7 +173,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "because there's no availability rules for them.",
         )
 
-    @Skip
     def test_availability_rooms_room_type(self):
         # TEST CASE
         # get availability withouth rules
@@ -206,7 +202,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "because there's no  availability rules for them.",
         )
 
-    @Skip
     def test_availability_closed_no_room_type(self):
         # TEST CASE:
         # coverage for 2 points:
@@ -241,7 +236,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "which its availability rules applies",
         )
 
-    @Skip
     def test_availability_rules(self):
         # TEST CASE
         # the availability should take into acount availability rules:
@@ -384,7 +378,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     "which its availability rules applies",
                 )
 
-    @Skip
     @freeze_time("1980-11-01")
     def test_rule_on_create_reservation(self):
         # TEST CASE
@@ -424,7 +417,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 }
             )
 
-    @Skip
     @freeze_time("1980-11-01")
     def test_rules_on_create_splitted_reservation(self):
         # TEST CASE
@@ -486,7 +478,6 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 }
             )
 
-    @Skip
     @freeze_time("1980-11-01")
     def test_rule_update_quota_on_create_reservation(self):
         # TEST CASE

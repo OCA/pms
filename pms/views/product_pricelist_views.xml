@@ -12,6 +12,8 @@
                 />
                 <field name="pricelist_type" />
                 <field name="cancelation_rule_id" />
+                <field name="availability_id" />
+
             </xpath>
             <xpath
                 expr="//field[@name='item_ids']/tree/field[@name='base']"
