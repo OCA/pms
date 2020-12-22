@@ -51,7 +51,12 @@ class PmsFolio(models.Model):
         "pms.property", default=_get_default_pms_property, required=True
     )
     partner_id = fields.Many2one(
-        "res.partner", compute="_compute_partner_id", tracking=True, ondelete="restrict"
+        "res.partner",
+        compute="_compute_partner_id",
+        tracking=True,
+        ondelete="restrict",
+        store=True,
+        readonly=False,
     )
     reservation_ids = fields.One2many(
         "pms.reservation",
@@ -361,6 +366,7 @@ class PmsFolio(models.Model):
         directly from existing invoices. This is necessary since such a
         refund is not directly linked to the Folio.
         """
+        self.move_ids = False
         for folio in self.filtered("pricelist_id"):
             move_ids = (
                 folio.reservation_ids.mapped("move_line_ids")
