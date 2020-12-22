@@ -71,11 +71,16 @@ class ProductPricelist(models.Model):
                 lambda i: not i.pms_property_ids
                 or self._context["property"] in i.pms_property_ids.ids
             )
+            reverse_id = items_filtered.sorted(id, reverse=True)
             return items_filtered.sorted(
                 key=lambda s: (
-                    (s.applied_on),
-                    ((s.date_end - s.date_start).days),
+                    s.applied_on,
+                    True if (not s.date_end or not s.date_start) else False,
+                    True
+                    if (not s.date_end or not s.date_start)
+                    else (s.date_end - s.date_start).days,
                     ((not s.pms_property_ids, s), len(s.pms_property_ids)),
+                    reverse_id,
                 )
             )
         return items

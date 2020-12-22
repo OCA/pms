@@ -544,6 +544,316 @@ class TestPmsPricelistRules(common.TransactionCase):
         # ACT
         n_days = (reservation.checkout - reservation.checkin).days
         expected_price = self.item2.fixed_price * n_days
+
+        # ASSERT
+        self.assertEqual(
+            expected_price, reservation.price_total, "The price is not as expected"
+        )
+
+    @freeze_time("2000-01-01 00:00:00")
+    def test_simple_price_without_items(self):
+
+        # ARRANGE
+        self.create_common_scenario()
+
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.today(),
+                "checkout": datetime.datetime.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room.id,
+                "pms_property_id": self.property1.id,
+            }
+        )
+
+        # ACT
+        n_days = (reservation.checkout - reservation.checkin).days
+        expected_price = self.room.room_type_id.list_price * n_days
+
+        # ASSERT
+        self.assertEqual(
+            expected_price, reservation.price_total, "The price is not as expected"
+        )
+
+    @freeze_time("2000-01-01 00:00:00")
+    def test_item_without_date_end(self):
+        # ARRANGE
+        self.create_common_scenario()
+
+        self.item1 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_1",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today(),
+                "fixed_price": 40.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.today(),
+                "checkout": datetime.datetime.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room.id,
+                "pms_property_id": self.property1.id,
+                "pricelist_id": self.pricelist.id,
+            }
+        )
+        n_days = (reservation.checkout - reservation.checkin).days
+        expected_price = self.item1.fixed_price * n_days
+
+        # ASSERT
+        self.assertEqual(
+            expected_price, reservation.price_total, "The price is not as expected"
+        )
+
+    @freeze_time("2000-01-01 00:00:00")
+    def test_item_without_date_start(self):
+        # ARRANGE
+        self.create_common_scenario()
+
+        self.item1 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_1",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=60),
+                "fixed_price": 40.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.today(),
+                "checkout": datetime.datetime.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room.id,
+                "pms_property_id": self.property1.id,
+                "pricelist_id": self.pricelist.id,
+            }
+        )
+        n_days = (reservation.checkout - reservation.checkin).days
+        expected_price = self.item1.fixed_price * n_days
+
+        # ASSERT
+        self.assertEqual(
+            expected_price, reservation.price_total, "The price is not as expected"
+        )
+
+    @freeze_time("2000-01-01 00:00:00")
+    def test_items_sorted_whitout_date_end(self):
+
+        # ARRANGE
+        self.create_common_scenario()
+
+        self.item1 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_1",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today() + datetime.timedelta(days=60),
+                "fixed_price": 40.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        self.item2 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_2",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today() + datetime.timedelta(days=7),
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=14),
+                "fixed_price": 50.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.today() + datetime.timedelta(days=7),
+                "checkout": datetime.datetime.today() + datetime.timedelta(days=10),
+                "preferred_room_id": self.room.id,
+                "pms_property_id": self.property1.id,
+                "pricelist_id": self.pricelist.id,
+            }
+        )
+        n_days = (reservation.checkout - reservation.checkin).days
+        expected_price = self.item2.fixed_price * n_days
+        # ASSERT
+        self.assertEqual(
+            expected_price, reservation.price_total, "The price is not as expected"
+        )
+
+    @freeze_time("2000-01-01 00:00:00")
+    def test_items_sorted_whitout_date_start(self):
+
+        # ARRANGE
+        self.create_common_scenario()
+
+        self.item1 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_1",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today(),
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=7),
+                "fixed_price": 40.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        self.item2 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_2",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=60),
+                "fixed_price": 50.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.today(),
+                "checkout": datetime.datetime.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room.id,
+                "pms_property_id": self.property1.id,
+                "pricelist_id": self.pricelist.id,
+            }
+        )
+        n_days = (reservation.checkout - reservation.checkin).days
+        expected_price = self.item1.fixed_price * n_days
+
+        # ASSERT
+        self.assertEqual(
+            expected_price, reservation.price_total, "The price is not as expected"
+        )
+
+    @freeze_time("2000-01-01 00:00:00")
+    def test_items_sorted_whith_tie(self):
+
+        # ARRANGE
+        self.create_common_scenario()
+
+        self.item1 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_1",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today(),
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=7),
+                "pms_property_ids": [self.property1.id],
+                "fixed_price": 40.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        self.item2 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_2",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today(),
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=7),
+                "pms_property_ids": [self.property1.id],
+                "fixed_price": 60.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.today(),
+                "checkout": datetime.datetime.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room.id,
+                "pms_property_id": self.property1.id,
+                "pricelist_id": self.pricelist.id,
+            }
+        )
+        n_days = (reservation.checkout - reservation.checkin).days
+        expected_price = self.item2.fixed_price * n_days
+
+        # ASSERT
+        self.assertEqual(
+            expected_price, reservation.price_total, "The price is not as expected"
+        )
+
+    @freeze_time("2000-01-01 00:00:00")
+    def test_three_items_sorted_whith_tie(self):
+
+        # ARRANGE
+        self.create_common_scenario()
+
+        self.item1 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_1",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today(),
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=7),
+                "pms_property_ids": [self.property1.id],
+                "fixed_price": 40.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        self.item2 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_2",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today(),
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=7),
+                "pms_property_ids": [self.property1.id],
+                "fixed_price": 60.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        self.item3 = self.env["product.pricelist.item"].create(
+            {
+                "name": "item_3",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start": datetime.datetime.today(),
+                "date_end": datetime.datetime.today() + datetime.timedelta(days=7),
+                "pms_property_ids": [self.property1.id],
+                "fixed_price": 50.0,
+                "pricelist_id": self.pricelist.id,
+                "compute_price": "fixed",
+            }
+        )
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.today(),
+                "checkout": datetime.datetime.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room.id,
+                "pms_property_id": self.property1.id,
+                "pricelist_id": self.pricelist.id,
+            }
+        )
+        n_days = (reservation.checkout - reservation.checkin).days
+        expected_price = self.item3.fixed_price * n_days
+
         # ASSERT
         self.assertEqual(
             expected_price, reservation.price_total, "The price is not as expected"
