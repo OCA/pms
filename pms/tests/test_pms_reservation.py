@@ -12,9 +12,9 @@ from .common import TestHotel
 class TestPmsReservations(TestHotel):
     def create_common_scenario(self):
         # create a room type availability
-        self.room_type_availability = self.env["pms.room.type.availability"].create(
-            {"name": "Availability plan for TEST"}
-        )
+        self.room_type_availability = self.env[
+            "pms.room.type.availability.plan"
+        ].create({"name": "Availability plan for TEST"})
 
         # create a property
         self.property = self.env["pms.property"].create(
@@ -22,7 +22,7 @@ class TestPmsReservations(TestHotel):
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "default_availability_id": self.room_type_availability.id,
+                "default_availability_plan_id": self.room_type_availability.id,
             }
         )
 
