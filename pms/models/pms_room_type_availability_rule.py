@@ -10,8 +10,8 @@ class PmsRoomTypeAvailabilityRule(models.Model):
 
     # Field Declarations
 
-    availability_id = fields.Many2one(
-        comodel_name="pms.room.type.availability",
+    availability_plan_id = fields.Many2one(
+        comodel_name="pms.room.type.availability.plan",
         string="Availability Plan",
         ondelete="cascade",
         index=True,
@@ -71,7 +71,7 @@ class PmsRoomTypeAvailabilityRule(models.Model):
     _sql_constraints = [
         (
             "room_type_registry_unique",
-            "unique(availability_id, room_type_id, date)",
+            "unique(availability_plan_id, room_type_id, date)",
             "Only can exists one availability rule in the same \
                          day for the same room type!",
         )

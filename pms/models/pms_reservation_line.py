@@ -109,7 +109,7 @@ class PmsReservationLine(models.Model):
                 free_room_select = True if reservation.preferred_room_id else False
                 # we get the rooms available for the entire stay
                 rooms_available = self.env[
-                    "pms.room.type.availability"
+                    "pms.room.type.availability.plan"
                 ].rooms_available(
                     checkin=line.reservation_id.checkin,
                     checkout=line.reservation_id.checkout,
@@ -141,7 +141,9 @@ class PmsReservationLine(models.Model):
                     else:
                         line.room_id = rooms_available[0]
                 # check that the reservation cannot be allocated even by dividing it
-                elif not self.env["pms.room.type.availability"].splitted_availability(
+                elif not self.env[
+                    "pms.room.type.availability.plan"
+                ].splitted_availability(
                     checkin=line.reservation_id.checkin,
                     checkout=line.reservation_id.checkout,
                     room_type_id=line.reservation_id.room_type_id.id,
@@ -235,7 +237,9 @@ class PmsReservationLine(models.Model):
     def _compute_impact_quota(self):
         for line in self:
             reservation = line.reservation_id
-            line.impacts_quota = self.env["pms.room.type.availability"].update_quota(
+            line.impacts_quota = self.env[
+                "pms.room.type.availability.plan"
+            ].update_quota(
                 pricelist_id=reservation.pricelist_id,
                 room_type_id=reservation.room_type_id,
                 date=line.date,

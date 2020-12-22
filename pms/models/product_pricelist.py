@@ -22,8 +22,8 @@ class ProductPricelist(models.Model):
         [("daily", "Daily Plan")], string="Pricelist Type", default="daily"
     )
 
-    availability_id = fields.Many2one(
-        comodel_name="pms.room.type.availability",
+    availability_plan_id = fields.Many2one(
+        comodel_name="pms.room.type.availability.plan",
         string="Availability Plan",
         ondelete="restrict",
     )
@@ -79,3 +79,19 @@ class ProductPricelist(models.Model):
                 )
             )
         return items
+
+    # Action methods
+    def open_massive_changes_wizard(self):
+
+        if self.ensure_one():
+            return {
+                "view_type": "form",
+                "view_mode": "form",
+                "name": "Massive changes on Pricelist: " + self.name,
+                "res_model": "pms.massive.changes.wizard",
+                "target": "new",
+                "type": "ir.actions.act_window",
+                "context": {
+                    "pricelist_id": self.id,
+                },
+            }

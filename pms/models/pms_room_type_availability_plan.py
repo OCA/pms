@@ -9,7 +9,7 @@ class PmsRoomTypeAvailability(models.Model):
     """The room type availability is used as a daily availability plan for room types
     and therefore is related only with one property."""
 
-    _name = "pms.room.type.availability"
+    _name = "pms.room.type.availability.plan"
     _description = "Reservation availability plan"
 
     # Default methods
@@ -27,17 +27,15 @@ class PmsRoomTypeAvailability(models.Model):
 
     pms_pricelist_ids = fields.One2many(
         comodel_name="product.pricelist",
-        inverse_name="availability_id",
+        inverse_name="availability_plan_id",
         string="Pricelists",
         required=False,
-        ondelete="restrict",
     )
 
-    item_ids = fields.One2many(
+    rule_ids = fields.One2many(
         comodel_name="pms.room.type.availability.rule",
-        inverse_name="availability_id",
-        string="Rule Items",
-        copy=True,
+        inverse_name="availability_plan_id",
+        string="Availability Rules",
     )
 
     active = fields.Boolean(
@@ -104,7 +102,9 @@ class PmsRoomTypeAvailability(models.Model):
         free_rooms = self.env["pms.room"].search(domain_rooms)
 
         if pricelist:
-            domain_rules.append(("availability_id.pms_pricelist_ids", "=", pricelist))
+            domain_rules.append(
+                ("availability_plan_id.pms_pricelist_ids", "=", pricelist)
+            )
             rule_items = self.env["pms.room.type.availability.rule"].search(
                 domain_rules
             )
@@ -149,7 +149,7 @@ class PmsRoomTypeAvailability(models.Model):
         if pricelist_id and room_type_id and date:
             rule = self.env["pms.room.type.availability.rule"].search(
                 [
-                    ("availability_id.pms_pricelist_ids", "=", pricelist_id.id),
+                    ("availability_plan_id.pms_pricelist_ids", "=", pricelist_id.id),
                     ("room_type_id", "=", room_type_id.id),
                     ("date", "=", date),
                 ]
@@ -191,3 +191,19 @@ class PmsRoomTypeAvailability(models.Model):
                 old_rule.quota += 1
 
         return False
+
+    # Action methods
+    def open_massive_changes_wizard(self):
+
+        if self.ensure_one():
+            return {
+                "view_type": "form",
+                "view_mode": "form",
+                "name": "Massive changes on Availability Plan: " + self.name,
+                "res_model": "pms.massive.changes.wizard",
+                "target": "new",
+                "type": "ir.actions.act_window",
+                "context": {
+                    "availability_plan_id": self.id,
+                },
+            }

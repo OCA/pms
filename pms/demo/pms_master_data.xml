@@ -298,7 +298,10 @@
             </field>
         </record>
         <!-- Multi pms Demo -->
-        <record id="demo_pms_room_type_availability" model="pms.room.type.availability">
+        <record
+            id="demo_pms_room_type_availability_plan"
+            model="pms.room.type.availability.plan"
+        >
             <field name="name">Availability Plan Demo</field>
         </record>
         <record id="demo_pms_property" model="pms.property">
@@ -306,8 +309,8 @@
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
             <field
-                name="default_availability_id"
-                ref="demo_pms_room_type_availability"
+                name="default_availability_plan_id"
+                ref="demo_pms_room_type_availability_plan"
             />
         </record>
         <!-- pms.room.type    -->

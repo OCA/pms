@@ -36,10 +36,17 @@
         <field name="model">pms.room.type.availability.rule</field>
         <field name="arch" type="xml">
             <tree string="Availability rules">
-                <field name="room_type_id" />
                 <field name="date" />
+                <field name="room_type_id" />
+                <field name="quota" />
+                <field name="max_avail" />
                 <field name="min_stay" />
+                <field name="max_stay" />
+                <field name="min_stay_arrival" />
+                <field name="max_stay_arrival" />
                 <field name="closed" />
+                <field name="closed_arrival" />
+                <field name="closed_departure" />
             </tree>
         </field>
     </record>

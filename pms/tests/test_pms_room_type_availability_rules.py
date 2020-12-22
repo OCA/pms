@@ -17,9 +17,9 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "test pricelist 1",
             }
         )
-        # pms.room.type.availability
+        # pms.room.type.availability.plan
         self.test_room_type_availability1 = self.env[
-            "pms.room.type.availability"
+            "pms.room.type.availability.plan"
         ].create(
             {
                 "name": "Availability plan for TEST",
@@ -32,7 +32,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.test_pricelist1.id,
-                "default_availability_id": self.test_room_type_availability1.id,
+                "default_availability_plan_id": self.test_room_type_availability1.id,
             }
         )
         # pms.room.type.class
@@ -127,7 +127,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.availability"].rooms_available(
+        result = self.env["pms.room.type.availability.plan"].rooms_available(
             checkin=checkin,
             checkout=checkout,
         )
@@ -160,7 +160,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.availability"].rooms_available(
+        result = self.env["pms.room.type.availability.plan"].rooms_available(
             checkin=checkin,
             checkout=checkout,
             current_lines=test_reservation.reservation_line_ids.ids,
@@ -188,7 +188,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.availability"].rooms_available(
+        result = self.env["pms.room.type.availability.plan"].rooms_available(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             room_type_id=self.test_room_type_double.id,
@@ -215,14 +215,14 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "pms.room.type.availability.rule"
         ].create(
             {
-                "availability_id": self.test_room_type_availability1.id,
+                "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,  # <- (1/2)
             }
         )
         # ACT
-        result = self.env["pms.room.type.availability"].rooms_available(
+        result = self.env["pms.room.type.availability.plan"].rooms_available(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             # room_type_id=False, # <-  (2/2)
@@ -249,7 +249,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "pms.room.type.availability.rule"
         ].create(
             {
-                "availability_id": self.test_room_type_availability1.id,
+                "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=0)).date(),
             }
@@ -363,7 +363,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 # ACT
                 self.test_room_type_availability1_item1.write(test_case)
 
-                result = self.env["pms.room.type.availability"].rooms_available(
+                result = self.env["pms.room.type.availability.plan"].rooms_available(
                     checkin=checkin,
                     checkout=checkout,
                     room_type_id=self.test_room_type_double.id,
@@ -390,7 +390,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "pms.room.type.availability.rule"
         ].create(
             {
-                "availability_id": self.test_room_type_availability1.id,
+                "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
@@ -429,7 +429,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "pms.room.type.availability.rule"
         ].create(
             {
-                "availability_id": self.test_room_type_availability1.id,
+                "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
@@ -491,7 +491,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             "pms.room.type.availability.rule"
         ].create(
             {
-                "availability_id": self.test_room_type_availability1.id,
+                "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": 1,
@@ -541,7 +541,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         )
         rule = self.env["pms.room.type.availability.rule"].create(
             {
-                "availability_id": self.test_room_type_availability1.id,
+                "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": test_quota,
