@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_pms_l10n_es" model="ir.ui.view">
+        <field name="name">Legal Spanish information</field>
+        <field name="model">res.partner</field>
+        <field
+            name="inherit_id"
+            ref="partner_contact_personal_information_page.personal_information"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='personal_information_group']" position="inside">
+                <field name='document_type' />
+                <field name='document_number' />
+                <field name='document_expedition_date' />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

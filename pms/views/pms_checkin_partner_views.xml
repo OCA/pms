@@ -76,6 +76,7 @@
             </tree>
         </field>
     </record>
+
     <record id="pms_checkin_partner_view_tree" model="ir.ui.view">
         <field name="name">pms.checkin.partner.view.tree</field>
         <field name="model">pms.checkin.partner</field>
