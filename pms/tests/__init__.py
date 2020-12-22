@@ -26,3 +26,5 @@ from . import test_pms_checkin_partner
 from . import test_pms_sale_channel
 from . import test_pms_folio
 from . import test_pms_room_type_availability_rules
+from . import test_pms_room_type
+from . import test_pms_wizard_massive_changes
