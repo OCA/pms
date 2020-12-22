@@ -1,0 +1,249 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="massive_changes_wizard" model="ir.ui.view">
+        <field name="name">Availability Wizard</field>
+        <field name="model">pms.massive.changes.wizard</field>
+        <field name="arch" type="xml">
+            <form class="pt-1">
+                <group>
+                <field name="avail_readonly" invisible="1" />
+                <field name="pricelist_readonly" invisible="1" />
+                </group>
+                <div class="row">
+                    <div class="col-5 ">
+                        <group>
+                            <field
+                                name="start_date"
+                                widget="daterange"
+                                options="{'related_end_date': 'end_date'}"
+                            />
+                            <field
+                                name="end_date"
+                                widget="daterange"
+                                options="{'related_start_date': 'start_date'}"
+                            />
+                        </group>
+                    </div>
+                    <div class="col-5">
+                        <group class="">
+                            <field
+                                name="massive_changes_on"
+                                attrs="{'invisible':['|', ('avail_readonly','=',True), ('pricelist_readonly', '=', True)]}"
+                            />
+                            <field
+                                name="availability_plan_id"
+                                class="mr-5"
+                                string="Availability Plan"
+                                attrs="{'invisible':['|','|',('massive_changes_on','=','pricelist'), ('avail_readonly','=',True),
+                                                             ('pricelist_readonly', '=', True)],
+                                'required': [('massive_changes_on','=','availability_plan')]}"
+                            />
+
+                            <field
+                                name="pricelist_id"
+                                string="Pricelist"
+                                attrs="{'invisible':['|','|',('massive_changes_on','=','availability_plan'),
+                                ('pricelist_readonly','=',True), ('pricelist_readonly', '=', True)],
+                                 'required': [('massive_changes_on','=','pricelist')]}"
+                                domain="[('id', 'in', allowed_pricelist_ids)]"
+                            />
+                            <field name="room_type_id" default_focus="1" />
+                        </group>
+
+                    </div>
+                </div>
+                <field name="allowed_pricelist_ids" invisible="1" />
+                <div class="row">
+                    <div class="col-12">
+                        <group>
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>All days</th>
+                                    <th>Sunday</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                    <th>Saturday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                       <field
+                                                name="apply_on_all_week"
+                                                widget="boolean_toggle"
+                                            />
+                                    </td>
+                                    <td>
+                                        <field
+                                                name="apply_on_sunday"
+                                                widget="boolean_toggle"
+                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                            />
+                                    </td>
+                                    <td>
+                                        <field
+                                                name="apply_on_monday"
+                                                widget="boolean_toggle"
+                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                            />
+                                    </td>
+                                    <td>
+                                        <field
+                                                name="apply_on_tuesday"
+                                                widget="boolean_toggle"
+                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                            />
+                                    </td>
+                                    <td>
+                                        <field
+                                                name="apply_on_wednesday"
+                                                widget="boolean_toggle"
+                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                            />
+                                    </td>
+                                    <td>
+                                        <field
+                                                name="apply_on_thursday"
+                                                widget="boolean_toggle"
+                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                            />
+                                    </td>
+                                    <td>
+                                        <field
+                                                name="apply_on_friday"
+                                                widget="boolean_toggle"
+                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                            />
+                                    </td>
+                                    <td>
+                                        <field
+                                                name="apply_on_saturday"
+                                                widget="boolean_toggle"
+                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                            />
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        </group>
+                    </div>
+                </div>
+                <b
+                    attrs="{'invisible':['|','|', ('massive_changes_on','=','pricelist'), ('avail_readonly','=',True), ('pricelist_readonly', '=', True)]}"
+                >
+                    Rules to apply:
+                </b>
+
+                <div
+                    class="row"
+                    attrs="{'invisible':[('massive_changes_on','=','pricelist')]}"
+                >
+
+                    <div class="col-4">
+                        <group>
+                            <field string="Min. Stay" name="min_stay" />
+                            <field string="Max. Stay" name="max_stay" />
+                        </group>
+                    </div>
+
+                    <div class="col-4">
+                        <group>
+                            <field string="Min. Stay Arrival" name="min_stay_arrival" />
+                            <field string="Max. Stay Arrival" name="max_stay_arrival" />
+                        </group>
+                    </div>
+                    <div class="col-4">
+                        <group>
+                            <field string="Closed" name="closed" />
+                            <field string="Closed Arrival" name="closed_arrival" />
+                            <field string="Closed departure" name="closed_departure" />
+                        </group>
+                    </div>
+                    <div class="col-4">
+                        <group>
+                            <field string="Quota" name="quota" />
+                        </group>
+                    </div>
+                    <div class="col-4">
+                        <group>
+                            <field string="Max. Avail." name="max_avail" />
+                        </group>
+                    </div>
+                </div>
+                <div
+                    class="row"
+                    attrs="{'invisible':[('massive_changes_on','=','availability_plan')]}"
+                >
+                    <div class="col-4">
+                        <group>
+                            <field name="price" />
+                            <field name="min_quantity" />
+                        </group>
+                    </div>
+                </div>
+                <b attrs="{'invisible':[('massive_changes_on','=','pricelist')]}">
+                    <span style="text-decoration:underline;">
+                        <field name="num_rules_to_overwrite" />
+                    </span>
+                    availability rules
+                    <u>will be overwritten:</u>
+                </b>
+
+                <b
+                    attrs="{'invisible':[('massive_changes_on','=','availability_plan')]}"
+                >
+                    <span style="text-decoration:underline;">
+                        <field name="num_pricelist_items_to_overwrite" />
+                    </span>
+                    pricelist items
+                    <u>will be overwritten:</u>
+                </b>
+
+
+                <!--    REVIEW:   a calendar view could be more understandable   -->
+                <field
+                    name="rules_to_overwrite"
+                    attrs="{'invisible':[('massive_changes_on','=','pricelist')]}"
+                />
+                <field
+                    name="pricelist_items_to_overwrite"
+                    attrs="{'invisible':[('massive_changes_on','=','availability_plan')]}"
+                />
+                <footer>
+                    <button
+                        name="apply_massive_changes"
+                        string="Apply changes"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    or
+                    <button
+                        string="Cancel"
+                        class="btn-default border"
+                        special="cancel"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_wizard_massive_changes" model="ir.actions.act_window">
+        <field name="name">Massive changes on Pricelist &amp; Availability Plans</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.massive.changes.wizard</field>
+        <field name="view_id" ref="massive_changes_wizard" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        name="Massive Changes"
+        id="menu_pms_room_massive_changes_wizard"
+        action="action_wizard_massive_changes"
+        sequence="25"
+        parent="pms.configuration_others"
+    />
+</odoo>

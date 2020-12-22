@@ -518,7 +518,7 @@ class PmsReservation(models.Model):
                     )
                     return
                 rooms_available = self.env[
-                    "pms.room.type.availability"
+                    "pms.room.type.availability.plan"
                 ].rooms_available(
                     checkin=reservation.checkin,
                     checkout=reservation.checkout,
@@ -1097,7 +1097,7 @@ class PmsReservation(models.Model):
         }
 
     def open_reservation_wizard(self):
-        rooms_available = self.env["pms.room.type.availability"].rooms_available(
+        rooms_available = self.env["pms.room.type.availability.plan"].rooms_available(
             checkin=self.checkin,
             checkout=self.checkout,
             current_lines=self.reservation_line_ids.ids,
@@ -1180,7 +1180,7 @@ class PmsReservation(models.Model):
     def _autoassign(self):
         self.ensure_one()
         room_chosen = False
-        rooms_available = self.env["pms.room.type.availability"].rooms_available(
+        rooms_available = self.env["pms.room.type.availability.plan"].rooms_available(
             checkin=self.checkin,
             checkout=self.checkout,
             room_type_id=self.room_type_id.id or False,

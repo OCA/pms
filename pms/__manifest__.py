@@ -52,7 +52,7 @@
         "views/account_move_views.xml",
         "views/res_users_views.xml",
         "views/pms_room_type_class_views.xml",
-        "views/pms_room_type_availability_views.xml",
+        "views/pms_room_type_availability_plan_views.xml",
         "views/pms_room_type_availability_rule_views.xml",
         "views/pms_service_views.xml",
         "views/pms_service_line_views.xml",
@@ -65,6 +65,7 @@
         "views/webclient_templates.xml",
         "views/ir_sequence_views.xml",
         "wizards/wizard_reservation.xml",
+        "wizards/wizard_massive_changes.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",

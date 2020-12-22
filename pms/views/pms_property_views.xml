@@ -24,7 +24,10 @@
                                 string="Price and Availability Plans"
                             >
                                 <field name="default_pricelist_id" required="True" />
-                                <field name="default_availability_id" required="True" />
+                                <field
+                                    name="default_availability_plan_id"
+                                    required="True"
+                                />
                             </group>
                             <group string="Timezone">
                                 <field name="tz" widget="timezone_mismatch" />

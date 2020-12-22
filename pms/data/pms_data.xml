@@ -2,7 +2,10 @@
 <odoo>
     <data noupdate="1">
         <!-- Basic pms  -->
-        <record id="main_pms_room_type_availability" model="pms.room.type.availability">
+        <record
+            id="main_pms_room_type_availability_plan"
+            model="pms.room.type.availability.plan"
+        >
             <field name="name">Availability Plan</field>
         </record>
         <record id="main_pms_property" model="pms.property">
@@ -10,8 +13,8 @@
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
             <field
-                name="default_availability_id"
-                ref="main_pms_room_type_availability"
+                name="default_availability_plan_id"
+                ref="main_pms_room_type_availability_plan"
             />
             <field name="street">Rua Street Demo, s/n</field>
             <field name="city">Commitsun city</field>

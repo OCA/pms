@@ -12,8 +12,7 @@
                 />
                 <field name="pricelist_type" />
                 <field name="cancelation_rule_id" />
-                <field name="availability_id" />
-
+                <field name="availability_plan_id" />
             </xpath>
             <xpath
                 expr="//field[@name='item_ids']/tree/field[@name='base']"
@@ -24,8 +23,27 @@
                     widget="many2many_tags"
                     options="{'no_create': True,'no_open': True}"
                 />
+
+            </xpath>
+            <xpath expr="//widget[@name='web_ribbon']" position="after">
+                <div class="oe_button_box " name="button_box">
+                    <button
+                        name="open_massive_changes_wizard"
+                        type="object"
+                        class="oe_stat_button mr-5"
+                        icon="fa-magic"
+                    >
+                        <label
+                            for="open_massive_changes_wizard"
+                            string="Massive changes"
+                        />
+                    </button>
+                </div>
             </xpath>
         </field>
+
+
+
     </record>
     <menuitem
         name="Pricelist"
