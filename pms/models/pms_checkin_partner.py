@@ -2,6 +2,8 @@
 # Copyright 2018  Alexandre Diaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import json
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -17,10 +19,7 @@ class PmsCheckinPartner(models.Model):
 
     # Fields declaration
     identifier = fields.Char(
-        "Identifier",
-        compute="_compute_identifier",
-        readonly=False,
-        store=True,
+        "Identifier", readonly=True, index=True, default=lambda self: _("New")
     )
     partner_id = fields.Many2one(
         "res.partner",
@@ -35,10 +34,29 @@ class PmsCheckinPartner(models.Model):
     pms_property_id = fields.Many2one(
         "pms.property", default=_get_default_pms_property, required=True
     )
-    name = fields.Char("Name", related="partner_id.name")
-    email = fields.Char("E-mail", related="partner_id.email")
-    mobile = fields.Char("Mobile", related="partner_id.mobile")
-    image_128 = fields.Image(related="partner_id.image_128")
+    name = fields.Char(
+        "Name",
+        compute="_compute_name",
+        store=True,
+        readonly=False,
+    )
+    email = fields.Char(
+        "E-mail",
+        compute="_compute_email",
+        store=True,
+        readonly=False,
+    )
+    mobile = fields.Char(
+        "Mobile",
+        compute="_compute_mobile",
+        store=True,
+        readonly=False,
+    )
+    image_128 = fields.Image(
+        compute="_compute_image_128",
+        store=True,
+        readonly=False,
+    )
     segmentation_ids = fields.Many2many(
         related="reservation_id.segmentation_ids",
         readonly=True,
@@ -98,12 +116,42 @@ class PmsCheckinPartner(models.Model):
                 else:
                     record.state = "precheckin"
 
+    @api.depends("partner_id", "partner_id.name")
+    def _compute_name(self):
+        for record in self:
+            if not record.name:
+                record.name = record.partner_id.name
+
+    @api.depends("partner_id", "partner_id.email")
+    def _compute_email(self):
+        for record in self:
+            if not record.email:
+                record.email = record.partner_id.email
+
+    @api.depends("partner_id", "partner_id.mobile")
+    def _compute_mobile(self):
+        for record in self:
+            if not record.mobile:
+                record.mobile = record.partner_id.mobile
+
+    @api.depends("partner_id", "partner_id.image_128")
+    def _compute_image_128(self):
+        for record in self:
+            record.image_128 = record.partner_id.image_128
+
     @api.model
     def _checkin_mandatory_fields(self, depends=False):
         # api.depends need "reservation_id.state" in de lambda function
         if depends:
             return ["reservation_id.state", "name"]
         return ["name"]
+
+    @api.model
+    def _checkin_partner_fields(self):
+        # api.depends need "reservation_id.state" in de lambda function
+        checkin_fields = self._checkin_mandatory_fields()
+        checkin_fields.extend(["mobile", "email"])
+        return checkin_fields
 
     # Constraints and onchanges
 
@@ -143,9 +191,51 @@ class PmsCheckinPartner(models.Model):
                 )
                 if len(draft_checkins) > 0 and vals.get("partner_id"):
                     draft_checkins[0].sudo().unlink()
+        if vals.get("identifier", _("New")) == _("New") or "identifier" not in vals:
+            pms_property_id = (
+                self.env.user.get_active_property_ids()[0]
+                if "pms_property_id" not in vals
+                else vals["pms_property_id"]
+            )
+            vals["identifier"] = self.env["ir.sequence"].search(
+                [("pms_property_id", "=", pms_property_id)]
+            ).next_by_code("pms.checkin.partner") or _("New")
         return super(PmsCheckinPartner, self).create(vals)
 
-    # Action methods
+    def write(self, vals):
+        res = super(PmsCheckinPartner, self).write(vals)
+        ResPartner = self.env["res.partner"]
+        if any(field in vals for field in ResPartner._get_key_fields()):
+            # Create Partner if get key field in the checkin
+            for record in self:
+                key = False
+                partner = False
+                if not record.partner_id:
+                    partner_vals = {}
+                    for field in self._checkin_partner_fields():
+                        if getattr(record, field):
+                            partner_vals[field] = getattr(record, field)
+                        if field in ResPartner._get_key_fields() and partner_vals.get(
+                            field
+                        ):
+                            key = True
+                            partner = ResPartner.search(
+                                [(field, "=", getattr(record, field))]
+                            )
+                    if key:
+                        partner = ResPartner.create(partner_vals)
+                        record.partner_id = partner
+
+        if any(field in vals for field in self._checkin_partner_fields()):
+            # Update partner when the checkin partner field is not set on the partner
+            for record in self:
+                if record.partner_id:
+                    partner_vals = {}
+                    for field in self._checkin_partner_fields():
+                        if not getattr(record.partner_id, field):
+                            partner_vals[field] = getattr(record, field)
+                    record.partner_id.write(partner_vals)
+        return res
 
     def action_on_board(self):
         for record in self:
@@ -169,3 +259,24 @@ class PmsCheckinPartner(models.Model):
             }
             record.update(vals)
         return True
+
+    @api.model
+    def import_room_list_json(self, roomlist_json):
+        roomlist_json = json.loads(roomlist_json)
+        for checkin_dict in roomlist_json:
+            identifier = checkin_dict["identifier"]
+            reservation_id = checkin_dict["reservation_id"]
+            checkin = self.env["pms.checkin.partner"].search(
+                [("identifier", "=", identifier)]
+            )
+            reservation = self.env["pms.reservation"].browse(reservation_id)
+            if not checkin:
+                raise ValidationError(
+                    _("%s not found in checkins (%s)"), identifier, reservation.name
+                )
+            checkin_vals = {}
+            for key, value in checkin_dict.items():
+                if key in ("reservation_id", "folio_id", "identifier"):
+                    continue
+                checkin_vals[key] = value
+            checkin.write(checkin_vals)
