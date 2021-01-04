@@ -66,6 +66,7 @@
         "views/ir_sequence_views.xml",
         "wizards/wizard_reservation.xml",
         "wizards/wizard_massive_changes.xml",
+        "wizards/wizard_advanced_filters.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",
