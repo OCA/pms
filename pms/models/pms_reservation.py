@@ -1330,6 +1330,8 @@ class PmsReservation(models.Model):
 
     def action_reservation_checkout(self):
         for record in self:
+            if record.state not in ("onboard", "no_checkout"):
+                raise UserError(_("This reservation cannot be check out"))
             record.state = "done"
             if record.checkin_partner_ids:
                 record.checkin_partner_ids.filtered(
@@ -1351,6 +1353,10 @@ class PmsReservation(models.Model):
                 "popup": True,
             },
             "domain": [("reservation_id", "=", self.id), ("state", "=", "draft")],
+            "search_view_id": [
+                self.env.ref("pms.pms_checkin_partner_view_folio_search").id,
+                "search",
+            ],
             "target": "new",
         }
 
@@ -1367,6 +1373,10 @@ class PmsReservation(models.Model):
                 "edit": True,
                 "popup": True,
             },
+            "search_view_id": [
+                self.env.ref("pms.pms_checkin_partner_view_folio_search").id,
+                "search",
+            ],
             "domain": [("reservation_id", "=", self.id)],
             "target": "new",
         }

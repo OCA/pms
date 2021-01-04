@@ -4,18 +4,90 @@ from odoo import api, fields, models
 class PmsCheckinPartner(models.Model):
     _inherit = "pms.checkin.partner"
 
-    lastname2 = fields.Char("Last Name", related="partner_id.lastname2")
-    birthdate_date = fields.Date("Birthdate", related="partner_id.birthdate_date")
+    lastname2 = fields.Char(
+        "Last Name",
+        compute="_compute_lastname2",
+        store=True,
+        readonly=False,
+    )
+    birthdate_date = fields.Date(
+        "Birthdate",
+        compute="_compute_birth_date",
+        store=True,
+        readonly=False,
+    )
     document_number = fields.Char(
-        "Document Number", related="partner_id.document_number"
+        "Document Number",
+        compute="_compute_document_number",
+        store=True,
+        readonly=False,
     )
     document_type = fields.Selection(
-        "Document Type", related="partner_id.document_type"
+        [
+            ("D", "DNI"),
+            ("P", "Passport"),
+            ("C", "Driving License"),
+            ("I", "Identification Document"),
+            ("N", "Spanish residence permit"),
+            ("X", "European residence permit"),
+        ],
+        string="Document Type",
+        help="Select a valid document type",
+        compute="_compute_document_type",
+        store=True,
+        readonly=False,
     )
     document_expedition_date = fields.Date(
-        "Expedition Date", related="partner_id.document_expedition_date"
+        "Expedition Date",
+        compute="_compute_document_expedition_date",
+        store=True,
+        readonly=False,
     )
-    gender = fields.Selection("Gender", related="partner_id.gender")
+    gender = fields.Selection(
+        [("male", "Male"), ("female", "Female"), ("other", "Other")],
+        string="Gender",
+        compute="_compute_gender",
+        store=True,
+        readonly=False,
+    )
+
+    @api.depends("partner_id", "partner_id.lastname2")
+    def _compute_lastname2(self):
+        for record in self:
+            if not record.lastname2:
+                record.lastname2 = record.partner_id.lastname2
+
+    @api.depends("partner_id", "partner_id.birthdate_date")
+    def _compute_birth_date(self):
+        for record in self:
+            if not record.birthdate_date:
+                record.birthdate_date = record.partner_id.birthdate_date
+
+    @api.depends("partner_id", "partner_id.document_number")
+    def _compute_document_number(self):
+        for record in self:
+            if not record.document_number:
+                record.document_number = record.partner_id.document_number
+
+    @api.depends("partner_id", "partner_id.document_type")
+    def _compute_document_type(self):
+        for record in self:
+            if not record.document_type:
+                record.document_type = record.partner_id.document_type
+
+    @api.depends("partner_id", "partner_id.document_expedition_date")
+    def _compute_document_expedition_date(self):
+        for record in self:
+            if not record.document_expedition_date:
+                record.document_expedition_date = (
+                    record.partner_id.document_expedition_date
+                )
+
+    @api.depends("partner_id", "partner_id.gender")
+    def _compute_gender(self):
+        for record in self:
+            if not record.gender:
+                record.gender = record.partner_id.gender
 
     @api.model
     def _checkin_mandatory_fields(self, depends=False):

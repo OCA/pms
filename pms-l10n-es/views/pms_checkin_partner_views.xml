@@ -36,6 +36,24 @@
         </field>
     </record>
 
+    <record id="pms_checkin_partner_folio_view_tree" model="ir.ui.view">
+        <field name="name">Checkin partner view reservation tree Spain</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="inherit_id" ref="pms.pms_checkin_partner_folio_view_tree" />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="lastname2" />
+                    <field name="gender" />
+                    <field name="birthdate_date" />
+                    <field name="document_type" />
+                    <field name="document_number" />
+                    <field name="document_expedition_date" />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
     <record id="pms_checkin_partner_view_tree" model="ir.ui.view">
         <field name="name">Checkin partner view tree Spain</field>
         <field name="model">pms.checkin.partner</field>

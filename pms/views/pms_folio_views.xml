@@ -33,7 +33,7 @@
                     />
                 </header>
                 <sheet>
-                    <div class=" oe_button_box">
+                    <div class="oe_button_box" name="button_box">
                         <button
                             type="object"
                             class="oe_stat_button"
@@ -54,6 +54,34 @@
                                 <span class="o_stat_text">Pending Payment</span>
                             </div>
                         </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            id="arrive_smart_button"
+                            icon="fa-street-view"
+                            name="action_to_arrive"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field
+                                        name="count_rooms_pending_arrival"
+                                        nolabel="1"
+                                    />
+                                </span>
+                                <span class="o_stat_text">To arrive Rooms</span>
+                            </div>
+                        </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            name="action_checks"
+                        >
+                            <field
+                                name="ratio_checkin_data"
+                                string="Checkin Data"
+                                widget="percentpie"
+                            />
+                        </button>
                     </div>
                     <h2>
                         <field name="name" />
@@ -70,11 +98,17 @@
                             attrs="{'invisible':[('reservation_type','not in',('out'))]}"
                         />
                     </h1>
-                    <group>
-                        <group>
+                    <group col="8">
+                        <group
+                            colspan="2"
+                            col="3"
+                            string="General Info"
+                            name="contact_details"
+                        >
                             <field name="email" placeholder="email" />
                             <field name="mobile" placeholder="mobile" />
                             <field name="phone" />
+                            <field name="partner_internal_comment" />
                             <field
                                 name="segmentation_ids"
                                 widget="many2many_tags"
@@ -86,7 +120,12 @@
                                 attrs="{'invisible':[('state','not in',('cancel'))]}"
                             />
                         </group>
-                        <group>
+                        <group
+                            colspan="2"
+                            col="3"
+                            string="Sale Details"
+                            name="sale_details"
+                        >
                             <field name="pms_property_id" invisible="0" />
                             <field name="pricelist_id" />
                             <field
@@ -108,36 +147,43 @@
                             />-->
                             <field name="agency_id" />
                             <field name="channel_type_id" />
-                        </group>
-                        <group>
-                            <field name="partner_internal_comment" />
-                        </group>
-                        <group>
                             <field name="internal_comment" />
-                            <field
-                                name="credit_card_details"
-                                attrs="{'invisible':[('pending_amount','&lt;=',0)]}"
-                            />
                         </group>
-                        <group colspan="2" class="oe_subtotal_footer oe_right">
+                        <group
+                            class="oe_subtotal_footer oe_right"
+                            colspan="2"
+                            name="folio_total"
+                        >
                             <field
                                 name="amount_untaxed"
-                                sum="Untaxed amount"
-                                widget='monetary'
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
                             />
-                            <field name="amount_tax" widget='monetary' />
-                            <div class="oe_subtotal_footer_separator oe_inline">
+                            <field
+                                name="amount_tax"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                            <div
+                                class="oe_subtotal_footer_separator oe_inline o_td_label"
+                            >
                                 <label for="amount_total" />
                             </div>
                             <field
                                 name="amount_total"
                                 nolabel="1"
-                                sum="Total amount"
-                                widget='monetary'
+                                class="oe_subtotal_footer_separator"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
                             />
-                            <field name="commission" widget='monetary' />
+                            <field
+                                name="commission"
+                                widget='monetary'
+                                options="{'currency_field': 'currency_id'}"
+                            />
                         </group>
                         <div class="oe_clear" />
+
                     </group>
                     <group invisible="1">
                         <field name="move_ids" invisible="1" />
@@ -165,13 +211,13 @@
                             />
                         </page>
                         <!--TODO: Add precheckin with indeterminate select room?? -->
-                        <page name="persons" string="Persons" invisible="1">
+                        <page name="persons" string="Rooming">
                             <field
                                 name="checkin_partner_ids"
                                 context="{
-                                    'default_reservation_id': id,
-                                    'reservation_id': id,
-                                    'tree_view_ref':'pms.pms_checkin_partner_reservation_view_tree',
+                                    'default_folio_id': id,
+                                    'folio_id': id,
+                                    'tree_view_ref':'pms.pms_checkin_partner_folio_view_tree',
                                     }"
                             />
                         </page>

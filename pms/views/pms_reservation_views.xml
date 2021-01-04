@@ -32,7 +32,7 @@
                     <button
                         name="action_reservation_checkout"
                         string="Check Out"
-                        states="onboard"
+                        states="onboard,no_checkout"
                         type="object"
                     />
                     <button
@@ -88,16 +88,6 @@
                         name="button_box"
                         attrs="{'invisible': [('folio_id','=',False)]}"
                     >
-                        <button
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-sign-out"
-                            name="action_reservation_checkout"
-                        >
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Checkout</span>
-                            </div>
-                        </button>
                         <button
                             type="object"
                             class="oe_stat_button"
