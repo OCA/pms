@@ -58,6 +58,9 @@ class PmsProperty(models.Model):
     folio_sequence_id = fields.Many2one(
         "ir.sequence", "Folio Sequence", check_company=True, copy=False
     )
+    checkin_sequence_id = fields.Many2one(
+        "ir.sequence", "Checkin Sequence", check_company=True, copy=False
+    )
     tz = fields.Selection(
         _tz_get,
         string="Timezone",
