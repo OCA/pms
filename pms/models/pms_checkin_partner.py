@@ -53,9 +53,7 @@ class PmsCheckinPartner(models.Model):
         readonly=False,
     )
     image_128 = fields.Image(
-        compute="_compute_image_128",
-        store=True,
-        readonly=False,
+        related="partner_id.image_128",
     )
     segmentation_ids = fields.Many2many(
         related="reservation_id.segmentation_ids",
@@ -133,11 +131,6 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.mobile:
                 record.mobile = record.partner_id.mobile
-
-    @api.depends("partner_id", "partner_id.image_128")
-    def _compute_image_128(self):
-        for record in self:
-            record.image_128 = record.partner_id.image_128
 
     @api.model
     def _checkin_mandatory_fields(self, depends=False):
