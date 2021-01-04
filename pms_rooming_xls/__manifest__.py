@@ -14,8 +14,8 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "views/pms_folio.xml",
         "wizard/import_rooming_xlsx.xml",
+        "views/pms_folio.xml",
     ],
     "external_dependencies": {"python": ["xlrd"]},
     "installable": True,
