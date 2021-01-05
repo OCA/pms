@@ -25,6 +25,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="lastname" />
                     <field name="lastname2" />
                     <field name="gender" />
                     <field name="birthdate_date" />
@@ -43,6 +44,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="lastname" />
                     <field name="lastname2" />
                     <field name="gender" />
                     <field name="birthdate_date" />
@@ -61,6 +63,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="lastname" />
                     <field name="lastname2" />
                     <field name="gender" />
                     <field name="birthdate_date" />
@@ -79,6 +82,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="lastname" />
                     <field name="lastname2" />
                     <field name="gender" />
                     <field name="birthdate_date" />

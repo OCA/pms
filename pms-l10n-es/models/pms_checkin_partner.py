@@ -4,8 +4,14 @@ from odoo import api, fields, models
 class PmsCheckinPartner(models.Model):
     _inherit = "pms.checkin.partner"
 
-    lastname2 = fields.Char(
+    lastname = fields.Char(
         "Last Name",
+        compute="_compute_lastname",
+        store=True,
+        readonly=False,
+    )
+    lastname2 = fields.Char(
+        "Second Last Name",
         compute="_compute_lastname2",
         store=True,
         readonly=False,
@@ -50,6 +56,12 @@ class PmsCheckinPartner(models.Model):
         store=True,
         readonly=False,
     )
+
+    @api.depends("partner_id", "partner_id.lastname")
+    def _compute_lastname(self):
+        for record in self:
+            if not record.lastname:
+                record.lastname = record.partner_id.lastname
 
     @api.depends("partner_id", "partner_id.lastname2")
     def _compute_lastname2(self):
