@@ -35,7 +35,7 @@ class TestResPartner(common.SavepointCase):
         partner = self.env["res.partner"].create(
             {
                 "name": "name1",
-                #"lastname": "lastname1",
+                # "lastname": "lastname1",
                 "lastname2": "secondlastname",
                 "expedition_name": "2011-02-20",
                 "birthdate": "1995-12-10",
@@ -97,7 +97,7 @@ class TestResPartner(common.SavepointCase):
         partner = self.env["res.partner"].create(
             {
                 "name": "name1",
-                #"lastname": "lastname1",
+                # "lastname": "lastname1",
                 "lastname2": "secondlastname",
                 "expedition_name": "2011-02-20",
                 "birthdate": "1995-12-10",

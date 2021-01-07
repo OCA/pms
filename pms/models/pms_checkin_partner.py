@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import json
+import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -169,6 +170,30 @@ class PmsCheckinPartner(models.Model):
                     raise ValidationError(
                         _("This guest is already registered in the room")
                     )
+
+    @api.constrains("email")
+    def check_email_pattern(self):
+        for record in self:
+            if record.email:
+                if not re.search(
+                    r"^[a-zA-Z0-9]([a-zA-z0-9\-\_]*[\.]?[a-zA-Z0-9\-\_]+)*"
+                    r"@([a-zA-z0-9\-]+([\.][a-zA-Z0-9\-\_]+)?\.[a-zA-Z0-9]+)+$",
+                    record.email,
+                ):
+                    raise ValidationError(_("'%s' is not a valid email", record.email))
+
+    @api.constrains("mobile")
+    def check_phone_pattern(self):
+
+        for record in self:
+            if record.mobile:
+
+                if not re.search(
+                    r"^(\d{3}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?|"
+                    r"\d{3}[\-\s]?\d{3}[\-\s]?\d{3})$",
+                    record.mobile,
+                ):
+                    raise ValidationError(_("'%s' is not a valid phone", record.mobile))
 
     # CRUD
     @api.model

@@ -49,7 +49,9 @@ class RoomingCheckinXlsx(models.AbstractModel):
         }
         wanted_list = ["code", "folio", "room"]
         for field_str in self.env["pms.checkin.partner"]._checkin_partner_fields():
-            render_field_str = "checkin." + field_str
+            render_field_str = (
+                "checkin." + field_str + " if checkin." + field_str + " else ''"
+            )
             checkin_template[field_str] = {
                 "header": {
                     "value": CheckinPartner._fields[field_str].string,
