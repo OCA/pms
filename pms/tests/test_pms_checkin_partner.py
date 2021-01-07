@@ -382,3 +382,77 @@ class TestPmsCheckinPartner(TestHotel):
             1,
             "Reservations not set like No checkout",
         )
+
+    def test_not_valid_emails(self):
+        # TEST CASES
+        # emails that should be detected as incorrect
+
+        # ARRANGE
+        test_cases = [
+            "myemail",
+            "myemail@",
+            "myemail@",
+            "myemail@.com",
+            ".myemail",
+            ".myemail@",
+            ".myemail@.com" ".myemail@.com." "123myemail@aaa.com",
+        ]
+        for mail in test_cases:
+            with self.subTest(i=mail):
+                with self.assertRaises(ValidationError):
+                    self.env["pms.checkin.partner"].create({"email": mail})
+
+    def test_valid_emails(self):
+        # TEST CASES
+        # emails that should be detected as correct
+
+        # ARRANGE
+        test_cases = [
+            "hello@commitsun.com",
+            "hi.welcome@commitsun.com",
+            "hi.welcome@dev.commitsun.com",
+            "hi.welcome@dev-commitsun.com",
+            "john.doe@xxx.yyy.zzz",
+        ]
+        for mail in test_cases:
+            with self.subTest(i=mail):
+                guest = self.env["pms.checkin.partner"].create({"email": mail})
+                self.assertEqual(
+                    mail,
+                    guest.email,
+                )
+
+    def test_not_valid_phone(self):
+        # TEST CASES
+        # phones that should be detected as incorrect
+
+        # ARRANGE
+        test_cases = [
+            "phone",
+            "123456789123",
+            "123.456.789",
+            "123",
+            "123123",
+        ]
+        for phone in test_cases:
+            with self.subTest(i=phone):
+                with self.assertRaises(ValidationError):
+                    self.env["pms.checkin.partner"].create({"mobile": phone})
+
+    def test_valid_phones(self):
+        # TEST CASES
+        # emails that should be detected as incorrect
+
+        # ARRANGE
+        test_cases = [
+            "981 981 981",
+            "981981981",
+            "981 98 98 98",
+        ]
+        for mobile in test_cases:
+            with self.subTest(i=mobile):
+                guest = self.env["pms.checkin.partner"].create({"mobile": mobile})
+                self.assertEqual(
+                    mobile,
+                    guest.mobile,
+                )
