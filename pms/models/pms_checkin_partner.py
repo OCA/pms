@@ -191,7 +191,7 @@ class PmsCheckinPartner(models.Model):
                 if not re.search(
                     r"^(\d{3}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?|"
                     r"\d{3}[\-\s]?\d{3}[\-\s]?\d{3})$",
-                    record.mobile,
+                    str(record.mobile),
                 ):
                     raise ValidationError(_("'%s' is not a valid phone", record.mobile))
 
