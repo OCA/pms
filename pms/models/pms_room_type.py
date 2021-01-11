@@ -78,41 +78,49 @@ class PmsRoomType(models.Model):
             record.total_rooms_count = len(record.room_ids)
 
     @api.model
-    def get_unique_by_code_property(self, code_type, pms_property_id):
+    def get_unique_by_property_code(self, pms_property_id, code_type=None):
         """
-        :param code_type: room type code
         :param pms_property_id: property ID
-        :return: one or 0 room types ValidationError if more than one found
+        :param code_type: room type code (optional)
+        :return: - recordset of
+                    - all the pms.room.type of the pms_property_id
+                      if code_type not defined
+                    - one or 0 pms.room.type if code_type defined
+                 - ValidationError if more than one code_type found by
+                   the same pms_property_id
         """
+        domain = []
+        if code_type:
+            domain += ["&", ("code_type", "=", code_type)]
         company_id = self.env["pms.property"].browse(pms_property_id).company_id.id
-        records = self.search(
-            [
-                "&",
-                ("code_type", "=", code_type),
-                "|",
-                ("pms_property_ids", "in", pms_property_id),
-                "|",
-                "&",
-                ("pms_property_ids", "=", False),
-                ("company_id", "=", company_id),
-                "&",
-                ("pms_property_ids", "=", False),
-                ("company_id", "=", False),
-            ]
-        )
-        res, res_priority = self, -1
+        domain += [
+            "|",
+            ("pms_property_ids", "in", pms_property_id),
+            "|",
+            "&",
+            ("pms_property_ids", "=", False),
+            ("company_id", "=", company_id),
+            "&",
+            ("pms_property_ids", "=", False),
+            ("company_id", "=", False),
+        ]
+        records = self.search(domain)
+        res, res_priority = {}, {}
         for rec in records:
+            res_priority.setdefault(rec.code_type, -1)
             priority = (rec.pms_property_ids and 2) or (rec.company_id and 1 or 0)
-            if priority > res_priority:
-                res, res_priority = rec, priority
-            elif priority == res_priority:
+            if priority > res_priority[rec.code_type]:
+                res.setdefault(rec.code_type, rec.id)
+                res[rec.code_type], res_priority[rec.code_type] = rec.id, priority
+            elif priority == res_priority[rec.code_type]:
                 raise ValidationError(
                     _(
-                        "Integrity error: There's multiple room types "
+                        "Integrity error: There's multiple room types with code %s"
                         "with the same code and properties"
                     )
+                    % rec.code_type
                 )
-        return res
+        return self.browse(list(res.values()))
 
     @api.constrains("pms_property_ids", "company_id")
     def _check_property_company_integrity(self):
@@ -144,7 +152,7 @@ class PmsRoomType(models.Model):
             else:
                 for pms_property in rec.pms_property_ids:
                     if (
-                        rec.get_unique_by_code_property(rec.code_type, pms_property.id)
+                        rec.get_unique_by_property_code(pms_property.id, rec.code_type)
                         != rec
                     ):
                         raise ValidationError(msg)
