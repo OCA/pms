@@ -286,8 +286,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p1.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p1.id, "c1"
         )
 
         # ASSERT
@@ -316,8 +316,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p1.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p1.id, "c1"
         )
 
         # ASSERT
@@ -346,8 +346,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p3.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p3.id, "c1"
         )
 
         # ASSERT
@@ -374,8 +374,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p1.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p1.id, "c1"
         )
 
         # ASSERT
@@ -403,8 +403,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p3.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p3.id, "c1"
         )
 
         # ASSERT
@@ -446,8 +446,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p1.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p1.id, "c1"
         )
 
         # ASSERT
@@ -488,8 +488,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p2.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p2.id, "c1"
         )
 
         # ASSERT
@@ -530,8 +530,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p3.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p3.id, "c1"
         )
 
         # ASSERT
@@ -573,8 +573,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p3.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p3.id, "c1"
         )
 
         # ASSERT
@@ -615,8 +615,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p3.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p3.id, "c1"
         )
 
         # ASSERT
@@ -670,8 +670,8 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         )
 
         # ACT
-        room_type = self.env["pms.room.type"].get_unique_by_code_property(
-            "c1", self.p3.id
+        room_type = self.env["pms.room.type"].get_unique_by_property_code(
+            self.p3.id, "c1"
         )
 
         # ASSERT
