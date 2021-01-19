@@ -160,7 +160,6 @@ class FolioWizard(models.TransientModel):
 
                     record.availability_results = cmds
 
-
                     record.availability_results = record.availability_results.sorted(
                         key=lambda s: s.num_rooms_available, reverse=True
                     )
