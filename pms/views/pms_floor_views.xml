@@ -38,7 +38,7 @@
         name="Ubications"
         id="menu_open_pms_floor_form_tree"
         action="open_pms_floor_form_tree"
-        sequence="21"
-        parent="pms.configuration_others"
+        sequence="65"
+        parent="pms.pms_rooms_menu"
     />
 </odoo>

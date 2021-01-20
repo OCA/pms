@@ -34,10 +34,10 @@
         <field name="view_mode">tree,form</field>
     </record>
     <menuitem
-        name="Sale Channel"
+        name="Sale Channels"
         id="menu_open_pms_sale_channel_form_tree"
         action="open_pms_sale_channel_form_tree"
-        sequence="21"
-        parent="pms.configuration_others"
+        sequence="55"
+        parent="pms.revenue_management_menu"
     />
 </odoo>

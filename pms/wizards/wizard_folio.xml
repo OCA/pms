@@ -128,10 +128,10 @@
     </record>
 
     <menuitem
-        name="Folio wizard"
+        name="Booking Engine"
         id="menu_pms_folio_wizard"
         action="action_wizard_folio"
-        sequence="25"
-        parent="pms.configuration_others"
+        sequence="55"
+        parent="pms.menu_reservations"
     />
 </odoo>

@@ -114,8 +114,8 @@
     <menuitem
         id="menu_pms_service_line"
         name="Services by Day"
-        parent="pms.pms_reports_menu"
-        sequence="30"
+        sequence="35"
         action="action_service_line"
+        parent="pms.menu_reservations"
     />
 </odoo>

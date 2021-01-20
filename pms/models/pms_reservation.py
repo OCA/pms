@@ -111,6 +111,9 @@ class PmsReservation(models.Model):
     board_service_room_id = fields.Many2one(
         "pms.board.service.room.type",
         string="Board Service",
+        compute="_compute_board_service_room_id",
+        store=True,
+        readonly=False,
     )
     room_type_id = fields.Many2one(
         "pms.room.type",
@@ -503,6 +506,32 @@ class PmsReservation(models.Model):
     def _compute_priority(self):
         # TODO: Logic priority (100 by example)
         self.priority = 100
+
+    @api.depends("pricelist_id", "room_type_id")
+    def _compute_board_service_room_id(self):
+        for reservation in self:
+            if reservation.pricelist_id and reservation.room_type_id:
+                board_service_default = self.env["pms.board.service.room.type"].search(
+                    [
+                        "&",
+                        "&",
+                        ("pms_room_type_id", "=", reservation.room_type_id.id),
+                        ("by_default", "=", True),
+                        "|",
+                        ("pricelist_id", "=", reservation.pricelist_id.id),
+                        ("pricelist_id", "=", False),
+                    ]
+                )
+                if len(board_service_default) > 1:
+                    reservation.board_service_room_id = board_service_default.filtered(
+                        lambda b: b.pricelist_id == reservation.pricelist_id
+                    )
+                else:
+                    reservation.board_service_room_id = (
+                        board_service_default.id if board_service_default else False
+                    )
+            elif not reservation.board_service_room_id:
+                reservation.board_service_room_id = False
 
     @api.depends("preferred_room_id")
     def _compute_room_type_id(self):
