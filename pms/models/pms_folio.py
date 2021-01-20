@@ -708,10 +708,10 @@ class PmsFolio(models.Model):
                 # Compute 'payment_state'.
                 if total <= paid_out:
                     payment_state = "paid"
-                elif paid_out < total:
-                    payment_state = "partial"
-                else:
+                elif paid_out <= 0:
                     payment_state = "not_paid"
+                else:
+                    payment_state = "partial"
                 vals = {
                     "pending_amount": total - paid_out,
                     "invoices_paid": paid_out,
@@ -723,9 +723,24 @@ class PmsFolio(models.Model):
 
     def action_pay(self):
         self.ensure_one()
-        action = self.env.ref("pms.action_payment_folio").sudo().read()[0]
-        action["res_id"] = self.id
-        return action
+        self.ensure_one()
+        partner = self.partner_id.id
+        amount = self.pending_amount
+        view_id = self.env.ref("pms.wizard_payment_folio_view_form").id
+        return {
+            "name": _("Register Payment"),
+            "view_type": "form",
+            "view_mode": "form",
+            "res_model": "wizard.payment.folio",
+            "type": "ir.actions.act_window",
+            "view_id": view_id,
+            "context": {
+                "default_folio_id": self.id,
+                "default_amount": amount,
+                "default_partner_id": partner,
+            },
+            "target": "new",
+        }
 
     def open_moves_folio(self):
         invoices = self.mapped("move_ids")

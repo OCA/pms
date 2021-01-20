@@ -11,25 +11,10 @@ class WizardPaymentFolio(models.TransientModel):
     _name = "wizard.payment.folio"
     _description = "Payments"
 
-    @api.model
-    def default_folio_id(self):
-        return self.env["pms.folio"].browse(self._context.get("active_id", [])).id
-
-    @api.model
-    def _default_amount(self):
-        folio = self.env["pms.folio"].browse(self._context.get("active_id", []))
-        return folio.pending_amount
-
-    @api.model
-    def _default_partner(self):
-        folio = self.env["pms.folio"].browse(self._context.get("active_id", []))
-        return folio.partner_id.id
-
     folio_id = fields.Many2one(
         "pms.folio",
         string="Folio",
         required=True,
-        default=default_folio_id,
     )
     reservation_ids = fields.Many2many(
         "pms.reservation",
@@ -53,9 +38,9 @@ class WizardPaymentFolio(models.TransientModel):
         compute="_compute_allowed_method_ids",
         store="True",
     )
-    amount = fields.Float("Amount", digits=("Product Price"), default=_default_amount)
+    amount = fields.Float("Amount", digits=("Product Price"))
     date = fields.Date("Date", default=fields.Date.context_today, required=True)
-    partner_id = fields.Many2one("res.partner", default=_default_partner)
+    partner_id = fields.Many2one("res.partner")
 
     @api.depends("folio_id")
     def _compute_allowed_method_ids(self):

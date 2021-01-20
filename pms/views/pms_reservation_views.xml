@@ -149,6 +149,17 @@
                             />
                         </button>
                     </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Paid"
+                        attrs="{'invisible': [('folio_payment_state', '!=', 'paid')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Partial"
+                        bg_color="bg-warning"
+                        attrs="{'invisible': [('folio_payment_state', '!=', 'partial')]}"
+                    />
                     <span
                         class="label label-danger"
                         attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
@@ -297,6 +308,7 @@
                             <field name="qty_invoiced" invisible="1" />
                             <field name="qty_to_invoice" invisible="1" />
                             <field name="allowed_room_ids" invisible="1" />
+                            <field name="folio_payment_state" invisible="1" />
                             <field
                                 name="room_type_id"
                                 on_change="1"
@@ -620,6 +632,15 @@
                     widget="badge"
                     optional="show"
                 />
+                <field
+                    name="folio_payment_state"
+                    decoration-success="folio_payment_state == 'paid'"
+                    decoration-danger="folio_payment_state == 'not_paid' and state in ['cancelled','onboard','done','no_show','no_checkout']"
+                    decoration-info="folio_payment_state == 'not_paid' and state in ['draft','confirm',]"
+                    decoration-warning="folio_payment_state == 'partial'"
+                    widget="badge"
+                    optional="show"
+                />
             </tree>
         </field>
     </record>
@@ -809,9 +830,20 @@
                 <searchpanel>
                     <field name="room_type_id" string="Room Type" enable_counters="1" />
                     <field name="pricelist_id" string="Pricelist" enable_counters="1" />
+                    <field
+                        name="channel_type_id"
+                        string="Channel"
+                        enable_counters="1"
+                    />
                     <field name="agency_id" string="Channel" enable_counters="1" />
                     <field
                         name="state"
+                        string="State"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="folio_payment_state"
                         string="State"
                         enable_counters="1"
                         select="multi"
