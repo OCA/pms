@@ -21,6 +21,7 @@ from . import pms_room_type
 from . import pms_service
 from . import account_move
 from . import product_template
+from . import product_product
 from . import res_company
 from . import account_payment
 from . import pms_room_type_availability_plan
