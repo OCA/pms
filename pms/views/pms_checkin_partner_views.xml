@@ -10,9 +10,9 @@
     <menuitem
         id="menu_pms_checkin_partner"
         name="Checkins"
-        parent="pms.pms_reports_menu"
         sequence="25"
         action="action_checkin_partner"
+        parent="pms.menu_reservations"
     />
     <record id="pms_checkin_partner_view_form" model="ir.ui.view">
         <field name="name">Checkin Form</field>

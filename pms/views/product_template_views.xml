@@ -32,4 +32,12 @@
             </xpath>
         </field>
     </record>
+
+    <menuitem
+        name="Services"
+        id="menu_services_pms"
+        action="product.product_template_action"
+        sequence="15"
+        parent="pms.pms_services_menu"
+    />
 </odoo>
