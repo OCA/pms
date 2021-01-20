@@ -541,7 +541,7 @@
         <field name="view_mode">tree,form,graph</field>
     </record>
     <menuitem
-        id="menu_all_folio"
+        id="menu_reservations"
         name="Reservations"
         parent="pms.pms_management_menu"
         sequence="4"
