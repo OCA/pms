@@ -1,4 +1,3 @@
-# Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 import json
@@ -15,7 +14,7 @@ class AccountMove(models.Model):
         comodel_name="pms.folio", compute="_compute_folio_origin"
     )
     pms_property_id = fields.Many2one("pms.property")
-    from_folio = fields.Boolean(compute="_compute_folio_origin")
+    from_reservation = fields.Boolean(compute="_compute_from_reservation")
     outstanding_folios_debits_widget = fields.Text(
         compute="_compute_get_outstanding_folios_JSON"
     )
@@ -27,13 +26,16 @@ class AccountMove(models.Model):
 
     def _compute_folio_origin(self):
         for inv in self:
-            inv.from_folio = False
             inv.folio_ids = False
-            folios = inv.mapped("invoice_line_ids.reservation_ids.folio_id")
-            folios |= inv.mapped("invoice_line_ids.service_ids.folio_id")
+            folios = inv.mapped("invoice_line_ids.folio_ids")
             if folios:
-                inv.from_folio = True
                 inv.folio_ids = [(6, 0, folios.ids)]
+
+    def _compute_from_reservation(self):
+        for inv in self:
+            inv.from_reservation = False
+            if len(inv.invoice_line_ids.mapped("reservation_line_ids")) > 0:
+                inv.from_reservation = True
 
     # Action methods
 
@@ -55,6 +57,7 @@ class AccountMove(models.Model):
         }
 
     # Business methods
+
     def _compute_get_outstanding_folios_JSON(self):
         self.ensure_one()
         self.outstanding_folios_debits_widget = json.dumps(False)

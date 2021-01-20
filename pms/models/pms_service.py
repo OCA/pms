@@ -424,14 +424,20 @@ class PmsService(models.Model):
             qty_invoiced = 0.0
             for invoice_line in line.move_line_ids:
                 if invoice_line.move_id.state != "cancel":
-                    if invoice_line.move_id.type == "out_invoice":
-                        qty_invoiced += invoice_line.uom_id._compute_quantity(
+                    if invoice_line.move_id.move_type == "out_invoice":
+                        qty_invoiced += invoice_line.product_uom_id._compute_quantity(
                             invoice_line.quantity, line.product_id.uom_id
                         )
-                    elif invoice_line.move_id.type == "out_refund":
-                        qty_invoiced -= invoice_line.uom_id._compute_quantity(
-                            invoice_line.quantity, line.product_id.uom_id
-                        )
+                    elif invoice_line.move_id.move_type == "out_refund":
+                        if (
+                            not line.is_downpayment
+                            or line.untaxed_amount_to_invoice == 0
+                        ):
+                            qty_invoiced -= (
+                                invoice_line.product_uom_id._compute_quantity(
+                                    invoice_line.quantity, line.product_id.uom_id
+                                )
+                            )
             line.qty_invoiced = qty_invoiced
 
     @api.depends("product_qty", "qty_to_invoice", "qty_invoiced")
@@ -496,7 +502,7 @@ class PmsService(models.Model):
 
     # Action methods
     def open_service_ids(self):
-        action = self.env.ref("pms.action_pms_services_form").read()[0]
+        action = self.env.ref("pms.action_pms_services_form").sudo().read()[0]
         action["views"] = [(self.env.ref("pms.pms_service_view_form").id, "form")]
         action["res_id"] = self.id
         action["target"] = "new"

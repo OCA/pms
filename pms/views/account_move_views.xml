@@ -6,21 +6,37 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_date']" position="after">
                 <field name="folio_ids" widget="many2many_tags" />
-                <field name="from_folio" invisible="1" />
+                <field name="from_reservation" invisible="1" />
                 <field name="pms_property_id" invisible="1" />
             </xpath>
             <xpath
-                expr="//field[@name='invoice_outstanding_credits_debits_widget']"
-                position="before"
+                expr="//field[@name='invoice_line_ids']/tree/field[@name='name']"
+                position="after"
             >
-                <field
-                    name="outstanding_folios_debits_widget"
-                    colspan="2"
-                    nolabel="1"
-                    widget="payment"
-                    attrs="{'invisible': [('state', 'not in', 'open')]}"
+                <button
+                    name="invoice_filter_days"
+                    type="object"
+                    icon="fa-calendar"
+                    string="Filter-days"
+                    aria-label="Change Period"
+                    class="float-right"
+                    attrs="{
+                        'column_invisible': ['|',('parent.from_reservation', '=', False),('parent.state', '!=', 'draft')],
+                        'invisible': [('reservation_line_ids', '=', [])]
+                    }"
                 />
+                <field name="reservation_line_ids" invisible="1" />
             </xpath>
+            <!-- <xpath
+                expr="//field[@name='invoice_line_ids']/tree/field[@name='quantity']"
+                position="attributes"
+            >
+                <attribute name="attrs">
+                    {
+                    'readonly': [('reservation_line_ids', '!=', False)],
+                    }
+                </attribute>
+            </xpath> -->
         </field>
     </record>
 </odoo>

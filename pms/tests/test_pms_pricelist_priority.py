@@ -126,7 +126,7 @@ class TestPmsPricelistRules(common.TransactionCase):
 
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-16 00:00:00")
@@ -179,7 +179,7 @@ class TestPmsPricelistRules(common.TransactionCase):
         expected_price = self.item1.fixed_price * n_days
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-05 00:00:00")
@@ -233,7 +233,7 @@ class TestPmsPricelistRules(common.TransactionCase):
         expected_price = self.item2.fixed_price * n_days
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-20 00:00:00")
@@ -301,7 +301,7 @@ class TestPmsPricelistRules(common.TransactionCase):
         expected_price = self.item1.fixed_price
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-25 00:00:00")
@@ -369,7 +369,7 @@ class TestPmsPricelistRules(common.TransactionCase):
         expected_price = self.item3.fixed_price
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-02-01 00:00:00")
@@ -437,7 +437,7 @@ class TestPmsPricelistRules(common.TransactionCase):
         expected_price = self.item3.fixed_price * n_days
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-02-01 00:00:00")
@@ -492,7 +492,7 @@ class TestPmsPricelistRules(common.TransactionCase):
         expected_price = self.item1.fixed_price * n_days
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-02-10 00:00:00")
@@ -547,7 +547,7 @@ class TestPmsPricelistRules(common.TransactionCase):
 
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-01 00:00:00")
@@ -571,7 +571,7 @@ class TestPmsPricelistRules(common.TransactionCase):
 
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-01 00:00:00")
@@ -603,10 +603,9 @@ class TestPmsPricelistRules(common.TransactionCase):
         )
         n_days = (reservation.checkout - reservation.checkin).days
         expected_price = self.item1.fixed_price * n_days
-
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-01 00:00:00")
@@ -641,7 +640,7 @@ class TestPmsPricelistRules(common.TransactionCase):
 
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-01 00:00:00")
@@ -689,7 +688,7 @@ class TestPmsPricelistRules(common.TransactionCase):
         expected_price = self.item2.fixed_price * n_days
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-01 00:00:00")
@@ -738,7 +737,7 @@ class TestPmsPricelistRules(common.TransactionCase):
 
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-01 00:00:00")
@@ -790,7 +789,7 @@ class TestPmsPricelistRules(common.TransactionCase):
 
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )
 
     @freeze_time("2000-01-01 00:00:00")
@@ -856,5 +855,5 @@ class TestPmsPricelistRules(common.TransactionCase):
 
         # ASSERT
         self.assertEqual(
-            expected_price, reservation.price_total, "The price is not as expected"
+            expected_price, reservation.price_subtotal, "The price is not as expected"
         )

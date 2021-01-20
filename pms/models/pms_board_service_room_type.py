@@ -106,7 +106,9 @@ class PmsBoardServiceRoomType(models.Model):
     # Action methods
 
     def open_board_lines_form(self):
-        action = self.env.ref("pms.action_pms_board_service_room_type_view").read()[0]
+        action = (
+            self.env.ref("pms.action_pms_board_service_room_type_view").sudo().read()[0]
+        )
         action["views"] = [
             (self.env.ref("pms.pms_board_service_room_type_form").id, "form")
         ]

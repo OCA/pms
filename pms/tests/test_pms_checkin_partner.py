@@ -118,7 +118,6 @@ class TestPmsCheckinPartner(TestHotel):
                 "checkin": "2012-01-15",
             }
         )
-
         # ACT & ASSERT
         with self.assertRaises(ValidationError), self.cr.savepoint():
             self.checkin1.action_on_board()
