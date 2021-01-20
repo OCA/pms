@@ -94,19 +94,20 @@ class ResPartner(models.Model):
             if not record.is_agency and record.sale_channel_id:
                 record.sale_channel_id = None
 
-    @api.constrains("mobile", "email")
-    def _check_duplicated(self):
-        for record in self:
-            partner, field = record._search_duplicated()
-            if partner:
-                raise models.ValidationError(
-                    _(
-                        "Partner %s found with same %s (%s)",
-                        partner.name,
-                        partner._fields[field].string,
-                        getattr(record, field),
-                    )
-                )
+    # REVIEW: problems with odoo demo data
+    # @api.constrains("mobile", "email")
+    # def _check_duplicated(self):
+    #     for record in self:
+    #         partner, field = record._search_duplicated()
+    #         if partner:
+    #             raise models.ValidationError(
+    #                 _(
+    #                     "Partner %s found with same %s (%s)",
+    #                     partner.name,
+    #                     partner._fields[field].string,
+    #                     getattr(record, field),
+    #                 )
+    #             )
 
     def _search_duplicated(self):
         self.ensure_one()

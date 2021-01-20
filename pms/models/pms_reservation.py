@@ -365,6 +365,11 @@ class PmsReservation(models.Model):
         "Detail Origin", compute="_compute_detail_origin", store=True
     )
     folio_pending_amount = fields.Monetary(related="folio_id.pending_amount")
+    folio_payment_state = fields.Selection(
+        related="folio_id.payment_state",
+        string="Payment State",
+        store=True,
+    )
     shared_folio = fields.Boolean(compute="_compute_shared")
     # Used to notify is the reservation folio has other reservations/services
     email = fields.Char("E-mail", related="partner_id.email")
@@ -1195,31 +1200,6 @@ class PmsReservation(models.Model):
     def action_pay_folio(self):
         self.ensure_one()
         return self.folio_id.action_pay()
-
-    def action_pay_reservation(self):
-        self.ensure_one()
-        partner = self.partner_id.id
-        amount = min(self.price_room_services_set, self.folio_pending_amount)
-        note = self.folio_id.name + " (" + self.name + ")"
-        view_id = self.env.ref("pms.account_payment_view_form_folio").id
-        return {
-            "name": _("Register Payment"),
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "account.payment",
-            "type": "ir.actions.act_window",
-            "view_id": view_id,
-            "context": {
-                "default_folio_id": self.folio_id.id,
-                "default_room_id": self.id,
-                "default_amount": amount,
-                "default_payment_type": "inbound",
-                "default_partner_type": "customer",
-                "default_partner_id": partner,
-                "default_communication": note,
-            },
-            "target": "new",
-        }
 
     def open_reservation_wizard(self):
         rooms_available = self.env["pms.room.type.availability.plan"].rooms_available(
