@@ -65,27 +65,67 @@ class ProductPricelist(models.Model):
     def _compute_price_rule_get_items(
         self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
     ):
-        items = super(ProductPricelist, self)._compute_price_rule_get_items(
-            products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
-        )
-        # Discard the rules with defined properties other than the context,
-        # and we reorder the rules to return the most concrete property rule first
-        if "property" in self._context:
-            items_filtered = items.filtered(
-                lambda i: not i.pms_property_ids
-                or self._context["property"] in i.pms_property_ids.ids
+
+        if "property" in self._context and self._context["property"]:
+            self.env["product.pricelist.item"].flush(
+                ["price", "currency_id", "company_id"]
             )
-            reverse_id = items_filtered.sorted(id, reverse=True)
-            return items_filtered.sorted(
-                key=lambda s: (
-                    s.applied_on,
-                    True if (not s.date_end or not s.date_start) else False,
-                    True
-                    if (not s.date_end or not s.date_start)
-                    else (s.date_end - s.date_start).days,
-                    ((not s.pms_property_ids, s), len(s.pms_property_ids)),
-                    reverse_id,
-                )
+            self.env.cr.execute(
+                """
+                SELECT item.id
+                FROM   product_pricelist_item item
+                       LEFT JOIN product_category categ
+                            ON item.categ_id = categ.id
+                       LEFT JOIN pms_property_product_pricelist_rel cab
+                            ON item.pricelist_id = cab.product_pricelist_id
+                       LEFT JOIN pms_property_product_pricelist_item_rel lin
+                            ON item.id = lin.product_pricelist_item_id
+                WHERE  (lin.pms_property_id = %s OR lin.pms_property_id IS NULL)
+                   AND (cab.pms_property_id = %s OR cab.pms_property_id IS NULL)
+                   AND (item.product_tmpl_id IS NULL
+                        OR item.product_tmpl_id = ANY(%s))
+                   AND (item.product_id IS NULL OR item.product_id = ANY(%s))
+                   AND (item.categ_id IS NULL OR item.categ_id = ANY(%s))
+                   AND (item.pricelist_id = %s)
+                   AND (item.date_start IS NULL OR item.date_start <=%s)
+                   AND (item.date_end IS NULL OR item.date_end >=%s)
+                   AND (item.date_start_overnight IS NULL
+                        OR item.date_start_overnight <=%s)
+                   AND (item.date_end_overnight IS NULL
+                        OR item.date_end_overnight >=%s)
+                GROUP  BY item.id
+                ORDER  BY item.applied_on,
+                          /* REVIEW: priotrity date sale / date overnight */
+                          item.date_end - item.date_start ASC,
+                          item.date_end_overnight - item.date_start_overnight ASC,
+                          NULLIF((SELECT COUNT(1)
+                           FROM   pms_property_product_pricelist_item_rel l
+                           WHERE  item.id = l.product_pricelist_item_id)
+                          + (SELECT COUNT(1)
+                             FROM   pms_property_product_pricelist_rel c
+                             WHERE  item.pricelist_id = c.product_pricelist_id),0)
+                          NULLS LAST,
+                          item.id DESC;
+                """,
+                (
+                    self._context["property"],
+                    self._context["property"],
+                    prod_tmpl_ids,
+                    prod_ids,
+                    categ_ids,
+                    self.id,
+                    date,
+                    date,
+                    self._context["date_overnight"],
+                    self._context["date_overnight"],
+                ),
+            )
+
+            item_ids = [x[0] for x in self.env.cr.fetchall()]
+            items = self.env["product.pricelist.item"].browse(item_ids)
+        else:
+            items = super(ProductPricelist, self)._compute_price_rule_get_items(
+                products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
             )
         return items
 

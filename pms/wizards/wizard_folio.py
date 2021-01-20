@@ -1,7 +1,5 @@
 import datetime
 
-import pytz
-
 from odoo import api, fields, models
 
 
@@ -101,13 +99,12 @@ class FolioWizard(models.TransientModel):
                         )
 
                         num_rooms_available_by_date.append(len(rooms_available))
-                        datetimes = self.get_datetime_from_start_end(date_iterator)
 
                         pricelist_item = self.env["product.pricelist.item"].search(
                             [
                                 ("pricelist_id", "=", record.pricelist_id.id),
-                                ("date_start", ">=", datetimes[0]),
-                                ("date_end", "<=", datetimes[1]),
+                                ("date_start_overnight", ">=", date_iterator),
+                                ("date_end_overnight", "<=", date_iterator),
                                 ("applied_on", "=", "1_product"),
                                 (
                                     "product_tmpl_id",
@@ -163,27 +160,6 @@ class FolioWizard(models.TransientModel):
                     record.availability_results = record.availability_results.sorted(
                         key=lambda s: s.num_rooms_available, reverse=True
                     )
-
-    @api.model
-    def get_datetime_from_start_end(self, date):
-        tz = "Europe/Madrid"
-        dt_from = datetime.datetime.combine(
-            date,
-            datetime.time.min,
-        )
-        dt_to = datetime.datetime.combine(
-            date,
-            datetime.time.max,
-        )
-        dt_from = pytz.timezone(tz).localize(dt_from)
-        dt_to = pytz.timezone(tz).localize(dt_to)
-
-        dt_from = dt_from.astimezone(pytz.utc)
-        dt_to = dt_to.astimezone(pytz.utc)
-
-        dt_from = dt_from.replace(tzinfo=None)
-        dt_to = dt_to.replace(tzinfo=None)
-        return dt_from, dt_to
 
     # actions
     def create_folio(self):

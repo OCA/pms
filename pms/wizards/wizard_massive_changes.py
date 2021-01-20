@@ -1,7 +1,5 @@
 import datetime
 
-import pytz
-
 from odoo import api, fields, models
 
 
@@ -9,6 +7,12 @@ class AvailabilityWizard(models.TransientModel):
 
     _name = "pms.massive.changes.wizard"
     _description = "Wizard for massive changes on Availability Plans & Pricelists."
+
+    def _default_avail_readonly(self):
+        return True if self._context.get("availability_plan_id") else False
+
+    def _default_pricelist_readonly(self):
+        return True if self._context.get("pricelist_id") else False
 
     # Fields declaration
     massive_changes_on = fields.Selection(
@@ -135,9 +139,10 @@ class AvailabilityWizard(models.TransientModel):
         store=False,
         readonly=True,
     )
-    avail_readonly = fields.Boolean(compute="_compute_avail_readonly")
-    pricelist_readonly = fields.Boolean(compute="_compute_pricelist_readonly")
+    avail_readonly = fields.Boolean(default=_default_avail_readonly)
+    pricelist_readonly = fields.Boolean(default=_default_pricelist_readonly)
 
+    @api.depends("massive_changes_on")
     def _compute_allowed_pricelist_ids(self):
         for record in self:
             record.allowed_pricelist_ids = self.env["product.pricelist"].search(
@@ -234,10 +239,10 @@ class AvailabilityWizard(models.TransientModel):
                 ]
 
                 if record.start_date:
-                    domain.append(("date_start", ">=", record.start_date))
-
+                    domain.append(("date_start_overnight", ">=", record.start_date))
                 if record.end_date:
-                    domain.append(("date_end", "<=", record.end_date))
+                    domain.append(("date_end_overnight", "<=", record.end_date))
+
                 if record.room_type_id:
                     domain.append(
                         (
@@ -265,7 +270,9 @@ class AvailabilityWizard(models.TransientModel):
                         and record.end_date
                     ):
                         record.pricelist_items_to_overwrite = items.filtered(
-                            lambda x: week_days_to_apply[x.date_start.timetuple()[6]]
+                            lambda x: week_days_to_apply[
+                                x.date_end_overnight.timetuple()[6]
+                            ]
                         )
                     else:
                         record.pricelist_items_to_overwrite = items
@@ -290,21 +297,9 @@ class AvailabilityWizard(models.TransientModel):
                 record.pricelist_items_to_overwrite
             )
 
-    def _compute_avail_readonly(self):
-        for record in self:
-            record.avail_readonly = (
-                True if self._context.get("availability_plan_id") else False
-            )
-
-    def _compute_pricelist_readonly(self):
-        for record in self:
-            record.pricelist_readonly = (
-                True if self._context.get("pricelist_id") else False
-            )
-
     # actions
     def apply_massive_changes(self):
-        tz = "Europe/Madrid"
+
         for record in self:
             # remove old rules
             record.rules_to_overwrite.unlink()
@@ -336,33 +331,13 @@ class AvailabilityWizard(models.TransientModel):
                 else:
                     rooms = [record.room_type_id]
                 for room in rooms:
-                    # REVIEW -> maybe would be more efficient creating a list
-                    # and write all data in 1 operation
                     if record.massive_changes_on == "pricelist":
-
-                        dt_from = datetime.datetime.combine(
-                            date,
-                            datetime.time.min,
-                        )
-                        dt_to = datetime.datetime.combine(
-                            date,
-                            datetime.time.max,
-                        )
-
-                        dt_from = pytz.timezone(tz).localize(dt_from)
-                        dt_to = pytz.timezone(tz).localize(dt_to)
-
-                        dt_from = dt_from.astimezone(pytz.utc)
-                        dt_to = dt_to.astimezone(pytz.utc)
-
-                        dt_from = dt_from.replace(tzinfo=None)
-                        dt_to = dt_to.replace(tzinfo=None)
 
                         self.env["product.pricelist.item"].create(
                             {
                                 "pricelist_id": record.pricelist_id.id,
-                                "date_start": dt_from,
-                                "date_end": dt_to,
+                                "date_start_overnight": date,
+                                "date_end_overnight": date,
                                 "compute_price": "fixed",
                                 "applied_on": "1_product",
                                 "product_tmpl_id": room.product_id.product_tmpl_id.id,
@@ -370,7 +345,6 @@ class AvailabilityWizard(models.TransientModel):
                                 "min_quantity": record.min_quantity,
                             }
                         )
-
                     else:
                         self.env["pms.room.type.availability.rule"].create(
                             {
@@ -388,5 +362,23 @@ class AvailabilityWizard(models.TransientModel):
                                 "closed_departure": record.closed_departure,
                             }
                         )
-
-        # return {}
+            if (
+                record.massive_changes_on == "pricelist"
+                and not record.pricelist_readonly
+            ):
+                action = self.env.ref("product.product_pricelist_action2").read()[0]
+                action["views"] = [
+                    (self.env.ref("pms.product_pricelist_view_form").id, "form")
+                ]
+                action["res_id"] = record.pricelist_id.id
+                return action
+            if (
+                record.massive_changes_on == "availability_plan"
+                and not record.avail_readonly
+            ):
+                action = self.env.ref("pms.room_type_availability_action").read()[0]
+                action["views"] = [
+                    (self.env.ref("pms.room_type_availability_view_form").id, "form")
+                ]
+                action["res_id"] = record.availability_plan_id.id
+                return action

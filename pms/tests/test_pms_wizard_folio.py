@@ -1,6 +1,3 @@
-# import datetime
-# from freezegun import freeze_time
-#
 import datetime
 
 from freezegun import freeze_time
@@ -246,16 +243,13 @@ class TestPmsWizardMassiveChanges(TestHotel):
         # expected price
         expected_price_total = days * price_today * num_double_rooms
 
-        # convert dates to datetimes
-        dates = self.env["pms.folio.wizard"].get_datetime_from_start_end(checkin)
-
         # set pricelist item for current day
         product_tmpl_id = self.test_room_type_double.product_id.product_tmpl_id.id
         pricelist_item = self.env["product.pricelist.item"].create(
             {
                 "pricelist_id": self.test_pricelist.id,
-                "date_start": dates[0],
-                "date_end": dates[1],
+                "date_start_overnight": checkin,
+                "date_end_overnight": checkin,
                 "compute_price": "fixed",
                 "applied_on": "1_product",
                 "product_tmpl_id": product_tmpl_id,
@@ -316,16 +310,13 @@ class TestPmsWizardMassiveChanges(TestHotel):
         checkout = fields.date.today() + datetime.timedelta(days=1)
         days = (checkout - checkin).days
 
-        # convert dates to datetimes
-        dates = self.env["pms.folio.wizard"].get_datetime_from_start_end(checkin)
-
         # set pricelist item for current day
         product_tmpl_id = self.test_room_type_double.product_id.product_tmpl_id.id
         pricelist_item = self.env["product.pricelist.item"].create(
             {
                 "pricelist_id": self.test_pricelist.id,
-                "date_start": dates[0],
-                "date_end": dates[1],
+                "date_start_overnight": checkin,
+                "date_end_overnight": checkin,
                 "compute_price": "fixed",
                 "applied_on": "1_product",
                 "product_tmpl_id": product_tmpl_id,
