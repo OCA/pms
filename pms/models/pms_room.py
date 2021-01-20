@@ -30,8 +30,8 @@ class PmsRoom(models.Model):
     name = fields.Char("Room Name", required=True)
     pms_property_id = fields.Many2one(
         "pms.property",
-        store=True,
-        readonly=True,
+        required=True,
+        ondelete="restrict",
     )
     room_type_id = fields.Many2one(
         "pms.room.type", "Property Room Type", required=True, ondelete="restrict"

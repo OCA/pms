@@ -65,6 +65,11 @@ class PmsReservationLine(models.Model):
         store=True,
         readonly=False,
     )
+    invoiced = fields.Boolean(
+        string="Invoiced",
+        compute="_compute_invoiced",
+        store=True,
+    )
     cancel_discount = fields.Float(
         string="Cancel Discount (%)",
         digits=("Discount"),
@@ -116,7 +121,7 @@ class PmsReservationLine(models.Model):
                     room_type_id=reservation.room_type_id.id
                     if not free_room_select
                     else False,
-                    current_lines=line._origin.reservation_id.reservation_line_ids.ids,
+                    current_lines=line.reservation_id.reservation_line_ids.ids,
                     pricelist=line.reservation_id.pricelist_id.id,
                 )
                 # if there is availability for the entire stay
@@ -282,8 +287,6 @@ class PmsReservationLine(models.Model):
                     line.reservation_id.company_id,
                 )
                 # TODO: Out of service 0 amount
-            else:
-                line.price = line._origin.price
 
     @api.depends("reservation_id.state", "reservation_id.overbooking")
     def _compute_occupies_availability(self):
@@ -314,6 +317,18 @@ class PmsReservationLine(models.Model):
         ):
             return True
         return False
+
+    @api.depends("move_line_ids", "move_line_ids.move_id.state")
+    def _compute_invoiced(self):
+        for line in self:
+            qty_invoiced = 0
+            for invoice_line in line.move_line_ids:
+                if invoice_line.move_id.state != "cancel":
+                    if invoice_line.move_id.move_type == "out_invoice":
+                        qty_invoiced += 1
+                    elif invoice_line.move_id.move_type == "out_refund":
+                        qty_invoiced -= 1
+            line.invoiced = False if qty_invoiced < 1 else True
 
     # TODO: Refact method and allowed cancelled single days
     @api.depends("reservation_id.cancelled_reason")

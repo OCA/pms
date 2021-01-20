@@ -33,11 +33,6 @@
                         <group>
                             <field name="pms_property_ids" widget="many2many_tags" />
                             <field name="company_id" />
-                            <field
-                                name="list_price"
-                                widget='monetary'
-                                options="{'currency_field': 'currency_id', 'field_digits': True}"
-                            />
                         </group>
                     </group>
                     <group colspan="2">
@@ -45,6 +40,15 @@
                             <field name="shared_room" />
                             <field name="room_ids" widget="many2many_tags" />
                             <field name="total_rooms_count" />
+                        </group>
+                        <group name="accounting_group">
+                            <field
+                                name="list_price"
+                                widget='monetary'
+                                options="{'currency_field': 'currency_id', 'field_digits': True}"
+                            />
+                            <field name="taxes_id" widget="many2many_tags" />
+                            <field name="categ_id" />
                         </group>
                     </group>
                     <notebook>

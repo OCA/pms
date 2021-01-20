@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="pms_invoice_filter_days_form" model="ir.ui.view">
+            <field name="name">pms.invoice.filter.days.form</field>
+            <field name="model">pms.invoice.filter.days</field>
+            <field name="arch" type="xml">
+                <form>
+                    <div class="o_row">
+                        <field
+                            name="from_date"
+                            widget="daterange"
+                            nolabel="1"
+                            class="oe_inline"
+                            options="{'related_end_date': 'to_date'}"
+                        />
+                        <i
+                            class="fa fa-long-arrow-right mx-2"
+                            aria-label="Arrow icon"
+                            title="Arrow"
+                        />
+                        <field
+                            name="to_date"
+                            widget="daterange"
+                            nolabel="1"
+                            class="oe_inline"
+                            options="{'related_start_date': 'from_date'}"
+                        />
+                    </div>
+                    <group>
+                        <field name="move_ids" invisible="0" />
+                        <field
+                            name="move_line_ids"
+                            string="Invoice Lines"
+                            widget="many2many_tags"
+                            options="{'no_create':True, 'no_open':True}"
+                            domain="[
+                                ('move_id', 'in', move_ids),
+                                ('reservation_line_ids', '!=', 0),
+                                ('exclude_from_invoice_tab', '=', False),
+                                ('display_type', '=', False)
+                                ]"
+                        />
+                        <field
+                            name="date_ids"
+                            default_focus="1"
+                            string="Dates to invoice"
+                        >
+                            <tree
+                                editable="bottom"
+                                create="false"
+                                delete="false"
+                                decoration-muted="not included"
+                                decoration-primary="included"
+                            >
+                                <field name="date" readonly="1" force_save="1" />
+                                <field name="included" />
+                            </tree>
+                        </field>
+                        <field name="reservation_line_ids" invisible="1" />
+                    </group>
+                    <footer>
+                        <button
+                            string="Apply"
+                            name="do_filter"
+                            type="object"
+                            class="oe_highlight"
+                        />
+                        <button
+                            string="Cancel"
+                            class="btn btn-secondary"
+                            special="cancel"
+                        />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="pms_invoice_filter_days_action" model="ir.actions.act_window">
+            <field name="name">Filter Days</field>
+            <field name="res_model">pms.invoice.filter.days</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>
