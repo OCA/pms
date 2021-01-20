@@ -468,8 +468,18 @@ class PmsReservation(models.Model):
         readonly=False,
         store=True,
     )
+    date_order = fields.Date(
+        compute="_compute_pms_creation_date",
+        store=True,
+        readonly=False,
+    )
 
     # Compute and Search methods
+
+    def _compute_pms_creation_date(self):
+        for record in self:
+            record.date_order = datetime.datetime.today()
+
     @api.depends("checkin", "checkout", "room_type_id")
     def _compute_name(self):
         for reservation in self:

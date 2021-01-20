@@ -11,6 +11,10 @@
                     options="{'no_create': True,'no_open': True}"
                 />
             </xpath>
+            <xpath expr="//field[@name='date_end']" position="after">
+                <field name="date_start_overnight" />
+                <field name="date_end_overnight" />
+            </xpath>
         </field>
     </record>
 </odoo>

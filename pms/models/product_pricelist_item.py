@@ -9,3 +9,11 @@ class ProductPricelistItem(models.Model):
     pms_property_ids = fields.Many2many(
         "pms.property", string="Properties", required=False, ondelete="restrict"
     )
+    date_start_overnight = fields.Date(
+        string="Start Date Overnight",
+        help="Start date to apply daily pricelist items",
+    )
+    date_end_overnight = fields.Date(
+        string="End Date Overnight",
+        help="End date to apply daily pricelist items",
+    )

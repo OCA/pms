@@ -182,7 +182,8 @@
                     <div class="col-4">
                         <group>
                             <field name="price" />
-                            <field name="min_quantity" />
+                            <!-- REVIEW 'min_quantity'-->
+                            <!--<field name="min_quantity" />-->
                         </group>
                     </div>
                 </div>
@@ -199,21 +200,28 @@
                 >
                     <span style="text-decoration:underline;">
                         <field name="num_pricelist_items_to_overwrite" />
+
                     </span>
                     pricelist items
                     <u>will be overwritten:</u>
                 </b>
-
-
-                <!--    REVIEW:   a calendar view could be more understandable   -->
                 <field
                     name="rules_to_overwrite"
                     attrs="{'invisible':[('massive_changes_on','=','pricelist')]}"
                 />
                 <field
                     name="pricelist_items_to_overwrite"
+                    nolabel="1"
                     attrs="{'invisible':[('massive_changes_on','=','availability_plan')]}"
-                />
+                >
+                     <tree>
+                         <field name="pricelist_id" />
+                         <field string="Applicable on" name="name" />
+                         <field name="date_start_overnight" />
+                         <field name="date_end_overnight" />
+                         <field name="price" />
+                    </tree>
+                </field>
                 <footer>
                     <button
                         name="apply_massive_changes"

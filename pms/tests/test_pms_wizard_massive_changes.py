@@ -1,6 +1,5 @@
 import datetime
 
-import pytz
 from freezegun import freeze_time
 
 from odoo import fields
@@ -301,16 +300,11 @@ class TestPmsWizardMassiveChanges(TestHotel):
 
         price = 20
         min_quantity = 3
+
         vals = {
             "pricelist_id": self.test_pricelist,
-            "date_start": datetime.datetime.combine(
-                date_from,
-                datetime.time.min,
-            ),
-            "date_end": datetime.datetime.combine(
-                date_to,
-                datetime.time.max,
-            ),
+            "date_start": date_from,
+            "date_end": date_to,
             "compute_price": "fixed",
             "applied_on": "1_product",
             "product_tmpl_id": self.test_room_type_double.product_id.product_tmpl_id,
@@ -330,26 +324,20 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "min_quantity": min_quantity,
             }
         ).apply_massive_changes()
-        vals["date_start"] = pytz.timezone("Europe/Madrid").localize(vals["date_start"])
-        vals["date_end"] = pytz.timezone("Europe/Madrid").localize(vals["date_end"])
+        vals["date_start_overnight"] = date_from
+        vals["date_end_overnight"] = date_to
+
+        del vals["date_start"]
+        del vals["date_end"]
+
         # ASSERT
         for key in vals:
             with self.subTest(k=key):
-                if key == "date_start" or key == "date_end":
-                    self.assertEqual(
-                        fields.Datetime.context_timestamp(
-                            self.test_pricelist.item_ids[0],
-                            self.test_pricelist.item_ids[0][key],
-                        ),
-                        vals[key],
-                        "The value of " + key + " is not correctly established",
-                    )
-                else:
-                    self.assertEqual(
-                        self.test_pricelist.item_ids[0][key],
-                        vals[key],
-                        "The value of " + key + " is not correctly established",
-                    )
+                self.assertEqual(
+                    self.test_pricelist.item_ids[0][key],
+                    vals[key],
+                    "The value of " + key + " is not correctly established",
+                )
 
     @freeze_time("1980-12-01")
     def test_day_of_week_pricelist_items_create(self):
@@ -398,17 +386,12 @@ class TestPmsWizardMassiveChanges(TestHotel):
 
                 # ASSERT
                 pricelist_items = self.test_pricelist.item_ids.sorted(
-                    key=lambda s: s.date_start
+                    key=lambda s: s.date_start_overnight
                 )
 
                 # ASSERT
                 self.assertTrue(
-                    (
-                        fields.Datetime.context_timestamp(
-                            pricelist_items[index], pricelist_items[index].date_start
-                        )
-                    ).timetuple()[6]
-                    == index
+                    pricelist_items[index].date_start_overnight.timetuple()[6] == index
                     and test_case[index],
                     "Rule not created on correct day of week",
                 )
