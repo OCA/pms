@@ -69,7 +69,12 @@ class ProductPricelist(models.Model):
     def _compute_price_rule_get_items(
         self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
     ):
-        if "property" in self._context and self._context["property"]:
+
+        if (
+            "property" in self._context
+            and self._context["property"]
+            and "date_overnight" in self._context
+        ):
             self.env["product.pricelist.item"].flush(
                 ["price", "currency_id", "company_id"]
             )
