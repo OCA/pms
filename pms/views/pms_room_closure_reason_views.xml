@@ -37,6 +37,6 @@
         id="menu_pms_room_closure_reason_form_tree"
         action="open_pms_room_closure_reason_form_tree"
         sequence="25"
-        parent="pms.configuration_others"
+        parent="pms.pms_configuration_menu"
     />
 </odoo>

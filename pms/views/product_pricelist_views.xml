@@ -45,15 +45,13 @@
                 </div>
             </xpath>
         </field>
-
-
-
     </record>
+
     <menuitem
-        name="Pricelist"
+        name="Pricelists"
         id="pricelist_menu"
         action="product.product_pricelist_action2"
-        sequence="22"
-        parent="pms.configuration_others"
+        sequence="15"
+        parent="pms.revenue_management_menu"
     />
 </odoo>

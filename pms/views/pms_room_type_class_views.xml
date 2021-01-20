@@ -58,10 +58,10 @@
         <field name="view_mode">tree,form</field>
     </record>
     <menuitem
-        name="Type Class"
+        name="Room Type Class"
         id="menu_open_pms_room_type_class_form_tree"
         action="open_pms_room_type_class_form_tree"
-        sequence="15"
-        parent="pms.menu_pms_room"
+        sequence="25"
+        parent="pms.pms_rooms_menu"
     />
 </odoo>

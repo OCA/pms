@@ -38,11 +38,12 @@
         <field name="res_model">pms.amenity.type</field>
         <field name="view_mode">tree,form</field>
     </record>
+
     <menuitem
         name="Amenity Types"
         id="menu_action_pms_room_amenity_type_view_form"
         action="action_pms_room_amenity_type_view_form"
-        sequence="3"
+        sequence="15"
         parent="pms.menu_amenity"
     />
 </odoo>

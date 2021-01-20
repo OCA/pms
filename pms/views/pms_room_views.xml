@@ -245,7 +245,7 @@
         id="menu_open_pms_room_form"
         action="action_pms_room_form"
         sequence="5"
-        parent="pms.menu_pms_room"
+        parent="pms.pms_rooms_menu"
     />
     <!-- Room Categories -->
     <!-- <record id="product_category_tree_view" model="ir.ui.view">

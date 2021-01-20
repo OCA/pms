@@ -105,13 +105,13 @@
         id="menu_amenity"
         name="Amenity"
         parent="pms.pms_configuration_menu"
-        sequence="2"
+        sequence="55"
     />
     <menuitem
         name="Amenities"
         id="menu_action_pms_room_amenity_view_form"
         action="action_pms_room_amenity_view_form"
-        sequence="2"
+        sequence="5"
         parent="pms.menu_amenity"
     />
     <!-- Amenities Categories -->

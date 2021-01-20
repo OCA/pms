@@ -275,6 +275,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
     @api.model
     def _get_lines_to_invoice(self, folios, bill_services=True, bill_rooms=True):
         lines_to_invoice = folios.sale_line_ids
+        import wdb; wdb.set_trace()
         if not self.bill_services:
             lines_to_invoice = lines_to_invoice - lines_to_invoice.filtered(
                 lambda l: l.service_id and not l.service_id.is_board_service
