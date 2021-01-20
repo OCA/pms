@@ -43,7 +43,7 @@
     <menuitem
         id="menu_pms_advanced_filters"
         name="Advanced Filters"
-        parent="pms.pms_reports_menu"
+        parent="pms.pms_configuration_menu"
         sequence="30"
         action="action_advanced_filters_wizard"
     />

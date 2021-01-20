@@ -62,9 +62,16 @@
     <!-- menus -->
     <menuitem
         action="pms_property_action"
-        id="pms_property_menu"
+        id="general_property_menu"
         parent="base.menu_users"
         sequence="10"
+        name="Properties"
+    />
+    <menuitem
+        action="pms_property_action"
+        id="pms_property_menu"
+        parent="pms.pms_configuration_menu"
+        sequence="65"
         name="Properties"
     />
 </odoo>

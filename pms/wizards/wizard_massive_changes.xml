@@ -251,7 +251,7 @@
         name="Massive Changes"
         id="menu_pms_room_massive_changes_wizard"
         action="action_wizard_massive_changes"
-        sequence="25"
-        parent="pms.configuration_others"
+        sequence="75"
+        parent="pms.revenue_management_menu"
     />
 </odoo>

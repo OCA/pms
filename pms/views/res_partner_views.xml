@@ -10,6 +10,24 @@
         <field name="res_model">pms.folio</field>
         <field name="domain">[('partner_id', '=',active_id)]</field>
     </record>
+    <record id="pms_customer_action" model="ir.actions.act_window">
+        <field name="name">Customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_agency', '=',False)]</field>
+    </record>
+    <record id="pms_agency_action" model="ir.actions.act_window">
+        <field name="name">Agencies</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_agency', '=',True)]</field>
+        <field
+            name="context"
+            eval="{
+                'default_is_agency': True,
+            }"
+        />
+    </record>
     <record id="res_partner_view_form" model="ir.ui.view">
         <field name="name">res.partner.view.form</field>
         <field name="model">res.partner</field>
@@ -69,10 +87,17 @@
         </field>
     </record>
     <menuitem
+        id="pms_customer_meu"
         name="Customers"
-        id="menu_pms_customer"
-        action="base.action_partner_form"
-        sequence="500"
-        parent="menu_all_folio"
+        action="pms.pms_customer_action"
+        sequence="10"
+        parent="pms_contacts_menu"
+    />
+    <menuitem
+        id="pms_agency_menu"
+        name="Agencies"
+        action="pms.pms_agency_action"
+        sequence="10"
+        parent="pms_contacts_menu"
     />
 </odoo>

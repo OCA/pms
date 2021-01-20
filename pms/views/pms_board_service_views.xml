@@ -43,6 +43,6 @@
         id="menu_open_pms_board_service_form_tree"
         action="open_pms_board_service_form_tree"
         sequence="25"
-        parent="pms.configuration_others"
+        parent="pms.pms_services_menu"
     />
 </odoo>

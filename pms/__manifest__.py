@@ -33,7 +33,6 @@
         "report/pms_folio.xml",
         "report/pms_folio_templates.xml",
         # "templates/pms_email_template.xml",
-        "views/general.xml",
         "data/menus.xml",
         "wizards/wizard_payment_folio.xml",
         "wizards/folio_make_invoice_advance_views.xml",
@@ -81,6 +80,7 @@
     ],
     "qweb": [
         "static/src/xml/pms_base_templates.xml",
+        "static/src/xml/reservation_group_button_views.xml",
     ],
     "post_init_hook": "post_init_hook",
 }

@@ -10,7 +10,7 @@
         <field name="arch" type="xml">
             <form string="Property Room Type">
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
+                    <!-- <div class="oe_button_box" name="button_box">
                         <button
                             name="toggle_active"
                             type="object"
@@ -23,7 +23,7 @@
                                 options='{"terminology": "archive"}'
                             />
                         </button>
-                    </div>
+                    </div> -->
                     <group colspan="4">
                         <group>
                             <field name="name" />
@@ -61,6 +61,7 @@
                                 context="{'default_pms_room_type_id':id}"
                             >
                                 <tree editable="bottom">
+                                    <field name="by_default" />
                                     <field name="pms_room_type_id" invisible="1" />
                                     <field name="pms_board_service_id" />
                                     <field name="price_type" />
@@ -70,7 +71,7 @@
                                         type="object"
                                         class="oe_stat_button"
                                         id="go_board_lines"
-                                        icon="fa fa-2x fa-bars"
+                                        icon="fa-2x fa-bars"
                                         name="open_board_lines_form"
                                     />
                                 </tree>
@@ -106,16 +107,10 @@
         <field name="view_mode">tree,form</field>
     </record>
     <menuitem
-        id="menu_pms_room"
-        name="Room"
-        parent="pms.pms_configuration_menu"
-        sequence="2"
-    />
-    <menuitem
         name="Room Types"
         id="menu_open_pms_room_type_form_tree"
         action="open_pms_room_type_form_tree"
-        sequence="6"
-        parent="pms.menu_pms_room"
+        sequence="15"
+        parent="pms.pms_rooms_menu"
     />
 </odoo>

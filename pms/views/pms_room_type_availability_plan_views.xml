@@ -86,7 +86,7 @@
         name="Availability Plans"
         id="reservation_availability_rules_menu"
         action="room_type_availability_action"
-        sequence="22"
-        parent="pms.configuration_others"
+        sequence="5"
+        parent="pms.revenue_management_menu"
     />
 </odoo>

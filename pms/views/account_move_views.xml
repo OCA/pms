@@ -39,4 +39,12 @@
             </xpath> -->
         </field>
     </record>
+
+    <menuitem
+        name="Invoices"
+        id="pms_invoice_menu"
+        action="account.action_move_out_invoice_type"
+        sequence="15"
+        parent="pms.pms_sales_menu"
+    />
 </odoo>

@@ -63,6 +63,7 @@ class PmsBoardServiceRoomType(models.Model):
     amount = fields.Float(
         "Amount", digits=("Product Price"), compute="_compute_board_amount", store=True
     )
+    by_default = fields.Boolean("Apply by Default")
 
     # Compute and Search methods
     @api.depends("board_service_line_ids.amount")
@@ -106,6 +107,28 @@ class PmsBoardServiceRoomType(models.Model):
                          can't repeat without pricelist"
                         )
                     )
+
+    @api.constrains("by_default", "pricelist_id")
+    def constrains_duplicated_board_defaul(self):
+        for record in self:
+            default_boards = (
+                record.pms_room_type_id.board_service_room_type_ids.filtered(
+                    "by_default"
+                )
+            )
+            # TODO Check properties (with different propertys is allowed)
+            if any(
+                default_boards.mapped(
+                    lambda l: l.pricelist_id == record.pricelist_id
+                    and l.id != record.id
+                )
+            ):
+                raise UserError(
+                    _(
+                        """Only can set one default board service by
+                            pricelist (or without pricelist)"""
+                    )
+                )
 
     # Action methods
 
