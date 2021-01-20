@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="wizard_payment_folio_view_form" model="ir.ui.view">
+        <field name="name">wizard.payment.folio.view.form</field>
+        <field name="model">wizard.payment.folio</field>
+        <field name="arch" type="xml">
+            <form string="Payment">
+                <group>
+                    <group>
+                        <field name="allowed_method_ids" invisible="1" />
+                        <field name="payment_method_id" widget="radio" />
+                        <field name="amount" />
+                    </group>
+                    <group>
+                        <field name="date" />
+                        <field name="partner_id" />
+                        <field name="folio_id" />
+                    </group>
+                </group>
+                <footer>
+                    <button
+                        type="object"
+                        class="btn-primary"
+                        id="payment"
+                        name="button_payment"
+                        string="Pay"
+                    />
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payment_folio" model="ir.actions.act_window">
+        <field name="name">Payment Folio</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wizard.payment.folio</field>
+        <field name="view_id" ref="wizard_payment_folio_view_form" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

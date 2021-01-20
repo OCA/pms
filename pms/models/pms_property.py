@@ -108,3 +108,22 @@ class PmsProperty(models.Model):
         date = date.astimezone(pytz.utc)
         date = date.replace(tzinfo=None)
         return date
+
+    def _get_payment_methods(self):
+        self.ensure_one()
+        payment_methods = self.env["account.journal"].search(
+            [
+                "&",
+                ("type", "in", ["cash", "bank"]),
+                "|",
+                ("pms_property_ids", "in", self.id),
+                "|",
+                "&",
+                ("pms_property_ids", "=", False),
+                ("company_id", "=", self.company_id.id),
+                "&",
+                ("pms_property_ids", "=", False),
+                ("company_id", "=", False),
+            ]
+        )
+        return payment_methods

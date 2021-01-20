@@ -269,7 +269,7 @@
                     </div>
                 </div>
                 <div>
-                    <span t-if="doc.payment_ids">
+                    <!-- <span t-if="doc.payment_ids">
                         <table style="width:80%;">
                             <thead>
                                 <tr>
@@ -288,7 +288,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </span>
+                    </span> -->
                     <!-- <span t-if="doc.return_ids">
                         <table style="width:80%;">
                             <thead>

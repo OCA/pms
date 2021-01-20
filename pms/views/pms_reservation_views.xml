@@ -403,6 +403,10 @@
                                     <field name="price" />
                                     <field name="discount" />
                                     <field
+                                        name="move_line_ids"
+                                        widget="many2many_tags"
+                                    />
+                                    <field
                                         name="cancel_discount"
                                         attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
                                     />
