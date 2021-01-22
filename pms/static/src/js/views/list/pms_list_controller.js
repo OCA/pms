@@ -9,15 +9,15 @@ odoo.define("pms.group.reservation.wizard", function (require) {
     var ReservationWizard = {
         start: function () {
             // Define a unique uploadId and a callback method
-            this.fileUploadID = _.uniqueId("account_bill_file_upload");
-            $(window).on(this.fileUploadID, this._onFileUploaded.bind(this));
+            // this.fileUploadID = _.uniqueId("account_bill_file_upload");
+            // $(window).on(this.fileUploadID, this._onFileUploaded.bind(this));
             return this._super.apply(this, arguments);
         },
 
         _onNewReservationGroup: function (event) {
             var self = this;
 
-            return this.do_action("pms.pms_reservation_view_tree", {
+            return this.do_action("pms.action_wizard_folio", {
                 on_close: function () {
                     self.reload();
                 },

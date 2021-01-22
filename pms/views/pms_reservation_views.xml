@@ -449,8 +449,8 @@
                                         decoration-success="is_board_service == True"
                                     >
                                         <field name="is_board_service" invisible="1" />
-                                        <field name="company_id" invisible="0" />
-                                        <field name="pms_property_id" invisible="0" />
+                                        <field name="company_id" invisible="1" />
+                                        <field name="pms_property_id" invisible="1" />
                                         <button
                                             type="object"
                                             class="oe_stat_button"
@@ -490,8 +490,8 @@
                                         <field name="price_unit" />
                                         <field name="discount" />
                                         <field name="tax_ids" widget="many2many_tags" />
-                                        <field name="price_subtotal" />
-                                        <field name="price_tax" />
+                                        <field name="price_subtotal" optional="show" />
+                                        <field name="price_tax" optional="show" />
                                         <field name="price_total" />
                                         <field name="service_line_ids" invisible="1">
                                             <tree string="Days">
