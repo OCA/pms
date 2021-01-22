@@ -37,8 +37,8 @@ class TestResPartner(common.SavepointCase):
                 "name": "name1",
                 # "lastname": "lastname1",
                 "lastname2": "secondlastname",
-                "expedition_name": "2011-02-20",
-                "birthdate": "1995-12-10",
+                "expedition_date": "2011-02-20",
+                "birthdate_date": "1995-12-10",
                 "gender": "M",
             }
         )
@@ -99,8 +99,8 @@ class TestResPartner(common.SavepointCase):
                 "name": "name1",
                 # "lastname": "lastname1",
                 "lastname2": "secondlastname",
-                "expedition_name": "2011-02-20",
-                "birthdate": "1995-12-10",
+                "expedition_date": "2011-02-20",
+                "birthdate_date": "1995-12-10",
                 "gender": "M",
             }
         )
