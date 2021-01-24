@@ -135,14 +135,14 @@ class PmsCheckinPartner(models.Model):
 
     @api.model
     def _checkin_mandatory_fields(self, depends=False):
-        # api.depends need "reservation_id.state" in de lambda function
+        # api.depends need "reservation_id.state" in the lambda function
         if depends:
             return ["reservation_id.state", "name"]
         return ["name"]
 
     @api.model
     def _checkin_partner_fields(self):
-        # api.depends need "reservation_id.state" in de lambda function
+        # api.depends need "reservation_id.state" in the lambda function
         checkin_fields = self._checkin_mandatory_fields()
         checkin_fields.extend(["mobile", "email"])
         return checkin_fields
@@ -261,6 +261,10 @@ class PmsCheckinPartner(models.Model):
                 raise ValidationError(_("It is not yet checkin day!"))
             if record.reservation_id.checkout <= fields.Date.today():
                 raise ValidationError(_("Its too late to checkin"))
+            if any(
+                not getattr(record, field) for field in self._checkin_mandatory_fields()
+            ):
+                raise ValidationError(_("Personal data is missing for check-in"))
             vals = {
                 "state": "onboard",
                 "arrival": fields.Datetime.now(),
