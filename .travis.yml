@@ -46,3 +46,6 @@ script:
 
 after_success:
   - travis_after_tests_success
+
+notifications:
+  webhooks: https://roomdoo.rocket.chat/hooks/gEMGqx2Tseaum7Xar/EwfmCm63EL9Kq6S7AMz849Da2QRs29qKadPNXTxoiCXQssbT
