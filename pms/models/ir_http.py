@@ -27,10 +27,7 @@ class IrHttp(models.AbstractModel):
                         for property in user.pms_property_ids
                     ],
                 },
-                "display_switch_pms_property_menu": user.has_group(
-                    "base.group_multi_company"
-                )
-                and len(user.pms_property_ids) > 1,
+                "display_switch_pms_property_menu": len(user.pms_property_ids) > 1,
             }
         )
         # TODO: This user context update should be placed in other function ¿?
