@@ -319,7 +319,10 @@
                                 placeholder="Reservation Notes"
                             />
                             <field name="agency_id" />
-                            <field name="channel_type_id" />
+                            <field
+                                name="channel_type_id"
+                                attrs="{'readonly':[('agency_id','!=', False)]}"
+                            />
                         </group>
                         <group
                             colspan="2"

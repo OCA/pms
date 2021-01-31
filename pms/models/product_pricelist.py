@@ -25,6 +25,9 @@ class ProductPricelist(models.Model):
     pricelist_type = fields.Selection(
         [("daily", "Daily Plan")], string="Pricelist Type", default="daily"
     )
+    pms_sale_channel_ids = fields.Many2many(
+        "pms.sale.channel", string="Available Channels"
+    )
 
     availability_plan_id = fields.Many2one(
         comodel_name="pms.room.type.availability.plan",
