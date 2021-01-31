@@ -27,7 +27,11 @@ class PmsRoomType(models.Model):
         ondelete="cascade",
     )
     room_ids = fields.One2many("pms.room", "room_type_id", "Rooms")
-    class_id = fields.Many2one("pms.room.type.class", "Property Type Class")
+    class_id = fields.Many2one(
+        "pms.room.type.class",
+        "Property Type Class",
+        required=True,
+    )
     board_service_room_type_ids = fields.One2many(
         "pms.board.service.room.type", "pms_room_type_id", string="Board Services"
     )
@@ -117,7 +121,7 @@ class PmsRoomType(models.Model):
     @api.constrains("pms_property_ids")
     def _check_integrity_property_class(self):
         for record in self:
-            if record.pms_property_ids and record.class_id:
+            if record.pms_property_ids and record.class_id.pms_property_ids:
                 for pms_property in record.pms_property_ids:
                     if pms_property.id not in record.class_id.pms_property_ids.ids:
                         raise ValidationError(
