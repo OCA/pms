@@ -28,12 +28,6 @@ class PmsFolio(models.Model):
             result.append((folio.id, name))
         return result
 
-    @api.model
-    def _get_default_pms_property(self):
-        return (
-            self.env.user.pms_property_id
-        )  # TODO: Change by property env variable (like company)
-
     def _default_note(self):
         return (
             self.env["ir.config_parameter"]
@@ -48,7 +42,9 @@ class PmsFolio(models.Model):
         string="Folio Number", readonly=True, index=True, default=lambda self: _("New")
     )
     pms_property_id = fields.Many2one(
-        "pms.property", default=_get_default_pms_property, required=True
+        "pms.property",
+        default=lambda self: self.env.user.get_active_property_ids()[0],
+        required=True,
     )
     partner_id = fields.Many2one(
         "res.partner",

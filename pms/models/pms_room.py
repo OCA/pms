@@ -32,6 +32,7 @@ class PmsRoom(models.Model):
         "pms.property",
         required=True,
         ondelete="restrict",
+        default=lambda self: self.env.user.get_active_property_ids()[0],
     )
     room_type_id = fields.Many2one(
         "pms.room.type", "Property Room Type", required=True, ondelete="restrict"
@@ -55,6 +56,41 @@ class PmsRoom(models.Model):
     active = fields.Boolean("Active", default=True)
     sequence = fields.Integer("Sequence", default=0)
 
+    allowed_property_ids = fields.Many2many(
+        comodel_name="pms.property",
+        relation="room_property_rel",
+        column1="room_id",
+        column2="property_id",
+        string="Allowed properties",
+        store=True,
+        readonly=True,
+        compute="_compute_allowed_property_ids",
+    )
+
+    @api.depends("room_type_id.pms_property_ids", "floor_id.pms_property_ids")
+    def _compute_allowed_property_ids(self):
+        for record in self:
+            if not (
+                record.room_type_id.pms_property_ids or record.floor_id.pms_property_ids
+            ):
+                record.allowed_property_ids = False
+            else:
+                if record.room_type_id.pms_property_ids:
+                    if record.floor_id.pms_property_ids:
+                        properties = list(
+                            set(record.room_type_id.pms_property_ids.ids)
+                            & set(record.floor_id.pms_property_ids.ids)
+                        )
+                        record.allowed_property_ids = self.env["pms.property"].search(
+                            [("id", "in", properties)]
+                        )
+                    else:
+                        record.allowed_property_ids = (
+                            record.room_type_id.pms_property_ids
+                        )
+                else:
+                    record.allowed_property_ids = record.floor_id.pms_property_ids
+
     # Constraints and onchanges
     @api.constrains("capacity")
     def _check_capacity(self):
@@ -66,6 +102,16 @@ class PmsRoom(models.Model):
                         room must be greater than 0."
                     )
                 )
+
+    @api.constrains(
+        "allowed_property_ids",
+        "pms_property_id",
+    )
+    def _check_property_integrity(self):
+        for rec in self:
+            if rec.pms_property_id and rec.allowed_property_ids:
+                if rec.pms_property_id.id not in rec.allowed_property_ids.ids:
+                    raise ValidationError(_("Property not allowed"))
 
     # Business methods
 

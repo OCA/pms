@@ -68,10 +68,27 @@ class PmsRoomTypeAvailabilityRule(models.Model):
         help="Maximum simultaneous availability on own Booking Engine.",
     )
 
+    pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
+        string="Property",
+        ondelete="restrict",
+    )
+
+    allowed_property_ids = fields.Many2many(
+        "pms.property",
+        "allowed_availability_move_rel",
+        "availability_rule_id",
+        "property_id",
+        string="Allowed Properties",
+        store=True,
+        readonly=True,
+        compute="_compute_allowed_property_ids",
+    )
+
     _sql_constraints = [
         (
             "room_type_registry_unique",
-            "unique(availability_plan_id, room_type_id, date)",
+            "unique(availability_plan_id, room_type_id, date, pms_property_id)",
             "Only can exists one availability rule in the same \
                          day for the same room type!",
         )
@@ -88,6 +105,59 @@ class PmsRoomTypeAvailabilityRule(models.Model):
         for record in self:
             if not record.max_avail:
                 record.max_avail = record.room_type_id.default_max_avail
+
+    @api.depends(
+        "availability_plan_id.pms_property_ids", "room_type_id.pms_property_ids"
+    )
+    def _compute_allowed_property_ids(self):
+
+        for rule in self:
+            properties = []
+
+            if not (
+                rule.availability_plan_id.pms_property_ids
+                or rule.room_type_id.pms_property_ids
+            ):
+                rule.allowed_property_ids = False
+            else:
+                if rule.availability_plan_id.pms_property_ids:
+                    if rule.room_type_id.pms_property_ids:
+                        for prp in rule.availability_plan_id.pms_property_ids:
+                            if prp in rule.room_type_id.pms_property_ids:
+                                properties.append(prp)
+                        rule.allowed_property_ids = [
+                            (4, prop.id) for prop in properties
+                        ]
+                    else:
+                        rule.allowed_property_ids = (
+                            rule.availability_plan_id.pms_property_ids
+                        )
+                else:
+                    rule.allowed_property_ids = rule.room_type_id.pms_property_ids
+
+    @api.constrains(
+        "allowed_property_ids",
+        "pms_property_id",
+    )
+    def _check_property_integrity(self):
+        for rec in self:
+            if rec.pms_property_id and rec.allowed_property_ids:
+                if rec.pms_property_id.id not in rec.allowed_property_ids.ids:
+                    raise ValidationError(_("Property not allowed"))
+
+    # @api.constrains(
+    #     "allowed_property_ids",
+    #     "pms_property_ids",
+    # )
+    # def _check_property_integrity(self):
+    #     for rule in self:
+    #         for p in rule.pms_property_ids:
+    #             allowed = list(
+    #                 set(rule.room_type_id.pms_property_ids.ids)
+    #                 &
+    #                 set(rule.availability_plan_id.pms_property_ids.ids))
+    #             if p.id not in allowed:
+    #                 raise ValidationError(_("Property not allowed"))
 
     @api.constrains("min_stay", "min_stay_arrival", "max_stay", "max_stay_arrival")
     def _check_min_max_stay(self):

@@ -22,7 +22,6 @@ class TestPmsReservations(TestHotel):
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "default_availability_plan_id": self.room_type_availability.id,
             }
         )
 

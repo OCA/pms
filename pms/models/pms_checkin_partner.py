@@ -13,11 +13,6 @@ class PmsCheckinPartner(models.Model):
     _name = "pms.checkin.partner"
     _description = "Partner Checkins"
 
-    @api.model
-    def _get_default_pms_property(self):
-        # TODO: Change by property env variable (like company)
-        return self.env.user.pms_property_id
-
     # Fields declaration
     identifier = fields.Char(
         "Identifier", readonly=True, index=True, default=lambda self: _("New")
@@ -33,7 +28,7 @@ class PmsCheckinPartner(models.Model):
         store=True,
     )
     pms_property_id = fields.Many2one(
-        "pms.property", default=_get_default_pms_property, required=True
+        "pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
     )
     name = fields.Char(
         "Name",

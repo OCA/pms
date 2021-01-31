@@ -42,7 +42,8 @@
                     </div>
                     <group>
                         <field
-                            name="pms_property_id"
+                            name="pms_property_ids"
+                            widget="many2many_tags"
                             options="{'no_create': True,'no_open': True}"
                         />
                         <field
@@ -64,7 +65,7 @@
         <field name="arch" type="xml">
             <tree string="Availability Plans">
                 <field name="name" />
-                <field name="pms_property_id" />
+                <field name="pms_property_ids" widget="many2many_tags" />
                 <field
                     name="pms_pricelist_ids"
                     widget="many2many_tags"

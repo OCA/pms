@@ -47,8 +47,12 @@ class PmsBoardServiceRoomType(models.Model):
     board_service_line_ids = fields.One2many(
         "pms.board.service.room.type.line", "pms_board_service_room_type_id"
     )
-    pms_property_id = fields.Many2one(
+    # TODO:review relation with pricelist and properties
+    pms_property_ids = fields.Many2many(
         "pms.property",
+        string="Properties",
+        required=False,
+        ondelete="restrict",
     )
     price_type = fields.Selection(
         [("fixed", "Fixed"), ("percent", "Percent")],

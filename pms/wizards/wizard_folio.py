@@ -25,6 +25,11 @@ class FolioWizard(models.TransientModel):
         store=True,
         readonly=False,
     )
+    pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
+        string="Property",
+        default=lambda self: self.env.user.get_active_property_ids()[0],
+    )
     partner_id = fields.Many2one(
         "res.partner",
     )
@@ -99,33 +104,18 @@ class FolioWizard(models.TransientModel):
                         )
 
                         num_rooms_available_by_date.append(len(rooms_available))
-
-                        pricelist_item = self.env["product.pricelist.item"].search(
-                            [
-                                ("pricelist_id", "=", record.pricelist_id.id),
-                                ("date_start_overnight", ">=", date_iterator),
-                                ("date_end_overnight", "<=", date_iterator),
-                                ("applied_on", "=", "1_product"),
-                                (
-                                    "product_tmpl_id",
-                                    "=",
-                                    room_type_iterator.product_id.product_tmpl_id.id,
-                                ),
-                            ]
+                        product = room_type_iterator
+                        product = product.with_context(
+                            lang=record.partner_id.lang,
+                            partner=record.partner_id.id,
+                            quantity=1,
+                            date=fields.Date.today(),
+                            date_overnight=date_iterator,
+                            pricelist=record.pricelist_id.id,
+                            uom=product.uom_id.id,
+                            property=record.pms_property_id.id,
                         )
-
-                        # if pricelist_item exists for the date and without
-                        # min_quantity (min_quantity = 0)
-                        if pricelist_item and pricelist_item.min_quantity == 0:
-                            pricelist_item.ensure_one()
-                            room_type_total_price_per_room += float(
-                                pricelist_item.price[2:]
-                            )
-                        else:
-                            # default price from room_type
-                            room_type_total_price_per_room += (
-                                room_type_iterator.product_id.list_price
-                            )
+                        room_type_total_price_per_room += product.price
 
                     # check there are rooms of the type
                     if room_type_iterator.total_rooms_count > 0:

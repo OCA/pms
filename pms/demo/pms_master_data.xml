@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
+        <!-- Multi pms Demo -->
+        <record id="pms_company1" model="res.company">
+            <field name="name">Pms Company</field>
+            <field name="currency_id" ref="base.EUR" />
+            <field
+                name="favicon"
+                model="res.company"
+                eval="obj()._get_default_favicon(original=True)"
+            />
+        </record>
+        <record
+            id="demo_pms_room_type_availability"
+            model="pms.room.type.availability.plan"
+        >
+            <field name="name">Availability Plan Demo</field>
+        </record>
+        <record id="demo_pms_property" model="pms.property">
+            <field name="name">My pms Demo</field>
+            <field name="company_id" ref="base.main_company" />
+            <field name="default_pricelist_id" ref="product.list0" />
+        </record>
+        <record id="demo_pms_property2" model="pms.property">
+            <field name="name">My property 2</field>
+            <field name="company_id" ref="base.main_company" />
+            <field name="default_pricelist_id" ref="product.list0" />
+        </record>
+        <record id="demo_pms_property3" model="pms.property">
+            <field name="name">Independent property </field>
+            <field name="company_id" ref="pms_company1" />
+            <field name="default_pricelist_id" ref="product.list0" />
+        </record>
         <!-- users -->
         <record id="base.user_demo" model="res.users">
             <field name="groups_id" eval="[(4,ref('pms.group_pms_user'))]" />
@@ -304,22 +335,6 @@
             <field name="description">
                 Used for closing of rooms for extra privacy.
             </field>
-        </record>
-        <!-- Multi pms Demo -->
-        <record
-            id="demo_pms_room_type_availability_plan"
-            model="pms.room.type.availability.plan"
-        >
-            <field name="name">Availability Plan Demo</field>
-        </record>
-        <record id="demo_pms_property" model="pms.property">
-            <field name="name">My pms Demo</field>
-            <field name="company_id" ref="base.main_company" />
-            <field name="default_pricelist_id" ref="product.list0" />
-            <field
-                name="default_availability_plan_id"
-                ref="demo_pms_room_type_availability_plan"
-            />
         </record>
         <!-- pms.room.type    -->
         <record id="demo_pms_room_type_0" model="pms.room.type">
