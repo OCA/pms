@@ -12,6 +12,10 @@
                     type="text/javascript"
                     src="/pms/static/src/js/widgets/switch_property_menu.js"
                 />
+                <script
+                    type="text/javascript"
+                    src="/pms/static/src/js/pms_list_controller.js"
+                />
             </xpath>
         </template>
     </data>
