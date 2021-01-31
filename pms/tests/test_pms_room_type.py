@@ -15,9 +15,6 @@ class TestRoomType(SavepointCase):
                 "name": "p2",
                 "company_id": self.m1.id,
                 "default_pricelist_id": self.ref("product.list0"),
-                "default_availability_plan_id": self.ref(
-                    "pms.main_pms_room_type_availability_plan"
-                ),
             }
         )
         self.m2 = self.env["res.company"].create(
@@ -30,9 +27,6 @@ class TestRoomType(SavepointCase):
                 "name": "p3",
                 "company_id": self.m2.id,
                 "default_pricelist_id": self.ref("product.list0"),
-                "default_availability_plan_id": self.ref(
-                    "pms.main_pms_room_type_availability_plan"
-                ),
             }
         )
 
@@ -676,3 +670,29 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
 
         # ASSERT
         self.assertEqual(room_type.id, r3.id, "Expected room type not found")
+
+    def test_check_property_room_type_class(self):
+        # ARRANGE
+        room_type_class = self.env["pms.room.type.class"].create(
+            {
+                "name": "Room Type Class",
+                "pms_property_ids": [
+                    (4, self.p2.id),
+                ],
+            },
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError, msg="Room Type has been created and it shouldn't"
+        ):
+            r = self.env["pms.room.type"].create(
+                {
+                    "name": "Room Type",
+                    "code_type": "c1",
+                    "class_id": room_type_class.id,
+                    "pms_property_ids": [
+                        (4, self.p2.id),
+                    ],
+                }
+            )
+            r.pms_property_ids = [(4, self.p1.id)]

@@ -12,10 +12,6 @@
             <field name="name">My Property</field>
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
-            <field
-                name="default_availability_plan_id"
-                ref="main_pms_room_type_availability_plan"
-            />
             <field name="street">Rua Street Demo, s/n</field>
             <field name="city">Commitsun city</field>
             <field name="country_id" ref="base.es" />

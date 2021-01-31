@@ -26,14 +26,6 @@ class PmsRoomType(models.Model):
         delegate=True,
         ondelete="cascade",
     )
-    pms_property_ids = fields.Many2many(
-        "pms.property",
-        "pms_property_room_type_rel",
-        "room_type_id",
-        "pms_property_id",
-        ondelete="restrict",
-        string="Properties",
-    )
     room_ids = fields.One2many("pms.room", "room_type_id", "Rooms")
     class_id = fields.Many2one("pms.room.type.class", "Property Type Class")
     board_service_room_type_ids = fields.One2many(
@@ -122,18 +114,15 @@ class PmsRoomType(models.Model):
                 )
         return self.browse(list(res.values()))
 
-    @api.constrains("pms_property_ids", "company_id")
-    def _check_property_company_integrity(self):
-        for rec in self:
-            if rec.company_id and rec.pms_property_ids:
-                property_companies = rec.pms_property_ids.mapped("company_id")
-                if len(property_companies) > 1 or rec.company_id != property_companies:
-                    raise ValidationError(
-                        _(
-                            "The company of the properties must match "
-                            "the company on the room type"
+    @api.constrains("pms_property_ids")
+    def _check_integrity_property_class(self):
+        for record in self:
+            if record.pms_property_ids and record.class_id:
+                for pms_property in record.pms_property_ids:
+                    if pms_property.id not in record.class_id.pms_property_ids.ids:
+                        raise ValidationError(
+                            _("Property isn't allowed in Room Type Class")
                         )
-                    )
 
     @api.constrains("code_type", "pms_property_ids", "company_id")
     def _check_code_property_company_uniqueness(self):

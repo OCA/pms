@@ -35,12 +35,6 @@ class PmsService(models.Model):
             return self.env.context.get("default_reservation_id")
         return False
 
-    @api.model
-    def _default_folio_id(self):
-        if "folio_id" in self._context:
-            return self._context["folio_id"]
-        return False
-
     # Fields declaration
     name = fields.Char(
         "Service description",
@@ -52,7 +46,11 @@ class PmsService(models.Model):
         "product.product", "Service", ondelete="restrict", required=True
     )
     folio_id = fields.Many2one(
-        "pms.folio", "Folio", ondelete="cascade", default=_default_folio_id
+        comodel_name="pms.folio",
+        string="Folio",
+        compute="_compute_folio_id",
+        readonly=False,
+        store=True
     )
     reservation_id = fields.Many2one(
         "pms.reservation", "Room", default=_default_reservation_id
@@ -68,7 +66,7 @@ class PmsService(models.Model):
         related="folio_id.company_id", string="Company", store=True, readonly=True
     )
     pms_property_id = fields.Many2one(
-        "pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
+        comodel_name="pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
     )
     tax_ids = fields.Many2many(
         "account.tax",
@@ -371,6 +369,16 @@ class PmsService(models.Model):
                     service.price_unit = service._origin.price_unit
             else:
                 service.price_unit = 0
+
+    @api.depends(
+        "reservation_id"
+    )
+    def _compute_folio_id(self):
+        for record in self:
+            if record.reservation_id:
+                record.folio_id = record.reservation_id.folio_id
+            elif not record.folio_id:
+                record.folio_id = False
 
     def _recompute_price(self):
         # REVIEW: Conditional to avoid overriding already calculated prices,

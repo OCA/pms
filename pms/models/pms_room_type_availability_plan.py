@@ -19,9 +19,9 @@ class PmsRoomTypeAvailability(models.Model):
 
     # Fields declaration
     name = fields.Char("Availability Plan Name", required=True)
-    pms_property_id = fields.Many2one(
+    pms_property_ids = fields.Many2many(
         comodel_name="pms.property",
-        string="Property",
+        string="Properties",
         ondelete="restrict",
     )
 
@@ -70,6 +70,7 @@ class PmsRoomTypeAvailability(models.Model):
         room_type_id=False,
         current_lines=False,
         pricelist=False,
+        pms_property_id=False,
     ):
         if current_lines and not isinstance(current_lines, list):
             current_lines = [current_lines]
@@ -88,12 +89,16 @@ class PmsRoomTypeAvailability(models.Model):
         )
 
         domain_rooms = [
-            ("id", "not in", rooms_not_avail if len(rooms_not_avail) > 0 else [])
+            ("id", "not in", rooms_not_avail if len(rooms_not_avail) > 0 else []),
         ]
         domain_rules = [
             ("date", ">=", checkin),
             ("date", "<=", checkout),
         ]
+
+        if pms_property_id:
+            domain_rooms.append(("pms_property_id", "=", pms_property_id))
+            domain_rules.append(("pms_property_id", "=", pms_property_id))
 
         if room_type_id:
             domain_rooms.append(("room_type_id", "=", room_type_id))
@@ -117,6 +122,11 @@ class PmsRoomTypeAvailability(models.Model):
                 free_rooms = free_rooms.filtered(
                     lambda x: x.room_type_id.id not in room_types_to_remove
                 )
+
+        # if pms_property_id:
+        #     free_rooms = free_rooms.filtered(
+        #         lambda x: x.pms_property_id = pms_property_id
+        #     )
 
         return free_rooms.sorted(key=lambda r: r.sequence)
 
