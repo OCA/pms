@@ -50,7 +50,7 @@ class PmsService(models.Model):
         string="Folio",
         compute="_compute_folio_id",
         readonly=False,
-        store=True
+        store=True,
     )
     reservation_id = fields.Many2one(
         "pms.reservation", "Room", default=_default_reservation_id
@@ -66,7 +66,10 @@ class PmsService(models.Model):
         related="folio_id.company_id", string="Company", store=True, readonly=True
     )
     pms_property_id = fields.Many2one(
-        comodel_name="pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
+        comodel_name="pms.property",
+        store=True,
+        readonly=True,
+        related="folio_id.pms_property_id",
     )
     tax_ids = fields.Many2many(
         "account.tax",
@@ -370,9 +373,7 @@ class PmsService(models.Model):
             else:
                 service.price_unit = 0
 
-    @api.depends(
-        "reservation_id"
-    )
+    @api.depends("reservation_id")
     def _compute_folio_id(self):
         for record in self:
             if record.reservation_id:
