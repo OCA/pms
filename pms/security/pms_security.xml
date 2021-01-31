@@ -106,15 +106,6 @@
                 user.get_active_property_ids())]
             </field>
         </record>
-        <record id="pms_checkin_partner_property_rule" model="ir.rule">
-            <field name="name">PMS Checkin Partner Property Rule</field>
-            <field name="model_id" ref="model_pms_amenity" />
-            <field name="global" eval="True" />
-            <field name="domain_force">
-                ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.get_active_property_ids())]
-            </field>
-        </record>
         <record id="pms_floor_property_rule" model="ir.rule">
             <field name="name">PMS Floor Property Rule</field>
             <field name="model_id" ref="model_pms_floor" />
@@ -166,15 +157,6 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.get_active_property_ids())]
-            </field>
-        </record>
-        <record id="pms_room_type_class_property_rule" model="ir.rule">
-            <field name="name">PMS Room Type Class Property Rule</field>
-            <field name="model_id" ref="model_pms_room_type_availability_plan" />
-            <field name="global" eval="True" />
-            <field name="domain_force">
-                ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
                 user.get_active_property_ids())]
             </field>
         </record>
