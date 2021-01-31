@@ -1,5 +1,6 @@
 from odoo.exceptions import ValidationError
-from odoo.tests import common, tagged
+from odoo.tests import common
+
 
 class TestPmsRoom(common.TransactionCase):
     def create_common_scenario(self):
@@ -26,7 +27,6 @@ class TestPmsRoom(common.TransactionCase):
             }
         )
 
-
         self.room_type_class = self.env["pms.room.type.class"].create(
             {"name": "Room Class"}
         )
@@ -42,17 +42,17 @@ class TestPmsRoom(common.TransactionCase):
         )
 
     def test_check_property_floor(self):
-        #ARRANGE
+        # ARRANGE
         self.create_common_scenario()
         floor = self.env["pms.floor"].create(
             {
                 "name": "Floor",
                 "pms_property_ids": [
                     (4, self.property1.id),
-                ]
+                ],
             }
         )
-        #ACT & ARRANGE
+        # ACT & ARRANGE
         with self.assertRaises(
             ValidationError, msg="Room has been created and it should't"
         ):

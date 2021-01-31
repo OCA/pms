@@ -584,8 +584,11 @@
                 class="o_sale_order"
                 decoration-warning="splitted"
                 decoration-bf="splitted"
+                js_class="pms_booking_engine_request_tree"
             >
-                <!--inside <tree>:  js_class="reservation_group"-->
+                <!--TODO: charget booking engine button (view type list is not present
+                in the view registry -->
+                <!--js_class="pms_booking_engine_request_tree"-->
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
@@ -852,12 +855,12 @@
                         enable_counters="1"
                         select="multi"
                     />
-                    <!--<field
+                    <field
                         name="folio_payment_state"
                         string="Payment State"
                         enable_counters="1"
                         select="multi"
-                    /> -->
+                    />
                 </searchpanel>
             </search>
         </field>
