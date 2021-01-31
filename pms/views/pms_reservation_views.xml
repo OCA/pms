@@ -181,7 +181,7 @@
                             options="{'no_create': True,'no_open': True}"
                             attrs="{'readonly':[('state','not in',('draft'))]}"
                             style="margin-right: 30px;"
-                        />                        
+                        />
                         <field
                             name="partner_id"
                             default_focus="1"
@@ -206,7 +206,7 @@
                             placeholder="Room"
                             style="margin-right: 30px;"
                             attrs="{'invisible': [('splitted','=',True)]}"
-                        />                       
+                        />
                         <field
                             name="checkin"
                             widget="daterange"
@@ -284,7 +284,7 @@
                             col="3"
                             string="Reservation Details"
                             name="reservation_details"
-                        >                            
+                        >
                             <field
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
@@ -312,7 +312,7 @@
                             <field name="qty_invoiced" invisible="1" />
                             <field name="qty_to_invoice" invisible="1" />
                             <field name="allowed_room_ids" invisible="1" />
-                            <field name="folio_payment_state" invisible="1" />                            
+                            <field name="folio_payment_state" invisible="1" />
                             <!-- TODO: How to filter to avoid show False (generic) pricelist board when exist a specific pricelist board¿? -->
                             <field
                                 name="board_service_room_id"
@@ -327,23 +327,19 @@
                                 colspan="2"
                                 nolabel="1"
                                 placeholder="Reservation Notes"
-                            />                            
+                            />
                             <field name="agency_id" />
-<<<<<<< HEAD
                             <field
                                 name="channel_type_id"
                                 attrs="{'readonly':[('agency_id','!=', False)]}"
                             />
-=======
-                            <field name="channel_type_id" />                            
->>>>>>> [IMP] Improvements
                         </group>
                         <group
                             colspan="2"
-                            class="oe_subtotal_footer oe_right"                            
+                            class="oe_subtotal_footer oe_right"
                             name="reservation_total"
                             string="Amounts"
-                        >                                                   
+                        >
                             <field
                                 name="price_services"
                                 string="Only Services"
@@ -370,7 +366,7 @@
                                     for="price_room_services_set"
                                     string="Reservation Total"
                                 />
-                            </div> 
+                            </div>
                             <field
                                 name="price_room_services_set"
                                 nolabel="1"
@@ -380,7 +376,7 @@
                             />
                             <field
                                 name="commission_percent"
-                                string="Commission percent (%)"                                
+                                string="Commission percent (%)"
                             />
                             <field
                                 name="commission_amount"
@@ -400,7 +396,7 @@
                                 placeholder="Credit Card Details"
                                 colspan="2"
                                 attrs="{'invisible':[('folio_id','!=',False),('folio_pending_amount','&lt;=',0)]}"
-                            />                            
+                            />
                         </group>
                         <div class="oe_clear" />
                     </group>
@@ -419,17 +415,14 @@
                         <page name="detail" string="Detail">
                             <field name="reservation_line_ids" nolabel="1">
                                 <tree create="false" delete="false" editable="bottom">
-                                    <field 
-                                        name="room_id" 
+                                    <field
+                                        name="room_id"
                                         attrs="{'column_invisible': [('parent.splitted','=', False)]}"
                                     />
                                     <field name="date" readonly="1" force_save="1" />
                                     <field name="price" />
                                     <field name="discount" />
-                                    <field
-                                        name="move_line_ids"
-                                        invisible="1"
-                                    />
+                                    <field name="move_line_ids" invisible="1" />
                                     <field
                                         name="cancel_discount"
                                         attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
@@ -449,8 +442,8 @@
                                         decoration-success="is_board_service == True"
                                     >
                                         <field name="is_board_service" invisible="1" />
-                                        <field name="company_id" invisible="1" />
-                                        <field name="pms_property_id" invisible="1" />
+                                        <field name="company_id" invisible="0" />
+                                        <field name="pms_property_id" invisible="0" />
                                         <button
                                             type="object"
                                             class="oe_stat_button"
@@ -490,8 +483,8 @@
                                         <field name="price_unit" />
                                         <field name="discount" />
                                         <field name="tax_ids" widget="many2many_tags" />
-                                        <field name="price_subtotal" optional="show" />
-                                        <field name="price_tax" optional="show" />
+                                        <field name="price_subtotal" />
+                                        <field name="price_tax" />
                                         <field name="price_total" />
                                         <field name="service_line_ids" invisible="1">
                                             <tree string="Days">
@@ -609,7 +602,7 @@
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="partner_id" />
                 <field name="room_type_id" optional="show" />
-                <field name="adults" optional="show"/>
+                <field name="adults" optional="show" />
                 <field name="ratio_checkin_data" widget="progressbar" optional="show" />
                 <field name="overbooking" invisible="1" />
                 <field name="activity_ids" widget="list_activity" optional="show" />
@@ -625,7 +618,7 @@
                 <field name="tax_ids" invisible="1" />
                 <field name="price_subtotal" invisible="1" />
                 <field name="price_total" />
-                <field name="folio_pending_amount" string="Folio Pending Amount" />                
+                <field name="folio_pending_amount" string="Folio Pending Amount" />
                 <field
                     name="state"
                     decoration-success="state == 'onboard'"

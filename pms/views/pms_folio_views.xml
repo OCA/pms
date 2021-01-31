@@ -170,16 +170,11 @@
                                 attrs="{'readonly':[('state','not in',('draft'))]}"
                             />
                             <field name="agency_id" />
-<<<<<<< HEAD
                             <field
                                 name="channel_type_id"
                                 attrs="{'readonly':[('agency_id','!=', False)]}"
                             />
                             <field name="internal_comment" />
-=======
-                            <field name="channel_type_id" />
-                            
->>>>>>> [IMP] Improvements
                         </group>
                         <group
                             class="oe_subtotal_footer oe_right"
