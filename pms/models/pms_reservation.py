@@ -68,11 +68,6 @@ class PmsReservation(models.Model):
         else:
             return default_departure_hour
 
-    @api.model
-    def _get_default_pms_property(self):
-        # TODO: Change by property env variable (like company)
-        return self.env.user.pms_property_id
-
     def _get_default_segmentation(self):
         folio = False
         segmentation_ids = False
@@ -158,7 +153,7 @@ class PmsReservation(models.Model):
     )
     pms_property_id = fields.Many2one(
         "pms.property",
-        default=_get_default_pms_property,  # required=True
+        default=lambda self: self.env.user.get_active_property_ids()[0],
     )
     reservation_line_ids = fields.One2many(
         "pms.reservation.line",

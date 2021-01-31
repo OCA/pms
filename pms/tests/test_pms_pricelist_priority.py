@@ -26,7 +26,6 @@ class TestPmsPricelistRules(common.TransactionCase):
                 "name": "Property_1",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "default_availability_plan_id": self.availability_plan1.id,
             }
         )
 
@@ -35,7 +34,6 @@ class TestPmsPricelistRules(common.TransactionCase):
                 "name": "Property_2",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "default_availability_plan_id": self.availability_plan2.id,
             }
         )
 
