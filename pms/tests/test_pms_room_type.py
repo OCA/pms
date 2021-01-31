@@ -52,6 +52,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                     "code_type": "c1",
                     "pms_property_ids": [(6, 0, [self.p1.id])],
                     "company_id": self.m1.id,
+                    "class_id": self.ref("pms.pms_room_type_class_0"),
                 }
             )
         except ValidationError:
@@ -79,6 +80,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                     "code_type": "c1",
                     "pms_property_ids": [(6, 0, [self.p1.id])],
                     "company_id": self.m2.id,
+                    "class_id": self.ref("pms.pms_room_type_class_0"),
                 }
             )
 
@@ -105,6 +107,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                     "code_type": "c1",
                     "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
                     "company_id": self.m2.id,
+                    "class_id": self.ref("pms.pms_room_type_class_0"),
                 }
             )
 
@@ -128,6 +131,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                     "code_type": "c1",
                     "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
                     "company_id": False,
+                    "class_id": self.ref("pms.pms_room_type_class_0"),
                 }
             )
         except ValidationError:
@@ -157,6 +161,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -171,6 +176,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                     "code_type": "c1",
                     "pms_property_ids": [(6, 0, [self.p1.id])],
                     "company_id": False,
+                    "class_id": self.ref("pms.pms_room_type_class_0"),
                 }
             )
 
@@ -197,6 +203,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -211,6 +218,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                     "code_type": "c1",
                     "pms_property_ids": [(6, 0, [self.p1.id])],
                     "company_id": self.m1.id,
+                    "class_id": self.ref("pms.pms_room_type_class_0"),
                 }
             )
 
@@ -238,6 +246,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": self.m1.id,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -252,6 +261,7 @@ class TestRoomTypeCodePropertyIntegrity(TestRoomType):
                     "code_type": "c1",
                     "pms_property_ids": [(6, 0, [self.p1.id, self.p2.id, self.p3.id])],
                     "company_id": False,
+                    "class_id": self.ref("pms.pms_room_type_class_0"),
                 }
             )
 
@@ -276,6 +286,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -306,6 +317,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -336,6 +348,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id, self.p2.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -364,6 +377,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": self.m1.id,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -393,6 +407,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": self.m1.id,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -427,6 +442,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
         # r2
@@ -436,6 +452,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -470,6 +487,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
         r2 = self.env["pms.room.type"].create(
@@ -478,6 +496,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -512,6 +531,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
         r2 = self.env["pms.room.type"].create(
@@ -520,6 +540,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -554,6 +575,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
         # r2
@@ -563,6 +585,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": self.m1.id,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -597,6 +620,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
         r2 = self.env["pms.room.type"].create(
@@ -605,6 +629,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": self.m2.id,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
@@ -643,6 +668,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": [(6, 0, [self.p1.id])],
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
         # r2
@@ -652,6 +678,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": self.m1.id,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
         r3 = self.env["pms.room.type"].create(
@@ -660,6 +687,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
                 "code_type": "c1",
                 "pms_property_ids": False,
                 "company_id": False,
+                "class_id": self.ref("pms.pms_room_type_class_0"),
             }
         )
 
