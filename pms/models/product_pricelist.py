@@ -2,7 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -68,7 +69,6 @@ class ProductPricelist(models.Model):
     def _compute_price_rule_get_items(
         self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
     ):
-
         if "property" in self._context and self._context["property"]:
             self.env["product.pricelist.item"].flush(
                 ["price", "currency_id", "company_id"]
@@ -147,3 +147,13 @@ class ProductPricelist(models.Model):
                     "pricelist_id": self.id,
                 },
             }
+
+    @api.constrains(
+        "cancelation_rule_id",
+    )
+    def _check_property_integrity(self):
+        for rec in self:
+            if rec.pms_property_ids:
+                for p in rec.pms_property_ids:
+                    if p.id not in rec.cancelation_rule_id.pms_property_ids.ids:
+                        raise ValidationError(_("Property not allowed"))

@@ -27,6 +27,12 @@
                         <field name="closed_departure" />
                         <field name="closed_arrival" />
                     </group>
+                    <group>
+                        <field
+                            name="pms_property_id"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                    </group>
                 </group>
             </form>
         </field>
@@ -47,6 +53,7 @@
                 <field name="closed" />
                 <field name="closed_arrival" />
                 <field name="closed_departure" />
+                <field name="pms_property_id" />
             </tree>
         </field>
     </record>

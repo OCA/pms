@@ -78,33 +78,19 @@ class AvailabilityWizard(models.TransientModel):
                     pricelist=record.folio_wizard_id.pricelist_id.id,
                 )
                 num_rooms_available_by_date.append(len(rooms_available))
-
-                # get pricelist item
-                pricelist_item = self.env["product.pricelist.item"].search(
-                    [
-                        ("pricelist_id", "=", record.folio_wizard_id.pricelist_id.id),
-                        ("date_start_overnight", ">=", date_iterator),
-                        ("date_end_overnight", "<=", date_iterator),
-                        ("applied_on", "=", "1_product"),
-                        (
-                            "product_tmpl_id",
-                            "=",
-                            record.room_type_id.product_id.product_tmpl_id.id,
-                        ),
-                    ]
+                partner = record.folio_wizard_id.partner_id
+                product = record.room_type_id.product_id
+                product = product.with_context(
+                    lang=partner.lang,
+                    partner=partner.id,
+                    quantity=1,
+                    date=fields.Date.today(),
+                    date_overnight=date_iterator,
+                    pricelist=record.folio_wizard_id.pricelist_id.id,
+                    uom=product.uom_id.id,
+                    property=record.folio_wizard_id.pms_property_id.id,
                 )
-
-                # check if applies pricelist item
-                if (
-                    pricelist_item
-                    and record.num_rooms_selected.value >= pricelist_item.min_quantity
-                ):
-                    pricelist_item.ensure_one()
-                    room_type_total_price_per_room += float(pricelist_item.price[2:])
-                else:
-                    room_type_total_price_per_room += (
-                        record.room_type_id.product_id.list_price
-                    )
+                room_type_total_price_per_room += product.price
 
             # get the availability for the entire stay (min of all dates)
             if num_rooms_available_by_date:
