@@ -10,3 +10,5 @@ class PmsSaleChannel(models.Model):
     channel_type = fields.Selection(
         [("direct", "Direct"), ("indirect", "Indirect")], string="Sale Channel Type"
     )
+    on_line = fields.Boolean("On Line")
+    product_pricelist_ids = fields.Many2many("product.pricelist", string="Pricelists")

@@ -143,7 +143,6 @@ class PmsReservation(models.Model):
     channel_type_id = fields.Many2one(
         related="folio_id.channel_type_id",
         readonly=False,
-        store=True,
     )
     partner_invoice_id = fields.Many2one(
         "res.partner",
@@ -643,6 +642,8 @@ class PmsReservation(models.Model):
     @api.depends("partner_id")
     def _compute_pricelist_id(self):
         for reservation in self:
+            # TODO: Review logic pricelist by partner
+            # and by allowed channel pricelist_ids
             if reservation.folio_id:
                 pricelist_id = reservation.folio_id.pricelist_id.id
             else:
