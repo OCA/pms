@@ -152,6 +152,9 @@ class PmsFolio(models.Model):
     )
     channel_type_id = fields.Many2one(
         "pms.sale.channel",
+        compute="_compute_channel_type_id",
+        readonly=False,
+        store=True,
         string="Direct Sale Channel",
         ondelete="restrict",
         domain=[("channel_type", "=", "direct")],
@@ -503,6 +506,12 @@ class PmsFolio(models.Model):
                 else:
                     folio.commission = 0
 
+    @api.depends("agency_id")
+    def _compute_channel_type_id(self):
+        for folio in self:
+            if folio.agency_id:
+                folio.channel_type_id = folio.agency_id.sale_channel_id.id
+
     @api.depends("sale_line_ids.invoice_lines")
     def _compute_get_invoiced(self):
         # The invoice_ids are obtained thanks to the invoice lines of the SO
@@ -639,7 +648,7 @@ class PmsFolio(models.Model):
     @api.depends("pending_checkin_data")
     def _compute_ratio_checkin_data(self):
         self.ratio_checkin_data = 0
-        for folio in self:
+        for folio in self.filtered("reservation_ids"):
             folio.ratio_checkin_data = (
                 (
                     sum(folio.reservation_ids.mapped("adults"))
@@ -1191,8 +1200,14 @@ class PmsFolio(models.Model):
     @api.constrains("agency_id", "channel_type_id")
     def _check_only_one_channel(self):
         for record in self:
-            if record.agency_id and record.channel_type_id:
-                raise models.ValidationError(_("There must be only one sale channel"))
+            if (
+                record.agency_id
+                and record.channel_type_id.channel_type
+                != record.agency_id.sale_channel_id.channel_type
+            ):
+                raise models.ValidationError(
+                    _("The Sale Channel does not correspond to the agency's")
+                )
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):

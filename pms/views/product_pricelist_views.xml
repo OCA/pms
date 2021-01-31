@@ -13,6 +13,7 @@
                 <field name="pricelist_type" />
                 <field name="cancelation_rule_id" />
                 <field name="availability_plan_id" />
+                <field name="pms_sale_channel_ids" widget="many2many_tags" />
             </xpath>
             <xpath
                 expr="//field[@name='item_ids']/tree/field[@name='base']"

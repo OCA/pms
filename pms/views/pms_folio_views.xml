@@ -168,16 +168,11 @@
                                 name="reservation_type"
                                 attrs="{'readonly':[('state','not in',('draft'))]}"
                             />
-                            <!--<field
-                                name="channel_type"
-                                attrs="{'required':[('reservation_type','=','normal')]}"
-                            />
-                            <field
-                                name="agency_id"
-                                options="{'no_create': True,'no_open': True}"
-                            />-->
                             <field name="agency_id" />
-                            <field name="channel_type_id" />
+                            <field
+                                name="channel_type_id"
+                                attrs="{'readonly':[('agency_id','!=', False)]}"
+                            />
                             <field name="internal_comment" />
                         </group>
                         <group
