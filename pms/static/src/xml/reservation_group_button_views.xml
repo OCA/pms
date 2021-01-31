@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates>
-    <t t-extend="ListView.buttons" t-name="ReservationGroupList.buttons">
+    <t t-extend="ListView.buttons" t-name="BookingEngineRequestListView.buttons">
         <t t-jquery="button.o_list_button_add" t-operation="after">
-            <button type="button" class="btn btn-secondary o_button_wizard_resevation">
+            <button type="button" class="btn btn-primary o_button_booking_engine">
                 Booking Engine
             </button>
         </t>
