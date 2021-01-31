@@ -348,7 +348,9 @@ class TestPmsCheckinPartner(TestHotel):
         freezer.start()
         PmsReservation.auto_no_show()
 
-        no_show_reservations = self.folio_1.filtered(lambda r: r.state == "no_show")
+        no_show_reservations = self.folio_1.reservation_ids.filtered(
+            lambda r: r.state == "no_show"
+        )
 
         # ASSERT
         self.assertEqual(
@@ -370,14 +372,11 @@ class TestPmsCheckinPartner(TestHotel):
         freezer.start()
         PmsReservation.auto_no_checkout()
 
-        no_checkout_reservations = self.folio_1.filtered(
-            lambda r: r.state == "no_checkout"
-        )
         freezer.stop()
         # ASSERT
         self.assertEqual(
-            len(no_checkout_reservations),
-            1,
+            self.reservation_1.state,
+            "no_checkout",
             "Reservations not set like No checkout",
         )
 

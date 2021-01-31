@@ -208,7 +208,8 @@ class PmsCheckinPartner(models.Model):
                     lambda c: c.state == "draft"
                 )
                 if len(draft_checkins) > 0 and vals.get("partner_id"):
-                    draft_checkins[0].sudo().unlink()
+                    draft_checkins[0].write(vals)
+                    return draft_checkins[0]
         if vals.get("identifier", _("New")) == _("New") or "identifier" not in vals:
             pms_property_id = (
                 self.env.user.get_active_property_ids()[0]
