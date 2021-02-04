@@ -531,18 +531,27 @@
                             </group>
                         </page>
                         <page name="others" string="Others">
-                            <group>
-                                <field name="pms_property_id" />
-                                <field name="localizator" />
-                                <field name="overbooking" />
-                            </group>
-                            <group>
-                                <!--<field
-                                    name="channel_type"
-                                    attrs="{'required':[('reservation_type','not in',('staff','out'))]}"
-                                />-->
-                                <field name="reservation_type" />
-                            </group>
+                            <div class="row">
+                                <div class="col-6">
+                                    <group>
+                                        <field name="pms_property_id" />
+                                        <field name="localizator" />
+                                        <field name="overbooking" />
+                                    </group>
+                                    <group>
+                                        <!--<field
+                                            name="channel_type"
+                                            attrs="{'required':[('reservation_type','not in',('staff','out'))]}"
+                                        />-->
+                                        <field name="reservation_type" />
+                                    </group>
+                                </div>
+                                <div class="col-6">
+                                    <group>
+                                        <field name="requests" />
+                                    </group>
+                                </div>
+                            </div>
                         </page>
                     </notebook>
                 </sheet>

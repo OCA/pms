@@ -2,12 +2,61 @@ import datetime
 
 from freezegun import freeze_time
 
+from odoo import fields
+
 from .common import TestHotel
 
 freeze_time("2000-02-02")
 
 
 class TestPmsFolio(TestHotel):
+    def create_common_scenario(self):
+        # create a room type availability
+        self.room_type_availability = self.env[
+            "pms.room.type.availability.plan"
+        ].create({"name": "Availability plan for TEST"})
+
+        # create a property
+        self.property = self.env["pms.property"].create(
+            {
+                "name": "MY PMS TEST",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
+        # create room type class
+        self.room_type_class = self.env["pms.room.type.class"].create({"name": "Room"})
+
+        # create room type
+        self.room_type_double = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [self.property.id],
+                "name": "Double Test",
+                "code_type": "DBL_Test",
+                "class_id": self.room_type_class.id,
+            }
+        )
+        # create room
+        self.room1 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.property.id,
+                "name": "Double 101",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+            }
+        )
+
+        # create room
+        self.room2 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.property.id,
+                "name": "Double 102",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+            }
+        )
+
     def test_commission_and_partner_correct(self):
         # ARRANGE
         PmsFolio = self.env["pms.folio"]
@@ -56,3 +105,33 @@ class TestPmsFolio(TestHotel):
             self.assertEqual(
                 folio.agency_id, folio.partner_id, "Agency has to be the partner"
             )
+
+    def test_compute_folio_priority(self):
+        self.create_common_scenario()
+        r1 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        r1.left_for_checkin = False
+
+        self.env["pms.reservation"].create(
+            {
+                "folio_id": r1.folio_id.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        self.assertEqual(
+            r1.priority,
+            r1.folio_id.max_reservation_prior,
+            "The max. reservation priority on the whole folio is incorrect",
+        )
