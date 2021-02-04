@@ -548,3 +548,136 @@ class TestPmsReservations(TestHotel):
                     "room_type_id": self.browse_ref("pms.pms_room_type_0").id,
                 }
             )
+
+    @freeze_time("1981-11-01")
+    def test_order_priority_to_assign(self):
+        # ARRANGE
+        self.create_common_scenario()
+        r1 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        r1.to_assign = False
+        # ACT
+        reservations = self.env["pms.reservation"].search(
+            [("pms_property_id", "=", self.property.id)]
+        )
+        # ASSERT
+        self.assertEqual(r1, reservations[0])
+
+    @freeze_time("1981-11-01")
+    def test_order_priority_left_for_checkin(self):
+        # ARRANGE
+        self.create_common_scenario()
+        r1 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        r1.left_for_checkin = False
+        # ACT
+        reservations = self.env["pms.reservation"].search(
+            [("pms_property_id", "=", self.property.id)]
+        )
+        # ASSERT
+        self.assertEqual(r1, reservations[0])
+
+    @freeze_time("1981-11-01")
+    def test_order_priority_left_for_checkout(self):
+        # ARRANGE
+        self.create_common_scenario()
+        r1 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        r1.left_for_checkout = True
+        # ACT
+        reservations = self.env["pms.reservation"].search(
+            [("pms_property_id", "=", self.property.id)]
+        )
+        # ASSERT
+        self.assertEqual(r1, reservations[0])
+
+    @freeze_time("1981-11-01")
+    def test_order_priority_state_onboard_and_pending_amount(self):
+        # ARRANGE
+        self.create_common_scenario()
+        host = self.env["res.partner"].create(
+            {
+                "name": "Miguel",
+                "phone": "654667733",
+                "email": "miguel@example.com",
+            }
+        )
+        r1 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": host.id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        checkin = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host.id,
+                "reservation_id": r1.id,
+            }
+        )
+        checkin.action_on_board()
+        self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        # ACT
+        reservations = self.env["pms.reservation"].search(
+            [("pms_property_id", "=", self.property.id)]
+        )
+        # ASSERT
+        self.assertEqual(r1, reservations[0])
