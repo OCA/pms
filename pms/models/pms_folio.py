@@ -318,6 +318,10 @@ class PmsFolio(models.Model):
     reservations_pending_count = fields.Integer(
         compute="_compute_reservations_pending_arrival"
     )
+    max_reservation_prior = fields.Integer(
+        string="Max reservation priority on the entire folio",
+        compute="_compute_max_reservation_prior",
+    )
     # Invoice Fields-----------------------------------------------------
     invoice_status = fields.Selection(
         [
@@ -718,6 +722,11 @@ class PmsFolio(models.Model):
                     "payment_state": payment_state,
                 }
                 record.update(vals)
+
+    def _compute_max_reservation_prior(self):
+        for record in self:
+            reservation_priors = record.reservation_ids.mapped("priority")
+            record.max_reservation_prior = max(reservation_priors)
 
     # Action methods
 

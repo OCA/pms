@@ -16,7 +16,9 @@ class PmsReservation(models.Model):
     _name = "pms.reservation"
     _description = "Reservation"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
-    _order = "priority desc, name"
+    _order = "priority desc, create_date desc, write_date desc"
+    # TODO:
+    #  consider near_to_checkin & pending_notifications to order
     _check_company_auto = True
 
     # Default Methods ang Gets
@@ -224,6 +226,15 @@ class PmsReservation(models.Model):
     left_for_checkin = fields.Boolean(
         compute="_compute_left_for_checkin", search="_search_left_for_checkin"
     )
+
+    left_for_checkout = fields.Boolean(
+        compute="_compute_left_for_checkout", search="_search_left_for_checkout"
+    )
+
+    left_for_cancel = fields.Boolean(
+        compute="_compute_left_for_cancel", search="_search_left_for_cancel"
+    )
+
     checkin_today = fields.Boolean(
         compute="_compute_checkin_today", search="_search_checkin_today"
     )
@@ -281,7 +292,11 @@ class PmsReservation(models.Model):
         tracking=True,
         help="Number of children there in guest list.",
     )
-    to_assign = fields.Boolean("To Assign", tracking=True)
+    to_assign = fields.Boolean(
+        string="To Assign",
+        tracking=True,
+        default=True,
+    )
     state = fields.Selection(
         [
             ("draft", "Pre-reservation"),
@@ -382,6 +397,9 @@ class PmsReservation(models.Model):
     partner_internal_comment = fields.Text(
         string="Internal Partner Notes", related="partner_id.comment"
     )
+
+    requests = fields.Text(string="Partner Requests")
+
     folio_internal_comment = fields.Text(
         string="Internal Folio Notes",
         related="folio_id.internal_comment",
@@ -505,8 +523,17 @@ class PmsReservation(models.Model):
 
     @api.depends("checkin")
     def _compute_priority(self):
-        # TODO: Logic priority (100 by example)
-        self.priority = 100
+        for record in self:
+            record.priority = 0
+            if any(
+                [
+                    not record.to_assign,
+                    not record.left_for_checkin,
+                    record.left_for_checkout,
+                    record.state == "onboard" and record.folio_pending_amount > 0,
+                ]
+            ):
+                record.priority += 1
 
     @api.depends("pricelist_id", "room_type_id")
     def _compute_board_service_room_id(self):
@@ -772,6 +799,27 @@ class PmsReservation(models.Model):
                 else False
             )
 
+    def _compute_left_for_checkout(self):
+        # Reservations still pending checkout today
+        for record in self:
+            record.left_for_checkout = (
+                True
+                if (
+                    record.state in ["onboard", "no_checkout"]
+                    and record.checkout >= fields.Date.today()
+                )
+                else False
+            )
+
+    def _compute_left_for_cancel(self):
+        # Reservations can be cancelled
+        for record in self:
+            record.left_for_cancel = (
+                True
+                if (record.state not in ["cancelled", "done", "no_checkout"])
+                else False
+            )
+
     def _search_left_for_checkin(self, operator, value):
         if operator not in ("=",):
             raise UserError(
@@ -787,6 +835,37 @@ class PmsReservation(models.Model):
         return [
             ("state", "in", ("draft", "confirm", "no_show")),
             ("checkin", "<=", today),
+        ]
+
+    def _search_left_for_checkout(self, operator, value):
+        if operator not in ("=",):
+            raise UserError(
+                _("Invalid domain operator %s for left of checkout", operator)
+            )
+
+        if value not in (True,):
+            raise UserError(
+                _("Invalid domain right operand %s for left of checkout", value)
+            )
+
+        today = fields.Date.context_today(self)
+        return [
+            ("state", "in", ("onboard", "no_checkout")),
+            ("checkout", ">=", today),
+        ]
+
+    def _search_left_for_cancel(self, operator, value):
+        if operator not in ("=",):
+            raise UserError(
+                _("Invalid domain operator %s for left of cancel", operator)
+            )
+
+        if value not in (True,):
+            raise UserError(
+                _("Invalid domain right operand %s for left of cancel", value)
+            )
+        return [
+            ("state", "not in", ("cancelled", "done", "no_checkout")),
         ]
 
     def _compute_ready_for_checkin(self):
