@@ -525,15 +525,16 @@ class PmsReservation(models.Model):
     def _compute_priority(self):
         for record in self:
             record.priority = 0
-            if any(
-                [
-                    not record.to_assign,
-                    not record.left_for_checkin,
-                    record.left_for_checkout,
-                    record.state == "onboard" and record.folio_pending_amount > 0,
-                ]
-            ):
+
+            # we can give weights for each condition
+            if not record.to_assign:
                 record.priority += 1
+            if not record.left_for_checkin:
+                record.priority += 10
+            if record.left_for_checkout:
+                record.priority += 100
+            if record.state == "onboard" and record.folio_pending_amount > 0:
+                record.priority += 1000
 
     @api.depends("pricelist_id", "room_type_id")
     def _compute_board_service_room_id(self):
