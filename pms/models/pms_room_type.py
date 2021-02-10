@@ -111,8 +111,8 @@ class PmsRoomType(models.Model):
             elif priority == res_priority[rec.code_type]:
                 raise ValidationError(
                     _(
-                        "Integrity error: There's multiple room types with code %s"
-                        "with the same code and properties"
+                        "Integrity error: There's multiple room types "
+                        "with the same code %s and properties"
                     )
                     % rec.code_type
                 )

@@ -71,7 +71,7 @@ class PmsReservationLine(models.Model):
         store=True,
     )
     cancel_discount = fields.Float(
-        string="Cancel Discount (%)",
+        string="Cancelation Discount (%)",
         digits=("Discount"),
         default=0.0,
         compute="_compute_cancel_discount",
