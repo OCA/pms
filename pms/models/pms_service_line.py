@@ -40,7 +40,7 @@ class PmsServiceLine(models.Model):
         "Discount", related="service_id.discount", readonly=True, store=True
     )
     cancel_discount = fields.Float(
-        "Discount cancel", compute="_compute_cancel_discount"
+        "Cancelation Discount", compute="_compute_cancel_discount"
     )
 
     # Compute and Search methods
