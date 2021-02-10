@@ -681,3 +681,86 @@ class TestPmsReservations(TestHotel):
         )
         # ASSERT
         self.assertEqual(r1, reservations[0])
+
+    @freeze_time("1981-11-01")
+    def test_reservation_action_assign(self):
+        # TEST CASE
+        # the reservation action assign
+        # change the reservation to 'to_assign' = False
+        # ARRANGE
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        # ACT
+        res.action_assign()
+        # ASSERT
+        self.assertFalse(res.to_assign, "The reservation should be marked as assigned")
+
+    @freeze_time("1981-11-01")
+    def test_reservation_action_cancel(self):
+        # TEST CASE
+        # the reservation action cancel
+        # change the state of the reservation to 'cancelled'
+        # ARRANGE
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        # ACT
+        res.action_cancel()
+        # ASSERT
+        self.assertEqual(res.state,
+                         'cancelled',
+                         "The reservation should be cancelled")
+
+    @freeze_time("1981-11-01")
+    def test_reservation_action_checkout(self):
+        # TEST CASE
+        # the reservation action checkout
+        # change the state of the reservation to 'done'
+        # ARRANGE
+        self.create_common_scenario()
+        host = self.env["res.partner"].create(
+            {
+                "name": "Miguel",
+                "phone": "654667733",
+                "email": "miguel@example.com",
+            }
+        )
+        r1 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": host.id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        checkin = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host.id,
+                "reservation_id": r1.id,
+            }
+        )
+        checkin.action_on_board()
+
+        # ACT
+        r1.action_reservation_checkout()
+
+        # ASSERT
+        self.assertEqual(r1.state,
+                         "done",
+                         "The reservation status should be done after checkout.")

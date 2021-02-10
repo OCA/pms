@@ -1476,16 +1476,23 @@ class PmsReservation(models.Model):
 
     def action_cancel(self):
         for record in self:
-            cancel_reason = (
-                "intime"
-                if self._context.get("no_penalty", False)
-                else record.compute_cancelation_reason()
-            )
-            if self._context.get("no_penalty", False):
-                _logger.info("Modified Reservation - No Penalty")
-            record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
-            # record._compute_cancelled_discount()
-            record.folio_id._compute_amount()
+            if not record.left_for_cancel:
+                raise UserError(_("This reservation cannot be cancelled"))
+            else:
+                cancel_reason = (
+                    "intime"
+                    if self._context.get("no_penalty", False)
+                    else record.compute_cancelation_reason()
+                )
+                if self._context.get("no_penalty", False):
+                    _logger.info("Modified Reservation - No Penalty")
+                record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
+                # record._compute_cancelled_discount()
+                record.folio_id._compute_amount()
+
+    def action_assign(self):
+        for record in self:
+            record.to_assign = False
 
     def compute_cancelation_reason(self):
         self.ensure_one()
@@ -1552,7 +1559,7 @@ class PmsReservation(models.Model):
 
     def action_reservation_checkout(self):
         for record in self:
-            if record.state not in ("onboard", "no_checkout"):
+            if not record.left_for_checkout:
                 raise UserError(_("This reservation cannot be check out"))
             record.state = "done"
             if record.checkin_partner_ids:
