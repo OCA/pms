@@ -722,9 +722,7 @@ class TestPmsReservations(TestHotel):
         # ACT
         res.action_cancel()
         # ASSERT
-        self.assertEqual(res.state,
-                         'cancelled',
-                         "The reservation should be cancelled")
+        self.assertEqual(res.state, "cancelled", "The reservation should be cancelled")
 
     @freeze_time("1981-11-01")
     def test_reservation_action_checkout(self):
@@ -761,6 +759,6 @@ class TestPmsReservations(TestHotel):
         r1.action_reservation_checkout()
 
         # ASSERT
-        self.assertEqual(r1.state,
-                         "done",
-                         "The reservation status should be done after checkout.")
+        self.assertEqual(
+            r1.state, "done", "The reservation status should be done after checkout."
+        )
