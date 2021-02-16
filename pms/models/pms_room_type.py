@@ -144,10 +144,10 @@ class PmsRoomType(models.Model):
                     raise ValidationError(msg)
             else:
                 for pms_property in rec.pms_property_ids:
-                    if (
-                        rec.get_unique_by_property_code(pms_property.id, rec.code_type)
-                        != rec
-                    ):
+                    other = rec.get_unique_by_property_code(
+                        pms_property.id, rec.code_type
+                    )
+                    if other and other != rec:
                         raise ValidationError(msg)
 
     # ORM Overrides
