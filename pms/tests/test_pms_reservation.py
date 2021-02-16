@@ -26,7 +26,9 @@ class TestPmsReservations(TestHotel):
         )
 
         # create room type class
-        self.room_type_class = self.env["pms.room.type.class"].create({"name": "Room"})
+        self.room_type_class = self.env["pms.room.type.class"].create(
+            {"name": "Room", "code_class": "ROOM"}
+        )
 
         # create room type
         self.room_type_double = self.env["pms.room.type"].create(

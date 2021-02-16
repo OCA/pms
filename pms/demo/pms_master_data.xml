@@ -92,9 +92,11 @@
         <!-- pms.room.type.class -->
         <record id="pms_room_type_class_0" model="pms.room.type.class">
             <field name="name">Room</field>
+            <field name="code_class">RO</field>
         </record>
         <record id="pms_room_type_class_1" model="pms.room.type.class">
             <field name="name">Conference</field>
+            <field name="code_class">CO</field>
         </record>
         <!-- pms.room.type    -->
         <record id="pms_room_type_0" model="pms.room.type">

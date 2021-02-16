@@ -704,6 +704,7 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
         room_type_class = self.env["pms.room.type.class"].create(
             {
                 "name": "Room Type Class",
+                "code_class": "ROOM",
                 "pms_property_ids": [
                     (4, self.p2.id),
                 ],
