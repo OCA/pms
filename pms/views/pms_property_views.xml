@@ -18,6 +18,13 @@
                             </group>
                         </page>
                         <page string="Settings" name="property_settings">
+                            <group
+                                colspan="4"
+                                col="4"
+                                string="Price and Availability Plans"
+                            >
+                                <field name="default_pricelist_id" required="True" />
+                            </group>
                             <group string="Timezone">
                                 <field name="tz" widget="timezone_mismatch" />
                             </group>
