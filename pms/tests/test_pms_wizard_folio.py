@@ -41,7 +41,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
 
         # CREATION OF ROOM TYPE CLASS
         self.test_room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room"}
+            {"name": "Room", "code_class": "ROOM"}
         )
         self.test_room_type_class.flush()
 

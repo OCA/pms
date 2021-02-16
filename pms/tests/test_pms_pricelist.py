@@ -31,7 +31,7 @@ class TestPmsPricelist(common.TransactionCase):
             }
         )
         self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room Class"}
+            {"name": "Room Class", "code_class": "ROOM"}
         )
 
         self.room_type = self.env["pms.room.type"].create(
