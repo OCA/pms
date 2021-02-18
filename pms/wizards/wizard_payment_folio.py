@@ -78,6 +78,7 @@ class WizardPaymentFolio(models.TransientModel):
         property_folio_id = folios.mapped("pms_property_id.id")
         if len(property_folio_id) != 1:
             raise ValidationError(_("Only can payment by property"))
+        ctx = dict(self.env.context, company_id=folios[0].company_id.id)
         statement = (
             self.env["account.bank.statement"]
             .sudo()
@@ -91,19 +92,29 @@ class WizardPaymentFolio(models.TransientModel):
         )
         reservation_ids = reservations.ids if reservations else []
         service_ids = services.ids if services else []
-        # TODO: If not open statement, create new, with cash control option
-        if statement:
-            return {
-                "date": date,
-                "amount": amount,
-                "partner_id": partner.id if partner else False,
-                "statement_folio_ids": [(6, 0, folios.ids)],
-                "reservation_ids": [(6, 0, reservation_ids)],
-                "service_ids": [(6, 0, service_ids)],
-                "payment_ref": folios.mapped("name"),
-                "statement_id": statement.id,
-                "journal_id": statement.journal_id.id,
-                "counterpart_account_id": receivable_account.id,
+        if not statement:
+            # TODO: cash control option
+            st_values = {
+                "journal_id": journal.id,
+                "user_id": self.env.user.id,
+                "property_id": property_folio_id[0],
+                "name": str(fields.Datetime.now()),
             }
-        else:
-            return False
+            statement = (
+                self.env["account.bank.statement"]
+                .with_context(ctx)
+                .sudo()
+                .create(st_values)
+            )
+        return {
+            "date": date,
+            "amount": amount,
+            "partner_id": partner.id if partner else False,
+            "statement_folio_ids": [(6, 0, folios.ids)],
+            "reservation_ids": [(6, 0, reservation_ids)],
+            "service_ids": [(6, 0, service_ids)],
+            "payment_ref": folios.mapped("name"),
+            "statement_id": statement.id,
+            "journal_id": statement.journal_id.id,
+            "counterpart_account_id": receivable_account.id,
+        }
