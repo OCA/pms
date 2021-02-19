@@ -31,15 +31,6 @@ class ResUsers(models.Model):
     )
     company_id = fields.Many2one(domain="[('id','in',company_ids)]")
 
-    active_property_ids = fields.Many2many(
-        comodel_name="pms.property", compute="_compute_active_property_ids", store=True
-    )
-
-    @api.depends("pms_property_ids")
-    def _compute_active_property_ids(self):
-        for rec in self:
-            rec.active_property_ids = [(6, 0, rec.get_active_property_ids())]
-
     @api.model
     def get_active_property_ids(self):
         # TODO: Require performance test and security (dont allow any property id)
