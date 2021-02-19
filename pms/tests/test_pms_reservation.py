@@ -661,6 +661,7 @@ class TestPmsReservations(TestHotel):
                 "pms_property_id": self.property.id,
             }
         )
+        r1.flush()
         checkin = self.env["pms.checkin.partner"].create(
             {
                 "partner_id": host.id,
@@ -749,6 +750,7 @@ class TestPmsReservations(TestHotel):
                 "pms_property_id": self.property.id,
             }
         )
+        r1.flush()
         checkin = self.env["pms.checkin.partner"].create(
             {
                 "partner_id": host.id,
@@ -756,6 +758,7 @@ class TestPmsReservations(TestHotel):
             }
         )
         checkin.action_on_board()
+        checkin.flush()
 
         # ACT
         r1.action_reservation_checkout()
