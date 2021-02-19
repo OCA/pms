@@ -195,41 +195,42 @@ class PmsCheckinPartner(models.Model):
     def create(self, vals):
         # The checkin records are created automatically from adult depends
         # if you try to create one manually, we update one unassigned checkin
-        if not self._context.get("auto_create_checkin"):
-            reservation_id = vals.get("reservation_id")
-            if reservation_id:
-                reservation = self.env["pms.reservation"].browse(reservation_id)
-                draft_checkins = reservation.checkin_partner_ids.filtered(
-                    lambda c: c.state == "draft"
-                )
-                if len(draft_checkins) > 0:
-                    draft_checkins[0].write(vals)
-                    return draft_checkins[0]
-        elif vals.get("identifier", _("New")) == _("New") or "identifier" not in vals:
-            pms_property_id = (
-                self.env.user.get_active_property_ids()[0]
-                if "pms_property_id" not in vals
-                else vals["pms_property_id"]
+        reservation_id = vals.get("reservation_id")
+        if reservation_id:
+            reservation = self.env["pms.reservation"].browse(reservation_id)
+        else:
+            raise ValidationError(
+                _("Is mandatory indicate the reservation on the checkin")
             )
-            vals["identifier"] = (
-                self.env["ir.sequence"]
-                .search(
-                    [
-                        ("code", "=", "pms.checkin.partner"),
-                        "|",
-                        ("pms_property_id", "=", pms_property_id),
-                        ("pms_property_id", "=", False),
-                    ]
+        draft_checkins = reservation.checkin_partner_ids.filtered(
+            lambda c: c.state == "draft"
+        )
+        if len(reservation.checkin_partner_ids) < reservation.adults:
+            if vals.get("identifier", _("New")) == _("New") or "identifier" not in vals:
+                pms_property_id = (
+                    self.env.user.get_active_property_ids()[0]
+                    if "pms_property_id" not in vals
+                    else vals["pms_property_id"]
                 )
-                ._next_do()
-                or _("New")
-            )
+                vals["identifier"] = (
+                    self.env["ir.sequence"]
+                    .search(
+                        [
+                            ("code", "=", "pms.checkin.partner"),
+                            "|",
+                            ("pms_property_id", "=", pms_property_id),
+                            ("pms_property_id", "=", False),
+                        ]
+                    )
+                    ._next_do()
+                    or _("New")
+                )
             return super(PmsCheckinPartner, self).create(vals)
+        if len(draft_checkins) > 0:
+            draft_checkins[0].write(vals)
+            return draft_checkins[0]
         raise ValidationError(
-            _(
-                "Either the reservation is not being indicated or it is \
-            not possible to create the proposed check-in in this reservation"
-            )
+            _("Is not possible to create the proposed check-in in this reservation")
         )
 
     def write(self, vals):

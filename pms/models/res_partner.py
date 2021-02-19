@@ -123,4 +123,4 @@ class ResPartner(models.Model):
 
     @api.model
     def _get_key_fields(self):
-        return ["mobile", "email"]
+        return []
