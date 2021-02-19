@@ -186,7 +186,6 @@ class TestPmsCheckinPartner(TestHotel):
                             0,
                             {
                                 "partner_id": host4.id,
-                                "reservation_id": self.reservation_1.id,
                             },
                         )
                     ]
@@ -385,6 +384,16 @@ class TestPmsCheckinPartner(TestHotel):
         # emails that should be detected as incorrect
 
         # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
         test_cases = [
             "myemail",
             "myemail@",
@@ -397,13 +406,36 @@ class TestPmsCheckinPartner(TestHotel):
         for mail in test_cases:
             with self.subTest(i=mail):
                 with self.assertRaises(ValidationError):
-                    self.env["pms.checkin.partner"].create({"email": mail})
+                    reservation.write(
+                        {
+                            "checkin_partner_ids": [
+                                (
+                                    0,
+                                    False,
+                                    {
+                                        "name": "Carlos",
+                                        "email": mail,
+                                    },
+                                )
+                            ]
+                        }
+                    )
 
     def test_valid_emails(self):
         # TEST CASES
         # emails that should be detected as correct
 
         # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
         test_cases = [
             "hello@commitsun.com",
             "hi.welcome@commitsun.com",
@@ -413,17 +445,34 @@ class TestPmsCheckinPartner(TestHotel):
         ]
         for mail in test_cases:
             with self.subTest(i=mail):
-                guest = self.env["pms.checkin.partner"].create({"email": mail})
+                guest = self.env["pms.checkin.partner"].create(
+                    {
+                        "name": "Carlos",
+                        "email": mail,
+                        "reservation_id": reservation.id,
+                    }
+                )
                 self.assertEqual(
                     mail,
                     guest.email,
                 )
+                guest.unlink()
 
     def test_not_valid_phone(self):
         # TEST CASES
         # phones that should be detected as incorrect
 
         # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
         test_cases = [
             "phone",
             "123456789123",
@@ -434,13 +483,29 @@ class TestPmsCheckinPartner(TestHotel):
         for phone in test_cases:
             with self.subTest(i=phone):
                 with self.assertRaises(ValidationError):
-                    self.env["pms.checkin.partner"].create({"mobile": phone})
+                    self.env["pms.checkin.partner"].create(
+                        {
+                            "name": "Carlos",
+                            "mobile": phone,
+                            "reservation_id": reservation.id,
+                        }
+                    )
 
     def test_valid_phones(self):
         # TEST CASES
         # emails that should be detected as incorrect
 
         # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
         test_cases = [
             "981 981 981",
             "981981981",
@@ -448,7 +513,13 @@ class TestPmsCheckinPartner(TestHotel):
         ]
         for mobile in test_cases:
             with self.subTest(i=mobile):
-                guest = self.env["pms.checkin.partner"].create({"mobile": mobile})
+                guest = self.env["pms.checkin.partner"].create(
+                    {
+                        "name": "Carlos",
+                        "mobile": mobile,
+                        "reservation_id": reservation.id,
+                    }
+                )
                 self.assertEqual(
                     mobile,
                     guest.mobile,
