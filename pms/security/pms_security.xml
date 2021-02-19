@@ -40,7 +40,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_reservation_property_rule" model="ir.rule">
@@ -49,7 +49,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_amenity_property_rule" model="ir.rule">
@@ -58,7 +58,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_amenity_type_property_rule" model="ir.rule">
@@ -67,7 +67,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_board_service_property_rule" model="ir.rule">
@@ -76,7 +76,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_board_service_line_property_rule" model="ir.rule">
@@ -85,7 +85,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_board_service_room_type_property_rule" model="ir.rule">
@@ -94,7 +94,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_cancelation_rule_property_rule" model="ir.rule">
@@ -103,7 +103,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_floor_property_rule" model="ir.rule">
@@ -112,7 +112,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_reservation_line_property_rule" model="ir.rule">
@@ -121,7 +121,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_clousure_reason_property_rule" model="ir.rule">
@@ -130,7 +130,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_room_type_property_rule" model="ir.rule">
@@ -139,7 +139,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_room_type_availability_plan_property_rule" model="ir.rule">
@@ -148,7 +148,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_room_type_availability_rule_property_rule" model="ir.rule">
@@ -157,7 +157,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_service_property_rule" model="ir.rule">
@@ -166,7 +166,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
          <record id="pms_service_line_property_rule" model="ir.rule">
@@ -175,7 +175,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_product_pricelist_property_rule" model="ir.rule">
@@ -184,7 +184,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_product_pricelist_item_property_rule" model="ir.rule">
@@ -193,7 +193,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_res_users_property_rule" model="ir.rule">
@@ -202,7 +202,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_account_move_property_rule" model="ir.rule">
@@ -211,7 +211,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_id','=',False),('pms_property_id', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
         <record id="pms_account_journal_property_rule" model="ir.rule">
@@ -220,7 +220,7 @@
             <field name="global" eval="True" />
             <field name="domain_force">
                 ['|',('pms_property_ids','=',False),('pms_property_ids', 'in',
-                user.active_property_ids.ids)]
+                user.get_active_property_ids())]
             </field>
         </record>
     </data>
