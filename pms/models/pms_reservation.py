@@ -748,9 +748,7 @@ class PmsReservation(models.Model):
                             },
                         )
                     )
-                reservation.with_context(
-                    {"auto_create_checkin": True}
-                ).checkin_partner_ids = checkins_lst
+                reservation.checkin_partner_ids = checkins_lst
 
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
     def _compute_count_pending_arrival(self):
@@ -1226,13 +1224,13 @@ class PmsReservation(models.Model):
                     )
                 )
 
-    @api.constrains("checkin_partner_ids", "adults")
-    def _max_checkin_partner_ids(self):
-        for record in self:
-            if len(record.checkin_partner_ids) > record.adults:
-                raise models.ValidationError(
-                    _("The room already is completed (%s)", record.name)
-                )
+    # @api.constrains("checkin_partner_ids", "adults")
+    # def _max_checkin_partner_ids(self):
+    #     for record in self:
+    #         if len(record.checkin_partner_ids) > record.adults:
+    #             raise models.ValidationError(
+    #                 _("The room already is completed (%s)", record.name)
+    #             )
 
     @api.constrains("adults")
     def _check_adults(self):
