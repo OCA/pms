@@ -37,6 +37,7 @@ class TestPmsFolio(TestHotel):
                 "name": "Double Test",
                 "code_type": "DBL_Test",
                 "class_id": self.room_type_class.id,
+                "price": 25,
             }
         )
         # create room
@@ -137,3 +138,66 @@ class TestPmsFolio(TestHotel):
             r1.folio_id.max_reservation_prior,
             "The max. reservation priority on the whole folio is incorrect",
         )
+
+    def test_full_pay_folio(self):
+        # TEST CASE
+        # Folio is paid after execute
+        #
+        # ARRANGE
+        self.create_common_scenario()
+        r_test = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "room_type_id": self.room_type_double.id,
+            }
+        )
+        self.env["pms.folio"].do_payment(
+            self.env["account.journal"].browse(
+                r_test.folio_id.pms_property_id._get_payment_methods().ids[0]
+            ),
+            self.env["account.journal"]
+            .browse(r_test.folio_id.pms_property_id._get_payment_methods().ids[0])
+            .suspense_account_id,
+            self.env.user,
+            r_test.folio_id.pending_amount,
+            r_test.folio_id,
+            partner=r_test.partner_id,
+            date=fields.date.today(),
+        )
+        self.assertFalse(r_test.folio_id.pending_amount)
+
+    def test_partial_pay_folio(self):
+        # TEST CASE
+        # Folio is partially paid after execute
+        #
+        # ARRANGE
+        left_to_pay = 1
+        self.create_common_scenario()
+        r_test = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "room_type_id": self.room_type_double.id,
+            }
+        )
+        self.env["pms.folio"].do_payment(
+            self.env["account.journal"].browse(
+                r_test.folio_id.pms_property_id._get_payment_methods().ids[0]
+            ),
+            self.env["account.journal"]
+            .browse(r_test.folio_id.pms_property_id._get_payment_methods().ids[0])
+            .suspense_account_id,
+            self.env.user,
+            r_test.folio_id.pending_amount - left_to_pay,
+            r_test.folio_id,
+            partner=r_test.partner_id,
+            date=fields.date.today(),
+        )
+        self.assertEqual(r_test.folio_id.pending_amount, left_to_pay)
