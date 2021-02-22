@@ -10,6 +10,13 @@ class PmsCheckinPartner(models.Model):
         store=True,
         readonly=False,
     )
+
+    firstname = fields.Char(
+        "Last Name",
+        compute="_compute_firstname",
+        store=True,
+        readonly=False,
+    )
     lastname2 = fields.Char(
         "Second Last Name",
         compute="_compute_lastname2",
@@ -62,6 +69,12 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.lastname:
                 record.lastname = record.partner_id.lastname
+
+    @api.depends("partner_id", "partner_id.firstname")
+    def _compute_firstname(self):
+        for record in self:
+            if not record.firstname:
+                record.firstname = record.partner_id.firstname
 
     @api.depends("partner_id", "partner_id.lastname2")
     def _compute_lastname2(self):
