@@ -285,4 +285,12 @@ class FolioAdvancePaymentInv(models.TransientModel):
             )
         if not lines_to_invoice:
             raise UserError(_("Nothing to invoice"))
-        return lines_to_invoice
+
+        lines_dict = dict()
+        for line in lines_to_invoice:
+            if not line.display_type:
+                lines_dict[line.id] = line.qty_to_invoice
+            else:
+                lines_dict[line.id] = 0
+        return lines_dict
+        # return lines_to_invoice
