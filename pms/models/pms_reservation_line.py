@@ -78,6 +78,14 @@ class PmsReservationLine(models.Model):
         store=True,
         readonly=False,
     )
+    avail_id = fields.Many2one(
+        string="Availability Day",
+        comodel_name="pms.room.type.availability",
+        ondelete="restrict",
+        compute="_compute_avail_id",
+        store=True,
+    )
+
     discount = fields.Float(string="Discount (%)", digits=("Discount"), default=0.0)
     occupies_availability = fields.Boolean(
         string="Occupies",
@@ -108,7 +116,7 @@ class PmsReservationLine(models.Model):
             key=lambda r: (r.reservation_id, r.date)
         ):
             reservation = line.reservation_id
-            if reservation.preferred_room_id or not line.room_id:
+            if reservation.preferred_room_id != line.room_id or not line.room_id:
                 # If reservation has a preferred_room_id We can allow
                 # select room_id regardless room_type_id selected on reservation
                 free_room_select = True if reservation.preferred_room_id else False
@@ -122,7 +130,8 @@ class PmsReservationLine(models.Model):
                     if not free_room_select
                     else False,
                     current_lines=line.reservation_id.reservation_line_ids.ids,
-                    pricelist=line.reservation_id.pricelist_id.id,
+                    pricelist_id=line.reservation_id.pricelist_id.id,
+                    pms_property_id=line.pms_property_id.id,
                 )
                 # if there is availability for the entire stay
                 if rooms_available:
@@ -154,6 +163,7 @@ class PmsReservationLine(models.Model):
                     room_type_id=line.reservation_id.room_type_id.id,
                     current_lines=line._origin.reservation_id.reservation_line_ids.ids,
                     pricelist=line.reservation_id.pricelist_id,
+                    pms_property_id=line.pms_property_id.id,
                 ):
                     raise ValidationError(
                         _("%s: No room type available")
@@ -166,9 +176,11 @@ class PmsReservationLine(models.Model):
 
                     # we go through the rooms of the type
                     for room in self.env["pms.room"].search(
-                        [("room_type_id", "=", reservation.room_type_id.id)]
+                        [
+                            ("room_type_id", "=", reservation.room_type_id.id),
+                            ("pms_property_id", "=", reservation.pms_property_id.id),
+                        ]
                     ):
-
                         # we iterate the dates from the date of the line to the checkout
                         for date_iterator in [
                             line.date + datetime.timedelta(days=x)
@@ -390,6 +402,35 @@ class PmsReservationLine(models.Model):
             #         reservation.reservation_line_ids.update({"cancel_discount": 0})
             # else:
             #     reservation.reservation_line_ids.update({"cancel_discount": 0})
+
+    @api.depends("room_id", "pms_property_id", "date", "occupies_availability")
+    def _compute_avail_id(self):
+        for record in self:
+            if (
+                record.room_id.room_type_id
+                and record.date
+                and record.pms_property_id
+                and record.occupies_availability
+            ):
+                avail = self.env["pms.room.type.availability"].search(
+                    [
+                        ("date", "=", record.date),
+                        ("room_type_id", "=", record.room_id.room_type_id.id),
+                        ("pms_property_id", "=", record.pms_property_id.id),
+                    ]
+                )
+                if avail:
+                    record.avail_id = avail.id
+                else:
+                    record.avail_id = self.env["pms.room.type.availability"].create(
+                        {
+                            "date": record.date,
+                            "room_type_id": record.room_id.room_type_id.id,
+                            "pms_property_id": record.pms_property_id.id,
+                        }
+                    )
+            else:
+                record.avail_id = False
 
     # Constraints and onchanges
     @api.constrains("date")
