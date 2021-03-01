@@ -33,7 +33,8 @@ class AvailabilityWizard(models.TransientModel):
 
     num_rooms_available = fields.Integer(
         string="Available rooms",
-        default=0,
+        compute="_compute_num_rooms_available",
+        store="true",
     )
     price_per_room = fields.Float(
         string="Price per room",
@@ -53,6 +54,10 @@ class AvailabilityWizard(models.TransientModel):
     price_total = fields.Float(
         string="Total price", default=0, compute="_compute_price_total"
     )
+    pms_property_id = fields.Many2one(
+        related="folio_wizard_id.pms_property_id",
+        string="Property",
+    )
 
     @api.depends("num_rooms_selected", "checkin", "checkout")
     def _compute_price_total(self):
@@ -62,22 +67,13 @@ class AvailabilityWizard(models.TransientModel):
             # this field refresh is just to update it and take into account @ xml
             record.value_num_rooms_selected = record.num_rooms_selected.value
 
-            num_rooms_available_by_date = []
             room_type_total_price_per_room = 0
 
             for date_iterator in [
                 record.checkin + datetime.timedelta(days=x)
                 for x in range(0, (record.checkout - record.checkin).days)
             ]:
-                rooms_available = self.env[
-                    "pms.room.type.availability.plan"
-                ].rooms_available(
-                    date_iterator,
-                    date_iterator + datetime.timedelta(days=1),
-                    room_type_id=record.room_type_id.id,
-                    pricelist=record.folio_wizard_id.pricelist_id.id,
-                )
-                num_rooms_available_by_date.append(len(rooms_available))
+
                 partner = record.folio_wizard_id.partner_id
                 product = record.room_type_id.product_id
                 product = product.with_context(
@@ -91,10 +87,6 @@ class AvailabilityWizard(models.TransientModel):
                     property=record.folio_wizard_id.pms_property_id.id,
                 )
                 room_type_total_price_per_room += product.price
-
-            # get the availability for the entire stay (min of all dates)
-            if num_rooms_available_by_date:
-                record.num_rooms_available = min(num_rooms_available_by_date)
 
             # udpate the price per room
             record.price_per_room = room_type_total_price_per_room
@@ -116,6 +108,19 @@ class AvailabilityWizard(models.TransientModel):
                 record.price_per_room = 0
 
             record.price_total = record.price_per_room * record.num_rooms_selected.value
+
+    @api.depends("room_type_id", "checkin", "checkout")
+    def _compute_num_rooms_available(self):
+        for record in self:
+            record.num_rooms_available = self.env[
+                "pms.room.type.availability.plan"
+            ].get_count_rooms_available(
+                record.checkin,
+                record.checkout,
+                room_type_id=record.room_type_id.id,
+                pricelist_id=record.folio_wizard_id.pricelist_id.id,
+                pms_property_id=record.folio_wizard_id.pms_property_id.id,
+            )
 
     def _compute_dynamic_selection(self):
         for record in self:

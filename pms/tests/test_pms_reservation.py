@@ -271,7 +271,6 @@ class TestPmsReservations(TestHotel):
             }
         )
         r_test.flush()
-
         # ASSERT
         self.assertEqual(
             expected_num_changes,

@@ -85,61 +85,35 @@ class FolioWizard(models.TransientModel):
 
                 cmds = [(5, 0, 0)]
 
-                for room_type_iterator in self.env["pms.room.type"].search([]):
-
-                    num_rooms_available_by_date = []
-                    room_type_total_price_per_room = 0
-
-                    for date_iterator in [
-                        record.start_date + datetime.timedelta(days=x)
-                        for x in range(0, (record.end_date - record.start_date).days)
-                    ]:
-                        rooms_available = self.env[
-                            "pms.room.type.availability.plan"
-                        ].rooms_available(
-                            date_iterator,
-                            date_iterator + datetime.timedelta(days=1),
-                            room_type_id=room_type_iterator.id,
-                            pricelist=record.pricelist_id.id,
+                for room_type_iterator in self.env["pms.room.type"].search(
+                    [
+                        "|",
+                        ("pms_property_ids", "=", False),
+                        ("pms_property_ids", "in", record.pms_property_id.id),
+                    ]
+                ):
+                    num_rooms_available = self.env[
+                        "pms.room.type.availability.plan"
+                    ].get_count_rooms_available(
+                        checkin=record.start_date,
+                        checkout=record.end_date,
+                        room_type_id=room_type_iterator.id,
+                        pricelist_id=record.pricelist_id.id,
+                        pms_property_id=record.pms_property_id.id,
+                    )
+                    cmds.append(
+                        (
+                            0,
+                            0,
+                            {
+                                "folio_wizard_id": record.id,
+                                "checkin": record.start_date,
+                                "checkout": record.end_date,
+                                "room_type_id": room_type_iterator.id,
+                                "num_rooms_available": num_rooms_available,
+                            },
                         )
-
-                        num_rooms_available_by_date.append(len(rooms_available))
-                        product = room_type_iterator
-                        product = product.with_context(
-                            lang=record.partner_id.lang,
-                            partner=record.partner_id.id,
-                            quantity=1,
-                            date=fields.Date.today(),
-                            date_overnight=date_iterator,
-                            pricelist=record.pricelist_id.id,
-                            uom=product.uom_id.id,
-                            property=record.pms_property_id.id,
-                        )
-                        room_type_total_price_per_room += product.price
-
-                    # check there are rooms of the type
-                    if room_type_iterator.total_rooms_count > 0:
-
-                        # get min availability between start date & end date
-                        num_rooms_available = min(num_rooms_available_by_date)
-
-                        cmds.append(
-                            (
-                                0,
-                                0,
-                                {
-                                    "folio_wizard_id": record.id,
-                                    "checkin": record.start_date,
-                                    "checkout": record.end_date,
-                                    "room_type_id": room_type_iterator.id,
-                                    "num_rooms_available": num_rooms_available,
-                                    "price_per_room": room_type_total_price_per_room
-                                    if num_rooms_available
-                                    > 0  # not showing price if there's no availability
-                                    else 0,
-                                },
-                            )
-                        )
+                    )
                     # remove old items
                     old_lines = record.availability_results.mapped("id")
                     for old_line in old_lines:
@@ -158,6 +132,7 @@ class FolioWizard(models.TransientModel):
                 {
                     "pricelist_id": record.pricelist_id.id,
                     "partner_id": record.partner_id.id,
+                    "pms_property_id": record.pms_property_id.id,
                 }
             )
             for line in record.availability_results:
@@ -170,6 +145,7 @@ class FolioWizard(models.TransientModel):
                             "room_type_id": line.room_type_id.id,
                             "partner_id": folio.partner_id.id,
                             "pricelist_id": folio.pricelist_id.id,
+                            "pms_property_id": record.pms_property_id.id,
                         }
                     )
                     res.reservation_line_ids.discount = record.discount * 100

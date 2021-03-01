@@ -78,6 +78,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                         "start_date": fields.date.today(),
                         "end_date": fields.date.today() + datetime.timedelta(days=days),
                         "room_type_id": self.test_room_type_double.id,
+                        "pms_property_ids": [self.test_property.id],
                     }
                 ).apply_massive_changes()
 
@@ -98,7 +99,13 @@ class TestPmsWizardMassiveChanges(TestHotel):
         date_from = fields.date.today()
         date_to = fields.date.today() + datetime.timedelta(days=3)
 
-        num_room_types = self.env["pms.room.type"].search_count([])
+        num_room_types = self.env["pms.room.type"].search_count(
+            [
+                "|",
+                ("pms_property_ids", "=", False),
+                ("pms_property_ids", "in", self.test_property.id),
+            ]
+        )
         num_exp_rules_to_create = ((date_to - date_from).days + 1) * num_room_types
 
         # ACT
@@ -108,6 +115,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "availability_plan_id": self.test_availability_plan.id,
                 "start_date": date_from,
                 "end_date": date_to,
+                "pms_property_ids": [self.test_property.id],
             }
         ).apply_massive_changes()
 
@@ -144,6 +152,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
             "closed": True,
             "closed_arrival": True,
             "closed_departure": True,
+            "pms_property_ids": [self.test_property.id],
         }
 
         # ACT
@@ -155,6 +164,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
         del vals["start_date"]
         del vals["end_date"]
         del vals["room_type_id"]
+        del vals["pms_property_ids"]
         for key in vals:
             with self.subTest(k=key):
                 self.assertEqual(
@@ -190,6 +200,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "start_date": date_from,
                 "end_date": date_to,
+                "pms_property_ids": [self.test_property.id],
             }
         )
 
@@ -243,6 +254,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                         "start_date": fields.date.today(),
                         "end_date": fields.date.today() + datetime.timedelta(days=days),
                         "room_type_id": self.test_room_type_double.id,
+                        "pms_property_ids": [self.test_property.id],
                     }
                 ).apply_massive_changes()
                 # ASSERT
@@ -266,7 +278,13 @@ class TestPmsWizardMassiveChanges(TestHotel):
         self.create_common_scenario()
         date_from = fields.date.today()
         date_to = fields.date.today() + datetime.timedelta(days=3)
-        num_room_types = self.env["pms.room.type"].search_count([])
+        num_room_types = self.env["pms.room.type"].search_count(
+            [
+                "|",
+                ("pms_property_ids", "=", False),
+                ("pms_property_ids", "in", self.test_property.id),
+            ]
+        )
         num_exp_items_to_create = ((date_to - date_from).days + 1) * num_room_types
 
         # ACT
@@ -276,6 +294,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "pricelist_id": self.test_pricelist.id,
                 "start_date": date_from,
                 "end_date": date_to,
+                "pms_property_ids": [self.test_property.id],
             }
         ).apply_massive_changes()
 
@@ -305,8 +324,8 @@ class TestPmsWizardMassiveChanges(TestHotel):
             "date_start": date_from,
             "date_end": date_to,
             "compute_price": "fixed",
-            "applied_on": "1_product",
-            "product_tmpl_id": self.test_room_type_double.product_id.product_tmpl_id,
+            "applied_on": "0_product_variant",
+            "product_id": self.test_room_type_double.product_id,
             "fixed_price": price,
             "min_quantity": min_quantity,
         }
@@ -321,6 +340,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "price": price,
                 "min_quantity": min_quantity,
+                "pms_property_ids": [self.test_property.id],
             }
         ).apply_massive_changes()
         vals["date_start_overnight"] = date_from
@@ -362,6 +382,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "start_date": date_from,
                 "end_date": date_to,
+                "pms_property_ids": [self.test_property.id],
             }
         )
         for index, test_case in enumerate(test_case_week_days):
