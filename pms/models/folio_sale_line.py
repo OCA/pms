@@ -700,7 +700,7 @@ class FolioSaleLine(models.Model):
         """
         return new or old
 
-    def _prepare_invoice_line(self, **optional_values):
+    def _prepare_invoice_line(self, qty=False, **optional_values):
         """
         Prepare the dict of values to create the new invoice line for a folio sale line.
 
@@ -709,16 +709,29 @@ class FolioSaleLine(models.Model):
             should be added to the returned invoice line
         """
         self.ensure_one()
+        if (qty > self.qty_to_invoice or qty < 1) and not self.display_type:
+            raise ValueError(
+                _(
+                    "The qty (%s) is wrong." % qty
+                    + " The quantity pending to invoice is %s" % self.qty_to_invoice
+                )
+            )
         reservation = self.reservation_id
         service = self.service_id
-        reservation_lines = self.reservation_line_ids.filtered(lambda l: not l.invoiced)
+        reservation_lines = self.reservation_line_ids.filtered(
+            lambda l: not l.invoiced and l.reservation_id
+        )
+        lines_to_invoice = list()
+        if self.reservation_id:
+            for i in range(0, int(qty)):
+                lines_to_invoice.append(reservation_lines[i].id)
         res = {
             "display_type": self.display_type,
             "sequence": self.sequence,
             "name": self.name,
             "product_id": self.product_id.id,
             "product_uom_id": self.product_uom.id,
-            "quantity": self.qty_to_invoice,
+            "quantity": qty if qty else self.qty_to_invoice,
             "discount": self.discount,
             "price_unit": self.price_unit,
             "tax_ids": [(6, 0, self.tax_ids.ids)],
@@ -727,7 +740,7 @@ class FolioSaleLine(models.Model):
             "folio_line_ids": [(6, 0, [self.id])],
             "reservation_ids": [(6, 0, reservation.ids)],
             "service_ids": [(6, 0, service.ids)],
-            "reservation_line_ids": [(6, 0, reservation_lines.ids)],
+            "reservation_line_ids": [(6, 0, lines_to_invoice)],
         }
         if optional_values:
             res.update(optional_values)

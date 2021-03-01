@@ -991,8 +991,9 @@ class PmsFolio(models.Model):
         If False, invoices are grouped by
                         (partner_invoice_id, currency)
         :param final: if True, refunds will be generated if necessary
+        :param lines_to_invoice: invoice specific lines dict(key=id, value=qty).
+            if False, invoice all
         :returns: list of created invoices
-        :lines_to_invoice: invoice specific lines, if False, invoice all
         """
         if not self.env["account.move"].check_access_rights("create", False):
             try:
@@ -1000,11 +1001,16 @@ class PmsFolio(models.Model):
                 self.check_access_rule("write")
             except AccessError:
                 return self.env["account.move"]
-
         # 1) Create invoices.
         if not lines_to_invoice:
-            lines_to_invoice = self.sale_line_ids
-        invoice_vals_list = self.get_invoice_vals_list(final, lines_to_invoice)
+            lines_to_invoice = dict()
+            for line in self.sale_line_ids:
+                lines_to_invoice[line.id] = (
+                    0 if line.display_type else line.qty_to_invoice
+                )
+        invoice_vals_list = self.get_invoice_vals_list(
+            final=final, lines_to_invoice=lines_to_invoice
+        )
 
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
@@ -1127,7 +1133,7 @@ class PmsFolio(models.Model):
             # Invoice line values (keep only necessary sections).
             invoice_lines_vals = []
             for line in order.sale_line_ids.filtered(
-                lambda l: l.id in lines_to_invoice.ids
+                lambda l: l.id in list(lines_to_invoice.keys())
             ):
                 if line.display_type == "line_section":
                     current_section_vals = line._prepare_invoice_line(
@@ -1152,7 +1158,7 @@ class PmsFolio(models.Model):
                         current_section_vals = None
                     invoice_item_sequence += 1
                     prepared_line = line._prepare_invoice_line(
-                        sequence=invoice_item_sequence
+                        sequence=invoice_item_sequence, qty=lines_to_invoice[line.id]
                     )
                     invoice_lines_vals.append(prepared_line)
 
