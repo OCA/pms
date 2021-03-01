@@ -46,3 +46,4 @@ from . import folio_sale_line
 from . import account_bank_statement_line
 from . import account_bank_statement
 from . import account_journal
+from . import pms_room_type_availability

@@ -15,6 +15,13 @@ class AvailabilityWizard(models.TransientModel):
         return True if self._context.get("pricelist_id") else False
 
     # Fields declaration
+    pms_property_ids = fields.Many2many(
+        comodel_name="pms.property",
+        string="Property",
+        default=lambda self: self.env["pms.property"].browse(
+            self.env.user.get_active_property_ids()[0]
+        ),
+    )
     massive_changes_on = fields.Selection(
         [("pricelist", "Pricelist"), ("availability_plan", "Availability Plan")],
         string="Massive changes on",
@@ -236,6 +243,9 @@ class AvailabilityWizard(models.TransientModel):
             if record.pricelist_id:
                 domain = [
                     ("pricelist_id", "=", record.pricelist_id.id),
+                    "|",
+                    ("pms_property_ids", "=", False),
+                    ("pms_property_ids", "in", record.pms_property_ids.ids),
                 ]
 
                 if record.start_date:
@@ -327,41 +337,50 @@ class AvailabilityWizard(models.TransientModel):
                     continue
 
                 if not record.room_type_id:
-                    rooms = self.env["pms.room.type"].search([])
+                    room_types = self.env["pms.room.type"].search(
+                        [
+                            "|",
+                            ("pms_property_ids", "=", False),
+                            ("pms_property_ids", "in", record.pms_property_ids.ids),
+                        ]
+                    )
                 else:
-                    rooms = [record.room_type_id]
-                for room in rooms:
-                    if record.massive_changes_on == "pricelist":
-
-                        self.env["product.pricelist.item"].create(
-                            {
-                                "pricelist_id": record.pricelist_id.id,
-                                "date_start_overnight": date,
-                                "date_end_overnight": date,
-                                "compute_price": "fixed",
-                                "applied_on": "1_product",
-                                "product_tmpl_id": room.product_id.product_tmpl_id.id,
-                                "fixed_price": record.price,
-                                "min_quantity": record.min_quantity,
-                            }
-                        )
-                    else:
-                        self.env["pms.room.type.availability.rule"].create(
-                            {
-                                "availability_plan_id": record.availability_plan_id.id,
-                                "date": date,
-                                "room_type_id": room.id,
-                                "quota": record.quota,
-                                "max_avail": record.max_avail,
-                                "min_stay": record.min_stay,
-                                "min_stay_arrival": record.min_stay_arrival,
-                                "max_stay": record.max_stay,
-                                "max_stay_arrival": record.max_stay_arrival,
-                                "closed": record.closed,
-                                "closed_arrival": record.closed_arrival,
-                                "closed_departure": record.closed_departure,
-                            }
-                        )
+                    room_types = [record.room_type_id]
+                for room_type in room_types:
+                    for pms_property in record.pms_property_ids:
+                        if record.massive_changes_on == "pricelist":
+                            self.env["product.pricelist.item"].create(
+                                {
+                                    "pricelist_id": record.pricelist_id.id,
+                                    "date_start_overnight": date,
+                                    "date_end_overnight": date,
+                                    "compute_price": "fixed",
+                                    "applied_on": "0_product_variant",
+                                    "product_id": room_type.product_id.id,
+                                    "fixed_price": record.price,
+                                    "min_quantity": record.min_quantity,
+                                    "pms_property_ids": [pms_property.id],
+                                }
+                            )
+                        else:
+                            avail_plan_id = record.availability_plan_id.id
+                            self.env["pms.room.type.availability.rule"].create(
+                                {
+                                    "availability_plan_id": avail_plan_id,
+                                    "date": date,
+                                    "room_type_id": room_type.id,
+                                    "quota": record.quota,
+                                    "max_avail": record.max_avail,
+                                    "min_stay": record.min_stay,
+                                    "min_stay_arrival": record.min_stay_arrival,
+                                    "max_stay": record.max_stay,
+                                    "max_stay_arrival": record.max_stay_arrival,
+                                    "closed": record.closed,
+                                    "closed_arrival": record.closed_arrival,
+                                    "closed_departure": record.closed_departure,
+                                    "pms_property_id": pms_property.id,
+                                }
+                            )
             if (
                 record.massive_changes_on == "pricelist"
                 and not record.pricelist_readonly

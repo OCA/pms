@@ -59,7 +59,6 @@ class PmsRoomTypeAvailabilityRule(models.Model):
         compute="_compute_quota",
         help="Generic Quota assigned.",
     )
-
     max_avail = fields.Integer(
         string="Max. Availability",
         store=True,
@@ -67,13 +66,12 @@ class PmsRoomTypeAvailabilityRule(models.Model):
         compute="_compute_max_avail",
         help="Maximum simultaneous availability on own Booking Engine.",
     )
-
     pms_property_id = fields.Many2one(
         comodel_name="pms.property",
         string="Property",
         ondelete="restrict",
+        required=True,
     )
-
     allowed_property_ids = fields.Many2many(
         "pms.property",
         "allowed_availability_move_rel",
@@ -84,6 +82,22 @@ class PmsRoomTypeAvailabilityRule(models.Model):
         readonly=True,
         compute="_compute_allowed_property_ids",
     )
+    avail_id = fields.Many2one(
+        string="Avail record",
+        comodel_name="pms.room.type.availability",
+        compute="_compute_avail_id",
+        store=True,
+        readonly=False,
+        ondelete="restrict",
+    )
+    real_avail = fields.Integer(
+        related="avail_id.real_avail",
+        store="True",
+    )
+    plan_avail = fields.Integer(
+        compute="_compute_plan_avail",
+        store="True",
+    )
 
     _sql_constraints = [
         (
@@ -93,6 +107,44 @@ class PmsRoomTypeAvailabilityRule(models.Model):
                          day for the same room type!",
         )
     ]
+
+    @api.depends("room_type_id", "date", "pms_property_id")
+    def _compute_avail_id(self):
+        for record in self:
+            if record.room_type_id and record.pms_property_id and record.date:
+                avail = self.env["pms.room.type.availability"].search(
+                    [
+                        ("date", "=", record.date),
+                        ("room_type_id", "=", record.room_type_id.id),
+                        ("pms_property_id", "=", record.pms_property_id.id),
+                    ]
+                )
+                if avail:
+                    record.avail_id = avail.id
+                else:
+                    record.avail_id = self.env["pms.room.type.availability"].create(
+                        {
+                            "date": record.date,
+                            "room_type_id": record.room_type_id.id,
+                            "pms_property_id": record.pms_property_id.id,
+                        }
+                    )
+            else:
+                record.avail_id = False
+
+    @api.depends("quota", "max_avail", "real_avail")
+    def _compute_plan_avail(self):
+        for record in self.filtered("real_avail"):
+            real_avail = record.real_avail
+            plan_avail = min(
+                [
+                    record.max_avail if record.max_avail >= 0 else real_avail,
+                    record.quota if record.quota >= 0 else real_avail,
+                    real_avail,
+                ]
+            )
+            if not record.plan_avail or record.plan_avail != plan_avail:
+                record.plan_avail = plan_avail
 
     @api.depends("room_type_id")
     def _compute_quota(self):
