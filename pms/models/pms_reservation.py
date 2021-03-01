@@ -598,6 +598,8 @@ class PmsReservation(models.Model):
 
     @api.depends(
         "reservation_line_ids.date",
+        "reservation_line_ids.room_id",
+        "reservation_line_ids.occupies_availability",
         "overbooking",
         "state",
         "preferred_room_id",
@@ -618,7 +620,8 @@ class PmsReservation(models.Model):
                     checkout=reservation.checkout,
                     room_type_id=False,  # Allow chosen any available room
                     current_lines=reservation.reservation_line_ids.ids,
-                    pricelist=reservation.pricelist_id.id,
+                    pricelist_id=reservation.pricelist_id.id,
+                    pms_property_id=reservation.pms_property_id.id,
                 )
                 reservation.allowed_room_ids = rooms_available
 
@@ -1314,7 +1317,8 @@ class PmsReservation(models.Model):
             checkin=self.checkin,
             checkout=self.checkout,
             current_lines=self.reservation_line_ids.ids,
-            pricelist=self.pricelist_id.id,
+            pricelist_id=self.pricelist_id.id,
+            pms_property_id=self.pms_property_id.id,
         )
         # REVIEW: check capacity room
         return {
@@ -1358,7 +1362,8 @@ class PmsReservation(models.Model):
             self.checkin,
             self.checkout,
             room_type_id=self.room_type_id.id,
-            pricelist=self.pricelist_id.id,
+            pricelist_id=self.pricelist_id.id,
+            pms_property_id=self.pms_property_id.id,
         )
         if self.preferred_room_id.id in rooms_available.ids:
             default["preferred_room_id"] = self.preferred_room_id.id
@@ -1410,7 +1415,8 @@ class PmsReservation(models.Model):
             checkin=self.checkin,
             checkout=self.checkout,
             room_type_id=self.room_type_id.id or False,
-            pricelist=self.pricelist_id.id,
+            pricelist_id=self.pricelist_id.id,
+            pms_property_id=self.pms_property_id.id,
         )
         if rooms_available:
             room_chosen = rooms_available[0]

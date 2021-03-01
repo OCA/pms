@@ -262,6 +262,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,  # <- (1/2)
+                "pms_property_id": self.test_property.id,
             }
         )
         # ACT
@@ -269,7 +270,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             # room_type_id=False, # <-  (2/2)
-            pricelist=self.test_pricelist1.id,
+            pricelist_id=self.test_pricelist1.id,
         )
         # ASSERT
         self.assertNotIn(
@@ -295,6 +296,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=0)).date(),
+                "pms_property_id": self.test_property.id,
             }
         )
 
@@ -410,7 +412,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     checkin=checkin,
                     checkout=checkout,
                     room_type_id=self.test_room_type_double.id,
-                    pricelist=self.test_pricelist1.id,
+                    pricelist_id=self.test_pricelist1.id,
                 )
 
                 # ASSERT
@@ -437,6 +439,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
+                "pms_property_id": self.test_property.id,
             }
         )
         checkin = datetime.datetime.now()
@@ -475,6 +478,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
+                "pms_property_id": self.test_property.id,
             }
         )
 
@@ -537,6 +541,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": 1,
+                "pms_property_id": self.test_property.id,
             }
         )
         r1 = self.env["pms.reservation"].create(
@@ -587,6 +592,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": test_quota,
+                "pms_property_id": self.test_property.id,
             }
         )
         reservation = self.env["pms.reservation"].create(
@@ -687,7 +693,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                         fields.datetime.today() + datetime.timedelta(days=2)
                     ).date(),
                     room_type_id=self.test_room_type_special.id,
-                    pricelist=self.test_pricelist1.id,
+                    pricelist_id=self.test_pricelist1.id,
                     pms_property_id=p["property"],
                 )
                 # ASSERT
@@ -730,6 +736,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "room_type_id": self.test_room_type_special.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
+                "pms_property_id": self.test_property1.id,
             }
         )
         # Test cases when creating a availability_rule
@@ -794,6 +801,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "room_type_id": self.test_room_type_special.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
+                "pms_property_id": self.test_property1.id,
             }
         )
 
@@ -802,6 +810,3 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             self.availability_rule1.allowed_property_ids.mapped("id"),
             "error",
         )
-
-    # plan 1    property  01   |      rule  property: False
-    # plan 1    property  02   |      rule  property: False

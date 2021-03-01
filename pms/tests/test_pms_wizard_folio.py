@@ -150,7 +150,6 @@ class TestPmsWizardMassiveChanges(TestHotel):
         # Set values for the wizard and the total price is correct
         # Also check the discount is correctly applied to get
         #                               the total folio price
-        # (no pricelist applied)
 
         # ARRANGE
         # common scenario
@@ -183,6 +182,8 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
+                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.test_pricelist.id,
             }
         )
 
@@ -206,7 +207,6 @@ class TestPmsWizardMassiveChanges(TestHotel):
         )
 
         lines_availability_test[0].num_rooms_selected = value
-
         for discount in discounts:
             with self.subTest(k=discount):
                 # ACT
@@ -265,6 +265,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.test_property.id,
             }
         )
         wizard_folio.flush()
@@ -395,6 +396,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.test_property.id,
             }
         )
         wizard_folio.flush()
@@ -444,6 +446,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.test_property.id,
             }
         )
         wizard_folio.flush()
@@ -495,6 +498,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.test_property.id,
             }
         )
         wizard_folio.flush()
@@ -552,6 +556,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.test_property.id,
             }
         )
         wizard_folio.flush()
@@ -585,6 +590,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
             "room_type_id": self.test_room_type_double,
             "partner_id": self.partner_id.id,
             "pricelist_id": folio.pricelist_id.id,
+            "pms_property_id": self.test_property.id,
         }
 
         # ASSERT
@@ -593,7 +599,8 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 with self.subTest(k=key):
                     self.assertEqual(
                         reservation[key].id
-                        if key in ["folio_id", "partner_id", "pricelist_id"]
+                        if key
+                        in ["folio_id", "partner_id", "pricelist_id", "pms_property_id"]
                         else reservation[key],
                         vals[key],
                         "The value of " + key + " is not correctly established",
@@ -620,6 +627,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
                 "partner_id": self.partner_id.id,
                 "pricelist_id": self.test_pricelist.id,
                 "discount": discount,
+                "pms_property_id": self.test_property.id,
             }
         )
         wizard_folio.flush()
@@ -655,3 +663,87 @@ class TestPmsWizardMassiveChanges(TestHotel):
                         discount * 100,
                         "The discount is not correctly established",
                     )
+
+    def test_check_quota_avail(self):
+        # TEST CASE
+        # Check avail on room type with quota
+
+        # ARRANGE
+        # common scenario
+        self.create_common_scenario()
+
+        # checkin & checkout
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=1)
+
+        self.env["pms.room.type.availability.rule"].create(
+            {
+                "quota": 1,
+                "room_type_id": self.test_room_type_double.id,
+                "availability_plan_id": self.test_availability_plan.id,
+                "date": fields.date.today(),
+                "pms_property_id": self.test_property.id,
+            }
+        )
+
+        # create folio wizard with partner id => pricelist & start-end dates
+        wizard_folio = self.env["pms.folio.wizard"].create(
+            {
+                "start_date": checkin,
+                "end_date": checkout,
+                "partner_id": self.partner_id.id,
+                "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.test_property.id,
+            }
+        )
+        wizard_folio.flush()
+
+        room_type_plan_avail = wizard_folio.availability_results.filtered(
+            lambda r: r.room_type_id.id == self.test_room_type_double.id
+        ).num_rooms_available
+
+        # ASSERT
+
+        self.assertEqual(room_type_plan_avail, 1, "Quota not applied in Wizard Folio")
+
+    def test_check_min_stay_avail(self):
+        # TEST CASE
+        # Check avail on room type with quota
+
+        # ARRANGE
+        # common scenario
+        self.create_common_scenario()
+
+        # checkin & checkout
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=1)
+
+        self.env["pms.room.type.availability.rule"].create(
+            {
+                "min_stay": 3,
+                "room_type_id": self.test_room_type_double.id,
+                "availability_plan_id": self.test_availability_plan.id,
+                "date": fields.date.today(),
+                "pms_property_id": self.test_property.id,
+            }
+        )
+
+        # create folio wizard with partner id => pricelist & start-end dates
+        wizard_folio = self.env["pms.folio.wizard"].create(
+            {
+                "start_date": checkin,
+                "end_date": checkout,
+                "partner_id": self.partner_id.id,
+                "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.test_property.id,
+            }
+        )
+        wizard_folio.flush()
+
+        room_type_plan_avail = wizard_folio.availability_results.filtered(
+            lambda r: r.room_type_id.id == self.test_room_type_double.id
+        ).num_rooms_available
+
+        # ASSERT
+
+        self.assertEqual(room_type_plan_avail, 0, "Quota not applied in Wizard Folio")

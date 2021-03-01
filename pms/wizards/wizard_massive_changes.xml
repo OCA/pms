@@ -26,6 +26,7 @@
                     </div>
                     <div class="col-5">
                         <group class="">
+                            <field name="pms_property_ids" widget="many2many_tags" />
                             <field
                                 name="massive_changes_on"
                                 attrs="{'invisible':['|', ('avail_readonly','=',True), ('pricelist_readonly', '=', True)]}"
@@ -37,6 +38,7 @@
                                 attrs="{'invisible':['|','|',('massive_changes_on','=','pricelist'), ('avail_readonly','=',True),
                                                              ('pricelist_readonly', '=', True)],
                                 'required': [('massive_changes_on','=','availability_plan')]}"
+                                domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
                             />
 
                             <field
@@ -45,9 +47,13 @@
                                 attrs="{'invisible':['|','|',('massive_changes_on','=','availability_plan'),
                                 ('pricelist_readonly','=',True), ('pricelist_readonly', '=', True)],
                                  'required': [('massive_changes_on','=','pricelist')]}"
-                                domain="[('id', 'in', allowed_pricelist_ids)]"
+                                domain="[('id', 'in', allowed_pricelist_ids), '|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
                             />
-                            <field name="room_type_id" default_focus="1" />
+                            <field
+                                name="room_type_id"
+                                default_focus="1"
+                                domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
+                            />
                         </group>
 
                     </div>

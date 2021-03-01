@@ -23,11 +23,13 @@
                     <div class="col-5">
                         <group>
                             <field name="partner_id" string="Partner" required="1" />
-                             <field
+                            <field name="pms_property_id" required="1" />
+                            <field
                                 default_focus="1"
                                 name="pricelist_id"
                                 string="Pricelist"
                                 required="1"
+                                domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_id)]"
                             />
                         </group>
                     </div>

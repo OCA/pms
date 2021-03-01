@@ -201,7 +201,7 @@
             <field name="name">Open Talk Away Room</field>
             <field name="room_type_id" ref="pms_room_type_4" />
             <field name="floor_id" ref="pms_floor_0" />
-            <field name="capacity">1</field>
+            <field name="capacity">10</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
         </record>
         <!-- product.product for pms services -->

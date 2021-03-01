@@ -18,6 +18,25 @@ class PmsRoomType(models.Model):
     _inherits = {"product.product": "product_id"}
     _order = "sequence, code_type, name"
 
+    # Defaults and Gets
+    def name_get(self):
+        result = []
+        for room_type in self:
+            name = room_type.name
+            if self._context.get("checkin") and self._context.get("checkin"):
+                avail = self.env[
+                    "pms.room.type.availability.plan"
+                ].get_count_rooms_available(
+                    checkin=self._context.get("checkin"),
+                    checkout=self._context.get("checkout"),
+                    room_type_id=room_type.id,
+                    pms_property_id=self._context.get("pms_property_id") or False,
+                    pricelist_id=self._context.get("pricelist_id") or False,
+                )
+                name += " (%s)" % avail
+            result.append((room_type.id, name))
+        return result
+
     # Fields declaration
     product_id = fields.Many2one(
         "product.product",
