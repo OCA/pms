@@ -29,7 +29,7 @@ class ResUsers(models.Model):
         string="Properties",
         domain="[('company_id','in',company_ids)]",
     )
-    company_id = fields.Many2one(domain="[('id','in',company_ids)]")
+    # company_id = fields.Many2one(domain="[('id','in',company_ids)]")
 
     @api.model
     def get_active_property_ids(self):

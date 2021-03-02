@@ -235,23 +235,23 @@
     <menuitem
         name="Room Rack"
         id="menu_action_pms_house_keeping_view_rack"
-        action="pms-housekeeping.action_pms_room_rack_kanban"
+        action="pms_housekeeping.action_pms_room_rack_kanban"
         sequence="10"
-        parent="pms-housekeeping.menu_action_pms_house_keeping"
+        parent="pms_housekeeping.menu_action_pms_house_keeping"
     />
     <menuitem
         name="Today Tasks"
         id="menu_action_pms_house_keeping_view_today_form"
         action="action_pms_house_keeping_view_today_form"
         sequence="20"
-        parent="pms-housekeeping.menu_action_pms_house_keeping"
+        parent="pms_housekeeping.menu_action_pms_house_keeping"
     />
     <menuitem
         name="Tasks History"
         id="menu_action_pms_house_keeping_view_form"
         action="action_pms_house_keeping_view_form"
         sequence="30"
-        parent="pms-housekeeping.menu_action_pms_house_keeping"
+        parent="pms_housekeeping.menu_action_pms_house_keeping"
     />
 
 </odoo>
