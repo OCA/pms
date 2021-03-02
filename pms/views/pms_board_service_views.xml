@@ -19,6 +19,7 @@
                             <field name="amount" />
                         </tree>
                     </field>
+                    <field name="show_detail_report" />
                 </group>
             </form>
         </field>
@@ -30,6 +31,7 @@
             <tree string="Board Services">
                 <field name="name" />
                 <field name="amount" />
+                <field name="show_detail_report" />
             </tree>
         </field>
     </record>

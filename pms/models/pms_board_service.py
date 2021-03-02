@@ -28,7 +28,9 @@ class PmsBoardService(models.Model):
         "Amount", digits=("Product Price"), compute="_compute_board_amount", store=True
     )
 
+    show_detail_report = fields.Boolean(string="Show Detail Report")
     # Compute and Search methods
+
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
         for record in self:
