@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+user_access_pms_housekeeping,user_access_pms_housekeeping,model_pms_housekeeping,pms.group_pms_user,1,1,1,1
+user_access_pms_housekeeping_task,user_access_pms_housekeeping_task,model_pms_housekeeping_task,pms.group_pms_user,1,1,1,1

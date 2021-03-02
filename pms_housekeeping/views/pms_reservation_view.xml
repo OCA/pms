@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="inheit_pms_reservation_view_form" model="ir.ui.view">
+        <field name="name">view.model.form</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms.pms_reservation_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='departure_hour']" position="after">
+                    <field name="dont_disturb" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
