@@ -3,6 +3,7 @@
     <record model="ir.ui.view" id="pms_room_view_form">
         <field name="name">pms.room.form</field>
         <field name="model">pms.room</field>
+        <field name="priority" eval="30" />
         <field name="arch" type="xml">
             <form string="Property Room">
                 <sheet>
