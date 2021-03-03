@@ -1,0 +1,47 @@
+<odoo>
+    <template id="portal_my_folios" name="Folios" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Folios</t>
+                <t t-set="url" t-value="'/my/folios'"/>
+                <t t-set="placeholder_count" t-value="'folio_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+
+    <template id="portal_my_folio" name="My Folios">
+      <t t-call="portal.portal_layout">
+        <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+        <t t-call="portal.portal_searchbar">
+            <t t-set="title">Folios</t>
+        </t>
+        <t t-if="not folios">
+            <p>There are currently no folios for your account.</p>
+        </t>
+        <t t-if="folios" t-call="portal.portal_table">
+            <thead>
+                <tr class="active">
+                    <th>Folio #</th>
+                    <th>Order Date</th>
+                    <th class="text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="folios" t-as="folio">
+                    <tr>
+                        <td>
+                            <a t-att-href="folio.get_portal_url()" t-att-title="folio.name">
+                                <t t-esc="folio.name"/>
+                            </a>
+                        </td>
+                        <td><span t-field="folio.date_order"/></td>
+                        <td class="text-right"><span t-field="folio.amount_total"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </t>
+      </t>
+    </template>
+</odoo>
