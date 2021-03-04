@@ -225,10 +225,10 @@
         </record>
         <record id="pms_folio_rule_portal" model="ir.rule">
             <field name="name">Portal Personal Folios</field>
-            <field name="model_id" ref="model_pms_folio"/>
+            <field name="model_id" ref="model_pms_folio" />
             <field name="domain_force">[]</field>
-            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-            <field name="perm_read" eval="True"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
         </record>
     </data>
 </odoo>
