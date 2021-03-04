@@ -1,5 +1,20 @@
 <odoo>
     <template
+        id="portal_my_home_menu_folio"
+        name="Portal layout : folio menu entries"
+        inherit_id="portal.portal_breadcrumbs"
+        priority="20"
+    >
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-attf-class="breadcrumb-item #{'active ' if not folios else ''}">
+                <a t-attf-href="/my/folios?{{ keep_query() }}">Folios</a>
+            </li>
+            <li t-if="folio" class="breadcrumb-item active">
+                <t t-esc="folio.name" />
+            </li>
+        </xpath>
+    </template>
+    <template
         id="portal_my_folios"
         name="Folios"
         inherit_id="portal.portal_my_home"
