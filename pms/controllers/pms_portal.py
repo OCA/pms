@@ -43,6 +43,12 @@ class PortalFolio(CustomerPortal):
                 ]
             )
         )
+        values.update(
+            {
+                "page_name": "folios",
+                "default_url": "/my/folios",
+            }
+        )
         return request.render("pms.portal_my_folio", values)
 
     @http.route(["/my/folios/<int:folio_id>"], type="http", auth="user", website=True)
