@@ -130,15 +130,13 @@
                         </ul>
                     </t>
                 </t>
-                <!-- main content -->
-                <div
-                    t-attf-class="card #{'pb-5' if report_type == 'html' else ''}"
-                    id="portal_folio_content"
-                >
+                <!-- main content-->
+                <div t-attf-class="card col-8 p-3" id="portal_folio_content">
                     <div t-call="pms.folio_portal_content" />
                 </div>
                 <!-- chatter -->
-                <div id="folio_communication" class="mt-4">
+                <div class="col-3" />
+                <div id="folio_communication" class="mt-4 col-8">
                     <h2>History</h2>
                     <t t-call="portal.message_thread">
                         <t t-set="object" t-value="folio" />
@@ -154,9 +152,10 @@
     template rendered in PDF with the report engine.
     -->
     <template id="folio_portal_content" name="Folio Portal Content">
-        <!--<t t-call="web.external_layout">-->
         <t t-set="address">
-            <div class="row">
+            <div
+                class="row pb-2 pt-3 #{'card-header bg-white' if report_type == 'html' else ''}"
+            >
                     <div class="col-xs-6">
                         <t t-if="folio.partner_invoice_id != folio.partner_id">
                             <div
@@ -188,29 +187,29 @@
             </h2>
 
             <div class="row mt32 mb32" id="informations">
-                <div t-if="folio.client_order_ref" class="col-auto col-3 mw-100 mb-2">
+                <div t-if="folio.client_order_ref" class="mb-3 col-6">
                     <strong>Your Reference:</strong>
                     <p class="m-0" t-field="folio.client_order_ref" />
                 </div>
                 <div
                     t-if="folio.date_order and folio.state not in ['draft','sent']"
-                    class="col-auto col-3 mw-100 mb-2"
+                    class="mb-3 col-6"
                 >
                     <strong>Order Date:</strong>
                     <p class="m-0" t-field="folio.date_order" />
                 </div>
                 <div
                     t-if="folio.date_order and folio.state in ['draft','sent']"
-                    class="col-auto col-3 mw-100 mb-2"
+                    class="mb-3 col-6"
                 >
                     <strong>Quotation Date:</strong>
                     <p
-                        class="m-0"
+                        class="mb-3 col-6"
                         t-field="folio.date_order"
                         t-options='{"widget": "date"}'
                     />
                 </div>
-                <div t-if="folio.user_id.name" class="col-auto col-3 mw-100 mb-2">
+                <div t-if="folio.user_id.name" class="mb-3 col-6">
                     <strong>Salesperson:</strong>
                     <p class="m-0" t-field="folio.user_id" />
                 </div>
@@ -446,6 +445,5 @@
                 <span t-field="folio.fiscal_position_id.sudo().note" />
             </p>
         </div>
-    <!--</t>-->
     </template>
 </odoo>
