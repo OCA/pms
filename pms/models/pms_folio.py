@@ -525,6 +525,11 @@ class PmsFolio(models.Model):
             order.move_ids = invoices
             order.invoice_count = len(invoices)
 
+    def _compute_access_url(self):
+        super(PmsFolio, self)._compute_access_url()
+        for folio in self:
+            folio.access_url = "/my/folios/%s" % (folio.id)
+
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
             self.env.cr.execute(

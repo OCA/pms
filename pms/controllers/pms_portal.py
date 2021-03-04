@@ -53,7 +53,7 @@ class PortalFolio(CustomerPortal):
             folio_sudo = self._document_check_access(
                 "pms.folio",
                 folio_id,
-                access_token="9a6f4fc8-59f6-4f50-ae45-5af6492e7aba",
+                access_token=access_token,
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
