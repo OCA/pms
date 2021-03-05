@@ -6,11 +6,12 @@
         priority="20"
     >
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <li t-attf-class="breadcrumb-item #{'active ' if not folios else ''}">
+            <li t-if="page_name == 'folios'" t-attf-class="breadcrumb-item #{'active ' if not folios else ''}">
                 <a t-attf-href="/my/folios?{{ keep_query() }}">Folios</a>
             </li>
             <li t-if="folio" class="breadcrumb-item active">
-                <t t-esc="folio.name" />
+                 <a t-attf-href="/my/folios?{{ keep_query() }}">Folios/</a>
+                <t t-esc="folio.name"/>
             </li>
         </xpath>
     </template>
@@ -112,14 +113,6 @@
                             </li>
 
                             <li
-                                class="navspy list-group-item pl-0 flex-grow-1"
-                                t-ignore="true"
-                                role="complementary"
-                            >
-                                <ul class="nav flex-column bs-sidenav" />
-                            </li>
-
-                            <li
                                 t-if="folio.user_id.name"
                                 class="list-group-item flex-grow-1"
                             >
@@ -127,10 +120,10 @@
                                         class="text-muted"
                                     >Salesperson</strong></div>
                                 <div class="row flex-nowrap">
-                                    <!--<div class="col flex-grow-0 pr-2">
-                                        <img class="rounded-circle mr4 float-left o_portal_contact_img" t-if="folio.user_id.image_1024" t-att-src="image_data_uri(sale_order.user_id.image_1024)" alt="Contact"/>
+                                    <div class="col flex-grow-0 pr-2">
+                                        <img class="rounded-circle mr4 float-left o_portal_contact_img" t-if="folio.user_id.image_1024" t-att-src="image_data_uri(folio.user_id.image_1024)" alt="Contact"/>
                                         <img class="rounded-circle mr4 float-left o_portal_contact_img" t-if="not folio.user_id.image_1024" src="/web/static/src/img/placeholder.png" alt="Contact"/>
-                                    </div>-->
+                                    </div>
                                     <div class="col pl-0" style="min-width: 150px">
                                         <span
                                             t-field="folio.user_id"
