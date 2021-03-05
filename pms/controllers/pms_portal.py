@@ -14,7 +14,7 @@ class PortalFolio(CustomerPortal):
             values["folio_count"] = (
                 Folio.search_count(
                     [
-                        ("partner_id", "child_of", partner.id),
+                        ("partner_id", "=", partner.id),
                     ]
                 )
                 if Folio.check_access_rights("read", raise_exception=False)
@@ -67,7 +67,7 @@ class PortalFolio(CustomerPortal):
             return self._show_report(
                 model=folio_sudo,
                 report_type=report_type,
-                report_ref="action_report_folio",
+                report_ref="pms.action_report_folio",
                 download=download,
             )
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
