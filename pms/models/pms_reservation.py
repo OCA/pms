@@ -184,6 +184,13 @@ class PmsReservation(models.Model):
         store=True,
         readonly=False,
     )
+    show_update_pricelist = fields.Boolean(
+        string="Has Pricelist Changed",
+        help="Technical Field, True if the pricelist was changed;\n"
+        " this will then display a recomputation button",
+        compute="_compute_show_update_pricelist",
+        store=True,
+    )
     commission_percent = fields.Float(
         string="Commission percent (%)",
         compute="_compute_commission_percent",
@@ -248,7 +255,7 @@ class PmsReservation(models.Model):
         default=_get_default_segmentation,
     )
     currency_id = fields.Many2one(
-        "res.currency",
+        related="pricelist_id.currency_id",
         depends=["pricelist_id"],
         store=True,
         readonly=True,
@@ -700,22 +707,36 @@ class PmsReservation(models.Model):
                 reservation.service_ids -= old_board_lines
                 reservation.service_ids = board_services
 
-    @api.depends("partner_id")
+    @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
         for reservation in self:
-            # TODO: Review logic pricelist by partner
-            # and by allowed channel pricelist_ids
-            if reservation.folio_id:
-                pricelist_id = reservation.folio_id.pricelist_id.id
-            else:
-                pricelist_id = (
-                    reservation.partner_id.property_product_pricelist
-                    and reservation.partner_id.property_product_pricelist.id
-                    or self.env.user.pms_property_id.default_pricelist_id.id
+            if reservation.agency_id and reservation.agency_id.apply_pricelist:
+                reservation.pricelist_id = (
+                    reservation.agency_id.property_product_pricelist.id
                 )
-            if reservation.pricelist_id.id != pricelist_id:
-                # TODO: Warning change de pricelist?
-                reservation.pricelist_id = pricelist_id
+            elif (
+                reservation.partner_id
+                and reservation.partner_id.property_product_pricelist
+            ):
+                reservation.pricelist_id = (
+                    reservation.partner_id.property_product_pricelist.id
+                )
+            elif not reservation.pricelist_id.id:
+                reservation.pricelist_id = (
+                    self.env.user.pms_property_id.default_pricelist_id.id
+                )
+
+    @api.depends("pricelist_id")
+    def _compute_show_update_pricelist(self):
+        for reservation in self:
+            if (
+                sum(reservation.reservation_line_ids.mapped("price")) > 0
+                and reservation.pricelist_id
+                and reservation._origin.pricelist_id != reservation.pricelist_id
+            ):
+                reservation.show_update_pricelist = True
+            else:
+                reservation.show_update_pricelist = False
 
     @api.depends("adults")
     def _compute_checkin_partner_ids(self):
@@ -1401,6 +1422,18 @@ class PmsReservation(models.Model):
         return record
 
     # Business methods
+
+    def update_prices(self):
+        self.ensure_one()
+        for line in self.reservation_line_ids:
+            line.with_context(force_recompute=True)._compute_price()
+        self.show_update_pricelist = False
+        self.message_post(
+            body=_(
+                "Prices have been recomputed according to pricelist <b>%s<b> ",
+                self.pricelist_id.display_name,
+            )
+        )
 
     def _compute_shared(self):
         # Has this reservation more charges associates in folio?,
