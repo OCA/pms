@@ -135,16 +135,18 @@ class PmsRoomTypeAvailability(models.Model):
             ("date", ">=", checkin),
             ("date", "<=", checkout - datetime.timedelta(1)),
         ]
+        if not current_lines:
+            current_lines = []
         rooms_not_avail = (
             Avail.search(domain)
-            .reservation_line_ids.filtered(
-                lambda l: l.id not in current_lines if current_lines else []
-            )
+            .reservation_line_ids.filtered(lambda l: l.id not in current_lines)
             .room_id.ids
         )
-        domain_rooms = [
-            ("id", "not in", rooms_not_avail if rooms_not_avail else []),
-        ]
+        domain_rooms = []
+        if rooms_not_avail:
+            domain_rooms = [
+                ("id", "not in", rooms_not_avail),
+            ]
         if pms_property_id:
             domain_rooms.append(("pms_property_id", "=", pms_property_id))
         if room_type_id:
