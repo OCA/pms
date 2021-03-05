@@ -1,8 +1,8 @@
-from odoo import http
+from odoo import _, http
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
-from odoo.addons.portal.controllers.portal import CustomerPortal
+from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 
 
 class PortalFolio(CustomerPortal):
@@ -28,25 +28,61 @@ class PortalFolio(CustomerPortal):
             folio, access_token, values, "my_folios_history", False, **kwargs
         )
 
-    @http.route(["/my/folios"], type="http", auth="user", website=True)
+    @http.route(
+        ["/my/folios", "/my/folios/page/<int:page>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
     def portal_my_folios(
         self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw
     ):
         partner = request.env.user.partner_id
         values = self._prepare_portal_layout_values()
-        values["folios"] = (
-            request.env["pms.folio"]
-            .sudo()
-            .search(
-                [
-                    ("partner_id", "child_of", partner.id),
-                ]
-            )
+        PmsFolio = request.env["pms.folio"]
+        values["folios"] = PmsFolio.sudo().search(
+            [
+                ("partner_id", "child_of", partner.id),
+            ]
         )
+        domain = [
+            ("partner_id", "child_of", partner.id),
+        ]
+        searchbar_sortings = {
+            "date": {"label": _("Order Date"), "folio": "date_order desc"},
+            "name": {"label": _("Reference"), "folio": "name"},
+            "stage": {"label": _("Stage"), "folio": "state"},
+        }
+        if not sortby:
+            sortby = "date"
+        sort_order = searchbar_sortings[sortby]["folio"]
+
+        if date_begin and date_end:
+            domain += [
+                ("create_date", ">", date_begin),
+                ("create_date", "<=", date_end),
+            ]
+        folio_count = PmsFolio.search_count(domain)
+        pager = portal_pager(
+            url="/my/folios",
+            url_args={"date_begin": date_begin, "date_end": date_end, "sortby": sortby},
+            total=folio_count,
+            page=page,
+            step=self._items_per_page,
+        )
+        folios = PmsFolio.search(
+            domain, order=sort_order, limit=self._items_per_page, offset=pager["offset"]
+        )
+        request.session["my_folios_history"] = folios.ids[:100]
         values.update(
             {
+                "date": date_begin,
+                "folios": folios.sudo(),
                 "page_name": "folios",
+                "pager": pager,
                 "default_url": "/my/folios",
+                "searchbar_sortings": searchbar_sortings,
+                "sortby": sortby,
             }
         )
         return request.render("pms.portal_my_folio", values)

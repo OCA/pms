@@ -736,7 +736,7 @@ class PmsFolio(models.Model):
     # Action methods
     def _get_report_base_filename(self):
         self.ensure_one()
-        return 'Folio %s' % self.name
+        return "Folio %s" % self.name
 
     def action_pay(self):
         self.ensure_one()
