@@ -40,7 +40,7 @@ class PortalFolio(CustomerPortal):
         partner = request.env.user.partner_id
         values = self._prepare_portal_layout_values()
         PmsFolio = request.env["pms.folio"]
-        values["folios"] = PmsFolio.sudo().search(
+        values["folios"] = PmsFolio.search(
             [
                 ("partner_id", "child_of", partner.id),
             ]
@@ -108,3 +108,113 @@ class PortalFolio(CustomerPortal):
             )
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
         return request.render("pms.folio_portal_template", values)
+
+
+class PortalReservation(CustomerPortal):
+    def _prepare_home_portal_values(self, counters):
+        partner = request.env.user.partner_id
+        values = super()._prepare_home_portal_values(counters)
+        Reservation = request.env["pms.reservation"]
+        if "reservation_count" in counters:
+            values["reservation_count"] = (
+                Reservation.search_count(
+                    [
+                        ("partner_id", "=", partner.id),
+                    ]
+                )
+                if Reservation.check_access_rights("read", raise_exception=False)
+                else 0
+            )
+        return values
+
+    def _reservation_get_page_view_values(self, reservation, access_token, **kwargs):
+        values = {"reservation": reservation, "token": access_token}
+        return self._get_page_view_values(
+            reservation,
+            access_token,
+            values,
+            "my_reservations_history",
+            False,
+            **kwargs
+        )
+
+    @http.route(
+        ["/my/reservations", "/my/reservations/page/<int:page>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_reservations(
+        self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw
+    ):
+        partner = request.env.user.partner_id
+        values = self._prepare_portal_layout_values()
+        Reservation = request.env["pms.reservation"]
+        values["reservations"] = Reservation.search(
+            [
+                ("partner_id", "child_of", partner.id),
+            ]
+        )
+        domain = [
+            ("partner_id", "child_of", partner.id),
+        ]
+        searchbar_sortings = {
+            "date": {"label": _("Order Date"), "reservation": "date_order desc"},
+            "name": {"label": _("Reference"), "reservation": "name"},
+            "stage": {"label": _("Stage"), "reservation": "state"},
+        }
+        if not sortby:
+            sortby = "date"
+        sort_order = searchbar_sortings[sortby]["reservation"]
+
+        if date_begin and date_end:
+            domain += [
+                ("create_date", ">", date_begin),
+                ("create_date", "<=", date_end),
+            ]
+        reservation_count = Reservation.search_count(domain)
+        pager = portal_pager(
+            url="/my/reservations",
+            url_args={"date_begin": date_begin, "date_end": date_end, "sortby": sortby},
+            total=reservation_count,
+            page=page,
+            step=self._items_per_page,
+        )
+        reservations = Reservation.search(
+            domain, order=sort_order, limit=self._items_per_page, offset=pager["offset"]
+        )
+        request.session["my_reservations_history"] = reservations.ids[:100]
+        values.update(
+            {
+                "date": date_begin,
+                "reservations": reservations.sudo(),
+                "page_name": "reservations",
+                "pager": pager,
+                "default_url": "/my/reservations",
+                "searchbar_sortings": searchbar_sortings,
+                "sortby": sortby,
+            }
+        )
+        return request.render("pms.portal_my_reservation", values)
+
+    @http.route(
+        ["/my/reservations/<int:reservation_id>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_reservation_detail(self, reservation_id, access_token=None, **kw):
+        try:
+            reservation_sudo = self._document_check_access(
+                "pms.reservation",
+                reservation_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        # for attachment in reservation_sudo.attachment_ids:
+        #     attachment.generate_access_token()
+        values = self._reservation_get_page_view_values(
+            reservation_sudo, access_token, **kw
+        )
+        return request.render("pms.portal_my_reservation_detail", values)
