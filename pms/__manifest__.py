@@ -68,6 +68,7 @@
         "views/ir_sequence_views.xml",
         "views/account_journal_views.xml",
         "views/folio_portal_templates.xml",
+        "views/reservation_portal_templates.xml",
         "wizards/wizard_reservation.xml",
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",

@@ -230,5 +230,12 @@
             <field name="groups" eval="[(4, ref('base.group_portal'))]" />
             <field name="perm_read" eval="True" />
         </record>
+        <record id="pms_reservation_rule_portal" model="ir.rule">
+            <field name="name">Portal Personal Reservation</field>
+            <field name="model_id" ref="model_pms_reservation" />
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
+        </record>
     </data>
 </odoo>
