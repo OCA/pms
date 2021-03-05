@@ -735,7 +735,7 @@ class PmsReservation(models.Model):
                 )
             elif leftover_unassigneds_count > 0:
                 for i in range(0, leftover_unassigneds_count):
-                    unassigned_checkins[i].sudo().unlink()
+                    reservation.checkin_partner_ids = [(2, unassigned_checkins[i].id)]
             elif reservation.adults > len(reservation.checkin_partner_ids):
                 checkins_lst = []
                 count_new_checkins = reservation.adults - len(
@@ -752,6 +752,8 @@ class PmsReservation(models.Model):
                         )
                     )
                 reservation.checkin_partner_ids = checkins_lst
+            elif reservation.adults == 0:
+                reservation.checkin_partner_ids = False
 
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
     def _compute_count_pending_arrival(self):
