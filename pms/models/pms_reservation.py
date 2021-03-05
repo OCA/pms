@@ -822,6 +822,11 @@ class PmsReservation(models.Model):
                 else False
             )
 
+    def _compute_access_url(self):
+        super(PmsReservation, self)._compute_access_url()
+        for reservation in self:
+            reservation.access_url = "/my/reservations/%s" % (reservation.id)
+
     def _search_left_for_checkin(self, operator, value):
         if operator not in ("=",):
             raise UserError(
