@@ -107,7 +107,6 @@ class PmsFolio(models.Model):
         copy=False,
     )
     currency_id = fields.Many2one(
-        "res.currency",
         related="pricelist_id.currency_id",
         string="Currency",
         readonly=True,
@@ -457,15 +456,14 @@ class PmsFolio(models.Model):
     @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
         for folio in self:
-            if folio.partner_id and folio.partner_id.property_product_pricelist:
-                pricelist_id = folio.partner_id.property_product_pricelist.id
-            else:
-                pricelist_id = self.env.user.pms_property_id.default_pricelist_id.id
-            if folio.pricelist_id.id != pricelist_id:
-                # TODO: Warning change de pricelist?
-                folio.pricelist_id = pricelist_id
             if folio.agency_id and folio.agency_id.apply_pricelist:
-                pricelist_id = folio.agency_id.property_product_pricelist.id
+                folio.pricelist_id = folio.agency_id.property_product_pricelist.id
+            elif folio.partner_id and folio.partner_id.property_product_pricelist:
+                folio.pricelist_id = folio.partner_id.property_product_pricelist.id
+            elif not folio.pricelist_id.id:
+                folio.pricelist_id = (
+                    self.env.user.pms_property_id.default_pricelist_id.id
+                )
 
     @api.depends("agency_id")
     def _compute_partner_id(self):

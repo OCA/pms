@@ -265,7 +265,6 @@ class PmsReservationLine(models.Model):
 
     @api.depends(
         "reservation_id",
-        "reservation_id.pricelist_id",
         "reservation_id.room_type_id",
         "reservation_id.reservation_type",
         "reservation_id.pms_property_id",
@@ -279,7 +278,7 @@ class PmsReservationLine(models.Model):
                 or not reservation.pms_property_id
             ):
                 line.price = 0
-            elif line._recompute_price():
+            elif not line.price or self._context.get("force_recompute"):
                 room_type_id = reservation.room_type_id.id
                 product = self.env["pms.room.type"].browse(room_type_id).product_id
                 partner = self.env["res.partner"].browse(reservation.partner_id.id)
@@ -311,25 +310,6 @@ class PmsReservationLine(models.Model):
                 line.occupies_availability = False
             else:
                 line.occupies_availability = True
-
-    def _recompute_price(self):
-        # REVIEW: Conditional to avoid overriding already calculated prices,
-        # I'm not sure it's the best way
-        self.ensure_one()
-        origin = self._origin.reservation_id
-        new = self.reservation_id
-        price_fields = [
-            "pricelist_id",
-            "room_type_id",
-            "reservation_type",
-            "pms_property_id",
-        ]
-        if (
-            any(origin[field] != new[field] for field in price_fields)
-            or self._origin.price == 0
-        ):
-            return True
-        return False
 
     @api.depends("move_line_ids", "move_line_ids.move_id.state")
     def _compute_invoiced(self):

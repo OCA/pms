@@ -286,9 +286,20 @@
                             string="Reservation Details"
                             name="reservation_details"
                         >
+                            <field name="show_update_pricelist" invisible="1" />
                             <field
                                 name="pricelist_id"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                                options="{'no_open':True,'no_create': True}"
+                            />
+                            <button
+                                name="update_prices"
+                                type="object"
+                                string=" Update Prices"
+                                help="Recompute all prices based on this pricelist"
+                                class="btn-link mb-1 px-0"
+                                icon="fa-refresh"
+                                confirm="This will update all unit prices based on the currently set pricelist."
+                                attrs="{'invisible': ['|', ('show_update_pricelist', '=', False), ('state', 'in', ['done'])]}"
                             />
                             <!--<field
                                 name="agency_id"
