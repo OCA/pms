@@ -598,7 +598,7 @@ class PmsReservation(models.Model):
                 elif reservation.agency_id:
                     reservation.partner_id = reservation.agency_id
                 else:
-                    reservation.partner_id = False
+                    raise ValidationError(_("Partner is requires on reservation"))
 
     @api.depends("partner_id")
     def _compute_partner_invoice_id(self):
@@ -1394,9 +1394,14 @@ class PmsReservation(models.Model):
     def create(self, vals):
         if "folio_id" in vals:
             folio = self.env["pms.folio"].browse(vals["folio_id"])
-        elif "partner_id" in vals:
+        elif "partner_id" in vals or "agency_id" in vals:
             folio_vals = {
-                "partner_id": int(vals.get("partner_id")),
+                "partner_id": int(vals.get("partner_id"))
+                if vals.get("partner_id")
+                else False,
+                "agency_id": int(vals.get("agency_id"))
+                if vals.get("agency_id")
+                else False,
             }
             # Create the folio in case of need
             # (To allow to create reservations direct)
