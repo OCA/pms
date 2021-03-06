@@ -148,6 +148,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r_test.flush()
@@ -186,6 +187,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r_test.flush()
@@ -218,6 +220,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
@@ -230,6 +233,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
@@ -242,6 +246,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
@@ -254,6 +259,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
@@ -268,6 +274,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r_test.flush()
@@ -302,6 +309,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
@@ -314,6 +322,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
@@ -326,6 +335,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
@@ -338,6 +348,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
@@ -350,6 +361,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r5.reservation_line_ids[0].room_id = self.room2.id
@@ -363,6 +375,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r_test.flush()
@@ -402,6 +415,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -416,6 +430,7 @@ class TestPmsReservations(TestHotel):
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                     "adults": 2,
                     "preferred_room_id": self.room1.id,
+                    "partner_id": self.env.ref("base.res_partner_12").id,
                 }
             )
             r_test.flush()
@@ -443,6 +458,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -458,6 +474,7 @@ class TestPmsReservations(TestHotel):
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                     "adults": 2,
                     "preferred_room_id": self.room1.id,
+                    "partner_id": self.env.ref("base.res_partner_12").id,
                 }
             )
             r_test.flush()
@@ -485,6 +502,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -499,6 +517,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room2
@@ -513,6 +532,7 @@ class TestPmsReservations(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room3
@@ -529,6 +549,7 @@ class TestPmsReservations(TestHotel):
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                     "adults": 2,
                     "room_type_id": self.room_type_double.id,
+                    "partner_id": self.env.ref("base.res_partner_12").id,
                 }
             )
 
@@ -547,6 +568,7 @@ class TestPmsReservations(TestHotel):
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                     "room_type_id": self.browse_ref("pms.pms_room_type_0").id,
+                    "partner_id": self.env.ref("base.res_partner_12").id,
                 }
             )
 

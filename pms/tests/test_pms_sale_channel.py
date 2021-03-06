@@ -32,11 +32,13 @@ class TestPmsSaleChannel(TestHotel):
         PmsSaleChannel = self.env["pms.sale.channel"]
         # ACT
         salechannel = PmsSaleChannel.create({"channel_type": "direct"})
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
         reservation = PmsReservation.create(
             {
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "channel_type_id": salechannel.id,
+                "partner_id": partner1.id,
             }
         )
         # ASSERT
