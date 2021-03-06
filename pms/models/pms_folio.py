@@ -461,9 +461,7 @@ class PmsFolio(models.Model):
             elif folio.partner_id and folio.partner_id.property_product_pricelist:
                 folio.pricelist_id = folio.partner_id.property_product_pricelist.id
             elif not folio.pricelist_id.id:
-                folio.pricelist_id = (
-                    self.env.user.pms_property_id.default_pricelist_id.id
-                )
+                folio.pricelist_id = folio.pms_property_id.default_pricelist_id.id
 
     @api.depends("agency_id")
     def _compute_partner_id(self):
@@ -822,9 +820,7 @@ class PmsFolio(models.Model):
     # ORM Overrides
     @api.model
     def create(self, vals):
-        # TODO: Make sequence from property, not company
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
-            # TODO: change for property env variable
             pms_property_id = (
                 self.env.user.pms_property_id.id
                 if "pms_property_id" not in vals
