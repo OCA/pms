@@ -822,13 +822,14 @@ class PmsFolio(models.Model):
     def create(self, vals):
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
             pms_property_id = (
-                self.env.user.pms_property_id.id
+                self.env.user.get_active_property_ids()[0]
                 if "pms_property_id" not in vals
                 else vals["pms_property_id"]
             )
-            vals["name"] = self.env["ir.sequence"].search(
-                [("pms_property_id", "=", pms_property_id)]
-            ).next_by_code("pms.folio") or _("New")
+            vals["name"] = self.env["ir.sequence"]._next_sequence_property(
+                pms_property_id=pms_property_id,
+                code="pms.folio",
+            )
         result = super(PmsFolio, self).create(vals)
         return result
 
