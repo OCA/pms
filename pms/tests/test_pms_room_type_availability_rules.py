@@ -118,6 +118,8 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "capacity": 1,
             }
         )
+        # partner
+        self.partner1 = self.env["res.partner"].create({"name": "Charles"})
 
     def create_scenario_multiproperty(self):
         self.create_common_scenario()
@@ -199,6 +201,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "pms_property_id": self.test_property.id,
                 "checkin": checkin,
                 "checkout": checkout,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -459,6 +462,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     "adults": 2,
                     "room_type_id": self.test_room_type_double.id,
                     "pricelist_id": self.test_pricelist1.id,
+                    "partner_id": self.partner1.id,
                 }
             )
 
@@ -493,6 +497,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
                 "preferred_room_id": self.test_room1_double.id,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -504,6 +509,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
                 "preferred_room_id": self.test_room2_double.id,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -521,6 +527,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     "adults": 2,
                     "room_type_id": self.test_room_type_double.id,
                     "pricelist_id": self.test_pricelist1.id,
+                    "partner_id": self.partner1.id,
                 }
             )
 
@@ -552,6 +559,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
                 "pricelist_id": self.test_pricelist1.id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -567,6 +575,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     "adults": 2,
                     "room_type_id": self.test_room_type_double.id,
                     "pricelist_id": self.test_pricelist1.id,
+                    "partner_id": self.partner1.id,
                 }
             )
 
@@ -603,6 +612,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
                 "pricelist_id": self.test_pricelist1.id,
+                "partner_id": self.partner1.id,
             }
         )
 

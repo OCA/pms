@@ -73,6 +73,8 @@ class TestPmsPricelistRules(common.TransactionCase):
             }
         )
 
+        self.partner1 = self.env["res.partner"].create({"name": "Carles"})
+
     @freeze_time("2000-01-01")
     def test_simple_price_without_items(self):
         # TEST CASE : no items applied
@@ -86,6 +88,7 @@ class TestPmsPricelistRules(common.TransactionCase):
                 "checkout": datetime.datetime.today() + datetime.timedelta(days=3),
                 "preferred_room_id": self.room.id,
                 "pms_property_id": self.property1.id,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -468,6 +471,7 @@ class TestPmsPricelistRules(common.TransactionCase):
                 # ACT
                 reservation = self.env["pms.reservation"].create(
                     {
+                        "partner_id": self.partner1.id,
                         "checkin": datetime.datetime.now(),
                         "checkout": datetime.datetime.now()
                         + datetime.timedelta(days=3),

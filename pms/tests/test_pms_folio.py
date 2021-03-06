@@ -80,17 +80,18 @@ class TestPmsFolio(TestHotel):
             }
         )
 
+        folio = PmsFolio.create(
+            {
+                "agency_id": agency.id,
+            }
+        )
+
         reservation = PmsReservation.create(
             {
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "agency_id": agency.id,
-            }
-        )
-        folio = PmsFolio.create(
-            {
-                "agency_id": agency.id,
-                "reservation_ids": [reservation.id],
+                "folio_id": folio.id,
             }
         )
 
