@@ -7,7 +7,7 @@ import time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_compare, float_is_zero
+from odoo.tools import float_compare, float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -58,10 +58,8 @@ class PmsReservation(models.Model):
     # Fields declaration
     name = fields.Text(
         "Reservation Description",
-        compute="_compute_name",
-        store=True,
         readonly=False,
-        # required=True,
+        required=True,
     )
     priority = fields.Integer(compute="_compute_priority", store="True", index=True)
 
@@ -484,26 +482,6 @@ class PmsReservation(models.Model):
     def _compute_pms_creation_date(self):
         for record in self:
             record.date_order = datetime.datetime.today()
-
-    @api.depends("checkin", "checkout", "room_type_id")
-    def _compute_name(self):
-        for reservation in self:
-            if (
-                reservation.room_type_id
-                and reservation.checkin
-                and reservation.checkout
-            ):
-                checkin_str = reservation.checkin.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                checkout_str = reservation.checkout.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                reservation.name = (
-                    reservation.room_type_id.name
-                    + ": "
-                    + checkin_str
-                    + " - "
-                    + checkout_str
-                )
-            else:
-                reservation.name = "/"
 
     @api.depends("checkin")
     def _compute_priority(self):

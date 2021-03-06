@@ -4,22 +4,25 @@
         <record model="ir.sequence" id="seq_pms_folio">
             <field name="name">PMS Folio</field>
             <field name="code">pms.folio</field>
-            <field name="prefix">F/</field>
-            <field name="padding">5</field>
+            <field name="prefix">F/%(y)s</field>
+            <field name="suffix">%(sec)s</field>
+            <field name="padding">4</field>
         </record>
 
         <record model="ir.sequence" id="seq_pms_reservation">
             <field name="name">PMS Reservation</field>
             <field name="code">pms.reservation</field>
-            <field name="prefix">R/</field>
-            <field name="padding">5</field>
+            <field name="prefix">R/%(y)s</field>
+            <field name="suffix">%(sec)s</field>
+            <field name="padding">4</field>
         </record>
 
         <record model="ir.sequence" id="seq_pms_checkin">
             <field name="name">PMS Checkin</field>
             <field name="code">pms.checkin.partner</field>
-            <field name="prefix">C/</field>
-            <field name="padding">5</field>
+            <field name="prefix">C/%(y)s</field>
+            <field name="suffix">%(sec)s</field>
+            <field name="padding">4</field>
         </record>
     </data>
 </odoo>
