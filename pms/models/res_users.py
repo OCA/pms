@@ -8,11 +8,6 @@ from odoo.http import request
 class ResUsers(models.Model):
     _inherit = "res.users"
 
-    # Default Methods ang Gets
-    @api.model
-    def _get_default_pms_property(self):
-        return self.env.user.pms_property_id
-
     # Fields declaration
     pms_property_id = fields.Many2one(
         "pms.property",
