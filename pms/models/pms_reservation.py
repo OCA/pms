@@ -44,30 +44,6 @@ class PmsReservation(models.Model):
         else:
             return fields.Date.today() + datetime.timedelta(1)
 
-    def _get_default_arrival_hour(self):
-        folio = False
-        default_arrival_hour = self.pms_property_id.default_arrival_hour
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].arrival_hour
-        else:
-            return default_arrival_hour
-
-    def _get_default_departure_hour(self):
-        folio = False
-        default_departure_hour = self.pms_property_id.default_departure_hour
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].departure_hour
-        else:
-            return default_departure_hour
-
     def _get_default_segmentation(self):
         folio = False
         segmentation_ids = False
@@ -145,7 +121,6 @@ class PmsReservation(models.Model):
     )
     partner_invoice_id = fields.Many2one(
         "res.partner",
-        string="Invoice Address",
         help="Invoice address for current reservation.",
         compute="_compute_partner_invoice_id",
         store=True,
@@ -349,13 +324,17 @@ class PmsReservation(models.Model):
     )
     arrival_hour = fields.Char(
         "Arrival Hour",
-        default=_get_default_arrival_hour,
-        help="Default Arrival Hour (HH:MM)",
+        compute="_compute_arrival_hour",
+        readonly=False,
+        store=True,
+        help="Arrival Hour (HH:MM)",
     )
     departure_hour = fields.Char(
         "Departure Hour",
-        default=_get_default_departure_hour,
-        help="Default Departure Hour (HH:MM)",
+        compute="_compute_departure_hour",
+        readonly=False,
+        store=True,
+        help="Departure Hour (HH:MM)",
     )
     checkin_datetime = fields.Datetime(
         "Exact Arrival",
@@ -908,6 +887,42 @@ class PmsReservation(models.Model):
                 )
                 >= 1
             )
+
+    @api.depends("pms_property_id", "folio_id")
+    def _compute_arrival_hour(self):
+        for record in self:
+            if not record.arrival_hour and record.pms_property_id:
+                default_arrival_hour = record.pms_property_id.default_arrival_hour
+                if (
+                    record.folio_id
+                    and record.folio_id.reservation_ids
+                    and record.folio_id.reservation_ids[0].arrival_hour
+                ):
+                    record.arrival_hour = record.folio_id.reservation_ids[
+                        0
+                    ].arrival_hour
+                else:
+                    record.arrival_hour = default_arrival_hour
+            elif not record.arrival_hour:
+                record.arrival_hour = False
+
+    @api.depends("pms_property_id", "folio_id")
+    def _compute_departure_hour(self):
+        for record in self:
+            if not record.departure_hour and record.pms_property_id:
+                default_departure_hour = record.pms_property_id.default_departure_hour
+                if (
+                    record.folio_id
+                    and record.folio_id.reservation_ids
+                    and record.folio_id.reservation_ids[0].departure_hour
+                ):
+                    record.departure_hour = record.folio_id.reservation_ids[
+                        0
+                    ].departure_hour
+                else:
+                    record.departure_hour = default_departure_hour
+            elif not record.departure_hour:
+                record.departure_hour = False
 
     def _compute_checkin_today(self):
         for record in self:
