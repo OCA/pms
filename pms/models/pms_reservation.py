@@ -46,8 +46,7 @@ class PmsReservation(models.Model):
 
     def _get_default_arrival_hour(self):
         folio = False
-        # TODO: Change by property env variable (like company)
-        default_arrival_hour = self.env.user.pms_property_id.default_arrival_hour
+        default_arrival_hour = self.pms_property_id.default_arrival_hour
         if "folio_id" in self._context:
             folio = self.env["pms.folio"].search(
                 [("id", "=", self._context["folio_id"])]
@@ -59,8 +58,7 @@ class PmsReservation(models.Model):
 
     def _get_default_departure_hour(self):
         folio = False
-        # TODO: Change by property env variable (like company)
-        default_departure_hour = self.env.user.pms_property_id.default_departure_hour
+        default_departure_hour = self.pms_property_id.default_departure_hour
         if "folio_id" in self._context:
             folio = self.env["pms.folio"].search(
                 [("id", "=", self._context["folio_id"])]
@@ -723,7 +721,7 @@ class PmsReservation(models.Model):
                 )
             elif not reservation.pricelist_id.id:
                 reservation.pricelist_id = (
-                    self.env.user.pms_property_id.default_pricelist_id.id
+                    reservation.pms_property_id.default_pricelist_id.id
                 )
 
     @api.depends("pricelist_id")
@@ -1542,7 +1540,7 @@ class PmsReservation(models.Model):
         self.ensure_one()
         pricelist = self.pricelist_id
         if pricelist and pricelist.cancelation_rule_id:
-            tz_property = self.env.user.pms_property_id.tz
+            tz_property = self.pms_property_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_property))
             days_diff = (
                 fields.Date.from_string(self.checkin) - fields.Date.from_string(today)

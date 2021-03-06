@@ -17,7 +17,7 @@ class PmsRoomTypeAvailability(models.Model):
     # Default methods
     @api.model
     def _get_default_pms_property(self):
-        return self.env.user.pms_property_id or None
+        return self.env.user.get_active_property_ids()[0] or None
 
     # Fields declaration
     name = fields.Char("Availability Plan Name", required=True)
