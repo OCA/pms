@@ -69,6 +69,40 @@ class TestPmsReservations(TestHotel):
         )
         self.demo_user = self.env.ref("base.user_admin")
 
+    def create_multiproperty_scenario(self):
+        self.property1 = self.env["pms.property"].create(
+            {
+                "name": "Property_1",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
+        self.property2 = self.env["pms.property"].create(
+            {
+                "name": "Property_2",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
+        self.property3 = self.env["pms.property"].create(
+            {
+                "name": "Property_3",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+        self.room_type_class = self.env["pms.room.type.class"].create(
+            {"name": "Room Class", "code_class": "RCTEST"}
+        )
+
+        self.board_service = self.env["pms.board.service"].create(
+            {
+                "name": "Board Service Test",
+            }
+        )
+
     @freeze_time("1980-11-01")
     def test_create_reservation_start_date(self):
         # TEST CASE
@@ -788,3 +822,84 @@ class TestPmsReservations(TestHotel):
         self.assertEqual(
             r1.state, "done", "The reservation status should be done after checkout."
         )
+
+    def test_multiproperty_checks(self):
+        """
+        # TEST CASE
+        Multiproperty checks in reservation
+        +---------------+------+------+------+----+----+
+        |  reservation  |           property1          |
+        +---------------+------+------+------+----+----+
+        |      room     |           property2          |
+        |   room_type   |      property2, property3    |
+        | board_service |      property2, property3    |
+        |   pricelist   |      property2, property3    |
+        +---------------+------+------+------+----+----+
+        """
+        # ARRANGE
+        self.create_multiproperty_scenario()
+        host = self.env["res.partner"].create(
+            {
+                "name": "Miguel",
+                "phone": "654667733",
+                "email": "miguel@example.com",
+            }
+        )
+        self.reservation_test = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "pms_property_id": self.property1.id,
+                "partner_id": host.id,
+            }
+        )
+
+        room_type_test = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [
+                    (4, self.property3.id),
+                    (4, self.property2.id),
+                ],
+                "name": "Single",
+                "code_type": "SIN",
+                "class_id": self.room_type_class.id,
+                "list_price": 30,
+            }
+        )
+
+        room = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.property2.id,
+                "room_type_id": room_type_test.id,
+            }
+        )
+
+        pricelist = self.env["product.pricelist"].create(
+            {
+                "name": "pricelist_test",
+                "pms_property_ids": [
+                    (4, self.property2.id),
+                    (4, self.property3.id),
+                ],
+            }
+        )
+
+        board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_board_service_id": self.board_service.id,
+                "pms_room_type_id": room_type_test.id,
+                "pms_property_ids": [self.property2.id, self.property3.id],
+            }
+        )
+        test_cases = [
+            {"preferred_room_id": room.id},
+            {"room_type_id": room_type_test.id},
+            {"pricelist_id": pricelist.id},
+            {"board_service_room_id": board_service_room_type.id},
+        ]
+
+        for test_case in test_cases:
+            with self.subTest(k=test_case):
+                with self.assertRaises(ValidationError):
+                    self.reservation_test.write(test_case)

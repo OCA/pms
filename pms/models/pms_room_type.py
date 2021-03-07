@@ -137,7 +137,7 @@ class PmsRoomType(models.Model):
                 )
         return self.browse(list(res.values()))
 
-    @api.constrains("pms_property_ids")
+    @api.constrains("pms_property_ids", "class_id")
     def _check_integrity_property_class(self):
         for record in self:
             if record.pms_property_ids and record.class_id.pms_property_ids:
