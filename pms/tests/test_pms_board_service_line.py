@@ -31,7 +31,6 @@ class TestPmsBoardService(TestHotel):
         self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Board Service",
-                "price_type": "fixed",
             }
         )
         with self.assertRaises(ValidationError):

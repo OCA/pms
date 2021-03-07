@@ -758,14 +758,15 @@ class TestRoomTypeCodePropertyUniqueness(TestRoomType):
             }
         )
         self.board_service = self.env["pms.board.service"].create(
-            {"name": "Board Service", "price_type": "fixed"}
+            {
+                "name": "Board Service",
+            }
         )
         with self.assertRaises(ValidationError):
             self.env["pms.board.service.room.type"].create(
                 {
                     "pms_board_service_id": self.board_service.id,
                     "pms_room_type_id": self.room_type.id,
-                    "price_type": "fixed",
                     "pricelist_id": self.env.ref("product.list0").id,
                     "pms_property_ids": self.property2,
                 }

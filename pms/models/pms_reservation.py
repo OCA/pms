@@ -57,9 +57,8 @@ class PmsReservation(models.Model):
 
     # Fields declaration
     name = fields.Text(
-        "Reservation Description",
-        readonly=False,
-        required=True,
+        "Reservation Id",
+        readonly=True,
     )
     priority = fields.Integer(compute="_compute_priority", store="True", index=True)
 
@@ -640,8 +639,6 @@ class PmsReservation(models.Model):
                     reservation.partner_id = reservation.folio_id.partner_id
                 elif reservation.agency_id:
                     reservation.partner_id = reservation.agency_id
-                else:
-                    raise ValidationError(_("Partner is requires on reservation"))
 
     @api.depends("partner_id")
     def _compute_partner_invoice_id(self):
