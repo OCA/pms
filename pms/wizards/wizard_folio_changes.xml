@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="wizard_folio_changes_view_form" model="ir.ui.view">
+        <field name="name">wizard.folio.changes.view.form</field>
+        <field name="model">wizard.folio.changes</field>
+        <field name="arch" type="xml">
+            <form string="Folio Changes">
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>All days</th>
+                                    <th>Sunday</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                    <th>Saturday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <field
+                                            name="apply_on_all_week"
+                                            widget="boolean_toggle"
+                                        />
+                                    </td>
+                                    <td>
+                                        <field
+                                            name="apply_on_sunday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
+                                    </td>
+                                    <td>
+                                        <field
+                                            name="apply_on_monday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
+                                    </td>
+                                    <td>
+                                        <field
+                                            name="apply_on_tuesday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
+                                    </td>
+                                    <td>
+                                        <field
+                                            name="apply_on_wednesday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
+                                    </td>
+                                    <td>
+                                        <field
+                                            name="apply_on_thursday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
+                                    </td>
+                                    <td>
+                                        <field
+                                            name="apply_on_friday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
+                                    </td>
+                                    <td>
+                                        <field
+                                            name="apply_on_saturday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5 ">
+                        <group>
+                            <field name="folio_id" invisible="1" />
+                            <field name="allowed_reservation_ids" invisible="1" />
+                            <field
+                                name="reservation_ids"
+                                widget="many2many_tags"
+                                nolabel="1"
+                            />
+                        </group>
+                    </div>
+                    <div class="col-4">
+                        <group>
+                            <field name="new_price" />
+                            <field name="new_discount" />
+                        </group>
+                    </div>
+                </div>
+                <footer>
+                    <button
+                        type="object"
+                        class="btn-primary"
+                        id="payment"
+                        name="button_change"
+                        string="Change"
+                    />
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_folio_changes" model="ir.actions.act_window">
+        <field name="name">Folio Changes</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wizard.folio.changes</field>
+        <field name="view_id" ref="wizard_folio_changes_view_form" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

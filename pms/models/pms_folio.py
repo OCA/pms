@@ -767,6 +767,13 @@ class PmsFolio(models.Model):
             action = {"type": "ir.actions.act_window_close"}
         return action
 
+    def folio_multi_changes(self):
+        self.ensure_one()
+        reservation_ids = self.reservation_ids.ids
+        action = self.env.ref("pms.action_folio_changes").sudo().read()[0]
+        action["context"] = ({"default_reservation_ids": [(6, 0, reservation_ids)]},)
+        return action
+
     # def action_return_payments(self):
     #     self.ensure_one()
     #     return_move_ids = []
