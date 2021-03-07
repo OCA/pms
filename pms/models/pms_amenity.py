@@ -12,9 +12,17 @@ class PmsRoomAmenity(models.Model):
     # Fields declaration
     name = fields.Char("Amenity Name", translate=True, required=True)
     pms_property_ids = fields.Many2many(
-        "pms.property", string="Properties", required=False, ondelete="restrict"
+        "pms.property",
+        string="Properties",
+        required=False,
+        ondelete="restrict",
     )
-    room_amenity_type_id = fields.Many2one("pms.amenity.type", "Amenity Category")
+    room_amenity_type_id = fields.Many2one(
+        "pms.amenity.type",
+        "Amenity Category",
+        domain="['|', ('pms_property_ids', '=', False),('pms_property_ids', 'in', "
+        "pms_property_ids)]",
+    )
     default_code = fields.Char("Internal Reference")
     active = fields.Boolean("Active", default=True)
 
@@ -51,4 +59,4 @@ class PmsRoomAmenity(models.Model):
             if rec.pms_property_ids and rec.allowed_property_ids:
                 for prop in rec.pms_property_ids:
                     if prop not in rec.allowed_property_ids:
-                        raise ValidationError(_("Property not allowed"))
+                        raise ValidationError(_("Property not allowed in amenity type"))

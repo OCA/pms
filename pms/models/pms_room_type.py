@@ -45,14 +45,32 @@ class PmsRoomType(models.Model):
         delegate=True,
         ondelete="cascade",
     )
-    room_ids = fields.One2many("pms.room", "room_type_id", "Rooms")
+    room_ids = fields.One2many(
+        "pms.room",
+        "room_type_id",
+        "Rooms",
+        domain="["
+        "'|', "
+        "('pms_property_id', '=', False), "
+        "('pms_property_id','in', pms_property_ids)"
+        "]",
+    )
     class_id = fields.Many2one(
         "pms.room.type.class",
         "Property Type Class",
         required=True,
+        domain="["
+        "'|', "
+        "('pms_property_ids', '=', False), "
+        "('pms_property_ids', 'in', pms_property_ids)"
+        "]",
     )
     board_service_room_type_ids = fields.One2many(
-        "pms.board.service.room.type", "pms_room_type_id", string="Board Services"
+        "pms.board.service.room.type",
+        "pms_room_type_id",
+        string="Board Services",
+        domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', "
+        "pms_property_ids)]",
     )
     room_amenity_ids = fields.Many2many(
         "pms.amenity",
@@ -61,6 +79,11 @@ class PmsRoomType(models.Model):
         "amenity_ids",
         string="Room Type Amenities",
         help="List of Amenities.",
+        domain="["
+        "'|', "
+        "('pms_property_ids', '=', False), "
+        "('pms_property_ids', 'in', pms_property_ids)"
+        "]",
     )
     code_type = fields.Char(
         "Code",
@@ -168,6 +191,37 @@ class PmsRoomType(models.Model):
                     )
                     if other and other != rec:
                         raise ValidationError(msg)
+
+    @api.constrains("room_amenity_ids", "pms_property_ids")
+    def _check_integrity_property_amenity(self):
+        for record in self:
+            if record.room_amenity_ids.pms_property_ids and record.pms_property_ids:
+                for pms_property in record.pms_property_ids:
+                    if pms_property not in record.room_amenity_ids.pms_property_ids:
+                        raise ValidationError(_("Property not allowed in amenity"))
+
+    @api.constrains("room_ids", "pms_property_ids")
+    def _check_integrity_property_room(self):
+        for record in self:
+            if record.room_ids and record.pms_property_ids:
+                for room in record.room_ids:
+                    if room.pms_property_id not in record.pms_property_ids:
+                        raise ValidationError(_("Property not allowed in room"))
+
+    @api.constrains("board_service_room_type_ids", "pms_property_ids")
+    def _check_integrity_property_board_service_room_type(self):
+        for record in self:
+            if record.board_service_room_type_ids and record.pms_property_ids:
+                for board_service_room_type in record.board_service_room_type_ids:
+                    if board_service_room_type.pms_property_ids:
+                        for pms_property in record.pms_property_ids:
+                            if (
+                                pms_property
+                                not in board_service_room_type.pms_property_ids
+                            ):
+                                raise ValidationError(
+                                    _("Property not allowed in board service room type")
+                                )
 
     # ORM Overrides
     @api.model

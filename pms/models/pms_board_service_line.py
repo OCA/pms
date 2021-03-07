@@ -1,6 +1,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PmsBoardServiceLine(models.Model):
@@ -29,3 +30,11 @@ class PmsBoardServiceLine(models.Model):
     def onchange_product_id(self):
         if self.product_id:
             self.update({"amount": self.product_id.list_price})
+
+    @api.constrains("pms_property_ids", "product_id")
+    def _check_property_integrity(self):
+        for record in self:
+            if record.pms_property_ids and record.product_id.pms_property_ids:
+                for pms_property in record.pms_property_ids:
+                    if pms_property not in record.product_id.pms_property_ids:
+                        raise ValidationError(_("Property not allowed in product"))
