@@ -9,8 +9,19 @@ from .common import TestHotel
 
 @freeze_time("2010-01-01")
 class TestPmsSaleChannel(TestHotel):
+    def create_common_scenario(self):
+        # create a property
+        self.property = self.env["pms.property"].create(
+            {
+                "name": "MY PROPERTY TEST",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
     def test_not_agency_as_agency(self):
         # ARRANGE
+        self.create_common_scenario()
         PmsReservation = self.env["pms.reservation"]
         not_agency = self.env["res.partner"].create(
             {"name": "partner1", "is_agency": False}
@@ -23,11 +34,13 @@ class TestPmsSaleChannel(TestHotel):
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                     "agency_id": not_agency.id,
+                    "pms_property_id": self.property.id,
                 }
             )
 
     def test_channel_type_id_only_directs(self):
         # ARRANGE
+        self.create_common_scenario()
         PmsReservation = self.env["pms.reservation"]
         PmsSaleChannel = self.env["pms.sale.channel"]
         # ACT
@@ -39,6 +52,7 @@ class TestPmsSaleChannel(TestHotel):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "channel_type_id": salechannel.id,
                 "partner_id": partner1.id,
+                "pms_property_id": self.property.id,
             }
         )
         # ASSERT
@@ -50,6 +64,7 @@ class TestPmsSaleChannel(TestHotel):
 
     def test_agency_id_is_agency(self):
         # ARRANGE
+        self.create_common_scenario()
         PmsReservation = self.env["pms.reservation"]
         PmsSaleChannel = self.env["pms.sale.channel"]
         salechannel = PmsSaleChannel.create(
@@ -68,6 +83,7 @@ class TestPmsSaleChannel(TestHotel):
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "agency_id": agency.id,
+                "pms_property_id": self.property.id,
             }
         )
         # ASSERT

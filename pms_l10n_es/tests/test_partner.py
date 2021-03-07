@@ -9,8 +9,18 @@ from odoo.tests import common
 
 @freeze_time("2011-03-16")
 class TestResPartner(common.SavepointCase):
+    def create_common_scenario(self):
+        self.property_test = self.property = self.env["pms.property"].create(
+            {
+                "name": "My property test",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
     def test_check_precheckin_state(self):
         # arrange
+        self.create_common_scenario()
         today = fields.date.today()
         partner = self.env["res.partner"].create(
             {
@@ -29,6 +39,7 @@ class TestResPartner(common.SavepointCase):
             "checkout": today + datetime.timedelta(days=3),
             "partner_id": partner.id,
             "adults": 1,
+            "pms_property_id": self.property_test.id,
         }
         # action
         reservation = self.env["pms.reservation"].create(reservation_vals)
@@ -46,8 +57,9 @@ class TestResPartner(common.SavepointCase):
         )
 
     def test_error_action_on_board(self):
-        today = fields.date.today()
         # arrange
+        self.create_common_scenario()
+        today = fields.date.today()
         partner = self.env["res.partner"].create(
             {
                 "name": "partner1",
@@ -58,6 +70,7 @@ class TestResPartner(common.SavepointCase):
             "checkout": today + datetime.timedelta(days=3),
             "partner_id": partner.id,
             "adults": 1,
+            "pms_property_id": self.property_test.id,
         }
         # action
         reservation = self.env["pms.reservation"].create(reservation_vals)
@@ -74,7 +87,7 @@ class TestResPartner(common.SavepointCase):
 
     def test_right_action_on_board(self):
         # arrange
-        # arrange
+        self.create_common_scenario()
         today = fields.date.today()
         partner = self.env["res.partner"].create(
             {
@@ -93,6 +106,7 @@ class TestResPartner(common.SavepointCase):
             "checkout": today + datetime.timedelta(days=3),
             "partner_id": partner.id,
             "adults": 1,
+            "pms_property_id": self.property_test.id,
         }
         # action
         reservation = self.env["pms.reservation"].create(reservation_vals)
