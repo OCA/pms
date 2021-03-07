@@ -32,14 +32,29 @@ class PmsRoom(models.Model):
         "pms.property",
         required=True,
         ondelete="restrict",
-        default=lambda self: self.env.user.get_active_property_ids()[0],
+        default=lambda self: self.env.user.active_property_ids[0],
     )
     room_type_id = fields.Many2one(
-        "pms.room.type", "Property Room Type", required=True, ondelete="restrict"
+        "pms.room.type",
+        "Property Room Type",
+        required=True,
+        ondelete="restrict",
+        domain=[
+            "|",
+            ("pms_property_ids", "=", False),
+            (pms_property_id, "in", "pms_property_ids"),
+        ],
     )
     shared_room_id = fields.Many2one("pms.shared.room", "Shared Room", default=False)
     floor_id = fields.Many2one(
-        "pms.floor", "Ubication", help="At which floor the room is located."
+        "pms.floor",
+        "Ubication",
+        help="At which floor the room is located.",
+        domain=[
+            "|",
+            ("pms_property_ids", "=", False),
+            (pms_property_id, "in", "pms_property_ids"),
+        ],
     )
     capacity = fields.Integer("Capacity")
     to_be_cleaned = fields.Boolean("To be Cleaned", default=False)
@@ -111,7 +126,9 @@ class PmsRoom(models.Model):
         for rec in self:
             if rec.pms_property_id and rec.allowed_property_ids:
                 if rec.pms_property_id.id not in rec.allowed_property_ids.ids:
-                    raise ValidationError(_("Property not allowed"))
+                    raise ValidationError(
+                        _("Property not allowed in room type or in floor")
+                    )
 
     # Business methods
 

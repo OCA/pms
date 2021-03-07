@@ -21,7 +21,13 @@ class ProductPricelist(models.Model):
         "pms.property", string="Properties", required=False, ondelete="restrict"
     )
     cancelation_rule_id = fields.Many2one(
-        "pms.cancelation.rule", string="Cancelation Policy"
+        "pms.cancelation.rule",
+        string="Cancelation Policy",
+        domain=[
+            "|",
+            ("pms_property_ids", "=", False),
+            ("pms_property_ids", "in", pms_property_ids),
+        ],
     )
     pricelist_type = fields.Selection(
         [("daily", "Daily Plan")], string="Pricelist Type", default="daily"
@@ -34,6 +40,11 @@ class ProductPricelist(models.Model):
         comodel_name="pms.room.type.availability.plan",
         string="Availability Plan",
         ondelete="restrict",
+        domain=[
+            "|",
+            ("pms_property_ids", "=", False),
+            ("pms_property_ids", "in", pms_property_ids),
+        ],
     )
 
     # Constraints and onchanges
@@ -161,4 +172,16 @@ class ProductPricelist(models.Model):
             if rec.pms_property_ids:
                 for p in rec.pms_property_ids:
                     if p.id not in rec.cancelation_rule_id.pms_property_ids.ids:
-                        raise ValidationError(_("Property not allowed"))
+                        raise ValidationError(
+                            _("Property not allowed in cancelation rule")
+                        )
+
+    @api.constrains("pms_property_ids", "availability_plan_id")
+    def _check_availability_plan_property_integrity(self):
+        for record in self:
+            if record.pms_property_ids and record.availability_plan_id.pms_property_ids:
+                for pms_property in record.pms_property_ids:
+                    if pms_property not in record.availability_plan_id.pms_property_ids:
+                        raise ValidationError(
+                            _("Property not allowed availability plan")
+                        )
