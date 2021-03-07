@@ -69,6 +69,7 @@ class PmsReservation(models.Model):
         ondelete="restrict",
         domain="[('id', 'in', allowed_room_ids)]",
         copy=False,
+        tracking=True,
     )
     allowed_room_ids = fields.Many2many(
         "pms.room",
@@ -88,6 +89,7 @@ class PmsReservation(models.Model):
         compute="_compute_board_service_room_id",
         store=True,
         readonly=False,
+        tracking=True,
     )
     room_type_id = fields.Many2one(
         "pms.room.type",
@@ -111,11 +113,13 @@ class PmsReservation(models.Model):
         related="folio_id.agency_id",
         readonly=False,
         store=True,
+        tracking=True,
     )
     channel_type_id = fields.Many2one(
         related="folio_id.channel_type_id",
         store=True,
         readonly=False,
+        tracking=True,
     )
     partner_invoice_id = fields.Many2one(
         "res.partner",
@@ -154,6 +158,7 @@ class PmsReservation(models.Model):
         compute="_compute_pricelist_id",
         store=True,
         readonly=False,
+        tracking=True,
     )
     show_update_pricelist = fields.Boolean(
         string="Has Pricelist Changed",
@@ -167,6 +172,7 @@ class PmsReservation(models.Model):
         compute="_compute_commission_percent",
         store=True,
         readonly=False,
+        tracking=True,
     )
     commission_amount = fields.Float(
         string="Commission amount",
@@ -315,10 +321,18 @@ class PmsReservation(models.Model):
     )
     out_service_description = fields.Text("Cause of out of service")
     checkin = fields.Date(
-        "Check In", required=True, default=_get_default_checkin, copy=False
+        "Check In",
+        required=True,
+        default=_get_default_checkin,
+        copy=False,
+        tracking=True,
     )
     checkout = fields.Date(
-        "Check Out", required=True, default=_get_default_checkout, copy=False
+        "Check Out",
+        required=True,
+        default=_get_default_checkout,
+        copy=False,
+        tracking=True,
     )
     arrival_hour = fields.Char(
         "Arrival Hour",
@@ -365,11 +379,15 @@ class PmsReservation(models.Model):
     detail_origin = fields.Char(
         "Detail Origin", compute="_compute_detail_origin", store=True
     )
-    folio_pending_amount = fields.Monetary(related="folio_id.pending_amount")
+    folio_pending_amount = fields.Monetary(
+        related="folio_id.pending_amount",
+        tracking=True,
+    )
     folio_payment_state = fields.Selection(
         related="folio_id.payment_state",
         string="Payment State",
         store=True,
+        tracking=True,
     )
     shared_folio = fields.Boolean(compute="_compute_shared")
     # Used to notify is the reservation folio has other reservations/services
@@ -445,6 +463,7 @@ class PmsReservation(models.Model):
         readonly=True,
         store=True,
         compute="_compute_amount_reservation",
+        tracking=True,
     )
     price_tax = fields.Float(
         string="Taxes Amount",
@@ -470,6 +489,7 @@ class PmsReservation(models.Model):
         compute="_compute_discount",
         readonly=False,
         store=True,
+        tracking=True,
     )
     date_order = fields.Date(
         compute="_compute_pms_creation_date",

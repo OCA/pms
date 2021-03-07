@@ -74,6 +74,7 @@
         "wizards/wizard_advanced_filters.xml",
         "wizards/wizard_folio.xml",
         "wizards/wizard_invoice_filter_days.xml",
+        "wizards/wizard_folio_changes.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",
