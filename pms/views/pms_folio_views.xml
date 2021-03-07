@@ -102,6 +102,14 @@
                                 string="Invoices"
                             />
                         </button>
+                        <button
+                            name="folio_multi_changes"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-calculator"
+                        >
+                            <span class="o_stat_text">Change Prices</span>
+                        </button>
                     </div>
                     <widget
                         name="web_ribbon"
@@ -219,6 +227,7 @@
                         <field name="currency_id" invisible="1" />
                         <!--<field name="refund_amount" invisible="1" />-->
                         <field name="invoices_paid" invisible="1" />
+                        <field name="number_of_rooms" invisible="1" />
                     </group>
                     <notebook colspan="4" col="1">
                         <page string="Sale Lines">
