@@ -173,6 +173,7 @@
                         OverBooking!
                     </span>
                     <h1>
+                        <field nolabel="1" colspan="2" name="name" />
                         <field
                             name="room_type_id"
                             placeholder="Room Type"
@@ -269,12 +270,6 @@
                                 name="partner_internal_comment"
                                 string="Partner Note"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
-                            />
-                            <field
-                                nolabel="1"
-                                colspan="2"
-                                placeholder="Description in Guest Documents"
-                                name="name"
                             />
                             <field name="nights" />
                             <field placeholder="Arrival Hour" name="arrival_hour" />

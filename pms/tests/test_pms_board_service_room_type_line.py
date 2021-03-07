@@ -25,7 +25,9 @@ class TestPmsBoardServiceRoomTypeLine(TestHotel):
             }
         )
         self.board_service = self.env["pms.board.service"].create(
-            {"name": "Board Service", "price_type": "fixed"}
+            {
+                "name": "Board Service",
+            }
         )
         self.room_type_class = self.env["pms.room.type.class"].create(
             {
@@ -45,7 +47,6 @@ class TestPmsBoardServiceRoomTypeLine(TestHotel):
             {
                 "pms_board_service_id": self.board_service.id,
                 "pms_room_type_id": self.room_type.id,
-                "price_type": "fixed",
                 "pms_property_ids": self.property1,
             }
         )
