@@ -132,6 +132,52 @@ class TestPmsFolioInvoice(TestHotel):
             "The status after an invoicing is not correct",
         )
 
+    def test_invoice_partial_folio_diferent_partners(self):
+        # ARRANGE
+        self.create_common_scenario()
+        r1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+            }
+        )
+        dict_lines = dict()
+        # qty to 1 to 1st folio sale line
+        dict_lines[
+            r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
+        ] = 1
+        r1.folio_id._create_invoices(
+            lines_to_invoice=dict_lines,
+            partner_invoice_id=self.env.ref("base.res_partner_1"),
+        )
+
+        # test does not work without invalidating cache
+        self.env["account.move"].invalidate_cache()
+
+        self.assertNotEqual(
+            "invoiced",
+            r1.folio_id.invoice_status,
+            "The status after a partial invoicing is not correct",
+        )
+
+        # qty to 2 to 1st folio sale line
+        dict_lines[
+            r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
+        ] = 2
+        r1.folio_id._create_invoices(
+            lines_to_invoice=dict_lines,
+            partner_invoice_id=self.env.ref("base.res_partner_12"),
+        )
+        self.assertNotEqual(
+            r1.folio_id.move_ids.mapped("partner_id")[0],
+            r1.folio_id.move_ids.mapped("partner_id")[1],
+            "The status after an invoicing is not correct",
+        )
+
     def test_invoice_partial_folio_wrong_qtys(self):
         # ARRANGE
         self.create_common_scenario()

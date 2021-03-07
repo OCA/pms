@@ -212,18 +212,22 @@ class PmsFolio(models.Model):
         tracking=True,
         compute="_compute_amount",
     )
-    partner_invoice_id = fields.Many2one(
-        "res.partner",
-        string="Invoice Address",
-        compute="_compute_partner_invoice_id",
+    partner_invoice_ids = fields.Many2many(
+        string="Billing addresses",
+        comodel_name="res.partner",
+        relation="pms_folio_partner_rel",
+        column1="folio",
+        column2="partner",
+        compute="_compute_partner_invoice_ids",
         store=True,
         readonly=False,
         help="Invoice address for current group.",
     )
-    partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
-    partner_invoice_country_id = fields.Many2one(
-        related="partner_invoice_id.country_id"
-    )
+    # REVIEW THIS
+    # partner_invoice_state_id = fields.Many2one(related="partner_invoice_id.state_id")
+    # partner_invoice_country_id = fields.Many2one(
+    #     related="partner_invoice_id.country_id"
+    # )
     fiscal_position_id = fields.Many2one(
         "account.fiscal.position", string="Fiscal Position"
     )
@@ -477,11 +481,12 @@ class PmsFolio(models.Model):
             folio.user_id = (folio.partner_id.user_id.id or self.env.uid,)
 
     @api.depends("partner_id")
-    def _compute_partner_invoice_id(self):
-        self.partner_invoice_id = False
+    def _compute_partner_invoice_ids(self):
         for folio in self:
+            folio.partner_invoice_ids = False
             addr = folio.partner_id.address_get(["invoice"])
-            folio.partner_invoice_id = addr["invoice"]
+            if not addr["invoice"] in folio.partner_invoice_ids.ids:
+                folio.partner_invoice_ids = [(4, addr["invoice"])]
 
     @api.depends("partner_id")
     def _compute_payment_term_id(self):
@@ -893,7 +898,7 @@ class PmsFolio(models.Model):
                 )
                 record.checkin_partner_pending_count = sum(mapped_checkin_partner_count)
 
-    def _prepare_invoice(self):
+    def _prepare_invoice(self, partner_invoice_id=False):
         """
         Prepare the dict of values to create the new invoice for a folio.
         This method may be overridden to implement custom invoice generation
@@ -920,7 +925,9 @@ class PmsFolio(models.Model):
             # 'medium_id': self.medium_id.id,
             # 'source_id': self.source_id.id,
             "invoice_user_id": self.user_id and self.user_id.id,
-            "partner_id": self.partner_invoice_id.id,
+            "partner_id": partner_invoice_id
+            if partner_invoice_id
+            else self.partner_invoice_ids[0],
             "partner_bank_id": self.company_id.partner_id.bank_ids[:1].id,
             "journal_id": journal.id,  # company comes from the journal
             "invoice_origin": self.name,
@@ -994,12 +1001,13 @@ class PmsFolio(models.Model):
         final=False,
         date=None,
         lines_to_invoice=False,
+        partner_invoice_id=False,
     ):
         """
         Create the invoice associated to the Folio.
         :param grouped: if True, invoices are grouped by Folio id.
         If False, invoices are grouped by
-                        (partner_invoice_id, currency)
+                        (partner_invoice_ids, currency)
         :param final: if True, refunds will be generated if necessary
         :param lines_to_invoice: invoice specific lines dict(key=id, value=qty).
             if False, invoice all
@@ -1019,7 +1027,9 @@ class PmsFolio(models.Model):
                     0 if line.display_type else line.qty_to_invoice
                 )
         invoice_vals_list = self.get_invoice_vals_list(
-            final=final, lines_to_invoice=lines_to_invoice
+            final=final,
+            lines_to_invoice=lines_to_invoice,
+            partner_invoice_id=partner_invoice_id,
         )
 
         if not invoice_vals_list:
@@ -1126,7 +1136,9 @@ class PmsFolio(models.Model):
             )
         return moves
 
-    def get_invoice_vals_list(self, final=False, lines_to_invoice=False):
+    def get_invoice_vals_list(
+        self, final=False, lines_to_invoice=False, partner_invoice_id=False
+    ):
         precision = self.env["decimal.precision"].precision_get(
             "Product Unit of Measure"
         )
@@ -1138,7 +1150,7 @@ class PmsFolio(models.Model):
             down_payments = order.env["folio.sale.line"]
 
             # Invoice values.
-            invoice_vals = order._prepare_invoice()
+            invoice_vals = order._prepare_invoice(partner_invoice_id=partner_invoice_id)
 
             # Invoice line values (keep only necessary sections).
             invoice_lines_vals = []

@@ -49,6 +49,20 @@ class FolioAdvancePaymentInv(models.TransientModel):
             sale_order = self.env["pms.folio"].browse(self._context.get("active_id"))
             return sale_order.currency_id
 
+    @api.model
+    def _default_partner_invoice_id(self):
+        if self._context.get("active_model") == "pms.folio" and self._context.get(
+            "active_id", False
+        ):
+            folio = self.env["pms.folio"].browse(self._context.get("active_id", []))
+            return folio.partner_invoice_ids[0]
+
+    partner_invoice_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="Billing contact",
+        default=_default_partner_invoice_id,
+    )
+
     advance_payment_method = fields.Selection(
         [
             ("delivered", "Regular invoice"),
@@ -116,7 +130,9 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "invoice_origin": order.name,
             "invoice_user_id": order.user_id.id,
             "narration": order.note,
-            "partner_id": order.partner_invoice_id.id,
+            "partner_id": self.partner_invoice_id
+            if self.partner_invoice_id
+            else order.partner_invoice_id.id,
             "currency_id": order.pricelist_id.currency_id.id,
             "payment_reference": order.reference,
             "invoice_payment_term_id": order.payment_term_id.id,
@@ -211,6 +227,9 @@ class FolioAdvancePaymentInv(models.TransientModel):
             folios._create_invoices(
                 final=self.deduct_down_payments,
                 lines_to_invoice=lines_to_invoice,
+                partner_invoice_id=self.partner_invoice_id
+                if self.partner_invoice_id
+                else False,
             )
         else:
             # Create deposit product if necessary
