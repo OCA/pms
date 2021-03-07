@@ -1,7 +1,7 @@
 # Copyright 2017  Dario
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class PmsBoardServiceRoomType(models.Model):
@@ -34,26 +34,39 @@ class PmsBoardServiceRoomType(models.Model):
         ondelete="cascade",
         required=True,
     )
-    pms_room_type_id = fields.Many2one(
-        "pms.room.type",
-        string="Room Type",
-        index=True,
-        ondelete="cascade",
-        required=True,
-    )
-    pricelist_id = fields.Many2one(
-        "product.pricelist", string="Pricelist", required=False
-    )
-    board_service_line_ids = fields.One2many(
-        "pms.board.service.room.type.line", "pms_board_service_room_type_id"
-    )
-    # TODO:review relation with pricelist and properties
     pms_property_ids = fields.Many2many(
         "pms.property",
         string="Properties",
         required=False,
         ondelete="restrict",
     )
+    pms_room_type_id = fields.Many2one(
+        "pms.room.type",
+        string="Room Type",
+        index=True,
+        ondelete="cascade",
+        required=True,
+        domain=[
+            "|",
+            ("pms_property_ids", "=", False),
+            ("pms_property_ids", "in", pms_property_ids),
+        ],
+    )
+    pricelist_id = fields.Many2one(
+        "product.pricelist",
+        string="Pricelist",
+        required=False,
+        domain=[
+            "|",
+            ("pms_property_ids", "=", False),
+            ("pms_property_ids", "in", pms_property_ids),
+        ],
+    )
+    board_service_line_ids = fields.One2many(
+        "pms.board.service.room.type.line", "pms_board_service_room_type_id"
+    )
+    # TODO:review relation with pricelist and properties
+
     price_type = fields.Selection(
         [("fixed", "Fixed"), ("percent", "Percent")],
         string="Type",
@@ -129,6 +142,22 @@ class PmsBoardServiceRoomType(models.Model):
                             pricelist (or without pricelist)"""
                     )
                 )
+
+    @api.constrains("pms_property_ids", "pms_room_type_ids")
+    def _check_room_type_property_integrity(self):
+        for record in self:
+            if record.pms_property_ids and record.pms_room_type_id.pms_property_ids:
+                for pms_property in record.pms_property_ids:
+                    if pms_property not in record.pms_room_type_id.pms_property_ids:
+                        raise ValidationError(_("Property not allowed in room type"))
+
+    @api.constrains("pms_property_ids", "pricelist_id")
+    def _check_pricelist_property_integrity(self):
+        for record in self:
+            if record.pms_property_ids and record.pricelist_id:
+                for pms_property in record.pms_property_ids:
+                    if pms_property not in record.pricelist_id.pms_property_ids:
+                        raise ValidationError(_("Property not allowed in pricelist"))
 
     # Action methods
 

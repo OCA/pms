@@ -148,3 +148,17 @@ class TestPmsPricelist(common.TransactionCase):
                     "cancelation_rule_id": self.cancelation_rule.id,
                 }
             )
+
+    def test_availability_plan_property_integrity(self):
+        self.create_common_scenario()
+        self.availability_plan = self.env["pms.room.type.availability.plan"].create(
+            {"name": "Availability Plan", "pms_property_ids": [self.property1.id]}
+        )
+        with self.assertRaises(ValidationError):
+            self.env["product.pricelist"].create(
+                {
+                    "name": "Pricelist",
+                    "pms_property_ids": [self.property2.id],
+                    "availability_plan_id": self.availability_plan.id,
+                }
+            )
