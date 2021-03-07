@@ -3,6 +3,7 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
+from odoo.exceptions import ValidationError
 
 from .common import TestHotel
 
@@ -60,8 +61,34 @@ class TestPmsFolio(TestHotel):
             }
         )
 
+    def create_multiproperty_scenario(self):
+        self.property1 = self.env["pms.property"].create(
+            {
+                "name": "Property_1",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
+        self.property2 = self.env["pms.property"].create(
+            {
+                "name": "Property_2",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
+        self.property3 = self.env["pms.property"].create(
+            {
+                "name": "Property_3",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
+            }
+        )
+
     def test_commission_and_partner_correct(self):
         # ARRANGE
+        self.create_common_scenario()
         PmsFolio = self.env["pms.folio"]
         PmsReservation = self.env["pms.reservation"]
         PmsPartner = self.env["res.partner"]
@@ -83,6 +110,7 @@ class TestPmsFolio(TestHotel):
         folio = PmsFolio.create(
             {
                 "agency_id": agency.id,
+                "pms_property_id": self.property.id,
             }
         )
 
@@ -202,3 +230,23 @@ class TestPmsFolio(TestHotel):
             date=fields.date.today(),
         )
         self.assertEqual(r_test.folio_id.pending_amount, left_to_pay)
+
+    def test_closure_reason_property(self):
+        self.create_multiproperty_scenario()
+        cl_reason = self.env["room.closure.reason"].create(
+            {
+                "name": "closure_reason_test",
+                "pms_property_ids": [
+                    (4, self.property1.id),
+                    (4, self.property2.id),
+                ],
+            }
+        )
+
+        with self.assertRaises(ValidationError):
+            self.env["pms.folio"].create(
+                {
+                    "pms_property_id": self.property3.id,
+                    "closure_reason_id": cl_reason.id,
+                }
+            )
