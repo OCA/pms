@@ -83,6 +83,7 @@
                         <group>
                             <field name="bill_services" widget="boolean_toggle" />
                             <field name="bill_rooms" widget="boolean_toggle" />
+                            <field name="partner_invoice_id" />
                         </group>
                     </group>
                     <footer>
