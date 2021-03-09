@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template
         id="portal_my_home_menu_reservation"
@@ -90,11 +90,17 @@
                     <div class="row no-gutters">
                         <div class="col-12">
                             <h5 class="d-flex mb-1 mb-md-0 row">
-                                <span t-field="reservation.name" class="col-9 text-truncate"/>
-                                <small class="text-muted d-none d-md-inline"> (#<span t-field="reservation.id"/>)</small>
+                                <span
+                                    t-field="reservation.name"
+                                    class="col-9 text-truncate"
+                                />
                                 <div class="col-3 col-md-2 text-right">
                                     <small class="text-right">Status:</small>
-                                    <span t-field="reservation.state" class=" badge badge-pill badge-info" title="Current state of this reservation"/>
+                                    <span
+                                        t-field="reservation.state"
+                                        class=" badge badge-pill badge-info"
+                                        title="Current state of this reservation"
+                                    />
                                 </div>
                             </h5>
                         </div>
@@ -106,36 +112,121 @@
 <!--                    </div>-->
 
                     <div class="row mb-4">
-                        <div class="col-12 col-md-6" t-if="reservation.checkin">
-                            <strong>Checkin:</strong> <span t-field="reservation.checkin" t-options='{"widget": "date"}'/>
+                        <div class="col-12 col-md-6">
+                            <strong>Checkin:</strong> <span
+                                t-field="reservation.checkin"
+                                t-options='{"widget": "date"}'
+                            />
                         </div>
                         <div class="col-12 col-md-6 mb-1">
-                            <strong>Checkout:</strong> <span t-field="reservation.checkout" t-options='{"widget": "date"}'/>
+                            <strong>Checkout:</strong> <span
+                                t-field="reservation.checkout"
+                                t-options='{"widget": "date"}'
+                            />
+                        </div>
+                    </div>
+                     <div class="row mb-4">
+                        <div class="col-12 col-md-6">
+                            <strong>Arrival hour:</strong> <span
+                                t-field="reservation.arrival_hour"
+                            />
+                        </div>
+                        <div class="col-12 col-md-6 mb-1">
+                            <strong>Departure hour:</strong> <span
+                                t-field="reservation.departure_hour"
+                            />
                         </div>
                     </div>
 
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-6">
+                            <strong>Room:</strong> <span
+                                t-field="reservation.preferred_room_id"
+                            />
+                        </div>
+                       <div class="col-12 col-md-6 mb-1">
+                            <strong>Reservation total:</strong> <span
+                                t-field="reservation.price_room_services_set"
+                            />
+                        </div>
+                    </div>
+                    <t t-if="reservation.service_ids">
+                        <table class="table">
+                            <thead style="display:table-row-group">
+                                <th name="th_services">
+                                    Services
+                                </th>
+                                <th name="th_qty">
+                                    Quantity
+                                </th>
+                                <th name="th_price">
+                                    Price
+                                </th>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="reservation.service_ids" t-as="service">
+                                <t t-if="service.is_board_service">
+                                    <tr>
+                                        <td><span t-field="service.name" /></td>
+                                        <td><span t-field="service.product_qty" /></td>
+                                        <td><span t-field="service.price_unit" /></td>
+                                    </tr>
+                                </t>
+                            </t>
+                            </tbody>
+                        </table>
+                    </t>
                     <div class="row mb-4" t-if="reservation.partner_id">
                         <div class="col-12 col-md-6 pb-2" t-if="reservation.partner_id">
                             <strong>Assigned to</strong>
                             <div class="row">
                                 <div class="col flex-grow-0 pr-3">
-                                    <img t-if="reservation.partner_id.image_1024" class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(reservation.partner_id.image_1024)" alt="Contact"/>
-                                    <img t-else="" class="rounded-circle mt-1 o_portal_contact_img" src="/web/static/src/img/user_menu_avatar.png" alt="Contact"/>
+                                    <img
+                                        t-if="reservation.partner_id.image_1024"
+                                        class="rounded-circle mt-1 o_portal_contact_img"
+                                        t-att-src="image_data_uri(reservation.partner_id.image_1024)"
+                                        alt="Contact"
+                                    />
+                                    <img
+                                        t-else=""
+                                        class="rounded-circle mt-1 o_portal_contact_img"
+                                        src="/web/static/src/img/user_menu_avatar.png"
+                                        alt="Contact"
+                                    />
                                 </div>
                                 <div class="col pl-md-0">
-                                    <div t-field="reservation.partner_id" t-options='{"widget": "contact", "fields": ["name", "email", "phone"]}'/>
+                                    <div
+                                        t-field="reservation.partner_id"
+                                        t-options='{"widget": "contact", "fields": ["name", "email", "phone"]}'
+                                    />
                                 </div>
                             </div>
                         </div>
-                        <div class="coll-12 col-md-6 pb-2" t-if="reservation.partner_id">
+                        <div
+                            class="coll-12 col-md-6 pb-2"
+                            t-if="reservation.partner_id"
+                        >
                             <strong>Reported by</strong>
                             <div class="row">
                                 <div class="col flex-grow-0 pr-3">
-                                    <img t-if="reservation.partner_id.image_1024" class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(reservation.partner_id.image_1024)" alt="Contact"/>
-                                    <img t-else="" class="rounded-circle mt-1 o_portal_contact_img" src="/web/static/src/img/user_menu_avatar.png" alt="Contact"/>
+                                    <img
+                                        t-if="reservation.partner_id.image_1024"
+                                        class="rounded-circle mt-1 o_portal_contact_img"
+                                        t-att-src="image_data_uri(reservation.partner_id.image_1024)"
+                                        alt="Contact"
+                                    />
+                                    <img
+                                        t-else=""
+                                        class="rounded-circle mt-1 o_portal_contact_img"
+                                        src="/web/static/src/img/user_menu_avatar.png"
+                                        alt="Contact"
+                                    />
                                 </div>
                                 <div class="col pl-md-0">
-                                    <div t-field="reservation.partner_id" t-options='{"widget": "contact", "fields": ["name", "email", "phone"]}'/>
+                                    <div
+                                        t-field="reservation.partner_id"
+                                        t-options='{"widget": "contact", "fields": ["name", "email", "phone"]}'
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -169,10 +260,10 @@
             <div class="mt32">
                 <h4><strong>Message and communication history</strong></h4>
                 <t t-call="portal.message_thread">
-                    <t t-set="object" t-value="reservation"/>
-                    <t t-set="token" t-value="reservation.access_token"/>
-                    <t t-set="pid" t-value="pid"/>
-                    <t t-set="hash" t-value="hash"/>
+                    <t t-set="object" t-value="reservation" />
+                    <t t-set="token" t-value="reservation.access_token" />
+                    <t t-set="pid" t-value="pid" />
+                    <t t-set="hash" t-value="hash" />
                 </t>
             </div>
         </t>
