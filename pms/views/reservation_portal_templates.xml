@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8" ?>
-=======
-<?xml version="1.0" encoding="utf-8"?>
->>>>>>> 9ae89adeafb12af5dbb27cdd270f5cf1fed9b2f1
 <odoo>
     <template
         id="portal_my_home_menu_reservation"
