@@ -158,14 +158,14 @@ class PortalReservation(CustomerPortal):
         domain = [
             ("partner_id", "child_of", partner.id),
         ]
-        searchbar_sortings = {
-            "date": {"label": _("Order Date"), "reservation": "date_order desc"},
-            "name": {"label": _("Reference"), "reservation": "name"},
-            "stage": {"label": _("Stage"), "reservation": "state"},
-        }
-        if not sortby:
-            sortby = "date"
-        sort_order = searchbar_sortings[sortby]["reservation"]
+        # searchbar_sortings = {
+        #     "date": {"label": _("Order Date"), "reservation": "date_order desc"},
+        #     "name": {"label": _("Reference"), "reservation": "name"},
+        #     "stage": {"label": _("Stage"), "reservation": "state"},
+        # }
+        # if not sortby:
+        #     sortby = "date"
+        # sort_order = searchbar_sortings[sortby]["reservation"]
 
         if date_begin and date_end:
             domain += [
@@ -175,13 +175,13 @@ class PortalReservation(CustomerPortal):
         reservation_count = Reservation.search_count(domain)
         pager = portal_pager(
             url="/my/reservations",
-            url_args={"date_begin": date_begin, "date_end": date_end, "sortby": sortby},
+            url_args={"date_begin": date_begin, "date_end": date_end},
             total=reservation_count,
             page=page,
             step=self._items_per_page,
         )
         reservations = Reservation.search(
-            domain, order=sort_order, limit=self._items_per_page, offset=pager["offset"]
+            domain, limit=self._items_per_page, offset=pager["offset"]
         )
         request.session["my_reservations_history"] = reservations.ids[:100]
         values.update(
@@ -191,8 +191,8 @@ class PortalReservation(CustomerPortal):
                 "page_name": "reservations",
                 "pager": pager,
                 "default_url": "/my/reservations",
-                "searchbar_sortings": searchbar_sortings,
-                "sortby": sortby,
+                # "searchbar_sortings": searchbar_sortings,
+                # "sortby": sortby,
             }
         )
         return request.render("pms.portal_my_reservation", values)
