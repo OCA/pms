@@ -56,15 +56,17 @@
             </thead>
             <tbody>
                 <t t-foreach="reservations" t-as="reservation">
-                    <t t-set="folio" t-value="reservation.folio_id"/>
+                    <t t-set="folio" t-value="reservation.folio_id" />
                     <!-- Sacar folio-->
                     <t t-if="reservation == folio.reservation_ids[0]">
                         <tr class="bg-light">
-                            <td colspan="4"><em class="font-weight-normal text-muted"><span/> Reservations for folio: </em>
+                            <td colspan="4"><em
+                                        class="font-weight-normal text-muted"
+                                    ><span /> Reservations by folio: </em>
                             <a
-                                    t-att-href="folio.get_portal_url()"
-                                    t-att-title="folio.name"
-                                >
+                                        t-att-href="folio.get_portal_url()"
+                                        t-att-title="folio.name"
+                                    >
                                 <t t-esc="folio.name" />
                             </a>
                         </td>
@@ -93,12 +95,6 @@
 
     <template id="portal_my_reservation_detail" name="My Reservation">
         <t t-call="portal.portal_layout">
-<!--            <t t-set="o_portal_fullwidth_alert" groups="project.group_project_user">-->
-<!--                <t t-call="portal.portal_back_in_edit_mode">-->
-<!--                    <t t-set="backend_url" t-value="'/web#model=project.task&amp;id=%s&amp;view_type=form' % (task.id)"/>-->
-<!--                </t>-->
-<!--            </t>-->
-
             <t t-call="portal.portal_record_layout">
                 <t t-set="card_header">
                     <div class="row no-gutters">
@@ -121,10 +117,6 @@
                     </div>
                 </t>
                 <t t-set="card_body">
-<!--                    <div class="mb-1" t-if="user in reservation.sudo().allowed_user_ids">-->
-<!--                        <strong>Project:</strong> <a t-attf-href="/my/project/#{reservation.project_id.id}" t-field="reservation.name"/>-->
-<!--                    </div>-->
-
                     <div class="row mb-4">
                         <div class="col-12 col-md-6">
                             <strong>Checkin:</strong> <span
@@ -164,6 +156,20 @@
                             />
                         </div>
                     </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-6">
+                            <strong>Room price per night:</strong> <span
+                                t-field="reservation.preferred_room_id.room_type_id.list_price"
+                                t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
+                            />
+                        </div>
+                       <div class="col-12 col-md-6 mb-1">
+                            <strong>Room price total:</strong> <span
+                                t-field="reservation.price_total"
+                            />
+                        </div>
+                    </div>
                     <t t-if="reservation.service_ids">
                         <table class="table">
                             <thead style="display:table-row-group">
@@ -178,13 +184,33 @@
                                 </th>
                             </thead>
                             <tbody>
+                                <t t-set="board_service_count" t-value="0" />
                                 <t t-foreach="reservation.service_ids" t-as="service">
+
                                 <t t-if="service.is_board_service">
-                                    <t t-set="board_service"
-                                     t-value="reservation.board_service_room_id.pms_board_service_id"
-                                    />
+                                    <t t-if="board_service_count==0">
+                                        <t
+                                                t-set="board_service_count"
+                                                t-value="board_service_count+1"
+                                            />
+                                        <t
+                                                t-set="board_service"
+                                                t-value="reservation.board_service_room_id.pms_board_service_id"
+                                            />
+                                        <tr>
+                                            <td><span t-esc="board_service.name" /></td>
+                                            <td><span
+                                                        t-field="service.product_qty"
+                                                    /></td>
+                                            <td><span
+                                                        t-field="board_service.amount"
+                                                    /></td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-else="">
                                     <tr>
-                                        <td><span t-esc="board_service.name" /></td>
+                                        <td><span t-esc="service.name" /></td>
                                         <td><span t-field="service.product_qty" /></td>
                                         <td><span t-field="service.price_unit" /></td>
                                     </tr>
@@ -195,7 +221,10 @@
                     </t>
 
                     <div class="row mb-4" t-if="reservation.partner_id.is_agency">
-                        <div class="col-12 col-md-6 pb-2" t-if="reservation.partner_id.is_agency">
+                        <div
+                            class="col-12 col-md-6 pb-2"
+                            t-if="reservation.partner_id.is_agency"
+                        >
                             <strong>Assigned to</strong>
                             <div class="row">
                                 <div class="col flex-grow-0 pr-3">
