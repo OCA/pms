@@ -151,26 +151,47 @@
                             />
                         </div>
                        <div class="col-12 col-md-6 mb-1">
-                            <strong>Reservation total:</strong> <span
-                                t-field="reservation.price_room_services_set"
-                            />
+                           <t t-if="reservation.board_service_room_id">
+                               <strong>Board Service:</strong> <span
+                                    t-field="reservation.board_service_room_id.pms_board_service_id.name"
+                                />
+                           </t>
                         </div>
                     </div>
-
+                    <t t-set="service_price" t-value="0" />
+                    <t t-set="board_service_price" t-value="0" />
+                    <t t-foreach="reservation.service_ids" t-as="service">
+                        <t t-if="service.is_board_service">
+                            <t
+                                t-set="board_service_price"
+                                t-value="board_service_price + service.price_total"
+                            />
+                        </t>
+                        <t t-else="">
+                            <t
+                                t-set="service_price"
+                                t-value="service_price + service.price_total"
+                            />
+                        </t>
+                    </t>
                     <div class="row mb-4">
                         <div class="col-12 col-md-6">
-                            <strong>Room price per night:</strong> <span
-                                t-field="reservation.preferred_room_id.room_type_id.list_price"
+                            <strong>Room price:</strong> <span
+                                t-esc="reservation.price_total + board_service_price"
                                 t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
                             />
                         </div>
                        <div class="col-12 col-md-6 mb-1">
-                            <strong>Room price total:</strong> <span
-                                t-field="reservation.price_total"
-                            />
+                           <t t-if="service_price!=0">
+                                <strong>Service total:</strong> <span
+                                    t-esc="service_price"
+                                    t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
+                                />
+                           </t>
                         </div>
                     </div>
                     <t t-if="reservation.service_ids">
+                        <t t-if="service_price!=0">
                         <table class="table">
                             <thead style="display:table-row-group">
                                 <th name="th_services">
@@ -180,44 +201,41 @@
                                     Quantity
                                 </th>
                                 <th name="th_price">
-                                    Price
+                                    Price Unit
+                                </th>
+                                <th name="th_price_total">
+                                    Price Total
                                 </th>
                             </thead>
                             <tbody>
-                                <t t-set="board_service_count" t-value="0" />
                                 <t t-foreach="reservation.service_ids" t-as="service">
-
-                                <t t-if="service.is_board_service">
-                                    <t t-if="board_service_count==0">
-                                        <t
-                                                t-set="board_service_count"
-                                                t-value="board_service_count+1"
-                                            />
-                                        <t
-                                                t-set="board_service"
-                                                t-value="reservation.board_service_room_id.pms_board_service_id"
-                                            />
+                                    <t t-if="not service.is_board_service">
                                         <tr>
-                                            <td><span t-esc="board_service.name" /></td>
+                                            <td><span t-esc="service.name" /></td>
                                             <td><span
                                                         t-field="service.product_qty"
                                                     /></td>
                                             <td><span
-                                                        t-field="board_service.amount"
+                                                        t-field="service.price_unit"
+                                                        t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
+                                                    /></td>
+                                            <td><span
+                                                        t-field="service.price_total"
+                                                        t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
                                                     /></td>
                                         </tr>
                                     </t>
                                 </t>
-                                <t t-else="">
-                                    <tr>
-                                        <td><span t-esc="service.name" /></td>
-                                        <td><span t-field="service.product_qty" /></td>
-                                        <td><span t-field="service.price_unit" /></td>
-                                    </tr>
-                                </t>
-                            </t>
                             </tbody>
                         </table>
+                        </t>
+                        <div class="row mb-4 justify-content-start">
+                            <div class="h3 text-info">
+                               <strong>Reservation total:</strong> <span
+                                    t-field="reservation.price_room_services_set"
+                                />
+                            </div>
+                        </div>
                     </t>
 
                     <div class="row mb-4" t-if="reservation.partner_id.is_agency">
