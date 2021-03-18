@@ -42,6 +42,17 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
+                            name="preview_folio"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-globe icon"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Customer</span>
+                                <span class="o_stat_text">Preview</span>
+                            </div>
+                        </button>
+                        <button
                             type="object"
                             class="oe_stat_button"
                             id="payment_smart_button"
