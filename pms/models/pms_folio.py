@@ -547,6 +547,14 @@ class PmsFolio(models.Model):
         for folio in self:
             folio.access_url = "/my/folios/%s" % (folio.id)
 
+    def preview_folio(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "target": "self",
+            "url": self.get_portal_url(),
+        }
+
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
             self.env.cr.execute(
