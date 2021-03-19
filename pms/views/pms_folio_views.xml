@@ -441,11 +441,7 @@
                 <field name="name" />
                 <field name="partner_id" select="1" />
                 <field name="date_order" select="1" />
-                <field
-                    name="create_uid"
-                    optional="show"
-                    widget="many2one_avatar_user"
-                />
+                <field name="user_id" optional="show" widget="many2one_avatar_user" />
                 <field name="reservation_ids" widget="many2many_tags" />
                 <field name="amount_total" sum="Total amount" />
                 <field name="pending_amount" sum="Total debt" />
