@@ -230,6 +230,49 @@ class TestPmsWizardMassiveChanges(TestHotel):
                     "Rule not created on correct day of week",
                 )
 
+    @freeze_time("1980-12-01")
+    def test_no_overwrite_values_not_setted(self):
+        # TEST CASE
+        # A rule value shouldnt overwrite with the default values
+        # another rules for the same day and room type
+
+        # ARRANGE
+        self.create_common_scenario()
+        date = fields.date.today()
+        initial_quota = 20
+        self.env["pms.room.type.availability.rule"].create(
+            {
+                "availability_plan_id": self.test_availability_plan.id,
+                "room_type_id": self.test_room_type_double.id,
+                "date": date,
+                "quota": initial_quota,
+                "pms_property_id": self.test_property.id,
+            }
+        )
+        vals_wizard = {
+            "massive_changes_on": "availability_plan",
+            "availability_plan_id": self.test_availability_plan.id,
+            "start_date": date,
+            "end_date": date,
+            "room_type_id": self.test_room_type_double.id,
+            "apply_max_avail": True,
+            "max_avail": 2,
+            "pms_property_ids": [self.test_property.id],
+        }
+
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+
+        # ASSERT
+        self.assertEqual(
+            self.test_availability_plan.rule_ids[0].quota,
+            initial_quota,
+            "A rule value shouldnt overwrite with the default values "
+            "another rules for the same day and room type",
+        )
+
     # MASSIVE CHANGE WIZARD TESTS ON PRICELIST ITEMS
 
     @freeze_time("1980-12-01")

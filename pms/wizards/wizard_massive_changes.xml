@@ -6,11 +6,12 @@
         <field name="arch" type="xml">
             <form class="pt-1">
                 <group>
-                <field name="avail_readonly" invisible="1" />
-                <field name="pricelist_readonly" invisible="1" />
+                    <field name="massive_changes_on" invisible="1" />
+                    <field name="avail_readonly" invisible="1" />
+                    <field name="pricelist_readonly" invisible="1" />
                 </group>
                 <div class="row">
-                    <div class="col-5 ">
+                    <div class="col-6">
                         <group>
                             <field
                                 name="start_date"
@@ -22,15 +23,15 @@
                                 widget="daterange"
                                 options="{'related_start_date': 'start_date'}"
                             />
-                        </group>
-                    </div>
-                    <div class="col-5">
-                        <group class="">
-                            <field name="pms_property_ids" widget="many2many_tags" />
                             <field
                                 name="massive_changes_on"
                                 attrs="{'invisible':['|', ('avail_readonly','=',True), ('pricelist_readonly', '=', True)]}"
                             />
+                        </group>
+                    </div>
+                    <div class="col-6">
+                        <group class="">
+                            <field name="pms_property_ids" widget="many2many_tags" />
                             <field
                                 name="availability_plan_id"
                                 class="mr-5"
@@ -59,9 +60,9 @@
                     </div>
                 </div>
                 <field name="allowed_pricelist_ids" invisible="1" />
+                <b>Days:</b>
                 <div class="row">
                     <div class="col-12">
-                        <group>
                         <table class="table table-bordered text-center">
                             <thead>
                                 <tr>
@@ -79,110 +80,262 @@
                                 <tr>
                                     <td>
                                        <field
-                                                name="apply_on_all_week"
-                                                widget="boolean_toggle"
-                                            />
+                                            name="apply_on_all_week"
+                                            widget="boolean_toggle"
+                                        />
                                     </td>
                                     <td>
                                         <field
-                                                name="apply_on_sunday"
-                                                widget="boolean_toggle"
-                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
-                                            />
+                                            name="apply_on_sunday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
                                     </td>
                                     <td>
                                         <field
-                                                name="apply_on_monday"
-                                                widget="boolean_toggle"
-                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
-                                            />
+                                            name="apply_on_monday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
                                     </td>
                                     <td>
                                         <field
-                                                name="apply_on_tuesday"
-                                                widget="boolean_toggle"
-                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
-                                            />
+                                            name="apply_on_tuesday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
                                     </td>
                                     <td>
                                         <field
-                                                name="apply_on_wednesday"
-                                                widget="boolean_toggle"
-                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
-                                            />
+                                            name="apply_on_wednesday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
                                     </td>
                                     <td>
                                         <field
-                                                name="apply_on_thursday"
-                                                widget="boolean_toggle"
-                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
-                                            />
+                                            name="apply_on_thursday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
                                     </td>
                                     <td>
                                         <field
-                                                name="apply_on_friday"
-                                                widget="boolean_toggle"
-                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
-                                            />
+                                            name="apply_on_friday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
                                     </td>
                                     <td>
                                         <field
-                                                name="apply_on_saturday"
-                                                widget="boolean_toggle"
-                                                attrs="{'invisible':[('apply_on_all_week','=',True)]}"
-                                            />
+                                            name="apply_on_saturday"
+                                            widget="boolean_toggle"
+                                            attrs="{'invisible':[('apply_on_all_week','=',True)]}"
+                                        />
                                     </td>
 
                                 </tr>
                             </tbody>
                         </table>
-                        </group>
                     </div>
                 </div>
-                <b
-                    attrs="{'invisible':['|','|', ('massive_changes_on','=','pricelist'), ('avail_readonly','=',True), ('pricelist_readonly', '=', True)]}"
-                >
-                    Rules to apply:
-                </b>
-
-                <div
-                    class="row"
-                    attrs="{'invisible':[('massive_changes_on','=','pricelist')]}"
-                >
-
-                    <div class="col-4">
-                        <group>
-                            <field string="Min. Stay" name="min_stay" />
-                            <field string="Max. Stay" name="max_stay" />
-                        </group>
+                <span attrs="{'invisible':[('massive_changes_on','=','pricelist')]}">
+                <b>Rules to apply:</b>
+                <div class="row">
+                    <div class="col-4 pr-0">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                            name="apply_min_stay"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-6">
+                                    <label for="min_stay" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                            name="min_stay"
+                                            nolabel="1"
+                                            attrs="{'invisible':[('apply_min_stay','=',False)], 'required':[('apply_min_stay','=',True)]}"
+                                        />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-4">
-                        <group>
-                            <field string="Min. Stay Arrival" name="min_stay_arrival" />
-                            <field string="Max. Stay Arrival" name="max_stay_arrival" />
-                        </group>
+                    <div class="col-5 pr-0">
+                        <div class="border h-100  pt-2 px-2 ">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                            name="apply_min_stay_arrival"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-6">
+                                    <label for="min_stay_arrival" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                            name="min_stay_arrival"
+                                            nolabel="1"
+                                            attrs="{'invisible':[('apply_min_stay_arrival','=',False)],'required':[('apply_min_stay_arrival','=',True)]}"
+                                        />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-4">
-                        <group>
-                            <field string="Closed" name="closed" />
-                            <field string="Closed Arrival" name="closed_arrival" />
-                            <field string="Closed departure" name="closed_departure" />
-                        </group>
-                    </div>
-                    <div class="col-4">
-                        <group>
-                            <field string="Quota" name="quota" />
-                        </group>
-                    </div>
-                    <div class="col-4">
-                        <group>
-                            <field string="Max. Avail." name="max_avail" />
-                        </group>
+                    <div class="col-3">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-3">
+                                    <field
+                                            name="apply_closed"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-9">
+                                    <field
+                                            name="closed"
+                                            attrs="{'readonly':[('apply_closed','=',False)]}"
+                                        />
+                                    <label for="closed" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <div class="row pt-3">
+                    <div class="col-4 pr-0">
+                        <div class="border h-100  pt-2 px-2 ">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                            name="apply_max_stay"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-6">
+                                    <label for="max_stay" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                            name="max_stay"
+                                            nolabel="1"
+                                            attrs="{'invisible':[('apply_max_stay','=',False)], 'required':[('apply_max_stay','=',True)]}"
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-5 pr-0">
+                        <div class="border h-100  pt-2 px-2 ">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                            name="apply_max_stay_arrival"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-6">
+                                    <label for="max_stay_arrival" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                            name="max_stay_arrival"
+                                            nolabel="1"
+                                            attrs="{'invisible':[('apply_max_stay_arrival','=',False)], 'required':[('apply_max_stay_arrival','=',True)]}"
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-3">
+                                    <field
+                                            name="apply_closed_arrival"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-9">
+                                    <field
+                                            name="closed_arrival"
+                                            attrs="{'readonly':[('apply_closed_arrival','=',False)]}"
+                                        />
+                                    <label for="closed_arrival" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-4">
+                    <div class="col-4 pr-0">
+                        <div class="border h-100  pt-2 px-2 ">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field name="apply_quota" widget="boolean_toggle" />
+                                </div>
+                                <div class="col-6">
+                                    <label for="quota" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                            name="quota"
+                                            nolabel="1"
+                                            attrs="{'invisible':[('apply_quota','=',False)], 'required':[('apply_quota','=',True)]}"
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-5 pr-0">
+                        <div class="border h-100  pt-2 px-2">
+                            <div class="row">
+                                <div class="col-2">
+                                    <field
+                                            name="apply_max_avail"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-6">
+                                    <label for="max_avail" />
+                                </div>
+                                <div class="col-4">
+                                    <field
+                                            name="max_avail"
+                                            nolabel="1"
+                                            attrs="{'invisible':[('apply_max_avail','=',False)],'required':[('apply_max_avail','=',True)]}"
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="border h-100 pt-2 px-2">
+                            <div class="row">
+                                <div class="col-3">
+                                    <field
+                                            name="apply_closed_departure"
+                                            widget="boolean_toggle"
+                                        />
+                                </div>
+                                <div class="col-9">
+                                    <field
+                                            name="closed_departure"
+                                            attrs="{'readonly':[('apply_closed_departure','=',False)]}"
+                                        />
+                                    <label for="closed_departure" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </span>
+                <br />
                 <div
-                    class="row"
                     attrs="{'invisible':[('massive_changes_on','=','availability_plan')]}"
                 >
                     <div class="col-4">
@@ -193,7 +346,10 @@
                         </group>
                     </div>
                 </div>
-                <b attrs="{'invisible':[('massive_changes_on','=','pricelist')]}">
+                <b
+                    attrs="{'invisible':[('massive_changes_on','=','pricelist')]}"
+                    class="mt-5"
+                >
                     <span style="text-decoration:underline;">
                         <field name="num_rules_to_overwrite" />
                     </span>
@@ -213,8 +369,55 @@
                 </b>
                 <field
                     name="rules_to_overwrite"
+                    nolabel="1"
                     attrs="{'invisible':[('massive_changes_on','=','pricelist')]}"
-                />
+                >
+                    <tree>
+                        <field name="date" />
+                        <field name="room_type_id" />
+                        <field
+                            name="quota"
+                            attrs="{'column_invisible':[('parent.apply_quota', '==', False)]}"
+                        />
+                        <field
+                            name="max_avail"
+                            attrs="{'column_invisible':[('parent.apply_max_avail', '==', False)]}"
+                        />
+                        <field
+                            name="min_stay"
+                            attrs="{'column_invisible':[('parent.apply_min_stay', '==', False)]}"
+                        />
+
+                        <field
+                            name="max_stay"
+                            attrs="{'column_invisible':[('parent.apply_max_stay', '==', False)]}"
+                        />
+
+                        <field
+                            name="min_stay_arrival"
+                            attrs="{'column_invisible':[('parent.apply_min_stay_arrival', '==', False)]}"
+                        />
+
+                        <field
+                            name="max_stay_arrival"
+                            attrs="{'column_invisible':[('parent.apply_max_stay_arrival', '==', False)]}"
+                        />
+
+                         <field
+                            name="closed"
+                            attrs="{'column_invisible':[('parent.apply_closed', '==', False)]}"
+                        />
+
+                        <field
+                            name="closed_arrival"
+                            attrs="{'column_invisible':[('parent.apply_closed_arrival', '==', False)]}"
+                        />
+                        <field
+                            name="closed_departure"
+                            attrs="{'column_invisible':[('parent.apply_closed_departure', '==', False)]}"
+                        />
+                    </tree>
+                </field>
                 <field
                     name="pricelist_items_to_overwrite"
                     nolabel="1"
