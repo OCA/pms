@@ -5,6 +5,7 @@
         <!-- reservation of 1 economic room for 1 person -->
         <record id="pms_folio_0" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -21,6 +22,7 @@
         <!-- reservation of 1 triple room for 3 people on behalf on the company -->
         <record id="pms_folio_1" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_admin" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -37,6 +39,7 @@
         <!-- TODO: The third reservation is marked from State: Cancelled to Pending arrival at Folio creation -->
         <record id="pms_folio_2" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
+            <field name="user_id" ref="base.user_admin" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -69,6 +72,7 @@
         <!-- reservation of the conference room for 1 day on behalf of a company -->
         <record id="pms_folio_3" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -84,6 +88,7 @@
         <!-- out of service room -->
         <record id="pms_folio_4" model="pms.folio">
             <field name="partner_id" ref="main_pms_property" />
+            <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">out</field>
             <field
                 name="reservation_ids"
@@ -103,6 +108,7 @@
         <!-- reservation of 1 double room for 1 day-->
         <record id="pms_folio_5" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_15" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -120,6 +126,7 @@
         <!-- reservation of 1 triple room for for 1 person and 1 day-->
         <record id="pms_folio_6" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_4" />
+            <field name="user_id" ref="base.user_admin" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -136,6 +143,7 @@
         <!-- reservation of all rooms for 1 day on behalf of a company -->
         <record id="pms_folio_7" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_10" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -208,6 +216,7 @@
         <!-- out of service single-101 room -->
         <record id="pms_folio_8" model="pms.folio">
             <field name="partner_id" ref="main_pms_property" />
+            <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">out</field>
             <field
                 name="reservation_ids"
@@ -227,6 +236,7 @@
         <!--2 reservetions in diferent rooms and diferent days-->
         <record id="pms_folio_9" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_33" />
+            <field name="user_id" ref="base.user_admin" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -251,6 +261,7 @@
         <!--reservation of the conference room for 3 days-->
         <record id="pms_folio_10" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_main2" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -266,6 +277,7 @@
         <!--reservation of 2 single rooms and 1 triple room-->
         <record id="pms_folio_11" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -298,6 +310,7 @@
         <!--Reservation of economic room-->
         <record id="pms_folio_12" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_1" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -313,6 +326,7 @@
         <!--Reservation of the conference room with VIP privacy closure reason-->
         <record id="pms_folio_13" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">normal</field>
             <field
                 name="reservation_ids"
@@ -330,6 +344,7 @@
         <!--Reservation of triple room with 2 adults and 1 children-->
         <record id="pms_folio_14" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -347,6 +362,7 @@
         <!-- TODO: The reservation is marked from State: Cancelled to Pending arrival at Folio creation -->
         <record id="pms_folio_15" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_18" />
+            <field name="user_id" ref="base.user_demo" />
             <field name="reservation_type">normal</field>
             <field
                 name="reservation_ids"
@@ -363,6 +379,7 @@
         <!--Reservation of double room without default hours-->
         <record id="pms_folio_16" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_18" />
+            <field name="user_id" ref="base.user_demo" />
             <field name="reservation_type">normal</field>
             <field
                 name="reservation_ids"
@@ -384,6 +401,7 @@
         <!-- TODO: The reservation is marked from State: Pre-reservation to Pending arrival at Folio creation -->
         <record id="pms_folio_17" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_32" />
+            <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">normal</field>
             <field
                 name="reservation_ids"
@@ -400,6 +418,7 @@
         <!--Reservation of 2 double rooms and 1 triple room whith board service-->
         <record id="pms_folio_18" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_30" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -436,6 +455,7 @@
         <!--Reservation of economic room and 3 single rooms whith differents board services-->
         <record id="pms_folio_19" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_18" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -479,6 +499,7 @@
         <!--Reservation of 2 single rooms whith differents arrival and departure hours-->
         <record id="pms_folio_20" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_25" />
+            <field name="user_id" ref="base.user_admin" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -507,6 +528,7 @@
         <!--Reservation of 2 double rooms whith differents arrival and departure hours and one room whith board service-->
         <record id="pms_folio_21" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_32" />
+            <field name="user_id" ref="base.user_admin" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -535,6 +557,7 @@
         <!--Reservation of conference room whith lunch and dinner services-->
         <record id="pms_folio_22" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_10" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -554,6 +577,7 @@
         <!--Reservation of economic room for a week-->
         <record id="pms_folio_23" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_4" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -570,6 +594,7 @@
         <!--Reservation of 1 single room for a week-->
         <record id="pms_folio_24" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -587,6 +612,7 @@
         <!--Reservation of 1 single room for a week whith board service-->
         <record id="pms_folio_25" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -604,6 +630,7 @@
         <!--Reservation of 2 double rooms for a week whith diferent checkouts-->
         <record id="pms_folio_26" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
@@ -628,6 +655,7 @@
         <!--Reservation of the conference room with VIP privacy closure reason and board service-->
         <record id="pms_folio_27" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_3" />
+            <field name="user_id" ref="base.user_admin" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -645,6 +673,7 @@
         <!--Reservation of 1 triple room for 1 adult and 2 children whith board service-->
         <record id="pms_folio_28" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_17" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -661,6 +690,7 @@
         <!--Reservation of 1 triple room for 1 adult and 2 children whith specific arrival and departure hours and whith board service-->
         <record id="pms_folio_29" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_25" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
@@ -679,6 +709,7 @@
         <!-- reservation of 1 triple room for 1 day-->
         <record id="pms_folio_30" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_15" />
+            <field name="user_id" ref="base.user_demo" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
