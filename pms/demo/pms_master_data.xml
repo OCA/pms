@@ -3,7 +3,7 @@
     <data noupdate="1">
         <!-- Multi pms Demo -->
         <record id="pms_company1" model="res.company">
-            <field name="name">Pms Company</field>
+            <field name="name">Alda Company</field>
             <field name="currency_id" ref="base.EUR" />
             <field
                 name="favicon"
@@ -18,27 +18,63 @@
             <field name="name">Availability Plan Demo</field>
         </record>
         <record id="demo_pms_property" model="pms.property">
-            <field name="name">My pms Demo</field>
+            <field name="name">San Carlos</field>
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
         </record>
         <record id="demo_pms_property2" model="pms.property">
-            <field name="name">My property 2</field>
+            <field name="name">Agalia</field>
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
         </record>
         <record id="demo_pms_property3" model="pms.property">
-            <field name="name">Independent property </field>
+            <field name="name">Pilgrim Leon</field>
             <field name="company_id" ref="pms_company1" />
             <field name="default_pricelist_id" ref="product.list0" />
         </record>
         <!-- users -->
+        <record id="base.user_root" model="res.users">
+            <field name="company_ids" eval="[(4, ref('pms.pms_company1'))]" />
+            <field
+                name="pms_property_ids"
+                eval="[
+                (4, ref('demo_pms_property')),
+                (4, ref('demo_pms_property2')),
+                (4, ref('demo_pms_property3')),
+                ]"
+            />
+        </record>
+        <record id="base.user_admin" model="res.users">
+            <field name="company_ids" eval="[(4, ref('pms.pms_company1'))]" />
+            <field
+                name="pms_property_ids"
+                eval="[
+                (4, ref('demo_pms_property')),
+                (4, ref('demo_pms_property2')),
+                (4, ref('demo_pms_property3')),
+                ]"
+            />
+        </record>
         <record id="base.user_demo" model="res.users">
             <field name="groups_id" eval="[(4,ref('pms.group_pms_user'))]" />
             <field name="company_id" ref="base.main_company" />
-            <field name="company_ids" eval="[(4, ref('base.main_company'))]" />
+            <field
+                name="company_ids"
+                eval="[
+                (4, ref('base.main_company')),
+                (4, ref('pms.pms_company1')),
+                ]"
+            />
             <field name="pms_property_id" ref="main_pms_property" />
-            <field name="pms_property_ids" eval="[(4, ref('main_pms_property'))]" />
+            <field
+                name="pms_property_ids"
+                eval="[
+                (4, ref('main_pms_property')),
+                (4, ref('demo_pms_property')),
+                (4, ref('demo_pms_property2')),
+                (4, ref('demo_pms_property3')),
+                ]"
+            />
         </record>
         <!-- pms.floor -->
         <record id="pms_floor_0" model="pms.floor">
