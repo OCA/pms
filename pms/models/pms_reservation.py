@@ -182,6 +182,12 @@ class PmsReservation(models.Model):
         "('pms_property_ids', 'in', pms_property_id),"
         "('pms_property_ids', '=', False)]",
     )
+    user_id = fields.Many2one(
+        related="folio_id.user_id",
+        depends=["folio_id"],
+        readonly=False,
+        store=True,
+    )
     show_update_pricelist = fields.Boolean(
         string="Has Pricelist Changed",
         help="Technical Field, True if the pricelist was changed;\n"
