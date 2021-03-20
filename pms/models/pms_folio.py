@@ -492,7 +492,8 @@ class PmsFolio(models.Model):
     @api.depends("partner_id")
     def _compute_user_id(self):
         for folio in self:
-            folio.user_id = (folio.partner_id.user_id.id or self.env.uid,)
+            if not folio.user_id:
+                folio.user_id = (folio.partner_id.user_id.id or self.env.uid,)
 
     @api.depends("partner_id")
     def _compute_partner_invoice_ids(self):
