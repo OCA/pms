@@ -4,16 +4,15 @@ from odoo import api, fields, models
 class PmsCheckinPartner(models.Model):
     _inherit = "pms.checkin.partner"
 
-    lastname = fields.Char(
-        "Last Name",
-        compute="_compute_lastname",
+    firstname = fields.Char(
+        "First Name",
+        compute="_compute_firstname",
         store=True,
         readonly=False,
     )
-
-    firstname = fields.Char(
+    lastname = fields.Char(
         "Last Name",
-        compute="_compute_firstname",
+        compute="_compute_lastname",
         store=True,
         readonly=False,
     )
