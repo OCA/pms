@@ -55,6 +55,14 @@ class PmsCheckinPartner(models.Model):
         related="reservation_id.segmentation_ids",
         readonly=True,
     )
+    checkin = fields.Date(
+        related="reservation_id.checkin", store=True, depends=["reservation_id.checkin"]
+    )
+    checkout = fields.Date(
+        related="reservation_id.checkout",
+        store=True,
+        depends=["reservation_id.checkout"],
+    )
     arrival = fields.Datetime("Enter")
     departure = fields.Datetime("Exit")
     state = fields.Selection(
@@ -110,11 +118,18 @@ class PmsCheckinPartner(models.Model):
                 else:
                     record.state = "precheckin"
 
-    @api.depends("partner_id", "partner_id.name")
+    @api.depends(
+        "partner_id",
+        "partner_id.name",
+        "reservation_id",
+        "reservation_id.preferred_room_id",
+    )
     def _compute_name(self):
-        for record in self:
-            if not record.name:
-                record.name = record.partner_id.name
+        self.name = False
+        for record in self.filtered("reservation_id.rooms"):
+            record.name = record.reservation_id.rooms
+            if record.partner_id:
+                record.name = record.name + " (" + record.partner_id.name + ")"
 
     @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
@@ -132,8 +147,8 @@ class PmsCheckinPartner(models.Model):
     def _checkin_mandatory_fields(self, depends=False):
         # api.depends need "reservation_id.state" in the lambda function
         if depends:
-            return ["reservation_id.state", "name"]
-        return ["name"]
+            return ["reservation_id.state", "partner_id"]
+        return ["partner_id"]
 
     @api.model
     def _checkin_partner_fields(self):

@@ -595,7 +595,7 @@
                 quick_add="False"
                 mode="month"
                 color="room_type_id"
-                scales="week,month,year"
+                scales="month,year"
             >
                 <field name="room_type_id" filters="1" />
                 <field name="preferred_room_id" filters="1" />
@@ -769,21 +769,21 @@
                     string="Reservations to 7 days"
                     name="next_res_week"
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
-                        ('state', '=', 'confirm')]"
+                        ('state', 'in', ['confirm','onboard'])]"
                     help="Show all reservations for which date enter is before than 7 days"
                 />
                 <filter
                     string="Reservations to 14 days"
                     name="next_res_2week"
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
-                        ('state', '=', 'confirm')]"
+                        ('state', 'in', ['confirm','onboard'])]"
                     help="Show all reservations for which date enter is before than 14 days"
                 />
                 <filter
                     string="Reservations to 1 month"
                     name="next_res_week"
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=30)).strftime('%Y-%m-%d')),
-                        ('state', '=', 'confirm')]"
+                        ('state', 'in', ['confirm','onboard'])]"
                     help="Show all reservations for which date enter is before than aprox. 1 month"
                 />
                 <filter
@@ -868,14 +868,6 @@
                     />
                 </group>
                 <searchpanel>
-                    <field name="room_type_id" string="Room Type" enable_counters="1" />
-                    <field name="pricelist_id" string="Pricelist" enable_counters="1" />
-                     <field
-                        name="channel_type_id"
-                        string="Channel"
-                        enable_counters="1"
-                    />
-                    <field name="agency_id" string="Channel" enable_counters="1" />
                     <field
                         name="state"
                         string="State"
@@ -888,10 +880,56 @@
                         enable_counters="1"
                         select="multi"
                     />
+                    <field
+                        name="room_type_id"
+                        string="Room Type"
+                        enable_counters="1"
+                        icon="fa-hotel"
+                        color="#784f73"
+                    />
+                    <field
+                        name="pricelist_id"
+                        string="Pricelist"
+                        enable_counters="1"
+                        icon="fa-bookmark"
+                        color="#875A7B"
+                    />
+                    <field
+                        name="channel_type_id"
+                        string="Channel"
+                        enable_counters="1"
+                        icon="fa-sitemap"
+                        expand="1"
+                    />
                 </searchpanel>
             </search>
         </field>
     </record>
+
+    <record id="pms_reservation_pivot" model="ir.ui.view">
+        <field name="name">pms.reservation.pivot</field>
+        <field name="model">pms.reservation</field>
+        <field name="arch" type="xml">
+            <pivot string="Reservations">
+                <field name="checkout" type="row" interval="month" />
+                <field name="room_type_id" type="col" />
+                <field name="price_total" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="pms_reservation_graph" model="ir.ui.view">
+        <field name="name">pms.reservation.graph</field>
+        <field name="model">pms.reservation</field>
+        <field name="arch" type="xml">
+            <graph string="Reservations">
+                <field name="checkout" type="row" interval="day" />
+                <field name="room_type_id" type="col" />
+                <field name="price_total" type="measure" />
+            </graph>
+        </field>
+    </record>
+
     <menuitem
         name="Reservation Rooms"
         id="menu_reservation_rooms"

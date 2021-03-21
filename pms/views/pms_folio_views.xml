@@ -42,15 +42,17 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
-                            name="preview_folio"
-                            type="object"
+                            type="action"
                             class="oe_stat_button"
-                            icon="fa-globe icon"
+                            name="%(open_pms_reservation_form_tree_all)d"
+                            icon="fa-cubes"
+                            context="{'search_default_folio_id': active_id, 'default_folio_id': active_id}"
                         >
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Customer</span>
-                                <span class="o_stat_text">Preview</span>
-                            </div>
+                            <field
+                                name="number_of_rooms"
+                                widget="statinfo"
+                                string="Rooms"
+                            />
                         </button>
                         <button
                             type="object"
@@ -238,7 +240,6 @@
                         <field name="currency_id" invisible="1" />
                         <!--<field name="refund_amount" invisible="1" />-->
                         <field name="invoices_paid" invisible="1" />
-                        <field name="number_of_rooms" invisible="1" />
                     </group>
                     <notebook colspan="4" col="1">
                         <page string="Sale Lines">
@@ -433,20 +434,68 @@
         <field name="arch" type="xml">
             <tree
                 string="Folio"
+                class="o_sale_order"
                 decoration-info="state == 'draft'"
                 decoration-muted="state == 'cancel'"
                 default_order="create_date desc"
             >
-                <field name="state" />
                 <field name="name" />
                 <field name="partner_id" select="1" />
                 <field name="date_order" select="1" />
-                <field name="user_id" optional="show" widget="many2one_avatar_user" />
-                <field name="reservation_ids" widget="many2many_tags" />
-                <field name="amount_total" sum="Total amount" />
-                <field name="pending_amount" sum="Total debt" />
-                <field name="invoice_status" />
-                <field name="pms_property_id" invisible="0" />
+                <field name="user_id" widget="many2one_avatar_user" optional="show" />
+                <field name="reservation_ids" widget="many2many_tags" optional="show" />
+                <field
+                    name="amount_total"
+                    sum="Total amount"
+                    widget="monetary"
+                    decoration-bf="1"
+                    optional="show"
+                />
+                <field
+                    name="pending_amount"
+                    sum="Total debt"
+                    widget="monetary"
+                    decoration-bf="1"
+                    optional="show"
+                />
+                <field
+                    name="state"
+                    decoration-success="state == 'done'"
+                    decoration-info="state == 'confirm'"
+                    decoration-primary="state == 'sent'"
+                    decoration-danger="state == 'cancel'"
+                    decoration-bf="state == 'draft'"
+                    widget="badge"
+                    optional="show"
+                />
+                <field
+                    name="invoice_status"
+                    widget="badge"
+                    decoration-success="invoice_status == 'invoiced'"
+                    decoration-info="invoice_status == 'to invoice'"
+                    optional="show"
+                />
+                <field
+                    name="payment_state"
+                    decoration-success="payment_state == 'paid'"
+                    decoration-danger="payment_state == 'not_paid' and state in ['cancelled','onboard','done','no_show','no_checkout']"
+                    decoration-info="payment_state == 'not_paid' and state in ['draft','confirm',]"
+                    decoration-warning="payment_state == 'partial'"
+                    widget="badge"
+                    optional="show"
+                />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="show"
+                    readonly="1"
+                />
+                <field
+                    name="pms_property_id"
+                    groups="base.group_multi_company"
+                    optional="show"
+                    readonly="1"
+                />
             </tree>
         </field>
     </record>

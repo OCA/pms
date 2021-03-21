@@ -9,6 +9,7 @@ class PmsServiceLine(models.Model):
     _name = "pms.service.line"
     _description = "Service by day"
     _order = "date"
+    _rec_name = "service_id"
 
     # Fields declaration
     service_id = fields.Many2one(
@@ -18,6 +19,7 @@ class PmsServiceLine(models.Model):
         required=True,
         copy=False,
     )
+    is_board_service = fields.Boolean(related="service_id.is_board_service", store=True)
     product_id = fields.Many2one(related="service_id.product_id", store=True)
     tax_ids = fields.Many2many(
         "account.tax", string="Taxes", related="service_id.tax_ids", readonly="True"
