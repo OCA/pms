@@ -32,15 +32,34 @@
         <field name="model">pms.service.line</field>
         <field name="arch" type="xml">
             <tree string="Service By Day">
+                <button
+                    class="oe_stat_button"
+                    icon="fa-1x fa-bed"
+                    name="open_service_ids"
+                    attrs="{'invisible':[('is_board_service','=', False)]}"
+                    title="Board Service"
+                />
+                <field name="is_board_service" invisible="1" />
                 <field name="product_id" />
                 <field name="date" />
                 <field name="day_qty" />
-                <field name="price_unit" />
-                <field name="service_id" />
+                <field
+                    name="price_unit"
+                    attrs="{'invisible':[('is_board_service','=', True)]}"
+                />
+                <field name="service_id" optional="show" />
                 <field name="room_id" />
-                <field name="tax_ids" invisible="1" />
-                <field name="discount" />
-                <field name="price_total" />
+                <field name="tax_ids" optional="show" />
+                <field
+                    name="discount"
+                    optional="show"
+                    attrs="{'invisible':[('is_board_service','=', True)]}"
+                />
+                <field
+                    name="price_total"
+                    optional="show"
+                    attrs="{'invisible':[('is_board_service','=', True)]}"
+                />
             </tree>
         </field>
     </record>
@@ -51,6 +70,22 @@
         <field name="arch" type="xml">
             <search string="Services By Day">
                 <field name="service_id" />
+                <separator />
+                <field name="pms_property_id" />
+                <separator />
+                <filter
+                    string="Board Services"
+                    name="board_services"
+                    domain="[('is_board_service', '=', True)]"
+                    help="Services included in the room reservation price"
+                />
+                <filter
+                    string="Extra Services"
+                    name="no_board_services"
+                    domain="[('is_board_service', '=', False)]"
+                    help="Services NOT included in the room reservation price"
+                />
+                <separator />
                 <filter
                     string="Today"
                     name="today"
@@ -66,7 +101,7 @@
                     string="Next 7 days"
                     name="next_7_days"
                     domain="[('date', '&gt;', context_today().strftime('%Y-%m-%d')),
-                                ('date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"
+                            ('date', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"
                 />
                 <group expand="0" string="Group By">
                     <filter
@@ -81,18 +116,68 @@
                     />
                     <filter
                         string="By Day"
-                        name="date_by_week"
+                        name="date_by_day"
                         context="{'group_by':'date:day', 'default_order': 'date'}"
                     />
                     <filter
+                        string="Property"
+                        name="group_property_id"
+                        context="{'group_by':'pms_property_id', 'default_order': 'product_id'}"
+                    />
+                    <filter
                         string="Product"
-                        name="product_id"
+                        name="group_product_id"
                         context="{'group_by':'product_id', 'default_order': 'product_id'}"
                     />
                 </group>
             </search>
         </field>
     </record>
+
+    <record id="pms_service_line_view_calendar" model="ir.ui.view">
+        <field name="name">pms.service.line.view.calendar</field>
+        <field name="model">pms.service.line</field>
+        <field name="arch" type="xml">
+            <calendar
+                date_start="date"
+                date_stop="date"
+                string="Services"
+                quick_add="False"
+                mode="month"
+                color="product_id"
+                scales="week,month,year"
+            >
+                <field name="service_id" />
+                <field name="product_id" filters="1" />
+                <field name="room_id" filters="1" />
+            </calendar>
+        </field>
+    </record>
+
+    <record id="pms_service_line_pivot" model="ir.ui.view">
+        <field name="name">pms.service.line.pivot</field>
+        <field name="model">pms.service.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Services">
+                <field name="date" type="row" interval="day" />
+                <field name="product_id" type="col" />
+                <field name="day_qty" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="pms_service_line_graph" model="ir.ui.view">
+        <field name="name">pms.service.line.graph</field>
+        <field name="model">pms.service.line</field>
+        <field name="arch" type="xml">
+            <graph string="Services">
+                <field name="date" type="row" interval="day" />
+                <field name="product_id" type="col" />
+                <field name="day_qty" type="measure" />
+            </graph>
+        </field>
+    </record>
+
     <!-- Action for service line from Form Folio/Reservation-->
     <record model="ir.actions.act_window" id="action_pms_service_line_form">
         <field name="name">Services</field>
@@ -108,8 +193,13 @@
         id="action_service_line"
         name="Services By Day"
         res_model="pms.service.line"
-        view_mode="tree,form"
+        view_mode="tree,form,calendar,pivot,graph"
         view_id="pms.pms_service_line_report_view_tree"
+        context="{
+            'search_default_next_7_days': 1,
+            'search_default_date_by_day': 1,
+            'search_default_group_product_id': 1,
+        }"
     />
     <menuitem
         id="menu_pms_service_line"

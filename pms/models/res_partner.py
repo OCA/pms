@@ -68,7 +68,6 @@ class ResPartner(models.Model):
             "|",
             ("phone", operator, name),
             ("mobile", operator, name),
-            ("email", operator, name),
         ]
         partners = self.search(
             domain + args,

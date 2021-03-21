@@ -307,7 +307,7 @@ class PmsFolio(models.Model):
         compute="_compute_amount",
         store=True,
         tracking=True,
-        string="Payments",
+        string="Paid Out",
     )
     amount_untaxed = fields.Monetary(
         string="Untaxed Amount",
