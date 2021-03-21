@@ -4,8 +4,10 @@
         id="action_checkin_partner"
         name="Action checkin"
         res_model="pms.checkin.partner"
-        view_mode="kanban,tree,form"
-        domain="[('state', '!=', 'draft')]"
+        view_mode="kanban,tree,form,calendar,graph,pivot"
+        context="{
+            'search_default_future':1,
+        }"
     />
     <menuitem
         id="menu_pms_checkin_partner"
@@ -154,6 +156,10 @@
                 class="o_res_partner_kanban"
                 sample="1"
                 create="false"
+                group_create="false"
+                group_delete="false"
+                group_edit="false"
+                records_draggable="false"
             >
                 <field name="id" />
                 <field name="identifier" />
@@ -287,79 +293,72 @@
                 <filter
                     string="To enter"
                     name="to_enter"
-                    domain="[('state', '=', 'draft')]"
+                    domain="[('state', '=', 'precheckin')]"
+                />
+                <separator />
+                <filter
+                    string="Hide Strangers"
+                    name="hide_strangers"
+                    domain="[('state', '!=', 'draft')]"
                 />
                 <filter string="Out" name="out" domain="[('state', '=', 'done')]" />
+                <separator />
+                <filter
+                    string="Checkins Today"
+                    name="enter_tomorrow"
+                    domain="[('checkin', '=', context_today().strftime('%Y-%m-%d'))]"
+                    help="Show all checkins for enter tomorrow"
+                />
                 <filter
                     string="Checkins Tomorrow"
                     name="enter_tomorrow"
-                    domain="[('arrival', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d')),
-                        ('state', '=', 'confirm')]"
+                    domain="[('checkin', '=', (context_today()+datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"
                     help="Show all checkins for enter tomorrow"
                 />
                 <filter
                     string="Checkins to 7 days"
                     name="next_res_week"
-                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
-                        ('state', '=', 'confirm')]"
+                    domain="[
+                        ('checkin', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
+                        ('checkin', '&gt;=', context_today().strftime('%Y-%m-%d'))
+                        ]"
                     help="Show all reservations for which date enter is before than 7 days"
                 />
+                <separator />
                 <filter
-                    string="On Board Tomorrow"
-                    name="next_res_2week"
-                    domain="[('arrival', '&lt;', (context_today()+datetime.timedelta(days=14)).strftime('%Y-%m-%d')),
-                        ('state', 'in', ['confirm','onboard'])]"
-                    help="Show all checkins for Tomorrow"
+                    string="Future"
+                    name="future"
+                    domain="[('checkin', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                        ('state', 'not in', ['cancelled'])]"
+                    help="Show all future checkins"
                 />
                 <group expand="0" string="Group By">
                     <filter
-                        string="Create by Month"
-                        name="create_date_by_month"
+                        string="Folio"
+                        name="folio_group"
+                        context="{'group_by':'folio_id', 'default_order': 'checkin asc'}"
+                    />
+                    <filter
+                        string="Room"
+                        name="reservation_group"
+                        context="{'group_by':'reservation_id', 'default_order': 'checkin asc'}"
+                    />
+                    <separator />
+                    <filter
+                        string="Create by"
+                        name="create_date_group"
                         context="{'group_by':'create_date', 'default_order': 'create_date asc'}"
                     />
                     <filter
-                        string="Create by Week"
-                        name="create_date_by_week"
-                        context="{'group_by':'create_date:week', 'default_order': 'create_date'}"
+                        string="Checkin by"
+                        name="checkin_group"
+                        context="{'group_by':'checkin', 'default_order': 'checkin asc'}"
                     />
                     <filter
-                        string="Create by Day"
-                        name="create_date_by_week"
-                        context="{'group_by':'create_date:day', 'default_order': 'create_date'}"
+                        string="Checkout by"
+                        name="checkout_group"
+                        context="{'group_by':'checkout', 'default_order': 'checkout asc'}"
                     />
-                    <separator />
-                    <filter
-                        string="Checkin by Month"
-                        name="checkin_by_month"
-                        context="{'group_by':'arrival', 'default_order': 'arrival asc'}"
-                    />
-                    <filter
-                        string="Checkin by Week"
-                        name="checkin_by_week"
-                        context="{'group_by':'arrival:week', 'default_order': 'arrival'}"
-                    />
-                    <filter
-                        string="Checkin by Day"
-                        name="checkin_by_week"
-                        context="{'group_by':'arrival:day', 'default_order': 'arrival'}"
-                    />
-                    <separator />
-                    <filter
-                        string="Checkout by Month"
-                        name="checkout_by_month"
-                        context="{'group_by':'departure', 'default_order': 'departure asc'}"
-                    />
-                    <filter
-                        string="Checkout by Week"
-                        name="checkout_by_week"
-                        context="{'group_by':'departure:week', 'default_order': 'departure'}"
-                    />
-                    <filter
-                        string="Checkout by Day"
-                        name="checkout_by_week"
-                        context="{'group_by':'departure:day', 'default_order': 'departure'}"
-                    />
-                    <separator />
                 </group>
                 <searchpanel>
                     <field
@@ -464,6 +463,48 @@
                     <separator />
                 </group>
             </search>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_view_calendar" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.view.calendar</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <calendar
+                date_start="checkin"
+                date_stop="checkout"
+                string="Hosts"
+                quick_add="False"
+                mode="month"
+                color="folio_id"
+                scales="week,month,year"
+            >
+                <field name="partner_id" />
+                <field name="name" />
+                <field name="reservation_id" />
+                <field name="folio_id" />
+                <field name="state" filters="1" />
+            </calendar>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_pivot" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.pivot</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <pivot string="Hosts">
+                <field name="checkin" type="row" interval="day" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="pms_checkin_partner_graph" model="ir.ui.view">
+        <field name="name">pms.checkin.partner.graph</field>
+        <field name="model">pms.checkin.partner</field>
+        <field name="arch" type="xml">
+            <graph string="Hosts">
+                <field name="checkin" type="row" interval="day" />
+            </graph>
         </field>
     </record>
 </odoo>
