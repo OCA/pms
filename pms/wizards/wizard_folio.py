@@ -28,10 +28,13 @@ class FolioWizard(models.TransientModel):
     pms_property_id = fields.Many2one(
         comodel_name="pms.property",
         string="Property",
-        default=lambda self: self.env.user.get_active_property_ids()[0],
+        default=lambda self: self._default_pms_property_id(),
     )
     partner_id = fields.Many2one(
         "res.partner",
+    )
+    folio_id = fields.Many2one(
+        "pms.folio",
     )
     availability_results = fields.One2many(
         comodel_name="pms.folio.availability.wizard",
@@ -48,6 +51,13 @@ class FolioWizard(models.TransientModel):
         default=0,
     )
     can_create_folio = fields.Boolean(compute="_compute_can_create_folio")
+
+    def _default_pms_property_id(self):
+        if self._context.get("default_folio_id"):
+            folio = self.env["pms.folio"].browse(self._context.get("default_folio_id"))
+            return folio.pms_property_id.id
+        else:
+            return self.env.user.get_active_property_ids()[0]
 
     @api.depends("availability_results.value_num_rooms_selected")
     def _compute_can_create_folio(self):
@@ -128,13 +138,16 @@ class FolioWizard(models.TransientModel):
     # actions
     def create_folio(self):
         for record in self:
-            folio = self.env["pms.folio"].create(
-                {
-                    "pricelist_id": record.pricelist_id.id,
-                    "partner_id": record.partner_id.id,
-                    "pms_property_id": record.pms_property_id.id,
-                }
-            )
+            if not record.folio_id:
+                folio = self.env["pms.folio"].create(
+                    {
+                        "pricelist_id": record.pricelist_id.id,
+                        "partner_id": record.partner_id.id,
+                        "pms_property_id": record.pms_property_id.id,
+                    }
+                )
+            else:
+                folio = record.folio_id
             for line in record.availability_results:
                 for _reservations_to_create in range(0, line.value_num_rooms_selected):
                     res = self.env["pms.reservation"].create(
@@ -143,8 +156,8 @@ class FolioWizard(models.TransientModel):
                             "checkin": line.checkin,
                             "checkout": line.checkout,
                             "room_type_id": line.room_type_id.id,
-                            "partner_id": folio.partner_id.id,
-                            "pricelist_id": folio.pricelist_id.id,
+                            "partner_id": record.partner_id.id,
+                            "pricelist_id": record.pricelist_id.id,
                             "pms_property_id": folio.pms_property_id.id,
                         }
                     )

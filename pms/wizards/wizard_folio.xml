@@ -18,12 +18,17 @@
                                 widget="daterange"
                                 options="{'related_start_date': 'start_date'}"
                             />
+                            <field name="folio_id" invisible="1" />
                         </group>
                     </div>
                     <div class="col-5">
                         <group>
                             <field name="partner_id" string="Partner" required="1" />
-                            <field name="pms_property_id" required="1" />
+                            <field
+                                name="pms_property_id"
+                                required="1"
+                                attrs="{'invisible':[('folio_id','!=',0)]}"
+                            />
                             <field
                                 default_focus="1"
                                 name="pricelist_id"
@@ -105,7 +110,14 @@
                         string="Create Folio"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible' : [('can_create_folio', '=', False)]}"
+                        attrs="{'invisible' : ['|',('can_create_folio', '=', False),('folio_id', '!=', False)]}"
+                    />
+                    <button
+                        name="create_folio"
+                        string="Add to Folio"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible' : ['|',('can_create_folio', '=', False),('folio_id', '=', False)]}"
                     />
                     <span attrs="{'invisible' : [('can_create_folio', '=', False)]}">
                         or
