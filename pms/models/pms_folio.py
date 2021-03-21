@@ -68,6 +68,11 @@ class PmsFolio(models.Model):
         compute="_compute_number_of_rooms",
         store="True",
     )
+    number_of_services = fields.Integer(
+        "Number of Rooms",
+        compute="_compute_number_of_services",
+        store="True",
+    )
     service_ids = fields.One2many(
         "pms.service",
         "folio_id",
@@ -376,6 +381,11 @@ class PmsFolio(models.Model):
             folio.number_of_rooms = len(
                 folio.reservation_ids.filtered(lambda a: a.state != "cancelled")
             )
+
+    @api.depends("service_ids", "service_ids.product_qty")
+    def _compute_number_of_services(self):
+        for folio in self:
+            folio.number_of_services = sum(folio.service_ids.mapped("product_qty"))
 
     @api.depends(
         "reservation_ids",

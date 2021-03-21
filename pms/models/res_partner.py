@@ -65,7 +65,6 @@ class ResPartner(models.Model):
             args = []
         domain = [
             "|",
-            "|",
             ("phone", operator, name),
             ("mobile", operator, name),
         ]
