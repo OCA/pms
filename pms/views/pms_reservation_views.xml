@@ -107,7 +107,12 @@
                         >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">
-                                    <field name="folio_id" readonly="1" nolabel="1" />
+                                    <field
+                                        name="folio_id"
+                                        readonly="1"
+                                        nolabel="1"
+                                        force_save="1"
+                                    />
                                 </span>
                             </div>
                         </button>
@@ -624,7 +629,7 @@
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
                 <field name="checkin" />
-                <field name="checkout" widget="date" />
+                <field name="checkout" />
                 <field name="nights" />
                 <button
                     type="object"
