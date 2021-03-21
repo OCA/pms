@@ -57,7 +57,7 @@
                 <button
                     type="object"
                     class="oe_stat_button"
-                    icon="fa fa-1x fa-bed"
+                    icon="fa-1x fa-bed"
                     name="open_service_ids"
                     attrs="{'invisible':[('is_board_service','=', False)]}"
                 />
@@ -83,7 +83,7 @@
                 <button
                     type="object"
                     class="oe_stat_button"
-                    icon="fa fa-2x fa-bars"
+                    icon="fa-2x fa-bars"
                     name="open_service_ids"
                     attrs="{'invisible': [('per_day','=',False)]}"
                 />
@@ -108,6 +108,7 @@
         <field name="arch" type="xml">
             <search string="Reservation Service">
                 <field name="name" />
+                <field name="folio_id" />
                 <field name="product_id" />
                 <field name="product_qty" />
                 <newline />

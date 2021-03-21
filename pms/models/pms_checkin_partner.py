@@ -12,6 +12,7 @@ from odoo.exceptions import ValidationError
 class PmsCheckinPartner(models.Model):
     _name = "pms.checkin.partner"
     _description = "Partner Checkins"
+    _rec_name = "identifier"
 
     # Fields declaration
     identifier = fields.Char(
@@ -125,11 +126,9 @@ class PmsCheckinPartner(models.Model):
         "reservation_id.preferred_room_id",
     )
     def _compute_name(self):
-        self.name = False
-        for record in self.filtered("reservation_id.rooms"):
-            record.name = record.reservation_id.rooms
-            if record.partner_id:
-                record.name = record.name + " (" + record.partner_id.name + ")"
+        for record in self:
+            if not record.name:
+                record.name = record.partner_id.name
 
     @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
@@ -147,8 +146,8 @@ class PmsCheckinPartner(models.Model):
     def _checkin_mandatory_fields(self, depends=False):
         # api.depends need "reservation_id.state" in the lambda function
         if depends:
-            return ["reservation_id.state", "partner_id"]
-        return ["partner_id"]
+            return ["reservation_id.state", "name"]
+        return ["name"]
 
     @api.model
     def _checkin_partner_fields(self):

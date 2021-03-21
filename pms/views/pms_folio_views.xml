@@ -45,13 +45,28 @@
                             type="action"
                             class="oe_stat_button"
                             name="%(open_pms_reservation_form_tree_all)d"
-                            icon="fa-cubes"
-                            context="{'search_default_folio_id': active_id, 'default_folio_id': active_id}"
+                            icon="fa-bed"
+                            context="{'search_default_folio_id': id, 'default_folio_id': id}"
+                            attrs="{'invisible': [('number_of_rooms', '=', 0)]}"
                         >
                             <field
                                 name="number_of_rooms"
                                 widget="statinfo"
                                 string="Rooms"
+                            />
+                        </button>
+                        <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(action_pms_services_form)d"
+                            icon="fa-coffee"
+                            context="{'search_default_folio_id': id, 'default_folio_id': id}"
+                            attrs="{'invisible': [('number_of_services', '=', 0)]}"
+                        >
+                            <field
+                                name="number_of_services"
+                                widget="statinfo"
+                                string="Services"
                             />
                         </button>
                         <button
@@ -72,23 +87,6 @@
                                     />
                                 </span>
                                 <span class="o_stat_text">Pending Payment</span>
-                            </div>
-                        </button>
-                        <button
-                            type="object"
-                            class="oe_stat_button"
-                            id="arrive_smart_button"
-                            icon="fa-street-view"
-                            name="action_to_arrive"
-                        >
-                            <div class="o_form_field o_stat_info">
-                                <span class="o_stat_value">
-                                    <field
-                                        name="count_rooms_pending_arrival"
-                                        nolabel="1"
-                                    />
-                                </span>
-                                <span class="o_stat_text">To arrive Rooms</span>
                             </div>
                         </button>
                         <button
@@ -119,9 +117,18 @@
                             name="folio_multi_changes"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-calculator"
+                            icon="fa-magic"
                         >
-                            <span class="o_stat_text">Change Prices</span>
+                            <span class="o_stat_text">Change in Group</span>
+                        </button>
+                        <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(action_wizard_folio)d"
+                            icon="fa-users"
+                            context="{'default_folio_id': id, 'default_partner_id': partner_id, 'default_pricelist_id': pricelist_id}"
+                        >
+                            <span class="o_stat_text">New Booking Group</span>
                         </button>
                     </div>
                     <widget
@@ -352,7 +359,8 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Reservation Rooms">
+                        <!-- REVIEW: its necesary? -->
+                        <page string="Reservation Rooms" invisible="1">
                             <field
                                 name="reservation_ids"
                                 colspan="4"
@@ -361,7 +369,8 @@
                                 context="{'reservation_ids':reservation_ids,'folio_id': id,'tree_view_ref':'pms.pms_reservation_view_bottom_tree', 'form_view_ref':'pms.pms_reservation_view_form'}"
                             />
                         </page>
-                        <page string="Services">
+                        <!-- REVIEW: its necesary? -->
+                        <page string="Services" invisible="1">
                             <separator string="Service Lines" colspan="4" />
                             <field
                                 name="service_ids"
@@ -373,6 +382,7 @@
                         <page name="persons" string="Rooming">
                             <field
                                 name="checkin_partner_ids"
+                                options="{'no_create': True, 'no_delete': True}"
                                 context="{
                                     'default_folio_id': id,
                                     'folio_id': id,
@@ -434,6 +444,7 @@
         <field name="arch" type="xml">
             <tree
                 string="Folio"
+                create="false"
                 class="o_sale_order"
                 decoration-info="state == 'draft'"
                 decoration-muted="state == 'cancel'"
