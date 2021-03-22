@@ -553,6 +553,19 @@ class PmsFolio(models.Model):
             order.move_ids = invoices
             order.invoice_count = len(invoices)
 
+    def _compute_access_url(self):
+        super(PmsFolio, self)._compute_access_url()
+        for folio in self:
+            folio.access_url = "/my/folios/%s" % (folio.id)
+
+    def preview_folio(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "target": "self",
+            "url": self.get_portal_url(),
+        }
+
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
             self.env.cr.execute(
@@ -757,6 +770,9 @@ class PmsFolio(models.Model):
             record.max_reservation_prior = max(reservation_priors)
 
     # Action methods
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return "Folio %s" % self.name
 
     def action_pay(self):
         self.ensure_one()
