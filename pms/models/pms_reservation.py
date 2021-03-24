@@ -1485,7 +1485,7 @@ class PmsReservation(models.Model):
 
     @api.model
     def create(self, vals):
-        if "folio_id" in vals:
+        if vals.get("folio_id"):
             folio = self.env["pms.folio"].browse(vals["folio_id"])
         elif "pms_property_id" in vals and (
             "partner_id" in vals or "agency_id" in vals
