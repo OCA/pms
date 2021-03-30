@@ -22,8 +22,6 @@ class AccountBankStatementLine(models.Model):
                 line.update(
                     {
                         "folio_ids": [(6, 0, self.statement_folio_ids.ids)],
-                        "reservation_ids": [(6, 0, self.reservation_ids.ids)],
-                        "service_ids": [(6, 0, self.service_ids.ids)],
                     }
                 )
         return line_vals_list

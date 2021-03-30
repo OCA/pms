@@ -80,15 +80,16 @@ class ProductPricelist(models.Model):
     def _compute_price_rule_get_items(
         self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
     ):
-
         if (
             "property" in self._context
             and self._context["property"]
-            and "date_overnight" in self._context
+            and self._context.get("date_overnight")
         ):
-            self.env["product.pricelist.item"].flush(
-                ["price", "currency_id", "company_id"]
-            )
+            # board_service_id = self._context.get("board_service")
+            # on_board_service_bool = True if board_service_id else False
+            # self.env["product.pricelist.item"].flush(
+            #     ["price", "currency_id", "company_id"]
+            # )
             self.env.cr.execute(
                 """
                 SELECT item.id
@@ -99,6 +100,8 @@ class ProductPricelist(models.Model):
                             ON item.pricelist_id = cab.product_pricelist_id
                        LEFT JOIN pms_property_product_pricelist_item_rel lin
                             ON item.id = lin.product_pricelist_item_id
+                       LEFT JOIN board_service_pricelist_item_rel board
+                            ON item.id = board.pricelist_item_id
                 WHERE  (lin.pms_property_id = %s OR lin.pms_property_id IS NULL)
                    AND (cab.pms_property_id = %s OR cab.pms_property_id IS NULL)
                    AND (item.product_tmpl_id IS NULL
@@ -132,6 +135,8 @@ class ProductPricelist(models.Model):
                     prod_tmpl_ids,
                     prod_ids,
                     categ_ids,
+                    # on_board_service_bool,
+                    # board_service_id,
                     self.id,
                     date,
                     date,

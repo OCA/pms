@@ -200,9 +200,6 @@
                                 <th name="th_qty">
                                     Quantity
                                 </th>
-                                <th name="th_price">
-                                    Price Unit
-                                </th>
                                 <th name="th_price_total">
                                     Price Total
                                 </th>
@@ -214,10 +211,6 @@
                                             <td><span t-esc="service.name" /></td>
                                             <td><span
                                                         t-field="service.product_qty"
-                                                    /></td>
-                                            <td><span
-                                                        t-field="service.price_unit"
-                                                        t-options='{"widget": "monetary", "display_currency": reservation.pricelist_id.currency_id}'
                                                     /></td>
                                             <td><span
                                                         t-field="service.price_total"

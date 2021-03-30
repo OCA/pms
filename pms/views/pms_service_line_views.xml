@@ -10,7 +10,13 @@
                     <field name="day_qty" />
                     <field name="date" />
                     <field name="price_unit" />
+                    <field
+                        name="discount"
+                        attrs="{'readonly':[('is_board_service','=', True)]}"
+                    />
+                    <field name="price_day_total" />
                     <field name="pms_property_id" invisible="1" />
+                    <field name="is_board_service" invisible="1" />
                 </group>
             </form>
         </field>
@@ -23,7 +29,14 @@
                 <field name="product_id" />
                 <field name="day_qty" />
                 <field name="date" />
+                <field name="price_unit" />
+                <field
+                    name="discount"
+                    attrs="{'readonly':[('is_board_service','=', True)]}"
+                />
+                <field name="price_day_total" />
                 <field name="pms_property_id" invisible="1" />
+                <field name="is_board_service" invisible="1" />
             </tree>
         </field>
     </record>
@@ -56,7 +69,7 @@
                     attrs="{'invisible':[('is_board_service','=', True)]}"
                 />
                 <field
-                    name="price_total"
+                    name="price_day_total"
                     optional="show"
                     attrs="{'invisible':[('is_board_service','=', True)]}"
                 />
