@@ -24,6 +24,9 @@ class FolioSaleLine(models.Model):
         for line in self:
             if line.state == "draft":
                 line.invoice_status = "no"
+            # REVIEW: if qty_to_invoice < 0 (invoice qty > sale qty),
+            # why status to_invoice?? this behavior is copied from sale order
+            # https://github.com/OCA/OCB/blob/14.0/addons/sale/models/sale.py#L1160
             elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
                 line.invoice_status = "to invoice"
             elif (
@@ -71,18 +74,6 @@ class FolioSaleLine(models.Model):
         else:
             return False
 
-    @api.depends("service_id", "service_id.price_unit")
-    def _compute_price_unit(self):
-        """
-        Compute unit prices of services
-        On reservations the unit price is compute by group in folio
-        """
-        for record in self:
-            if record.service_id:
-                record.price_unit = record.service_id.price_unit
-            elif not record.price_unit:
-                record.price_unit = False
-
     @api.depends("product_uom_qty", "discount", "price_unit", "tax_ids")
     def _compute_amount(self):
         """
@@ -121,11 +112,23 @@ class FolioSaleLine(models.Model):
                 else record.reservation_id.tax_ids
             )
 
-    @api.depends("service_id", "service_id.discount")
+    @api.depends(
+        "service_id",
+        "service_id.service_line_ids",
+        "service_id.service_line_ids.discount",
+    )
     def _compute_discount(self):
-        self.discount = 0.0
-        for record in self.filtered("service_id"):
-            record.discount = record.service_id.discount
+        """
+        Only in services without room we compute discount,
+        and this services only have one service line
+        """
+        for record in self:
+            if record.service_id and not record.service_id.reservation_id:
+                record.discount = record.service_id.service_line_ids.mapped("discount")[
+                    0
+                ]
+            elif not record.discount:
+                record.discount = 0
 
     @api.depends("reservation_id.room_type_id", "service_id.product_id")
     def _compute_product_id(self):
@@ -355,6 +358,12 @@ class FolioSaleLine(models.Model):
         index=True,
         copy=False,
     )
+    is_board_service = fields.Boolean(
+        string="Board Service",
+        related="service_id.is_board_service",
+        store=True,
+    )
+
     name = fields.Text(
         string="Description", compute="_compute_name", store=True, readonly=False
     )
@@ -362,6 +371,10 @@ class FolioSaleLine(models.Model):
     reservation_line_ids = fields.Many2many(
         "pms.reservation.line",
         string="Nights",
+    )
+    service_line_ids = fields.Many2many(
+        "pms.service.line",
+        string="Service Lines",
     )
     sequence = fields.Integer(string="Sequence", default=10)
 
@@ -389,8 +402,6 @@ class FolioSaleLine(models.Model):
     price_unit = fields.Float(
         "Unit Price",
         digits="Product Price",
-        compute="_compute_price_unit",
-        store=True,
     )
 
     price_subtotal = fields.Monetary(
@@ -433,6 +444,7 @@ class FolioSaleLine(models.Model):
         string="Discount (%)",
         digits="Discount",
         compute="_compute_discount",
+        readonly=False,
         store=True,
     )
 
@@ -550,13 +562,13 @@ class FolioSaleLine(models.Model):
         help="Technical field for UX purpose.",
     )
 
-    @api.depends("reservation_line_ids", "service_id")
+    @api.depends("reservation_line_ids", "service_line_ids", "service_line_ids.day_qty")
     def _compute_product_uom_qty(self):
         for line in self:
             if line.reservation_line_ids:
                 line.product_uom_qty = len(line.reservation_line_ids)
-            elif line.service_id:
-                line.product_uom_qty = line.service_id.product_qty
+            elif line.service_line_ids:
+                line.product_uom_qty = sum(line.service_line_ids.mapped("day_qty"))
             elif not line.product_uom_qty:
                 line.product_uom_qty = False
 
@@ -716,15 +728,6 @@ class FolioSaleLine(models.Model):
                     + " The quantity pending to invoice is %s" % self.qty_to_invoice
                 )
             )
-        reservation = self.reservation_id
-        service = self.service_id
-        reservation_lines = self.reservation_line_ids.filtered(
-            lambda l: not l.invoiced and l.reservation_id
-        )
-        lines_to_invoice = list()
-        if self.reservation_id:
-            for i in range(0, int(qty)):
-                lines_to_invoice.append(reservation_lines[i].id)
         res = {
             "display_type": self.display_type,
             "sequence": self.sequence,
@@ -738,9 +741,6 @@ class FolioSaleLine(models.Model):
             "analytic_account_id": self.folio_id.analytic_account_id.id,
             "analytic_tag_ids": [(6, 0, self.analytic_tag_ids.ids)],
             "folio_line_ids": [(6, 0, [self.id])],
-            "reservation_ids": [(6, 0, reservation.ids)],
-            "service_ids": [(6, 0, service.ids)],
-            "reservation_line_ids": [(6, 0, lines_to_invoice)],
         }
         if optional_values:
             res.update(optional_values)

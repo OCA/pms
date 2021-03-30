@@ -18,6 +18,17 @@ class ProductPricelistItem(models.Model):
         string="End Date Overnight",
         help="End date to apply daily pricelist items",
     )
+    on_board_service = fields.Boolean("Those included in Board Services")
+    board_service_room_type_ids = fields.Many2many(
+        "pms.board.service.room.type",
+        "board_service_pricelist_item_rel",
+        "pricelist_item_id",
+        "board_service_id",
+        string="Board Services on Room Types",
+        ondelete="cascade",  # check_company=True,
+        help="""Specify a Board services on Room Types.""",
+        # domain="[('pms_property_ids', 'in', [allowed_property_ids, False])]",
+    )
 
     allowed_property_ids = fields.Many2many(
         "pms.property",

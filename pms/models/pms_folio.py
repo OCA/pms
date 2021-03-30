@@ -391,6 +391,9 @@ class PmsFolio(models.Model):
         "reservation_ids",
         "service_ids",
         "service_ids.reservation_id",
+        "service_ids.service_line_ids.price_day_total",
+        "service_ids.service_line_ids.discount",
+        "service_ids.service_line_ids.cancel_discount",
         "reservation_ids.reservation_line_ids",
         "reservation_ids.reservation_line_ids.price",
         "reservation_ids.reservation_line_ids.discount",
@@ -415,7 +418,7 @@ class PmsFolio(models.Model):
                         },
                     )
                 )
-                group_lines = {}
+                group_reservation_lines = {}
                 for line in reservation.reservation_line_ids:
                     # On resevations the price, and discounts fields are used
                     # by group, we need pass this in the create line
@@ -431,32 +434,45 @@ class PmsFolio(models.Model):
                     for discount in [line.discount, line.cancel_discount]:
                         discount_factor = discount_factor * ((100.0 - discount) / 100.0)
                     final_discount = 100.0 - (discount_factor * 100.0)
-                    if group_key not in group_lines:
-                        group_lines[group_key] = {
+                    if group_key not in group_reservation_lines:
+                        group_reservation_lines[group_key] = {
                             "reservation_id": reservation.id,
                             "discount": final_discount,
                             "price_unit": line.price,
                             "reservation_line_ids": [(4, line.id)],
                         }
                     else:
-                        group_lines[group_key][("reservation_line_ids")].append(
-                            (4, line.id)
-                        )
-                for item in group_lines.items():
+                        group_reservation_lines[group_key][
+                            ("reservation_line_ids")
+                        ].append((4, line.id))
+                for item in group_reservation_lines.items():
                     sale_lines.append((0, False, item[1]))
                 for service in reservation.service_ids:
-                    # On service the price, and discounts fields are
-                    # compute in the sale.order.line
-                    sale_lines.append(
-                        (
-                            0,
-                            False,
-                            {
+                    # Service days with different prices,
+                    # go to differente sale lines
+                    group_service_lines = {}
+                    for service_line in service.service_line_ids:
+                        service_group_key = (
+                            service_line.price_unit,
+                            service_line.discount,
+                            service_line.cancel_discount,
+                        )
+                        if service_group_key not in group_service_lines:
+                            # On service the price, and discounts fields are
+                            # compute in the sale.order.line
+                            group_service_lines[service_group_key] = {
                                 "name": service.name,
                                 "service_id": service.id,
-                            },
-                        )
-                    )
+                                "discount": service_line.discount,
+                                "price_unit": service_line.price_unit,
+                                "service_line_ids": [(4, service_line.id)],
+                            }
+                        else:
+                            group_service_lines[service_group_key][
+                                ("service_line_ids")
+                            ].append((4, service_line.id))
+                    for item in group_service_lines.items():
+                        sale_lines.append((0, False, item[1]))
             if services_without_room:
                 sale_lines.append(
                     (
@@ -646,25 +662,20 @@ class PmsFolio(models.Model):
             else:
                 order.invoice_status = "no"
 
-    @api.depends("reservation_ids.price_total", "service_ids.price_total")
+    @api.depends("sale_line_ids.price_total")
     def _compute_amount_all(self):
         """
         Compute the total amounts of the SO.
         """
-        for record in self.filtered("pricelist_id"):
+        for folio in self:
             amount_untaxed = amount_tax = 0.0
-            amount_untaxed = sum(record.reservation_ids.mapped("price_subtotal")) + sum(
-                record.service_ids.mapped("price_subtotal")
-            )
-            amount_tax = sum(record.reservation_ids.mapped("price_tax")) + sum(
-                record.service_ids.mapped("price_tax")
-            )
-            record.update(
+            for line in folio.sale_line_ids:
+                amount_untaxed += line.price_subtotal
+                amount_tax += line.price_tax
+            folio.update(
                 {
-                    "amount_untaxed": record.pricelist_id.currency_id.round(
-                        amount_untaxed
-                    ),
-                    "amount_tax": record.pricelist_id.currency_id.round(amount_tax),
+                    "amount_untaxed": amount_untaxed,
+                    "amount_tax": amount_tax,
                     "amount_total": amount_untaxed + amount_tax,
                 }
             )
@@ -1248,24 +1259,12 @@ class PmsFolio(models.Model):
     def _get_tax_amount_by_group(self):
         self.ensure_one()
         res = {}
-        for line in self.reservation_ids:
+        for line in self.sale_line_ids:
             price_reduce = line.price_total
-            product = line.room_type_id.product_id
+            product = line.product_id
             taxes = line.tax_ids.compute_all(price_reduce, quantity=1, product=product)[
                 "taxes"
             ]
-            for tax in line.tax_ids:
-                group = tax.tax_group_id
-                res.setdefault(group, {"amount": 0.0, "base": 0.0})
-                for t in taxes:
-                    if t["id"] == tax.id or t["id"] in tax.children_tax_ids.ids:
-                        res[group]["amount"] += t["amount"]
-                        res[group]["base"] += t["base"]
-        for line in self.service_ids:
-            price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
-            taxes = line.tax_ids.compute_all(
-                price_reduce, quantity=line.product_qty, product=line.product_id
-            )["taxes"]
             for tax in line.tax_ids:
                 group = tax.tax_group_id
                 res.setdefault(group, {"amount": 0.0, "base": 0.0})
