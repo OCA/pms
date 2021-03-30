@@ -179,6 +179,7 @@
                                 attrs="{'invisible':[('state','not in',('cancel'))]}"
                             />
                             <field name="internal_comment" />
+                            <field name="user_id" />
                         </group>
                         <group
                             colspan="2"
@@ -275,8 +276,16 @@
                                     <field name="sequence" widget="handle" />
                                     <!-- We do not display the type because we don't want the user to be bothered with that information if he has no section or note. -->
                                     <field name="display_type" invisible="1" />
+                                    <field name="is_board_service" invisible="1" />
 
                                     <!-- <field name="product_updatable" invisible="1"/> -->
+                                    <button
+                                        title="Board Service"
+                                        class="oe_stat_button"
+                                        icon="fa-1x fa-bed"
+                                        name="open_service_ids"
+                                        attrs="{'invisible':[('is_board_service','=', False)]}"
+                                    />
                                     <field
                                         name="product_id"
                                         options="{'no_open': True}"
@@ -337,7 +346,6 @@
                                     <field
                                         name="discount"
                                         string="Disc.%"
-                                        groups="product.group_discount_per_so_line"
                                         optional="show"
                                         widget="product_discount"
                                     />
@@ -408,7 +416,7 @@
                                 />
                             </group>
                         </page>
-                        <page string="Other data" invisible="1">
+                        <page string="Other data">
                             <group>
                                 <field name="user_id" />
                                 <field name="client_order_ref" />
