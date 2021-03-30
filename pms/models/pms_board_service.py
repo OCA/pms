@@ -18,12 +18,6 @@ class PmsBoardService(models.Model):
     pms_board_service_room_type_ids = fields.One2many(
         "pms.board.service.room.type", "pms_board_service_id"
     )
-    price_type = fields.Selection(
-        [("fixed", "Fixed"), ("percent", "Percent")],
-        string="Type",
-        default="fixed",
-        required=True,
-    )
     amount = fields.Float(
         "Amount", digits=("Product Price"), compute="_compute_board_amount", store=True
     )

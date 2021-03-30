@@ -1,5 +1,3 @@
-from odoo.exceptions import ValidationError
-
 from .common import TestHotel
 
 
@@ -39,32 +37,3 @@ class TestPmsBoardServiceRoomType(TestHotel):
                 "class_id": self.room_type_class.id,
             }
         )
-
-    def test_room_type_property_integrity(self):
-        self._create_common_scenario()
-        self.room_type.pms_property_ids = [self.property1.id]
-        with self.assertRaises(ValidationError):
-            self.board_service_room_type = self.env[
-                "pms.board.service.room.type"
-            ].create(
-                {
-                    "pms_board_service_id": self.board_service.id,
-                    "pms_room_type_id": self.room_type.id,
-                    "pms_property_ids": self.property2,
-                }
-            )
-
-    def test_pricelist_property_integrity(self):
-        self._create_common_scenario()
-        self.pricelist = self.env["product.pricelist"].create(
-            {"name": "pricelist_1", "pms_property_ids": [self.property1.id]}
-        )
-        with self.assertRaises(ValidationError):
-            self.env["pms.board.service.room.type"].create(
-                {
-                    "pms_board_service_id": self.board_service.id,
-                    "pms_room_type_id": self.room_type.id,
-                    "pricelist_id": self.pricelist.id,
-                    "pms_property_ids": self.property2,
-                }
-            )

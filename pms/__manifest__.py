@@ -37,7 +37,6 @@
         "wizards/wizard_payment_folio.xml",
         "wizards/folio_make_invoice_advance_views.xml",
         "wizards/wizard_folio.xml",
-        "wizards/wizard_invoice_filter_days.xml",
         "wizards/wizard_folio_changes.xml",
         "views/pms_amenity_views.xml",
         "views/pms_amenity_type_views.xml",

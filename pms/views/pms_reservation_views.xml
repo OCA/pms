@@ -48,7 +48,7 @@
                     class="alert alert-info"
                     role="alert"
                     style="margin-bottom:0px;"
-                    attrs="{'invisible': ['|',('shared_folio','=',False),('splitted', '=', True)]}"
+                    attrs="{'invisible': [('shared_folio','=',False)]}"
                 >
                     This reservation has other reservantions and/or services in the
                     folio, you can check it in the
@@ -58,6 +58,24 @@
                             type="object"
                             name="open_folio"
                             string="Folio Form"
+                        />
+                    </bold>
+                </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': ['|', ('show_update_pricelist', '=', False), ('state', 'in', ['done'])]}"
+                >
+                    Recompute all prices based on this pricelist
+                    <bold>
+                        <button
+                            name="update_prices"
+                            type="object"
+                            string=" Update Prices"
+                            class="btn-link mb-1 px-0"
+                            icon="fa-refresh"
+                            confirm="This will update all unit prices based on the currently set pricelist."
                         />
                     </bold>
                 </div>
@@ -197,7 +215,6 @@
                             nolabel="1"
                             context="{'checkin': checkin, 'checkout': checkout, 'pms_property_id':pms_property_id, 'pricelist_id':pricelist_id}"
                             options="{'no_create': True,'no_open': True}"
-                            attrs="{'readonly':[('state','not in',('draft'))]}"
                             style="margin-right: 30px;"
                         />
                         <field
@@ -302,16 +319,6 @@
                                 name="pricelist_id"
                                 options="{'no_open':True,'no_create': True}"
                             />
-                            <button
-                                name="update_prices"
-                                type="object"
-                                string=" Update Prices"
-                                help="Recompute all prices based on this pricelist"
-                                class="btn-link mb-1 px-0"
-                                icon="fa-refresh"
-                                confirm="This will update all unit prices based on the currently set pricelist."
-                                attrs="{'invisible': ['|', ('show_update_pricelist', '=', False), ('state', 'in', ['done'])]}"
-                            />
                             <!--<field
                                 name="agency_id"
                                 options="{'no_create': True,'no_open': True}"
@@ -332,16 +339,12 @@
                                 name="children_occupying"
                                 attrs="{'invisible': [('children', '=', 0)]}"
                             />
-                            <field name="qty_invoiced" invisible="1" />
-                            <field name="qty_to_invoice" invisible="1" />
                             <field name="allowed_room_ids" invisible="1" />
                             <field name="folio_payment_state" invisible="1" />
                             <!-- TODO: How to filter to avoid show False (generic) pricelist board when exist a specific pricelist board¿? -->
                             <field
                                 name="board_service_room_id"
-                                domain="[
-                                    ('pms_room_type_id', '=', room_type_id),
-                                    ('pricelist_id', 'in', [pricelist_id, False])]"
+                                domain="[('pms_room_type_id', '=', room_type_id)]"
                                 options="{'no_create': True,'no_open': True}"
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
@@ -445,7 +448,6 @@
                                     <field name="date" readonly="1" force_save="1" />
                                     <field name="price" />
                                     <field name="discount" />
-                                    <field name="move_line_ids" invisible="1" />
                                     <field
                                         name="cancel_discount"
                                         attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
@@ -503,8 +505,6 @@
                                             name="open_service_ids"
                                             attrs="{'invisible': [('per_day','=',False)]}"
                                         />
-                                        <field name="price_unit" />
-                                        <field name="discount" />
                                         <field name="tax_ids" widget="many2many_tags" />
                                         <field name="price_subtotal" />
                                         <field name="price_tax" />
@@ -513,6 +513,16 @@
                                             <tree string="Days">
                                                 <field name="date" />
                                                 <field name="day_qty" />
+                                                <field
+                                                    name="discount"
+                                                    attrs="{'readonly':[('is_board_service','=', True)]}"
+                                                />
+                                                <field name="price_unit" />
+                                                <field name="price_day_total" />
+                                                <field
+                                                    name="is_board_service"
+                                                    invisible="1"
+                                                />
                                             </tree>
                                         </field>
                                     </tree>
@@ -674,6 +684,7 @@
                     widget="badge"
                     optional="show"
                 />
+                <field name="invoice_status" optional="show" />
                 <field
                     name="company_id"
                     groups="base.group_multi_company"

@@ -14,7 +14,6 @@ class AccountMove(models.Model):
         comodel_name="pms.folio", compute="_compute_folio_origin"
     )
     pms_property_id = fields.Many2one("pms.property")
-    from_reservation = fields.Boolean(compute="_compute_from_reservation")
     outstanding_folios_debits_widget = fields.Text(
         compute="_compute_get_outstanding_folios_JSON"
     )
@@ -30,12 +29,6 @@ class AccountMove(models.Model):
             folios = inv.mapped("invoice_line_ids.folio_ids")
             if folios:
                 inv.folio_ids = [(6, 0, folios.ids)]
-
-    def _compute_from_reservation(self):
-        for inv in self:
-            inv.from_reservation = False
-            if len(inv.invoice_line_ids.mapped("reservation_line_ids")) > 0:
-                inv.from_reservation = True
 
     # Action methods
 

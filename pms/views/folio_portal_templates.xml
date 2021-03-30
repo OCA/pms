@@ -303,7 +303,7 @@
                                                 <t t-if="service.is_board_service">
                                                         <t
                                                     t-set="price"
-                                                    t-value="service.product_qty/line.product_uom_qty*service.price_unit*(1-(service.discount or 0.0)*0.01) + price"
+                                                    t-value="service.product_qty/line.price_total*(1-(service.reservation_id.discount or 0.0)*0.01) + price"
                                                 />
                                                 </t>
                                             </t>

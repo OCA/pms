@@ -208,6 +208,8 @@ class PmsRoomType(models.Model):
                     if room.pms_property_id not in record.pms_property_ids:
                         raise ValidationError(_("Property not allowed in room"))
 
+    # TODO: Not allowed repeat boardservice on room_type with
+    # same properties os without properties
     @api.constrains("board_service_room_type_ids", "pms_property_ids")
     def _check_integrity_property_board_service_room_type(self):
         for record in self:

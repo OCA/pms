@@ -301,7 +301,6 @@
                     'product_id': ref('pms_service_0'),
                     'amount': 3})]"
             />
-            <field name="price_type">fixed</field>
         </record>
         <record id="pms_board_service_1" model="pms.board.service">
             <field name="name">Half Board</field>
@@ -314,7 +313,6 @@
                     'amount': 8})
                     ]"
             />
-            <field name="price_type">fixed</field>
         </record>
         <record id="pms_board_service_2" model="pms.board.service">
             <field name="name">FullBoard</field>
@@ -329,36 +327,29 @@
                     'amount': 8})
                     ]"
             />
-            <field name="price_type">fixed</field>
         </record>
         <!-- pms.board.service.room.type -->
         <!--Room 0 Economic-->
         <record id="pms_board_service_room_0" model="pms.board.service.room.type">
             <field name="pms_board_service_id" ref="pms_board_service_0" />
             <field name="pms_room_type_id" ref="pms_room_type_0" />
-            <field name="price_type">fixed</field>
         </record>
         <record id="pms_board_service_room_1" model="pms.board.service.room.type">
             <field name="pms_board_service_id" ref="pms_board_service_1" />
             <field name="pms_room_type_id" ref="pms_room_type_0" />
-            <field name="price_type">fixed</field>
         </record>
         <record id="pms_board_service_room_2" model="pms.board.service.room.type">
             <field name="pms_board_service_id" ref="pms_board_service_1" />
             <field name="pms_room_type_id" ref="pms_room_type_0" />
-            <field name="pricelist_id" ref="product.list0" />
-            <field name="price_type">fixed</field>
         </record>
         <!--Room 3 Triple-->
         <record id="pms_board_service_room_3" model="pms.board.service.room.type">
             <field name="pms_board_service_id" ref="pms_board_service_0" />
             <field name="pms_room_type_id" ref="pms_room_type_3" />
-            <field name="price_type">fixed</field>
         </record>
         <record id="pms_board_service_room_4" model="pms.board.service.room.type">
             <field name="pms_board_service_id" ref="pms_board_service_2" />
             <field name="pms_room_type_id" ref="pms_room_type_3" />
-            <field name="price_type">fixed</field>
         </record>
         <!-- room.closure.reason -->
         <record id="pms_room_closure_reason_0" model="room.closure.reason">
