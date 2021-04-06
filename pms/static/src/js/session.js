@@ -3,9 +3,8 @@ odoo.define("pms.session", function (require) {
 
     var Session = require("web.Session");
     var utils = require("web.utils");
-    var modules = odoo._modules;
 
-    var inherited_Session = Session.extend({
+    Session.include({
         // TODO: require test and debug
         setPmsProperties: function (pms_main_property_id, pms_property_ids) {
             var hash = $.bbq.getState();
@@ -24,12 +23,4 @@ odoo.define("pms.session", function (require) {
             location.reload();
         },
     });
-
-    var pms_session = new inherited_Session(undefined, undefined, {
-        modules: modules,
-        use_cors: false,
-    });
-    pms_session.is_bound = pms_session.session_bind();
-
-    return pms_session;
 });
