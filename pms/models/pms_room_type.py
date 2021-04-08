@@ -23,7 +23,7 @@ class PmsRoomType(models.Model):
         result = []
         for room_type in self:
             name = room_type.name
-            if self._context.get("checkin") and self._context.get("checkin"):
+            if self._context.get("checkin") and self._context.get("checkout"):
                 avail = self.env[
                     "pms.room.type.availability.plan"
                 ].get_count_rooms_available(
