@@ -467,8 +467,16 @@
                                         decoration-success="is_board_service == True"
                                     >
                                         <field name="is_board_service" invisible="1" />
-                                        <field name="company_id" invisible="0" />
-                                        <field name="pms_property_id" invisible="0" />
+                                        <field
+                                            name="company_id"
+                                            invisible="1"
+                                            readonly="1"
+                                        />
+                                        <field
+                                            name="pms_property_id"
+                                            invisible="1"
+                                            readonly="1"
+                                        />
                                         <button
                                             type="object"
                                             class="oe_stat_button"
@@ -481,7 +489,11 @@
                                             invisible="1"
                                             readonly="1"
                                         />
-                                        <field name="folio_id" invisible="1" />
+                                        <field
+                                            name="folio_id"
+                                            invisible="1"
+                                            readonly="1"
+                                        />
                                         <field
                                             name="reservation_id"
                                             invisible="1"
