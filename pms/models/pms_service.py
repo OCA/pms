@@ -282,7 +282,7 @@ class PmsService(models.Model):
             qty = sum(service.service_line_ids.mapped("day_qty"))
             service.product_qty = qty
 
-    @api.depends("reservation_id")
+    @api.depends("reservation_id", "reservation_id.folio_id")
     def _compute_folio_id(self):
         for record in self:
             if record.reservation_id:
