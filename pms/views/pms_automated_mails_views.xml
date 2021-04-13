@@ -44,8 +44,7 @@
             <field name="arch" type="xml">
                 <tree string="Automated Mails">
                     <field name="name" />
-                    <field name="time" />
-                    <field name="time_type" />
+                    <field name="action" />
                     <field name="template_id" />
                 </tree>
             </field>
