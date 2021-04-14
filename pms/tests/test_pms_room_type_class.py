@@ -2,57 +2,47 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.exceptions import ValidationError
-from odoo.tests.common import SavepointCase
+
+from .common import TestPms
 
 
-class TestRoomTypeClass(SavepointCase):
+class TestRoomTypeClass(TestPms):
     def setUp(self):
         super().setUp()
-        self.p1 = self.browse_ref("pms.main_pms_property")
-        self.m1 = self.p1.company_id
-        self.p2 = self.env["pms.property"].create(
+        self.company2 = self.env["res.company"].create(
             {
-                "name": "p2",
-                "company_id": self.m1.id,
-                "default_pricelist_id": self.ref("product.list0"),
+                "name": "Company 2",
             }
         )
-        self.m2 = self.env["res.company"].create(
+        self.pms_property3 = self.env["pms.property"].create(
             {
-                "name": "Company m2",
-            }
-        )
-        self.p3 = self.env["pms.property"].create(
-            {
-                "name": "p3",
-                "company_id": self.m2.id,
-                "default_pricelist_id": self.ref("product.list0"),
+                "name": "Property 3",
+                "company_id": self.company2.id,
+                "default_pricelist_id": self.pricelist1.id,
             }
         )
 
-
-class TestRoomTypeClassCodePropertyIntegrity(TestRoomTypeClass):
     # external integrity
     def test_external_case_01(self):
         """
         PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has property p1
-                - p1 has company m1
-        ACT:    - create a new cl2 class
-                - cl2 has code c1
-                - cl2 has property p1
-                - p1 has company m1
+                - room_type_class1 has code c1
+                - room_type_class1 has pms_property1
+                - pms_property1 has company company1
+        ACT:    - create a new room_type_class2 class
+                - room_type_class2 has code c1
+                - room_type_class2 has pms_property1
+                - pms_property1 has company company1
         POST:   - Integrity error: the room type already exists
-                - cl2 not created
+                - room_type_class2 not created
         """
         # ARRANGE
-        # cl1
+        # room_type_class1
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id])],
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
 
@@ -60,36 +50,44 @@ class TestRoomTypeClassCodePropertyIntegrity(TestRoomTypeClass):
         with self.assertRaises(
             ValidationError, msg="The room type class has been created and it shouldn't"
         ):
-            # cl2
+            # room_type_class2
             self.env["pms.room.type.class"].create(
                 {
                     "name": "Room type class cl2",
                     "code_class": "c1",
-                    "pms_property_ids": [(6, 0, [self.p1.id])],
+                    "pms_property_ids": [(6, 0, [self.pms_property1.id])],
                 }
             )
 
     def test_external_case_02(self):
         """
         PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has property p1
-                - p1 has company m1
-        ACT:    - create a new cl2 class
-                - cl2 has code c1
-                - cl2 has property p1, p2, p3
-                - p1, p2 has company m1
-                - p3 has company m2
+                - room_type_class1 has code c1
+                - room_type_class1 has property pms_property1
+                - pms_property1 has company company1
+        ACT:    - create a new room_type_class2 class
+                - room_type_class2 has code c1
+                - room_type_class2 has property pms_property1, pms_property2,
+                    pms_property3
+                - pms_property1, pms_property2 has company company1
+                - pms_property3 has company company2
         POST:   - Integrity error: the room type class already exists
-                - cl2 not created
+                - room_type_class2 not created
         """
         # ARRANGE
-        # cl1
+        self.pms_property2 = self.env["pms.property"].create(
+            {
+                "name": "Property 2",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+        # room_type_class1
         self.env["pms.room.type.class"].create(
             {
-                "name": "Room type class cl1",
+                "name": "Room type class 1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id])],
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
 
@@ -97,158 +95,184 @@ class TestRoomTypeClassCodePropertyIntegrity(TestRoomTypeClass):
         with self.assertRaises(
             ValidationError, msg="The room type class has been created and it shouldn't"
         ):
-            # cl2
+            # room_type_class2
             self.env["pms.room.type.class"].create(
                 {
                     "name": "Room type class cl2",
                     "code_class": "c1",
-                    "pms_property_ids": [(6, 0, [self.p1.id, self.p2.id, self.p3.id])],
+                    "pms_property_ids": [
+                        (
+                            6,
+                            0,
+                            [
+                                self.pms_property1.id,
+                                self.pms_property2.id,
+                                self.pms_property3.id,
+                            ],
+                        )
+                    ],
                 }
             )
 
-
-class TestRoomTypeClassCodePropertyUniqueness(TestRoomTypeClass):
-    # test with one room type class
     def test_single_case_01(self):
         """
         PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has 2 properties p1 and p2
-                - p1 and p2 have the same company m1
-        ACT:    - search room type class with code c1 and property p1
-                - p1 has company m1
-        POST:   - only cl1 room type class found
+                - room_type_class1 has code c1
+                - room_type_class1 has 2 properties pms_property1 and pms_property2
+                - pms_property_1 and pms_property2 have the same company company1
+        ACT:    - search room type class with code c1 and pms_property1
+                - pms_property1 has company company1
+        POST:   - only room_type_class1 room type class found
         """
         # ARRANGE
-        cl1 = self.env["pms.room.type.class"].create(
+        room_type_class1 = self.env["pms.room.type.class"].create(
             {
-                "name": "Room type class cl1",
+                "name": "Room type class 1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
+                "pms_property_ids": [
+                    (6, 0, [self.pms_property1.id, self.pms_property3.id])
+                ],
             }
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p1.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property1.id, "c1"
         )
 
         # ASSERT
         self.assertEqual(
-            room_type_class.id, cl1.id, "Expected room type class not found"
+            room_type_classes.id,
+            room_type_class1.id,
+            "Expected room type class not found",
         )
 
     def test_single_case_02(self):
         """
         PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has 2 properties p1 and p3
-                - p1 and p2 have different companies
-                - p1 have company m1 and p3 have company m2
-        ACT:    - search room type class with code c1 and property p1
-                - p1 has company m1
-        POST:   - only cl1 room type found
+                - room_type_class1 has code c1
+                - room_type_class1 has 2 properties pms_property1 and pms_property3
+                - pms_property1 and pms_property2 have different companies
+                - pms_property1 have company company1 and pms_property3 have company2
+        ACT:    - search room type class with code c1 and property pms_property1
+                - pms_property1 has company company1
+        POST:   - only room_type_class1 room type found
         """
         # ARRANGE
         cl1 = self.env["pms.room.type.class"].create(
             {
-                "name": "Room type class cl1",
+                "name": "Room type class 1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
+                "pms_property_ids": [
+                    (6, 0, [self.pms_property1.id, self.pms_property3.id])
+                ],
             }
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p1.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property1.id, "c1"
         )
 
         # ASSERT
         self.assertEqual(
-            room_type_class.id, cl1.id, "Expected room type class not found"
+            room_type_classes.id, cl1.id, "Expected room type class not found"
         )
 
     def test_single_case_03(self):
         """
-        PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 with 2 properties p1 and p2
-                - p1 and p2 have same company m1
-        ACT:    - search room type class with code c1 and property p3
-                - p3 have company m2
+        PRE:    - room_type_class1 exists
+                - room_type_class1 has code c1
+                - room_type_class1 with 2 properties pms_property1 and pms_property2
+                - pms_property1 and pms_property2 have same company company1
+        ACT:    - search room type class with code c1 and property pms_property3
+                - pms_property3 have company company2
         POST:   - no room type found
         """
         # ARRANGE
-        # cl1
+        self.pms_property2 = self.env["pms.property"].create(
+            {
+                "name": "Property 2",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+        # room_type_class1
         self.env["pms.room.type.class"].create(
             {
-                "name": "Room type class cl1",
+                "name": "Room type class 1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id, self.p2.id])],
+                "pms_property_ids": [
+                    (6, 0, [self.pms_property1.id, self.pms_property2.id])
+                ],
             }
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p3.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property3.id, "c1"
         )
 
         # ASSERT
         self.assertFalse(
-            room_type_class, "Room type class found but it should not have found any"
+            room_type_classes, "Room type class found but it should not have found any"
         )
 
     def test_single_case_04(self):
         """
-        PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 properties are null
-        ACT:    - search room type class with code c1 and property p1
-                - p1 have company m1
-        POST:   - only cl1 room type class found
+        PRE:    - room_type_class1 exists
+                - room_type_class1 has code c1
+                - room_type_class1 properties are null
+        ACT:    - search room type class with code c1 and property pms_property1
+                - pms_property1 have company company1
+        POST:   - only room_type_class1 room type class found
         """
         # ARRANGE
-        cl1 = self.env["pms.room.type.class"].create(
+        room_type_class1 = self.env["pms.room.type.class"].create(
             {
-                "name": "Room type class cl1",
+                "name": "Room type class 1",
                 "code_class": "c1",
                 "pms_property_ids": False,
             }
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p1.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property1.id, "c1"
         )
 
         # ASSERT
         self.assertEqual(
-            room_type_class.id, cl1.id, "Expected room type class not found"
+            room_type_classes.id,
+            room_type_class1.id,
+            "Expected room type class not found",
         )
 
     # tests with more than one room type class
     def test_multiple_case_01(self):
         """
-        PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has 2 properties p1 and p2
-                - p1 and p2 have the same company m1
-                - room type class cl2 exists
-                - cl2 has code c1
-                - cl2 has no properties
-        ACT:    - search room type class with code c1 and property p1
-                - p1 have company m1
-        POST:   - only cl1 room type class found
+        PRE:    - room_type_class1 exists
+                - room_type_class1 has code c1
+                - room_type_class1 has 2 properties pms_property1 and pms_property2
+                - pms_property1 and pms_property2 have the same company company1
+                - room type class room_type_class2 exists
+                - room_type_class2 has code c1
+                - room_type_class2 has no properties
+        ACT:    - search room type class with code c1 and property pms_property1
+                - pms_property1 have company company1
+        POST:   - only room_type_class1 room type class found
         """
         # ARRANGE
-        cl1 = self.env["pms.room.type.class"].create(
+        room_type_class1 = self.env["pms.room.type.class"].create(
             {
-                "name": "Room type class cl1",
+                "name": "Room type class 1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id, self.p3.id])],
+                "pms_property_ids": [
+                    (6, 0, [self.pms_property1.id, self.pms_property3.id])
+                ],
             }
         )
-        # cl2
+        # room_type_class2
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
@@ -258,38 +282,47 @@ class TestRoomTypeClassCodePropertyUniqueness(TestRoomTypeClass):
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p1.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property1.id, "c1"
         )
 
         # ASSERT
         self.assertEqual(
-            room_type_class.id, cl1.id, "Expected room type class not found"
+            room_type_classes.id,
+            room_type_class1.id,
+            "Expected room type class not found",
         )
 
     def test_multiple_case_02(self):
         """
-        PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has property p1
-                - p1 have the company m1
-                - room type class cl2 exists
-                - cl2 has code c1
-                - cl2 has no properties
-        ACT:    - search room type class with code c1 and property p2
-                - p2 have company m1
-        POST:   - only cl1 room type class found
+        PRE:    - room_type_class1 exists
+                - room_type_class1 has code c1
+                - room_type_class1 has property pms_property1
+                - pms_property1 have the company company1
+                - room type class room_type_class2 exists
+                - room_type_class2 has code c1
+                - room_type_class2 has no properties
+        ACT:    - search room type class with code c1 and pms_property2
+                - pms_property2 have company company1
+        POST:   - only room_type_class1 room type class found
         """
         # ARRANGE
-        # cl1
-        self.env["pms.room.type.class"].create(
+        self.pms_property2 = self.env["pms.property"].create(
             {
-                "name": "Room type class cl1",
-                "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id])],
+                "name": "Property 2",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
             }
         )
-        cl2 = self.env["pms.room.type.class"].create(
+        # room_type_class1
+        self.env["pms.room.type.class"].create(
+            {
+                "name": "Room type class 1",
+                "code_class": "c1",
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+            }
+        )
+        room_type_class2 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
                 "code_class": "c1",
@@ -298,38 +331,40 @@ class TestRoomTypeClassCodePropertyUniqueness(TestRoomTypeClass):
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p2.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property2.id, "c1"
         )
 
         # ASSERT
         self.assertEqual(
-            room_type_class.id, cl2.id, "Expected room type class not found"
+            room_type_classes.id,
+            room_type_class2.id,
+            "Expected room type class not found",
         )
 
     def test_multiple_case_03(self):
         """
-        PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has property p1
-                - p1 have the company m1
-                - room type class cl2 exists
-                - cl2 has code c1
-                - cl2 has no properties
-        ACT:    - search room type class with code c1 and property p3
-                - p3 have company m2
-        POST:   - only cl2 room type class found
+        PRE:    - room_type_class1 exists
+                - room_type_class1 has code c1
+                - room_type_class1 has property pms_property1
+                - pms_property1 have the company company1
+                - room type class room_type_class2 exists
+                - room_type_class2 has code c1
+                - room_type_class2 has no properties
+        ACT:    - search room type class with code c1 and property pms_property3
+                - pms_property3 have company company2
+        POST:   - only room_type_class2 room type class found
         """
         # ARRANGE
-        # cl1
+        # room_type_class1
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id])],
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
-        cl2 = self.env["pms.room.type.class"].create(
+        room_type_class2 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
                 "code_class": "c1",
@@ -338,38 +373,40 @@ class TestRoomTypeClassCodePropertyUniqueness(TestRoomTypeClass):
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p3.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property3.id, "c1"
         )
 
         # ASSERT
         self.assertEqual(
-            room_type_class.id, cl2.id, "Expected room type class not found"
+            room_type_classes.id,
+            room_type_class2.id,
+            "Expected room type class not found",
         )
 
     def test_multiple_case_04(self):
         """
-        PRE:    - room type class cl1 exists
-                - cl1 has code c1
-                - cl1 has property p1
-                - p1 have the company m1
-                - room type cl2 exists
-                - cl2 has code c1
-                - cl2 has no properties
-        ACT:    - search room type class with code c1 and property p3
-                - p3 have company m2
+        PRE:    - room_type_class1 exists
+                - room_type_class1 has code c1
+                - room_type_class1 has property pms_property1
+                - pms_property1 have the company company1
+                - room type room_type_class2 exists
+                - room_type_class2 has code c1
+                - room_type_class2 has no properties
+        ACT:    - search room type class with code c1 and property pms_property3
+                - pms_property3 have company company2
         POST:   - r2 room type class found
         """
         # ARRANGE
-        # cl1
+        # room_type_class1
         self.env["pms.room.type.class"].create(
             {
-                "name": "Room type class cl1",
+                "name": "Room type class 1",
                 "code_class": "c1",
-                "pms_property_ids": [(6, 0, [self.p1.id])],
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
-        cl2 = self.env["pms.room.type.class"].create(
+        room_type_class2 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
                 "code_class": "c1",
@@ -378,9 +415,11 @@ class TestRoomTypeClassCodePropertyUniqueness(TestRoomTypeClass):
         )
 
         # ACT
-        room_type_class = self.env["pms.room.type.class"].get_unique_by_property_code(
-            self.p3.id, "c1"
+        room_type_classes = self.env["pms.room.type.class"].get_unique_by_property_code(
+            self.pms_property3.id, "c1"
         )
 
         # ASSERT
-        self.assertEqual(room_type_class.id, cl2.id, "Expected room type not found")
+        self.assertEqual(
+            room_type_classes.id, room_type_class2.id, "Expected room type not found"
+        )

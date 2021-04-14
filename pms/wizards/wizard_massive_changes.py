@@ -30,7 +30,7 @@ class AvailabilityWizard(models.TransientModel):
         required=True,
     )
     availability_plan_id = fields.Many2one(
-        comodel_name="pms.room.type.availability.plan",
+        comodel_name="pms.availability.plan",
         string="Availability Plan to apply massive changes",
         # can be setted by context from availability plan detail
     )
@@ -169,7 +169,7 @@ class AvailabilityWizard(models.TransientModel):
     )
 
     rules_to_overwrite = fields.One2many(
-        comodel_name="pms.room.type.availability.rule",
+        comodel_name="pms.availability.plan.rule",
         compute="_compute_rules_to_overwrite",
         store=False,
         readonly=True,
@@ -275,7 +275,7 @@ class AvailabilityWizard(models.TransientModel):
                     record.apply_on_sunday,
                 )
                 if record.start_date and record.end_date:
-                    rules = self.env["pms.room.type.availability.rule"].search(domain)
+                    rules = self.env["pms.availability.plan.rule"].search(domain)
                     if (
                         not record.apply_on_all_week
                         and record.start_date
@@ -525,7 +525,7 @@ class AvailabilityWizard(models.TransientModel):
                                 )
                                 overwrite.write(vals)
                             else:
-                                self.env["pms.room.type.availability.rule"].create(
+                                self.env["pms.availability.plan.rule"].create(
                                     {
                                         "availability_plan_id": avail_plan_id,
                                         "date": date,
@@ -556,9 +556,9 @@ class AvailabilityWizard(models.TransientModel):
                 record.massive_changes_on == "availability_plan"
                 and not record.avail_readonly
             ):
-                action = self.env.ref("pms.room_type_availability_action").read()[0]
+                action = self.env.ref("pms.availability_action").read()[0]
                 action["views"] = [
-                    (self.env.ref("pms.room_type_availability_view_form").id, "form")
+                    (self.env.ref("pms.availability_view_form").id, "form")
                 ]
                 action["res_id"] = record.availability_plan_id.id
                 return action

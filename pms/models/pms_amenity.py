@@ -7,56 +7,46 @@ from odoo.exceptions import ValidationError
 
 class PmsRoomAmenity(models.Model):
     _name = "pms.amenity"
-    _description = "Room amenities"
+    _description = "Room amenity"
 
-    # Fields declaration
-    name = fields.Char("Amenity Name", translate=True, required=True)
-    pms_property_ids = fields.Many2many(
-        "pms.property",
-        string="Properties",
-        required=False,
-        ondelete="restrict",
+    active = fields.Boolean(
+        string="Active",
+        help="Determines if amenity is active",
+        default=True,
     )
-    room_amenity_type_id = fields.Many2one(
-        "pms.amenity.type",
-        "Amenity Category",
+    name = fields.Char(
+        string="Amenity Name",
+        help="Amenity Name",
+        required=True,
+        translate=True,
+    )
+    pms_property_ids = fields.Many2many(
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        comodel_name="pms.property",
+        relation="pms_amenity_pms_property_rel",
+        column1="amenity_type_id",
+        column2="pms_property_id",
+    )
+    pms_amenity_type_id = fields.Many2one(
+        string="Amenity Category",
+        help="Segment the amenities by categories (multimedia, comfort, etc ...)",
+        comodel_name="pms.amenity.type",
         domain="['|', ('pms_property_ids', '=', False),('pms_property_ids', 'in', "
         "pms_property_ids)]",
     )
-    default_code = fields.Char("Internal Reference")
-    active = fields.Boolean("Active", default=True)
-
-    # TODO: Constrain coherence pms_property_ids with amenity types pms_property_ids
-    allowed_property_ids = fields.Many2many(
-        "pms.property",
-        "allowed_amenity_move_rel",
-        "amenity_id",
-        "property_id",
-        string="Allowed Properties",
-        store=True,
-        readonly=True,
-        compute="_compute_allowed_property_ids",
+    default_code = fields.Char(
+        string="Internal Reference", help="Internal unique identifier of the amenity"
     )
-
-    @api.depends(
-        "room_amenity_type_id.pms_property_ids",
-    )
-    def _compute_allowed_property_ids(self):
-        for amenity in self:
-            if amenity.room_amenity_type_id.pms_property_ids:
-                amenity.allowed_property_ids = (
-                    amenity.room_amenity_type_id.pms_property_ids
-                )
-            else:
-                amenity.allowed_property_ids = False
 
     @api.constrains(
-        "allowed_property_ids",
+        "pms_amenity_type_id",
         "pms_property_ids",
     )
     def _check_property_integrity(self):
         for rec in self:
-            if rec.pms_property_ids and rec.allowed_property_ids:
-                for prop in rec.pms_property_ids:
-                    if prop not in rec.allowed_property_ids:
-                        raise ValidationError(_("Property not allowed in amenity type"))
+            if rec.pms_amenity_type_id and rec.pms_amenity_type_id.pms_property_ids:
+                res = rec.pms_property_ids - rec.pms_amenity_type_id.pms_property_ids
+                if res:
+                    raise ValidationError(_("Property not allowed"))

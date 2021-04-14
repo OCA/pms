@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <odoo>
-    <record id="room_type_availability_rule_view_form" model="ir.ui.view">
-        <field name="name">pms.room.type.availability.rule.form</field>
-        <field name="model">pms.room.type.availability.rule</field>
+    <record id="availability_plan_rule_view_form" model="ir.ui.view">
+        <field name="name">pms.availability.plan.rule.form</field>
+        <field name="model">pms.availability.plan.rule</field>
         <field name="arch" type="xml">
             <form string="Availability Plans">
                 <group>
@@ -37,9 +37,9 @@
             </form>
         </field>
     </record>
-    <record id="room_type_availability_rule_view_tree" model="ir.ui.view">
-        <field name="name">pms.room.type.availability.rule.tree</field>
-        <field name="model">pms.room.type.availability.rule</field>
+    <record id="availability_plan_rule_view_tree" model="ir.ui.view">
+        <field name="name">pms.availability.plan.rule.tree</field>
+        <field name="model">pms.availability.plan.rule</field>
         <field name="arch" type="xml">
             <tree string="Availability rules">
                 <field name="date" />

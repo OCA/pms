@@ -3,7 +3,9 @@
     <record id="pms_partner_reservations" model="ir.actions.act_window">
         <field name="name">Reservations</field>
         <field name="res_model">pms.reservation</field>
-        <field name="domain">[('partner_id', '=',active_id)]</field>
+        <field
+            name="domain"
+        >[('folio_id.partner_id', 'in', "TODO: O2m de partner a folios")]</field>
     </record>
     <record id="pms_partner_folios" model="ir.actions.act_window">
         <field name="name">Folios</field>
@@ -80,7 +82,7 @@
                               <span>%%</span>
                           </div>-->
                         <field name="apply_pricelist" />
-                        <field name="invoice_agency" />
+                        <field name="invoice_to_agency" />
                     </group>
                 </page>
             </xpath>

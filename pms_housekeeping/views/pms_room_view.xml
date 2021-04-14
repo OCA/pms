@@ -93,7 +93,7 @@
         <field name="arch" type="xml">
             <search string="Housekeeping filters">
                 <field name="clean_employee_id" />
-                <field name="floor_id" />
+                <field name="ubication_id" />
                 <field name="room_type_id" />
                 <!-- <filter name="filter_occupied" string="Occupied" domain="[('clean_status','=','occupied')]"/> -->
 
@@ -113,8 +113,8 @@
                         icon="fa-user"
                     />
                     <field
-                        name="floor_id"
-                        string="Floor"
+                        name="ubication_id"
+                        string="Ubication"
                         enable_counters="1"
                         select="multi"
                         icon="fa-hospital-o"
@@ -134,8 +134,8 @@
         <field name="active" eval="True" />
         <field name="arch" type="xml">
             <kanban
-                default_group_by="floor_id"
-                default_order="floor_id"
+                default_group_by="ubication_id"
+                default_order="ubication_id"
                 class="o_res_partner_kanban"
                 sample="1"
                 group_create="false"

@@ -4,14 +4,13 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-
-from .common import TestHotel
+from odoo.tests import common
 
 _logger = logging.getLogger(__name__)
 
 
 @freeze_time("2012-01-14")
-class TestPmsCheckinPartner(TestHotel):
+class TestPmsCheckinPartner(common.SavepointCase):
     @classmethod
     def arrange_single_checkin(cls):
         # Arrange for one checkin on one reservation
@@ -336,7 +335,7 @@ class TestPmsCheckinPartner(TestHotel):
             "Fail the checkins data ratio on reservation",
         )
 
-    def test_auto_no_show(self):
+    def test_auto_arrival_delayed(self):
 
         # ARRANGE
         self.arrange_folio_reservations()
@@ -345,21 +344,21 @@ class TestPmsCheckinPartner(TestHotel):
         # ACTION
         freezer = freeze_time("2012-01-15 10:00:00")
         freezer.start()
-        PmsReservation.auto_no_show()
+        PmsReservation.auto_arrival_delayed()
 
-        no_show_reservations = self.folio_1.reservation_ids.filtered(
-            lambda r: r.state == "no_show"
+        arrival_delayed_reservations = self.folio_1.reservation_ids.filtered(
+            lambda r: r.state == "arrival_delayed"
         )
 
         # ASSERT
         self.assertEqual(
-            len(no_show_reservations),
+            len(arrival_delayed_reservations),
             3,
             "Reservations not set like No Show",
         )
         freezer.stop()
 
-    def test_auto_no_checkout(self):
+    def test_auto_departure_delayed(self):
 
         # ARRANGE
         self.arrange_single_checkin()
@@ -369,14 +368,14 @@ class TestPmsCheckinPartner(TestHotel):
         # ACTION
         freezer = freeze_time("2012-01-17 12:00:00")
         freezer.start()
-        PmsReservation.auto_no_checkout()
+        PmsReservation.auto_departure_delayed()
 
         freezer.stop()
         # ASSERT
         self.assertEqual(
             self.reservation_1.state,
-            "no_checkout",
-            "Reservations not set like No checkout",
+            "departure_delayed",
+            "Reservations not set like Departure delayed",
         )
 
     def test_not_valid_emails(self):

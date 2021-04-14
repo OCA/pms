@@ -10,43 +10,60 @@ class PmsSharedRoom(models.Model):
     _name = "pms.shared.room"
     _description = "Shared Room"
     _order = "room_type_id, name"
-
-    # Fields declaration
-    name = fields.Char("Room Name", required=True)
+    name = fields.Char(
+        string="Room Name", help="Name of the shared room", required=True
+    )
+    active = fields.Boolean(
+        string="Active", help="Determines if shared room is active", default=True
+    )
+    sequence = fields.Integer(
+        string="Sequence",
+        help="Field used to change the position of the shared rooms in tree view."
+        "Changing the position changes the sequence",
+        required=True,
+    )
     room_type_id = fields.Many2one(
-        "pms.room.type",
-        "Room Type",
+        string="Room Type",
+        help="Room type which the shared room belongs",
+        comodel_name="pms.room.type",
         required=True,
         ondelete="restrict",
         domain=[("shared_room", "=", True)],
     )
     # TODO: properties relation
     pms_property_ids = fields.Many2many(
-        "pms.property",
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        comodel_name="pms.property",
+        relation="pms_shared_room_pms_property_rel",
+        column1="shared_room_id",
+        column2="pms_property_id",
     )
-    floor_id = fields.Many2one(
-        "pms.floor",
-        "Ubication",
+    ubication_id = fields.Many2one(
+        string="Ubication",
+        help="At which ubication the room is located.",
+        comodel_name="pms.ubication",
         ondelete="restrict",
-        help="At which floor the room is located.",
     )
     bed_ids = fields.One2many(
-        "pms.room",
-        "shared_room_id",
+        string="Beds",
+        help="Beds in one room",
+        comodel_name="pms.room",
+        inverse_name="shared_room_id",
         readonly=True,
     )
-    active = fields.Boolean("Active", default=True)
-    sequence = fields.Integer("Sequence", required=True)
-    beds = fields.Integer("Beds")
+    beds = fields.Integer(
+        string="Number Of Beds", help="Number of beds in a shared room"
+    )
     description_sale = fields.Text(
-        "Sale Description",
-        translate=True,
+        string="Sale Description",
         help="A description of the Product that you want to communicate to "
         " your customers. This description will be copied to every Sales "
         " Order, Delivery Order and Customer Invoice/Credit Note",
+        translate=True,
     )
 
-    # Constraints and onchanges
     @api.constrains("beds")
     def _constrain_beds(self):
         self.ensure_one()
@@ -75,7 +92,7 @@ class PmsSharedRoom(models.Model):
                 "capacity": 1,
                 "room_type_id": self.room_type_id.id,
                 "sequence": self.sequence,
-                "floor_id": self.floor_id.id if self.floor_id else False,
+                "ubication_id": self.ubication_id.id if self.ubication_id else False,
                 "shared_room_id": self.id,
             }
             beds.append((0, False, bed_vals))
@@ -98,11 +115,11 @@ class PmsSharedRoom(models.Model):
             }
         )
 
-    @api.constrains("floor_id")
-    def _constrain_floor_id(self):
+    @api.constrains("ubication_id")
+    def _constrain_ubication_id(self):
         self.bed_ids.write(
             {
-                "floor_id": self.floor_id.id,
+                "ubication_id": self.ubication_id.id,
             }
         )
 

@@ -30,14 +30,12 @@
                             </group>
                             <group string="Sequences">
                                 <field name="folio_sequence_id" />
+                                <field name="reservation_sequence_id" />
+                                <field name="checkin_sequence_id" />
                             </group>
                             <group colspan="4" col="4" string="Check-in hours">
                                 <field name="default_arrival_hour" />
                                 <field name="default_departure_hour" />
-                            </group>
-                            <group colspan="4" col="4" string="Cancellation policies">
-                                <field name="default_cancel_policy_days" />
-                                <field name="default_cancel_policy_percent" />
                             </group>
                         </page>
                         <page string="Rooms" name="property_rooms">

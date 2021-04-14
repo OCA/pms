@@ -17,16 +17,41 @@ class PmsRoomTypeClass(models.Model):
     _description = "Room Type Class"
     _order = "sequence, name, code_class"
 
-    # Fields declaration
-    name = fields.Char("Class Name", required=True, translate=True)
-    # Relationship between models
-    pms_property_ids = fields.Many2many(
-        "pms.property", string="Properties", required=False, ondelete="restrict"
+    name = fields.Char(
+        string="Class Name",
+        help="Name of the room type class",
+        required=True,
+        translate=True,
     )
-    room_type_ids = fields.One2many("pms.room.type", "class_id", "Types")
-    code_class = fields.Char("Code", required=True)
-    active = fields.Boolean("Active", default=True)
-    sequence = fields.Integer("Sequence", default=0)
+    active = fields.Boolean(
+        string="Active",
+        help="If unchecked, it will allow you to hide the room type",
+        default=True,
+    )
+    sequence = fields.Integer(
+        string="Sequence",
+        help="Field used to change the position of the room type classes in tree view.",
+        default=0,
+    )
+    pms_property_ids = fields.Many2many(
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        comodel_name="pms.property",
+        relation="pms_room_type_class_property_rel",
+        column1="room_type_class_id",
+        column2="pms_property_id",
+        ondelete="restrict",
+    )
+    room_type_ids = fields.One2many(
+        string="Types",
+        help="Room Types that belong to this Room Type Class",
+        comodel_name="pms.room.type",
+        inverse_name="class_id",
+    )
+    code_class = fields.Char(
+        string="Code", help="Room type class identification code", required=True
+    )
 
     @api.model
     def get_unique_by_property_code(self, pms_property_id, code_class=None):

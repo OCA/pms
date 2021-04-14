@@ -13,135 +13,239 @@ class PmsService(models.Model):
     _name = "pms.service"
     _description = "Services and its charges"
 
-    # Default methods
-
-    def name_get(self):
-        result = []
-        for rec in self:
-            name = []
-            name.append("{name}".format(name=rec.name))
-            if rec.reservation_id.name:
-                name.append("{name}".format(name=rec.reservation_id.name))
-            result.append((rec.id, ", ".join(name)))
-        return result
-
-    @api.model
-    def _default_reservation_id(self):
-        if self.env.context.get("reservation_ids"):
-            ids = [item[1] for item in self.env.context["reservation_ids"]]
-            return self.env["pms.reservation"].browse([(ids)], limit=1)
-        elif self.env.context.get("default_reservation_id"):
-            return self.env.context.get("default_reservation_id")
-        return False
-
-    # Fields declaration
     name = fields.Char(
-        "Service description",
-        compute="_compute_name",
-        store=True,
+        string="Service description",
+        help="Service description",
         readonly=False,
+        store=True,
+        compute="_compute_name",
     )
     product_id = fields.Many2one(
-        "product.product", "Service", ondelete="restrict", required=True
+        string="Service",
+        help="Product associated with this service",
+        required=True,
+        comodel_name="product.product",
+        ondelete="restrict",
     )
     folio_id = fields.Many2one(
-        comodel_name="pms.folio",
         string="Folio",
-        compute="_compute_folio_id",
+        help="Folio in which the service is included",
         readonly=False,
         store=True,
+        comodel_name="pms.folio",
+        compute="_compute_folio_id",
     )
     sale_line_ids = fields.One2many(
+        string="Sale Lines",
+        help="",
+        copy=False,
         comodel_name="folio.sale.line",
         inverse_name="service_id",
-        string="Sale Lines",
-        copy=False,
     )
     reservation_id = fields.Many2one(
-        "pms.reservation",
-        "Room",
-        default=_default_reservation_id,
+        string="Room",
+        help="Reservation in which the service is included",
+        default=lambda self: self._default_reservation_id(),
+        comodel_name="pms.reservation",
         ondelete="cascade",
     )
     service_line_ids = fields.One2many(
-        "pms.service.line",
-        "service_id",
-        compute="_compute_service_line_ids",
-        store=True,
+        string="Service Lines",
+        help="Subservices included in this service",
         readonly=False,
+        store=True,
+        comodel_name="pms.service.line",
+        inverse_name="service_id",
+        compute="_compute_service_line_ids",
     )
     company_id = fields.Many2one(
-        related="folio_id.company_id", string="Company", store=True, readonly=True
+        string="Company",
+        help="Company to which the service belongs",
+        readonly=True,
+        store=True,
+        related="folio_id.company_id",
     )
     pms_property_id = fields.Many2one(
-        comodel_name="pms.property",
-        store=True,
+        string="Property",
+        help="Property to which the service belongs",
         readonly=True,
+        store=True,
+        comodel_name="pms.property",
         related="folio_id.pms_property_id",
     )
     tax_ids = fields.Many2many(
-        "account.tax",
         string="Taxes",
-        compute="_compute_tax_ids",
-        store=True,
+        help="Taxes applied in the service",
         readonly=False,
+        store=True,
+        comodel_name="account.tax",
         domain=["|", ("active", "=", False), ("active", "=", True)],
+        compute="_compute_tax_ids",
     )
-    analytic_tag_ids = fields.Many2many("account.analytic.tag", string="Analytic Tags")
+    analytic_tag_ids = fields.Many2many(
+        string="Analytic Tags",
+        help="",
+        comodel_name="account.analytic.tag",
+    )
     currency_id = fields.Many2one(
-        related="folio_id.currency_id", store=True, string="Currency", readonly=True
-    )
-    sequence = fields.Integer(string="Sequence", default=10)
-    state = fields.Selection(related="folio_id.state")
-    per_day = fields.Boolean(related="product_id.per_day", related_sudo=True)
-    product_qty = fields.Integer(
-        "Quantity",
-        compute="_compute_product_qty",
+        string="Currency",
+        help="The currency used in relation to the folio",
+        readonly=True,
         store=True,
-        readonly=False,
+        related="folio_id.currency_id",
     )
-    is_board_service = fields.Boolean()
+    sequence = fields.Integer(string="Sequence", help="", default=10)
+    state = fields.Selection(
+        string="State",
+        help="Service status, it corresponds with folio status",
+        related="folio_id.state",
+    )
+    per_day = fields.Boolean(
+        string="Per Day",
+        help="Indicates if service is sold by days",
+        related="product_id.per_day",
+        related_sudo=True,
+    )
+    product_qty = fields.Integer(
+        string="Quantity",
+        help="Number of services that were sold",
+        readonly=False,
+        store=True,
+        compute="_compute_product_qty",
+    )
+    is_board_service = fields.Boolean(
+        string="Is Board Service",
+        help="Indicates if the service is part of a board service",
+    )
     # Non-stored related field to allow portal user to
     # see the image of the product he has ordered
     product_image = fields.Binary(
-        "Product Image", related="product_id.image_1024", store=False, related_sudo=True
+        string="Product Image",
+        help="Image of the service",
+        store=False,
+        related="product_id.image_1024",
+        related_sudo=True,
     )
     invoice_status = fields.Selection(
-        [
+        string="Invoice Status",
+        help="State in which the service is with respect to invoices."
+        "It can be 'invoiced', 'to_invoice' or 'no'",
+        readonly=True,
+        default="no",
+        store=True,
+        compute="_compute_invoice_status",
+        selection=[
             ("invoiced", "Fully Invoiced"),
             ("to invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
         ],
-        string="Invoice Status",
-        compute="_compute_invoice_status",
-        store=True,
-        readonly=True,
-        default="no",
     )
     channel_type = fields.Selection(
-        [
+        string="Sales Channel",
+        help="sales channel through which the service was sold."
+        "It can be 'door', 'mail', 'phone', 'call' or 'web'",
+        selection=[
             ("door", "Door"),
             ("mail", "Mail"),
             ("phone", "Phone"),
             ("call", "Call Center"),
             ("web", "Web"),
         ],
-        string="Sales Channel",
     )
     price_subtotal = fields.Monetary(
-        string="Subtotal", readonly=True, store=True, compute="_compute_amount_service"
+        string="Subtotal",
+        help="Subtotal price without taxes",
+        readonly=True,
+        store=True,
+        compute="_compute_amount_service",
     )
     price_total = fields.Monetary(
-        string="Total", readonly=True, store=True, compute="_compute_amount_service"
+        string="Total",
+        help="Total price without taxes",
+        readonly=True,
+        store=True,
+        compute="_compute_amount_service",
     )
     price_tax = fields.Float(
         string="Taxes Amount",
+        help="Total of taxes in service",
         readonly=True,
         store=True,
         compute="_compute_amount_service",
     )
 
     # Compute and Search methods
+    @api.depends("product_id")
+    def _compute_tax_ids(self):
+        for service in self:
+            service.tax_ids = service.product_id.taxes_id.filtered(
+                lambda r: not service.company_id or r.company_id == service.company_id
+            )
+
+    @api.depends("service_line_ids", "service_line_ids.day_qty")
+    def _compute_product_qty(self):
+        self.product_qty = 0
+        for service in self.filtered("service_line_ids"):
+            qty = sum(service.service_line_ids.mapped("day_qty"))
+            service.product_qty = qty
+
+    @api.depends("reservation_id", "reservation_id.folio_id")
+    def _compute_folio_id(self):
+        for record in self:
+            if record.reservation_id:
+                record.folio_id = record.reservation_id.folio_id
+            elif not record.folio_id:
+                record.folio_id = False
+
+    @api.depends(
+        "sale_line_ids",
+        "sale_line_ids.invoice_status",
+    )
+    def _compute_invoice_status(self):
+        """
+        Compute the invoice status of a Reservation. Possible statuses:
+        Base on folio sale line invoice status
+        """
+        for line in self:
+            states = list(set(line.sale_line_ids.mapped("invoice_status")))
+            if len(states) == 1:
+                line.invoice_status = states[0]
+            elif len(states) >= 1:
+                if "to_invoice" in states:
+                    line.invoice_status = "to_invoice"
+                elif "invoiced" in states:
+                    line.invoice_status = "invoiced"
+                else:
+                    line.invoice_status = "no"
+            else:
+                line.invoice_status = "no"
+
+    @api.depends("service_line_ids.price_day_total")
+    def _compute_amount_service(self):
+        for service in self:
+            if service.service_line_ids:
+                service.update(
+                    {
+                        "price_tax": sum(
+                            service.service_line_ids.mapped("price_day_tax")
+                        ),
+                        "price_total": sum(
+                            service.service_line_ids.mapped("price_day_total")
+                        ),
+                        "price_subtotal": sum(
+                            service.service_line_ids.mapped("price_day_subtotal")
+                        ),
+                    }
+                )
+            else:
+                service.update(
+                    {
+                        "price_tax": 0,
+                        "price_total": 0,
+                        "price_subtotal": 0,
+                    }
+                )
+
     @api.depends("product_id")
     def _compute_name(self):
         self.name = False
@@ -268,76 +372,26 @@ class PmsService(models.Model):
             return old_line
         return False
 
-    @api.depends("product_id")
-    def _compute_tax_ids(self):
-        for service in self:
-            service.tax_ids = service.product_id.taxes_id.filtered(
-                lambda r: not service.company_id or r.company_id == service.company_id
-            )
+        # Default methods
 
-    @api.depends("service_line_ids", "service_line_ids.day_qty")
-    def _compute_product_qty(self):
-        self.product_qty = 0
-        for service in self.filtered("service_line_ids"):
-            qty = sum(service.service_line_ids.mapped("day_qty"))
-            service.product_qty = qty
+    def name_get(self):
+        result = []
+        for rec in self:
+            name = []
+            name.append("{name}".format(name=rec.name))
+            if rec.reservation_id.name:
+                name.append("{name}".format(name=rec.reservation_id.name))
+            result.append((rec.id, ", ".join(name)))
+        return result
 
-    @api.depends("reservation_id", "reservation_id.folio_id")
-    def _compute_folio_id(self):
-        for record in self:
-            if record.reservation_id:
-                record.folio_id = record.reservation_id.folio_id
-            elif not record.folio_id:
-                record.folio_id = False
-
-    @api.depends(
-        "sale_line_ids",
-        "sale_line_ids.invoice_status",
-    )
-    def _compute_invoice_status(self):
-        """
-        Compute the invoice status of a Reservation. Possible statuses:
-        Base on folio sale line invoice status
-        """
-        for line in self:
-            states = list(set(line.sale_line_ids.mapped("invoice_status")))
-            if len(states) == 1:
-                line.invoice_status = states[0]
-            elif len(states) >= 1:
-                if "to_invoice" in states:
-                    line.invoice_status = "to_invoice"
-                elif "invoiced" in states:
-                    line.invoice_status = "invoiced"
-                else:
-                    line.invoice_status = "no"
-            else:
-                line.invoice_status = "no"
-
-    @api.depends("service_line_ids.price_day_total")
-    def _compute_amount_service(self):
-        for service in self:
-            if service.service_line_ids:
-                service.update(
-                    {
-                        "price_tax": sum(
-                            service.service_line_ids.mapped("price_day_tax")
-                        ),
-                        "price_total": sum(
-                            service.service_line_ids.mapped("price_day_total")
-                        ),
-                        "price_subtotal": sum(
-                            service.service_line_ids.mapped("price_day_subtotal")
-                        ),
-                    }
-                )
-            else:
-                service.update(
-                    {
-                        "price_tax": 0,
-                        "price_total": 0,
-                        "price_subtotal": 0,
-                    }
-                )
+    @api.model
+    def _default_reservation_id(self):
+        if self.env.context.get("reservation_ids"):
+            ids = [item[1] for item in self.env.context["reservation_ids"]]
+            return self.env["pms.reservation"].browse([(ids)], limit=1)
+        elif self.env.context.get("default_reservation_id"):
+            return self.env.context.get("default_reservation_id")
+        return False
 
     # Action methods
     def open_service_ids(self):

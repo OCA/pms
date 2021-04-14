@@ -4,39 +4,46 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class PmsRoomTypeAvailability(models.Model):
-    _name = "pms.room.type.availability"
+class PmsAvailability(models.Model):
+    _name = "pms.availability"
     _description = "Room type availability per day"
 
     room_type_id = fields.Many2one(
-        comodel_name="pms.room.type",
         string="Room Type",
-        required=True,
-        ondelete="cascade",
+        help="Room type for which availability is indicated",
         readonly=True,
+        required=True,
+        comodel_name="pms.room.type",
+        ondelete="cascade",
     )
     date = fields.Date(
         string="Date",
-        required=True,
+        help="Date for which availability applies",
         readonly=True,
+        required=True,
     )
     pms_property_id = fields.Many2one(
-        comodel_name="pms.property",
         string="Property",
-        ondelete="restrict",
-        required=True,
+        help="Property to which the availability is directed",
         readonly=True,
+        required=True,
+        comodel_name="pms.property",
+        ondelete="restrict",
     )
     reservation_line_ids = fields.One2many(
         string="Reservation Lines",
+        help="They are the lines of the reservation into a reservation,"
+        "they corresponds to the nights",
+        readonly=True,
         comodel_name="pms.reservation.line",
         inverse_name="avail_id",
-        readonly=True,
     )
     real_avail = fields.Integer(
-        compute="_compute_real_avail",
+        string="Real Avail",
+        help="",
         store=True,
         readonly=True,
+        compute="_compute_real_avail",
     )
 
     _sql_constraints = [

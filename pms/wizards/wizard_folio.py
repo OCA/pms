@@ -103,7 +103,7 @@ class FolioWizard(models.TransientModel):
                     ]
                 ):
                     num_rooms_available = self.env[
-                        "pms.room.type.availability.plan"
+                        "pms.availability.plan"
                     ].get_count_rooms_available(
                         checkin=record.start_date,
                         checkout=record.end_date,

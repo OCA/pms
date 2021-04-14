@@ -8,23 +8,22 @@ from odoo.http import request
 class ResUsers(models.Model):
     _inherit = "res.users"
 
-    # Fields declaration
     pms_property_id = fields.Many2one(
-        "pms.property",
-        string="Property",
-        help="The property this user is currently working for.",
-        context={"user_preference": True},
+        string="Default Property",
+        help="The property that is selected within " "those allowed for the user",
+        comodel_name="pms.property",
         domain="[('id','in',pms_property_ids)]",
+        context={"user_preference": True},
     )
     pms_property_ids = fields.Many2many(
-        "pms.property",
-        "pms_property_users_rel",
-        "user_id",
-        "pms_property_id",
         string="Properties",
+        help="The properties allowed for this user",
+        comodel_name="pms.property",
+        relation="pms_property_users_rel",
+        column1="user_id",
+        column2="pms_property_id",
         domain="[('company_id','in',company_ids)]",
     )
-    # company_id = fields.Many2one(domain="[('id','in',company_ids)]")
 
     @api.model
     def get_active_property_ids(self):

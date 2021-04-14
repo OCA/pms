@@ -2,12 +2,12 @@ from odoo.exceptions import ValidationError
 from odoo.tests import common
 
 
-class TestPmsResUser(common.TransactionCase):
+class TestPmsResUser(common.SavepointCase):
     def create_common_scenario(self):
         # create a room type availability
-        self.room_type_availability = self.env[
-            "pms.room.type.availability.plan"
-        ].create({"name": "Availability plan 1"})
+        self.room_type_availability = self.env["pms.availability.plan"].create(
+            {"name": "Availability plan 1"}
+        )
 
         # create a company and properties
         self.company_A = self.env["res.company"].create(
@@ -20,11 +20,62 @@ class TestPmsResUser(common.TransactionCase):
                 "name": "Pms_Company2",
             }
         )
+        self.folio_sequenceA = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.company_A.id,
+            }
+        )
+        self.reservation_sequenceA = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.company_A.id,
+            }
+        )
+        self.checkin_sequenceA = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.company_A.id,
+            }
+        )
+        self.folio_sequenceB = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.company_B.id,
+            }
+        )
+        self.reservation_sequenceB = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.company_B.id,
+            }
+        )
+        self.checkin_sequenceB = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.company_B.id,
+            }
+        )
         self.property_A1 = self.env["pms.property"].create(
             {
                 "name": "Pms_property",
                 "company_id": self.company_A.id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequenceA.id,
+                "reservation_sequence_id": self.reservation_sequenceA.id,
+                "checkin_sequence_id": self.checkin_sequenceA.id,
             }
         )
         self.property_A2 = self.env["pms.property"].create(
@@ -32,6 +83,9 @@ class TestPmsResUser(common.TransactionCase):
                 "name": "Pms_property2",
                 "company_id": self.company_A.id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequenceA.id,
+                "reservation_sequence_id": self.reservation_sequenceA.id,
+                "checkin_sequence_id": self.checkin_sequenceA.id,
             }
         )
         self.property_B1 = self.env["pms.property"].create(
@@ -39,6 +93,9 @@ class TestPmsResUser(common.TransactionCase):
                 "name": "Pms_propertyB1",
                 "company_id": self.company_B.id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequenceB.id,
+                "reservation_sequence_id": self.reservation_sequenceB.id,
+                "checkin_sequence_id": self.checkin_sequenceB.id,
             }
         )
 

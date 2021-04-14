@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <odoo>
-    <record id="room_type_availability_view_form" model="ir.ui.view">
-        <field name="name">pms.room.type.availability.plan.form</field>
-        <field name="model">pms.room.type.availability.plan</field>
+    <record id="availability_view_form" model="ir.ui.view">
+        <field name="name">pms.availability.plan.form</field>
+        <field name="model">pms.availability.plan</field>
         <field name="arch" type="xml">
             <form string="Rules">
                 <sheet>
@@ -58,9 +58,9 @@
             </form>
         </field>
     </record>
-    <record id="room_type_availability_view_tree" model="ir.ui.view">
-        <field name="name">pms.room.type.availability.plan.tree</field>
-        <field name="model">pms.room.type.availability.plan</field>
+    <record id="availability_view_tree" model="ir.ui.view">
+        <field name="name">pms.availability.plan.tree</field>
+        <field name="model">pms.availability.plan</field>
 
         <field name="arch" type="xml">
             <tree string="Availability Plans">
@@ -76,16 +76,16 @@
         </field>
     </record>
     <!-- Action of reservation availability plan-->
-    <record model="ir.actions.act_window" id="room_type_availability_action">
+    <record model="ir.actions.act_window" id="availability_action">
         <field name="name">Reservation Availability Plans</field>
-        <field name="res_model">pms.room.type.availability.plan</field>
+        <field name="res_model">pms.availability.plan</field>
         <field name="view_mode">tree,form</field>
     </record>
     <!-- MENUS -->
     <menuitem
         name="Availability Plans"
-        id="reservation_availability_rules_menu"
-        action="room_type_availability_action"
+        id="reservation_availability_plan_rules_menu"
+        action="availability_action"
         sequence="5"
         parent="pms.revenue_management_menu"
     />
