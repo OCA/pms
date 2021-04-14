@@ -497,7 +497,7 @@
                 <field
                     name="payment_state"
                     decoration-success="payment_state == 'paid'"
-                    decoration-danger="payment_state == 'not_paid' and state in ['cancelled','onboard','done','no_show','no_checkout']"
+                    decoration-danger="payment_state == 'not_paid' and state in ['cancelled','onboard','done','arrival_delayed','departure_delayed']"
                     decoration-info="payment_state == 'not_paid' and state in ['draft','confirm',]"
                     decoration-warning="payment_state == 'partial'"
                     widget="badge"
