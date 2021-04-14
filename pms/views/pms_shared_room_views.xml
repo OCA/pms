@@ -32,7 +32,7 @@
                             string="Information"
                         >
                             <group colspan="4" col="4">
-                                <field name="floor_id" string="Ubication" />
+                                <field name="ubication_id" string="Ubication" />
                                 <field name="room_type_id" string="Room Type" />
                                 <field name="beds" />
                                 <field name="sequence" />

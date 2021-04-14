@@ -22,9 +22,10 @@
                                     options="{'no_create': True,'no_open': True}"
                                 />
                                 <field
-                                    name="room_amenity_type_id"
+                                    name="pms_amenity_type_id"
                                     select="2"
                                     string="Amenity Type"
+                                    domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
                                 />
                                 <!-- <field name="categ_id" select="1"
                                     domain="[('isamenitytype','=',True)]" /> -->
@@ -73,7 +74,7 @@
         <field name="arch" type="xml">
             <search string="Room Amenities">
                 <field name="name" />
-                <field name="room_amenity_type_id" select="1" />
+                <field name="pms_amenity_type_id" select="1" />
                 <!-- <field name="list_price" string="ty rate" /> -->
                 <newline />
                 <group expand="0" string="Group By...">
@@ -90,7 +91,7 @@
         <field name="arch" type="xml">
             <tree string="Room Amenities">
                 <field name="name" />
-                <field name="room_amenity_type_id" select="1" />
+                <field name="pms_amenity_type_id" select="1" />
                 <!-- <field name="list_price" string="Ty rate" invisible="1" /> -->
             </tree>
         </field>

@@ -9,7 +9,7 @@
                     <group>
                         <field name="name" colspan="1" />
                         <field name="channel_type" />
-                        <field name="on_line" />
+                        <field name="is_on_line" />
                         <field name="product_pricelist_ids" widget="many2many_tags" />
                     </group>
                 </sheet>
@@ -23,7 +23,7 @@
             <tree string=" Sale Channel">
                 <field name="name" />
                 <field name="channel_type" />
-                <field name="on_line" />
+                <field name="is_on_line" />
                 <field name="product_pricelist_ids" widget="many2many_tags" />
             </tree>
         </field>

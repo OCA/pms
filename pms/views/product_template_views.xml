@@ -16,7 +16,6 @@
                             />
                             <field name="is_extra_bed" />
                             <field name="daily_limit" />
-                            <field name="show_in_calendar" />
                         </group>
                         <group>
                             <field name="per_day" />
