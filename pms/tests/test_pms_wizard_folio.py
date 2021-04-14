@@ -3,12 +3,11 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
-
-from .common import TestHotel
+from odoo.tests import common
 
 
 @freeze_time("1980-12-01")
-class TestPmsWizardMassiveChanges(TestHotel):
+class TestPmsWizardMassiveChanges(common.SavepointCase):
     def create_common_scenario(self):
         # PRICELIST CREATION
         self.test_pricelist = self.env["product.pricelist"].create(
@@ -19,9 +18,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
         self.test_pricelist.flush()
 
         # AVAILABILITY PLAN CREATION
-        self.test_availability_plan = self.env[
-            "pms.room.type.availability.plan"
-        ].create(
+        self.test_availability_plan = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
                 "pms_pricelist_ids": [(6, 0, [self.test_pricelist.id])],
@@ -29,12 +26,40 @@ class TestPmsWizardMassiveChanges(TestHotel):
         )
         self.test_availability_plan.flush()
 
+        # SEQUENCES
+        self.folio_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.reservation_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.checkin_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
         # PROPERTY CREATION (WITH DEFAULT PRICELIST AND AVAILABILITY PLAN
         self.test_property = self.env["pms.property"].create(
             {
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.test_pricelist.id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
         self.test_property.flush()
@@ -50,7 +75,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
             {
                 "pms_property_ids": [self.test_property.id],
                 "name": "Single Test",
-                "code_type": "SNG_Test",
+                "default_code": "SNG_Test",
                 "class_id": self.test_room_type_class.id,
                 "list_price": 25.0,
             }
@@ -62,7 +87,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
             {
                 "pms_property_ids": [self.test_property.id],
                 "name": "Double Test",
-                "code_type": "DBL_Test",
+                "default_code": "DBL_Test",
                 "class_id": self.test_room_type_class.id,
                 "list_price": 40.0,
             }
@@ -676,7 +701,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
-        self.env["pms.room.type.availability.rule"].create(
+        self.env["pms.availability.plan.rule"].create(
             {
                 "quota": 1,
                 "room_type_id": self.test_room_type_double.id,
@@ -718,7 +743,7 @@ class TestPmsWizardMassiveChanges(TestHotel):
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
-        self.env["pms.room.type.availability.rule"].create(
+        self.env["pms.availability.plan.rule"].create(
             {
                 "min_stay": 3,
                 "room_type_id": self.test_room_type_double.id,

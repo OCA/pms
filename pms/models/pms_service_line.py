@@ -11,59 +11,100 @@ class PmsServiceLine(models.Model):
     _order = "date"
     _rec_name = "service_id"
 
-    # Fields declaration
     service_id = fields.Many2one(
-        "pms.service",
         string="Service Room",
-        ondelete="cascade",
+        help="Service identifier",
         required=True,
         copy=False,
+        comodel_name="pms.service",
+        ondelete="cascade",
     )
-    is_board_service = fields.Boolean(related="service_id.is_board_service", store=True)
-    product_id = fields.Many2one(related="service_id.product_id", store=True)
+    is_board_service = fields.Boolean(
+        string="Is Board Service",
+        help="Indicates if the service line is part of a board service",
+        store=True,
+        related="service_id.is_board_service",
+    )
+    product_id = fields.Many2one(
+        string="Product",
+        help="Product associated with this service line",
+        store=True,
+        related="service_id.product_id",
+    )
     tax_ids = fields.Many2many(
-        "account.tax", string="Taxes", related="service_id.tax_ids", readonly="True"
+        string="Taxes",
+        help="Taxes applied in the service line",
+        readonly="True",
+        comodel_name="account.tax",
+        related="service_id.tax_ids",
     )
     pms_property_id = fields.Many2one(
-        "pms.property", store=True, readonly=True, related="service_id.pms_property_id"
+        string="Property",
+        help="Property to which the service belongs",
+        readonly=True,
+        store=True,
+        comodel_name="pms.property",
+        related="service_id.pms_property_id",
     )
-    date = fields.Date("Date")
-    day_qty = fields.Integer("Units")
+    date = fields.Date(
+        string="Date",
+        help="Sate on which the product is to be consumed",
+    )
+    day_qty = fields.Integer(
+        string="Units",
+        help="Amount to be consumed per day",
+    )
     price_unit = fields.Float(
-        "Unit Price",
+        string="Unit Price",
+        help="Price per unit of service",
         digits=("Product Price"),
     )
     price_day_subtotal = fields.Monetary(
         string="Subtotal",
+        help="Subtotal price without taxes",
         readonly=True,
         store=True,
         compute="_compute_day_amount_service",
     )
     price_day_total = fields.Monetary(
-        string="Total", readonly=True, store=True, compute="_compute_day_amount_service"
+        string="Total",
+        help="Total price without taxes",
+        readonly=True,
+        store=True,
+        compute="_compute_day_amount_service",
     )
     price_day_tax = fields.Float(
         string="Taxes Amount",
+        help="",
         readonly=True,
         store=True,
         compute="_compute_day_amount_service",
     )
     currency_id = fields.Many2one(
-        related="service_id.currency_id", store=True, string="Currency", readonly=True
+        string="Currency",
+        help="The currency used in relation to the service where it's included",
+        readonly=True,
+        store=True,
+        related="service_id.currency_id",
     )
     room_id = fields.Many2one(
-        string="Room", related="service_id.reservation_id", readonly=True, store=True
+        string="Room",
+        help="Room to which the services will be applied",
+        readonly=True,
+        store=True,
+        related="service_id.reservation_id",
     )
     discount = fields.Float(
         string="Discount (%)",
-        digits=("Discount"),
-        default=0.0,
-        compute="_compute_discount",
+        help="Discount in the price of the service.",
         readonly=False,
         store=True,
+        default=0.0,
+        digits=("Discount"),
+        compute="_compute_discount",
     )
     cancel_discount = fields.Float(
-        "Cancelation Discount", compute="_compute_cancel_discount"
+        string="Cancelation Discount", help="", compute="_compute_cancel_discount"
     )
 
     @api.depends("day_qty", "discount", "price_unit", "tax_ids")

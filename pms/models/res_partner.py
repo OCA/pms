@@ -11,35 +11,45 @@ _logger = logging.getLogger(__name__)
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    # Fields declaration
-    main_partner_id = fields.Many2one(
-        "res.partner", string="Destination Partner fusion"
-    )
     reservations_count = fields.Integer(
-        "Reservations", compute="_compute_reservations_count"
+        string="Reservations",
+        help="Number of reservations of the partner",
+        compute="_compute_reservations_count",
     )
-    folios_count = fields.Integer("Folios", compute="_compute_folios_count")
-    unconfirmed = fields.Boolean("Unconfirmed", default=True)
-    is_agency = fields.Boolean("Is Agency")
+    folios_count = fields.Integer(
+        string="Folios",
+        help="Number of folios of the partner",
+        compute="_compute_folios_count",
+    )
+    is_agency = fields.Boolean(
+        string="Is Agency", help="Indicates if the partner is an agency"
+    )
     sale_channel_id = fields.Many2one(
-        "pms.sale.channel",
         string="Sale Channel",
-        ondelete="restrict",
+        help="The sale channel of the partner",
+        comodel_name="pms.sale.channel",
         domain=[("channel_type", "=", "indirect")],
+        ondelete="restrict",
     )
-    default_commission = fields.Integer("Commission")
-    apply_pricelist = fields.Boolean("Apply Pricelist")
-    invoice_agency = fields.Boolean("Invoice Agency")
+    default_commission = fields.Integer(string="Commission", help="Default commission")
+    apply_pricelist = fields.Boolean(
+        string="Apply Pricelist",
+        help="Indicates if agency pricelist is applied to his reservations",
+    )
+    invoice_to_agency = fields.Boolean(
+        string="Invoice Agency",
+        help="Indicates if agency invoices partner",
+    )
 
-    # Compute and Search methods
     def _compute_reservations_count(self):
+        # TODO: recuperar las reservas de los folios del partner
         pms_reservation_obj = self.env["pms.reservation"]
         for record in self:
             record.reservations_count = pms_reservation_obj.search_count(
                 [
                     (
                         "partner_id.id",
-                        "=",
+                        "child_of",
                         record.id if isinstance(record.id, int) else False,
                     )
                 ]
@@ -58,7 +68,6 @@ class ResPartner(models.Model):
                 ]
             )
 
-    # ORM Overrides
     @api.model
     def name_search(self, name, args=None, operator="ilike", limit=100):
         if not args:

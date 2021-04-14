@@ -8,24 +8,37 @@ class PmsBoardServiceLine(models.Model):
     _name = "pms.board.service.line"
     _description = "Services on Board Service included"
 
-    # Default methods
+    pms_board_service_id = fields.Many2one(
+        string="Board Service",
+        help="Board Service in which this line is included",
+        required=True,
+        comodel_name="pms.board.service",
+        ondelete="cascade",
+    )
+    product_id = fields.Many2one(
+        string="Product",
+        help="Product associated with this board service line",
+        required=True,
+        comodel_name="product.product",
+    )
+    pms_property_ids = fields.Many2many(
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        comodel_name="pms.property",
+        related="pms_board_service_id.pms_property_ids",
+    )
+    amount = fields.Float(
+        string="Amount",
+        help="Price for this Board Service Line/Product",
+        default=lambda self: self._get_default_price(),
+        digits=("Product Price"),
+    )
+
     def _get_default_price(self):
         if self.product_id:
             return self.product_id.list_price
 
-    # Fields declaration
-    pms_board_service_id = fields.Many2one(
-        "pms.board.service", "Board Service", ondelete="cascade", required=True
-    )
-    product_id = fields.Many2one("product.product", string="Product", required=True)
-    pms_property_ids = fields.Many2many(
-        "pms.property", related="pms_board_service_id.pms_property_ids"
-    )
-    amount = fields.Float(
-        "Amount", digits=("Product Price"), default=_get_default_price
-    )
-
-    # Constraints and onchanges
     @api.onchange("product_id")
     def onchange_product_id(self):
         if self.product_id:

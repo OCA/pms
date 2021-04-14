@@ -1,98 +1,183 @@
 from odoo.exceptions import ValidationError
 
-from .common import TestHotel
+from .common import TestPms
 
 
-class TestPmsAmenity(TestHotel):
-    def create_common_scenario(self):
-        # create company and properties
-        self.company1 = self.env["res.company"].create(
-            {
-                "name": "Pms_Company_Test",
-            }
-        )
-        self.property1 = self.env["pms.property"].create(
-            {
-                "name": "Pms_property_test1",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-            }
-        )
-        self.property2 = self.env["pms.property"].create(
+class TestPmsAmenity(TestPms):
+    def setUp(self):
+        super().setUp()
+        # Create two properties
+        # +-----------+-----------+
+        # |      Properties       |
+        # +-----------+-----------+
+        # | Property2 - Property3 |
+        # +-----------+-----------+
+
+        self.pms_property2 = self.env["pms.property"].create(
             {
                 "name": "Pms_property_test2",
                 "company_id": self.company1.id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
+                "default_pricelist_id": self.pricelist1.id,
             }
         )
 
-        self.property3 = self.env["pms.property"].create(
+        self.pms_property3 = self.env["pms.property"].create(
             {
                 "name": "Pms_property_test3",
                 "company_id": self.company1.id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
+                "default_pricelist_id": self.pricelist1.id,
             }
         )
 
     def test_property_not_allowed(self):
+        # Creation of a Amenity with Properties incompatible with it Amenity Type
+
+        # +-----------------------------------+-----------------------------------+
+        # |  Amenity Type (TestAmenityType1)  |      Amenity (TestAmenity1)       |
+        # +-----------------------------------+-----------------------------------+
+        # |      Property1 - Property2        | Property1 - Property2 - Property3 |
+        # +-----------------------------------+-----------------------------------+
+
         # ARRANGE
-        name = "amenityTest1"
-        name2 = "amenity"
-        self.create_common_scenario()
         AmenityType = self.env["pms.amenity.type"]
         Amenity = self.env["pms.amenity"]
-        # ACT
-        A1 = AmenityType.create(
+        amenity_type1 = AmenityType.create(
             {
-                "name": name,
+                "name": "TestAmenityType1",
                 "pms_property_ids": [
-                    (4, self.property1.id),
-                    (4, self.property2.id),
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property2.id),
                 ],
             }
         )
-        # ASSERT
+        # ACT & ASSERT
         with self.assertRaises(ValidationError), self.cr.savepoint():
             Amenity.create(
                 {
-                    "name": name2,
-                    "room_amenity_type_id": A1.id,
+                    "name": "TestAmenity1",
+                    "pms_amenity_type_id": amenity_type1.id,
                     "pms_property_ids": [
-                        (4, self.property1.id),
-                        (4, self.property2.id),
-                        (4, self.property3.id),
+                        (
+                            6,
+                            0,
+                            [
+                                self.pms_property1.id,
+                                self.pms_property2.id,
+                                self.pms_property3.id,
+                            ],
+                        )
                     ],
                 }
             )
 
-    def test_check_allowed_property_ids(self):
+    def test_property_allowed(self):
+        # Creation of a Amenity with Properties compatible with it Amenity Type
+        # Check Properties of Amenity are in Properties of Amenity Type
+        # +----------------------------------------+-----------------------------------+
+        # |     Amenity Type (TestAmenityType1)    |      Amenity (TestAmenity1)       |
+        # +----------------------------------------+-----------------------------------+
+        # |    Property1 - Property2 - Property3   | Property1 - Property2 - Property3 |
+        # +----------------------------------------+-----------------------------------+
+
         # ARRANGE
-        name = "amenityTest1"
-        name2 = "amenity"
-        self.create_common_scenario()
         AmenityType = self.env["pms.amenity.type"]
         Amenity = self.env["pms.amenity"]
-        # ACT
-        AT1 = AmenityType.create(
+        amenity_type1 = AmenityType.create(
             {
-                "name": name,
+                "name": "TestAmenityType1",
                 "pms_property_ids": [
-                    (4, self.property1.id),
-                    (4, self.property2.id),
+                    (
+                        6,
+                        0,
+                        [
+                            self.pms_property1.id,
+                            self.pms_property2.id,
+                            self.pms_property3.id,
+                        ],
+                    )
                 ],
             }
         )
-        A2 = Amenity.create(
+        # ACT
+        amenity1 = Amenity.create(
             {
-                "name": name2,
-                "room_amenity_type_id": AT1.id,
+                "name": "TestAmenity1",
+                "pms_amenity_type_id": amenity_type1.id,
                 "pms_property_ids": [
-                    (4, self.property1.id),
-                    (4, self.property2.id),
+                    (
+                        6,
+                        0,
+                        [
+                            self.pms_property1.id,
+                            self.pms_property2.id,
+                            self.pms_property3.id,
+                        ],
+                    )
+                ],
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            amenity1.pms_property_ids.ids,
+            amenity_type1.pms_property_ids.ids,
+            "Properties not allowed in amenity type",
+        )
+
+    def test_change_amenity_property(self):
+        # Creation of a Amenity with Properties compatible with it Amenity Type
+        # Delete a Property in Amenity Type, check Validation Error when do that
+        # 1st scenario:
+        # +----------------------------------------+-----------------------------------+
+        # |     Amenity Type (TestAmenityType1)    |      Amenity (TestAmenity1)       |
+        # +----------------------------------------+-----------------------------------+
+        # |    Property1 - Property2 - Property3   | Property1 - Property2 - Property3 |
+        # +----------------------------------------+-----------------------------------+
+        # 2nd scenario(Error):
+        # +----------------------------------------+-----------------------------------+
+        # |     Amenity Type (TestAmenityType1)    |      Amenity (TestAmenity1)       |
+        # +----------------------------------------+-----------------------------------+
+        # |          Property1 - Property2         | Property1 - Property2 - Property3 |
+        # +----------------------------------------+-----------------------------------+
+
+        # ARRANGE
+        AmenityType = self.env["pms.amenity.type"]
+        Amenity = self.env["pms.amenity"]
+        amenity_type1 = AmenityType.create(
+            {
+                "name": "TestAmenityType1",
+                "pms_property_ids": [
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property2.id),
+                    (4, self.pms_property3.id),
+                ],
+            }
+        )
+        # ACT
+        Amenity.create(
+            {
+                "name": "TestAmenity1",
+                "pms_amenity_type_id": amenity_type1.id,
+                "pms_property_ids": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.pms_property1.id,
+                            self.pms_property2.id,
+                            self.pms_property3.id,
+                        ],
+                    )
                 ],
             }
         )
         # ASSERT
-        self.assertEqual(
-            A2.allowed_property_ids, AT1.pms_property_ids, "Properties doesnt much"
-        )
+        with self.assertRaises(ValidationError):
+            amenity_type1.pms_property_ids = [
+                (
+                    6,
+                    0,
+                    [self.pms_property1.id, self.pms_property2.id],
+                )
+            ]
+            amenity_type1.flush()

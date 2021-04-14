@@ -34,10 +34,6 @@
                                 invisible='True'
                             />
                         </h1>
-                        <!-- <label for="to_be_cleaned" string="To be Cleaned" />
-              <h2>
-                <field name="to_be_cleaned"/>
-              </h2> -->
                     </div>
                     <notebook>
                         <page name="information_pms_room" string="Information">
@@ -48,7 +44,7 @@
                                     force_save="1"
                                 />
                                 <field
-                                    name="floor_id"
+                                    name="ubication_id"
                                     string="Ubication"
                                     attrs="{'readonly':[('shared_room_id','!=', False)]}"
                                 />

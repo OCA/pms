@@ -5,7 +5,7 @@ from freezegun import freeze_time
 from odoo.tests import common
 
 
-class TestPmsPricelistRules(common.TransactionCase):
+class TestPmsPricelistRules(common.SavepointCase):
     def create_common_scenario(self):
         self.product_template = self.env["product.template"].create(
             {"name": "Template1"}
@@ -14,18 +14,46 @@ class TestPmsPricelistRules(common.TransactionCase):
             {"name": "Category1"}
         )
 
-        self.availability_plan1 = self.env["pms.room.type.availability.plan"].create(
+        self.availability_plan1 = self.env["pms.availability.plan"].create(
             {"name": "Availability 1"}
         )
 
-        self.availability_plan2 = self.env["pms.room.type.availability.plan"].create(
+        self.availability_plan2 = self.env["pms.availability.plan"].create(
             {"name": "Availability"}
+        )
+        # sequences
+        self.folio_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.reservation_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.checkin_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
         )
         self.property1 = self.env["pms.property"].create(
             {
                 "name": "Property_1",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
@@ -34,6 +62,9 @@ class TestPmsPricelistRules(common.TransactionCase):
                 "name": "Property_2",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
@@ -45,7 +76,7 @@ class TestPmsPricelistRules(common.TransactionCase):
             {
                 "pms_property_ids": [self.property1.id, self.property2.id],
                 "name": "Single",
-                "code_type": "SIN",
+                "default_code": "SIN",
                 "class_id": self.room_type_class.id,
                 "list_price": 30,
             }

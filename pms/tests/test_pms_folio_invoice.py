@@ -1,23 +1,51 @@
 import datetime
 
-from .common import TestHotel
+from odoo.tests import common
 
 
-class TestPmsFolioInvoice(TestHotel):
+class TestPmsFolioInvoice(common.SavepointCase):
     def setUp(self):
         super(TestPmsFolioInvoice, self).setUp()
 
     def create_common_scenario(self):
         # create a room type availability
-        self.room_type_availability = self.env[
-            "pms.room.type.availability.plan"
-        ].create({"name": "Availability plan for TEST"})
+        # sequences
+        self.folio_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.reservation_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.checkin_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.room_type_availability = self.env["pms.availability.plan"].create(
+            {"name": "Availability plan for TEST"}
+        )
         # create a property
         self.property = self.env["pms.property"].create(
             {
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
         # create room type class
@@ -30,7 +58,7 @@ class TestPmsFolioInvoice(TestHotel):
             {
                 "pms_property_ids": [self.property.id],
                 "name": "Double Test",
-                "code_type": "DBL_Test",
+                "default_code": "DBL_Test",
                 "class_id": self.room_type_class.id,
                 "price": 25,
             }

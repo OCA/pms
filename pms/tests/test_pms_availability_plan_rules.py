@@ -4,12 +4,11 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-
-from .common import TestHotel
+from odoo.tests import common
 
 
 @freeze_time("1980-01-01")
-class TestPmsRoomTypeAvailabilityRules(TestHotel):
+class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
     def create_common_scenario(self):
         # product.pricelist
         self.test_pricelist1 = self.env["product.pricelist"].create(
@@ -22,13 +21,36 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "test pricelist 2",
             }
         )
-        # pms.room.type.availability.plan
-        self.test_room_type_availability1 = self.env[
-            "pms.room.type.availability.plan"
-        ].create(
+        # pms.availability.plan
+        self.test_room_type_availability1 = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
                 "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
+            }
+        )
+        # SEQUENCES
+        self.folio_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.reservation_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.checkin_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
             }
         )
         # pms.property
@@ -37,6 +59,9 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.test_pricelist1.id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
         # pms.room.type.class
@@ -49,7 +74,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             {
                 "pms_property_ids": [self.test_property.id],
                 "name": "Single Test",
-                "code_type": "SNG_Test",
+                "default_code": "SNG_Test",
                 "class_id": self.test_room_type_class.id,
             }
         )
@@ -60,7 +85,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     (4, self.test_property.id),
                 ],
                 "name": "Double Test",
-                "code_type": "DBL_Test",
+                "default_code": "DBL_Test",
                 "class_id": self.test_room_type_class.id,
             }
         )
@@ -129,6 +154,9 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "Property 1",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.test_pricelist2.id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
         self.test_property2 = self.env["pms.property"].create(
@@ -136,6 +164,9 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "Property 2",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.test_pricelist2.id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
         self.test_property3 = self.env["pms.property"].create(
@@ -143,11 +174,12 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "Property 3",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.test_pricelist2.id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
-        self.availability_multiproperty = self.env[
-            "pms.room.type.availability.plan"
-        ].create(
+        self.availability_multiproperty = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
                 "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
@@ -172,7 +204,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.availability.plan"].rooms_available(
+        result = self.env["pms.availability.plan"].rooms_available(
             checkin=checkin,
             checkout=checkout,
         )
@@ -206,7 +238,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.availability.plan"].rooms_available(
+        result = self.env["pms.availability.plan"].rooms_available(
             checkin=checkin,
             checkout=checkout,
             current_lines=test_reservation.reservation_line_ids.ids,
@@ -234,7 +266,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         )
 
         # ACT
-        result = self.env["pms.room.type.availability.plan"].rooms_available(
+        result = self.env["pms.availability.plan"].rooms_available(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             room_type_id=self.test_room_type_double.id,
@@ -258,7 +290,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         # ARRANGE
         self.create_common_scenario()
         self.test_room_type_availability_rule1 = self.env[
-            "pms.room.type.availability.rule"
+            "pms.availability.plan.rule"
         ].create(
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
@@ -269,7 +301,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             }
         )
         # ACT
-        result = self.env["pms.room.type.availability.plan"].rooms_available(
+        result = self.env["pms.availability.plan"].rooms_available(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             # room_type_id=False, # <-  (2/2)
@@ -293,7 +325,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         self.create_common_scenario()
 
         self.test_room_type_availability_rule1 = self.env[
-            "pms.room.type.availability.rule"
+            "pms.availability.plan.rule"
         ].create(
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
@@ -411,7 +443,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 # ACT
                 self.test_room_type_availability_rule1.write(test_case)
 
-                result = self.env["pms.room.type.availability.plan"].rooms_available(
+                result = self.env["pms.availability.plan"].rooms_available(
                     checkin=checkin,
                     checkout=checkout,
                     room_type_id=self.test_room_type_double.id,
@@ -435,7 +467,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         # ARRANGE
         self.create_common_scenario()
         self.test_room_type_availability_rule1 = self.env[
-            "pms.room.type.availability.rule"
+            "pms.availability.plan.rule"
         ].create(
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
@@ -475,7 +507,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         # ARRANGE
         self.create_common_scenario()
         self.test_room_type_availability_rule1 = self.env[
-            "pms.room.type.availability.rule"
+            "pms.availability.plan.rule"
         ].create(
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
@@ -541,7 +573,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         self.create_common_scenario()
 
         self.test_room_type_availability_rule1 = self.env[
-            "pms.room.type.availability.rule"
+            "pms.availability.plan.rule"
         ].create(
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
@@ -595,7 +627,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 "name": "test pricelist 2",
             }
         )
-        rule = self.env["pms.room.type.availability.rule"].create(
+        rule = self.env["pms.availability.plan.rule"].create(
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
@@ -641,7 +673,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     (4, self.test_property2.id),
                 ],
                 "name": "Special Room Test",
-                "code_type": "SP_Test",
+                "default_code": "SP_Test",
                 "class_id": self.test_room_type_class.id,
             }
         )
@@ -663,7 +695,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             }
         )
         self.test_room_type_availability_rule1 = self.env[
-            "pms.room.type.availability.rule"
+            "pms.availability.plan.rule"
         ].create(
             {
                 "availability_plan_id": self.availability_multiproperty.id,
@@ -674,7 +706,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
             }
         )
         self.test_room_type_availability_rule2 = self.env[
-            "pms.room.type.availability.rule"
+            "pms.availability.plan.rule"
         ].create(
             {
                 "availability_plan_id": self.availability_multiproperty.id,
@@ -695,9 +727,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
         for p in properties:
             with self.subTest(k=p):
                 # ACT
-                rooms_avail = self.env[
-                    "pms.room.type.availability.plan"
-                ].rooms_available(
+                rooms_avail = self.env["pms.availability.plan"].rooms_available(
                     checkin=fields.date.today(),
                     checkout=(
                         fields.datetime.today() + datetime.timedelta(days=2)
@@ -725,12 +755,12 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     (4, self.test_property3.id),
                 ],
                 "name": "Special Room Test",
-                "code_type": "SP_Test",
+                "default_code": "SP_Test",
                 "class_id": self.test_room_type_class.id,
             }
         )
         # ACT
-        self.availability_example = self.env["pms.room.type.availability.plan"].create(
+        self.availability_example = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
                 "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
@@ -740,7 +770,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 ],
             }
         )
-        self.availability_rule1 = self.env["pms.room.type.availability.rule"].create(
+        self.availability_rule1 = self.env["pms.availability.plan.rule"].create(
             {
                 "availability_plan_id": self.availability_example.id,
                 "room_type_id": self.test_room_type_special.id,
@@ -790,12 +820,12 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                     (4, self.test_property3.id),
                 ],
                 "name": "Special Room Test",
-                "code_type": "SP_Test",
+                "default_code": "SP_Test",
                 "class_id": self.test_room_type_class.id,
             }
         )
         # ACT
-        self.availability_example = self.env["pms.room.type.availability.plan"].create(
+        self.availability_example = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
                 "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
@@ -805,7 +835,7 @@ class TestPmsRoomTypeAvailabilityRules(TestHotel):
                 ],
             }
         )
-        self.availability_rule1 = self.env["pms.room.type.availability.rule"].create(
+        self.availability_rule1 = self.env["pms.availability.plan.rule"].create(
             {
                 "availability_plan_id": self.availability_example.id,
                 "room_type_id": self.test_room_type_special.id,

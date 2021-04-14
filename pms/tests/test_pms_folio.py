@@ -4,25 +4,51 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-
-from .common import TestHotel
+from odoo.tests import common
 
 freeze_time("2000-02-02")
 
 
-class TestPmsFolio(TestHotel):
+class TestPmsFolio(common.SavepointCase):
     def create_common_scenario(self):
         # create a room type availability
-        self.room_type_availability = self.env[
-            "pms.room.type.availability.plan"
-        ].create({"name": "Availability plan for TEST"})
-
+        self.room_type_availability = self.env["pms.availability.plan"].create(
+            {"name": "Availability plan for TEST"}
+        )
+        # sequences
+        self.folio_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.reservation_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.checkin_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
         # create a property
         self.property = self.env["pms.property"].create(
             {
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
@@ -36,7 +62,7 @@ class TestPmsFolio(TestHotel):
             {
                 "pms_property_ids": [self.property.id],
                 "name": "Double Test",
-                "code_type": "DBL_Test",
+                "default_code": "DBL_Test",
                 "class_id": self.room_type_class.id,
                 "price": 25,
             }
@@ -62,11 +88,15 @@ class TestPmsFolio(TestHotel):
         )
 
     def create_multiproperty_scenario(self):
+        self.create_common_scenario()
         self.property1 = self.env["pms.property"].create(
             {
                 "name": "Property_1",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
@@ -75,6 +105,9 @@ class TestPmsFolio(TestHotel):
                 "name": "Property_2",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
@@ -83,6 +116,9 @@ class TestPmsFolio(TestHotel):
                 "name": "Property_3",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
@@ -101,7 +137,7 @@ class TestPmsFolio(TestHotel):
             {
                 "name": "partner1",
                 "is_agency": True,
-                "invoice_agency": True,
+                "invoice_to_agency": True,
                 "default_commission": 15,
                 "sale_channel_id": saleChannel.id,
             }
@@ -149,7 +185,7 @@ class TestPmsFolio(TestHotel):
                 "pms_property_id": self.property.id,
             }
         )
-        r1.left_for_checkin = False
+        r1.allowed_checkin = False
 
         self.env["pms.reservation"].create(
             {
@@ -250,3 +286,35 @@ class TestPmsFolio(TestHotel):
                     "closure_reason_id": cl_reason.id,
                 }
             )
+
+    def _test_compute_currency(self):
+        self.create_common_scenario()
+        self.currency1 = self.env["res.currency"].create(
+            {
+                "name": "currency1",
+                "symbol": "C",
+            }
+        )
+        self.pricelist = self.env["product.pricelist"].create(
+            {
+                "name": "pricelist 1",
+                "pms_property_ids": [
+                    (4, self.property.id),
+                ],
+                "currency_id": self.currency1.id,
+            }
+        )
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pricelist_id": self.pricelist.id,
+            }
+        )
+        self.assertEqual(
+            self.currency1.id,
+            self.reservation1.folio_id.currency_id.id,
+            "Currency must match",
+        )

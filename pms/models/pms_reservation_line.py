@@ -15,84 +15,94 @@ class PmsReservationLine(models.Model):
     _description = "Reservations by day"
     _order = "date"
 
-    # Default Methods ang Gets
-
-    def name_get(self):
-        result = []
-        for res in self:
-            date = fields.Date.from_string(res.date)
-            name = u"{}/{}".format(date.day, date.month)
-            result.append((res.id, name))
-        return result
-
-    # Fields declaration
     reservation_id = fields.Many2one(
-        "pms.reservation",
         string="Reservation",
-        ondelete="cascade",
+        help="It is the reservation in a reservation line",
         required=True,
         copy=False,
+        comodel_name="pms.reservation",
+        ondelete="cascade",
     )
     room_id = fields.Many2one(
-        "pms.room",
         string="Room",
-        ondelete="restrict",
-        compute="_compute_room_id",
-        store=True,
+        help="The room of a reservation. ",
         readonly=False,
+        store=True,
+        compute="_compute_room_id",
+        comodel_name="pms.room",
+        ondelete="restrict",
     )
+
     sale_line_ids = fields.Many2many(
-        "folio.sale.line",
-        "reservation_line_sale_line_rel",
-        "reservation_line_id",
-        "sale_line_id",
         string="Sales Lines",
         readonly=True,
         copy=False,
+        comodel_name="folio.sale.line",
+        relation="reservation_line_sale_line_rel",
+        column1="reservation_line_id",
+        column2="sale_line_id",
     )
     pms_property_id = fields.Many2one(
-        "pms.property",
-        store=True,
+        string="Property",
+        help="Property with access to the element;"
+        " if not set, all properties can access",
         readonly=True,
+        store=True,
+        comodel_name="pms.property",
         related="reservation_id.pms_property_id",
     )
-    date = fields.Date("Date")
-    state = fields.Selection(related="reservation_id.state")
+    date = fields.Date(
+        string="Date",
+        help="The date of the reservation in reservation line",
+    )
+    state = fields.Selection(
+        string="State",
+        help="State of the reservation line.",
+        related="reservation_id.state",
+    )
     price = fields.Float(
         string="Price",
+        help="The price in a reservation line",
+        store=True,
         digits=("Product Price"),
         compute="_compute_price",
-        store=True,
-        readonly=False,
     )
     cancel_discount = fields.Float(
         string="Cancelation Discount (%)",
-        digits=("Discount"),
-        default=0.0,
-        compute="_compute_cancel_discount",
-        store=True,
+        help="",
         readonly=False,
+        default=0.0,
+        store=True,
+        digits=("Discount"),
+        compute="_compute_cancel_discount",
     )
     avail_id = fields.Many2one(
         string="Availability Day",
-        comodel_name="pms.room.type.availability",
+        help="",
+        store=True,
+        comodel_name="pms.availability",
         ondelete="restrict",
         compute="_compute_avail_id",
-        store=True,
     )
 
-    discount = fields.Float(string="Discount (%)", digits=("Discount"), default=0.0)
+    discount = fields.Float(
+        string="Discount (%)",
+        help="",
+        default=0.0,
+        digits=("Discount"),
+    )
     occupies_availability = fields.Boolean(
         string="Occupies",
-        compute="_compute_occupies_availability",
-        store=True,
         help="This record is taken into account to calculate availability",
+        store=True,
+        compute="_compute_occupies_availability",
     )
     impacts_quota = fields.Integer(
         string="Impacts quota",
-        compute="_compute_impact_quota",
-        store=True,
+        help="",
         readonly=False,
+        store=True,
+        compute="_compute_impact_quota",
     )
 
     _sql_constraints = [
@@ -104,7 +114,43 @@ class PmsReservationLine(models.Model):
         ),
     ]
 
-    # Compute and Search methods
+    def name_get(self):
+        result = []
+        for res in self:
+            date = fields.Date.from_string(res.date)
+            name = u"{}/{}".format(date.day, date.month)
+            result.append((res.id, name))
+        return result
+
+    def _get_display_price(self, product):
+        if self.reservation_id.pricelist_id.discount_policy == "with_discount":
+            return product.with_context(
+                pricelist=self.reservation_id.pricelist_id.id
+            ).price
+        product_context = dict(
+            self.env.context,
+            partner_id=self.reservation_id.partner_id.id,
+            date=self.date,
+            uom=product.uom_id.id,
+        )
+        final_price, rule_id = self.reservation_id.pricelist_id.with_context(
+            product_context
+        ).get_product_price_rule(product, 1.0, self.reservation_id.partner_id)
+        base_price, currency = self.with_context(
+            product_context
+        )._get_real_price_currency(
+            product, rule_id, 1, product.uom_id, self.reservation_id.pricelist_id.id
+        )
+        if currency != self.reservation_id.pricelist_id.currency_id:
+            base_price = currency._convert(
+                base_price,
+                self.reservation_id.pricelist_id.currency_id,
+                self.reservation_id.company_id or self.env.company,
+                fields.Date.today(),
+            )
+        # negative discounts (= surcharge) are included in the display price
+        return max(base_price, final_price)
+
     @api.depends("reservation_id.room_type_id", "reservation_id.preferred_room_id")
     def _compute_room_id(self):
         for line in self.filtered("reservation_id.room_type_id").sorted(
@@ -116,9 +162,7 @@ class PmsReservationLine(models.Model):
                 # select room_id regardless room_type_id selected on reservation
                 free_room_select = True if reservation.preferred_room_id else False
                 # we get the rooms available for the entire stay
-                rooms_available = self.env[
-                    "pms.room.type.availability.plan"
-                ].rooms_available(
+                rooms_available = self.env["pms.availability.plan"].rooms_available(
                     checkin=line.reservation_id.checkin,
                     checkout=line.reservation_id.checkout,
                     room_type_id=reservation.room_type_id.id
@@ -150,9 +194,7 @@ class PmsReservationLine(models.Model):
                     else:
                         line.room_id = rooms_available[0]
                 # check that the reservation cannot be allocated even by dividing it
-                elif not self.env[
-                    "pms.room.type.availability.plan"
-                ].splitted_availability(
+                elif not self.env["pms.availability.plan"].splitted_availability(
                     checkin=line.reservation_id.checkin,
                     checkout=line.reservation_id.checkout,
                     room_type_id=line.reservation_id.room_type_id.id,
@@ -249,9 +291,7 @@ class PmsReservationLine(models.Model):
     def _compute_impact_quota(self):
         for line in self:
             reservation = line.reservation_id
-            line.impacts_quota = self.env[
-                "pms.room.type.availability.plan"
-            ].update_quota(
+            line.impacts_quota = self.env["pms.availability.plan"].update_quota(
                 pricelist_id=reservation.pricelist_id,
                 room_type_id=reservation.room_type_id,
                 date=line.date,
@@ -282,7 +322,7 @@ class PmsReservationLine(models.Model):
                     partner=partner.id,
                     quantity=1,
                     date=line.reservation_id.date_order,
-                    date_overnight=line.date,
+                    consumption_date=line.date,
                     pricelist=reservation.pricelist_id.id,
                     uom=product.uom_id.id,
                     property=reservation.pms_property_id.id,
@@ -371,7 +411,7 @@ class PmsReservationLine(models.Model):
                 and record.pms_property_id
                 and record.occupies_availability
             ):
-                avail = self.env["pms.room.type.availability"].search(
+                avail = self.env["pms.availability"].search(
                     [
                         ("date", "=", record.date),
                         ("room_type_id", "=", record.room_id.room_type_id.id),
@@ -381,7 +421,7 @@ class PmsReservationLine(models.Model):
                 if avail:
                     record.avail_id = avail.id
                 else:
-                    record.avail_id = self.env["pms.room.type.availability"].create(
+                    record.avail_id = self.env["pms.availability"].create(
                         {
                             "date": record.date,
                             "room_type_id": record.room_id.room_type_id.id,
@@ -411,35 +451,6 @@ class PmsReservationLine(models.Model):
                         lambda r: r.date == record.date
                     )
                     cancel_lines.day_qty = 0
-
-    def _get_display_price(self, product):
-        if self.reservation_id.pricelist_id.discount_policy == "with_discount":
-            return product.with_context(
-                pricelist=self.reservation_id.pricelist_id.id
-            ).price
-        product_context = dict(
-            self.env.context,
-            partner_id=self.reservation_id.partner_id.id,
-            date=self.date,
-            uom=product.uom_id.id,
-        )
-        final_price, rule_id = self.reservation_id.pricelist_id.with_context(
-            product_context
-        ).get_product_price_rule(product, 1.0, self.reservation_id.partner_id)
-        base_price, currency = self.with_context(
-            product_context
-        )._get_real_price_currency(
-            product, rule_id, 1, product.uom_id, self.reservation_id.pricelist_id.id
-        )
-        if currency != self.reservation_id.pricelist_id.currency_id:
-            base_price = currency._convert(
-                base_price,
-                self.reservation_id.pricelist_id.currency_id,
-                self.reservation_id.company_id or self.env.company,
-                fields.Date.today(),
-            )
-        # negative discounts (= surcharge) are included in the display price
-        return max(base_price, final_price)
 
     @api.constrains("room_id")
     def _check_adults(self):

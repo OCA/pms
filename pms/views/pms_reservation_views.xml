@@ -14,7 +14,6 @@
                 <header>
                     <field name="splitted" invisible="True" />
                     <field name="tax_ids" invisible="1" />
-                    <field name="checkin_today" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
                     <button
                         name="confirm"
@@ -32,14 +31,7 @@
                     <button
                         name="action_reservation_checkout"
                         string="Check Out"
-                        states="onboard,no_checkout"
-                        type="object"
-                    />
-                    <button
-                        name="draft"
-                        string="Set to Draft"
-                        states="cancelled"
-                        class="oe_highlight"
+                        states="onboard,departure_delayed"
                         type="object"
                     />
                     <field name="state" widget="statusbar" />
@@ -98,9 +90,8 @@
                 </div>
                 <sheet>
                     <field name="shared_folio" invisible="1" />
-                    <field name="left_for_checkin" invisible="1" />
+                    <field name="allowed_checkin" invisible="1" />
                     <field name="ready_for_checkin" invisible="1" />
-                    <field name="departure_today" invisible="1" />
                     <div
                         class="oe_button_box"
                         name="button_box"
@@ -157,7 +148,7 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            name="action_onboard"
+                            name="action_checkin_partner_onboard_view"
                             attrs="{'invisible': [
                                 ('ready_for_checkin', '!=', True),
                             ]}"
@@ -171,9 +162,9 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            name="action_checks"
+                            name="action_checkin_partner_view"
                             attrs="{'invisible': [
-                                ('left_for_checkin', '!=', True),
+                                ('allowed_checkin', '!=', True),
                             ]}"
                         >
                             <field
@@ -275,7 +266,7 @@
                             name="contact_details"
                         >
                             <field
-                                name="email"
+                                name="partner_email"
                                 colspan="2"
                                 nolabel="1"
                                 placeholder="email"
@@ -283,10 +274,10 @@
                                 force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                        'readonly': [('partner_id', '!=', False),
-                                                   ('email','!=', False)]}"
+                                                   ('partner_email','!=', False)]}"
                             />
                             <field
-                                name="mobile"
+                                name="partner_mobile"
                                 colspan="2"
                                 nolabel="1"
                                 placeholder="mobile"
@@ -294,7 +285,7 @@
                                 force_save="1"
                                 attrs="{'invisible': [('reservation_type','in',('out'))],
                                        'readonly': [('partner_id', '!=', False),
-                                                   ('mobile','!=', False)]}"
+                                                   ('partner_mobile','!=', False)]}"
                             />
                             <field
                                 placeholder="Partner Notes"
@@ -568,12 +559,6 @@
                             string="Invoicing"
                             attrs="{'invisible': [('reservation_type','in',('out'))]}"
                         >
-                            <group>
-                                <field
-                                    name="partner_invoice_id"
-                                    string="Contact Invoiced"
-                                />
-                            </group>
                         </page>
                         <page name="others" string="Others">
                             <div class="row">
@@ -581,7 +566,6 @@
                                     <group>
                                         <field name="user_id" />
                                         <field name="pms_property_id" />
-                                        <field name="localizator" />
                                         <field name="overbooking" />
                                     </group>
                                     <group>
@@ -594,7 +578,7 @@
                                 </div>
                                 <div class="col-6">
                                     <group>
-                                        <field name="requests" />
+                                        <field name="partner_requests" />
                                     </group>
                                 </div>
                             </div>
@@ -668,7 +652,6 @@
                 <field name="overbooking" invisible="1" />
                 <field name="activity_ids" widget="list_activity" optional="show" />
                 <field name="user_id" optional="show" widget="many2one_avatar_user" />
-                <!-- <field name="origin" /> -->
                 <field name="checkin_partner_ids" invisible="1" />
                 <field name="to_assign" invisible="1" />
                 <field name="checkin_partner_pending_count" invisible="1" />
@@ -680,17 +663,17 @@
                     name="state"
                     decoration-success="state == 'onboard'"
                     decoration-info="state == 'confirm'"
-                    decoration-primary="state == 'no_checkout'"
+                    decoration-primary="state == 'departure_delayed'"
                     decoration-danger="state == 'cancelled'"
                     decoration-bf="state == 'draft'"
-                    decoration-warning="state == 'no_show'"
+                    decoration-warning="state == 'arrival_delayed'"
                     widget="badge"
                     optional="show"
                 />
                 <field
                     name="folio_payment_state"
                     decoration-success="folio_payment_state == 'paid'"
-                    decoration-danger="folio_payment_state == 'not_paid' and state in ['cancelled','onboard','done','no_show','no_checkout']"
+                    decoration-danger="folio_payment_state == 'not_paid' and state in ['cancelled','onboard','done','arrival_delayed','departure_delayed']"
                     decoration-info="folio_payment_state == 'not_paid' and state in ['draft','confirm',]"
                     decoration-warning="folio_payment_state == 'partial'"
                     widget="badge"
@@ -786,7 +769,7 @@
                 <filter
                     string="To enter"
                     name="to_enter"
-                    domain="[('left_for_checkin', '=', True)]"
+                    domain="[('allowed_checkin', '=', True)]"
                 />
                 <filter
                     string="Overbookings"

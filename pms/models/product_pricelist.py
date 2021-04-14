@@ -37,7 +37,7 @@ class ProductPricelist(models.Model):
     )
 
     availability_plan_id = fields.Many2one(
-        comodel_name="pms.room.type.availability.plan",
+        comodel_name="pms.availability.plan",
         string="Availability Plan",
         ondelete="restrict",
         domain=[
@@ -83,7 +83,7 @@ class ProductPricelist(models.Model):
         if (
             "property" in self._context
             and self._context["property"]
-            and self._context.get("date_overnight")
+            and self._context.get("consumption_date")
         ):
             # board_service_id = self._context.get("board_service")
             # on_board_service_bool = True if board_service_id else False
@@ -140,8 +140,8 @@ class ProductPricelist(models.Model):
                     self.id,
                     date,
                     date,
-                    self._context["date_overnight"],
-                    self._context["date_overnight"],
+                    self._context["consumption_date"],
+                    self._context["consumption_date"],
                 ),
             )
 

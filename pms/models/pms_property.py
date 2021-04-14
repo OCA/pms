@@ -18,53 +18,77 @@ class PmsProperty(models.Model):
     _inherits = {"res.partner": "partner_id"}
     _check_company_auto = True
 
-    # Fields declaration
     partner_id = fields.Many2one(
-        "res.partner", "Property", required=True, delegate=True, ondelete="cascade"
+        string="Property",
+        help="Current property",
+        comodel_name="res.partner",
+        required=True,
+        ondelete="cascade",
     )
     company_id = fields.Many2one(
-        "res.company",
-        required=True,
+        string="Company",
         help="The company that owns or operates this property.",
+        comodel_name="res.company",
+        required=True,
     )
     user_ids = fields.Many2many(
-        "res.users",
-        "pms_property_users_rel",
-        "pms_property_id",
-        "user_id",
         string="Accepted Users",
+        help="Field related to res.users. Allowed users on the property",
+        comodel_name="res.users",
+        relation="pms_property_users_rel",
+        column1="pms_property_id",
+        column2="user_id",
     )
-    room_ids = fields.One2many("pms.room", "pms_property_id", "Rooms")
+    room_ids = fields.One2many(
+        string="Rooms",
+        help="Rooms that a property has.",
+        comodel_name="pms.room",
+        inverse_name="pms_property_id",
+    )
+    # TODO: establecer tarifa publica por defecto
     default_pricelist_id = fields.Many2one(
-        "product.pricelist",
         string="Product Pricelist",
-        required=True,
         help="The default pricelist used in this property.",
+        comodel_name="product.pricelist",
+        required=True,
+        default=lambda self: self.env.ref("product.list0").id,
     )
     default_arrival_hour = fields.Char(
-        "Arrival Hour (GMT)", help="HH:mm Format", default="14:00"
+        string="Arrival Hour", help="HH:mm Format", default="14:00"
     )
     default_departure_hour = fields.Char(
-        "Departure Hour (GMT)", help="HH:mm Format", default="12:00"
+        string="Departure Hour", help="HH:mm Format", default="12:00"
     )
-    default_cancel_policy_days = fields.Integer("Cancellation Days")
-    default_cancel_policy_percent = fields.Float("Percent to pay")
     folio_sequence_id = fields.Many2one(
-        "ir.sequence", "Folio Sequence", check_company=True, copy=False
+        string="Folio Sequence",
+        help="The sequence that formed the name of the folio.",
+        check_company=True,
+        copy=False,
+        comodel_name="ir.sequence",
+    )
+    reservation_sequence_id = fields.Many2one(
+        string="Reservation Sequence",
+        help="The sequence that formed the name of the reservation.",
+        check_company=True,
+        copy=False,
+        comodel_name="ir.sequence",
     )
     checkin_sequence_id = fields.Many2one(
-        "ir.sequence", "Checkin Sequence", check_company=True, copy=False
-    )
-    tz = fields.Selection(
-        _tz_get,
-        string="Timezone",
-        required=True,
-        default=lambda self: self.env.user.tz or "UTC",
-        help="This field is used in order to define \
-         in which timezone the arrival/departure will work.",
+        string="Checkin Sequence",
+        help="Field used to create the name of the checkin partner",
+        check_company=True,
+        copy=False,
+        comodel_name="ir.sequence",
     )
 
-    # Constraints and onchanges
+    tz = fields.Selection(
+        string="Timezone",
+        help="This field is used to determine de timezone of the property.",
+        required=True,
+        default=lambda self: self.env.user.tz or "UTC",
+        selection=_tz_get,
+    )
+
     @api.constrains("default_arrival_hour")
     def _check_arrival_hour(self):
         for record in self:
@@ -93,15 +117,15 @@ class PmsProperty(models.Model):
                     )
                 )
 
-    def date_property_timezone(self, date):
+    def date_property_timezone(self, dt):
         self.ensure_one()
         tz_property = self.tz
-        date = pytz.timezone(tz_property).localize(date)
-        date = date.replace(tzinfo=None)
-        date = pytz.timezone(self.env.user.tz).localize(date)
-        date = date.astimezone(pytz.utc)
-        date = date.replace(tzinfo=None)
-        return date
+        dt = pytz.timezone(tz_property).localize(dt)
+        dt = dt.replace(tzinfo=None)
+        dt = pytz.timezone(self.env.user.tz).localize(dt)
+        dt = dt.astimezone(pytz.utc)
+        dt = dt.replace(tzinfo=None)
+        return dt
 
     def _get_payment_methods(self):
         self.ensure_one()
@@ -121,3 +145,47 @@ class PmsProperty(models.Model):
             ]
         )
         return payment_methods
+
+    @api.model
+    def create(self, vals):
+        name = vals.get("name")
+        if "folio_sequence_id" not in vals or not vals.get("folio_sequence_id"):
+            folio_sequence = self.env["ir.sequence"].create(
+                {
+                    "name": "PMS Folio " + name,
+                    "code": "pms.folio",
+                    "prefix": "F/%(y)s",
+                    "suffix": "%(sec)s",
+                    "padding": 4,
+                    "company_id": vals.get("company_id"),
+                }
+            )
+            vals.update({"folio_sequence_id": folio_sequence.id})
+        if "reservation_sequence_id" not in vals or not vals.get(
+            "reservation_sequence_id"
+        ):
+            reservation_sequence = self.env["ir.sequence"].create(
+                {
+                    "name": "PMS Reservation " + name,
+                    "code": "pms.reservation",
+                    "prefix": "R/%(y)s",
+                    "suffix": "%(sec)s",
+                    "padding": 4,
+                    "company_id": vals.get("company_id"),
+                }
+            )
+            vals.update({"reservation_sequence_id": reservation_sequence.id})
+        if "checkin_sequence_id" not in vals or not vals.get("checkin_sequence_id"):
+            checkin_sequence = self.env["ir.sequence"].create(
+                {
+                    "name": "PMS Checkin " + name,
+                    "code": "pms.checkin.partner",
+                    "prefix": "C/%(y)s",
+                    "suffix": "%(sec)s",
+                    "padding": 4,
+                    "company_id": vals.get("company_id"),
+                }
+            )
+            vals.update({"checkin_sequence_id": checkin_sequence.id})
+        record = super(PmsProperty, self).create(vals)
+        return record

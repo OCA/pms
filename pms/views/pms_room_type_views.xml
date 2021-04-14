@@ -27,7 +27,7 @@
                     <group colspan="4">
                         <group>
                             <field name="name" />
-                            <field name="code_type" />
+                            <field name="default_code" />
                             <field name="class_id" />
                         </group>
                         <group>
@@ -37,7 +37,7 @@
                     </group>
                     <group colspan="2">
                         <group name="room_ids_group">
-                            <field name="shared_room" />
+                            <field name="is_shared_room" />
                             <field name="room_ids" widget="many2many_tags" />
                             <field name="total_rooms_count" />
                         </group>
@@ -92,7 +92,7 @@
                 <field name="sequence" widget="handle" />
                 <field name="pms_property_ids" widget="many2many_tags" />
                 <field name="name" />
-                <field name="code_type" />
+                <field name="default_code" />
                 <field name="list_price" />
                 <field name="room_ids" />
                 <field name="total_rooms_count" />

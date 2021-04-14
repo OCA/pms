@@ -11,41 +11,54 @@ class PmsBoardServiceRoomType(models.Model):
     _log_access = False
     _description = "Board Service included in Room"
 
-    # Fields declaration
     pms_board_service_id = fields.Many2one(
-        "pms.board.service",
         string="Board Service",
-        index=True,
-        ondelete="cascade",
+        help="Board Service corresponding to this Board Service Room Type",
         required=True,
+        index=True,
+        comodel_name="pms.board.service",
+        ondelete="cascade",
     )
     pms_property_ids = fields.Many2many(
-        "pms.property",
         string="Properties",
+        help="Properties with access to the element; "
+        "if not set, all properties can access",
         required=False,
+        comodel_name="pms.property",
         ondelete="restrict",
     )
     pms_room_type_id = fields.Many2one(
-        "pms.room.type",
         string="Room Type",
-        index=True,
-        ondelete="cascade",
+        help="Room Type for which this Board Service is available",
         required=True,
+        index=True,
+        comodel_name="pms.room.type",
         domain=[
             "|",
             ("pms_property_ids", "=", False),
             ("pms_property_ids", "in", pms_property_ids),
         ],
+        ondelete="cascade",
     )
     board_service_line_ids = fields.One2many(
-        "pms.board.service.room.type.line", "pms_board_service_room_type_id"
+        string="Board Service Lines",
+        help="Services included in this Board Service",
+        comodel_name="pms.board.service.room.type.line",
+        inverse_name="pms_board_service_room_type_id",
     )
     amount = fields.Float(
-        "Amount", digits=("Product Price"), compute="_compute_board_amount", store=True
+        string="Amount",
+        help="Price for this Board Service. "
+        "It corresponds to the sum of his board service lines",
+        store=True,
+        digits=("Product Price"),
+        compute="_compute_board_amount",
     )
-    by_default = fields.Boolean("Apply by Default")
+    by_default = fields.Boolean(
+        string="Apply by Default",
+        help="Indicates if this board service is applied by default in the room type",
+    )
 
-    # Compute and Search methods
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
         for record in self:
@@ -66,8 +79,6 @@ class PmsBoardServiceRoomType(models.Model):
             if any(default_boards.filtered(lambda l: l.id != record.id)):
                 raise UserError(_("""Only can set one default board service"""))
 
-    # Action methods
-
     def open_board_lines_form(self):
         action = (
             self.env.ref("pms.action_pms_board_service_room_type_view").sudo().read()[0]
@@ -79,7 +90,6 @@ class PmsBoardServiceRoomType(models.Model):
         action["target"] = "new"
         return action
 
-    # ORM Overrides
     def init(self):
         self._cr.execute(
             "SELECT indexname FROM pg_indexes WHERE indexname = %s",
@@ -107,7 +117,6 @@ class PmsBoardServiceRoomType(models.Model):
             )
         return super(PmsBoardServiceRoomType, self).write(vals)
 
-    # Business methods
     @api.model
     def prepare_board_service_reservation_ids(self, board_service_id):
         """

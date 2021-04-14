@@ -123,6 +123,8 @@ class PmsFolio(models.Model):
         readonly=True,
         required=True,
         ondelete="restrict",
+        # comodel_name="res.currency",
+        # compute="_compute_currency_id"
     )
     pricelist_id = fields.Many2one(
         "product.pricelist",
@@ -257,6 +259,7 @@ class PmsFolio(models.Model):
     client_order_ref = fields.Char(string="Customer Reference", copy=False)
     reservation_type = fields.Selection(
         [("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
+        required=True,
         string="Type",
         default=lambda *a: "normal",
     )
@@ -510,7 +513,7 @@ class PmsFolio(models.Model):
     @api.depends("agency_id")
     def _compute_partner_id(self):
         for folio in self:
-            if folio.agency_id and folio.agency_id.invoice_agency:
+            if folio.agency_id and folio.agency_id.invoice_to_agency:
                 folio.partner_id = folio.agency_id.id
             elif not folio.partner_id:
                 folio.partner_id = False
@@ -569,6 +572,16 @@ class PmsFolio(models.Model):
             order.move_ids = invoices
             order.invoice_count = len(invoices)
 
+    # @api.depends(
+    #     "reservation_ids",
+    #     "reservation_ids.currency_id"
+    # )
+    # def _compute_currency_id(self):
+    #     if len(self.reservation_ids.mapped("currency_id")) == 1:
+    #         self.currency_id = self.reservation_ids.mapped("currency_id")
+    #     else:
+    #         raise UserError(_("Some reservations have different currency"))
+
     def _compute_access_url(self):
         super(PmsFolio, self)._compute_access_url()
         for folio in self:
@@ -620,7 +633,6 @@ class PmsFolio(models.Model):
           other status is met.
         - to invoice: if any SO line is 'to invoice', the whole SO is 'to invoice'
         - invoiced: if all SO lines are invoiced, the SO is invoiced.
-        - upselling: if all SO lines are invoiced or upselling, the status is upselling.
         """
         unconfirmed_orders = self.filtered(lambda so: so.state in ["draft"])
         unconfirmed_orders.invoice_status = "no"
@@ -686,7 +698,7 @@ class PmsFolio(models.Model):
         for folio in self.filtered("reservation_ids"):
             folio.count_rooms_pending_arrival = len(
                 folio.reservation_ids.filtered(
-                    lambda c: c.state in ("draf", "confirm", "no_show")
+                    lambda c: c.state in ("draf", "confirm", "arrival_delayed")
                 )
             )
 
@@ -869,7 +881,7 @@ class PmsFolio(models.Model):
     def action_to_arrive(self):
         self.ensure_one()
         reservations = self.reservation_ids.filtered(
-            lambda c: c.state in ("draf", "confirm", "no_show")
+            lambda c: c.state in ("draf", "confirm", "arrival_delayed")
         )
         action = self.env.ref("pms.open_pms_reservation_form_tree_all").read()[0]
         action["domain"] = [("id", "in", reservations.ids)]
@@ -884,10 +896,8 @@ class PmsFolio(models.Model):
                 if "pms_property_id" not in vals
                 else vals["pms_property_id"]
             )
-            vals["name"] = self.env["ir.sequence"]._next_sequence_property(
-                pms_property_id=pms_property_id,
-                code="pms.folio",
-            )
+            pms_property = self.env["pms.property"].browse(pms_property_id)
+            vals["name"] = pms_property.folio_sequence_id._next_do()
         result = super(PmsFolio, self).create(vals)
         return result
 
