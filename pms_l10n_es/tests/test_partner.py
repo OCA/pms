@@ -10,11 +10,38 @@ from odoo.tests import common
 @freeze_time("2011-03-16")
 class TestResPartner(common.SavepointCase):
     def create_common_scenario(self):
+        self.folio_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Folio",
+                "code": "pms.folio",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.reservation_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Reservation",
+                "code": "pms.reservation",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.checkin_sequence = self.env["ir.sequence"].create(
+            {
+                "name": "PMS Checkin",
+                "code": "pms.checkin.partner",
+                "padding": 4,
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
         self.property_test = self.property = self.env["pms.property"].create(
             {
                 "name": "My property test",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
+                "folio_sequence_id": self.folio_sequence.id,
+                "reservation_sequence_id": self.reservation_sequence.id,
+                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
