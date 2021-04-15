@@ -284,6 +284,7 @@
             <field name="purchase_ok">False</field>
             <field name="per_day">True</field>
             <field name="per_person">True</field>
+            <field name="consumed_on">after</field>
         </record>
         <record id="pms_service_1" model="product.product">
             <field name="name">Extra Bed</field>
@@ -374,7 +375,7 @@
             <field name="pms_room_type_id" ref="pms_room_type_0" />
         </record>
         <record id="pms_board_service_room_2" model="pms.board.service.room.type">
-            <field name="pms_board_service_id" ref="pms_board_service_1" />
+            <field name="pms_board_service_id" ref="pms_board_service_2" />
             <field name="pms_room_type_id" ref="pms_room_type_0" />
         </record>
         <!--Room 3 Triple-->
