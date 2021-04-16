@@ -18,6 +18,11 @@
                                 <field name="active" widget="boolean_toggle" />
                                 <field name="template_id" />
                                 <field name="action" />
+                                <field
+                                    name="pms_property_ids"
+                                    widget="many2many_tags"
+                                    options="{'no_create': True,'no_open': True}"
+                                />
                             </group>
                         </div>
                         <div class="col-5">
