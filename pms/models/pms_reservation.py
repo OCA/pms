@@ -37,9 +37,6 @@ class PmsReservation(models.Model):
         "empty if reservation is splitted",
         copy=False,
         comodel_name="pms.room",
-        compute="_compute_preferred_room_id",
-        store=True,
-        readonly=False,
         domain="[('id', 'in', allowed_room_ids)]",
         ondelete="restrict",
         tracking=True,
@@ -989,20 +986,14 @@ class PmsReservation(models.Model):
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_splitted(self):
+        # REVIEW: Updating preferred_room_id here avoids cyclical dependency
         for reservation in self:
             room_ids = reservation.reservation_line_ids.mapped("room_id.id")
             if len(room_ids) > 1:
                 reservation.splitted = True
+                reservation.preferred_room_id = False
             else:
                 reservation.splitted = False
-
-    @api.depends("splitted")
-    def _compute_preferred_room_id(self):
-        for reservation in self:
-            room_ids = reservation.reservation_line_ids.mapped("room_id.id")
-            if reservation.splitted:
-                reservation.preferred_room_id = False
-            elif not reservation.preferred_room_id:
                 if room_ids:
                     reservation.preferred_room_id = room_ids[0]
 
@@ -1126,13 +1117,11 @@ class PmsReservation(models.Model):
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_rooms(self):
         self.rooms = False
-
         for reservation in self:
             if reservation.splitted:
                 reservation.rooms = ", ".join(
                     [r for r in reservation.reservation_line_ids.mapped("room_id.name")]
                 )
-                reservation.preferred_room_id = False
             else:
                 reservation.rooms = reservation.preferred_room_id.name
 
