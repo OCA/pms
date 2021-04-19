@@ -97,6 +97,15 @@ class PmsRoom(models.Model):
         column2="property_id",
     )
 
+    _sql_constraints = [
+        (
+            "room_property_unique",
+            "unique(name, pms_property_id)",
+            "you cannot have more than one room "
+            "with the same name in the same property",
+        )
+    ]
+
     def name_get(self):
         result = []
         for room in self:

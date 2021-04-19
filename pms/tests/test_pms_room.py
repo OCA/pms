@@ -1,4 +1,7 @@
+from psycopg2 import IntegrityError
+
 from odoo.exceptions import ValidationError
+from odoo.tools import mute_logger
 
 from .common import TestPms
 
@@ -67,3 +70,64 @@ class TestPmsRoom(TestPms):
                     "room_type_id": self.room_type1.id,
                 }
             )
+
+    @mute_logger("odoo.sql_db")
+    def test_name_property_unique_01(self):
+        """
+        PRE:    - room1 'Room 101' exists
+                - room1 has pms_property1
+        ACT:    - create a new room2
+                - room2 has name 'Room 101'
+                - room2 has pms_property1
+        POST:   - Integrity error: already exists another room
+                  with the same name on the same property
+                - room2 not created
+        """
+        # ARRANGE
+        self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+            }
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            IntegrityError, msg="Room has been created and it shouldn't"
+        ):
+            self.env["pms.room"].create(
+                {
+                    "name": "Room 101",
+                    "pms_property_id": self.pms_property1.id,
+                    "room_type_id": self.room_type1.id,
+                }
+            )
+
+    def test_name_property_unique_02(self):
+        """
+        PRE:    - room1 'Room 101' exists
+                - room1 has pms_property1
+        ACT:    - create a new room2
+                - room2 has name 'Room 101'
+                - room2 has pms_property2
+        POST:   - room2 created
+        """
+        # ARRANGE
+        self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+            }
+        )
+        # ACT & ASSERT
+        try:
+            self.env["pms.room"].create(
+                {
+                    "name": "Room 101",
+                    "pms_property_id": self.pms_property2.id,
+                    "room_type_id": self.room_type1.id,
+                }
+            )
+        except IntegrityError:
+            self.fail("Duplicated Room found but it shouldn't")
