@@ -56,6 +56,7 @@ class TestPmsBoardServiceRoomTypeLine(common.SavepointCase):
         self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Board Service",
+                "code_board": "CB",
             }
         )
         self.room_type_class = self.env["pms.room.type.class"].create(

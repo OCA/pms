@@ -331,6 +331,7 @@
         <!-- pms.board.service -->
         <record id="pms_board_service_0" model="pms.board.service">
             <field name="name">BreakFast</field>
+            <field name="code_board">BB</field>
             <field
                 name="board_service_line_ids"
                 eval="[(5, 0), (0, 0, {
@@ -340,6 +341,7 @@
         </record>
         <record id="pms_board_service_1" model="pms.board.service">
             <field name="name">Half Board</field>
+            <field name="code_board">HB</field>
             <field
                 name="board_service_line_ids"
                 eval="[(5, 0), (0, 0, {
@@ -352,6 +354,7 @@
         </record>
         <record id="pms_board_service_2" model="pms.board.service">
             <field name="name">FullBoard</field>
+            <field name="code_board">FB</field>
             <field
                 name="board_service_line_ids"
                 eval="[(5, 0), (0, 0, {
