@@ -325,6 +325,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -385,6 +386,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -444,6 +446,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -506,6 +509,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -568,6 +572,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -628,6 +633,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -689,6 +695,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
 
@@ -755,6 +762,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
+                "code_board": "TPS",
             }
         )
 
