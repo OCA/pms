@@ -8,6 +8,9 @@
                 <field name="folio_ids" widget="many2many_tags" />
                 <field name="pms_property_id" invisible="1" />
             </xpath>
+            <xpath expr="//field[@name='quantity']" position="before">
+                <field name="name_changed_by_user" invisible="1" />
+            </xpath>
         </field>
     </record>
 

@@ -61,7 +61,7 @@
                     attrs="{'invisible':[('is_board_service','=', True)]}"
                 />
                 <field name="service_id" optional="show" />
-                <field name="room_id" />
+                <field name="reservation_id" />
                 <field name="tax_ids" optional="show" />
                 <field
                     name="discount"
@@ -162,7 +162,7 @@
             >
                 <field name="service_id" />
                 <field name="product_id" filters="1" />
-                <field name="room_id" filters="1" />
+                <field name="reservation_id" filters="1" />
             </calendar>
         </field>
     </record>
