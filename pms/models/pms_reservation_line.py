@@ -157,6 +157,7 @@ class PmsReservationLine(models.Model):
         for line in self.filtered("reservation_id.room_type_id").sorted(
             key=lambda r: (r.reservation_id, r.date)
         ):
+            _logger.info("LINE ROOM ID")
             reservation = line.reservation_id
             if reservation.preferred_room_id != line.room_id or not line.room_id:
                 # If reservation has a preferred_room_id We can allow
