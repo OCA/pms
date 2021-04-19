@@ -35,7 +35,7 @@ class PmsRoom(models.Model):
         help="Properties with access to the element;"
         " if not set, all properties can access",
         required=True,
-        default=lambda self: self.env.user.active_property_ids[0],
+        default=lambda self: self.env.user.get_active_property_ids()[0],
         comodel_name="pms.property",
         ondelete="restrict",
     )
