@@ -1,6 +1,8 @@
 # Copyright 2020  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from math import ceil
+
 from odoo import _, api, fields, models
 from odoo.osv import expression
 from odoo.tools import float_compare, float_is_zero
@@ -9,7 +11,8 @@ from odoo.tools import float_compare, float_is_zero
 class FolioSaleLine(models.Model):
     _name = "folio.sale.line"
     _description = "Folio Sale Line"
-    _order = "folio_id, sequence, id"
+    _order = "folio_id, sequence, reservation_order desc, service_order, date_order"
+
     _check_company_auto = True
 
     @api.depends("state", "product_uom_qty", "qty_to_invoice", "qty_invoiced")
@@ -41,26 +44,34 @@ class FolioSaleLine(models.Model):
             else:
                 line.invoice_status = "no"
 
-    @api.depends("reservation_line_ids", "service_id")
+    @api.depends("reservation_line_ids", "service_line_ids", "service_id")
     def _compute_name(self):
         for record in self:
-            if not record.name_updated:
-                record.name = record._get_compute_name()
+            record.name = self.generate_folio_sale_name(
+                record.reservation_id,
+                record.product_id,
+                record.service_id,
+                record.reservation_line_ids,
+                record.service_line_ids,
+            )
 
-    @api.depends("name")
-    def _compute_name_updated(self):
-        self.name_updated = False
-        for record in self.filtered("name"):
-            if record.name != record._get_compute_name():
-                record.name_updated = True
-
-    def _get_compute_name(self):
-        self.ensure_one()
-        if self.reservation_line_ids:
+    @api.model
+    def generate_folio_sale_name(
+        self,
+        reservation_id,
+        product_id,
+        service_id,
+        reservation_line_ids,
+        service_line_ids,
+        qty=False,
+    ):
+        if reservation_line_ids:
             month = False
             name = False
-            lines = self.reservation_line_ids.sorted("date")
-            for date in lines.mapped("date"):
+            lines = reservation_line_ids.sorted(key="date")
+            for index, date in enumerate(lines.mapped("date")):
+                if qty and index > (qty - 1):
+                    break
                 if date.month != month:
                     name = name + "\n" if name else ""
                     name += date.strftime("%B-%Y") + ": "
@@ -68,11 +79,28 @@ class FolioSaleLine(models.Model):
                     month = date.month
                 else:
                     name += ", " + date.strftime("%d")
-            return name
-        elif self.service_id:
-            return self.service_id.name
+
+            return "{} ({}).".format(product_id.name, name)
+        elif service_line_ids:
+            month = False
+            name = False
+            lines = service_line_ids.filtered(
+                lambda x: x.service_id == service_id
+            ).sorted(key="date")
+
+            for index, date in enumerate(lines.mapped("date")):
+                if qty and index > (ceil(qty / reservation_id.adults) - 1):
+                    break
+                if date.month != month:
+                    name = name + "\n" if name else ""
+                    name += date.strftime("%B-%Y") + ": "
+                    name += date.strftime("%d")
+                    month = date.month
+                else:
+                    name += ", " + date.strftime("%d")
+            return "{} ({}).".format(service_id.name, name)
         else:
-            return False
+            return service_id.name
 
     @api.depends("product_uom_qty", "discount", "price_unit", "tax_ids")
     def _compute_amount(self):
@@ -133,7 +161,7 @@ class FolioSaleLine(models.Model):
     @api.depends("reservation_id.room_type_id", "service_id.product_id")
     def _compute_product_id(self):
         for record in self:
-            if record.reservation_id:
+            if record.reservation_id and not record.service_id:
                 record.product_id = record.reservation_id.room_type_id.product_id
             elif record.service_id:
                 record.product_id = record.service_id.product_id
@@ -367,7 +395,6 @@ class FolioSaleLine(models.Model):
     name = fields.Text(
         string="Description", compute="_compute_name", store=True, readonly=False
     )
-    name_updated = fields.Boolean(compute="_compute_name_updated", store=True)
     reservation_line_ids = fields.Many2many(
         "pms.reservation.line",
         string="Nights",
@@ -561,6 +588,68 @@ class FolioSaleLine(models.Model):
         default=False,
         help="Technical field for UX purpose.",
     )
+
+    service_order = fields.Integer(
+        string="Service id",
+        compute="_compute_service_order",
+        help="Field to order by service id",
+        store=True,
+        readonly=True,
+    )
+
+    reservation_order = fields.Integer(
+        string="Reservation id",
+        compute="_compute_reservation_order",
+        help="Field to order by reservation id",
+        store=True,
+        readonly=True,
+    )
+
+    date_order = fields.Date(
+        string="Date",
+        compute="_compute_date_order",
+        help="Field to order by service date",
+        store=True,
+        readonly=True,
+    )
+
+    @api.depends("qty_to_invoice")
+    def _compute_service_order(self):
+        for record in self:
+            record.service_order = (
+                record.service_id
+                if record.service_id
+                else -1
+                if record.display_type
+                else 0
+            )
+
+    @api.depends("service_order")
+    def _compute_date_order(self):
+        for record in self:
+            if record.display_type:
+                record.date_order = 0
+            elif record.reservation_id and not record.service_id:
+                record.date_order = (
+                    min(record.reservation_line_ids.mapped("date"))
+                    if record.reservation_line_ids
+                    else 0
+                )
+            elif record.reservation_id and record.service_id:
+                record.date_order = (
+                    min(record.service_line_ids.mapped("date"))
+                    if record.service_line_ids
+                    else 0
+                )
+            else:
+                record.date_order = 0
+
+    @api.depends("date_order")
+    def _compute_reservation_order(self):
+        for record in self:
+            record.reservation_order = (
+                record.reservation_id if record.reservation_id else 0
+            )
 
     @api.depends("reservation_line_ids", "service_line_ids", "service_line_ids.day_qty")
     def _compute_product_uom_qty(self):
