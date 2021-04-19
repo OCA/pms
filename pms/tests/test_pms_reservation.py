@@ -146,6 +146,7 @@ class TestPmsReservations(common.SavepointCase):
         self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Board Service Test",
+                "code_board": "CB",
             }
         )
 
