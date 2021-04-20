@@ -83,23 +83,17 @@ class PmsAutomatedMails(models.Model):
         moment = vals.get("moment")
         properties = vals.get("pms_property_ids")
         is_create = True
+        if action in ("creation", "write", "cancel", "invoice") and moment == "before":
+            raise UserError(_("The moment for this action cannot be 'Before'"))
         dict_val = self._prepare_automated_actions_id(
             action, time, moment, properties, is_create
         )
-        property_vals = vals.get("pms_property_ids")
-        property_vals_ids = property_vals[0][2]
-        pms_properties = []
-        pms_property_ids = self.env["pms.property"].search([])
-        for pms_property in pms_property_ids:
-            pms_properties.append(pms_property.id)
-        if pms_properties == property_vals_ids:
-            vals.update({"pms_property_ids": False})
 
         action_server_vals = {
             "name": name,
             "state": "email",
             "usage": "ir_cron",
-            "model_id": dict_val["model_id"].id,
+            "model_id": dict_val["model_id"],
         }
         action_server = self.env["ir.actions.server"].create(action_server_vals)
         model_field = dict_val["model_field"]
@@ -131,6 +125,11 @@ class PmsAutomatedMails(models.Model):
     def write(self, vals):
         result = super(PmsAutomatedMails, self).write(vals)
         is_create = False
+        if (
+            self.action in ("creation", "write", "cancel", "invoice")
+            and self.moment == "before"
+        ):
+            raise UserError(_("The moment for this action cannot be 'Before'"))
         dict_val = self._prepare_automated_actions_id(
             self.action, self.time, self.moment, self.pms_property_ids, is_create
         )
@@ -140,7 +139,7 @@ class PmsAutomatedMails(models.Model):
             "name": self.name,
             "state": "email",
             "usage": "ir_cron",
-            "model_id": dict_val["model_id"].id,
+            "model_id": dict_val["model_id"],
         }
         action_server.write(action_server_vals)
         model_field = dict_val["model_field"]
@@ -182,14 +181,13 @@ class PmsAutomatedMails(models.Model):
         trigger = False
         model_field = False
         model_id = False
+        filter_domain = []
         today = fields.Date.today()
-        pms_property_ids = self._get_pms_property_ids(properties, is_create)
-        filter_domain = [("pms_property_id", "in", pms_property_ids)]
-        if action in ("creation", "write", "cancel", "invoice") and moment == "before":
-            raise UserError(_("The moment for this action cannot be 'Before'"))
         # action: create reservation
         if action == "creation":
-            model_id = self.env["ir.model"].search([("name", "=", "Reservation")])
+            model_id = (
+                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+            )
             if moment == "in_act":
                 trigger = "on_create"
                 time = 0
@@ -200,12 +198,9 @@ class PmsAutomatedMails(models.Model):
                 )
         # action: write and cancel reservation
         if action == "write" or action == "cancel":
-            model_id = self.env["ir.model"].search([("name", "=", "Reservation")])
-            if action == "cancel":
-                filter_domain = [
-                    ("state", "=", "cancelled"),
-                    ("pms_property_id", "in", pms_property_ids),
-                ]
+            model_id = (
+                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+            )
             if moment == "in_act":
                 trigger = "on_write"
                 time = 0
@@ -214,9 +209,15 @@ class PmsAutomatedMails(models.Model):
                 model_field = self.env["ir.model.fields"].search(
                     [("model", "=", "pms.reservation"), ("name", "=", "write_date")]
                 )
+            if action == "cancel":
+                filter_domain = [
+                    ("state", "=", "cancelled"),
+                ]
         # action: checkin
         if action == "checkin":
-            model_id = self.env["ir.model"].search([("name", "=", "Reservation")])
+            model_id = (
+                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+            )
             trigger = "on_time"
             model_field = self.env["ir.model.fields"].search(
                 [("model", "=", "pms.reservation"), ("name", "=", "checkin")]
@@ -225,13 +226,14 @@ class PmsAutomatedMails(models.Model):
                 time = 0
                 filter_domain = [
                     ("checkin", "=", str(today)),
-                    ("pms_property_id", "in", pms_property_ids),
                 ]
             elif moment == "before":
                 time = time * (-1)
         # action: checkout
         if action == "checkout":
-            model_id = self.env["ir.model"].search([("name", "=", "Reservation")])
+            model_id = (
+                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+            )
             trigger = "on_time"
             model_field = self.env["ir.model.fields"].search(
                 [("model", "=", "pms.reservation"), ("name", "=", "checkout")]
@@ -240,14 +242,15 @@ class PmsAutomatedMails(models.Model):
                 time = 0
                 filter_domain = [
                     ("checkout", "=", str(today)),
-                    ("pms_property_id", "in", pms_property_ids),
                 ]
             elif moment == "before":
                 time = time * (-1)
         # action: payments
         if action == "payment":
-            model_id = self.env["ir.model"].search(
-                [("name", "=", "Payments"), ("transient", "=", False)]
+            model_id = (
+                self.env["ir.model"]
+                .search([("model", "=", "account.payment"), ("transient", "=", False)])
+                .id
             )
             if moment == "in_act":
                 trigger = "on_creation"
@@ -262,17 +265,21 @@ class PmsAutomatedMails(models.Model):
                 )
                 if moment == "before":
                     time = time * (-1)
-        # TODO: create automated action when the act be 'invoice'
+        # TODO: create automated action when the act is 'invoice'
         # action: invoices
         # if action == "invoice":
-        #     model_id = self.env["ir.model"].search([("name", "=", "Journal Entry")])
+        #     model_id = self.env["ir.model"].search(
+        #       [("model", "=", "account.move")]
+        #     ).id
         #     filter_domain = [
         #         ("folio_ids", "!=", False),
-        #         ("pms_property_id", "in", pms_property_ids),
         #     ]
         #     if moment == "in_act":
         #         trigger = "on_create"
         #         time = 0
+        pms_property_ids = self._get_pms_property_ids(properties, is_create)
+        if pms_property_ids:
+            filter_domain.append(("pms_property_id", "in", pms_property_ids))
         result = {
             "trigger": trigger,
             "model_field": model_field,
@@ -286,17 +293,7 @@ class PmsAutomatedMails(models.Model):
         pms_property_ids = []
         if is_create:
             pms_property_ids = properties[0][2]
-            if not pms_property_ids:
-                self.pms_property_ids = False
-                properties = self.env["pms.property"].search([])
-                for pms_property in properties:
-                    pms_property_ids.append(pms_property.id)
         else:
-            if not properties:
-                properties = self.env["pms.property"].search([])
-                for pms_property in properties:
-                    pms_property_ids.append(pms_property.id)
-            else:
-                for pms_property in properties:
-                    pms_property_ids.append(pms_property.id)
+            for pms_property in properties:
+                pms_property_ids.append(pms_property.id)
         return pms_property_ids
