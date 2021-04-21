@@ -88,7 +88,6 @@ class PmsAutomatedMails(models.Model):
         dict_val = self._prepare_automated_actions_id(
             action, time, moment, properties, is_create
         )
-
         action_server_vals = {
             "name": name,
             "state": "email",
@@ -96,28 +95,30 @@ class PmsAutomatedMails(models.Model):
             "model_id": dict_val["model_id"],
         }
         action_server = self.env["ir.actions.server"].create(action_server_vals)
+        automated_actions_vals = {
+            "active": active,
+            "action_server_id": action_server.id,
+            "trigger": dict_val["trigger"],
+            "filter_domain": dict_val["filter_domain"],
+            "filter_pre_domain": dict_val["filter_pre_domain"],
+            "trg_date_range": dict_val["time"],
+            "trg_date_range_type": date_range_type,
+            "template_id": template_id,
+        }
         model_field = dict_val["model_field"]
-        if not model_field:
-            automated_actions_vals = {
-                "active": active,
-                "action_server_id": action_server.id,
-                "trigger": dict_val["trigger"],
-                "filter_domain": dict_val["filter_domain"],
-                "trg_date_range": dict_val["time"],
-                "trg_date_range_type": date_range_type,
-                "template_id": template_id,
-            }
-        else:
-            automated_actions_vals = {
-                "active": active,
-                "action_server_id": action_server.id,
-                "trigger": dict_val["trigger"],
-                "trg_date_id": dict_val["model_field"].id,
-                "filter_domain": dict_val["filter_domain"],
-                "trg_date_range": dict_val["time"],
-                "trg_date_range_type": date_range_type,
-                "template_id": template_id,
-            }
+        if model_field:
+            automated_actions_vals.update(
+                {
+                    "trg_date_id": dict_val["model_field"].id,
+                }
+            )
+        trigger_field = dict_val["trigger_fields"]
+        if trigger_field:
+            automated_actions_vals.update(
+                {
+                    "trigger_field_ids": dict_val["trigger_fields"].ids,
+                }
+            )
         automated_action = self.env["base.automation"].create(automated_actions_vals)
         vals.update({"automated_actions_id": automated_action.id})
         return super(PmsAutomatedMails, self).create(vals)
@@ -142,28 +143,30 @@ class PmsAutomatedMails(models.Model):
             "model_id": dict_val["model_id"],
         }
         action_server.write(action_server_vals)
+        automated_actions_vals = {
+            "active": self.active,
+            "action_server_id": action_server.id,
+            "trigger": dict_val["trigger"],
+            "filter_domain": dict_val["filter_domain"],
+            "filter_pre_domain": dict_val["filter_pre_domain"],
+            "trg_date_range": dict_val["time"],
+            "trg_date_range_type": self.time_type,
+            "template_id": self.template_id,
+        }
         model_field = dict_val["model_field"]
-        if not model_field:
-            automated_actions_vals = {
-                "active": self.active,
-                "action_server_id": action_server.id,
-                "trigger": dict_val["trigger"],
-                "filter_domain": dict_val["filter_domain"],
-                "trg_date_range": dict_val["time"],
-                "trg_date_range_type": self.time_type,
-                "template_id": self.template_id,
-            }
-        else:
-            automated_actions_vals = {
-                "active": self.active,
-                "action_server_id": action_server.id,
-                "trigger": dict_val["trigger"],
-                "trg_date_id": dict_val["model_field"].id,
-                "filter_domain": dict_val["filter_domain"],
-                "trg_date_range": dict_val["time"],
-                "trg_date_range_type": self.time_type,
-                "template_id": self.template_id,
-            }
+        if model_field:
+            automated_actions_vals.update(
+                {
+                    "trg_date_id": dict_val["model_field"].id,
+                }
+            )
+        trigger_field = dict_val["trigger_fields"]
+        if trigger_field:
+            automated_actions_vals.update(
+                {
+                    "trigger_field_ids": dict_val["trigger_fields"].ids,
+                }
+            )
         automated_actions_id.write(automated_actions_vals)
         vals.update({"automated_actions_id": automated_actions_id.id})
         return result
@@ -175,117 +178,182 @@ class PmsAutomatedMails(models.Model):
         action_server.unlink()
         return super(PmsAutomatedMails, self).unlink()
 
+    @api.model
+    def _get_auto_action_fields_in_creation_action(self, moment, time):
+        model_field = False
+        model_id = self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+        if moment == "in_act":
+            trigger = "on_create"
+            time = 0
+        else:
+            trigger = "on_time"
+            model_field = self.env["ir.model.fields"].search(
+                [("model", "=", "pms.reservation"), ("name", "=", "create_date")]
+            )
+        result = {
+            "model_id": model_id,
+            "trigger": trigger,
+            "model_field": model_field,
+            "time": time,
+        }
+        return result
+
+    @api.model
+    def _get_auto_action_fields_in_write_or_cancel_action(self, moment, time):
+        model_field = False
+        model_id = self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+        if moment == "in_act":
+            trigger = "on_write"
+            time = 0
+        else:
+            trigger = "on_time"
+            model_field = self.env["ir.model.fields"].search(
+                [("model", "=", "pms.reservation"), ("name", "=", "write_date")]
+            )
+        result = {
+            "model_id": model_id,
+            "trigger": trigger,
+            "model_field": model_field,
+            "time": time,
+        }
+        return result
+
+    @api.model
+    def _get_auto_action_fields_in_checkin_action(self, moment, time):
+        model_id = self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+        trigger = "on_time"
+        model_field = self.env["ir.model.fields"].search(
+            [("model", "=", "pms.reservation"), ("name", "=", "checkin")]
+        )
+        if moment == "before":
+            time = time * (-1)
+        if moment == "in_act":
+            trigger = "on_write"
+            time = 0
+        result = {
+            "model_id": model_id,
+            "trigger": trigger,
+            "model_field": model_field,
+            "time": time,
+        }
+        return result
+
+    @api.model
+    def _get_auto_action_fields_in_checkout_action(self, moment, time):
+        model_id = self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+        trigger = "on_time"
+        model_field = self.env["ir.model.fields"].search(
+            [("model", "=", "pms.reservation"), ("name", "=", "checkout")]
+        )
+        if moment == "before":
+            time = time * (-1)
+        if moment == "in_act":
+            trigger = "on_write"
+            time = 0
+        result = {
+            "model_id": model_id,
+            "trigger": trigger,
+            "model_field": model_field,
+            "time": time,
+        }
+        return result
+
+    @api.model
+    def _get_auto_action_fields_in_payment_action(self, moment, time):
+        model_field = False
+        model_id = (
+            self.env["ir.model"]
+            .search([("model", "=", "account.payment"), ("transient", "=", False)])
+            .id
+        )
+        if moment == "in_act":
+            trigger = "on_create"
+            time = 0
+        else:
+            trigger = "on_time"
+            model_field = self.env["ir.model.fields"].search(
+                [("model", "=", "account.payment"), ("name", "=", "date")]
+            )
+            if moment == "before":
+                time = time * (-1)
+        result = {
+            "model_id": model_id,
+            "trigger": trigger,
+            "model_field": model_field,
+            "time": time,
+        }
+        return result
+
+    @api.model
+    def _get_auto_action_fields_in_invoice_action(self, moment, time):
+        trigger = False
+        model_id = self.env["ir.model"].search([("model", "=", "account.move")]).id
+        if moment == "in_act":
+            trigger = "on_create"
+            time = 0
+        result = {
+            "model_id": model_id,
+            "time": time,
+            "trigger": trigger,
+            "model_field": False,
+        }
+        return result
+
     def _prepare_automated_actions_id(
         self, action, time, moment, properties, is_create
     ):
-        trigger = False
-        model_field = False
-        model_id = False
         filter_domain = []
-        today = fields.Date.today()
-        # action: create reservation
+        filter_pre_domain = []
+        trigger_fields = False
+        dict_val = {}
         if action == "creation":
-            model_id = (
-                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
+            dict_val = self._get_auto_action_fields_in_creation_action(moment, time)
+        elif action == "write" or action == "cancel":
+            dict_val = self._get_auto_action_fields_in_write_or_cancel_action(
+                moment, time
             )
-            if moment == "in_act":
-                trigger = "on_create"
-                time = 0
-            else:
-                trigger = "on_time"
-                model_field = self.env["ir.model.fields"].search(
-                    [("model", "=", "pms.reservation"), ("name", "=", "create_date")]
-                )
-        # action: write and cancel reservation
-        if action == "write" or action == "cancel":
-            model_id = (
-                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
-            )
-            if moment == "in_act":
-                trigger = "on_write"
-                time = 0
-            else:
-                trigger = "on_time"
-                model_field = self.env["ir.model.fields"].search(
-                    [("model", "=", "pms.reservation"), ("name", "=", "write_date")]
-                )
             if action == "cancel":
                 filter_domain = [
                     ("state", "=", "cancelled"),
                 ]
-        # action: checkin
-        if action == "checkin":
-            model_id = (
-                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
-            )
-            trigger = "on_time"
-            model_field = self.env["ir.model.fields"].search(
-                [("model", "=", "pms.reservation"), ("name", "=", "checkin")]
-            )
+        elif action == "checkin":
+            dict_val = self._get_auto_action_fields_in_checkin_action(moment, time)
             if moment == "in_act":
-                time = 0
-                filter_domain = [
-                    ("checkin", "=", str(today)),
-                ]
-            elif moment == "before":
-                time = time * (-1)
-        # action: checkout
-        if action == "checkout":
-            model_id = (
-                self.env["ir.model"].search([("model", "=", "pms.reservation")]).id
-            )
-            trigger = "on_time"
-            model_field = self.env["ir.model.fields"].search(
-                [("model", "=", "pms.reservation"), ("name", "=", "checkout")]
-            )
-            if moment == "in_act":
-                time = 0
-                filter_domain = [
-                    ("checkout", "=", str(today)),
-                ]
-            elif moment == "before":
-                time = time * (-1)
-        # action: payments
-        if action == "payment":
-            model_id = (
-                self.env["ir.model"]
-                .search([("model", "=", "account.payment"), ("transient", "=", False)])
-                .id
-            )
-            if moment == "in_act":
-                trigger = "on_creation"
-                model_field = self.env["ir.model.fields"].search(
-                    [("model", "=", "account.payment"), ("name", "=", "create_date")]
+                trigger_fields = self.env["ir.model.fields"].search(
+                    [("model", "=", "pms.reservation"), ("name", "=", "state")]
                 )
-                time = 0
-            else:
-                trigger = "on_time"
-                model_field = self.env["ir.model.fields"].search(
-                    [("model", "=", "account.payment"), ("name", "=", "date")]
+                filter_pre_domain = [("state", "=", "confirm")]
+                filter_domain = [
+                    ("state", "=", "onboard"),
+                ]
+        elif action == "checkout":
+            dict_val = self._get_auto_action_fields_in_checkout_action(moment, time)
+            if moment == "in_act":
+                trigger_fields = self.env["ir.model.fields"].search(
+                    [("model", "=", "pms.reservation"), ("name", "=", "state")]
                 )
-                if moment == "before":
-                    time = time * (-1)
-        # TODO: create automated action when the act is 'invoice'
-        # action: invoices
-        # if action == "invoice":
-        #     model_id = self.env["ir.model"].search(
-        #       [("model", "=", "account.move")]
-        #     ).id
-        #     filter_domain = [
-        #         ("folio_ids", "!=", False),
-        #     ]
-        #     if moment == "in_act":
-        #         trigger = "on_create"
-        #         time = 0
+                filter_pre_domain = [("state", "=", "onboard")]
+                filter_domain = [
+                    ("state", "=", "out"),
+                ]
+        elif action == "payment":
+            dict_val = self._get_auto_action_fields_in_payment_action(moment, time)
+        elif action == "invoice":
+            dict_val = self._get_auto_action_fields_in_invoice_action(moment, time)
+            filter_domain = [
+                ("folio_ids", "!=", False),
+            ]
         pms_property_ids = self._get_pms_property_ids(properties, is_create)
         if pms_property_ids:
             filter_domain.append(("pms_property_id", "in", pms_property_ids))
         result = {
-            "trigger": trigger,
-            "model_field": model_field,
+            "trigger": dict_val["trigger"],
+            "model_field": dict_val["model_field"],
+            "trigger_fields": trigger_fields,
+            "filter_pre_domain": filter_pre_domain,
             "filter_domain": filter_domain,
-            "time": time,
-            "model_id": model_id,
+            "time": dict_val["time"],
+            "model_id": dict_val["model_id"],
         }
         return result
 
