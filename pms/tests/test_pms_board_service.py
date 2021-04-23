@@ -41,7 +41,7 @@ class TestBoardService(TestPms):
         self.env["pms.board.service"].create(
             {
                 "name": "Board service bs1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
@@ -54,7 +54,7 @@ class TestBoardService(TestPms):
             self.env["pms.board.service"].create(
                 {
                     "name": "Board service bs2",
-                    "code_board": "c1",
+                    "default_code": "c1",
                     "pms_property_ids": [(6, 0, [self.pms_property1.id])],
                 }
             )
@@ -86,7 +86,7 @@ class TestBoardService(TestPms):
         self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
@@ -99,7 +99,7 @@ class TestBoardService(TestPms):
             self.env["pms.board.service"].create(
                 {
                     "name": "Board service bs2",
-                    "code_board": "c1",
+                    "default_code": "c1",
                     "pms_property_ids": [
                         (
                             6,
@@ -128,7 +128,7 @@ class TestBoardService(TestPms):
         board_service1 = self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property3.id])
                 ],
@@ -162,7 +162,7 @@ class TestBoardService(TestPms):
         bs1 = self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property3.id])
                 ],
@@ -199,7 +199,7 @@ class TestBoardService(TestPms):
         self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property2.id])
                 ],
@@ -229,7 +229,7 @@ class TestBoardService(TestPms):
         board_service1 = self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -264,7 +264,7 @@ class TestBoardService(TestPms):
         board_service1 = self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property3.id])
                 ],
@@ -274,7 +274,7 @@ class TestBoardService(TestPms):
         self.env["pms.board.service"].create(
             {
                 "name": "Board service bs2",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -316,14 +316,14 @@ class TestBoardService(TestPms):
         self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
         board_service2 = self.env["pms.board.service"].create(
             {
                 "name": "Board service bs2",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -358,14 +358,14 @@ class TestBoardService(TestPms):
         self.env["pms.board.service"].create(
             {
                 "name": "Board service bs1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
         board_service2 = self.env["pms.board.service"].create(
             {
                 "name": "Board service bs2",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -400,14 +400,14 @@ class TestBoardService(TestPms):
         self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
         board_service2 = self.env["pms.board.service"].create(
             {
                 "name": "Board service bs2",
-                "code_board": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )

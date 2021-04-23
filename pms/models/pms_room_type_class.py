@@ -15,7 +15,7 @@ class PmsRoomTypeClass(models.Model):
 
     _name = "pms.room.type.class"
     _description = "Room Type Class"
-    _order = "sequence, name, code_class"
+    _order = "sequence, name, default_code"
 
     name = fields.Char(
         string="Class Name",
@@ -49,26 +49,26 @@ class PmsRoomTypeClass(models.Model):
         comodel_name="pms.room.type",
         inverse_name="class_id",
     )
-    code_class = fields.Char(
+    default_code = fields.Char(
         string="Code", help="Room type class identification code", required=True
     )
 
     @api.model
-    def get_unique_by_property_code(self, pms_property_id, code_class=None):
+    def get_unique_by_property_code(self, pms_property_id, default_code=None):
         """
         :param pms_property_id: property ID
-        :param code_class: room type code (optional)
+        :param default_code: room type code (optional)
         :return: - recordset of
                     - all the pms.room.type.class of the pms_property_id
-                      if code_class not defined
-                    - one or 0 pms.room.type.class if code_class defined
-                 - ValidationError if more than one code_class found by
+                      if default_code not defined
+                    - one or 0 pms.room.type.class if default_code defined
+                 - ValidationError if more than one default_code found by
                    the same pms_property_id
         """
         # TODO: similiar code as room.type -> unify
         domain = []
-        if code_class:
-            domain += ["&", ("code_class", "=", code_class)]
+        if default_code:
+            domain += ["&", ("default_code", "=", default_code)]
         domain += [
             "|",
             ("pms_property_ids", "in", pms_property_id),
@@ -77,22 +77,22 @@ class PmsRoomTypeClass(models.Model):
         records = self.search(domain)
         res, res_priority = {}, {}
         for rec in records:
-            res_priority.setdefault(rec.code_class, -1)
+            res_priority.setdefault(rec.default_code, -1)
             priority = rec.pms_property_ids and 1 or 0
-            if priority > res_priority[rec.code_class]:
-                res.setdefault(rec.code_class, rec.id)
-                res[rec.code_class], res_priority[rec.code_class] = rec.id, priority
-            elif priority == res_priority[rec.code_class]:
+            if priority > res_priority[rec.default_code]:
+                res.setdefault(rec.default_code, rec.id)
+                res[rec.default_code], res_priority[rec.default_code] = rec.id, priority
+            elif priority == res_priority[rec.default_code]:
                 raise ValidationError(
                     _(
                         "Integrity error: There's multiple room types "
                         "with the same code %s and properties"
                     )
-                    % rec.code_class
+                    % rec.default_code
                 )
         return self.browse(list(res.values()))
 
-    @api.constrains("code_class", "pms_property_ids")
+    @api.constrains("default_code", "pms_property_ids")
     def _check_code_property_uniqueness(self):
         # TODO: similiar code as room.type -> unify
         msg = _(
@@ -103,7 +103,7 @@ class PmsRoomTypeClass(models.Model):
                 if self.search(
                     [
                         ("id", "!=", rec.id),
-                        ("code_class", "=", rec.code_class),
+                        ("default_code", "=", rec.default_code),
                         ("pms_property_ids", "=", False),
                     ]
                 ):
@@ -111,7 +111,7 @@ class PmsRoomTypeClass(models.Model):
             else:
                 for pms_property in rec.pms_property_ids:
                     other = rec.get_unique_by_property_code(
-                        pms_property.id, rec.code_class
+                        pms_property.id, rec.default_code
                     )
                     if other and other != rec:
                         raise ValidationError(msg)

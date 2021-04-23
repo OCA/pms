@@ -50,7 +50,7 @@ class TestPmsFolioInvoice(common.SavepointCase):
         )
         # create room type class
         self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "code_class": "ROOM"}
+            {"name": "Room", "default_code": "ROOM"}
         )
 
         # create room type

@@ -7,7 +7,7 @@
             <form string="Board Service Line">
                 <group>
                     <field name="name" />
-                    <field name="code_board" />
+                    <field name="default_code" />
                     <field
                         name="pms_property_ids"
                         widget="many2many_tags"
@@ -31,7 +31,7 @@
         <field name="arch" type="xml">
             <tree string="Board Services">
                 <field name="name" />
-                <field name="code_board" />
+                <field name="default_code" />
                 <field name="amount" />
                 <field name="show_detail_report" />
             </tree>
