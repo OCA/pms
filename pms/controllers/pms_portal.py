@@ -214,3 +214,71 @@ class PortalReservation(CustomerPortal):
             reservation_sudo, access_token, **kw
         )
         return request.render("pms.portal_my_reservation_detail", values)
+
+
+class PortalPrecheckin(CustomerPortal):
+    def _prepare_home_portal_values(self, counters):
+        partner = request.env.user.partner_id
+        values = super()._prepare_home_portal_values(counters)
+        Reservation = request.env["pms.reservation"].search([("partner_id", "=", partner.id)])
+        if "checkin_count" in counters:
+            checkin_partner_count = len(Reservation.checkin_partner_ids)
+            values["checkin_count"] = checkin_partner_count if Reservation.check_access_rights("read", raise_exception=False) else 0
+        return values
+
+    def _precheckin_get_page_view_values(self, precheckin, access_token, **kwargs):
+        values = {"precheckin": precheckin, "token": access_token}
+        return self._get_page_view_values(
+            precheckin,
+            access_token,
+            values,
+            "my_precheckins_history",
+            False,
+            **kwargs
+        )
+
+    @http.route(
+        ["/my/precheckins", "/my/precheckins/page/<int:page>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_precheckin(
+        self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw
+    ):
+        partner = request.env.user.partner_id
+        values = self._prepare_portal_layout_values()
+        Reservation = request.env["pms.reservation"]
+        values["reservations"] = Reservation.search(
+            [
+                ("partner_id", "child_of", partner.id),
+            ]
+        )
+        domain = [
+            ("partner_id", "child_of", partner.id),
+        ]
+        if date_begin and date_end:
+            domain += [
+                ("create_date", ">", date_begin),
+                ("create_date", "<=", date_end),
+            ]
+
+        reservations = Reservation.search(domain)
+        checkin_count = len(reservations.checkin_partner_ids)
+        pager = portal_pager(
+            url="/my/precheckins",
+            url_args={"date_begin": date_begin, "date_end": date_end},
+            total=checkin_count,
+            page=page,
+            step=self._items_per_page,
+        )
+        request.session["my_precheckins_history"] = reservations.ids[:100]
+        values.update(
+            {
+                "date": date_begin,
+                "page_name": "precheckins",
+                "pager": pager,
+                "default_url": "/my/precheckins",
+            }
+        )
+        return request.render("pms.portal_my_precheckin", values)
