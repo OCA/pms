@@ -459,6 +459,27 @@ class PmsCheckinPartner(models.Model):
             else:
                 record.partner_incongruences = False
 
+    def _compute_access_url(self):
+        super(PmsCheckinPartner, self)._compute_access_url()
+        for checkin in self:
+            checkin.access_url = "/my/precheckin/%s" % (checkin.id)
+
+    @api.model
+    def _checkin_mandatory_fields(self, depends=False):
+        # api.depends need "reservation_id.state" in the lambda function
+        if depends:
+            return ["reservation_id.state", "name"]
+        return ["name"]
+
+    @api.model
+    def _checkin_partner_fields(self):
+        # api.depends need "reservation_id.state" in the lambda function
+        checkin_fields = self._checkin_mandatory_fields()
+        checkin_fields.extend(["mobile", "email"])
+        return checkin_fields
+
+    # Constraints and onchanges
+
     @api.constrains("departure", "arrival")
     def _check_departure(self):
         for record in self:
