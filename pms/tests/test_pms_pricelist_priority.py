@@ -69,7 +69,7 @@ class TestPmsPricelistRules(common.SavepointCase):
         )
 
         self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room Class", "code_class": "ROOM"}
+            {"name": "Room Class", "default_code": "ROOM"}
         )
 
         self.room_type = self.env["pms.room.type"].create(

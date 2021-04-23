@@ -66,7 +66,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
         # CREATION OF ROOM TYPE CLASS
         self.test_room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "code_class": "ROOM"}
+            {"name": "Room", "default_code": "ROOM"}
         )
         self.test_room_type_class.flush()
 

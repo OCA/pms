@@ -24,6 +24,6 @@ class TestPms(common.SavepointCase):
         self.room_type_class1 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room Type Class 1",
-                "code_class": "RTC1",
+                "default_code": "RTC1",
             }
         )
