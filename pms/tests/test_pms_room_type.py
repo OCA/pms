@@ -720,7 +720,7 @@ class TestRoomType(TestPms):
         room_type_class = self.env["pms.room.type.class"].create(
             {
                 "name": "Room Type Class",
-                "code_class": "ROOM",
+                "default_code": "ROOM",
                 "pms_property_ids": [
                     (4, self.pms_property2.id),
                 ],
@@ -747,7 +747,7 @@ class TestRoomType(TestPms):
     # def test_check_board_service_property_integrity(self):
     #
     #     self.room_type_class = self.env["pms.room.type.class"].create(
-    #         {"name": "Room Type Class", "code_class": "SIN1"}
+    #         {"name": "Room Type Class", "default_code": "SIN1"}
     #     )
     #     self.room_type = self.env["pms.room.type"].create(
     #        {

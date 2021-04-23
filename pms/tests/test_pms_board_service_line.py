@@ -60,7 +60,7 @@ class TestPmsBoardService(common.SavepointCase):
         self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Board Service",
-                "code_board": "CB",
+                "default_code": "CB",
             }
         )
         with self.assertRaises(ValidationError):
