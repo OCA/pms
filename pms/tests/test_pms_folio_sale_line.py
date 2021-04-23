@@ -21,7 +21,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         # create room type class
         self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "code_class": "ROOM"}
+            {"name": "Room", "default_code": "ROOM"}
         )
 
         # create room type
@@ -325,7 +325,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -386,7 +386,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -446,7 +446,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -509,7 +509,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -572,7 +572,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -633,7 +633,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
         self.env["pms.board.service.line"].create(
@@ -695,7 +695,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
 
@@ -762,7 +762,7 @@ class TestPmsFolioSaleLine(TestPms):
         board_service_test = self.board_service = self.env["pms.board.service"].create(
             {
                 "name": "Test Board Service",
-                "code_board": "TPS",
+                "default_code": "TPS",
             }
         )
 

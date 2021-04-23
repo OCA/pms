@@ -41,7 +41,7 @@ class TestRoomTypeClass(TestPms):
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
@@ -54,7 +54,7 @@ class TestRoomTypeClass(TestPms):
             self.env["pms.room.type.class"].create(
                 {
                     "name": "Room type class cl2",
-                    "code_class": "c1",
+                    "default_code": "c1",
                     "pms_property_ids": [(6, 0, [self.pms_property1.id])],
                 }
             )
@@ -86,7 +86,7 @@ class TestRoomTypeClass(TestPms):
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
@@ -99,7 +99,7 @@ class TestRoomTypeClass(TestPms):
             self.env["pms.room.type.class"].create(
                 {
                     "name": "Room type class cl2",
-                    "code_class": "c1",
+                    "default_code": "c1",
                     "pms_property_ids": [
                         (
                             6,
@@ -128,7 +128,7 @@ class TestRoomTypeClass(TestPms):
         room_type_class1 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property3.id])
                 ],
@@ -162,7 +162,7 @@ class TestRoomTypeClass(TestPms):
         cl1 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property3.id])
                 ],
@@ -201,7 +201,7 @@ class TestRoomTypeClass(TestPms):
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property2.id])
                 ],
@@ -231,7 +231,7 @@ class TestRoomTypeClass(TestPms):
         room_type_class1 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -266,7 +266,7 @@ class TestRoomTypeClass(TestPms):
         room_type_class1 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [
                     (6, 0, [self.pms_property1.id, self.pms_property3.id])
                 ],
@@ -276,7 +276,7 @@ class TestRoomTypeClass(TestPms):
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -318,14 +318,14 @@ class TestRoomTypeClass(TestPms):
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
         room_type_class2 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -360,14 +360,14 @@ class TestRoomTypeClass(TestPms):
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
         room_type_class2 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )
@@ -402,14 +402,14 @@ class TestRoomTypeClass(TestPms):
         self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class 1",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": [(6, 0, [self.pms_property1.id])],
             }
         )
         room_type_class2 = self.env["pms.room.type.class"].create(
             {
                 "name": "Room type class cl2",
-                "code_class": "c1",
+                "default_code": "c1",
                 "pms_property_ids": False,
             }
         )

@@ -16,7 +16,7 @@ class PmsBoardService(models.Model):
         size=64,
         translate=True,
     )
-    code_board = fields.Char(
+    default_code = fields.Char(
         string="Board Service Code",
         help="Unique Board Service identification code per property",
         required=True,
@@ -67,21 +67,21 @@ class PmsBoardService(models.Model):
             record.update({"amount": total})
 
     @api.model
-    def get_unique_by_property_code(self, pms_property_id, code_board=None):
+    def get_unique_by_property_code(self, pms_property_id, default_code=None):
         """
         :param pms_property_id: property ID
-        :param code_board: board service code (optional)
+        :param default_code: board service code (optional)
         :return: - recordset of
                     - all the pms.board.service of the pms_property_id
-                      if code_board not defined
-                    - one or 0 pms.board.service if code_board defined
-                 - ValidationError if more than one code_board found by
+                      if default_code not defined
+                    - one or 0 pms.board.service if default_code defined
+                 - ValidationError if more than one default_code found by
                    the same pms_property_id
         """
         # TODO: similiar code as room.type -> unify
         domain = []
-        if code_board:
-            domain += ["&", ("code_board", "=", code_board)]
+        if default_code:
+            domain += ["&", ("default_code", "=", default_code)]
         domain += [
             "|",
             ("pms_property_ids", "in", pms_property_id),
@@ -90,22 +90,22 @@ class PmsBoardService(models.Model):
         records = self.search(domain)
         res, res_priority = {}, {}
         for rec in records:
-            res_priority.setdefault(rec.code_board, -1)
+            res_priority.setdefault(rec.default_code, -1)
             priority = rec.pms_property_ids and 1 or 0
-            if priority > res_priority[rec.code_board]:
-                res.setdefault(rec.code_board, rec.id)
-                res[rec.code_board], res_priority[rec.code_board] = rec.id, priority
-            elif priority == res_priority[rec.code_board]:
+            if priority > res_priority[rec.default_code]:
+                res.setdefault(rec.default_code, rec.id)
+                res[rec.default_code], res_priority[rec.default_code] = rec.id, priority
+            elif priority == res_priority[rec.default_code]:
                 raise ValidationError(
                     _(
                         "Integrity error: There's multiple board services "
                         "with the same code %s and properties"
                     )
-                    % rec.code_board
+                    % rec.default_code
                 )
         return self.browse(list(res.values()))
 
-    @api.constrains("code_board", "pms_property_ids")
+    @api.constrains("default_code", "pms_property_ids")
     def _check_code_property_uniqueness(self):
         # TODO: similiar code as room.type -> unify
         msg = _(
@@ -116,7 +116,7 @@ class PmsBoardService(models.Model):
                 if self.search(
                     [
                         ("id", "!=", rec.id),
-                        ("code_board", "=", rec.code_board),
+                        ("default_code", "=", rec.default_code),
                         ("pms_property_ids", "=", False),
                     ]
                 ):
@@ -124,7 +124,7 @@ class PmsBoardService(models.Model):
             else:
                 for pms_property in rec.pms_property_ids:
                     other = rec.get_unique_by_property_code(
-                        pms_property.id, rec.code_board
+                        pms_property.id, rec.default_code
                     )
                     if other and other != rec:
                         raise ValidationError(msg)

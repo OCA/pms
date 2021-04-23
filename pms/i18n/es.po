@@ -1190,7 +1190,7 @@ msgstr "Razón de Cierre"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__code_type
-#: model:ir.model.fields,field_description:pms.field_pms_room_type_class__code_class
+#: model:ir.model.fields,field_description:pms.field_pms_room_type_class_default_code
 msgid "Code"
 msgstr "Código"
 
@@ -4652,7 +4652,7 @@ msgid "Room Class"
 msgstr "Clase de Habitación"
 
 #. module: pms
-#: model:ir.model.constraint,message:pms.constraint_pms_room_type_class_code_class_unique
+#: model:ir.model.constraint,message:pms.constraint_pms_room_type_class_default_code_unique
 msgid "Room Class Code must be unique!"
 msgstr "El código de la clase de habitación debe ser único!"
 

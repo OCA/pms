@@ -66,7 +66,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         )
         # pms.room.type.class
         self.test_room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "code_class": "ROOM"}
+            {"name": "Room", "default_code": "ROOM"}
         )
 
         # pms.room.type
