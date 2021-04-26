@@ -12,6 +12,7 @@ from odoo.tools.safe_eval import safe_eval
 class PmsCheckinPartner(models.Model):
     _name = "pms.checkin.partner"
     _description = "Partner Checkins"
+    _inherit = ["portal.mixin"]
     _rec_name = "identifier"
     _check_pms_properties_auto = True
 
