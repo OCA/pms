@@ -19,11 +19,18 @@
                                 options="{'related_start_date': 'start_date'}"
                             />
                             <field name="folio_id" invisible="1" />
+                            <field name="agency_id" />
+                            <field name="segmentation_ids" widget="many2many_tags" />
                         </group>
                     </div>
                     <div class="col-5">
                         <group>
-                            <field name="partner_id" string="Partner" required="1" />
+                            <field
+                                name="partner_id"
+                                string="Partner"
+                                required="1"
+                                options="{'no_create': True,'no_open': True}"
+                            />
                             <field
                                 name="pms_property_id"
                                 required="1"
@@ -35,7 +42,9 @@
                                 string="Pricelist"
                                 required="1"
                                 domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_id)]"
+                                options="{'no_create': True,'no_open': True}"
                             />
+                            <field name="channel_type_id" />
                         </group>
                     </div>
                 </div>
@@ -75,6 +84,7 @@
                                         attrs="{'readonly':[('num_rooms_available','&lt;',1)]}"
                                         force_save="1"
                                     />
+                                    <field name="board_service_room_id" />
                                     <field
                                         name="price_per_room"
                                         readonly="1"
