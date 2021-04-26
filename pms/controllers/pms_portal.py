@@ -220,16 +220,22 @@ class PortalPrecheckin(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
         partner = request.env.user.partner_id
         values = super()._prepare_home_portal_values(counters)
-        Reservation = request.env["pms.reservation"].search([("partner_id", "=", partner.id)])
+        Reservation = request.env["pms.reservation"].search(
+            [("partner_id", "=", partner.id)]
+        )
         if "checkin_count" in counters:
             checkin_partner_count = len(Reservation.checkin_partner_ids)
-            values["checkin_count"] = checkin_partner_count if Reservation.check_access_rights("read", raise_exception=False) else 0
+            values["checkin_count"] = (
+                checkin_partner_count
+                if Reservation.check_access_rights("read", raise_exception=False)
+                else 0
+            )
         return values
 
-    def _precheckin_get_page_view_values(self, precheckin, access_token, **kwargs):
-        values = {"precheckin": precheckin, "token": access_token}
+    def _precheckin_get_page_view_values(self, checkin_partner, access_token, **kwargs):
+        values = {"checkin_partner": checkin_partner, "token": access_token}
         return self._get_page_view_values(
-            precheckin,
+            checkin_partner,
             access_token,
             values,
             "my_precheckins_history",
@@ -282,3 +288,23 @@ class PortalPrecheckin(CustomerPortal):
             }
         )
         return request.render("pms.portal_my_precheckin", values)
+
+    @http.route(
+        ["/my/precheckin/<int:checkin_partner_id>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_precheckin_detail(self, checkin_partner_id, access_token=None, **kw):
+        try:
+            checkin_sudo = self._document_check_access(
+                "pms.checkin.partner",
+                checkin_partner_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        # for attachment in reservation_sudo.attachment_ids:
+        #     attachment.generate_access_token()
+        values = self._precheckin_get_page_view_values(checkin_sudo, access_token, **kw)
+        return request.render("pms.portal_my_precheckin_detail", values)

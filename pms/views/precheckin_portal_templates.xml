@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template
         id="portal_my_home_menu_precheckin"
@@ -13,10 +13,10 @@
             >
                 <a t-attf-href="/my/precheckin?{{ keep_query() }}">Precheckin</a>
             </li>
-            <li t-if="reservation" class="breadcrumb-item active">
-                 <a t-attf-href="/my/precheckin?{{ keep_query() }}">Precheckin/</a>
-                <t t-esc="reservation.name" />
-            </li>
+<!--            <li t-if="reservation" class="breadcrumb-item active">-->
+<!--                 <a t-attf-href="/my/precheckin?{{ keep_query() }}">Precheckin/</a>-->
+<!--                <t t-esc="reservation.name" />-->
+<!--            </li>-->
         </xpath>
     </template>
     <template
@@ -35,6 +35,8 @@
         </xpath>
     </template>
     <template id="portal_my_precheckin" name="My PreCheckins">
+<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+<!--        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
       <t t-call="portal.portal_layout">
         <t t-set="breadcrumbs_searchbar" t-value="True" />
 
@@ -66,9 +68,8 @@
                         </tr>
                     </t>
                     <tr class="bg-light">
-                        <td colspan="4"><em
-                                        class="font-weight-normal text-muted"
-                                    ><span />Reservation: </em>
+                        <td colspan="4"><em class="font-weight-normal text-muted"><span
+                                    />Reservation: </em>
                             <a
                                     t-att-href="reservation.get_portal_url()"
                                     t-att-title="reservation.name"
@@ -77,10 +78,29 @@
                             </a>
                         </td>
                     </tr>
-                    <t t-foreach="reservation.checkin_partner_ids" t-as="checkin_partner">
+                    <t
+                            t-foreach="reservation.checkin_partner_ids"
+                            t-as="checkin_partner"
+                        >
                         <tr>
-                            <td>
-                                <a>Checkin</a>
+                            <td colspan="4">
+                            <a t-att-href="checkin_partner.get_portal_url()">
+                                    Checkin
+                            </a>
+                                <div t-attf-class="form-group">
+                                        <div class="col-2">
+                                            <label
+                                                class="col-form-label"
+                                                for="name"
+                                            >Name: </label>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                t-attf-class="form-control"
+                                                t-att-value="name or checkin_partner.name"
+                                            />
+                                        </div>
+                                </div>
                             </td>
                         </tr>
                     </t>
@@ -88,5 +108,140 @@
             </tbody>
         </t>
       </t>
+    </template>
+
+    <template id="portal_my_precheckin_detail" name="My Precheckin">
+        <t t-call="portal.portal_layout">
+            <t t-set="additional_title">Contact Details</t>
+            <form action="/my/precheckin" method="post">
+<!--                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>-->
+                <div class="row o_portal_details">
+                    <div class="col-lg-8">
+                        <div class="row">
+<!--                            <t t-set="partner_can_edit_vat" t-value="partner.can_edit_vat()"/>-->
+<!--                            <div class="col-lg-12">-->
+<!--                              <div t-if="error_message" class="alert alert-danger" role="alert">-->
+<!--                                  <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>-->
+<!--                              </div>-->
+<!--                            </div>-->
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Name</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    t-attf-class="form-control"
+                                    t-att-value="name or checkin_partner.firstname"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                    class="col-form-label"
+                                    for="name"
+                                >Lastname</label>
+                                <input
+                                    type="text"
+                                    name="lastname"
+                                    t-attf-class="form-control"
+                                    t-att-value="lastname or checkin_partner.lastname"
+                                />
+                            </div>
+
+<!--                            <div class="clearfix" />-->
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                    class="col-form-label"
+                                    for="name"
+                                > Second Lastname</label>
+                                <input
+                                    type="text"
+                                    name="second_lastname"
+                                    t-attf-class="form-control"
+                                    t-att-value="lastname2 or checkin_partner.lastname2"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                    class="col-form-label"
+                                    for="name"
+                                > Birth Date</label>
+                                <input
+                                    type="text"
+                                    name="birth_date"
+                                    t-attf-class="form-control"
+                                    t-att-value="birth_date or checkin_partner.birthdate_date"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Gender</label>
+                                <input
+                                    type="text"
+                                    name="gender"
+                                    t-attf-class="form-control"
+                                    t-att-value="gender or checkin_partner.gender"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                    class="col-form-label"
+                                    for="name"
+                                >Doc. type</label>
+                                <input
+                                    type="text"
+                                    name="doc_type"
+                                    t-attf-class="form-control"
+                                    t-att-value="doc_type or checkin_partner.document_type"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                    class="col-form-label"
+                                    for="name"
+                                >Doc. number</label>
+                                <input
+                                    type="text"
+                                    name="doc_number"
+                                    t-attf-class="form-control"
+                                    t-att-value="doc_number or checkin_partner.document_number"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                    class="col-form-label"
+                                    for="name"
+                                >Doc. expedition date</label>
+                                <input
+                                    type="text"
+                                    name="doc_exp_date"
+                                    t-attf-class="form-control"
+                                    t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
+                                />
+                            </div>
+<!--                            <div t-attf-class="form-group col-xl-6">-->
+<!--                                <label class="col-form-label" for="name">Phone</label>-->
+<!--                                <input type="text" name="phone" t-attf-class="form-control" t-att-value="phone or checkin_partner.phone" />-->
+<!--                            </div>-->
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Mobile</label>
+                                <input
+                                    type="text"
+                                    name="mobile"
+                                    t-attf-class="form-control"
+                                    t-att-value="mobile or checkin_partner.mobile"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Email</label>
+                                <input
+                                    type="text"
+                                    name="email"
+                                    t-attf-class="form-control"
+                                    t-att-value="email or checkin_partner.email"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </t>
     </template>
 </odoo>
