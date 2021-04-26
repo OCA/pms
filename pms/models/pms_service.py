@@ -271,7 +271,12 @@ class PmsService(models.Model):
                 name += "\n" + product.description_sale
             service.name = name
 
-    @api.depends("reservation_id.checkin", "reservation_id.checkout", "product_id")
+    @api.depends(
+        "reservation_id.checkin",
+        "reservation_id.checkout",
+        "product_id",
+        "reservation_id.adults",
+    )
     def _compute_service_line_ids(self):
         for service in self:
             if service.product_id:
@@ -288,15 +293,22 @@ class PmsService(models.Model):
                             if consumed_on == "after":
                                 i += 1
                             idate = reservation.checkin + timedelta(days=i)
-                            old_line = service._search_old_lines(idate)
-                            if idate in [
-                                line.date for line in service.service_line_ids
-                            ]:
-                                # REVIEW: If the date is already
-                                # cached (otherwise double the date)
-                                pass
+                            old_line = service.service_line_ids.filtered(
+                                lambda r: r.date == idate
+                            )
+                            price_unit = service._get_price_unit_line(idate)
+                            if old_line and old_line.auto_qty:
+                                lines.append(
+                                    (
+                                        1,
+                                        old_line.id,
+                                        {
+                                            "day_qty": day_qty,
+                                            "auto_qty": True,
+                                        },
+                                    )
+                                )
                             elif not old_line:
-                                price_unit = service._get_price_unit_line(idate)
                                 lines.append(
                                     (
                                         0,
@@ -304,12 +316,11 @@ class PmsService(models.Model):
                                         {
                                             "date": idate,
                                             "day_qty": day_qty,
+                                            "auto_qty": True,
                                             "price_unit": price_unit,
                                         },
                                     )
                                 )
-                            else:
-                                lines.append((4, old_line.id))
                         move_day = 0
                         if consumed_on == "after":
                             move_day = 1
@@ -332,7 +343,6 @@ class PmsService(models.Model):
                         )
                         service.service_line_ids = lines
                     else:
-                        # TODO: Review (business logic refact) no per_day logic service
                         if not service.service_line_ids:
                             price_unit = service._get_price_unit_line()
                             service.service_line_ids = [
@@ -347,8 +357,6 @@ class PmsService(models.Model):
                                 )
                             ]
                 else:
-                    # TODO: Service without reservation(room) but with folio¿?
-                    # example: tourist tour in group
                     if not service.service_line_ids:
                         price_unit = service._get_price_unit_line()
                         service.service_line_ids = [
@@ -364,13 +372,6 @@ class PmsService(models.Model):
                         ]
             else:
                 service.service_line_ids = False
-
-    def _search_old_lines(self, date):
-        self.ensure_one()
-        if isinstance(self._origin.id, int):
-            old_line = self._origin.service_line_ids.filtered(lambda r: r.date == date)
-            return old_line
-        return False
 
         # Default methods
 

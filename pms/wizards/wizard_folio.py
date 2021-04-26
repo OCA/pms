@@ -30,6 +30,9 @@ class FolioWizard(models.TransientModel):
         string="Property",
         default=lambda self: self._default_pms_property_id(),
     )
+    segmentation_ids = fields.Many2many(
+        "res.partner.category", string="Segmentation", ondelete="restrict"
+    )
     partner_id = fields.Many2one(
         "res.partner",
     )
@@ -42,6 +45,21 @@ class FolioWizard(models.TransientModel):
         compute="_compute_availability_results",
         store=True,
         readonly=False,
+    )
+    agency_id = fields.Many2one(
+        string="Agency",
+        comodel_name="res.partner",
+        ondelete="restrict",
+        domain=[("is_agency", "=", True)],
+    )
+    channel_type_id = fields.Many2one(
+        string="Direct Sale Channel",
+        readonly=False,
+        store=True,
+        comodel_name="pms.sale.channel",
+        domain=[("channel_type", "=", "direct")],
+        compute="_compute_channel_type_id",
+        ondelete="restrict",
     )
     total_price_folio = fields.Float(
         string="Total Price", compute="_compute_total_price_folio"
@@ -70,6 +88,12 @@ class FolioWizard(models.TransientModel):
     def _compute_pricelist_id(self):
         for record in self:
             record.pricelist_id = record.partner_id.property_product_pricelist.id
+
+    @api.depends("agency_id")
+    def _compute_channel_type_id(self):
+        for record in self:
+            if record.agency_id:
+                record.channel_type_id = record.agency_id.sale_channel_id.id
 
     @api.depends("availability_results.price_total", "discount")
     def _compute_total_price_folio(self):
@@ -144,6 +168,9 @@ class FolioWizard(models.TransientModel):
                         "pricelist_id": record.pricelist_id.id,
                         "partner_id": record.partner_id.id,
                         "pms_property_id": record.pms_property_id.id,
+                        "agency_id": record.agency_id.id,
+                        "channel_type_id": record.channel_type_id.id,
+                        "segmentation_ids": [(6, 0, record.segmentation_ids.ids)],
                     }
                 )
             else:
@@ -159,6 +186,7 @@ class FolioWizard(models.TransientModel):
                             "partner_id": record.partner_id.id,
                             "pricelist_id": record.pricelist_id.id,
                             "pms_property_id": folio.pms_property_id.id,
+                            "board_service_room_id": line.board_service_room_id.id,
                         }
                     )
                     res.reservation_line_ids.discount = record.discount * 100

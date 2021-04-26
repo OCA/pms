@@ -58,8 +58,15 @@ class AvailabilityWizard(models.TransientModel):
         related="folio_wizard_id.pms_property_id",
         string="Property",
     )
+    board_service_room_id = fields.Many2one(
+        string="Board Service",
+        help="Board Service included in the room",
+        comodel_name="pms.board.service.room.type",
+        domain="[('pms_room_type_id','=',room_type_id)]",
+        tracking=True,
+    )
 
-    @api.depends("num_rooms_selected", "checkin", "checkout")
+    @api.depends("num_rooms_selected", "checkin", "checkout", "board_service_room_id")
     def _compute_price_total(self):
         for record in self:
             record.price_total = 0
@@ -87,6 +94,12 @@ class AvailabilityWizard(models.TransientModel):
                     property=record.folio_wizard_id.pms_property_id.id,
                 )
                 room_type_total_price_per_room += product.price
+
+            if record.board_service_room_id:
+                nights = (record.checkout - record.checkin).days
+                room_type_total_price_per_room += (
+                    record.board_service_room_id.amount * nights
+                )
 
             # udpate the price per room
             record.price_per_room = room_type_total_price_per_room
