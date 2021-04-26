@@ -110,6 +110,13 @@ class PmsServiceLine(models.Model):
         readonly=True,
         store=True,
     )
+    auto_qty = fields.Boolean(
+        string="Qty automated setted",
+        help="Show if the day qty was calculated automatically",
+        compute="_compute_auto_qty",
+        readonly=False,
+        store=True,
+    )
 
     @api.depends("day_qty", "discount", "price_unit", "tax_ids")
     def _compute_day_amount_service(self):
@@ -212,6 +219,16 @@ class PmsServiceLine(models.Model):
             #         reservation.reservation_line_ids.update({"cancel_discount": 0})
             # else:
             #     reservation.reservation_line_ids.update({"cancel_discount": 0})
+
+    @api.depends("day_qty")
+    def _compute_auto_qty(self):
+        """
+        Set auto_qty = False if the service is no linked to room or
+        if the day_qty was set manually
+        (See autogeneration of service lines in
+        _compute_service_line_ids -pms.service-)
+        """
+        self.auto_qty = False
 
     # Constraints and onchanges
     @api.constrains("day_qty")
