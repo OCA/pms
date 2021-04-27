@@ -122,7 +122,6 @@ class TestPmsPricelistRules(common.SavepointCase):
                 "partner_id": self.partner1.id,
             }
         )
-
         # ACT
         n_days = (reservation.checkout - reservation.checkin).days
         expected_price = self.room.room_type_id.list_price * n_days
@@ -147,7 +146,7 @@ class TestPmsPricelistRules(common.SavepointCase):
         #                                                   5. id
         # - tie
         # - no [date_start|date_end|date_start_overnight|date_end_overnight]
-
+        properties = self.room_type.product_id.pms_property_ids.ids
         test_cases = [
             {
                 "name": "sorting applied_on",
@@ -164,6 +163,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "applied_on": "0_product_variant",
                         "product_id": self.room_type.product_id.id,
                         "fixed_price": 50.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -171,6 +171,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "product_id": self.room_type.product_id.id,
                         "product_tmpl_id": self.product_template.id,
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -186,6 +187,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end": datetime.datetime.now()
                         + datetime.timedelta(days=2),
                         "fixed_price": 60.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -195,6 +197,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end": datetime.datetime.now()
                         + datetime.timedelta(days=1),
                         "fixed_price": 50.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -204,6 +207,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end": datetime.datetime.now()
                         + datetime.timedelta(days=3),
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -219,6 +223,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end_overnight": datetime.datetime.now()
                         + datetime.timedelta(days=6),
                         "fixed_price": 60.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -228,6 +233,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end_overnight": datetime.datetime.now()
                         + datetime.timedelta(days=10),
                         "fixed_price": 50.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -237,6 +243,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end_overnight": datetime.datetime.now()
                         + datetime.timedelta(days=3),
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -249,6 +256,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "applied_on": "0_product_variant",
                         "product_id": self.room_type.product_id.id,
                         "fixed_price": 60.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -275,18 +283,21 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "applied_on": "0_product_variant",
                         "product_id": self.room_type.product_id.id,
                         "fixed_price": 60.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
                         "applied_on": "0_product_variant",
                         "product_id": self.room_type.product_id.id,
                         "fixed_price": 50.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
                         "applied_on": "0_product_variant",
                         "product_id": self.room_type.product_id.id,
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -302,6 +313,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end": datetime.datetime.now()
                         + datetime.timedelta(days=2),
                         "fixed_price": 60.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -312,6 +324,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end": datetime.datetime.now()
                         + datetime.timedelta(days=1),
                         "fixed_price": 50.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -327,6 +340,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end": datetime.datetime.now()
                         + datetime.timedelta(days=10),
                         "fixed_price": 120.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -336,6 +350,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end_overnight": datetime.datetime.now()
                         + datetime.timedelta(days=3),
                         "fixed_price": 50.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -351,6 +366,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end_overnight": datetime.datetime.now()
                         + datetime.timedelta(days=3),
                         "fixed_price": 120.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -376,6 +392,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end_overnight": datetime.datetime.now()
                         + datetime.timedelta(days=3),
                         "fixed_price": 120.0,
+                        "pms_property_ids": properties,
                     },
                     {
                         "pricelist_id": self.pricelist.id,
@@ -432,6 +449,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_end": datetime.datetime.now()
                         + datetime.timedelta(days=1),
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -445,6 +463,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "product_id": self.room_type.product_id.id,
                         "date_start": datetime.datetime.now(),
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -458,6 +477,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "product_id": self.room_type.product_id.id,
                         "date_end_overnight": datetime.datetime.now(),
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -471,6 +491,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "product_id": self.room_type.product_id.id,
                         "date_start_overnight": datetime.datetime.now(),
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },
@@ -485,6 +506,7 @@ class TestPmsPricelistRules(common.SavepointCase):
                         "date_start_overnight": datetime.datetime.now(),
                         "date_end_overnight": datetime.datetime.now(),
                         "fixed_price": 40.0,
+                        "pms_property_ids": properties,
                     },
                 ],
             },

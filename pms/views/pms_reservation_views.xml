@@ -443,6 +443,7 @@
                                         name="cancel_discount"
                                         attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
                                     />
+                                    <field name="pms_property_id" invisible="1" />
                                 </tree>
                             </field>
                             <group string="Services" name="reservation_services">

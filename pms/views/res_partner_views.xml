@@ -64,6 +64,11 @@
                     <field name="is_agency" />
                 </group>
             </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <group>
+                    <field name="pms_property_ids" />
+                </group>
+            </xpath>
             <xpath expr="//page[@name='internal_notes']" position="after">
                 <page
                     name="agency"

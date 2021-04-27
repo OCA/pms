@@ -13,6 +13,7 @@ class PmsAvailabilityPlan(models.Model):
 
     _name = "pms.availability.plan"
     _description = "Reservation availability plan"
+    _check_pms_properties_auto = True
 
     @api.model
     def _get_default_pms_property(self):
@@ -26,15 +27,18 @@ class PmsAvailabilityPlan(models.Model):
         help="Properties with access to the element;"
         " if not set, all properties can access",
         comodel_name="pms.property",
+        ondelete="restrict",
         relation="pms_availability_plan_pms_property_rel",
         column1="availability_plan_id",
         column2="pms_property_id",
+        check_pms_properties=True,
     )
     pms_pricelist_ids = fields.One2many(
         string="Pricelists",
         help="Pricelists of the availability plan ",
         comodel_name="product.pricelist",
         inverse_name="availability_plan_id",
+        check_pms_properties=True,
     )
 
     rule_ids = fields.One2many(
@@ -42,6 +46,7 @@ class PmsAvailabilityPlan(models.Model):
         help="Rules in a availability plan",
         comodel_name="pms.availability.plan.rule",
         inverse_name="availability_plan_id",
+        check_pms_properties=True,
     )
 
     active = fields.Boolean(
@@ -50,76 +55,6 @@ class PmsAvailabilityPlan(models.Model):
         "Availability plan without removing it.",
         default=True,
     )
-
-    @api.model
-    def get_count_rooms_available(
-        self,
-        checkin,
-        checkout,
-        room_type_id,
-        pms_property_id,
-        current_lines=False,
-        pricelist_id=False,
-    ):
-        if current_lines and not isinstance(current_lines, list):
-            current_lines = [current_lines]
-
-        avail = self.get_count_real_free_rooms(
-            checkin, checkout, room_type_id, pms_property_id, current_lines
-        )
-        domain_rules = [
-            ("date", ">=", checkin),
-            (
-                "date",
-                "<=",
-                checkout,
-            ),  # TODO: only closed_departure take account checkout date!
-            ("room_type_id", "=", room_type_id),
-            ("pms_property_id", "=", pms_property_id),
-        ]
-        if pricelist_id:
-            pricelist = self.env["product.pricelist"].browse(pricelist_id)
-        if pricelist and pricelist.availability_plan_id:
-            domain_rules.append(
-                ("availability_plan_id", "=", pricelist.availability_plan_id.id)
-            )
-            rule_items = self.env["pms.availability.plan.rule"].search(domain_rules)
-            if len(rule_items) > 0:
-                for item in rule_items:
-                    if self.any_rule_applies(checkin, checkout, item):
-                        return 0
-                avail = min(rule_items.mapped("plan_avail"))
-        return avail
-
-    def get_count_real_free_rooms(
-        self,
-        checkin,
-        checkout,
-        room_type_id,
-        pms_property_id,
-        current_lines=False,
-    ):
-        Avail = self.env["pms.availability"]
-        count_free_rooms = len(self.env["pms.room.type"].browse(room_type_id).room_ids)
-        if isinstance(checkin, str):
-            checkin = datetime.datetime.strptime(
-                checkin, DEFAULT_SERVER_DATE_FORMAT
-            ).date()
-        if isinstance(checkout, str):
-            checkout = datetime.datetime.strptime(
-                checkout, DEFAULT_SERVER_DATE_FORMAT
-            ).date()
-        for avail in Avail.search(
-            [
-                ("date", ">=", checkin),
-                ("date", "<=", checkout - datetime.timedelta(1)),
-                ("room_type_id", "=", room_type_id),
-                ("pms_property_id", "=", pms_property_id),
-            ]
-        ):
-            if avail.real_avail < count_free_rooms:
-                count_free_rooms = avail.real_avail
-        return count_free_rooms
 
     @classmethod
     def any_rule_applies(cls, checkin, checkout, item):
@@ -223,6 +158,80 @@ class PmsAvailabilityPlan(models.Model):
         if room_type_id:
             domain_rooms.append(("room_type_id", "=", room_type_id))
         return self.env["pms.room"].search(domain_rooms)
+
+    @api.model
+    def get_count_rooms_available(
+        self,
+        checkin,
+        checkout,
+        room_type_id,
+        pms_property_id,
+        current_lines=False,
+        pricelist_id=False,
+    ):
+        if current_lines and not isinstance(current_lines, list):
+            current_lines = [current_lines]
+
+        avail = self.get_count_real_free_rooms(
+            checkin, checkout, room_type_id, pms_property_id, current_lines
+        )
+        domain_rules = [
+            ("date", ">=", checkin),
+            (
+                "date",
+                "<=",
+                checkout,
+            ),  # TODO: only closed_departure take account checkout date!
+            ("room_type_id", "=", room_type_id),
+            ("pms_property_id", "=", pms_property_id),
+        ]
+        if pricelist_id:
+            pricelist = self.env["product.pricelist"].browse(pricelist_id)
+        if pricelist and pricelist.availability_plan_id:
+            domain_rules.append(
+                ("availability_plan_id", "=", pricelist.availability_plan_id.id)
+            )
+            rule_items = self.env["pms.availability.plan.rule"].search(domain_rules)
+            if len(rule_items) > 0:
+                for item in rule_items:
+                    if self.any_rule_applies(checkin, checkout, item):
+                        return 0
+                avail = min(rule_items.mapped("plan_avail"))
+        return avail
+
+    def get_count_real_free_rooms(
+        self,
+        checkin,
+        checkout,
+        room_type_id,
+        pms_property_id,
+        current_lines=False,
+    ):
+        Avail = self.env["pms.availability"]
+        count_free_rooms = len(
+            self.env["pms.room.type"]
+            .browse(room_type_id)
+            .room_ids.filtered(lambda r: r.pms_property_id.id == pms_property_id)
+        )
+        if isinstance(checkin, str):
+            checkin = datetime.datetime.strptime(
+                checkin, DEFAULT_SERVER_DATE_FORMAT
+            ).date()
+        if isinstance(checkout, str):
+            checkout = datetime.datetime.strptime(
+                checkout, DEFAULT_SERVER_DATE_FORMAT
+            ).date()
+        for avail in Avail.search(
+            [
+                ("date", ">=", checkin),
+                ("date", "<=", checkout - datetime.timedelta(1)),
+                ("room_type_id", "=", room_type_id),
+                ("pms_property_id", "=", pms_property_id),
+            ]
+        ):
+            if avail.real_avail < count_free_rooms:
+                count_free_rooms = avail.real_avail
+        return count_free_rooms
 
     @api.model
     def splitted_availability(

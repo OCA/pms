@@ -6,7 +6,6 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='applied_on']" position="before">
                 <field name="on_board_service" />
-                <field name="allowed_property_ids" invisible="1" />
                 <field
                     name="board_service_room_type_ids"
                     widget="many2many_tags"

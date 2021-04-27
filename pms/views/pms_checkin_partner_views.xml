@@ -41,6 +41,7 @@
                             <field name="reservation_id" />
                             <field name="folio_id" />
                             <field name="identifier" />
+                            <field name="pms_property_id" invisible="1" />
                         </group>
                     </group>
                 </sheet>
@@ -77,6 +78,7 @@
                 <field name="reservation_id" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" invisible="0" />
+                <field name="pms_property_id" invisible="1" />
             </tree>
         </field>
     </record>
@@ -103,6 +105,7 @@
                     attrs="{'invisible': [('state','!=','precheckin')]}"
                 />
                 <field name="reservation_id" />
+                <field name="pms_property_id" invisible="1" />
                 <field name="partner_id" domain="[('is_company','=', False)]" />
                 <field name="name" />
                 <field name="mobile" />
@@ -142,6 +145,7 @@
                 <field name="arrival" />
                 <field name="departure" />
                 <field name="reservation_id" />
+                <field name="pms_property_id" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" />
             </tree>
@@ -217,6 +221,10 @@
                                             <field
                                                 name="reservation_id"
                                                 placeholder="Room Reservation"
+                                            />
+                                            <field
+                                                name="pms_property_id"
+                                                invisible="1"
                                             />
                                         </strong>
                                         <span
@@ -484,6 +492,7 @@
                 <field name="reservation_id" />
                 <field name="folio_id" />
                 <field name="state" filters="1" />
+                <field name="pms_property_id" invisible="1" />
             </calendar>
         </field>
     </record>

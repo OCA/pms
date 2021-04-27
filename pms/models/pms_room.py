@@ -15,6 +15,7 @@ class PmsRoom(models.Model):
     _name = "pms.room"
     _description = "Property Room"
     _order = "sequence, room_type_id, name"
+    _check_pms_properties_auto = True
 
     name = fields.Char(
         string="Room Name",
@@ -44,14 +45,10 @@ class PmsRoom(models.Model):
         help="Unique room type for the rooms",
         required=True,
         comodel_name="pms.room.type",
-        domain=[
-            "|",
-            ("pms_property_ids", "=", False),
-            (pms_property_id, "in", "pms_property_ids"),
-        ],
         ondelete="restrict",
+        check_pms_properties=True,
     )
-    # TODO: Dario, design shared rooms
+    # TODO: design shared rooms
     shared_room_id = fields.Many2one(
         string="Shared Room",
         help="The room can be sold by beds",
@@ -62,11 +59,7 @@ class PmsRoom(models.Model):
         string="Ubication",
         help="At which ubication the room is located.",
         comodel_name="pms.ubication",
-        domain=[
-            "|",
-            ("pms_property_ids", "=", False),
-            (pms_property_id, "in", "pms_property_ids"),
-        ],
+        check_pms_properties=True,
     )
     capacity = fields.Integer(
         string="Capacity", help="The maximum number of people that can occupy a room"
@@ -83,18 +76,6 @@ class PmsRoom(models.Model):
         " your customers. This description will be copied to every Sales "
         " Order, Delivery Order and Customer Invoice/Credit Note",
         translate=True,
-    )
-
-    allowed_property_ids = fields.Many2many(
-        string="Allowed Properties",
-        help="Allowed properties for rooms",
-        store=True,
-        readonly=True,
-        compute="_compute_allowed_property_ids",
-        comodel_name="pms.property",
-        relation="room_property_rel",
-        column1="room_id",
-        column2="property_id",
     )
 
     _sql_constraints = [
@@ -115,30 +96,7 @@ class PmsRoom(models.Model):
             result.append((room.id, name))
         return result
 
-    @api.depends(
-        "room_type_id",
-        "room_type_id.pms_property_ids",
-        "ubication_id",
-        "ubication_id.pms_property_ids",
-    )
-    # TODO: Dario, revisar flujo de allowed properties
-    def _compute_allowed_property_ids(self):
-        for record in self:
-            if not (
-                record.room_type_id.pms_property_ids
-                or record.ubication_id.pms_property_ids
-            ):
-                record.allowed_property_ids = self.env["pms.property"].search([])
-            elif not record.room_type_id.pms_property_ids:
-                record.allowed_property_ids = record.ubication_id.pms_property_ids
-            elif not record.ubication_id.pms_property_ids:
-                record.allowed_property_ids = record.room_type_id.pms_property_ids
-            else:
-                record.allowed_property_ids = (
-                    record.room_type_id.pms_property_ids
-                    & record.ubication_id.pms_property_ids
-                )
-
+    # Constraints and onchanges
     @api.constrains("capacity")
     def _check_capacity(self):
         for record in self:
@@ -150,17 +108,7 @@ class PmsRoom(models.Model):
                     )
                 )
 
-    @api.constrains(
-        "allowed_property_ids",
-        "pms_property_id",
-    )
-    def _check_property_integrity(self):
-        for rec in self:
-            if rec.pms_property_id:
-                if rec.pms_property_id.id not in rec.allowed_property_ids.ids:
-                    raise ValidationError(
-                        _("Property not allowed in room type or in ubication")
-                    )
+    # Business methods
 
     def get_capacity(self, extra_bed=0):
         for record in self:

@@ -40,6 +40,21 @@ class ResPartner(models.Model):
         string="Invoice Agency",
         help="Indicates if agency invoices partner",
     )
+    pms_property_ids = fields.Many2many(
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        required=False,
+        comodel_name="pms.property",
+        relation="res_partner_pms_property_rel",
+        column1="res_partner_id",
+        column2="pms_property_id",
+        ondelete="restrict",
+        check_pms_properties=True,
+    )
+    company_id = fields.Many2one(
+        check_pms_properties=True,
+    )
 
     def _compute_reservations_count(self):
         # TODO: recuperar las reservas de los folios del partner

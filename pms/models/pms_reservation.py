@@ -16,7 +16,9 @@ class PmsReservation(models.Model):
     _description = "Reservation"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
     _order = "priority desc, create_date desc, write_date desc"
-
+    # TODO:
+    #  consider near_to_checkin & pending_notifications to order
+    _check_pms_properties_auto = True
     _check_company_auto = True
 
     name = fields.Text(
@@ -37,9 +39,13 @@ class PmsReservation(models.Model):
         "empty if reservation is splitted",
         copy=False,
         comodel_name="pms.room",
-        domain="[('id', 'in', allowed_room_ids)]",
         ondelete="restrict",
+        domain="["
+        "('id', 'in', allowed_room_ids),"
+        "('pms_property_id', '=', pms_property_id),"
+        "]",
         tracking=True,
+        check_pms_properties=True,
     )
     allowed_room_ids = fields.Many2many(
         string="Allowed Rooms",
@@ -68,12 +74,9 @@ class PmsReservation(models.Model):
         readonly=False,
         store=True,
         comodel_name="pms.board.service.room.type",
-        domain="["
-        "'|',"
-        "('pms_property_ids', 'in', pms_property_id),"
-        "('pms_property_ids', '=', False)]",
         compute="_compute_board_service_room_id",
         tracking=True,
+        check_pms_properties=True,
     )
     room_type_id = fields.Many2one(
         string="Room Type",
@@ -84,11 +87,9 @@ class PmsReservation(models.Model):
         copy=False,
         store=True,
         comodel_name="pms.room.type",
-        domain="['|',"
-        "('pms_property_ids', 'in', pms_property_id),"
-        "('pms_property_ids', '=', False)]",
         compute="_compute_room_type_id",
         tracking=True,
+        check_pms_properties=True,
     )
     partner_id = fields.Many2one(
         string="Customer",
@@ -99,6 +100,7 @@ class PmsReservation(models.Model):
         ondelete="restrict",
         compute="_compute_partner_id",
         tracking=True,
+        check_pms_properties=True,
     )
     agency_id = fields.Many2one(
         string="Agency",
@@ -120,9 +122,7 @@ class PmsReservation(models.Model):
         string="Closure Reason",
         help="Reason why the reservation cannot be made",
         related="folio_id.closure_reason_id",
-        domain="['|',"
-        "(pms_property_id, 'in', 'pms_property_ids'),"
-        "('pms_property_ids', '=', False)]",
+        check_pms_properties=True,
     )
     company_id = fields.Many2one(
         string="Company",
@@ -150,6 +150,7 @@ class PmsReservation(models.Model):
         compute="_compute_reservation_line_ids",
         comodel_name="pms.reservation.line",
         inverse_name="reservation_id",
+        check_pms_properties=True,
     )
     service_ids = fields.One2many(
         string="Services",
@@ -158,11 +159,9 @@ class PmsReservation(models.Model):
         store=True,
         comodel_name="pms.service",
         inverse_name="reservation_id",
-        domain="['|',"
-        "('pms_property_id', '=', pms_property_id),"
-        "('pms_property_id', '=', False)]",
         compute="_compute_service_ids",
         check_company=True,
+        check_pms_properties=True,
     )
     pricelist_id = fields.Many2one(
         string="Pricelist",
@@ -170,12 +169,10 @@ class PmsReservation(models.Model):
         readonly=False,
         store=True,
         comodel_name="product.pricelist",
-        domain="['|',"
-        "('pms_property_ids', 'in', pms_property_id),"
-        "('pms_property_ids', '=', False)]",
         ondelete="restrict",
         compute="_compute_pricelist_id",
         tracking=True,
+        check_pms_properties=True,
     )
     user_id = fields.Many2one(
         string="Salesperson",
@@ -216,6 +213,7 @@ class PmsReservation(models.Model):
         compute="_compute_checkin_partner_ids",
         comodel_name="pms.checkin.partner",
         inverse_name="reservation_id",
+        check_pms_properties=True,
     )
     count_pending_arrival = fields.Integer(
         string="Pending Arrival",
@@ -278,7 +276,7 @@ class PmsReservation(models.Model):
     )
     currency_id = fields.Many2one(
         string="Currency",
-        hepl="The currency used in relation to the pricelist",
+        help="The currency used in relation to the pricelist",
         readonly=True,
         store=True,
         related="pricelist_id.currency_id",
@@ -1292,44 +1290,7 @@ class PmsReservation(models.Model):
             if record.agency_id and not record.agency_id.is_agency:
                 raise ValidationError(_("booking agency with wrong configuration: "))
 
-    @api.constrains("pms_property_id", "preferred_room_id")
-    def _check_room_property_integrity(self):
-        for record in self:
-            if record.pms_property_id and record.preferred_room_id.pms_property_id:
-                if record.pms_property_id != record.preferred_room_id.pms_property_id:
-                    raise ValidationError(
-                        _("Property doesn't match with room property")
-                    )
-
-    @api.constrains("pms_property_id", "room_type_id")
-    def _check_room_type_property_integrity(self):
-        for record in self:
-            if record.pms_property_id and record.room_type_id.pms_property_ids:
-                if (
-                    record.pms_property_id.id
-                    not in record.room_type_id.pms_property_ids.ids
-                ):
-                    raise ValidationError(_("Property isn't allowed in Room Type"))
-
-    @api.constrains("pms_property_id", "pricelist_id")
-    def _check_pricelist_property_integrity(self):
-        for record in self:
-            if record.pms_property_id and record.pricelist_id.pms_property_ids:
-                if (
-                    record.pms_property_id.id
-                    not in record.pricelist_id.pms_property_ids.ids
-                ):
-                    raise ValidationError(_("Property isn't allowed in Pricelist"))
-
-    @api.constrains("pms_property_id", "board_service_room_id")
-    def _check_board_service_property_integrity(self):
-        for record in self:
-            if record.pms_property_id and record.board_service_room_id.pms_property_ids:
-                if (
-                    record.pms_property_id.id
-                    not in record.board_service_room_id.pms_property_ids.ids
-                ):
-                    raise ValidationError(_("Property isn't allowed in Board Service"))
+    # Action methods
 
     def open_folio(self):
         action = self.env.ref("pms.open_pms_folio1_form_tree_all").sudo().read()[0]

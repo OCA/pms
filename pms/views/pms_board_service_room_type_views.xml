@@ -8,6 +8,7 @@
                 <group>
                     <field name="amount" />
                     <field name="board_service_line_ids">
+                    <field name="pms_property_ids" invisible="1" />
                         <tree editable="bottom">
                             <field
                                 name="pms_board_service_room_type_id"
@@ -15,6 +16,7 @@
                             />
                             <field name="product_id" />
                             <field name="amount" />
+                            <field name="pms_property_ids" invisible="1" />
                         </tree>
                     </field>
                 </group>

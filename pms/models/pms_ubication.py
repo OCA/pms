@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class PmsUbication(models.Model):
     _name = "pms.ubication"
     _description = "Ubication"
+    _check_pms_properties_auto = True
 
     name = fields.Char(
         string="Ubication Name",
@@ -27,12 +28,15 @@ class PmsUbication(models.Model):
         relation="pms_ubication_pms_property_rel",
         column1="ubication_type_id",
         column2="pms_property_id",
+        ondelete="restrict",
+        check_pms_properties=True,
     )
     pms_room_ids = fields.One2many(
         string="Rooms",
         help="Rooms found in this location",
         comodel_name="pms.room",
         inverse_name="ubication_id",
+        check_pms_properties=True,
     )
 
     @api.constrains(

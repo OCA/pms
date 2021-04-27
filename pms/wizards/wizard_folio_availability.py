@@ -16,6 +16,7 @@ class NumRoomsSelectionModel(models.TransientModel):
 
 class AvailabilityWizard(models.TransientModel):
     _name = "pms.folio.availability.wizard"
+    _check_pms_properties_auto = True
 
     # Fields declarations
     folio_wizard_id = fields.Many2one(
@@ -29,7 +30,10 @@ class AvailabilityWizard(models.TransientModel):
         string="To:",
         required=True,
     )
-    room_type_id = fields.Many2one(comodel_name="pms.room.type")
+    room_type_id = fields.Many2one(
+        comodel_name="pms.room.type",
+        check_pms_properties=True,
+    )
 
     num_rooms_available = fields.Integer(
         string="Available rooms",

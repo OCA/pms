@@ -268,7 +268,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         expected_price_total = days * price_today * num_double_rooms
 
         # set pricelist item for current day
-        product_tmpl_id = self.test_room_type_double.product_id.product_tmpl_id.id
+        product_tmpl = self.test_room_type_double.product_id.product_tmpl_id
         pricelist_item = self.env["product.pricelist.item"].create(
             {
                 "pricelist_id": self.test_pricelist.id,
@@ -276,9 +276,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "date_end_overnight": checkin,
                 "compute_price": "fixed",
                 "applied_on": "1_product",
-                "product_tmpl_id": product_tmpl_id,
+                "product_tmpl_id": product_tmpl.id,
                 "fixed_price": price_today,
                 "min_quantity": 0,
+                "pms_property_ids": product_tmpl.pms_property_ids.ids,
             }
         )
         pricelist_item.flush()

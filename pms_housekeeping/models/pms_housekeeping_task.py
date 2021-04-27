@@ -13,8 +13,18 @@ class HouseKeepingTask(models.Model):
     active = fields.Boolean("Active", default=True)
     name = fields.Char("Task Name", translate=True, required=True)
     pms_property_ids = fields.Many2many(
-        "pms.property", string="Properties", required=False, ondelete="restrict"
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        required=False,
+        comodel_name="pms.property",
+        relation="pms_housekeepink_task_pms_property_rel",
+        column1="pms_housekeepink_task_id",
+        column2="pms_property_id",
+        ondelete="restrict",
+        check_pms_properties=True,
     )
+
     clean_type = fields.Selection(
         string="Clean type",
         selection=[

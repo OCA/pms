@@ -10,6 +10,7 @@ class PmsServiceLine(models.Model):
     _description = "Service by day"
     _order = "date"
     _rec_name = "service_id"
+    _check_pms_properties_auto = True
 
     service_id = fields.Many2one(
         string="Service Room",
@@ -30,6 +31,7 @@ class PmsServiceLine(models.Model):
         help="Product associated with this service line",
         store=True,
         related="service_id.product_id",
+        check_pms_properties=True,
     )
     tax_ids = fields.Many2many(
         string="Taxes",
@@ -93,6 +95,7 @@ class PmsServiceLine(models.Model):
         readonly=True,
         store=True,
         related="service_id.reservation_id",
+        check_pms_properties=True,
     )
     discount = fields.Float(
         string="Discount (%)",
