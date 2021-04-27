@@ -8,14 +8,27 @@ from odoo import fields, models
 class PmsCancelationRule(models.Model):
     _name = "pms.cancelation.rule"
     _description = "Cancelation Rules"
+    _check_pms_properties_auto = True
 
     # Fields declaration
     name = fields.Char(string="Cancelation Rule", translate=True, required=True)
     pricelist_ids = fields.One2many(
-        "product.pricelist", "cancelation_rule_id", "Pricelist that use this rule"
+        "product.pricelist",
+        "cancelation_rule_id",
+        "Pricelist that use this rule",
+        check_pms_properties=True,
     )
     pms_property_ids = fields.Many2many(
-        "pms.property", string="Properties", required=False, ondelete="restrict"
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        required=False,
+        ondelete="restrict",
+        comodel_name="pms.property",
+        relation="pms_cancelation_rule_pms_property_rel",
+        column1="pms_cancelation_rule_id",
+        column2="pms_property_id",
+        check_pms_properties=True,
     )
     active = fields.Boolean("Active", default=True)
     days_intime = fields.Integer(
@@ -35,5 +48,3 @@ class PmsCancelationRule(models.Model):
         default="all",
     )
     days_noshow = fields.Integer("NoShow first days", default="2")
-
-    # TODO: Constrain coherence pms_property_ids pricelist and cancelation_rules

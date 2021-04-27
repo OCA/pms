@@ -1,7 +1,7 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 from .common import TestPms
 
@@ -68,7 +68,7 @@ class TestRoomType(TestPms):
         """
         # ARRANGE & ACT & ASSERT
         with self.assertRaises(
-            ValidationError, msg="The room type has been created and it shouldn't"
+            UserError, msg="The room type has been created and it shouldn't"
         ):
             # room_type1
             self.env["pms.room.type"].create(
@@ -95,7 +95,7 @@ class TestRoomType(TestPms):
         """
         # ARRANGE & ACT & ASSERT
         with self.assertRaises(
-            ValidationError, msg="The room type has been created and it shouldn't"
+            UserError, msg="The room type has been created and it shouldn't"
         ):
             # room_type1
             self.env["pms.room.type"].create(
@@ -728,7 +728,7 @@ class TestRoomType(TestPms):
         )
         # ACT & ASSERT
         with self.assertRaises(
-            ValidationError, msg="Room Type has been created and it shouldn't"
+            UserError, msg="Room Type has been created and it shouldn't"
         ):
             room_type1 = self.env["pms.room.type"].create(
                 {
@@ -776,7 +776,7 @@ class TestRoomType(TestPms):
         self.amenity1 = self.env["pms.amenity"].create(
             {"name": "Amenity", "pms_property_ids": self.pms_property1}
         )
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             self.env["pms.room.type"].create(
                 {
                     "name": "Room Type",

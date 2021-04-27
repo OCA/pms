@@ -1,8 +1,7 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
 
 class ProductTemplate(models.Model):
@@ -17,6 +16,11 @@ class ProductTemplate(models.Model):
         relation="product_template_pms_property_rel",
         column1="product_tmpl_id",
         column2="pms_property_id",
+        ondelete="restrict",
+        check_pms_properties=True,
+    )
+    company_id = fields.Many2one(
+        check_pms_properties=True,
     )
     per_day = fields.Boolean(
         string="Unit increment per day",
@@ -40,16 +44,3 @@ class ProductTemplate(models.Model):
         help="Indicates if that product is a extra bed, add +1 capacity in the room",
         default=False,
     )
-
-    @api.constrains("pms_property_ids", "company_id")
-    def _check_property_company_integrity(self):
-        for rec in self:
-            if rec.company_id and rec.pms_property_ids:
-                property_companies = rec.pms_property_ids.mapped("company_id")
-                if len(property_companies) > 1 or rec.company_id != property_companies:
-                    raise ValidationError(
-                        _(
-                            "The company of the properties must match "
-                            "the company on the room type"
-                        )
-                    )

@@ -13,6 +13,7 @@ class PmsCheckinPartner(models.Model):
     _name = "pms.checkin.partner"
     _description = "Partner Checkins"
     _rec_name = "identifier"
+    _check_pms_properties_auto = True
 
     # Fields declaration
     identifier = fields.Char(
@@ -22,11 +23,15 @@ class PmsCheckinPartner(models.Model):
         "res.partner",
         domain="[('is_company', '=', False)]",
     )
-    reservation_id = fields.Many2one("pms.reservation")
+    reservation_id = fields.Many2one(
+        "pms.reservation",
+        check_pms_properties=True,
+    )
     folio_id = fields.Many2one(
         "pms.folio",
         compute="_compute_folio_id",
         store=True,
+        check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(
         "pms.property", store=True, readonly=True, related="folio_id.pms_property_id"

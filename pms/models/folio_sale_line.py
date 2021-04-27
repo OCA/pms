@@ -557,6 +557,7 @@ class FolioSaleLine(models.Model):
         store=True,
         readonly=True,
         index=True,
+        check_pms_properties=True,
     )
     folio_partner_id = fields.Many2one(
         related="folio_id.partner_id", store=True, string="Customer", readonly=False

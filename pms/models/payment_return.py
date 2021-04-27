@@ -11,6 +11,9 @@ class PaymentReturn(models.Model):
     pms_property_id = fields.Many2one(
         "pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
     )
+    company_id = fields.Many2one(
+        check_pms_properties=True,
+    )
 
     # Business methods
 

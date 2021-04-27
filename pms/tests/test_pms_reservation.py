@@ -951,7 +951,7 @@ class TestPmsReservations(common.SavepointCase):
 
         for test_case in test_cases:
             with self.subTest(k=test_case):
-                with self.assertRaises(ValidationError):
+                with self.assertRaises(UserError):
                     self.reservation_test.write(test_case)
 
     @freeze_time("1950-11-01")

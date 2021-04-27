@@ -50,11 +50,7 @@
                                  'required': [('massive_changes_on','=','pricelist')]}"
                                 domain="[('id', 'in', allowed_pricelist_ids), '|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
                             />
-                            <field
-                                name="room_type_id"
-                                default_focus="1"
-                                domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
-                            />
+                            <field name="room_type_id" default_focus="1" />
                         </group>
 
                     </div>

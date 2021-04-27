@@ -6,6 +6,7 @@ from odoo import fields, models
 class RoomClosureReason(models.Model):
     _name = "room.closure.reason"
     _description = "Cause of out of service"
+    _check_pms_properties_auto = True
 
     name = fields.Char(
         string="Name",
@@ -22,6 +23,7 @@ class RoomClosureReason(models.Model):
         column1="room_closure_reason_type_id",
         column2="pms_property_id",
         ondelete="restrict",
+        check_pms_properties=True,
     )
     description = fields.Text(
         string="Description",
