@@ -1,14 +1,22 @@
 # Copyright 2017  Alexandre Díaz, Pablo Quesada, Darío Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
 
 class ProductPricelistItem(models.Model):
     _inherit = "product.pricelist.item"
+    _check_pms_properties_auto = True
 
     pms_property_ids = fields.Many2many(
-        "pms.property", string="Properties", required=False, ondelete="restrict"
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        comodel_name="pms.property",
+        relation="product_pricelist_item_pms_property_rel",
+        column1="product_pricelist_item_id",
+        column2="pms_property_id",
+        ondelete="restrict",
+        check_pms_properties=True,
     )
     date_start_overnight = fields.Date(
         string="Start Date Overnight",
@@ -27,56 +35,8 @@ class ProductPricelistItem(models.Model):
         string="Board Services on Room Types",
         ondelete="cascade",  # check_company=True,
         help="""Specify a Board services on Room Types.""",
-        # domain="[('pms_property_ids', 'in', [allowed_property_ids, False])]",
+        check_pms_properties=True,
     )
-
-    allowed_property_ids = fields.Many2many(
-        "pms.property",
-        "allowed_pricelist_move_rel",
-        "pricelist_item_id",
-        "property_id",
-        string="Allowed Properties",
-        store=True,
-        readonly=True,
-        compute="_compute_allowed_property_ids",
-    )
-
-    @api.depends("product_id.pms_property_ids", "pricelist_id.pms_property_ids")
-    def _compute_allowed_property_ids(self):
-        for record in self:
-            properties = []
-            if record.applied_on == "0_product_variant":
-                product = record.product_id
-            elif record.applied_on == "1_product":
-                product = record.product_tmpl_id
-            else:
-                product = False
-            if not record.pricelist_id.pms_property_ids or not product:
-                record.allowed_property_ids = False
-            else:
-                if record.pricelist_id.pms_property_ids:
-                    if product.pms_property_ids:
-                        properties = list(
-                            set(record.pricelist_id.pms_property_ids.ids)
-                            & set(product.pms_property_ids.ids)
-                        )
-                        record.allowed_property_ids = self.env["pms.property"].search(
-                            [("id", "in", properties)]
-                        )
-                    else:
-                        record.allowed_property_ids = product.pms_property_ids
-                else:
-                    record.allowed_property_ids = product.pms_property_ids
-            # else:
-            #   record.allowed_property_ids = False
-
-    @api.constrains(
-        "allowed_property_ids",
-        "pms_property_ids",
-    )
-    def _check_property_integrity(self):
-        for rec in self:
-            if rec.pms_property_ids and rec.allowed_property_ids:
-                for p in rec.pms_property_ids:
-                    if p.id not in rec.allowed_property_ids.ids:
-                        raise ValidationError(_("Property not allowed"))
+    pricelist_id = fields.Many2one(check_pms_properties=True)
+    product_id = fields.Many2one(check_pms_properties=True)
+    product_tmpl_id = fields.Many2one(check_pms_properties=True)

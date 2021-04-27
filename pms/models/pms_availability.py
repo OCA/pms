@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class PmsAvailability(models.Model):
     _name = "pms.availability"
     _description = "Room type availability per day"
+    _check_pms_properties_auto = True
 
     room_type_id = fields.Many2one(
         string="Room Type",
@@ -15,6 +16,7 @@ class PmsAvailability(models.Model):
         required=True,
         comodel_name="pms.room.type",
         ondelete="cascade",
+        check_pms_properties=True,
     )
     date = fields.Date(
         string="Date",
@@ -37,6 +39,7 @@ class PmsAvailability(models.Model):
         readonly=True,
         comodel_name="pms.reservation.line",
         inverse_name="avail_id",
+        check_pms_properties=True,
     )
     real_avail = fields.Integer(
         string="Real Avail",

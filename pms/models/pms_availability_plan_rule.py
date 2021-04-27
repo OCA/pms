@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class PmsAvailabilityPlanRule(models.Model):
     _name = "pms.availability.plan.rule"
     _description = "Reservation rule by day"
+    _check_pms_properties_auto = True
 
     availability_plan_id = fields.Many2one(
         string="Availability Plan",
@@ -14,6 +15,7 @@ class PmsAvailabilityPlanRule(models.Model):
         index=True,
         comodel_name="pms.availability.plan",
         ondelete="cascade",
+        check_pms_properties=True,
     )
     room_type_id = fields.Many2one(
         string="Room Type",
@@ -21,6 +23,7 @@ class PmsAvailabilityPlanRule(models.Model):
         required=True,
         comodel_name="pms.room.type",
         ondelete="cascade",
+        check_pms_properties=True,
     )
     date = fields.Date(
         string="Date",
@@ -83,17 +86,6 @@ class PmsAvailabilityPlanRule(models.Model):
         required=True,
         comodel_name="pms.property",
     )
-    allowed_property_ids = fields.Many2many(
-        string="Allowed Properties",
-        help="Allowed properties for user",
-        store=True,
-        readonly=True,
-        compute="_compute_allowed_property_ids",
-        comodel_name="pms.property",
-        relation="allowed_availability_move_rel",
-        column1="availability_plan_rule_id",
-        column2="property_id",
-    )
     avail_id = fields.Many2one(
         string="Avail record",
         comodel_name="pms.availability",
@@ -101,6 +93,7 @@ class PmsAvailabilityPlanRule(models.Model):
         store=True,
         readonly=False,
         ondelete="restrict",
+        check_pms_properties=True,
     )
     real_avail = fields.Integer(
         string="Real availability",
@@ -170,59 +163,6 @@ class PmsAvailabilityPlanRule(models.Model):
         for record in self:
             if not record.max_avail:
                 record.max_avail = record.room_type_id.default_max_avail
-
-    @api.depends(
-        "availability_plan_id.pms_property_ids", "room_type_id.pms_property_ids"
-    )
-    def _compute_allowed_property_ids(self):
-
-        for rule in self:
-            properties = []
-
-            if not (
-                rule.availability_plan_id.pms_property_ids
-                or rule.room_type_id.pms_property_ids
-            ):
-                rule.allowed_property_ids = False
-            else:
-                if rule.availability_plan_id.pms_property_ids:
-                    if rule.room_type_id.pms_property_ids:
-                        for prp in rule.availability_plan_id.pms_property_ids:
-                            if prp in rule.room_type_id.pms_property_ids:
-                                properties.append(prp)
-                        rule.allowed_property_ids = [
-                            (4, prop.id) for prop in properties
-                        ]
-                    else:
-                        rule.allowed_property_ids = (
-                            rule.availability_plan_id.pms_property_ids
-                        )
-                else:
-                    rule.allowed_property_ids = rule.room_type_id.pms_property_ids
-
-    @api.constrains(
-        "allowed_property_ids",
-        "pms_property_id",
-    )
-    def _check_property_integrity(self):
-        for rec in self:
-            if rec.pms_property_id and rec.allowed_property_ids:
-                if rec.pms_property_id.id not in rec.allowed_property_ids.ids:
-                    raise ValidationError(_("Property not allowed"))
-
-    # @api.constrains(
-    #     "allowed_property_ids",
-    #     "pms_property_ids",
-    # )
-    # def _check_property_integrity(self):
-    #     for rule in self:
-    #         for p in rule.pms_property_ids:
-    #             allowed = list(
-    #                 set(rule.room_type_id.pms_property_ids.ids)
-    #                 &
-    #                 set(rule.availability_plan_id.pms_property_ids.ids))
-    #             if p.id not in allowed:
-    #                 raise ValidationError(_("Property not allowed"))
 
     @api.constrains("min_stay", "min_stay_arrival", "max_stay", "max_stay_arrival")
     def _check_min_max_stay(self):
