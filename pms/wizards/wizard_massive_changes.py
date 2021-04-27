@@ -8,6 +8,7 @@ class AvailabilityWizard(models.TransientModel):
 
     _name = "pms.massive.changes.wizard"
     _description = "Wizard for massive changes on Availability Plans & Pricelists."
+    _check_pms_properties_auto = True
 
     def _default_avail_readonly(self):
         return True if self._context.get("availability_plan_id") else False
@@ -32,11 +33,13 @@ class AvailabilityWizard(models.TransientModel):
     availability_plan_id = fields.Many2one(
         comodel_name="pms.availability.plan",
         string="Availability Plan to apply massive changes",
+        check_pms_properties=True,
         # can be setted by context from availability plan detail
     )
     pricelist_id = fields.Many2one(
         comodel_name="product.pricelist",
         string="Pricelist to apply massive changes",
+        check_pms_properties=True,
     )
     allowed_pricelist_ids = fields.One2many(
         comodel_name="product.pricelist", compute="_compute_allowed_pricelist_ids"
@@ -49,7 +52,11 @@ class AvailabilityWizard(models.TransientModel):
         string="To",
         required=True,
     )
-    room_type_id = fields.Many2one(comodel_name="pms.room.type", string="Room Type")
+    room_type_id = fields.Many2one(
+        comodel_name="pms.room.type",
+        string="Room Type",
+        check_pms_properties=True,
+    )
     price = fields.Float(string="Price")
     min_quantity = fields.Float(string="Min. Quantity")
 

@@ -14,6 +14,7 @@ class PmsReservationLine(models.Model):
     _name = "pms.reservation.line"
     _description = "Reservations by day"
     _order = "date"
+    _check_company_auto = True
 
     reservation_id = fields.Many2one(
         string="Reservation",
@@ -22,6 +23,7 @@ class PmsReservationLine(models.Model):
         copy=False,
         comodel_name="pms.reservation",
         ondelete="cascade",
+        check_pms_properties=True,
     )
     room_id = fields.Many2one(
         string="Room",
@@ -31,6 +33,7 @@ class PmsReservationLine(models.Model):
         compute="_compute_room_id",
         comodel_name="pms.room",
         ondelete="restrict",
+        check_pms_properties=True,
     )
 
     sale_line_ids = fields.Many2many(
@@ -41,6 +44,7 @@ class PmsReservationLine(models.Model):
         relation="reservation_line_sale_line_rel",
         column1="reservation_line_id",
         column2="sale_line_id",
+        check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(
         string="Property",
@@ -84,6 +88,7 @@ class PmsReservationLine(models.Model):
         comodel_name="pms.availability",
         ondelete="restrict",
         compute="_compute_avail_id",
+        check_pms_properties=True,
     )
 
     discount = fields.Float(

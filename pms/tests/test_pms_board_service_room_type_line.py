@@ -1,4 +1,4 @@
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
 from odoo.tests import common
 
 
@@ -57,19 +57,21 @@ class TestPmsBoardServiceRoomTypeLine(common.SavepointCase):
             {
                 "name": "Board Service",
                 "default_code": "CB",
+                "pms_property_ids": self.property1,
             }
         )
         self.room_type_class = self.env["pms.room.type.class"].create(
             {
                 "name": "Room Type Class",
-                "pms_property_ids": self.property1,
                 "default_code": "SIN1",
+                "pms_property_ids": self.property1,
             }
         )
         self.room_type = self.env["pms.room.type"].create(
             {
                 "name": "Room Type",
                 "default_code": "Type1",
+                "pms_property_ids": self.property1,
                 "class_id": self.room_type_class.id,
             }
         )
@@ -84,8 +86,7 @@ class TestPmsBoardServiceRoomTypeLine(common.SavepointCase):
         self.product = self.env["product.product"].create(
             {"name": "Product", "pms_property_ids": self.property2}
         )
-
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             self.env["pms.board.service.room.type.line"].create(
                 {
                     "pms_board_service_room_type_id": self.board_service_room_type.id,

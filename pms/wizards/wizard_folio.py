@@ -9,6 +9,8 @@ class FolioWizard(models.TransientModel):
         "Wizard to check availability by room type and pricelist &"
         " creation of folios with its reservations"
     )
+    _check_pms_properties_auto = True
+
     # Fields declaration
     start_date = fields.Date(
         string="From:",
@@ -24,6 +26,7 @@ class FolioWizard(models.TransientModel):
         compute="_compute_pricelist_id",
         store=True,
         readonly=False,
+        check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(
         comodel_name="pms.property",
@@ -35,9 +38,11 @@ class FolioWizard(models.TransientModel):
     )
     partner_id = fields.Many2one(
         "res.partner",
+        check_pms_properties=True,
     )
     folio_id = fields.Many2one(
         "pms.folio",
+        check_pms_properties=True,
     )
     availability_results = fields.One2many(
         comodel_name="pms.folio.availability.wizard",
@@ -45,6 +50,7 @@ class FolioWizard(models.TransientModel):
         compute="_compute_availability_results",
         store=True,
         readonly=False,
+        check_pms_properties=True,
     )
     agency_id = fields.Many2one(
         string="Agency",

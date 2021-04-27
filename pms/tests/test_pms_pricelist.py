@@ -1,6 +1,6 @@
 import datetime
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import common, tagged
 
 
@@ -124,7 +124,7 @@ class TestPmsPricelist(common.SavepointCase):
         # ARRANGE
         self.create_common_scenario()
         # ACT & ASSERT
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             self.item1 = self.env["product.pricelist.item"].create(
                 {
                     "name": "item_1",
@@ -149,7 +149,7 @@ class TestPmsPricelist(common.SavepointCase):
             }
         )
         # ASSERT
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             self.item1 = self.env["product.pricelist.item"].create(
                 {
                     "name": "item_1",
@@ -175,7 +175,7 @@ class TestPmsPricelist(common.SavepointCase):
             }
         )
         # ASSERT
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             Pricelist.create(
                 {
                     "name": "Pricelist Test",
@@ -189,7 +189,7 @@ class TestPmsPricelist(common.SavepointCase):
         self.availability_plan = self.env["pms.availability.plan"].create(
             {"name": "Availability Plan", "pms_property_ids": [self.property1.id]}
         )
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             self.env["product.pricelist"].create(
                 {
                     "name": "Pricelist",

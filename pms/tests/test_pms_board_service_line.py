@@ -1,4 +1,4 @@
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
 from odoo.tests import common
 
 
@@ -63,7 +63,7 @@ class TestPmsBoardService(common.SavepointCase):
                 "default_code": "CB",
             }
         )
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             board_service_line = self.board_service_line = self.env[
                 "pms.board.service.line"
             ].create(

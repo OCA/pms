@@ -23,6 +23,7 @@
         # "partner_firstname",
         # "email_template_qweb",
         "sale",
+        "multi_pms_properties",
     ],
     "data": [
         "security/pms_security.xml",

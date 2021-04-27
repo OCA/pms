@@ -10,6 +10,8 @@ class PmsSharedRoom(models.Model):
     _name = "pms.shared.room"
     _description = "Shared Room"
     _order = "room_type_id, name"
+    _check_pms_properties_auto = True
+
     name = fields.Char(
         string="Room Name", help="Name of the shared room", required=True
     )
@@ -39,6 +41,7 @@ class PmsSharedRoom(models.Model):
         relation="pms_shared_room_pms_property_rel",
         column1="shared_room_id",
         column2="pms_property_id",
+        check_pms_properties=True,
     )
     ubication_id = fields.Many2one(
         string="Ubication",

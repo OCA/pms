@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class PmsBoardService(models.Model):
     _name = "pms.board.service"
     _description = "Board Services"
+    _check_pms_properties_auto = True
 
     name = fields.Char(
         string="Board Service Name",
@@ -32,10 +33,12 @@ class PmsBoardService(models.Model):
         help="Properties with access to the element;"
         " if not set, all properties can access",
         required=False,
+        ondelete="restrict",
         comodel_name="pms.property",
         relation="pms_board_service_pms_property_rel",
         column1="board_service_id",
         column2="pms_property_id",
+        check_pms_properties=True,
     )
     pms_board_service_room_type_ids = fields.One2many(
         string="Board Services Room Type",

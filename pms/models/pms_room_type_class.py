@@ -42,15 +42,19 @@ class PmsRoomTypeClass(models.Model):
         column1="room_type_class_id",
         column2="pms_property_id",
         ondelete="restrict",
+        check_pms_properties=True,
     )
     room_type_ids = fields.One2many(
         string="Types",
         help="Room Types that belong to this Room Type Class",
         comodel_name="pms.room.type",
         inverse_name="class_id",
+        check_pms_properties=True,
     )
     default_code = fields.Char(
-        string="Code", help="Room type class identification code", required=True
+        string="Code",
+        help="Room type class identification code",
+        required=True,
     )
 
     @api.model

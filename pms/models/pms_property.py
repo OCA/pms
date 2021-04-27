@@ -30,6 +30,7 @@ class PmsProperty(models.Model):
         help="The company that owns or operates this property.",
         comodel_name="res.company",
         required=True,
+        check_pms_properties=True,
     )
     user_ids = fields.Many2many(
         string="Accepted Users",
@@ -45,7 +46,6 @@ class PmsProperty(models.Model):
         comodel_name="pms.room",
         inverse_name="pms_property_id",
     )
-    # TODO: establecer tarifa publica por defecto
     default_pricelist_id = fields.Many2one(
         string="Product Pricelist",
         help="The default pricelist used in this property.",

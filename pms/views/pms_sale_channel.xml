@@ -11,6 +11,7 @@
                         <field name="channel_type" />
                         <field name="is_on_line" />
                         <field name="product_pricelist_ids" widget="many2many_tags" />
+                        <field name="pms_property_ids" widget="many2many_tags" />
                     </group>
                 </sheet>
             </form>
@@ -25,6 +26,7 @@
                 <field name="channel_type" />
                 <field name="is_on_line" />
                 <field name="product_pricelist_ids" widget="many2many_tags" />
+                <field name="pms_property_ids" />
             </tree>
         </field>
     </record>

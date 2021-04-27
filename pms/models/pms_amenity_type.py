@@ -1,13 +1,13 @@
 # Copyright 2017  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
 
 class PmsRoomAmenityType(models.Model):
     _name = "pms.amenity.type"
     _description = "Amenity Type"
+    _check_pms_properties_auto = True
 
     active = fields.Boolean(
         string="Active",
@@ -25,24 +25,16 @@ class PmsRoomAmenityType(models.Model):
         help="Properties with access to the element;"
         " if not set, all properties can access",
         comodel_name="pms.property",
+        ondelete="restrict",
         relation="pms_amenity_type_pms_property_rel",
         column1="amenity_type_id",
         column2="pms_property_id",
+        check_pms_properties=True,
     )
     pms_amenity_ids = fields.One2many(
         string="Amenities In This Category",
         help="Amenities included in this type",
         comodel_name="pms.amenity",
         inverse_name="pms_amenity_type_id",
+        check_pms_properties=True,
     )
-
-    @api.constrains(
-        "pms_property_ids",
-        "pms_amenity_ids",
-    )
-    def _check_property_integrity(self):
-        for rec in self:
-            if rec.pms_property_ids:
-                res = rec.pms_amenity_ids.pms_property_ids - rec.pms_property_ids
-                if res:
-                    raise ValidationError(_("Property not allowed"))

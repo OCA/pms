@@ -3,7 +3,7 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
 from odoo.tests import common
 
 freeze_time("2000-02-02")
@@ -279,7 +279,7 @@ class TestPmsFolio(common.SavepointCase):
             }
         )
 
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             self.env["pms.folio"].create(
                 {
                     "pms_property_id": self.property3.id,
