@@ -163,9 +163,13 @@ class PmsReservationLine(models.Model):
             key=lambda r: (r.reservation_id, r.date)
         ):
             reservation = line.reservation_id
-            if reservation.preferred_room_id != line.room_id or not line.room_id:
-                # If reservation has a preferred_room_id We can allow
-                # select room_id regardless room_type_id selected on reservation
+            if (
+                reservation.preferred_room_id
+                and reservation.preferred_room_id != line.room_id
+            ) or (
+                (reservation.preferred_room_id or reservation.room_type_id)
+                and not line.room_id
+            ):
                 free_room_select = True if reservation.preferred_room_id else False
                 # we get the rooms available for the entire stay
                 rooms_available = self.env["pms.availability.plan"].rooms_available(
