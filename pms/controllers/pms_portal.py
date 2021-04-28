@@ -110,7 +110,7 @@ class PortalFolio(CustomerPortal):
         return request.render("pms.folio_portal_template", values)
 
     @http.route(
-        ["/my/folios/precheckin/<int:folio_id>"], type="http", auth="user", website=True
+        ["/my/folios/<int:folio_id>/precheckin"], type="http", auth="user", website=True
     )
     def portal_my_folio_precheckin(
         self, folio_id, access_token=None, report_type=None, download=False, **kw
@@ -123,13 +123,6 @@ class PortalFolio(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        if report_type in ("html", "pdf", "text"):
-            return self._show_report(
-                model=folio_sudo,
-                report_type=report_type,
-                report_ref="pms.action_report_folio",
-                download=download,
-            )
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
         return request.render("pms.portal_my_folio_precheckin", values)
 
