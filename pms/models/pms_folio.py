@@ -791,40 +791,12 @@ class PmsFolio(models.Model):
     #     else:
     #         raise UserError(_("Some reservations have different currency"))
 
-    is_checkin = fields.Boolean(default=False)
+    # is_checkin = fields.Boolean()
 
     def _compute_access_url(self):
         super(PmsFolio, self)._compute_access_url()
-        print(self.is_checkin)
         for folio in self:
             folio.access_url = "/my/folios/%s" % (folio.id)
-            if self.is_checkin:
-                folio.access_url = "/my/folios/precheckin/%s" % (folio.id)
-                self.is_checkin = False
-
-
-    def get_portal_url(
-        self,
-        suffix=None,
-        report_type=None,
-        download=None,
-        query_string=None,
-        anchor=None,
-        bol=None,
-    ):
-        self.ensure_one()
-        if bol:
-            self.is_checkin = True
-
-        url = self.access_url + '%s?access_token=%s%s%s%s%s' % (
-            suffix if suffix else '',
-            self._portal_ensure_token(),
-            '&report_type=%s' % report_type if report_type else '',
-            '&download=true' if download else '',
-            query_string if query_string else '',
-            '#%s' % anchor if anchor else ''
-        )
-        return url
 
     @api.depends("state", "sale_line_ids.invoice_status")
     def _compute_get_invoice_status(self):
