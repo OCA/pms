@@ -109,6 +109,30 @@ class PortalFolio(CustomerPortal):
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
         return request.render("pms.folio_portal_template", values)
 
+    @http.route(
+        ["/my/folios/precheckin/<int:folio_id>"], type="http", auth="user", website=True
+    )
+    def portal_my_folio_precheckin(
+        self, folio_id, access_token=None, report_type=None, download=False, **kw
+    ):
+        try:
+            folio_sudo = self._document_check_access(
+                "pms.folio",
+                folio_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        if report_type in ("html", "pdf", "text"):
+            return self._show_report(
+                model=folio_sudo,
+                report_type=report_type,
+                report_ref="pms.action_report_folio",
+                download=download,
+            )
+        values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
+        return request.render("pms.portal_my_folio_precheckin", values)
+
 
 class PortalReservation(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
@@ -214,6 +238,28 @@ class PortalReservation(CustomerPortal):
             reservation_sudo, access_token, **kw
         )
         return request.render("pms.portal_my_reservation_detail", values)
+
+    @http.route(
+        ["/my/reservations/precheckin/<int:reservation_id>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_reservation_precheckin(self, reservation_id, access_token=None, **kw):
+        try:
+            reservation_sudo = self._document_check_access(
+                "pms.reservation",
+                reservation_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        # for attachment in reservation_sudo.attachment_ids:
+        #     attachment.generate_access_token()
+        values = self._reservation_get_page_view_values(
+            reservation_sudo, access_token, **kw
+        )
+        return request.render("pms.portal_my_reservation_precheckin", values)
 
 
 class PortalPrecheckin(CustomerPortal):

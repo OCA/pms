@@ -35,8 +35,6 @@
         </xpath>
     </template>
     <template id="portal_my_precheckin" name="My PreCheckins">
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
-<!--        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
       <t t-call="portal.portal_layout">
         <t t-set="breadcrumbs_searchbar" t-value="True" />
 
