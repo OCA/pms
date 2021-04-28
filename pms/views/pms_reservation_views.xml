@@ -77,15 +77,18 @@
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('splitted','=',False)]}"
                 >
-                    This reservation is part of splitted reservation, you can try to
-                    unify the reservation here
+                    This reservation is part of a splitted reservation, you can try to
+                    join the reservation here
                     <bold>
                         <button
                             class="alert-link"
                             type="object"
                             name="open_reservation_wizard"
-                            string="Unify the reservation"
+                            string="Join the reservation"
+                            context="{'default_operation': 'join'}"
                         />
+
+
                     </bold>
                 </div>
                 <sheet>
@@ -949,4 +952,15 @@
         sequence="5"
         parent="pms.menu_reservations"
     />
+
+    <record id="action_view_reservation_operations" model="ir.actions.act_window">
+        <field name="name">Reservation operations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.reservation.split.join.swap.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="pms.model_pms_reservation" />
+        <field name="binding_view_types">form</field>
+    </record>
+
 </odoo>

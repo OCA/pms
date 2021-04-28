@@ -353,6 +353,7 @@ class PmsReservation(models.Model):
         string="Room/s",
         help="Rooms that are reserved",
         compute="_compute_rooms",
+        store=True,
         tracking=True,
     )
     credit_card_details = fields.Text(
@@ -1324,7 +1325,7 @@ class PmsReservation(models.Model):
             "view_type": "form",
             "view_mode": "form",
             "name": "Unify the reservation",
-            "res_model": "pms.reservation.wizard",
+            "res_model": "pms.reservation.split.join.swap.wizard",
             "target": "new",
             "type": "ir.actions.act_window",
             "context": {
