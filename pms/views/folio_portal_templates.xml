@@ -64,7 +64,7 @@
                                 <t t-esc="folio.name" />
                             </a>
                             <a
-                                    t-att-href="folio.get_portal_url(bol=True)"
+                                    t-att-href="folio.get_portal_url(suffix='/precheckin')"
                                     t-att-title="Precheckin"
                                 >Precheckin</a>
                         </td>
@@ -488,7 +488,8 @@
                 <t t-set="title">Precheckins</t>
             </t>
             <t t-if="not folio.reservation_ids">
-                <p>There are currently no reservations in this folio for your account.</p>
+                <p
+                >There are currently no reservations in this folio for your account.</p>
             </t>
             <t t-if="folio.reservation_ids" t-call="portal.portal_table">
                 <thead>
@@ -499,20 +500,21 @@
                 <tbody>
                     <t t-foreach="folio.reservation_ids" t-as="reservation">
                         <tr class="bg-light">
-                            <td colspan="4"><em class="font-weight-normal text-muted"><span
-                                        />Reservation: </em>
+                            <td colspan="4"><em
+                                    class="font-weight-normal text-muted"
+                                ><span />Reservation: </em>
                                 <a
-                                        t-att-href="reservation.get_portal_url()"
-                                        t-att-title="reservation.name"
-                                    >
+                                    t-att-href="reservation.get_portal_url()"
+                                    t-att-title="reservation.name"
+                                >
                                     <t t-esc="reservation.name" />
                                 </a>
                             </td>
                         </tr>
                         <t
-                                t-foreach="reservation.checkin_partner_ids"
-                                t-as="checkin_partner"
-                            >
+                            t-foreach="reservation.checkin_partner_ids"
+                            t-as="checkin_partner"
+                        >
                             <tr>
                                 <td colspan="4">
                                 <a t-att-href="checkin_partner.get_portal_url()">
@@ -521,15 +523,15 @@
                                     <div t-attf-class="form-group">
                                             <div class="col-2">
                                                 <label
-                                                    class="col-form-label"
-                                                    for="name"
-                                                >Name: </label>
+                                                class="col-form-label"
+                                                for="name"
+                                            >Name: </label>
                                                 <input
-                                                    type="text"
-                                                    name="name"
-                                                    t-attf-class="form-control"
-                                                    t-att-value="name or checkin_partner.name"
-                                                />
+                                                type="text"
+                                                name="name"
+                                                t-attf-class="form-control"
+                                                t-att-value="name or checkin_partner.name"
+                                            />
                                             </div>
                                     </div>
                                 </td>
