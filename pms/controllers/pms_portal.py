@@ -158,15 +158,6 @@ class PortalReservation(CustomerPortal):
         domain = [
             ("partner_id", "child_of", partner.id),
         ]
-        # searchbar_sortings = {
-        #     "date": {"label": _("Order Date"), "reservation": "date_order desc"},
-        #     "name": {"label": _("Reference"), "reservation": "name"},
-        #     "stage": {"label": _("Stage"), "reservation": "state"},
-        # }
-        # if not sortby:
-        #     sortby = "date"
-        # sort_order = searchbar_sortings[sortby]["reservation"]
-
         if date_begin and date_end:
             domain += [
                 ("create_date", ">", date_begin),
@@ -183,6 +174,11 @@ class PortalReservation(CustomerPortal):
         reservations = Reservation.search(
             domain, limit=self._items_per_page, offset=pager["offset"]
         )
+        folios_dict = {}
+        for reservation in reservations:
+            folio = reservation.folio_id
+            folios_dict[folio] = ""
+
         request.session["my_reservations_history"] = reservations.ids[:100]
         values.update(
             {
@@ -191,8 +187,8 @@ class PortalReservation(CustomerPortal):
                 "page_name": "reservations",
                 "pager": pager,
                 "default_url": "/my/reservations",
-                # "searchbar_sortings": searchbar_sortings,
-                # "sortby": sortby,
+                "folios_dict": folios_dict,
+                "partner": partner,
             }
         )
         return request.render("pms.portal_my_reservation", values)

@@ -55,38 +55,42 @@
                 </tr>
             </thead>
             <tbody>
-                <t t-foreach="reservations" t-as="reservation">
-                    <t t-set="folio" t-value="reservation.folio_id" />
-                    <!-- Sacar folio-->
-                    <t t-if="reservation == folio.reservation_ids[0]">
-                        <tr class="bg-light">
-                            <td colspan="4"><em
-                                        class="font-weight-normal text-muted"
-                                    ><span /> Reservations by folio: </em>
-                            <a
-                                        t-att-href="folio.get_portal_url()"
-                                        t-att-title="folio.name"
-                                    >
-                                <t t-esc="folio.name" />
-                            </a>
-                        </td>
-                        </tr>
+                <t t-set="folio_old" t-value="" />
+                <t t-foreach="folios_dict" t-as="folio">
+                    <t t-foreach="folio.reservation_ids" t-as="reservation">
+                        <t t-if="reservation.partner_id == partner">
+                            <t t-if="folio != folio_old">
+                                <tr class="bg-light">
+                                    <td colspan="4"><em
+                                                class="font-weight-normal text-muted"
+                                            ><span /> Reservations by folio: </em>
+                                    <a
+                                                t-att-href="folio.get_portal_url()"
+                                                t-att-title="folio.name"
+                                            >
+                                        <t t-esc="folio.name" />
+                                    </a>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-set="folio_old" t-value="folio" />
+                            <tr>
+                                <td>
+                                    <a
+                                            t-att-href="reservation.get_portal_url()"
+                                            t-att-title="reservation.name"
+                                        >
+                                        <t t-esc="reservation.name" />
+                                    </a>
+                                </td>
+                                <td><span t-field="reservation.checkin" /></td>
+                                <td><span t-field="reservation.checkout" /></td>
+                                <td class="text-right"><span
+                                            t-field="reservation.price_room_services_set"
+                                        /></td>
+                            </tr>
+                        </t>
                     </t>
-                    <tr>
-                        <td>
-                            <a
-                                    t-att-href="reservation.get_portal_url()"
-                                    t-att-title="reservation.name"
-                                >
-                                <t t-esc="reservation.name" />
-                            </a>
-                        </td>
-                        <td><span t-field="reservation.checkin" /></td>
-                        <td><span t-field="reservation.checkout" /></td>
-                        <td class="text-right"><span
-                                    t-field="reservation.price_room_services_set"
-                                /></td>
-                    </tr>
                 </t>
             </tbody>
         </t>
