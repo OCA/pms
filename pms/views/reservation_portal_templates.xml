@@ -279,4 +279,9 @@
             </div>
         </t>
     </template>
+    <template id="portal_my_reservation_precheckin" name="Precheckin Reservation">
+        <div class="row mt16">
+            <p>Hola</p>
+        </div>
+    </template>
 </odoo>
