@@ -1,8 +1,10 @@
 import base64
 import datetime
 from datetime import date
-from odoo import _, api, fields, models
+
 import requests
+
+from odoo import _, fields, models
 
 
 class TravellerReport(models.TransientModel):
@@ -29,7 +31,12 @@ class TravellerReport(models.TransientModel):
             [("id", "=", self.env.user.get_active_property_ids()[0])]
         )
         if pms_property.police_number and pms_property.name:
-            content = "1|" + pms_property.police_number.upper() + "|" + pms_property.name.upper()
+            content = (
+                "1|"
+                + pms_property.police_number.upper()
+                + "|"
+                + pms_property.name.upper()
+            )
             content += "|"
             content += datetime.datetime.now().strftime("%Y%m%d|%H%M")
             content += "|" + str(len(lines))
@@ -52,7 +59,9 @@ class TravellerReport(models.TransientModel):
                 # REVIEW: nationality_id must be nationality
                 content += line.nationality_id.name.upper() + "|"
                 content += line.arrival.strftime("%Y%m%d") + "|"
-            sequence_num = self.env['ir.sequence'].next_by_code("traveller.report.wizard")
+            sequence_num = self.env["ir.sequence"].next_by_code(
+                "traveller.report.wizard"
+            )
             txt_binary = self.env["traveller.report.wizard"].create(
                 {
                     "txt_filename": pms_property.police_number + "." + sequence_num,
@@ -72,6 +81,7 @@ class TravellerReport(models.TransientModel):
             }
 
     def send_guardia_civil_report(self):
+        # TODO: Review this
         pms_property = self.env["pms.property"].search(
             [("id", "=", self.env.user.get_active_property_ids()[0])]
         )
@@ -80,7 +90,8 @@ class TravellerReport(models.TransientModel):
         if user and password:
             data = [self.txt_binary]
             requests.post(
-                'https://usuario:password@hospederias.guardiacivil.es/hospederias/servlet/ControlRecepcionFichero',
+                "https://usuario:password@hospederias.guardiacivil.es/"
+                "hospederias/servlet/ControlRecepcionFichero",
                 auth=(user, password),
-                data=data
+                data=data,
             )

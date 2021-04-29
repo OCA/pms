@@ -9,10 +9,10 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='property_settings']" position="inside">
                     <group name="property_data" string="Property data">
-                        <field name="police_type"/>
-                        <field name="police_number"/>
-                        <field name="police_user"/>
-                        <field name="police_pass"/>
+                        <field name="police_type" />
+                        <field name="police_number" />
+                        <field name="police_user" />
+                        <field name="police_pass" />
                     </group>
             </xpath>
         </field>
