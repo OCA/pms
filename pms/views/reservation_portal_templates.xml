@@ -314,11 +314,11 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="firstname"
                                                 >Name</label>
                                                 <input
                                                     type="text"
-                                                    name="name"
+                                                    name="firstname"
                                                     t-attf-class="form-control"
                                                     t-att-value="name or checkin_partner.firstname"
                                                 />
@@ -326,7 +326,7 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="lastname"
                                                 >Lastname</label>
                                                 <input
                                                     type="text"
@@ -338,11 +338,11 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="lastname2"
                                                 > Second Lastname</label>
                                                 <input
                                                     type="text"
-                                                    name="second_lastname"
+                                                    name="lastname2"
                                                     t-attf-class="form-control"
                                                     t-att-value="lastname2 or checkin_partner.lastname2"
                                                 />
@@ -350,11 +350,11 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="birthdate_date"
                                                 > Birth Date</label>
                                                 <input
                                                     type="text"
-                                                    name="birth_date"
+                                                    name="birthdate_date"
                                                     t-attf-class="form-control"
                                                     t-att-value="birth_date or checkin_partner.birthdate_date"
                                                 />
@@ -362,35 +362,53 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="gender"
                                                 >Gender</label>
-                                                <input
-                                                    type="text"
+                                                <select
+                                                    class="form-control"
+                                                    id="gender"
                                                     name="gender"
-                                                    t-attf-class="form-control"
-                                                    t-att-value="gender or checkin_partner.gender"
-                                                />
+                                                >
+                                                    <option
+                                                        value="female"
+                                                    >Female</option>
+                                                    <option value="male">Male</option>
+                                                    <option value="other">Other</option>
+                                                </select>
                                             </div>
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="document_type"
                                                 >Doc. type</label>
-                                                <input
-                                                    type="text"
-                                                    name="doc_type"
-                                                    t-attf-class="form-control"
-                                                    t-att-value="doc_type or checkin_partner.document_type"
-                                                />
+                                                <select
+                                                    class="form-control"
+                                                    id="doc_type_id"
+                                                    name="document_type"
+                                                >
+                                                    <option value="D">DNI</option>
+                                                    <option
+                                                        value="C"
+                                                    >Driving License</option>
+                                                    <option
+                                                        value="I"
+                                                    >Identification Document</option>
+                                                    <option
+                                                        value="N"
+                                                    >Spanish residence permit</option>
+                                                    <option
+                                                        value="X"
+                                                    >European residence permit</option>
+                                               </select>
                                             </div>
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="document_number"
                                                 >Doc. number</label>
                                                 <input
                                                     type="text"
-                                                    name="doc_number"
+                                                    name="document_number"
                                                     t-attf-class="form-control"
                                                     t-att-value="doc_number or checkin_partner.document_number"
                                                 />
@@ -398,11 +416,11 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="document_expedition_date"
                                                 >Doc. expedition date</label>
                                                 <input
                                                     type="text"
-                                                    name="doc_exp_date"
+                                                    name="document_expedition_date"
                                                     t-attf-class="form-control"
                                                     t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
                                                 />
@@ -410,7 +428,7 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="mobile"
                                                 >Mobile</label>
                                                 <input
                                                     type="text"
@@ -422,7 +440,7 @@
                                             <div t-attf-class="form-group col-xl-6">
                                                 <label
                                                     class="col-form-label"
-                                                    for="name"
+                                                    for="email"
                                                 >Email</label>
                                                 <input
                                                     type="text"
@@ -439,12 +457,15 @@
                     </t>
                     <tr>
                         <td>
-                            <button
-                                type="submit"
-                                class="btn btn-primary float-right mb32 "
-                            >
-                                Confirm<span class="fa fa-long-arrow-right" />
-                            </button>
+                            <div class="clearfix">
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary float-right mb32 "
+                                >
+                                    Confirm
+                                    <span class="fa fa-long-arrow-right" />
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
