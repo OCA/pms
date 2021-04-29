@@ -69,7 +69,6 @@
         "views/reservation_portal_templates.xml",
         "views/precheckin_portal_templates.xml",
         "wizards/wizard_split_join_swap_reservation.xml",
-        "wizards/wizard_reservation.xml",
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",
     ],

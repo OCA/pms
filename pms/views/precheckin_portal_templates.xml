@@ -1,127 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template
-        id="portal_my_home_menu_precheckin"
-        name="Portal layout : precheckin menu entries"
-        inherit_id="portal.portal_breadcrumbs"
-        priority="30"
-    >
-        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <li
-                t-if="page_name == 'precheckin'"
-                t-attf-class="breadcrumb-item #{'active ' if not reservations else ''}"
-            >
-                <a t-attf-href="/my/precheckin?{{ keep_query() }}">Precheckin</a>
-            </li>
-<!--            <li t-if="reservation" class="breadcrumb-item active">-->
-<!--                 <a t-attf-href="/my/precheckin?{{ keep_query() }}">Precheckin/</a>-->
-<!--                <t t-esc="reservation.name" />-->
-<!--            </li>-->
-        </xpath>
-    </template>
-    <template
-        id="portal_my_precheckins"
-        name="Precheckins"
-        inherit_id="portal.portal_my_home"
-        customize_show="True"
-        priority="40"
-    >
-        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
-            <t t-call="portal.portal_docs_entry">
-                <t t-set="title">Precheckin</t>
-                <t t-set="url" t-value="'/my/precheckins'" />
-                <t t-set="placeholder_count" t-value="'checkin_count'" />
-            </t>
-        </xpath>
-    </template>
-    <template id="portal_my_precheckin" name="My PreCheckins">
-      <t t-call="portal.portal_layout">
-        <t t-set="breadcrumbs_searchbar" t-value="True" />
-
-        <t t-call="portal.portal_searchbar">
-            <t t-set="title">Precheckins</t>
-        </t>
-        <t t-if="not reservations">
-            <p>There are currently no reservations for your account.</p>
-        </t>
-        <t t-if="reservations" t-call="portal.portal_table">
-            <thead>
-                <tr class="active">
-                    <th>PreCheckin #</th>
-                </tr>
-            </thead>
-            <tbody>
-                <t t-foreach="reservations" t-as="reservation">
-                    <t t-set="folio" t-value="reservation.folio_id" />
-                    <!-- Sacar folio-->
-                    <t t-if="reservation == folio.reservation_ids[0]">
-                        <tr class="bg-light">
-                            <td colspan="4"><em
-                                        class="font-weight-normal text-muted"
-                                    ><span />Folio: </em>
-                            <a>
-                                <t t-esc="folio.name" />
-                            </a>
-                        </td>
-                        </tr>
-                    </t>
-                    <tr class="bg-light">
-                        <td colspan="4"><em class="font-weight-normal text-muted"><span
-                                    />Reservation: </em>
-                            <a
-                                    t-att-href="reservation.get_portal_url()"
-                                    t-att-title="reservation.name"
-                                >
-                                <t t-esc="reservation.name" />
-                            </a>
-                        </td>
-                    </tr>
-                    <t
-                            t-foreach="reservation.checkin_partner_ids"
-                            t-as="checkin_partner"
-                        >
-                        <tr>
-                            <td colspan="4">
-                            <a t-att-href="checkin_partner.get_portal_url()">
-                                    Checkin
-                            </a>
-                                <div t-attf-class="form-group">
-                                        <div class="col-2">
-                                            <label
-                                                class="col-form-label"
-                                                for="name"
-                                            >Name: </label>
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                t-attf-class="form-control"
-                                                t-att-value="name or checkin_partner.name"
-                                            />
-                                        </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </t>
-                </t>
-            </tbody>
-        </t>
-      </t>
-    </template>
-
     <template id="portal_my_precheckin_detail" name="My Precheckin">
         <t t-call="portal.portal_layout">
             <t t-set="additional_title">Contact Details</t>
             <form action="/my/precheckin" method="post">
-<!--                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>-->
                 <div class="row o_portal_details">
                     <div class="col-lg-8">
                         <div class="row">
-<!--                            <t t-set="partner_can_edit_vat" t-value="partner.can_edit_vat()"/>-->
-<!--                            <div class="col-lg-12">-->
-<!--                              <div t-if="error_message" class="alert alert-danger" role="alert">-->
-<!--                                  <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>-->
-<!--                              </div>-->
-<!--                            </div>-->
                             <div t-attf-class="form-group col-xl-6">
                                 <label class="col-form-label" for="name">Name</label>
                                 <input
@@ -143,8 +28,6 @@
                                     t-att-value="lastname or checkin_partner.lastname"
                                 />
                             </div>
-
-<!--                            <div class="clearfix" />-->
                             <div t-attf-class="form-group col-xl-6">
                                 <label
                                     class="col-form-label"
@@ -214,10 +97,6 @@
                                     t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
                                 />
                             </div>
-<!--                            <div t-attf-class="form-group col-xl-6">-->
-<!--                                <label class="col-form-label" for="name">Phone</label>-->
-<!--                                <input type="text" name="phone" t-attf-class="form-control" t-att-value="phone or checkin_partner.phone" />-->
-<!--                            </div>-->
                             <div t-attf-class="form-group col-xl-6">
                                 <label class="col-form-label" for="name">Mobile</label>
                                 <input
@@ -239,6 +118,12 @@
                         </div>
                     </div>
                 </div>
+                    <div class="clearfix">
+                        <button type="submit" class="btn btn-primary float-right mb32 ">
+                            Confirm
+                            <span class="fa fa-long-arrow-right" />
+                        </button>
+                    </div>
             </form>
         </t>
     </template>
