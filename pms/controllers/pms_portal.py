@@ -233,12 +233,14 @@ class PortalReservation(CustomerPortal):
         return request.render("pms.portal_my_reservation_detail", values)
 
     @http.route(
-        ["/my/reservations/precheckin/<int:reservation_id>"],
+        ["/my/reservations/<int:reservation_id>/precheckin"],
         type="http",
         auth="user",
         website=True,
     )
-    def portal_my_reservation_precheckin(self, reservation_id, access_token=None, **kw):
+    def portal_my_reservation_precheckin(
+        self, reservation_id, access_token=None, report_type=None, download=False, **kw
+    ):
         try:
             reservation_sudo = self._document_check_access(
                 "pms.reservation",
@@ -247,8 +249,6 @@ class PortalReservation(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        # for attachment in reservation_sudo.attachment_ids:
-        #     attachment.generate_access_token()
         values = self._reservation_get_page_view_values(
             reservation_sudo, access_token, **kw
         )
@@ -283,52 +283,6 @@ class PortalPrecheckin(CustomerPortal):
         )
 
     @http.route(
-        ["/my/precheckins", "/my/precheckins/page/<int:page>"],
-        type="http",
-        auth="user",
-        website=True,
-    )
-    def portal_my_precheckin(
-        self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw
-    ):
-        partner = request.env.user.partner_id
-        values = self._prepare_portal_layout_values()
-        Reservation = request.env["pms.reservation"]
-        values["reservations"] = Reservation.search(
-            [
-                ("partner_id", "child_of", partner.id),
-            ]
-        )
-        domain = [
-            ("partner_id", "child_of", partner.id),
-        ]
-        if date_begin and date_end:
-            domain += [
-                ("create_date", ">", date_begin),
-                ("create_date", "<=", date_end),
-            ]
-
-        reservations = Reservation.search(domain)
-        checkin_count = len(reservations.checkin_partner_ids)
-        pager = portal_pager(
-            url="/my/precheckins",
-            url_args={"date_begin": date_begin, "date_end": date_end},
-            total=checkin_count,
-            page=page,
-            step=self._items_per_page,
-        )
-        request.session["my_precheckins_history"] = reservations.ids[:100]
-        values.update(
-            {
-                "date": date_begin,
-                "page_name": "precheckins",
-                "pager": pager,
-                "default_url": "/my/precheckins",
-            }
-        )
-        return request.render("pms.portal_my_precheckin", values)
-
-    @http.route(
         ["/my/precheckin/<int:checkin_partner_id>"],
         type="http",
         auth="user",
@@ -343,7 +297,5 @@ class PortalPrecheckin(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        # for attachment in reservation_sudo.attachment_ids:
-        #     attachment.generate_access_token()
         values = self._precheckin_get_page_view_values(checkin_sudo, access_token, **kw)
         return request.render("pms.portal_my_precheckin_detail", values)
