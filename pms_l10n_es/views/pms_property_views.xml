@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Hotel Settings -->
+    <record id="view_property_form_pms_l10n_es" model="ir.ui.view">
+        <field name="name">Property Form l10n_es</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='property_settings']" position="inside">
+                    <group name="property_data" string="Property data">
+                        <field name="police_type"/>
+                        <field name="police_number"/>
+                        <field name="police_user"/>
+                        <field name="police_pass"/>
+                    </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

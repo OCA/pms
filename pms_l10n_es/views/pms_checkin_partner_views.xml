@@ -7,12 +7,14 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="lastname" />
                     <field name="lastname2" />
                     <field name="gender" />
                     <field name="birthdate_date" />
                     <field name="document_type" />
                     <field name="document_number" />
                     <field name="document_expedition_date" />
+                    <field name="nationality_id" />
                 </xpath>
             </data>
         </field>
@@ -32,6 +34,7 @@
                     <field name="document_type" />
                     <field name="document_number" />
                     <field name="document_expedition_date" />
+                    <field name="nationality_id" />
                 </xpath>
             </data>
         </field>
@@ -51,6 +54,7 @@
                     <field name="document_type" />
                     <field name="document_number" />
                     <field name="document_expedition_date" />
+                    <field name="nationality_id" />
                 </xpath>
             </data>
         </field>
@@ -70,11 +74,11 @@
                     <field name="document_type" />
                     <field name="document_number" />
                     <field name="document_expedition_date" />
+                    <field name="nationality_id" />
                 </xpath>
             </data>
         </field>
     </record>
-
     <record id="pms_checkin_partner_view_search" model="ir.ui.view">
         <field name="name">Checkin partner view tree Spain</field>
         <field name="model">pms.checkin.partner</field>
@@ -93,6 +97,4 @@
             </data>
         </field>
     </record>
-
-
 </odoo>
