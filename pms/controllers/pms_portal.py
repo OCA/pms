@@ -302,10 +302,12 @@ class PortalPrecheckin(CustomerPortal):
 
     @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
     def portal_precheckin_submit(self, **kw):
-        if "id" in kw:
-            checkin_partner = request.env["pms.checkin.partner"].browse(
-                int(kw.get("id"))
-            )
-            checkin_partner.write(kw)
-
-        # return request.render("pms.portal_my_reservation_precheckin", kw)
+        checkin_partner = request.env["pms.checkin.partner"].browse(int(kw.get("id")))
+        checkin_partner.write(kw)
+        reservation = request.env["pms.reservation"].browse(
+            checkin_partner.reservation_id
+        )
+        values = {
+            "reservation": reservation.id,
+        }
+        return request.render("pms.portal_my_reservation_precheckin", values)
