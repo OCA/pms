@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record model="ir.sequence" id="seq_pms_traveller_report">
+            <field name="name">PMS L10N Traveller Report</field>
+            <field name="code">traveller.report.wizard</field>
+            <field name="padding">3</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+</odoo>

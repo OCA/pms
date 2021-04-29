@@ -15,10 +15,16 @@
         "partner_second_lastname",
         "partner_contact_gender",
         "partner_contact_birthdate",
+        "partner_contact_nationality",
     ],
     "data": [
+        "data/cron_jobs.xml",
+        "data/pms_sequence.xml",
+        "security/ir.model.access.csv",
         "views/pms_checkin_partner_views.xml",
+        "views/pms_property_views.xml",
         "views/res_partner_views.xml",
+        "wizards/traveller_report.xml",
     ],
     "installable": True,
 }
