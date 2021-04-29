@@ -171,11 +171,6 @@
         </xpath>
     </template>
 
-    <!--
-    Sales Order content : intro, informations, order lines, remarks, descriptions ....
-    This template should contains all the printable element of the SO. This is the
-    template rendered in PDF with the report engine.
-    -->
     <template id="folio_portal_content" name="Folio Portal Content">
         <t t-set="address">
             <div
@@ -504,7 +499,7 @@
                                     class="font-weight-normal text-muted"
                                 ><span />Reservation: </em>
                                 <a
-                                    t-att-href="reservation.get_portal_url()"
+                                    t-att-href="reservation.get_portal_url(suffix='/precheckin')"
                                     t-att-title="reservation.name"
                                 >
                                     <t t-esc="reservation.name" />
@@ -520,20 +515,120 @@
                                 <a t-att-href="checkin_partner.get_portal_url()">
                                         Checkin
                                 </a>
-                                    <div t-attf-class="form-group">
-                                            <div class="col-2">
-                                                <label
-                                                class="col-form-label"
-                                                for="name"
-                                            >Name: </label>
-                                                <input
-                                                type="text"
-                                                name="name"
-                                                t-attf-class="form-control"
-                                                t-att-value="name or checkin_partner.name"
-                                            />
-                                            </div>
-                                    </div>
+                                    <div class="row o_portal_details">
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Name</label>
+                                <input
+                                                        type="text"
+                                                        name="name"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="name or checkin_partner.firstname"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                                        class="col-form-label"
+                                                        for="name"
+                                                    >Lastname</label>
+                                <input
+                                                        type="text"
+                                                        name="lastname"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="lastname or checkin_partner.lastname"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                                        class="col-form-label"
+                                                        for="name"
+                                                    > Second Lastname</label>
+                                <input
+                                                        type="text"
+                                                        name="second_lastname"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="lastname2 or checkin_partner.lastname2"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                                        class="col-form-label"
+                                                        for="name"
+                                                    > Birth Date</label>
+                                <input
+                                                        type="text"
+                                                        name="birth_date"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="birth_date or checkin_partner.birthdate_date"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Gender</label>
+                                <input
+                                                        type="text"
+                                                        name="gender"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="gender or checkin_partner.gender"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                                        class="col-form-label"
+                                                        for="name"
+                                                    >Doc. type</label>
+                                <input
+                                                        type="text"
+                                                        name="doc_type"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="doc_type or checkin_partner.document_type"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                                        class="col-form-label"
+                                                        for="name"
+                                                    >Doc. number</label>
+                                <input
+                                                        type="text"
+                                                        name="doc_number"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="doc_number or checkin_partner.document_number"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label
+                                                        class="col-form-label"
+                                                        for="name"
+                                                    >Doc. expedition date</label>
+                                <input
+                                                        type="text"
+                                                        name="doc_exp_date"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Mobile</label>
+                                <input
+                                                        type="text"
+                                                        name="mobile"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="mobile or checkin_partner.mobile"
+                                                    />
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label class="col-form-label" for="name">Email</label>
+                                <input
+                                                        type="text"
+                                                        name="email"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="email or checkin_partner.email"
+                                                    />
+                            </div>
+                        </div>
+                    </div>
+                </div>
                                 </td>
                             </tr>
                         </t>
