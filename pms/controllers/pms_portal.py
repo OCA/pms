@@ -299,3 +299,13 @@ class PortalPrecheckin(CustomerPortal):
             return request.redirect("/my")
         values = self._precheckin_get_page_view_values(checkin_sudo, access_token, **kw)
         return request.render("pms.portal_my_precheckin_detail", values)
+
+    @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
+    def portal_precheckin_submit(self, **kw):
+        if "id" in kw:
+            checkin_partner = request.env["pms.checkin.partner"].browse(
+                int(kw.get("id"))
+            )
+            checkin_partner.write(kw)
+
+        # return request.render("pms.portal_my_reservation_precheckin", kw)

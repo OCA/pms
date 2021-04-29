@@ -5,13 +5,25 @@
             <t t-set="additional_title">Contact Details</t>
             <form action="/my/precheckin" method="post">
                 <div class="row o_portal_details">
+                    <div t-attf-class="form-group col-xl-6 d-none">
+                                <input
+                            type="number"
+                            name="id"
+                            t-attf-class="form-control"
+                            t-att-value="id or checkin_partner.id"
+                        />
+
+                            </div>
                     <div class="col-lg-8">
                         <div class="row">
                             <div t-attf-class="form-group col-xl-6">
-                                <label class="col-form-label" for="name">Name</label>
+                                <label
+                                    class="col-form-label"
+                                    for="firstname"
+                                >Name</label>
                                 <input
                                     type="text"
-                                    name="name"
+                                    name="firstname"
                                     t-attf-class="form-control"
                                     t-att-value="name or checkin_partner.firstname"
                                 />
@@ -19,7 +31,7 @@
                             <div t-attf-class="form-group col-xl-6">
                                 <label
                                     class="col-form-label"
-                                    for="name"
+                                    for="lastname"
                                 >Lastname</label>
                                 <input
                                     type="text"
@@ -31,11 +43,11 @@
                             <div t-attf-class="form-group col-xl-6">
                                 <label
                                     class="col-form-label"
-                                    for="name"
+                                    for="lastname2"
                                 > Second Lastname</label>
                                 <input
                                     type="text"
-                                    name="second_lastname"
+                                    name="lastname2"
                                     t-attf-class="form-control"
                                     t-att-value="lastname2 or checkin_partner.lastname2"
                                 />
@@ -43,17 +55,20 @@
                             <div t-attf-class="form-group col-xl-6">
                                 <label
                                     class="col-form-label"
-                                    for="name"
+                                    for="birthdate_date"
                                 > Birth Date</label>
                                 <input
                                     type="text"
-                                    name="birth_date"
+                                    name="birthdate_date"
                                     t-attf-class="form-control"
                                     t-att-value="birth_date or checkin_partner.birthdate_date"
                                 />
                             </div>
                             <div t-attf-class="form-group col-xl-6">
-                                <label class="col-form-label" for="name">Gender</label>
+                                <label
+                                    class="col-form-label"
+                                    for="gender"
+                                >Gender</label>
                                 <input
                                     type="text"
                                     name="gender"
@@ -64,11 +79,11 @@
                             <div t-attf-class="form-group col-xl-6">
                                 <label
                                     class="col-form-label"
-                                    for="name"
+                                    for="document_type"
                                 >Doc. type</label>
                                 <input
                                     type="text"
-                                    name="doc_type"
+                                    name="document_type"
                                     t-attf-class="form-control"
                                     t-att-value="doc_type or checkin_partner.document_type"
                                 />
@@ -76,11 +91,11 @@
                             <div t-attf-class="form-group col-xl-6">
                                 <label
                                     class="col-form-label"
-                                    for="name"
+                                    for="document_number"
                                 >Doc. number</label>
                                 <input
                                     type="text"
-                                    name="doc_number"
+                                    name="document_number"
                                     t-attf-class="form-control"
                                     t-att-value="doc_number or checkin_partner.document_number"
                                 />
@@ -88,17 +103,20 @@
                             <div t-attf-class="form-group col-xl-6">
                                 <label
                                     class="col-form-label"
-                                    for="name"
+                                    for="document_expedition_date"
                                 >Doc. expedition date</label>
                                 <input
                                     type="text"
-                                    name="doc_exp_date"
+                                    name="document_expedition_date"
                                     t-attf-class="form-control"
                                     t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
                                 />
                             </div>
                             <div t-attf-class="form-group col-xl-6">
-                                <label class="col-form-label" for="name">Mobile</label>
+                                <label
+                                    class="col-form-label"
+                                    for="mobile"
+                                >Mobile</label>
                                 <input
                                     type="text"
                                     name="mobile"
@@ -107,7 +125,7 @@
                                 />
                             </div>
                             <div t-attf-class="form-group col-xl-6">
-                                <label class="col-form-label" for="name">Email</label>
+                                <label class="col-form-label" for="email">Email</label>
                                 <input
                                     type="text"
                                     name="email"
