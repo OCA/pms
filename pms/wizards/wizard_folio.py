@@ -115,7 +115,6 @@ class FolioWizard(models.TransientModel):
         "pricelist_id",
     )
     def _compute_availability_results(self):
-
         for record in self:
             record.availability_results = False
 
