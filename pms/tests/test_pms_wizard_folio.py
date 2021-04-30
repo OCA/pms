@@ -214,7 +214,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
         # force pricelist load
         wizard_folio.flush()
-        wizard_folio.availability_results._compute_dynamic_selection()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -295,7 +294,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
         wizard_folio.flush()
-        wizard_folio.availability_results._compute_dynamic_selection()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -366,7 +364,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #         }
     #     )
     #     wizard_folio.flush()
-    #     wizard_folio.availability_results._compute_dynamic_selection()
 
     #     # availability items belonging to test property
     #     lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -426,7 +423,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
         wizard_folio.flush()
-        wizard_folio.availability_results._compute_dynamic_selection()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -476,7 +472,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
         wizard_folio.flush()
-        wizard_folio.availability_results._compute_dynamic_selection()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -528,7 +523,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
         wizard_folio.flush()
-        wizard_folio.availability_results._compute_dynamic_selection()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -586,7 +580,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
         wizard_folio.flush()
-        wizard_folio.availability_results._compute_dynamic_selection()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -657,7 +650,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
         wizard_folio.flush()
-        wizard_folio.availability_results._compute_dynamic_selection()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
