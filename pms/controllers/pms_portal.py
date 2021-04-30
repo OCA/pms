@@ -124,6 +124,7 @@ class PortalFolio(CustomerPortal):
         except (AccessError, MissingError):
             return request.redirect("/my")
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
+        values.update({"no_breadcrumbs": True})
         return request.render("pms.portal_my_folio_precheckin", values)
 
 
@@ -252,6 +253,7 @@ class PortalReservation(CustomerPortal):
         values = self._reservation_get_page_view_values(
             reservation_sudo, access_token, **kw
         )
+        values.update({"no_breadcrumbs": True})
         return request.render("pms.portal_my_reservation_precheckin", values)
 
 
@@ -298,6 +300,7 @@ class PortalPrecheckin(CustomerPortal):
         except (AccessError, MissingError):
             return request.redirect("/my")
         values = self._precheckin_get_page_view_values(checkin_sudo, access_token, **kw)
+        values.update({"no_breadcrumbs": True})
         return request.render("pms.portal_my_precheckin_detail", values)
 
     @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
