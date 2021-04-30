@@ -40,24 +40,26 @@ class AvailabilityWizard(models.TransientModel):
         compute="_compute_num_rooms_available",
         store="true",
     )
-    price_per_room = fields.Float(
-        string="Price per room",
-        default=0,
-    )
     num_rooms_selected = fields.Many2one(
         comodel_name="pms.num.rooms.selection",
         inverse_name="folio_wizard_id",
         string="Selected rooms",
-        compute="_compute_dynamic_selection",
+        compute="_compute_num_rooms_selected",
         store=True,
         readonly=False,
         domain="[('value', '<=', num_rooms_available), "
         "('room_type_id', '=', room_type_id)]",
     )
-    value_num_rooms_selected = fields.Integer(default=0)
-    price_total = fields.Float(
-        string="Total price", default=0, compute="_compute_price_total"
+    value_num_rooms_selected = fields.Integer(
+        compute="_compute_value_num_rooms_selected",
+        store=True,
+        readonly=False,
     )
+    price_per_room = fields.Float(
+        string="Price per room",
+        compute="_compute_price_per_room",
+    )
+    price_total = fields.Float(string="Total price", compute="_compute_price_total")
     pms_property_id = fields.Many2one(
         related="folio_wizard_id.pms_property_id",
         string="Property",
@@ -70,14 +72,53 @@ class AvailabilityWizard(models.TransientModel):
         tracking=True,
     )
 
-    @api.depends("num_rooms_selected", "checkin", "checkout", "board_service_room_id")
-    def _compute_price_total(self):
+    @api.depends("room_type_id", "checkin", "checkout")
+    def _compute_num_rooms_available(self):
         for record in self:
-            record.price_total = 0
+            record.num_rooms_available = self.env[
+                "pms.availability.plan"
+            ].get_count_rooms_available(
+                record.checkin,
+                record.checkout,
+                room_type_id=record.room_type_id.id,
+                pricelist_id=record.folio_wizard_id.pricelist_id.id,
+                pms_property_id=record.folio_wizard_id.pms_property_id.id,
+            )
 
-            # this field refresh is just to update it and take into account @ xml
-            record.value_num_rooms_selected = record.num_rooms_selected.value
+    @api.depends("num_rooms_available")
+    def _compute_num_rooms_selected(self):
+        for record in self:
+            for elem_to_insert in range(0, record.num_rooms_available + 1):
+                if (
+                    self.env["pms.num.rooms.selection"].search_count(
+                        [
+                            ("value", "=", elem_to_insert),
+                            ("room_type_id", "=", record.room_type_id.id),
+                        ]
+                    )
+                    == 0
+                ):
+                    self.env["pms.num.rooms.selection"].create(
+                        {
+                            "value": elem_to_insert,
+                            "room_type_id": record.room_type_id.id,
+                        }
+                    )
+            record.num_rooms_selected = self.env["pms.num.rooms.selection"].search(
+                [("value", "=", 0), ("room_type_id", "=", record.room_type_id.id)]
+            )
 
+    @api.depends("num_rooms_selected")
+    def _compute_value_num_rooms_selected(self):
+        for record in self:
+            if record.num_rooms_selected and record.num_rooms_selected.value:
+                record.value_num_rooms_selected = record.num_rooms_selected.value
+            elif not record.value_num_rooms_selected:
+                record.value_num_rooms_selected = 0
+
+    @api.depends("room_type_id", "board_service_room_id", "checkin", "checkout")
+    def _compute_price_per_room(self):
+        for record in self:
             room_type_total_price_per_room = 0
 
             for date_iterator in [
@@ -105,59 +146,9 @@ class AvailabilityWizard(models.TransientModel):
                     record.board_service_room_id.amount * nights
                 )
 
-            # udpate the price per room
             record.price_per_room = room_type_total_price_per_room
 
-            # if there's no rooms available
-            if record.num_rooms_available == 0:
-                # change the selector num_rooms_availabe to 0
-                value_selected = self.env["pms.num.rooms.selection"].search(
-                    [
-                        ("room_type_id", "=", record.room_type_id.id),
-                        ("value", "=", 0),
-                    ]
-                )
-                if value_selected:
-                    record.num_rooms_selected = value_selected
-                record.value_num_rooms_selected = 0
-
-                # change the price per room to 0
-                record.price_per_room = 0
-
-            record.price_total = record.price_per_room * record.num_rooms_selected.value
-
-    @api.depends("room_type_id", "checkin", "checkout")
-    def _compute_num_rooms_available(self):
+    @api.depends("price_per_room", "value_num_rooms_selected")
+    def _compute_price_total(self):
         for record in self:
-            record.num_rooms_available = self.env[
-                "pms.availability.plan"
-            ].get_count_rooms_available(
-                record.checkin,
-                record.checkout,
-                room_type_id=record.room_type_id.id,
-                pricelist_id=record.folio_wizard_id.pricelist_id.id,
-                pms_property_id=record.folio_wizard_id.pms_property_id.id,
-            )
-
-    def _compute_dynamic_selection(self):
-        for record in self:
-            for elem_to_insert in range(0, record.num_rooms_available + 1):
-                if (
-                    self.env["pms.num.rooms.selection"].search_count(
-                        [
-                            ("value", "=", elem_to_insert),
-                            ("room_type_id", "=", record.room_type_id.id),
-                        ]
-                    )
-                    == 0
-                ):
-                    self.env["pms.num.rooms.selection"].create(
-                        {
-                            "value": elem_to_insert,
-                            "room_type_id": record.room_type_id.id,
-                        }
-                    )
-            default = self.env["pms.num.rooms.selection"].search(
-                [("value", "=", 0), ("room_type_id", "=", record.room_type_id.id)]
-            )
-            record.num_rooms_selected = default
+            record.price_total = record.price_per_room * record.value_num_rooms_selected
