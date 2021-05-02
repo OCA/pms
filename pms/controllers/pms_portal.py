@@ -307,10 +307,31 @@ class PortalPrecheckin(CustomerPortal):
     def portal_precheckin_submit(self, **kw):
         checkin_partner = request.env["pms.checkin.partner"].browse(int(kw.get("id")))
         checkin_partner.write(kw)
-        reservation = request.env["pms.reservation"].browse(
-            checkin_partner.reservation_id
-        )
-        values = {
-            "reservation": reservation.id,
-        }
-        return request.render("pms.portal_my_reservation_precheckin", values)
+
+    @http.route(
+        ["/my/precheckin/folio"], type="http", auth="user", website=False, csrf=True
+    )
+    def portal_precheckin_folio_submit(self, **kw):
+        counter = 2
+        folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+        checkin_partners = len(folio.checkin_partner_ids)
+        for _checkin in range(checkin_partners):
+            values = {
+                "firstname": kw["firstname-" + str(counter)],
+                "lastname": kw["lastname-" + str(counter)],
+                "lastname2": kw["lastname2-" + str(counter)],
+                "gender": kw["gender-" + str(counter)],
+                "document_type": kw["document_type-" + str(counter)],
+                "document_number": kw["document_number-" + str(counter)],
+                "document_expedition_date": kw[
+                    "document_expedition_date-" + str(counter)
+                ],
+                "mobile": kw["mobile-" + str(counter)],
+                "email": kw["email-" + str(counter)],
+            }
+            checkin_partner_id = int(kw.get("id-" + str(counter)))
+            checkin_partner = request.env["pms.checkin.partner"].browse(
+                checkin_partner_id
+            )
+            checkin_partner.write(values)
+            counter = counter + 1
