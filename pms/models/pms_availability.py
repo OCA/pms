@@ -58,7 +58,11 @@ class PmsAvailability(models.Model):
         )
     ]
 
-    @api.depends("reservation_line_ids", "reservation_line_ids.occupies_availability")
+    @api.depends(
+        "reservation_line_ids",
+        "reservation_line_ids.occupies_availability",
+        "room_type_id.total_rooms_count",
+    )
     def _compute_real_avail(self):
         for record in self:
             Rooms = self.env["pms.room"]
