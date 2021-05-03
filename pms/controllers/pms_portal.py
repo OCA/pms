@@ -306,32 +306,72 @@ class PortalPrecheckin(CustomerPortal):
     @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
     def portal_precheckin_submit(self, **kw):
         checkin_partner = request.env["pms.checkin.partner"].browse(int(kw.get("id")))
+        if not checkin_partner.partner_id:
+            ResPartner = request.env["res.partner"]
+            res_partner = ResPartner.create(kw)
+            kw.update(
+                {
+                    "partner_id": res_partner.id,
+                }
+            )
+        else:
+            res_partner = checkin_partner.partner_id
+            res_partner.write(kw)
         checkin_partner.write(kw)
 
     @http.route(
-        ["/my/precheckin/folio"], type="http", auth="user", website=False, csrf=True
+        ["/my/precheckin/folio_reservation"],
+        type="http",
+        auth="user",
+        website=False,
+        csrf=True,
     )
     def portal_precheckin_folio_submit(self, **kw):
-        counter = 2
-        folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
-        checkin_partners = len(folio.checkin_partner_ids)
+        counter = 1
+        if kw.get("folio_id"):
+            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            checkin_partners = len(folio.checkin_partner_ids)
+        elif kw.get("reservation_id"):
+            reservation = request.env["pms.reservation"].browse(
+                int(kw.get("reservation_id"))
+            )
+            checkin_partners = len(reservation.checkin_partner_ids)
         for _checkin in range(checkin_partners):
             values = {
-                "firstname": kw["firstname-" + str(counter)],
-                "lastname": kw["lastname-" + str(counter)],
-                "lastname2": kw["lastname2-" + str(counter)],
-                "gender": kw["gender-" + str(counter)],
-                "document_type": kw["document_type-" + str(counter)],
-                "document_number": kw["document_number-" + str(counter)],
-                "document_expedition_date": kw[
+                "firstname": kw.get("firstname-" + str(counter)),
+                "lastname": kw.get("lastname-" + str(counter)),
+                "lastname2": kw.get("lastname2-" + str(counter)),
+                "gender": kw.get("gender-" + str(counter)),
+                "birthdate_date": kw.get("birthdate_date-" + str(counter))
+                if kw.get("birthdate_date-" + str(counter))
+                else False,
+                "document_type": kw.get("document_type-" + str(counter)),
+                "document_number": kw.get("document_number-" + str(counter)),
+                "document_expedition_date": kw.get(
                     "document_expedition_date-" + str(counter)
-                ],
-                "mobile": kw["mobile-" + str(counter)],
-                "email": kw["email-" + str(counter)],
+                )
+                if kw.get("document_expedition_date-" + str(counter))
+                else False,
+                "mobile": kw.get("mobile-" + str(counter)),
+                "email": kw.get("email-" + str(counter)),
             }
             checkin_partner_id = int(kw.get("id-" + str(counter)))
             checkin_partner = request.env["pms.checkin.partner"].browse(
                 checkin_partner_id
             )
+            lastname = True if kw.get("lastname-" + str(counter)) else False
+            firstname = True if kw.get("firstname-" + str(counter)) else False
+            lastname2 = True if kw.get("lastname2-" + str(counter)) else False
+            if not checkin_partner.partner_id and (lastname or firstname or lastname2):
+                ResPartner = request.env["res.partner"]
+                res_partner = ResPartner.create(values)
+                values.update(
+                    {
+                        "partner_id": res_partner.id,
+                    }
+                )
+            elif checkin_partner.partner_id:
+                res_partner = checkin_partner.partner_id
+                res_partner.write(values)
             checkin_partner.write(values)
             counter = counter + 1
