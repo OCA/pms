@@ -27,7 +27,7 @@ class PmsRoomAmenity(models.Model):
         comodel_name="pms.property",
         ondelete="restrict",
         relation="pms_amenity_pms_property_rel",
-        column1="amenity_type_id",
+        column1="amenity_id",
         column2="pms_property_id",
         check_pms_properties=True,
     )
