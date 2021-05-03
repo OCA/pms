@@ -244,5 +244,12 @@
             <field name="groups" eval="[(4, ref('base.group_portal'))]" />
             <field name="perm_read" eval="True" />
         </record>
+        <record id="res_partner_rule_portal" model="ir.rule">
+            <field name="name">Res Partner Rule</field>
+            <field name="model_id" ref="model_res_partner" />
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+            <field name="perm_read" eval="True" />
+        </record>
     </data>
 </odoo>
