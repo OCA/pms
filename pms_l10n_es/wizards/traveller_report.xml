@@ -8,22 +8,30 @@
                 <sheet>
                         <div>
                             <button
-                            name="generate_file"
-                            class="btn btn-primary btn-sm"
-                            type="object"
-                            string="Generate Police file"
-                        />
+                                name="generate_file"
+                                class="btn btn-primary btn-sm"
+                                type="object"
+                                string="Generate Police file"
+                            />
                             <field name="txt_filename" invisible="1" />
                             <field
-                            name="txt_binary"
-                            filename="txt_filename"
-                            readonly="1"
-                            style="margin-left: 20px;"
-                        />
+                                name="txt_binary"
+                                filename="txt_filename"
+                                readonly="1"
+                                style="margin-left: 20px;"
+                            />
+                             <button
+                                name="send_guardia_civil_report"
+                                class="btn btn-primary btn-sm"
+                                type="object"
+                                string="Send file"
+                            />
                         </div>
                     <group colspan="1">
                         <div>
-                            <p><field name="txt_message" readonly="1" /></p>
+                            <p>
+                                <field name="txt_message" readonly="1" />
+                            </p>
                         </div>
                     </group>
                 </sheet>
