@@ -115,6 +115,13 @@ class PortalFolio(CustomerPortal):
     def portal_my_folio_precheckin(
         self, folio_id, access_token=None, report_type=None, download=False, **kw
     ):
+        values = self._prepare_portal_layout_values()
+        values.update(
+            {
+                "error": {},
+                "error_message": [],
+            }
+        )
         try:
             folio_sudo = self._document_check_access(
                 "pms.folio",
@@ -123,7 +130,7 @@ class PortalFolio(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
+        values.update(self._folio_get_page_view_values(folio_sudo, access_token, **kw))
         values.update({"no_breadcrumbs": True})
         return request.render("pms.portal_my_folio_precheckin", values)
 
@@ -304,20 +311,71 @@ class PortalPrecheckin(CustomerPortal):
         return request.render("pms.portal_my_precheckin_detail", values)
 
     @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
-    def portal_precheckin_submit(self, **kw):
-        checkin_partner = request.env["pms.checkin.partner"].browse(int(kw.get("id")))
-        if not checkin_partner.partner_id:
-            ResPartner = request.env["res.partner"]
-            res_partner = ResPartner.create(kw)
-            kw.update(
+    def portal_precheckin_submit(self, access_token=None, **kw):
+
+        values = dict()
+        values.update(
+            {
+                "error": {},
+                "error_message": [],
+            }
+        )
+        if kw:
+            error, error_message = self.form_validate(kw)
+            values.update(
                 {
-                    "partner_id": res_partner.id,
+                    "error": error,
+                    "error_message": error_message,
                 }
             )
-        else:
-            res_partner = checkin_partner.partner_id
-            res_partner.write(kw)
-        checkin_partner.write(kw)
+            if not error:
+                values = kw
+                checkin_partner = request.env["pms.checkin.partner"].browse(
+                    int(kw.get("id"))
+                )
+                if not values.get("birthdate_date"):
+                    values.update({"birthdate_date": False})
+                if not values.get("document_expedition_date"):
+                    values.update({"document_expedition_date": False})
+                lastname = True if values.get("lastname") else False
+                firstname = True if values.get("firstname") else False
+                lastname2 = True if values.get("lastname2") else False
+                if not checkin_partner.partner_id and (
+                    lastname or firstname or lastname2
+                ):
+                    ResPartner = request.env["res.partner"]
+                    res_partner = ResPartner.create(values)
+                    values.update(
+                        {
+                            "partner_id": res_partner.id,
+                        }
+                    )
+                elif checkin_partner.partner_id:
+                    res_partner = checkin_partner.partner_id
+                    res_partner.write(values)
+                checkin_partner.write(values)
+                values1 = dict()
+                values1.update(
+                    {
+                        "success": True,
+                        "checkin_partner": checkin_partner,
+                        "no_breadcrumbs": True,
+                    }
+                )
+                return request.render("pms.portal_my_precheckin_detail", values1)
+        try:
+            checkin_partner = request.env["pms.checkin.partner"].browse(
+                int(kw.get("id"))
+            )
+            values.update(
+                {
+                    "checkin_partner": checkin_partner,
+                    "no_breadcrumbs": True,
+                }
+            )
+            return request.render("pms.portal_my_precheckin_detail", values)
+        except (AccessError, MissingError):
+            return request.redirect("/my")
 
     @http.route(
         ["/my/precheckin/folio_reservation"],
@@ -328,15 +386,16 @@ class PortalPrecheckin(CustomerPortal):
     )
     def portal_precheckin_folio_submit(self, **kw):
         counter = 1
+        checkin_partners = False
         if kw.get("folio_id"):
             folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
-            checkin_partners = len(folio.checkin_partner_ids)
+            checkin_partners = folio.checkin_partner_ids
         elif kw.get("reservation_id"):
             reservation = request.env["pms.reservation"].browse(
                 int(kw.get("reservation_id"))
             )
-            checkin_partners = len(reservation.checkin_partner_ids)
-        for _checkin in range(checkin_partners):
+            checkin_partners = reservation.checkin_partner_ids
+        for checkin in checkin_partners:
             values = {
                 "firstname": kw.get("firstname-" + str(counter)),
                 "lastname": kw.get("lastname-" + str(counter)),
@@ -355,14 +414,10 @@ class PortalPrecheckin(CustomerPortal):
                 "mobile": kw.get("mobile-" + str(counter)),
                 "email": kw.get("email-" + str(counter)),
             }
-            checkin_partner_id = int(kw.get("id-" + str(counter)))
-            checkin_partner = request.env["pms.checkin.partner"].browse(
-                checkin_partner_id
-            )
             lastname = True if kw.get("lastname-" + str(counter)) else False
             firstname = True if kw.get("firstname-" + str(counter)) else False
             lastname2 = True if kw.get("lastname2-" + str(counter)) else False
-            if not checkin_partner.partner_id and (lastname or firstname or lastname2):
+            if not checkin.partner_id and (lastname or firstname or lastname2):
                 ResPartner = request.env["res.partner"]
                 res_partner = ResPartner.create(values)
                 values.update(
@@ -370,8 +425,16 @@ class PortalPrecheckin(CustomerPortal):
                         "partner_id": res_partner.id,
                     }
                 )
-            elif checkin_partner.partner_id:
-                res_partner = checkin_partner.partner_id
+            elif checkin.partner_id:
+                res_partner = checkin.partner_id
                 res_partner.write(values)
-            checkin_partner.write(values)
+            checkin.write(values)
             counter = counter + 1
+
+    def form_validate(self, data):
+        error = dict()
+        error_message = []
+        if not data["mobile"]:
+            error["mobile"] = "error"
+            error_message.append(_("Mobile is missing."))
+        return error, error_message
