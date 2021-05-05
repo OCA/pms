@@ -118,12 +118,6 @@ class PortalFolio(CustomerPortal):
         self, folio_id, access_token=None, report_type=None, download=False, **kw
     ):
         values = self._prepare_portal_layout_values()
-        values.update(
-            {
-                "error": {},
-                "error_message": [],
-            }
-        )
         try:
             folio_sudo = self._document_check_access(
                 "pms.folio",
@@ -133,7 +127,7 @@ class PortalFolio(CustomerPortal):
         except (AccessError, MissingError):
             return request.redirect("/my")
         values.update(self._folio_get_page_view_values(folio_sudo, access_token, **kw))
-        values.update({"no_breadcrumbs": True})
+        values.update({"no_breadcrumbs": True, "error": {}})
         return request.render("pms.portal_my_folio_precheckin", values)
 
 
@@ -262,7 +256,7 @@ class PortalReservation(CustomerPortal):
         values = self._reservation_get_page_view_values(
             reservation_sudo, access_token, **kw
         )
-        values.update({"no_breadcrumbs": True})
+        values.update({"no_breadcrumbs": True, "error": {}})
         return request.render("pms.portal_my_reservation_precheckin", values)
 
 
@@ -309,7 +303,7 @@ class PortalPrecheckin(CustomerPortal):
         except (AccessError, MissingError):
             return request.redirect("/my")
         values = self._precheckin_get_page_view_values(checkin_sudo, access_token, **kw)
-        values.update({"no_breadcrumbs": True})
+        values.update({"no_breadcrumbs": True, "error": {}})
         return request.render("pms.portal_my_precheckin_detail", values)
 
     @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
@@ -362,6 +356,7 @@ class PortalPrecheckin(CustomerPortal):
                         "success": True,
                         "checkin_partner": checkin_partner,
                         "no_breadcrumbs": True,
+                        "error": {},
                     }
                 )
                 return request.render("pms.portal_my_precheckin_detail", values1)
@@ -383,11 +378,14 @@ class PortalPrecheckin(CustomerPortal):
         ["/my/precheckin/folio_reservation"],
         type="http",
         auth="user",
-        website=False,
-        csrf=True,
+        website=True,
+        csrf=False,
     )
     def portal_precheckin_folio_submit(self, **kw):
+        errors = {}
+        e_messages = []
         counter = 1
+        has_error = False
         checkin_partners = False
         if kw.get("folio_id"):
             folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
@@ -416,26 +414,76 @@ class PortalPrecheckin(CustomerPortal):
                 "mobile": kw.get("mobile-" + str(counter)),
                 "email": kw.get("email-" + str(counter)),
             }
-            lastname = True if kw.get("lastname-" + str(counter)) else False
-            firstname = True if kw.get("firstname-" + str(counter)) else False
-            lastname2 = True if kw.get("lastname2-" + str(counter)) else False
-            if not checkin.partner_id and (lastname or firstname or lastname2):
-                ResPartner = request.env["res.partner"]
-                res_partner = ResPartner.create(values)
-                values.update(
-                    {
-                        "partner_id": res_partner.id,
-                    }
-                )
-            elif checkin.partner_id:
-                res_partner = checkin.partner_id
-                res_partner.write(values)
-            checkin.write(values)
+            error, error_message = self.form_validate(values)
+            errors.update({counter: error})
+            if error_message:
+                for e in error_message:
+                    e_messages.append(e)
+
+                has_error = True
+            else:
+                lastname = True if kw.get("lastname-" + str(counter)) else False
+                firstname = True if kw.get("firstname-" + str(counter)) else False
+                lastname2 = True if kw.get("lastname2-" + str(counter)) else False
+                if not checkin.partner_id and (lastname or firstname or lastname2):
+                    ResPartner = request.env["res.partner"]
+                    res_partner = ResPartner.create(values)
+                    values.update(
+                        {
+                            "partner_id": res_partner.id,
+                        }
+                    )
+                elif checkin.partner_id:
+                    res_partner = checkin.partner_id
+                    res_partner.write(values)
+                checkin.write(values)
             counter = counter + 1
+        values = {"no_breadcrumbs": True}
+        if has_error:
+            for e in errors:
+                error = errors[e]
+                values.update({"error": error})
+            values.update(
+                {
+                    "error_message": e_messages,
+                }
+            )
+        else:
+            values.update(
+                {
+                    "success": True,
+                }
+            )
+        if kw.get("folio_id"):
+            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            values.update(
+                {
+                    "folio": folio,
+                }
+            )
+            return request.render("pms.portal_my_folio_precheckin", values)
+        elif kw.get("reservation_id"):
+            reservation = request.env["pms.reservation"].browse(
+                int(kw.get("reservation_id"))
+            )
+            values.update(
+                {
+                    "reservation": reservation,
+                }
+            )
+            return request.render("pms.portal_my_reservation_precheckin", values)
 
     def form_validate(self, data):
         error = dict()
         error_message = []
+        if data["mobile"]:
+            if not re.match(
+                r"^(\d{3}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?|"
+                r"\d{3}[\-\s]?\d{3}[\-\s]?\d{3})$",
+                data["mobile"],
+            ):
+                error["mobile"] = error
+                error_message.append("Invalid phone")
         if data["document_number"]:
             if data["document_type"] == "D":
                 if not re.match(r"^\d{8}[ -]?[a-zA-Z]$", data["document_number"]):
@@ -504,5 +552,4 @@ class PortalPrecheckin(CustomerPortal):
         if data["email"] and not tools.single_email_re.match(data["email"]):
             error["email"] = "error"
             error_message.append("Email format is wrong")
-
         return error, error_message
