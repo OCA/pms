@@ -1,4 +1,6 @@
-from odoo import _, http
+import re
+
+from odoo import _, fields, http, tools
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
@@ -434,7 +436,73 @@ class PortalPrecheckin(CustomerPortal):
     def form_validate(self, data):
         error = dict()
         error_message = []
-        if not data["mobile"]:
-            error["mobile"] = "error"
-            error_message.append(_("Mobile is missing."))
+        if data["document_number"]:
+            if data["document_type"] == "D":
+                if not re.match(r"^\d{8}[ -]?[a-zA-Z]$", data["document_number"]):
+                    error["document_number"] = "error"
+                    error_message.append("The DNI format is wrong")
+                letters = {
+                    0: "T",
+                    1: "R",
+                    2: "W",
+                    3: "A",
+                    4: "G",
+                    5: "M",
+                    6: "Y",
+                    7: "F",
+                    8: "P",
+                    9: "D",
+                    10: "X",
+                    11: "B",
+                    12: "N",
+                    13: "J",
+                    14: "Z",
+                    15: "S",
+                    16: "Q",
+                    17: "V",
+                    18: "H",
+                    19: "L",
+                    20: "C",
+                    21: "K",
+                    22: "E",
+                }
+                dni_number = data["document_number"][0:8]
+                dni_letter = data["document_number"][
+                    len(data["document_number"]) - 1 : len(data["document_number"])
+                ]
+                if letters.get(int(dni_number) % 23) != dni_letter:
+                    error["document_number"] = "error"
+                    error_message.append("DNI is invalid")
+
+            if data["document_type"] == "C" and not re.match(
+                r"^\d{8}[ -]?[a-zA-Z]$", data["document_number"]
+            ):
+                error["document_number"] = "error"
+                error_message.append("The Driving License format is wrong")
+            if data["document_type"] == "N" and not re.match(
+                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data["document_number"]
+            ):
+                error["document_number"] = "error"
+                error_message.append("The Spanish Residence Permit format is wrong")
+            if data["document_type"] == "X" and not re.match(
+                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data["document_number"]
+            ):
+                error["document_number"] = "error"
+                error_message.append("The European Residence Permit format is wrong")
+
+        if data["birthdate_date"] and data["birthdate_date"] > str(
+            fields.Datetime.today()
+        ):
+            error["birthdate_date"] = "error"
+            error_message.append("Birthdate must be less than today")
+        if data["document_expedition_date"] and data["document_expedition_date"] > str(
+            fields.Datetime.today()
+        ):
+            error["document_expedition_date"] = "error"
+            error_message.append("Expedition Date must be less than today")
+
+        if data["email"] and not tools.single_email_re.match(data["email"]):
+            error["email"] = "error"
+            error_message.append("Email format is wrong")
+
         return error, error_message
