@@ -28,6 +28,7 @@
                                     for="firstname"
                                 >Name</label>
                                 <input
+                                    t-att-class="error"
                                     type="text"
                                     name="firstname"
                                     t-attf-class="form-control"
@@ -66,7 +67,7 @@
                                 <input
                                     type="date"
                                     name="birthdate_date"
-                                    t-attf-class="form-control"
+                                    t-attf-class="form-control #{error.get('birthdate_date') and 'is-invalid' or ''}"
                                     t-att-value="birth_date or checkin_partner.birthdate_date"
                                 />
                             </div>
@@ -112,7 +113,7 @@
                                 <input
                                     type="text"
                                     name="document_number"
-                                    t-attf-class="form-control"
+                                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
                                     t-att-value="doc_number or checkin_partner.document_number"
                                 />
                             </div>
@@ -124,7 +125,7 @@
                                 <input
                                     type="date"
                                     name="document_expedition_date"
-                                    t-attf-class="form-control"
+                                    t-attf-class="form-control #{error.get('document_expedition_date') and 'is-invalid' or ''}"
                                     t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
                                 />
                             </div>
@@ -134,9 +135,9 @@
                                     for="mobile"
                                 >Mobile</label>
                                 <input
-                                    type="number"
+                                    type="phone"
                                     name="mobile"
-                                    t-attf-class="form-control"
+                                    t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"
                                     t-att-value="mobile or checkin_partner.mobile"
                                 />
                             </div>
@@ -145,7 +146,7 @@
                                 <input
                                     type="email"
                                     name="email"
-                                    t-attf-class="form-control"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
                                     t-att-value="email or checkin_partner.email"
                                 />
                             </div>
@@ -182,6 +183,17 @@
                         action="/my/precheckin/folio_reservation"
                         method="get"
                     >
+                        <div
+                            t-if="error_message"
+                            class="alert alert-danger"
+                            role="alert"
+                        >
+                            <t t-foreach="error_message" t-as="err"><t t-esc="err" /><br
+                                /></t>
+                        </div>
+                        <div t-if="success" class="alert alert-success" role="alert">
+                            <span>Data saved successfully!</span>
+                        </div>
                         <t
                             t-foreach="reservation.checkin_partner_ids"
                             t-as="checkin_partner"
@@ -218,7 +230,6 @@
                                                         t-att-name="'firstname-' + str(count)"
                                                         t-attf-class="form-control"
                                                         t-att-value="firstname or checkin_partner.firstname"
-                                                        t-att-id="idcheckin"
                                                     />
                                                 </div>
                                                 <div t-attf-class="form-group col-xl-6">
@@ -231,7 +242,6 @@
                                                         t-att-name="'lastname-' + str(count)"
                                                         t-attf-class="form-control"
                                                         t-att-value="lastname or checkin_partner.lastname"
-                                                        t-att-id="idcheckin"
                                                     />
                                                 </div>
                                                 <div t-attf-class="form-group col-xl-6">
@@ -293,6 +303,9 @@
                                                     >
                                                         <option value="D">DNI</option>
                                                         <option
+                                                            value="P"
+                                                        >Passport</option>
+                                                        <option
                                                             value="C"
                                                         >Driving License</option>
                                                         <option
@@ -336,7 +349,7 @@
                                                         for="mobile"
                                                     >Mobile</label>
                                                     <input
-                                                        type="number"
+                                                        type="phone"
                                                         t-att-name="'mobile-'+ str(count)"
                                                         t-attf-class="form-control"
                                                         t-att-value="mobile or checkin_partner.mobile"
@@ -416,6 +429,17 @@
                         action="/my/precheckin/folio_reservation"
                         method="get"
                     >
+                        <div
+                            t-if="error_message"
+                            class="alert alert-danger"
+                            role="alert"
+                        >
+                            <t t-foreach="error_message" t-as="err"><t t-esc="err" /><br
+                                /></t>
+                        </div>
+                        <div t-if="success" class="alert alert-success" role="alert">
+                            <span>Data saved successfully!</span>
+                        </div>
                         <t t-foreach="folio.reservation_ids" t-as="reservation">
                             <t t-set="count_reservation" t-value="0" />
                             <tr class="bg-light">
@@ -475,8 +499,7 @@
                                                             type="text"
                                                             t-att-name="'firstname-' + str(count)"
                                                             t-attf-class="form-control"
-                                                            t-att-value="firstname or checkin_partner.firstname"
-                                                            t-att-id="idcheckin"
+                                                            t-att-value="firstname or (checkin_partner.firstname)"
                                                         />
                                                     </div>
                                                     <div
@@ -491,7 +514,6 @@
                                                             t-att-name="'lastname-' + str(count)"
                                                             t-attf-class="form-control"
                                                             t-att-value="lastname or checkin_partner.lastname"
-                                                            t-att-id="idcheckin"
                                                         />
                                                     </div>
                                                     <div
@@ -563,6 +585,9 @@
                                                                 value="D"
                                                             >DNI</option>
                                                             <option
+                                                                value="P"
+                                                            >Passport</option>
+                                                            <option
                                                                 value="C"
                                                             >Driving License</option>
                                                             <option
@@ -612,9 +637,9 @@
                                                             for="mobile"
                                                         >Mobile</label>
                                                         <input
-                                                            type="number"
+                                                            type="phone"
                                                             t-att-name="'mobile-'+ str(count)"
-                                                            t-attf-class="form-control"
+                                                            t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"
                                                             t-att-value="mobile or checkin_partner.mobile"
                                                         />
                                                     </div>
