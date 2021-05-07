@@ -28,7 +28,6 @@
                                     for="firstname"
                                 >Name</label>
                                 <input
-                                    t-att-class="error"
                                     type="text"
                                     name="firstname"
                                     t-attf-class="form-control"
@@ -82,6 +81,7 @@
                                     name="gender"
                                     t-att-value="gender or checkin_partner.gender"
                                 >
+                                    <option value="">Select an option</option>
                                     <option value="female">Female</option>
                                     <option value="male">Male</option>
                                     <option value="other">Other</option>
@@ -98,6 +98,13 @@
                                     name="document_type"
                                     t-att-value="document_type or checkin_partner.document_type"
                                 >
+                                    <xpath
+                                        expr="//option[@value='I']"
+                                        position="attributes"
+                                    >
+                                        <attribute name="selected" add="True" />
+                                    </xpath>
+                                    <option value="">Select an option</option>
                                     <option value="D">DNI</option>
                                     <option value="C">Driving License</option>
                                     <option value="I">Identification Document</option>
@@ -181,7 +188,7 @@
                     <form
                         class="collapse"
                         action="/my/precheckin/folio_reservation"
-                        method="get"
+                        method="post"
                     >
                         <div
                             t-if="error_message"
@@ -280,6 +287,9 @@
                                                         t-att-value="gender or checkin_partner.gender"
                                                     >
                                                         <option
+                                                            value=""
+                                                        >Select an option</option>
+                                                        <option
                                                             value="female"
                                                         >Female</option>
                                                         <option
@@ -301,6 +311,9 @@
                                                         t-att-name="'document_type-'+ str(count)"
                                                         t-att-value="document_type or checkin_partner.document_type"
                                                     >
+                                                        <option
+                                                            value=""
+                                                        >Select an option</option>
                                                         <option value="D">DNI</option>
                                                         <option
                                                             value="P"
@@ -344,6 +357,9 @@
                                                     />
                                                 </div>
                                                 <div t-attf-class="form-group col-xl-6">
+                                                    <t t-esc="error" />
+                                                    <t t-esc="'mobile-'+str(count)" />
+
                                                     <label
                                                         class="col-form-label"
                                                         for="mobile"
@@ -351,7 +367,7 @@
                                                     <input
                                                         type="phone"
                                                         t-att-name="'mobile-'+ str(count)"
-                                                        t-attf-class="form-control"
+                                                        t-attf-class="form-control #{error.get('mobile-'+str(count)) and 'is-invalid' or ''}"
                                                         t-att-value="mobile or checkin_partner.mobile"
                                                     />
                                                 </div>
@@ -427,7 +443,7 @@
                     <form
                         class="collapse"
                         action="/my/precheckin/folio_reservation"
-                        method="get"
+                        method="post"
                     >
                         <div
                             t-if="error_message"
@@ -558,6 +574,9 @@
                                                             t-att-value="gender or checkin_partner.gender"
                                                         >
                                                             <option
+                                                                value=""
+                                                            >Select an option</option>
+                                                            <option
                                                                 value="female"
                                                             >Female</option>
                                                             <option
@@ -581,6 +600,9 @@
                                                             t-att-name="'document_type-'+ str(count)"
                                                             t-att-value="document_type or checkin_partner.document_type"
                                                         >
+                                                            <option
+                                                                value=""
+                                                            >Select an option</option>
                                                             <option
                                                                 value="D"
                                                             >DNI</option>
@@ -639,7 +661,7 @@
                                                         <input
                                                             type="phone"
                                                             t-att-name="'mobile-'+ str(count)"
-                                                            t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"
+                                                            t-attf-class="form-control #{error.get('mobile-'+str(count)) and 'is-invalid' or ''}"
                                                             t-att-value="mobile or checkin_partner.mobile"
                                                         />
                                                     </div>
