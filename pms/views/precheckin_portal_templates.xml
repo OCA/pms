@@ -75,6 +75,9 @@
                                     class="col-form-label"
                                     for="gender"
                                 >Gender</label>
+                                <div class="d-none"><p id="genderId"><t
+                                            t-esc="checkin_partner.gender"
+                                        /></p></div>
                                 <select
                                     class="form-control"
                                     id="gender"
@@ -92,18 +95,15 @@
                                     class="col-form-label"
                                     for="document_type"
                                 >Doc. type</label>
+                                <div class="d-none"><p id="docTypeId"><t
+                                            t-esc="checkin_partner.document_type"
+                                        /></p></div>
                                 <select
                                     class="form-control"
                                     id="doc_type_id"
                                     name="document_type"
                                     t-att-value="document_type or checkin_partner.document_type"
                                 >
-                                    <xpath
-                                        expr="//option[@value='I']"
-                                        position="attributes"
-                                    >
-                                        <attribute name="selected" add="True" />
-                                    </xpath>
                                     <option value="">Select an option</option>
                                     <option value="D">DNI</option>
                                     <option value="C">Driving License</option>
@@ -168,6 +168,23 @@
                 </div>
             </form>
         </t>
+        <script>
+            var select_doc_type = document.getElementById("doc_type_id")
+            var document_type_value = document.getElementById("docTypeId").textContent
+            for (let i=0;i&lt;select_doc_type.length;i++){
+                if (select_doc_type[i].value == document_type_value){
+                    select_doc_type[i].setAttribute("selected","True")
+                }
+            }
+
+            var select_gender = document.getElementById("gender")
+            var gender_value = document.getElementById("genderId").textContent
+            for (let i=0;i&lt;select_gender.length;i++){
+                if(select_gender[i].value==gender_value){
+                    select_gender[i].setAttribute("selected","True")
+                }
+            }
+        </script>
     </template>
     <template id="portal_my_reservation_precheckin" name="Precheckin Reservation">
         <t t-call="portal.portal_layout">
@@ -221,7 +238,10 @@
                                         t-att-data-target="id3"
                                         class="text-primary"
                                     >
-                                        <span class="fa fa-chevron-down fa-sm" />
+                                        <span
+                                            t-att-id="count"
+                                            class="fa fa-chevron-down fa-sm"
+                                        />
                                     </a>
 
                                     <div class="row o_portal_details">
@@ -280,9 +300,15 @@
                                                         class="col-form-label"
                                                         for="gender"
                                                     >Gender</label>
+                                                    <div class="d-none"><p
+                                                            class="gender_class"
+                                                            t-att-id="'genderId'+str(count)"
+                                                        ><t
+                                                                t-esc="checkin_partner.gender"
+                                                            /></p></div>
                                                     <select
-                                                        class="form-control"
-                                                        id="gender"
+                                                        class="form-control select_gender_class"
+                                                        t-att-id="'gender-'+ str(count)"
                                                         t-att-name="'gender-'+ str(count)"
                                                         t-att-value="gender or checkin_partner.gender"
                                                     >
@@ -305,9 +331,15 @@
                                                         class="col-form-label"
                                                         for="document_type"
                                                     >Doc. type</label>
+                                                    <div class="d-none"><p
+                                                            class="doc_type_class"
+                                                            t-att-id="'docTypeId'+str(count)"
+                                                        ><t
+                                                                t-esc="checkin_partner.document_type"
+                                                            /></p></div>
                                                     <select
-                                                        class="form-control"
-                                                        id="doc_type_id"
+                                                        class="form-control select_doc_type_class"
+                                                        t-att-id="'doc_type_id'+str(count)"
                                                         t-att-name="'document_type-'+ str(count)"
                                                         t-att-value="document_type or checkin_partner.document_type"
                                                     >
@@ -357,9 +389,6 @@
                                                     />
                                                 </div>
                                                 <div t-attf-class="form-group col-xl-6">
-                                                    <t t-esc="error" />
-                                                    <t t-esc="'mobile-'+str(count)" />
-
                                                     <label
                                                         class="col-form-label"
                                                         for="mobile"
@@ -425,6 +454,36 @@
                 </tbody>
             </t>
         </t>
+        <script>
+            let listaElementos = document.getElementsByClassName("fa-sm");
+            for(i=0; i&lt;listaElementos.length; i++){
+                let element =document.getElementById(i+1)
+                element.addEventListener('click', function(){
+                    element.classList.toggle("fa-chevron-down");
+                    element.classList.toggle("fa-chevron-up");
+                },false);
+            }
+            let selects_doc_type = document.getElementsByClassName("select_doc_type_class");
+            let doc_type_values = document.getElementsByClassName("doc_type_class");
+            for(i=0;i&lt;selects_doc_type.length;i++){
+                let doc_type_value = doc_type_values[i].textContent;
+                for(x=0;x&lt;selects_doc_type[i].length;x++){
+                    if(selects_doc_type[i][x].value == doc_type_value){
+                         selects_doc_type[i][x].setAttribute("selected","True")
+                    }
+                }
+            }
+            let selects_gender = document.getElementsByClassName("select_gender_class");
+            let gender_values = document.getElementsByClassName("gender_class");
+            for(i=0;i&lt;selects_gender.length;i++){
+                let gender_value = gender_values[i].textContent;
+                for(x=0;x&lt;selects_gender[i].length;x++){
+                    if(selects_gender[i][x].value == gender_value){
+                         selects_gender[i][x].setAttribute("selected","True")
+                    }
+                }
+            }
+        </script>
     </template>
     <template id="portal_my_folio_precheckin" name="Precheckin Folio">
         <t t-call="portal.portal_layout">
@@ -496,7 +555,10 @@
                                             t-att-data-target="id3"
                                             class="text-primary"
                                         >
-                                            <span class="fa fa-chevron-down fa-sm" />
+                                            <span
+                                                t-att-id="count"
+                                                class="fa fa-chevron-down fa-sm"
+                                            />
                                         </a>
                                         <div class="row o_portal_details">
                                             <div class="col-lg-8">
@@ -567,8 +629,14 @@
                                                             class="col-form-label"
                                                             for="gender"
                                                         >Gender</label>
+                                                        <div class="d-none"><p
+                                                                class="gender_class"
+                                                                t-att-id="'genderId'+str(count)"
+                                                            ><t
+                                                                    t-esc="checkin_partner.gender"
+                                                                /></p></div>
                                                         <select
-                                                            class="form-control"
+                                                            class="form-control select_gender_class"
                                                             id="gender"
                                                             t-att-name="'gender-'+ str(count)"
                                                             t-att-value="gender or checkin_partner.gender"
@@ -594,9 +662,15 @@
                                                             class="col-form-label"
                                                             for="document_type"
                                                         >Doc. type</label>
+                                                        <div class="d-none"><p
+                                                                class="doc_type_class"
+                                                                t-att-id="'docTypeId'+str(count)"
+                                                            ><t
+                                                                    t-esc="checkin_partner.document_type"
+                                                                /></p></div>
                                                         <select
-                                                            class="form-control"
-                                                            id="doc_type_id"
+                                                            class="form-control select_doc_type_class"
+                                                            t-att-id="'doc_type_id'+str(count)"
                                                             t-att-name="'document_type-'+ str(count)"
                                                             t-att-value="document_type or checkin_partner.document_type"
                                                         >
@@ -721,5 +795,35 @@
                 </tbody>
             </t>
         </t>
+        <script>
+            let listaElementos = document.getElementsByClassName("fa-sm");
+            for(i=0; i&lt;listaElementos.length; i++){
+                let element =document.getElementById(i+1)
+                element.addEventListener('click', function(){
+                    element.classList.toggle("fa-chevron-down")
+                    element.classList.toggle("fa-chevron-up")
+                },false);
+            }
+            let selects_doc_type = document.getElementsByClassName("select_doc_type_class");
+            let doc_type_values = document.getElementsByClassName("doc_type_class");
+            for(i=0;i&lt;selects_doc_type.length;i++){
+                let doc_type_value = doc_type_values[i].textContent;
+                for(x=0;x&lt;selects_doc_type[i].length;x++){
+                    if(selects_doc_type[i][x].value == doc_type_value){
+                         selects_doc_type[i][x].setAttribute("selected","True")
+                    }
+                }
+            }
+            let selects_gender = document.getElementsByClassName("select_gender_class");
+            let gender_values = document.getElementsByClassName("gender_class");
+            for(i=0;i&lt;selects_gender.length;i++){
+                let gender_value = gender_values[i].textContent;
+                for(x=0;x&lt;selects_gender[i].length;x++){
+                    if(selects_gender[i][x].value == gender_value){
+                         selects_gender[i][x].setAttribute("selected","True")
+                    }
+                }
+            }
+        </script>
     </template>
 </odoo>
