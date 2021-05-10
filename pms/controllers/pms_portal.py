@@ -416,11 +416,10 @@ class PortalPrecheckin(CustomerPortal):
                 "email": kw.get("email-" + str(counter)),
             }
             error, error_message = self.form_validate(kw, counter)
-            errors.update({counter: error})
+            errors.update(error)
             if error_message:
                 for e in error_message:
                     e_messages.append(e)
-
                 has_error = True
             else:
                 lastname = True if kw.get("lastname-" + str(counter)) else False
@@ -437,28 +436,20 @@ class PortalPrecheckin(CustomerPortal):
                 elif checkin.partner_id:
                     res_partner = checkin.partner_id
                     res_partner.write(values)
-
                 checkin.write(values)
             counter = counter + 1
         values = {"no_breadcrumbs": True}
 
         if has_error:
             filtered_dict = {k: v for k, v in errors.items() if v}
-            for e in filtered_dict:
-                error = filtered_dict[e]
-                values.update({"error": error})
-
+            values.update({"error": filtered_dict})
             values.update(
                 {
                     "error_message": e_messages,
                 }
             )
         else:
-            values.update(
-                {
-                    "success": True,
-                }
-            )
+            values.update({"success": True, "error": {}})
         if kw.get("folio_id"):
             folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
             values.update(
@@ -479,8 +470,7 @@ class PortalPrecheckin(CustomerPortal):
             return request.render("pms.portal_my_reservation_precheckin", values)
 
     def form_validate(self, data, counter):
-        error = dict()
-        error_message = []
+        error, error_message = self.form_document_validate(data, counter)
         keys = data.keys()
         mobile = "mobile" if "mobile" in keys else "mobile-" + str(counter)
         if data[mobile]:
@@ -491,17 +481,71 @@ class PortalPrecheckin(CustomerPortal):
             ):
                 error[mobile] = "error"
                 error_message.append("Invalid phone")
-        if data["document_number"]:
-            if not data["document_type"]:
-                error["document_type"] = "error"
+        birthdate_date = (
+            "birthdate_date"
+            if "birthdate_date" in keys
+            else "birthdate_date-" + str(counter)
+        )
+        if data[birthdate_date] and data[birthdate_date] > str(fields.Datetime.today()):
+            error[birthdate_date] = "error"
+            error_message.append("Birthdate must be less than today")
+        document_expedition_date = (
+            "document_expedition_date"
+            if "document_expedition_date" in keys
+            else "document_expedition_date-" + str(counter)
+        )
+        if data[document_expedition_date] and data[document_expedition_date] > str(
+            fields.Datetime.today()
+        ):
+            error[document_expedition_date] = "error"
+            error_message.append("Expedition Date must be less than today")
+        email = "email" if "email" in keys else "email-" + str(counter)
+        if data[email] and not tools.single_email_re.match(data[email]):
+            error[email] = "error"
+            error_message.append("Email format is wrong")
+        firstname = "firstname" if "firstname" in keys else "firstname-" + str(counter)
+        lastname = "lastname" if "lastname" in keys else "lastname-" + str(counter)
+        lastname2 = "lastname2" if "lastname2" in keys else "lastname2-" + str(counter)
+        if not data[firstname] and not data[lastname] and not data[lastname2]:
+            error[firstname] = "error"
+            error_message.append("Firstname or any lastname are not included")
+        return error, error_message
+
+    def form_document_validate(self, data, counter):
+        error = dict()
+        error_message = []
+        keys = data.keys()
+        document_number = (
+            "document_number"
+            if "document_number" in keys
+            else "document_number-" + str(counter)
+        )
+        document_type = (
+            "document_type"
+            if "document_type" in keys
+            else "document_type-" + str(counter)
+        )
+        checkin_partner_id = "id" if "id" in keys else "id-" + str(counter)
+        checkin_partner = request.env["pms.checkin.partner"].search(
+            [("id", "=", data[checkin_partner_id])]
+        )
+        partner_id = checkin_partner.partner_id.id
+        if partner_id:
+            partners = request.env["res.partner"].search(
+                [("id", "!=", str(partner_id))]
+            )
+        if data[document_number]:
+            for partner in partners:
+                if data[document_number] == partner.document_number:
+                    error[document_number] = "error"
+                    error_message.append("Document Number already exists")
+            if not data[document_type]:
+                error[document_type] = "error"
                 error_message.append("Document Type is not selected")
-            if data["document_type"] == "D":
-                if (
-                    len(data["document_number"]) == 9
-                    or len(data["document_number"]) == 10
-                ):
-                    if not re.match(r"^\d{8}[ -]?[a-zA-Z]$", data["document_number"]):
-                        error["document_number"] = "error"
+            if data[document_type] == "D":
+                if len(data[document_number]) == 9 or len(data[document_number]) == 10:
+                    if not re.match(r"^\d{8}[ -]?[a-zA-Z]$", data[document_number]):
+                        error[document_number] = "error"
                         error_message.append("The DNI format is wrong")
                     letters = {
                         0: "T",
@@ -528,52 +572,32 @@ class PortalPrecheckin(CustomerPortal):
                         21: "K",
                         22: "E",
                     }
-                    dni_number = data["document_number"][0:8]
-                    dni_letter = data["document_number"][
-                        len(data["document_number"]) - 1 : len(data["document_number"])
+                    dni_number = data[document_number][0:8]
+                    dni_letter = data[document_number][
+                        len(data[document_number]) - 1 : len(data[document_number])
                     ]
                     if letters.get(int(dni_number) % 23) != dni_letter.upper():
-                        error["document_number"] = "error"
+                        error[document_number] = "error"
                         error_message.append("DNI is invalid")
                 else:
-                    error["document_number"] = "error"
+                    error[document_number] = "error"
                     error_message.append("DNI is invalid")
-            if data["document_type"] == "C" and not re.match(
-                r"^\d{8}[ -]?[a-zA-Z]$", data["document_number"]
+            if data[document_type] == "C" and not re.match(
+                r"^\d{8}[ -]?[a-zA-Z]$", data[document_number]
             ):
-                error["document_number"] = "error"
+                error[document_number] = "error"
                 error_message.append("The Driving License format is wrong")
-            if data["document_type"] == "N" and not re.match(
-                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data["document_number"]
+            if data[document_type] == "N" and not re.match(
+                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data[document_number]
             ):
-                error["document_number"] = "error"
+                error[document_number] = "error"
                 error_message.append("The Spanish Residence Permit format is wrong")
-            if data["document_type"] == "X" and not re.match(
-                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data["document_number"]
+            if data[document_type] == "X" and not re.match(
+                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data[document_number]
             ):
-                error["document_number"] = "error"
+                error[document_number] = "error"
                 error_message.append("The European Residence Permit format is wrong")
-        elif data["document_type"]:
-            error["document_number"] = "error"
+        elif data[document_type]:
+            error[document_number] = "error"
             error_message.append("Document Number not entered")
-
-        if data["birthdate_date"] and data["birthdate_date"] > str(
-            fields.Datetime.today()
-        ):
-            error["birthdate_date"] = "error"
-            error_message.append("Birthdate must be less than today")
-        if data["document_expedition_date"] and data["document_expedition_date"] > str(
-            fields.Datetime.today()
-        ):
-            error["document_expedition_date"] = "error"
-            error_message.append("Expedition Date must be less than today")
-
-        if data["email"] and not tools.single_email_re.match(data["email"]):
-            error["email"] = "error"
-            error_message.append("Email format is wrong")
-
-        if not data["firstname"] and not data["lastname"] and not data["lastname2"]:
-            error["firstanme"] = "error"
-            error_message.append("Firstname or any lastname are not included")
-
         return error, error_message
