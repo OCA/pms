@@ -3,4 +3,4 @@
 from . import models
 from . import wizards
 from . import controllers
-from .init_hook import post_init_hook
+from .init_hook import pre_init_hook
