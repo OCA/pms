@@ -8,11 +8,11 @@
         <field name="inherit_id" ref="pms.pms_property_views_form" />
         <field name="arch" type="xml">
             <xpath expr="//page[@name='property_settings']" position="inside">
-                    <group name="property_data" string="Property data">
-                        <field name="police_type" />
-                        <field name="police_number" />
-                        <field name="police_user" />
-                        <field name="police_pass" />
+                    <group name="property_data" string="Settings of guest information">
+                        <field name="institution" />
+                        <field name="institution_property_id" />
+                        <field name="institution_user" />
+                        <field name="institution_password" />
                     </group>
             </xpath>
         </field>
