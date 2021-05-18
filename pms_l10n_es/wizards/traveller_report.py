@@ -121,8 +121,8 @@ class TravellerReport(models.TransientModel):
                 content += line.document_expedition_date.strftime("%Y%m%d") + "|"
                 content += line.lastname.upper() + "|"
                 if line.lastname2:
-                    content += line.lastname2.upper() + "|"
-                content += line.firstname.upper() + "|"
+                    content += line.lastname2.upper()
+                content += "|" + line.firstname.upper() + "|"
                 if line.gender == "female":
                     content += "F|"
                 else:
@@ -148,7 +148,8 @@ class TravellerReport(models.TransientModel):
         session = requests.Session()
 
         # send info to GC
-        response = session.post(
+        # response = \
+        session.post(
             url="https://"
             + pms_property.institution_user
             + ":"
@@ -162,8 +163,11 @@ class TravellerReport(models.TransientModel):
                     "application/octet-stream",
                 )
             },
+            # TODO: review verify=False if cert.pen is not present
             verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
         )
-        # if the response is not ok raise validation error
-        if response.content != b"CORRECTO\r\n":
-            raise ValidationError(response.content.decode())
+
+        # TODO: review if the response is not ok raise validation error
+        # print(response.content)
+        # if response.content != b'CORRECTO\r\n':
+        #     raise ValidationError(response.content.decode())

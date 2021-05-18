@@ -133,7 +133,6 @@ class PmsCheckinPartner(models.Model):
         )
         mandatory_fields.extend(
             [
-                "lastname2",
                 "birthdate_date",
                 "document_number",
                 "document_type",
