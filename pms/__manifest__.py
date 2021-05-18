@@ -84,5 +84,5 @@
         "static/src/xml/pms_base_templates.xml",
         "static/src/xml/reservation_group_button_views.xml",
     ],
-    "post_init_hook": "post_init_hook",
+    "pre_init_hook": "pre_init_hook",
 }
