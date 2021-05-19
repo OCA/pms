@@ -33,9 +33,11 @@
                         <group class="">
                             <field name="pms_property_ids" widget="many2many_tags" />
                             <field
-                                name="availability_plan_id"
+                                name="availability_plan_ids"
                                 class="mr-5"
                                 string="Availability Plan"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
                                 attrs="{'invisible':['|','|',('massive_changes_on','=','pricelist'), ('avail_readonly','=',True),
                                                              ('pricelist_readonly', '=', True)],
                                 'required': [('massive_changes_on','=','availability_plan')]}"
@@ -43,14 +45,21 @@
                             />
 
                             <field
-                                name="pricelist_id"
+                                name="pricelist_ids"
                                 string="Pricelist"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
                                 attrs="{'invisible':['|','|',('massive_changes_on','=','availability_plan'),
                                 ('pricelist_readonly','=',True), ('pricelist_readonly', '=', True)],
                                  'required': [('massive_changes_on','=','pricelist')]}"
                                 domain="[('id', 'in', allowed_pricelist_ids), '|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
                             />
-                            <field name="room_type_id" default_focus="1" />
+                            <field
+                                name="room_type_ids"
+                                default_focus="1"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
+                            />
                         </group>
 
                     </div>
