@@ -99,10 +99,12 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 self.env["pms.massive.changes.wizard"].create(
                     {
                         "massive_changes_on": "availability_plan",
-                        "availability_plan_id": self.test_availability_plan.id,
+                        "availability_plan_ids": [
+                            (6, 0, [self.test_availability_plan.id])
+                        ],
                         "start_date": fields.date.today(),
                         "end_date": fields.date.today() + datetime.timedelta(days=days),
-                        "room_type_id": self.test_room_type_double.id,
+                        "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
                         "pms_property_ids": [self.test_property.id],
                     }
                 ).apply_massive_changes()
@@ -137,7 +139,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "availability_plan",
-                "availability_plan_id": self.test_availability_plan.id,
+                "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
                 "start_date": date_from,
                 "end_date": date_to,
                 "pms_property_ids": [self.test_property.id],
@@ -164,10 +166,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
         vals = {
             "massive_changes_on": "availability_plan",
-            "availability_plan_id": self.test_availability_plan.id,
+            "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
             "start_date": date_from,
             "end_date": date_to,
-            "room_type_id": self.test_room_type_double.id,
+            "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
             "quota": 50,
             "max_avail": 5,
             "min_stay": 10,
@@ -185,10 +187,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
         # ASSERT
         del vals["massive_changes_on"]
-        del vals["availability_plan_id"]
+        del vals["availability_plan_ids"]
         del vals["start_date"]
         del vals["end_date"]
-        del vals["room_type_id"]
+        del vals["room_type_ids"]
         del vals["pms_property_ids"]
         for key in vals:
             with self.subTest(k=key):
@@ -221,8 +223,8 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         wizard = self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "availability_plan",
-                "availability_plan_id": self.test_availability_plan.id,
-                "room_type_id": self.test_room_type_double.id,
+                "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
+                "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
                 "start_date": date_from,
                 "end_date": date_to,
                 "pms_property_ids": [self.test_property.id],
@@ -276,10 +278,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
         vals_wizard = {
             "massive_changes_on": "availability_plan",
-            "availability_plan_id": self.test_availability_plan.id,
+            "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
             "start_date": date,
             "end_date": date,
-            "room_type_id": self.test_room_type_double.id,
+            "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
             "apply_max_avail": True,
             "max_avail": 2,
             "pms_property_ids": [self.test_property.id],
@@ -318,10 +320,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 self.env["pms.massive.changes.wizard"].create(
                     {
                         "massive_changes_on": "pricelist",
-                        "pricelist_id": self.test_pricelist.id,
+                        "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
                         "start_date": fields.date.today(),
                         "end_date": fields.date.today() + datetime.timedelta(days=days),
-                        "room_type_id": self.test_room_type_double.id,
+                        "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
                         "pms_property_ids": [self.test_property.id],
                     }
                 ).apply_massive_changes()
@@ -359,7 +361,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "pricelist",
-                "pricelist_id": self.test_pricelist.id,
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
                 "start_date": date_from,
                 "end_date": date_to,
                 "pms_property_ids": [self.test_property.id],
@@ -402,10 +404,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "pricelist",
-                "pricelist_id": self.test_pricelist.id,
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
                 "start_date": date_from,
                 "end_date": date_to,
-                "room_type_id": self.test_room_type_double.id,
+                "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
                 "price": price,
                 "min_quantity": min_quantity,
                 "pms_property_ids": [self.test_property.id],
@@ -446,8 +448,8 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         wizard = self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "pricelist",
-                "pricelist_id": self.test_pricelist.id,
-                "room_type_id": self.test_room_type_double.id,
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
                 "start_date": date_from,
                 "end_date": date_to,
                 "pms_property_ids": [self.test_property.id],
@@ -482,4 +484,108 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                     pricelist_items[index].date_start_overnight.timetuple()[6] == index
                     and test_case[index],
                     "Rule not created on correct day of week",
+                )
+
+    @freeze_time("2025-12-01")
+    def test_several_availability_plan(self):
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = date_from + datetime.timedelta(days=6)
+        self.test_availability_plan_2 = self.env["pms.availability.plan"].create(
+            {
+                "name": "Second availability plan for TEST",
+                "pms_pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+            }
+        )
+
+        wizard = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "availability_plan_ids": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.test_availability_plan.id,
+                            self.test_availability_plan_2.id,
+                        ],
+                    )
+                ],
+                "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+            }
+        )
+
+        availability_plan_ids = [
+            self.test_availability_plan.id,
+            self.test_availability_plan_2.id,
+        ]
+        for avail_plan_id in wizard["availability_plan_ids"].ids:
+            with self.subTest(k=avail_plan_id):
+                self.assertIn(
+                    avail_plan_id,
+                    availability_plan_ids,
+                    "Availability plan has not been write ",
+                )
+
+    @freeze_time("2025-01-01")
+    def test_several_pricelists(self):
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = date_from + datetime.timedelta(days=6)
+        self.test_pricelist_2 = self.env["product.pricelist"].create(
+            {
+                "name": "test pricelist 2",
+            }
+        )
+
+        wizard = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [
+                    (6, 0, [self.test_pricelist.id, self.test_pricelist_2.id])
+                ],
+                "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+            }
+        )
+
+        pricelist_ids = [self.test_pricelist.id, self.test_pricelist_2.id]
+        for pricelist_id in wizard["pricelist_ids"].ids:
+            with self.subTest(k=pricelist_id):
+                self.assertIn(
+                    pricelist_id, pricelist_ids, "Pricelist has not been write "
+                )
+
+    @freeze_time("2025-02-01")
+    def test_several_room_types(self):
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = date_from + datetime.timedelta(days=6)
+        wizard = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "room_type_ids": [
+                    (
+                        6,
+                        0,
+                        [self.test_room_type_double.id, self.test_room_type_double.id],
+                    )
+                ],
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+            }
+        )
+
+        room_type_ids = [self.test_room_type_double.id, self.test_room_type_double.id]
+        for room_type_id in wizard["room_type_ids"].ids:
+            with self.subTest(k=room_type_id):
+                self.assertIn(
+                    room_type_id, room_type_ids, "Room type has not been write "
                 )
