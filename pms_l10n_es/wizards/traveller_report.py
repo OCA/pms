@@ -163,11 +163,11 @@ class TravellerReport(models.TransientModel):
                     "application/octet-stream",
                 )
             },
-            # TODO: review verify=False if cert.pen is not present
+            # TODO: review download file cert.pem
             verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
         )
 
-        # TODO: review if the response is not ok raise validation error
+        # TODO: review save log queue (oca/queue)
         # print(response.content)
         # if response.content != b'CORRECTO\r\n':
         #     raise ValidationError(response.content.decode())
