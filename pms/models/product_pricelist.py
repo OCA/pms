@@ -2,7 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -136,6 +137,27 @@ class ProductPricelist(models.Model):
             )
         return items
 
+    @api.constrains("pricelist_type", "item_ids", "pms_property_ids")
+    def _check_pricelist_type(self):
+        for record in self:
+            if record.item_ids:
+                for item in record.item_ids:
+                    days_diff = (
+                        item.date_end_overnight - item.date_start_overnight
+                    ).days
+                    if record.pricelist_type == "daily" and (
+                        item.compute_price != "fixed"
+                        or len(record.pms_property_ids) != 1
+                        or days_diff > 1
+                    ):
+                        raise ValidationError(
+                            _(
+                                "Daily Plan must have fixed price, "
+                                "only one property and its items must be daily"
+                            )
+                        )
+
+    # Action methods
     # Constraints and onchanges
     # @api.constrains("pricelist_type", "pms_property_ids")
     # def _check_pricelist_type_property_ids(self):

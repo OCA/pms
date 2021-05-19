@@ -1,5 +1,7 @@
 import datetime
 
+from freezegun import freeze_time
+
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import common, tagged
 
@@ -197,3 +199,99 @@ class TestPmsPricelist(common.SavepointCase):
                     "availability_plan_id": self.availability_plan.id,
                 }
             )
+
+    @freeze_time("2000-01-01")
+    def test_pricelist_daily_failed(self):
+        self.create_common_scenario()
+        test_cases = [
+            {
+                "compute_price": "fixed",
+                "pms_property_ids": [self.property1.id, self.property2.id],
+                "date_start_overnight": datetime.datetime.now(),
+                "date_end_overnight": datetime.datetime.today()
+                + datetime.timedelta(days=1),
+            },
+            {
+                "compute_price": "fixed",
+                "pms_property_ids": False,
+                "date_start_overnight": datetime.datetime.now(),
+                "date_end_overnight": datetime.datetime.today()
+                + datetime.timedelta(days=1),
+            },
+            {
+                "compute_price": "percentage",
+                "pms_property_ids": [self.property1.id],
+                "date_start_overnight": datetime.datetime.now(),
+                "date_end_overnight": datetime.datetime.today()
+                + datetime.timedelta(days=1),
+            },
+            {
+                "compute_price": "percentage",
+                "pms_property_ids": [self.property1.id, self.property2.id],
+                "date_start_overnight": datetime.datetime.now(),
+                "date_end_overnight": datetime.datetime.today()
+                + datetime.timedelta(days=1),
+            },
+            {
+                "compute_price": "percentage",
+                "pms_property_ids": False,
+                "date_start_overnight": datetime.datetime.now(),
+                "date_end_overnight": datetime.datetime.today()
+                + datetime.timedelta(days=1),
+            },
+            {
+                "compute_price": "fixed",
+                "pms_property_ids": [self.property1.id],
+                "date_start_overnight": datetime.datetime.now(),
+                "date_end_overnight": datetime.datetime.today()
+                + datetime.timedelta(days=3),
+            },
+        ]
+
+        for tc in test_cases:
+            with self.subTest(k=tc):
+                with self.assertRaises(ValidationError):
+                    self.room_type.pms_property_ids = tc["pms_property_ids"]
+                    item = self.env["product.pricelist.item"].create(
+                        {
+                            "pms_property_ids": tc["pms_property_ids"],
+                            "compute_price": tc["compute_price"],
+                            "applied_on": "0_product_variant",
+                            "product_id": self.room_type.product_id.id,
+                            "date_start_overnight": tc["date_start_overnight"],
+                            "date_end_overnight": tc["date_end_overnight"],
+                        }
+                    )
+                    self.pricelist_test = self.env["product.pricelist"].create(
+                        {
+                            "name": "Pricelist test",
+                            "pricelist_type": "daily",
+                            "pms_property_ids": tc["pms_property_ids"],
+                            "item_ids": [item.id],
+                        }
+                    )
+
+    @freeze_time("2020-01-01")
+    def test_pricelist_daily(self):
+        self.create_common_scenario()
+        self.room_type.pms_property_ids = (self.property1.id,)
+        item = self.env["product.pricelist.item"].create(
+            {
+                "pms_property_ids": [self.property1.id],
+                "compute_price": "fixed",
+                "applied_on": "0_product_variant",
+                "product_id": self.room_type.product_id.id,
+                "date_start_overnight": datetime.datetime.now(),
+                "date_end_overnight": datetime.datetime.today()
+                + datetime.timedelta(days=1),
+            }
+        )
+        self.pricelist_test = self.env["product.pricelist"].create(
+            {
+                "name": "Pricelist test",
+                "pricelist_type": "daily",
+                "pms_property_ids": [self.property1.id],
+                "item_ids": [item.id],
+            }
+        )
+        self.assertTrue(self.pricelist_test, "Pricelist not created.")
