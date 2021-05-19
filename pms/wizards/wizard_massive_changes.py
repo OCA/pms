@@ -24,18 +24,23 @@ class AvailabilityWizard(models.TransientModel):
             ("pricelist", "Pricelist"),
             ("availability_plan", "Availability Plan"),
         ],
-        required=True,
-        default="availability_plan",
+        default=lambda self: "availability_plan"
+        if self._context.get("availability_plan_ids")
+        else "pricelist"
+        if self._context.get("pricelist_ids")
+        else "availability_plan",
     )
-    availability_plan_id = fields.Many2one(
-        string="Availability Plan to apply massive changes",
+
+    availability_plan_ids = fields.Many2many(
         comodel_name="pms.availability.plan",
+        string="Availability Plan to apply massive changes",
         check_pms_properties=True,
         # can be setted by context from availability plan detail
     )
-    pricelist_id = fields.Many2one(
-        string="Pricelist to apply massive changes",
+
+    pricelist_ids = fields.Many2many(
         comodel_name="product.pricelist",
+        string="Pricelist to apply massive changes",
         check_pms_properties=True,
     )
     allowed_pricelist_ids = fields.One2many(
@@ -51,9 +56,10 @@ class AvailabilityWizard(models.TransientModel):
         string="To",
         required=True,
     )
-    room_type_id = fields.Many2one(
-        string="Room Type",
+
+    room_type_ids = fields.Many2many(
         comodel_name="pms.room.type",
+        string="Room Type",
         check_pms_properties=True,
     )
     price = fields.Float(string="Price")
@@ -210,10 +216,10 @@ class AvailabilityWizard(models.TransientModel):
     )
 
     def _default_avail_readonly(self):
-        return True if self._context.get("availability_plan_id") else False
+        return True if self._context.get("availability_plan_ids") else False
 
     def _default_pricelist_readonly(self):
-        return True if self._context.get("pricelist_id") else False
+        return True if self._context.get("pricelist_ids") else False
 
     @api.depends("massive_changes_on")
     def _compute_allowed_pricelist_ids(self):
@@ -227,7 +233,7 @@ class AvailabilityWizard(models.TransientModel):
     @api.depends(
         "start_date",
         "end_date",
-        "room_type_id",
+        "room_type_ids",
         "apply_on_monday",
         "apply_on_tuesday",
         "apply_on_wednesday",
@@ -236,7 +242,7 @@ class AvailabilityWizard(models.TransientModel):
         "apply_on_saturday",
         "apply_on_sunday",
         "apply_on_all_week",
-        "availability_plan_id",
+        "availability_plan_ids",
         "apply_quota",
         "apply_max_avail",
         "apply_min_stay",
@@ -258,20 +264,21 @@ class AvailabilityWizard(models.TransientModel):
     )
     def _compute_rules_to_overwrite(self):
         for record in self:
-
-            if not record.availability_plan_id and self._context.get(
-                "availability_plan_id"
+            if not record.availability_plan_ids and self._context.get(
+                "availability_plan_ids"
             ):
-                record.availability_plan_id = self._context.get("availability_plan_id")
+                record.availability_plan_ids = [
+                    (4, self._context.get("availability_plan_ids"))
+                ]
                 record.massive_changes_on = "availability_plan"
 
-            if record.availability_plan_id:
+            if record.availability_plan_ids:
                 domain = [
-                    ("availability_plan_id", "=", record.availability_plan_id.id),
+                    ("availability_plan_id", "in", record.availability_plan_ids.ids),
                 ]
 
-                if record.room_type_id:
-                    domain.append(("room_type_id", "=", record.room_type_id.id))
+                if record.room_type_ids:
+                    domain.append(("room_type_id", "in", record.room_type_ids.ids))
                 if record.start_date:
                     domain.append(("date", ">=", record.start_date))
                 if record.end_date:
@@ -284,7 +291,6 @@ class AvailabilityWizard(models.TransientModel):
                     else:
                         domain_overwrite = expression.OR(domain_overwrite)
                         domain.extend(domain_overwrite)
-
                 week_days_to_apply = (
                     record.apply_on_monday,
                     record.apply_on_tuesday,
@@ -314,7 +320,7 @@ class AvailabilityWizard(models.TransientModel):
     @api.depends(
         "start_date",
         "end_date",
-        "room_type_id",
+        "room_type_ids",
         "apply_on_monday",
         "apply_on_tuesday",
         "apply_on_wednesday",
@@ -323,18 +329,17 @@ class AvailabilityWizard(models.TransientModel):
         "apply_on_saturday",
         "apply_on_sunday",
         "apply_on_all_week",
-        "pricelist_id",
+        "pricelist_ids",
     )
     def _compute_pricelist_items_to_overwrite(self):
         for record in self:
-
-            if not record.pricelist_id and self._context.get("pricelist_id"):
-                record.pricelist_id = self._context.get("pricelist_id")
+            if not record.pricelist_ids and self._context.get("pricelist_ids"):
+                record.pricelist_ids = [(4, self._context.get("pricelist_ids"))]
                 record.massive_changes_on = "pricelist"
 
-            if record.pricelist_id:
+            if record.pricelist_ids:
                 domain = [
-                    ("pricelist_id", "=", record.pricelist_id.id),
+                    ("pricelist_id", "in", record.pricelist_ids.ids),
                     "|",
                     ("pms_property_ids", "=", False),
                     ("pms_property_ids", "in", record.pms_property_ids.ids),
@@ -344,16 +349,21 @@ class AvailabilityWizard(models.TransientModel):
                     domain.append(("date_start_overnight", ">=", record.start_date))
                 if record.end_date:
                     domain.append(("date_end_overnight", "<=", record.end_date))
-
-                if record.room_type_id:
+                if record.room_type_ids:
+                    room_type_ids = record.room_type_ids.ids
+                    product_ids = (
+                        self.env["pms.room.type"]
+                        .search([("id", "in", room_type_ids)])
+                        .mapped("product_id")
+                        .ids
+                    )
                     domain.append(
                         (
-                            "product_tmpl_id",
-                            "=",
-                            record.room_type_id.product_id.product_tmpl_id.id,
+                            "product_id",
+                            "in",
+                            product_ids,
                         )
                     )
-
                 week_days_to_apply = (
                     record.apply_on_monday,
                     record.apply_on_tuesday,
@@ -445,6 +455,7 @@ class AvailabilityWizard(models.TransientModel):
             )
 
             # dates between start and end (both included)
+            items = []
             for date in [
                 record.start_date + datetime.timedelta(days=x)
                 for x in range(0, (record.end_date - record.start_date).days + 1)
@@ -456,7 +467,7 @@ class AvailabilityWizard(models.TransientModel):
                 ):
                     continue
 
-                if not record.room_type_id:
+                if not record.room_type_ids:
                     room_types = self.env["pms.room.type"].search(
                         [
                             "|",
@@ -465,119 +476,129 @@ class AvailabilityWizard(models.TransientModel):
                         ]
                     )
                 else:
-                    room_types = [record.room_type_id]
-                for room_type in room_types:
-                    for pms_property in record.pms_property_ids:
+                    room_types = record.room_type_ids
+                for pms_property in record.pms_property_ids:
+                    for room_type in room_types:
                         if record.massive_changes_on == "pricelist":
-
-                            self.env["product.pricelist.item"].create(
-                                {
-                                    "pricelist_id": record.pricelist_id.id,
-                                    "date_start_overnight": date,
-                                    "date_end_overnight": date,
-                                    "compute_price": "fixed",
-                                    "applied_on": "0_product_variant",
-                                    "product_id": room_type.product_id.id,
-                                    "fixed_price": record.price,
-                                    "min_quantity": record.min_quantity,
-                                    "pms_property_ids": [pms_property.id],
-                                }
-                            )
-                        else:
-                            avail_plan_id = record.availability_plan_id.id
-                            vals = {}
-                            vals.update(
-                                {"min_stay": record.min_stay}
-                                if record.apply_min_stay
-                                else {}
-                            )
-                            vals.update(
-                                {"min_stay_arrival": record.min_stay_arrival}
-                                if record.apply_min_stay_arrival
-                                else {}
-                            )
-                            vals.update(
-                                {"max_stay": record.max_stay}
-                                if record.apply_max_stay
-                                else {}
-                            )
-
-                            vals.update(
-                                {"max_stay_arrival": record.max_stay_arrival}
-                                if record.apply_max_stay_arrival
-                                else {}
-                            )
-                            vals.update(
-                                {"quota": record.quota} if record.apply_quota else {}
-                            )
-                            vals.update(
-                                {"max_avail": record.max_avail}
-                                if record.apply_max_avail
-                                else {}
-                            )
-
-                            vals.update(
-                                {"closed": record.closed} if record.apply_closed else {}
-                            )
-                            vals.update(
-                                {"closed_arrival": record.closed_arrival}
-                                if record.apply_closed_arrival
-                                else {}
-                            )
-                            vals.update(
-                                {"closed_departure": record.closed_departure}
-                                if record.apply_closed_departure
-                                else {}
-                            )
-
-                            if date in record.rules_to_overwrite.mapped(
-                                "date"
-                            ) and room_type in record.rules_to_overwrite.mapped(
-                                "room_type_id"
-                            ):
-
-                                overwrite = record.rules_to_overwrite.search(
-                                    [
-                                        ("room_type_id", "=", room_type.id),
-                                        ("date", "=", date),
-                                    ]
-                                )
-                                overwrite.write(vals)
-                            else:
-                                self.env["pms.availability.plan.rule"].create(
+                            for pricelist in record.pricelist_ids:
+                                pricelist_item = self.env[
+                                    "product.pricelist.item"
+                                ].create(
                                     {
-                                        "availability_plan_id": avail_plan_id,
-                                        "date": date,
-                                        "room_type_id": room_type.id,
-                                        "quota": record.quota,
-                                        "max_avail": record.max_avail,
-                                        "min_stay": record.min_stay,
-                                        "min_stay_arrival": record.min_stay_arrival,
-                                        "max_stay": record.max_stay,
-                                        "max_stay_arrival": record.max_stay_arrival,
-                                        "closed": record.closed,
-                                        "closed_arrival": record.closed_arrival,
-                                        "closed_departure": record.closed_departure,
-                                        "pms_property_id": pms_property.id,
+                                        "pricelist_id": pricelist.id,
+                                        "date_start_overnight": date,
+                                        "date_end_overnight": date,
+                                        "compute_price": "fixed",
+                                        "applied_on": "0_product_variant",
+                                        "product_id": room_type.product_id.id,
+                                        "fixed_price": record.price,
+                                        "min_quantity": record.min_quantity,
+                                        "pms_property_ids": [pms_property.id],
                                     }
                                 )
+                                items.append(pricelist_item.id)
+                        else:
+                            for avail_plan_id in record.availability_plan_ids:
+                                vals = {}
+                                vals.update(
+                                    {"min_stay": record.min_stay}
+                                    if record.apply_min_stay
+                                    else {}
+                                )
+                                vals.update(
+                                    {"min_stay_arrival": record.min_stay_arrival}
+                                    if record.apply_min_stay_arrival
+                                    else {}
+                                )
+                                vals.update(
+                                    {"max_stay": record.max_stay}
+                                    if record.apply_max_stay
+                                    else {}
+                                )
+
+                                vals.update(
+                                    {"max_stay_arrival": record.max_stay_arrival}
+                                    if record.apply_max_stay_arrival
+                                    else {}
+                                )
+                                vals.update(
+                                    {"quota": record.quota}
+                                    if record.apply_quota
+                                    else {}
+                                )
+                                vals.update(
+                                    {"max_avail": record.max_avail}
+                                    if record.apply_max_avail
+                                    else {}
+                                )
+
+                                vals.update(
+                                    {"closed": record.closed}
+                                    if record.apply_closed
+                                    else {}
+                                )
+                                vals.update(
+                                    {"closed_arrival": record.closed_arrival}
+                                    if record.apply_closed_arrival
+                                    else {}
+                                )
+                                vals.update(
+                                    {"closed_departure": record.closed_departure}
+                                    if record.apply_closed_departure
+                                    else {}
+                                )
+
+                                if date in record.rules_to_overwrite.mapped(
+                                    "date"
+                                ) and room_type in record.rules_to_overwrite.mapped(
+                                    "room_type_id"
+                                ):
+                                    overwrite = record.rules_to_overwrite.search(
+                                        [
+                                            ("room_type_id", "=", room_type.id),
+                                            ("date", "=", date),
+                                        ]
+                                    )
+                                    overwrite.write(vals)
+                                    items.append(overwrite.id)
+                                else:
+                                    plan_rule = self.env[
+                                        "pms.availability.plan.rule"
+                                    ].create(
+                                        {
+                                            "availability_plan_id": avail_plan_id.id,
+                                            "date": date,
+                                            "room_type_id": room_type.id,
+                                            "quota": record.quota,
+                                            "max_avail": record.max_avail,
+                                            "min_stay": record.min_stay,
+                                            "min_stay_arrival": record.min_stay_arrival,
+                                            "max_stay": record.max_stay,
+                                            "max_stay_arrival": record.max_stay_arrival,
+                                            "closed": record.closed,
+                                            "closed_arrival": record.closed_arrival,
+                                            "closed_departure": record.closed_departure,
+                                            "pms_property_id": pms_property.id,
+                                        }
+                                    )
+                                    items.append(plan_rule.id)
+            action = {}
             if (
                 record.massive_changes_on == "pricelist"
                 and not record.pricelist_readonly
             ):
-                action = self.env.ref("product.product_pricelist_action2").read()[0]
-                action["views"] = [
-                    (self.env.ref("pms.product_pricelist_view_form").id, "form")
-                ]
-                action["res_id"] = record.pricelist_id.id
-                return action
+                action = {
+                    "view": self.env.ref("pms.product_pricelist_item_action2").read()[0]
+                }
+
             if (
                 record.massive_changes_on == "availability_plan"
                 and not record.avail_readonly
             ):
-                action = self.env.ref("pms.availability_action").read()[0]
-                action["views"] = [
-                    (self.env.ref("pms.availability_view_form").id, "form")
-                ]
-                action["res_id"] = record.availability_plan_id.id
-                return action
+                action = {
+                    "view": self.env.ref(
+                        "pms.availability_plan_rule_view_tree_action"
+                    ).read()[0]
+                }
+            action["view"]["domain"] = [("id", "in", items)]
+            return action["view"]
