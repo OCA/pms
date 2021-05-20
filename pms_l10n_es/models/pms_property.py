@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class PmsProperty(models.Model):
@@ -27,3 +27,30 @@ class PmsProperty(models.Model):
         string="Institution password",
         help="Password provided by institution to send the data.",
     )
+    sequence_id = fields.Many2one("ir.sequence")
+
+    # ORM Overrides
+    @api.model
+    def create(self, vals):
+        result = super(PmsProperty, self).create(vals)
+        result["sequence_id"] = self.env["ir.sequence"].create(
+            {
+                "name": "sequence for property: " + result["name"],
+                "code": "property." + str(result.id),
+                "padding": 3,
+            }
+        )
+        return result
+
+    def write(self, vals):
+        result = super(PmsProperty, self).write(vals)
+        for record in self:
+            if not record.sequence_id:
+                record.sequence_id = self.env["ir.sequence"].create(
+                    {
+                        "name": "sequence for property: " + result["name"],
+                        "code": "property." + str(result.id),
+                        "padding": 3,
+                    }
+                )
+        return result
