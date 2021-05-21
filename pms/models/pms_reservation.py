@@ -1312,6 +1312,12 @@ class PmsReservation(models.Model):
         self.ensure_one()
         return self.folio_id.action_pay()
 
+    def action_send_email(self):
+        for record in self:
+            if record.state == "confirm":
+                template = self.env.ref("pms.reservation_confirm_email")
+                template.send_mail(self.id)
+
     def open_reservation_wizard(self):
         rooms_available = self.env["pms.availability.plan"].rooms_available(
             checkin=self.checkin,

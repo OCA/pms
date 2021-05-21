@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+   <data noupdate="0">
+         <record id="reservation_confirm_email" model="mail.template">
+             <field name="name">Confirmed Reservation</field>
+             <field name="model_id" ref="pms.model_pms_reservation" />
+             <field
+                name="subject"
+            >${object.pms_property_id.name} from ${object.company_id.name} has confirmed your reservation</field>
+             <field
+                name="email_from"
+            >"${object.company_id.name | safe}" &lt;${(object.company_id.email or user.email) | safe}&gt;</field>
+             <field name="email_to">${object.partner_id.email}</field>
+             <field name="lang">${object.lang}</field>
+             <field name="auto_delete" eval="True" />
+             <field name="body_html" type="html">
+                  <div class="container">
+                 <h1>${object.pms_property_id.name}</h1>
+            <div class="row">
+                <div class="col-sm-4">
+
+                    <t t-if="object.pms_property_id.partner_id.street">
+
+                       <p>${object.pms_property_id.partner_id.street}</p>
+                    </t>
+                    <p>${object.pms_property_id.partner_id.zip}</p>
+                    <p>${object.pms_property_id.partner_id.city},</p>
+                    <p>${object.pms_property_id.partner_id.country_id.name}</p>
+                </div>
+
+            </div>
+                 <div class="row" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    <p>
+                        Dear ${object.partner_id.name},
+                        <br />
+                        Thank you for your reservation.
+
+                    </p>
+                    <p>
+                        Here is your confirmation code: <b>${object.name}</b>.
+                    Keep this code for any question about your booking order.
+                    </p>
+                    <p>You can find the reservation details below:</p>
+                </div>
+            </div>
+                        <div class="row table-responsive" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Room Type</th>
+                                <th scope="col">Checkin</th>
+                                <th scope="col">Nights</th>
+                                <th scope="col">
+                                    Price
+                                    <t t-esc="object.currency_id.name" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <tr>
+                                    <td>
+                                        ${object.room_type_id.name}
+
+                                    </td>
+                                    <td>
+                                        ${object.checkin}
+
+                                    </td>
+                                    <td>
+                                        ${object.nights}
+                                    </td>
+                                    <td>
+                                        ${object.price_total}
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <div class="row" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    You can do your chekin online in
+                    <a href="${object.get_portal_url()}">portal</a>
+                </div>
+            </div>
+            <div class="row" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    If you have any questions, please do not hesitate to contact with
+                    the property's staff.
+                    <br />
+                    Looking forward to seeing you at our property,
+                    <br />
+                    Best regards.
+                </div>
+            </div>
+                 <div class="row" style="padding-top: 20px;">
+                <div class="col-sm-12">
+                    Privacy Policy: We use your Personal Information only for managing
+                    your reservation. By using the property, you
+                agree to the collection and use of information in accordance with this
+                    policy.
+                </div>
+            </div>
+
+                 </div>
+            </field>
+        </record>
+    </data>
+</odoo>
