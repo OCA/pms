@@ -64,6 +64,7 @@ class PmsReservationLine(models.Model):
         string="State",
         help="State of the reservation line.",
         related="reservation_id.state",
+        store=True,
     )
     price = fields.Float(
         string="Price",

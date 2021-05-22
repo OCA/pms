@@ -38,7 +38,7 @@ class WizardPaymentFolio(models.TransientModel):
         compute="_compute_allowed_method_ids",
     )
     amount = fields.Float(string="Amount", digits=("Product Price"))
-    date = fields.Date(String="Date", required=True, default=fields.Date.context_today)
+    date = fields.Date(string="Date", required=True, default=fields.Date.context_today)
     partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
 
     @api.depends("folio_id")

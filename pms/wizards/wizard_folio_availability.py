@@ -5,7 +5,9 @@ from odoo import api, fields, models
 
 class NumRoomsSelectionModel(models.TransientModel):
     _name = "pms.num.rooms.selection"
+    _description = "Dinamic Selection based on avails room"
     _rec_name = "value"
+
     value = fields.Integer()
     room_type_id = fields.Char()
     folio_wizard_id = fields.One2many(
@@ -16,6 +18,7 @@ class NumRoomsSelectionModel(models.TransientModel):
 
 class AvailabilityWizard(models.TransientModel):
     _name = "pms.folio.availability.wizard"
+    _description = "Room type line in Booking Engine"
     _check_pms_properties_auto = True
 
     folio_wizard_id = fields.Many2one(
@@ -50,7 +53,6 @@ class AvailabilityWizard(models.TransientModel):
         readonly=False,
         store=True,
         comodel_name="pms.num.rooms.selection",
-        inverse_name="folio_wizard_id",
         domain="[('value', '<=', num_rooms_available), "
         "('room_type_id', '=', room_type_id)]",
         compute="_compute_num_rooms_selected",
