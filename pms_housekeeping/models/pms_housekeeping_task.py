@@ -4,39 +4,49 @@
 from odoo import fields, models
 
 
-class HouseKeepingTask(models.Model):
+class PmsHouseKeepingTask(models.Model):
     _name = "pms.housekeeping.task"
-    _description = "HouseKeeping Tasks"
-    # HouseKeeping 'Task types'
+    _description = "HouseKeeping Task"
 
-    # Fields declaration
-    active = fields.Boolean("Active", default=True)
-    name = fields.Char("Task Name", translate=True, required=True)
-    pms_property_ids = fields.Many2many(
-        string="Properties",
-        help="Properties with access to the element;"
-        " if not set, all properties can access",
-        required=False,
-        comodel_name="pms.property",
-        relation="pms_housekeepink_task_pms_property_rel",
-        column1="pms_housekeepink_task_id",
-        column2="pms_property_id",
-        ondelete="restrict",
-        check_pms_properties=True,
+    task_date = fields.Date(
+        string="Clean date",
+        help="Date the task was done or;" " is scheduled to be done",
+        default=lambda self: fields.Datetime.now(),
+        required=True,
     )
-
-    clean_type = fields.Selection(
-        string="Clean type",
+    task_start = fields.Datetime(string="Task start at")
+    task_end = fields.Datetime(string="Task end at")
+    room_id = fields.Many2one(
+        comodel_name="pms.room",
+        string="Room",
+    )
+    employee_id = fields.Many2one(
+        string="Employee",
+        comodel_name="hr.employee",
+    )
+    task_type_id = fields.Many2one(
+        string="Task",
+        comodel_name="pms.housekeeping.task.type",
+        required=True,
+    )
+    notes = fields.Text(string="Internal Notes")
+    lostfound = fields.Text(string="Lost and Found")
+    state = fields.Selection(
+        string="Task State",
         selection=[
-            ("occupied", "Occupied"),
-            ("exit", "Exit"),
-            ("picked_up", "Picked up"),
-            ("staff", "Staff"),
-            ("clean", "Clean"),
-            ("inspected", "Inspected"),
-            ("dont_disturb", "Don't disturb"),
+            ("draft", "Draft"),
+            ("to_do", "To Do"),
+            ("in_progress", "In Progress"),
+            ("done", "Done"),
         ],
+        default="draft",
     )
-    def_employee_id = fields.Many2one(
-        "hr.employee", string="Employee assigned by default"
-    )
+    color = fields.Integer(string="Color Index")
+
+    # Default Methods ang Gets
+    def name_get(self):
+        result = []
+        for task in self:
+            name = task.task_type_id.name
+            result.append((task.id, name))
+        return result
