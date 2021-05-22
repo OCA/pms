@@ -6,30 +6,26 @@ class WizardFolioChanges(models.TransientModel):
     _name = "wizard.folio.changes"
     _description = "Folio Changes"
 
-    def _default_folio_id(self):
-        folio_id = self._context.get("active_id")
-        folio = self.env["pms.folio"].browse(folio_id)
-        return folio
-
-    def _default_reservation_ids(self):
-        folio_id = self._context.get("active_id")
-        folio = self.env["pms.folio"].browse(folio_id)
-        return folio.reservation_ids
-
     folio_id = fields.Many2one(
-        "pms.folio",
         string="Folio",
-        default=_default_folio_id,
+        default=lambda self: self._default_folio_id(),
+        comodel_name="pms.folio",
     )
     reservation_ids = fields.Many2many(
-        "pms.reservation",
         string="Reservations",
-        default=_default_reservation_ids,
+        default=lambda self: self._default_reservation_ids(),
+        comodel_name="pms.reservation",
+        relation="folio_changes_reservation_rel",
+        column1="folio_changes_id",
+        column2="reservation_ids",
         domain="[('id', 'in', allowed_reservation_ids)]",
     )
     allowed_reservation_ids = fields.Many2many(
-        "pms.reservation",
         string="Allowed Reservations",
+        comodel_name="pms.reservation",
+        relation="folio_changes_allowed_reservation_rel",
+        column1="folio_changes_id",
+        column2="allowed_reservation_ids",
         compute="_compute_allowed_reservations",
     )
     new_price = fields.Float(
@@ -70,6 +66,16 @@ class WizardFolioChanges(models.TransientModel):
         string="Apply Availability Rule for the whole week",
         default=True,
     )
+
+    def _default_folio_id(self):
+        folio_id = self._context.get("active_id")
+        folio = self.env["pms.folio"].browse(folio_id)
+        return folio
+
+    def _default_reservation_ids(self):
+        folio_id = self._context.get("active_id")
+        folio = self.env["pms.folio"].browse(folio_id)
+        return folio.reservation_ids
 
     @api.depends("folio_id")
     def _compute_allowed_reservations(self):

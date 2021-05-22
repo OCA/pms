@@ -11,9 +11,19 @@ class AccountMove(models.Model):
 
     # Field Declarations
     folio_ids = fields.Many2many(
-        comodel_name="pms.folio", compute="_compute_folio_origin"
+        string="Folios",
+        help="Folios where the account move are included",
+        comodel_name="pms.folio",
+        compute="_compute_folio_origin",
+        relation="account_move_folio_ids_rel",
+        column1="account_move_id",
+        column2="folio_ids_id",
     )
-    pms_property_id = fields.Many2one("pms.property")
+    pms_property_id = fields.Many2one(
+        string="Property",
+        help="Property with access to the element",
+        comodel_name="pms.property",
+    )
     outstanding_folios_debits_widget = fields.Text(
         compute="_compute_get_outstanding_folios_JSON"
     )
@@ -21,35 +31,12 @@ class AccountMove(models.Model):
         compute="_compute_get_outstanding_folios_JSON"
     )
 
-    # Compute and Search methods
-
     def _compute_folio_origin(self):
         for inv in self:
             inv.folio_ids = False
             folios = inv.mapped("invoice_line_ids.folio_ids")
             if folios:
                 inv.folio_ids = [(6, 0, folios.ids)]
-
-    # Action methods
-
-    def action_folio_payments(self):
-        self.ensure_one()
-        sales = self.mapped("invoice_line_ids.sale_line_ids.order_id")
-        folios = self.env["pms.folio"].search([("order_id.id", "in", sales.ids)])
-        payments_obj = self.env["account.payment"]
-        payments = payments_obj.search([("folio_id", "in", folios.ids)])
-        payment_ids = payments.mapped("id")
-        return {
-            "name": _("Payments"),
-            "view_type": "form",
-            "view_mode": "tree,form",
-            "res_model": "account.payment",
-            "target": "new",
-            "type": "ir.actions.act_window",
-            "domain": [("id", "in", payment_ids)],
-        }
-
-    # Business methods
 
     def _compute_get_outstanding_folios_JSON(self):
         self.ensure_one()
@@ -120,3 +107,20 @@ class AccountMove(models.Model):
                     info["title"] = type_payment
                     self.outstanding_folios_debits_widget = json.dumps(info)
                     self.has_folio_outstanding = True
+
+    def action_folio_payments(self):
+        self.ensure_one()
+        sales = self.mapped("invoice_line_ids.sale_line_ids.order_id")
+        folios = self.env["pms.folio"].search([("order_id.id", "in", sales.ids)])
+        payments_obj = self.env["account.payment"]
+        payments = payments_obj.search([("folio_id", "in", folios.ids)])
+        payment_ids = payments.mapped("id")
+        return {
+            "name": _("Payments"),
+            "view_type": "form",
+            "view_mode": "tree,form",
+            "res_model": "account.payment",
+            "target": "new",
+            "type": "ir.actions.act_window",
+            "domain": [("id", "in", payment_ids)],
+        }
