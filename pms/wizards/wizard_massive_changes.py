@@ -16,6 +16,7 @@ class AvailabilityWizard(models.TransientModel):
         default=lambda self: self.env["pms.property"].browse(
             self.env.user.get_active_property_ids()[0]
         ),
+        check_pms_properties=True,
     )
     massive_changes_on = fields.Selection(
         string="On",

@@ -16,6 +16,7 @@ class PmsRoomTypeClass(models.Model):
     _name = "pms.room.type.class"
     _description = "Room Type Class"
     _order = "sequence, name, default_code"
+    _check_pms_properties_auto = True
 
     name = fields.Char(
         string="Class Name",

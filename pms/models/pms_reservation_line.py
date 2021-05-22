@@ -54,6 +54,7 @@ class PmsReservationLine(models.Model):
         store=True,
         comodel_name="pms.property",
         related="reservation_id.pms_property_id",
+        check_pms_properties=True,
     )
     date = fields.Date(
         string="Date",
@@ -105,7 +106,7 @@ class PmsReservationLine(models.Model):
     )
     impacts_quota = fields.Integer(
         string="Impacts quota",
-        help="",
+        help="This line has been taken into account in the avail quota",
         readonly=False,
         store=True,
         compute="_compute_impact_quota",

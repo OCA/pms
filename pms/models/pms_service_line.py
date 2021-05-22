@@ -47,6 +47,7 @@ class PmsServiceLine(models.Model):
         store=True,
         comodel_name="pms.property",
         related="service_id.pms_property_id",
+        check_pms_properties=True,
     )
     date = fields.Date(
         string="Date",
