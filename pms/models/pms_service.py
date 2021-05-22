@@ -78,6 +78,7 @@ class PmsService(models.Model):
         store=True,
         comodel_name="pms.property",
         related="folio_id.pms_property_id",
+        check_pms_properties=True,
     )
     tax_ids = fields.Many2many(
         string="Taxes",

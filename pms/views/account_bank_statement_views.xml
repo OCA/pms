@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="account.view_bank_statement_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="property_id" />
+                <field name="pms_property_id" />
             </xpath>
         </field>
     </record>

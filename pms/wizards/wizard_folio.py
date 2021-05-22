@@ -35,6 +35,7 @@ class FolioWizard(models.TransientModel):
         help="Property to which the folio belongs",
         default=lambda self: self._default_pms_property_id(),
         comodel_name="pms.property",
+        check_pms_properties=True,
     )
     segmentation_ids = fields.Many2many(
         string="Segmentation",

@@ -31,6 +31,7 @@ class PmsAvailability(models.Model):
         required=True,
         comodel_name="pms.property",
         ondelete="restrict",
+        check_pms_properties=True,
     )
     reservation_line_ids = fields.One2many(
         string="Reservation Lines",

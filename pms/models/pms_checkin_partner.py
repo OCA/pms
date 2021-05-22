@@ -49,6 +49,7 @@ class PmsCheckinPartner(models.Model):
         store=True,
         comodel_name="pms.property",
         related="folio_id.pms_property_id",
+        check_pms_properties=True,
     )
     name = fields.Char(
         string="Name",
