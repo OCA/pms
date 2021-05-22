@@ -15,6 +15,487 @@ class FolioSaleLine(models.Model):
 
     _check_company_auto = True
 
+    folio_id = fields.Many2one(
+        string="Folio Reference",
+        help="Folio to which folio sale line belongs",
+        required=True,
+        index=True,
+        copy=False,
+        comodel_name="pms.folio",
+        ondelete="cascade",
+    )
+    reservation_id = fields.Many2one(
+        string="Reservation Reference",
+        help="Reservation to which folio sale line belongs",
+        index=True,
+        copy=False,
+        comodel_name="pms.reservation",
+        ondelete="cascade",
+    )
+    service_id = fields.Many2one(
+        string="Service Reference",
+        help="Sevice included in folio sale line",
+        index=True,
+        copy=False,
+        comodel_name="pms.service",
+        ondelete="cascade",
+    )
+    is_board_service = fields.Boolean(
+        string="Board Service",
+        help="Indicates if the service included in "
+        "folio sale line is part of a board service",
+        store=True,
+        related="service_id.is_board_service",
+    )
+
+    name = fields.Text(
+        string="Description",
+        help="Description of folio sale line",
+        readonly=False,
+        store=True,
+        compute="_compute_name",
+    )
+    reservation_line_ids = fields.Many2many(
+        string="Nights",
+        help="Reservation lines associated with folio sale line,"
+        " they corresponds with nights",
+        comodel_name="pms.reservation.line",
+    )
+    service_line_ids = fields.Many2many(
+        string="Service Lines",
+        help="Subservices included in folio sale line service",
+        comodel_name="pms.service.line",
+    )
+    sequence = fields.Integer(string="Sequence", help="", default=10)
+
+    invoice_lines = fields.Many2many(
+        string="Invoice Lines",
+        copy=False,
+        help="Folio sale line invoice lines",
+        comodel_name="account.move.line",
+        relation="folio_sale_line_invoice_rel",
+        column1="sale_line_id",
+        column2="invoice_line_id",
+    )
+    invoice_status = fields.Selection(
+        string="Invoice Status",
+        help="Invoice Status; it can be: upselling, invoiced, to invoice, no",
+        readonly=True,
+        default="no",
+        store=True,
+        selection=[
+            ("upselling", "Upselling Opportunity"),
+            ("invoiced", "Fully Invoiced"),
+            ("to invoice", "To Invoice"),
+            ("no", "Nothing to Invoice"),
+        ],
+        compute="_compute_invoice_status",
+    )
+    price_unit = fields.Float(
+        string="Unit Price",
+        help="Unit Price of folio sale line",
+        digits="Product Price",
+    )
+
+    price_subtotal = fields.Monetary(
+        string="Subtotal",
+        help="Subtotal price without taxes",
+        readonly=True,
+        store=True,
+        compute="_compute_amount",
+    )
+    price_tax = fields.Float(
+        string="Total Tax",
+        help="Total of taxes in a reservation",
+        readonly=True,
+        store=True,
+        compute="_compute_amount",
+    )
+    price_total = fields.Monetary(
+        string="Total",
+        help="Total price with taxes",
+        readonly=True,
+        store=True,
+        compute="_compute_amount",
+    )
+    price_reduce = fields.Float(
+        string="Price Reduce",
+        help="Reduced price amount, that is, total price with discounts applied",
+        readonly=True,
+        store=True,
+        digits="Product Price",
+        compute="_compute_get_price_reduce",
+    )
+    tax_ids = fields.Many2many(
+        string="Taxes",
+        help="Taxes applied in the folio sale line",
+        store=True,
+        comodel_name="account.tax",
+        compute="_compute_tax_ids",
+        domain=["|", ("active", "=", False), ("active", "=", True)],
+    )
+    price_reduce_taxinc = fields.Monetary(
+        string="Price Reduce Tax inc",
+        help="Price with discounts applied and taxes included",
+        readonly=True,
+        store=True,
+        compute="_compute_get_price_reduce_tax",
+    )
+    price_reduce_taxexcl = fields.Monetary(
+        string="Price Reduce Tax excl",
+        help="Price with discounts applied without taxes",
+        readonly=True,
+        store=True,
+        compute="_compute_get_price_reduce_notax",
+    )
+
+    discount = fields.Float(
+        string="Discount (%)",
+        help="Discount of total price in folio sale line",
+        readonly=False,
+        store=True,
+        digits="Discount",
+        compute="_compute_discount",
+    )
+
+    product_id = fields.Many2one(
+        string="Product",
+        help="Product associated with folio sale line, "
+        "can be product associated with service "
+        "or product associated with"
+        "reservation's room type, in other case it's false",
+        store=True,
+        comodel_name="product.product",
+        domain="[('sale_ok', '=', True),\
+            '|', ('company_id', '=', False), \
+            ('company_id', '=', company_id)]",
+        ondelete="restrict",
+        compute="_compute_product_id",
+        check_company=True,
+        change_default=True,
+    )
+    product_uom_qty = fields.Float(
+        string="Quantity",
+        help="",
+        readonly=False,
+        store=True,
+        digits="Product Unit of Measure",
+        compute="_compute_product_uom_qty",
+    )
+    product_uom = fields.Many2one(
+        string="Unit of Measure",
+        help="",
+        comodel_name="uom.uom",
+        domain="[('category_id', '=', product_uom_category_id)]",
+    )
+    product_uom_category_id = fields.Many2one(
+        string="Unit of Measure Category",
+        help="",
+        readonly=True,
+        related="product_id.uom_id.category_id",
+    )
+    product_uom_readonly = fields.Boolean(
+        string="", help="", compute="_compute_product_uom_readonly"
+    )
+
+    product_custom_attribute_value_ids = fields.One2many(
+        string="Custom Values",
+        copy=True,
+        comodel_name="product.attribute.custom.value",
+        inverse_name="sale_order_line_id",
+    )
+
+    qty_to_invoice = fields.Float(
+        string="To Invoice Quantity",
+        help="The quantity to invoice. If the invoice policy is order, "
+        "the quantity to invoice is calculated from the ordered quantity. "
+        "Otherwise, the quantity delivered is used.",
+        readonly=True,
+        store=True,
+        digits="Product Unit of Measure",
+        compute="_compute_get_to_invoice_qty",
+    )
+    qty_invoiced = fields.Float(
+        string="Invoiced Quantity",
+        help="It is the amount invoiced when an invoice is issued",
+        readonly=True,
+        store=True,
+        digits="Product Unit of Measure",
+        compute="_compute_get_invoice_qty",
+        compute_sudo=True,
+    )
+
+    untaxed_amount_invoiced = fields.Monetary(
+        string="Untaxed Invoiced Amount",
+        help="The amount to invoice without taxes in the line of folio",
+        store=True,
+        compute="_compute_untaxed_amount_invoiced",
+        compute_sudo=True,
+    )
+    untaxed_amount_to_invoice = fields.Monetary(
+        string="Untaxed Amount To Invoice",
+        help="The invoiced amount without taxes in the line of the folio",
+        store=True,
+        compute="_compute_untaxed_amount_to_invoice",
+        compute_sudo=True,
+    )
+
+    currency_id = fields.Many2one(
+        string="Currency",
+        help="The currency for the folio",
+        readonly=True,
+        store=True,
+        depends=["folio_id.currency_id"],
+        related="folio_id.currency_id",
+    )
+    company_id = fields.Many2one(
+        string="Company",
+        help="The company in the folio sale line",
+        readonly=True,
+        store=True,
+        index=True,
+        related="folio_id.company_id",
+        check_pms_properties=True,
+    )
+    folio_partner_id = fields.Many2one(
+        string="Customer",
+        help="Related customer with Folio Sale Line",
+        readonly=False,
+        store=True,
+        related="folio_id.partner_id",
+    )
+    analytic_tag_ids = fields.Many2many(
+        string="Analytic Tags",
+        comodel_name="account.analytic.tag",
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+    )
+    analytic_line_ids = fields.One2many(
+        string="Analytic lines",
+        comodel_name="account.analytic.line",
+        inverse_name="so_line",
+    )
+    is_downpayment = fields.Boolean(
+        string="Is a down payment",
+        help="Down payments are made when creating invoices from a folio."
+        " They are not copied when duplicating a folio.",
+    )
+
+    state = fields.Selection(
+        string="Folio Status",
+        help="The status of the folio related with folio sale line",
+        readonly=True,
+        copy=False,
+        store=True,
+        related="folio_id.state",
+    )
+
+    display_type = fields.Selection(
+        string="Display Type",
+        help="Technical field for UX purpose.",
+        selection=[("line_section", "Section"), ("line_note", "Note")],
+        default=False,
+    )
+
+    service_order = fields.Integer(
+        string="Service Id",
+        help="Field to order by service id",
+        readonly=True,
+        store=True,
+        compute="_compute_service_order",
+    )
+
+    reservation_order = fields.Integer(
+        string="Reservation Id",
+        help="Field to order by reservation id",
+        readonly=True,
+        store=True,
+        compute="_compute_reservation_order",
+    )
+
+    date_order = fields.Date(
+        string="Date",
+        help="Field to order by service",
+        readonly=True,
+        store=True,
+        compute="_compute_date_order",
+    )
+
+    @api.depends("qty_to_invoice")
+    def _compute_service_order(self):
+        for record in self:
+            record.service_order = (
+                record.service_id
+                if record.service_id
+                else -1
+                if record.display_type
+                else 0
+            )
+
+    @api.depends("service_order")
+    def _compute_date_order(self):
+        for record in self:
+            if record.display_type:
+                record.date_order = 0
+            elif record.reservation_id and not record.service_id:
+                record.date_order = (
+                    min(record.reservation_line_ids.mapped("date"))
+                    if record.reservation_line_ids
+                    else 0
+                )
+            elif record.reservation_id and record.service_id:
+                record.date_order = (
+                    min(record.service_line_ids.mapped("date"))
+                    if record.service_line_ids
+                    else 0
+                )
+            else:
+                record.date_order = 0
+
+    @api.depends("date_order")
+    def _compute_reservation_order(self):
+        for record in self:
+            record.reservation_order = (
+                record.reservation_id if record.reservation_id else 0
+            )
+
+    @api.depends("reservation_line_ids", "service_line_ids", "service_line_ids.day_qty")
+    def _compute_product_uom_qty(self):
+        for line in self:
+            if line.reservation_line_ids:
+                line.product_uom_qty = len(line.reservation_line_ids)
+            elif line.service_line_ids:
+                line.product_uom_qty = sum(line.service_line_ids.mapped("day_qty"))
+            elif not line.product_uom_qty:
+                line.product_uom_qty = False
+
+    @api.depends("state")
+    def _compute_product_uom_readonly(self):
+        for line in self:
+            line.product_uom_readonly = line.state in ["sale", "done", "cancel"]
+
+    @api.depends(
+        "invoice_lines",
+        "invoice_lines.price_total",
+        "invoice_lines.move_id.state",
+        "invoice_lines.move_id.move_type",
+    )
+    def _compute_untaxed_amount_invoiced(self):
+        """Compute the untaxed amount already invoiced from
+        the sale order line, taking the refund attached
+        the so line into account. This amount is computed as
+            SUM(inv_line.price_subtotal) - SUM(ref_line.price_subtotal)
+        where
+            `inv_line` is a customer invoice line linked to the SO line
+            `ref_line` is a customer credit note (refund) line linked to the SO line
+        """
+        for line in self:
+            amount_invoiced = 0.0
+            for invoice_line in line.invoice_lines:
+                if invoice_line.move_id.state == "posted":
+                    invoice_date = (
+                        invoice_line.move_id.invoice_date or fields.Date.today()
+                    )
+                    if invoice_line.move_id.move_type == "out_invoice":
+                        amount_invoiced += invoice_line.currency_id._convert(
+                            invoice_line.price_subtotal,
+                            line.currency_id,
+                            line.company_id,
+                            invoice_date,
+                        )
+                    elif invoice_line.move_id.move_type == "out_refund":
+                        amount_invoiced -= invoice_line.currency_id._convert(
+                            invoice_line.price_subtotal,
+                            line.currency_id,
+                            line.company_id,
+                            invoice_date,
+                        )
+            line.untaxed_amount_invoiced = amount_invoiced
+
+    @api.depends(
+        "state",
+        "price_reduce",
+        "product_id",
+        "untaxed_amount_invoiced",
+        "product_uom_qty",
+    )
+    def _compute_untaxed_amount_to_invoice(self):
+        """Total of remaining amount to invoice on the sale order line (taxes excl.) as
+            total_sol - amount already invoiced
+        where Total_sol depends on the invoice policy of the product.
+
+        Note: Draft invoice are ignored on purpose, the 'to invoice' amount should
+        come only from the SO lines.
+        """
+        for line in self:
+            amount_to_invoice = 0.0
+            if line.state != "draft":
+                # Note: do not use price_subtotal field as it returns
+                # zero when the ordered quantity is zero.
+                # It causes problem for expense line (e.i.: ordered qty = 0,
+                # deli qty = 4, price_unit = 20 ; subtotal is zero),
+                # but when you can invoice the line,
+                # you see an amount and not zero.
+                # Since we compute untaxed amount, we can use directly the price
+                # reduce (to include discount) without using `compute_all()`
+                # method on taxes.
+                price_subtotal = 0.0
+                price_subtotal = line.price_reduce * line.product_uom_qty
+                if len(line.tax_ids.filtered(lambda tax: tax.price_include)) > 0:
+                    # As included taxes are not excluded from the computed subtotal,
+                    # `compute_all()` method has to be called to retrieve
+                    # the subtotal without them.
+                    # `price_reduce_taxexcl` cannot be used as it is computed from
+                    # `price_subtotal` field. (see upper Note)
+                    price_subtotal = line.tax_ids.compute_all(
+                        price_subtotal,
+                        currency=line.folio_id.currency_id,
+                        quantity=line.product_uom_qty,
+                        product=line.product_id,
+                        partner=line.folio_id.partner_shipping_id,
+                    )["total_excluded"]
+
+                if any(
+                    line.invoice_lines.mapped(lambda l: l.discount != line.discount)
+                ):
+                    # In case of re-invoicing with different
+                    # discount we try to calculate manually the
+                    # remaining amount to invoice
+                    amount = 0
+                    for inv_line in line.invoice_lines:
+                        if (
+                            len(
+                                inv_line.tax_ids.filtered(lambda tax: tax.price_include)
+                            )
+                            > 0
+                        ):
+                            amount += inv_line.tax_ids.compute_all(
+                                inv_line.currency_id._convert(
+                                    inv_line.price_unit,
+                                    line.currency_id,
+                                    line.company_id,
+                                    inv_line.date or fields.Date.today(),
+                                    round=False,
+                                )
+                                * inv_line.quantity
+                            )["total_excluded"]
+                        else:
+                            amount += (
+                                inv_line.currency_id._convert(
+                                    inv_line.price_unit,
+                                    line.currency_id,
+                                    line.company_id,
+                                    inv_line.date or fields.Date.today(),
+                                    round=False,
+                                )
+                                * inv_line.quantity
+                            )
+
+                    amount_to_invoice = max(price_subtotal - amount, 0)
+                else:
+                    amount_to_invoice = price_subtotal - line.untaxed_amount_invoiced
+
+            line.untaxed_amount_to_invoice = amount_to_invoice
+
     @api.depends("state", "product_uom_qty", "qty_to_invoice", "qty_invoiced")
     def _compute_invoice_status(self):
         """
@@ -54,53 +535,6 @@ class FolioSaleLine(models.Model):
                 record.reservation_line_ids,
                 record.service_line_ids,
             )
-
-    @api.model
-    def generate_folio_sale_name(
-        self,
-        reservation_id,
-        product_id,
-        service_id,
-        reservation_line_ids,
-        service_line_ids,
-        qty=False,
-    ):
-        if reservation_line_ids:
-            month = False
-            name = False
-            lines = reservation_line_ids.sorted(key="date")
-            for index, date in enumerate(lines.mapped("date")):
-                if qty and index > (qty - 1):
-                    break
-                if date.month != month:
-                    name = name + "\n" if name else ""
-                    name += date.strftime("%B-%Y") + ": "
-                    name += date.strftime("%d")
-                    month = date.month
-                else:
-                    name += ", " + date.strftime("%d")
-
-            return "{} ({}).".format(product_id.name, name)
-        elif service_line_ids:
-            month = False
-            name = False
-            lines = service_line_ids.filtered(
-                lambda x: x.service_id == service_id
-            ).sorted(key="date")
-
-            for index, date in enumerate(lines.mapped("date")):
-                if qty and index > (ceil(qty / reservation_id.adults) - 1):
-                    break
-                if date.month != month:
-                    name = name + "\n" if name else ""
-                    name += date.strftime("%B-%Y") + ": "
-                    name += date.strftime("%d")
-                    month = date.month
-                else:
-                    name += ", " + date.strftime("%d")
-            return "{} ({}).".format(service_id.name, name)
-        else:
-            return service_id.name
 
     @api.depends("product_uom_qty", "discount", "price_unit", "tax_ids")
     def _compute_amount(self):
@@ -301,6 +735,89 @@ class FolioSaleLine(models.Model):
     #                 product_uom IS NULL AND customer_lead = 0))",
     #         "Forbidden values on non-accountable sale order line"),
     # ]
+    @api.model
+    def _name_search(
+        self, name, args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        if operator in ("ilike", "like", "=", "=like", "=ilike"):
+            args = expression.AND(
+                [
+                    args or [],
+                    ["|", ("folio_id.name", operator, name), ("name", operator, name)],
+                ]
+            )
+        return super(FolioSaleLine, self)._name_search(
+            name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid
+        )
+
+    def name_get(self):
+        result = []
+        for so_line in self.sudo():
+            name = "{} - {}".format(
+                so_line.folio_id.name,
+                so_line.name and so_line.name.split("\n")[0] or so_line.product_id.name,
+            )
+            result.append((so_line.id, name))
+        return result
+
+    @api.model
+    def generate_folio_sale_name(
+        self,
+        reservation_id,
+        product_id,
+        service_id,
+        reservation_line_ids,
+        service_line_ids,
+        qty=False,
+    ):
+        if reservation_line_ids:
+            month = False
+            name = False
+            lines = reservation_line_ids.sorted(key="date")
+            for index, date in enumerate(lines.mapped("date")):
+                if qty and index > (qty - 1):
+                    break
+                if date.month != month:
+                    name = name + "\n" if name else ""
+                    name += date.strftime("%B-%Y") + ": "
+                    name += date.strftime("%d")
+                    month = date.month
+                else:
+                    name += ", " + date.strftime("%d")
+
+            return "{} ({}).".format(product_id.name, name)
+        elif service_line_ids:
+            month = False
+            name = False
+            lines = service_line_ids.filtered(
+                lambda x: x.service_id == service_id
+            ).sorted(key="date")
+
+            for index, date in enumerate(lines.mapped("date")):
+                if qty and index > (ceil(qty / reservation_id.adults) - 1):
+                    break
+                if date.month != month:
+                    name = name + "\n" if name else ""
+                    name += date.strftime("%B-%Y") + ": "
+                    name += date.strftime("%d")
+                    month = date.month
+                else:
+                    name += ", " + date.strftime("%d")
+            return "{} ({}).".format(service_id.name, name)
+        else:
+            return service_id.name
+
+    def _get_invoice_line_sequence(self, new=0, old=0):
+        """
+        Method intended to be overridden in third-party
+        module if we want to prevent the resequencing of invoice lines.
+
+        :param int new:   the new line sequence
+        :param int old:   the old line sequence
+
+        :return:          the sequence of the SO line, by default the new one.
+        """
+        return new or old
 
     def _update_line_quantity(self, values):
         folios = self.mapped("folio_id")
@@ -362,446 +879,7 @@ class FolioSaleLine(models.Model):
     #         )
 
     #     result = super(SaleOrderLine, self).write(values)
-    #     return result
-
-    folio_id = fields.Many2one(
-        "pms.folio",
-        string="Folio Reference",
-        required=True,
-        ondelete="cascade",
-        index=True,
-        copy=False,
-    )
-    reservation_id = fields.Many2one(
-        "pms.reservation",
-        string="Reservation Reference",
-        ondelete="cascade",
-        index=True,
-        copy=False,
-    )
-    service_id = fields.Many2one(
-        "pms.service",
-        string="Service Reference",
-        ondelete="cascade",
-        index=True,
-        copy=False,
-    )
-    is_board_service = fields.Boolean(
-        string="Board Service",
-        related="service_id.is_board_service",
-        store=True,
-    )
-
-    name = fields.Text(
-        string="Description", compute="_compute_name", store=True, readonly=False
-    )
-    reservation_line_ids = fields.Many2many(
-        "pms.reservation.line",
-        string="Nights",
-    )
-    service_line_ids = fields.Many2many(
-        "pms.service.line",
-        string="Service Lines",
-    )
-    sequence = fields.Integer(string="Sequence", default=10)
-
-    invoice_lines = fields.Many2many(
-        "account.move.line",
-        "folio_sale_line_invoice_rel",
-        "sale_line_id",
-        "invoice_line_id",
-        string="Invoice Lines",
-        copy=False,
-    )
-    invoice_status = fields.Selection(
-        [
-            ("upselling", "Upselling Opportunity"),
-            ("invoiced", "Fully Invoiced"),
-            ("to invoice", "To Invoice"),
-            ("no", "Nothing to Invoice"),
-        ],
-        string="Invoice Status",
-        compute="_compute_invoice_status",
-        store=True,
-        readonly=True,
-        default="no",
-    )
-    price_unit = fields.Float(
-        "Unit Price",
-        digits="Product Price",
-    )
-
-    price_subtotal = fields.Monetary(
-        compute="_compute_amount", string="Subtotal", readonly=True, store=True
-    )
-    price_tax = fields.Float(
-        compute="_compute_amount", string="Total Tax", readonly=True, store=True
-    )
-    price_total = fields.Monetary(
-        compute="_compute_amount", string="Total", readonly=True, store=True
-    )
-    price_reduce = fields.Float(
-        compute="_compute_get_price_reduce",
-        string="Price Reduce",
-        digits="Product Price",
-        readonly=True,
-        store=True,
-    )
-    tax_ids = fields.Many2many(
-        "account.tax",
-        compute="_compute_tax_ids",
-        store=True,
-        string="Taxes",
-        domain=["|", ("active", "=", False), ("active", "=", True)],
-    )
-    price_reduce_taxinc = fields.Monetary(
-        compute="_compute_get_price_reduce_tax",
-        string="Price Reduce Tax inc",
-        readonly=True,
-        store=True,
-    )
-    price_reduce_taxexcl = fields.Monetary(
-        compute="_compute_get_price_reduce_notax",
-        string="Price Reduce Tax excl",
-        readonly=True,
-        store=True,
-    )
-
-    discount = fields.Float(
-        string="Discount (%)",
-        digits="Discount",
-        compute="_compute_discount",
-        readonly=False,
-        store=True,
-    )
-
-    product_id = fields.Many2one(
-        "product.product",
-        string="Product",
-        domain="[('sale_ok', '=', True),\
-            '|', ('company_id', '=', False), \
-            ('company_id', '=', company_id)]",
-        change_default=True,
-        ondelete="restrict",
-        check_company=True,
-        compute="_compute_product_id",
-        store=True,
-    )
-    # product_updatable = fields.Boolean(
-    #   compute='_compute_product_updatable',
-    #   string='Can Edit Product',
-    #   readonly=True,
-    #   default=True)
-    product_uom_qty = fields.Float(
-        string="Quantity",
-        digits="Product Unit of Measure",
-        compute="_compute_product_uom_qty",
-        store=True,
-        readonly=False,
-    )
-    product_uom = fields.Many2one(
-        "uom.uom",
-        string="Unit of Measure",
-        domain="[('category_id', '=', product_uom_category_id)]",
-    )
-    product_uom_category_id = fields.Many2one(
-        related="product_id.uom_id.category_id", readonly=True
-    )
-    product_uom_readonly = fields.Boolean(compute="_compute_product_uom_readonly")
-    product_custom_attribute_value_ids = fields.One2many(
-        "product.attribute.custom.value",
-        "sale_order_line_id",
-        string="Custom Values",
-        copy=True,
-    )
-
-    qty_to_invoice = fields.Float(
-        compute="_compute_get_to_invoice_qty",
-        string="To Invoice Quantity",
-        store=True,
-        readonly=True,
-        digits="Product Unit of Measure",
-    )
-    qty_invoiced = fields.Float(
-        compute="_compute_get_invoice_qty",
-        string="Invoiced Quantity",
-        store=True,
-        readonly=True,
-        compute_sudo=True,
-        digits="Product Unit of Measure",
-    )
-
-    untaxed_amount_invoiced = fields.Monetary(
-        "Untaxed Invoiced Amount",
-        compute="_compute_untaxed_amount_invoiced",
-        compute_sudo=True,
-        store=True,
-    )
-    untaxed_amount_to_invoice = fields.Monetary(
-        "Untaxed Amount To Invoice",
-        compute="_compute_untaxed_amount_to_invoice",
-        compute_sudo=True,
-        store=True,
-    )
-
-    currency_id = fields.Many2one(
-        related="folio_id.currency_id",
-        depends=["folio_id.currency_id"],
-        store=True,
-        string="Currency",
-        readonly=True,
-    )
-    company_id = fields.Many2one(
-        related="folio_id.company_id",
-        string="Company",
-        store=True,
-        readonly=True,
-        index=True,
-        check_pms_properties=True,
-    )
-    folio_partner_id = fields.Many2one(
-        related="folio_id.partner_id", store=True, string="Customer", readonly=False
-    )
-    analytic_tag_ids = fields.Many2many(
-        "account.analytic.tag",
-        string="Analytic Tags",
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-    )
-    analytic_line_ids = fields.One2many(
-        "account.analytic.line", "so_line", string="Analytic lines"
-    )
-    is_downpayment = fields.Boolean(
-        string="Is a down payment",
-        help="Down payments are made when creating invoices from a folio."
-        " They are not copied when duplicating a folio.",
-    )
-
-    state = fields.Selection(
-        related="folio_id.state",
-        string="Folio Status",
-        readonly=True,
-        copy=False,
-        store=True,
-    )
-
-    display_type = fields.Selection(
-        [("line_section", "Section"), ("line_note", "Note")],
-        default=False,
-        help="Technical field for UX purpose.",
-    )
-
-    service_order = fields.Integer(
-        string="Service id",
-        compute="_compute_service_order",
-        help="Field to order by service id",
-        store=True,
-        readonly=True,
-    )
-
-    reservation_order = fields.Integer(
-        string="Reservation id",
-        compute="_compute_reservation_order",
-        help="Field to order by reservation id",
-        store=True,
-        readonly=True,
-    )
-
-    date_order = fields.Date(
-        string="Date",
-        compute="_compute_date_order",
-        help="Field to order by service date",
-        store=True,
-        readonly=True,
-    )
-
-    @api.depends("qty_to_invoice")
-    def _compute_service_order(self):
-        for record in self:
-            record.service_order = (
-                record.service_id
-                if record.service_id
-                else -1
-                if record.display_type
-                else 0
-            )
-
-    @api.depends("service_order")
-    def _compute_date_order(self):
-        for record in self:
-            if record.display_type:
-                record.date_order = 0
-            elif record.reservation_id and not record.service_id:
-                record.date_order = (
-                    min(record.reservation_line_ids.mapped("date"))
-                    if record.reservation_line_ids
-                    else 0
-                )
-            elif record.reservation_id and record.service_id:
-                record.date_order = (
-                    min(record.service_line_ids.mapped("date"))
-                    if record.service_line_ids
-                    else 0
-                )
-            else:
-                record.date_order = 0
-
-    @api.depends("date_order")
-    def _compute_reservation_order(self):
-        for record in self:
-            record.reservation_order = (
-                record.reservation_id if record.reservation_id else 0
-            )
-
-    @api.depends("reservation_line_ids", "service_line_ids", "service_line_ids.day_qty")
-    def _compute_product_uom_qty(self):
-        for line in self:
-            if line.reservation_line_ids:
-                line.product_uom_qty = len(line.reservation_line_ids)
-            elif line.service_line_ids:
-                line.product_uom_qty = sum(line.service_line_ids.mapped("day_qty"))
-            elif not line.product_uom_qty:
-                line.product_uom_qty = False
-
-    @api.depends("state")
-    def _compute_product_uom_readonly(self):
-        for line in self:
-            line.product_uom_readonly = line.state in ["sale", "done", "cancel"]
-
-    @api.depends(
-        "invoice_lines",
-        "invoice_lines.price_total",
-        "invoice_lines.move_id.state",
-        "invoice_lines.move_id.move_type",
-    )
-    def _compute_untaxed_amount_invoiced(self):
-        """Compute the untaxed amount already invoiced from
-        the sale order line, taking the refund attached
-        the so line into account. This amount is computed as
-            SUM(inv_line.price_subtotal) - SUM(ref_line.price_subtotal)
-        where
-            `inv_line` is a customer invoice line linked to the SO line
-            `ref_line` is a customer credit note (refund) line linked to the SO line
-        """
-        for line in self:
-            amount_invoiced = 0.0
-            for invoice_line in line.invoice_lines:
-                if invoice_line.move_id.state == "posted":
-                    invoice_date = (
-                        invoice_line.move_id.invoice_date or fields.Date.today()
-                    )
-                    if invoice_line.move_id.move_type == "out_invoice":
-                        amount_invoiced += invoice_line.currency_id._convert(
-                            invoice_line.price_subtotal,
-                            line.currency_id,
-                            line.company_id,
-                            invoice_date,
-                        )
-                    elif invoice_line.move_id.move_type == "out_refund":
-                        amount_invoiced -= invoice_line.currency_id._convert(
-                            invoice_line.price_subtotal,
-                            line.currency_id,
-                            line.company_id,
-                            invoice_date,
-                        )
-            line.untaxed_amount_invoiced = amount_invoiced
-
-    @api.depends(
-        "state",
-        "price_reduce",
-        "product_id",
-        "untaxed_amount_invoiced",
-        "product_uom_qty",
-    )
-    def _compute_untaxed_amount_to_invoice(self):
-        """Total of remaining amount to invoice on the sale order line (taxes excl.) as
-            total_sol - amount already invoiced
-        where Total_sol depends on the invoice policy of the product.
-
-        Note: Draft invoice are ignored on purpose, the 'to invoice' amount should
-        come only from the SO lines.
-        """
-        for line in self:
-            amount_to_invoice = 0.0
-            if line.state != "draft":
-                # Note: do not use price_subtotal field as it returns
-                # zero when the ordered quantity is zero.
-                # It causes problem for expense line (e.i.: ordered qty = 0,
-                # deli qty = 4, price_unit = 20 ; subtotal is zero),
-                # but when you can invoice the line,
-                # you see an amount and not zero.
-                # Since we compute untaxed amount, we can use directly the price
-                # reduce (to include discount) without using `compute_all()`
-                # method on taxes.
-                price_subtotal = 0.0
-                price_subtotal = line.price_reduce * line.product_uom_qty
-                if len(line.tax_ids.filtered(lambda tax: tax.price_include)) > 0:
-                    # As included taxes are not excluded from the computed subtotal,
-                    # `compute_all()` method has to be called to retrieve
-                    # the subtotal without them.
-                    # `price_reduce_taxexcl` cannot be used as it is computed from
-                    # `price_subtotal` field. (see upper Note)
-                    price_subtotal = line.tax_ids.compute_all(
-                        price_subtotal,
-                        currency=line.folio_id.currency_id,
-                        quantity=line.product_uom_qty,
-                        product=line.product_id,
-                        partner=line.folio_id.partner_shipping_id,
-                    )["total_excluded"]
-
-                if any(
-                    line.invoice_lines.mapped(lambda l: l.discount != line.discount)
-                ):
-                    # In case of re-invoicing with different
-                    # discount we try to calculate manually the
-                    # remaining amount to invoice
-                    amount = 0
-                    for inv_line in line.invoice_lines:
-                        if (
-                            len(
-                                inv_line.tax_ids.filtered(lambda tax: tax.price_include)
-                            )
-                            > 0
-                        ):
-                            amount += inv_line.tax_ids.compute_all(
-                                inv_line.currency_id._convert(
-                                    inv_line.price_unit,
-                                    line.currency_id,
-                                    line.company_id,
-                                    inv_line.date or fields.Date.today(),
-                                    round=False,
-                                )
-                                * inv_line.quantity
-                            )["total_excluded"]
-                        else:
-                            amount += (
-                                inv_line.currency_id._convert(
-                                    inv_line.price_unit,
-                                    line.currency_id,
-                                    line.company_id,
-                                    inv_line.date or fields.Date.today(),
-                                    round=False,
-                                )
-                                * inv_line.quantity
-                            )
-
-                    amount_to_invoice = max(price_subtotal - amount, 0)
-                else:
-                    amount_to_invoice = price_subtotal - line.untaxed_amount_invoiced
-
-            line.untaxed_amount_to_invoice = amount_to_invoice
-
-    def _get_invoice_line_sequence(self, new=0, old=0):
-        """
-        Method intended to be overridden in third-party
-        module if we want to prevent the resequencing of invoice lines.
-
-        :param int new:   the new line sequence
-        :param int old:   the old line sequence
-
-        :return:          the sequence of the SO line, by default the new one.
-        """
-        return new or old
-
+    #     return resul   def _prepare_invoice_line(self, qty=False, **optional_values):
     def _prepare_invoice_line(self, qty=False, **optional_values):
         """
         Prepare the dict of values to create the new invoice line for a folio sale line.
@@ -837,31 +915,6 @@ class FolioSaleLine(models.Model):
         if self.display_type:
             res["account_id"] = False
         return res
-
-    def name_get(self):
-        result = []
-        for so_line in self.sudo():
-            name = "{} - {}".format(
-                so_line.folio_id.name,
-                so_line.name and so_line.name.split("\n")[0] or so_line.product_id.name,
-            )
-            result.append((so_line.id, name))
-        return result
-
-    @api.model
-    def _name_search(
-        self, name, args=None, operator="ilike", limit=100, name_get_uid=None
-    ):
-        if operator in ("ilike", "like", "=", "=like", "=ilike"):
-            args = expression.AND(
-                [
-                    args or [],
-                    ["|", ("folio_id.name", operator, name), ("name", operator, name)],
-                ]
-            )
-        return super(FolioSaleLine, self)._name_search(
-            name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid
-        )
 
     def _check_line_unlink(self):
         """

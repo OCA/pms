@@ -26,17 +26,32 @@ class ProductPricelistItem(models.Model):
         string="End Date Overnight",
         help="End date to apply daily pricelist items",
     )
-    on_board_service = fields.Boolean("Those included in Board Services")
+    on_board_service = fields.Boolean(
+        string="On Board Service",
+        help="Those included in Board Services",
+    )
     board_service_room_type_ids = fields.Many2many(
-        "pms.board.service.room.type",
-        "board_service_pricelist_item_rel",
-        "pricelist_item_id",
-        "board_service_id",
-        string="Board Services on Room Types",
-        ondelete="cascade",  # check_company=True,
+        string="Board Services",
         help="""Specify a Board services on Room Types.""",
+        comodel_name="pms.board.service.room.type",
+        relation="board_service_pricelist_item_rel",
+        column1="pricelist_item_id",
+        column2="board_service_id",
+        ondelete="cascade",
         check_pms_properties=True,
     )
-    pricelist_id = fields.Many2one(check_pms_properties=True)
-    product_id = fields.Many2one(check_pms_properties=True)
-    product_tmpl_id = fields.Many2one(check_pms_properties=True)
+    pricelist_id = fields.Many2one(
+        string="Pricelist",
+        help="Pricelist in which this item is included",
+        check_pms_properties=True,
+    )
+    product_id = fields.Many2one(
+        string="Product",
+        help="Product associated with the item",
+        check_pms_properties=True,
+    )
+    product_tmpl_id = fields.Many2one(
+        string="Product Template",
+        help="Product template associated with the item",
+        check_pms_properties=True,
+    )

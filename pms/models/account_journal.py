@@ -16,5 +16,7 @@ class AccountJournal(models.Model):
         check_pms_properties=True,
     )
     company_id = fields.Many2one(
+        string="Company",
+        help="The company for Account Jouarnal",
         check_pms_properties=True,
     )

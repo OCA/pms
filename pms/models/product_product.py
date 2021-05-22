@@ -5,10 +5,10 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
 
     board_price = fields.Float(
-        "Board Service Price",
+        string="Board Service Price",
+        help="Get price on board service",
         digits="Product Price",
         compute="_compute_board_price",
-        help="Get price price on board service",
     )
 
     @api.depends_context("consumption_date")

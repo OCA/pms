@@ -18,17 +18,17 @@ class AdvancedFiltersWizard(models.TransientModel):
     _description = "Wizard for advanced filters"
 
     pms_model_id = fields.Many2one(
-        "ir.model",
         string="Recipients Model",
-        ondelete="cascade",
         required=True,
-        domain=[("model", "in", PMS_BUSINESS_MODELS)],
         default=lambda self: self.env.ref("pms.model_pms_reservation").id,
+        comodel_name="ir.model",
+        domain=[("model", "in", PMS_BUSINESS_MODELS)],
+        ondelete="cascade",
     )
     pms_model_name = fields.Char(
         string="Recipients Model Name",
-        related="pms_model_id.model",
         readonly=True,
+        related="pms_model_id.model",
         related_sudo=True,
     )
     pms_domain = fields.Char(string="Domain")
