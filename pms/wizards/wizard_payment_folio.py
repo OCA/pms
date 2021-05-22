@@ -11,35 +11,35 @@ class WizardPaymentFolio(models.TransientModel):
     _description = "Payments"
 
     folio_id = fields.Many2one(
-        "pms.folio",
         string="Folio",
         required=True,
+        comodel_name="pms.folio",
     )
     reservation_ids = fields.Many2many(
-        "pms.reservation",
         string="Reservations",
+        comodel_name="pms.reservation",
     )
     service_ids = fields.Many2many(
-        "pms.service",
         string="Services",
+        comodel_name="pms.service",
     )
     payment_method_id = fields.Many2one(
-        "account.journal",
         string="Payment Method",
         required=True,
+        comodel_name="account.journal",
         domain="[('id', 'in', allowed_method_ids)]",
     )
     allowed_method_ids = fields.Many2many(
-        "account.journal",
-        "allowed_payment_journal_rel",
-        "payment_id",
-        "journal_id",
-        compute="_compute_allowed_method_ids",
         store="True",
+        comodel_name="account.journal",
+        relation="allowed_payment_journal_rel",
+        column1="payment_id",
+        column2="journal_id",
+        compute="_compute_allowed_method_ids",
     )
-    amount = fields.Float("Amount", digits=("Product Price"))
-    date = fields.Date("Date", default=fields.Date.context_today, required=True)
-    partner_id = fields.Many2one("res.partner")
+    amount = fields.Float(string="Amount", digits=("Product Price"))
+    date = fields.Date(String="Date", required=True, default=fields.Date.context_today)
+    partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
 
     @api.depends("folio_id")
     def _compute_allowed_method_ids(self):

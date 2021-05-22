@@ -18,51 +18,63 @@ class AvailabilityWizard(models.TransientModel):
     _name = "pms.folio.availability.wizard"
     _check_pms_properties_auto = True
 
-    # Fields declarations
     folio_wizard_id = fields.Many2one(
+        string="Folio Wizard ID",
         comodel_name="pms.folio.wizard",
     )
     checkin = fields.Date(
         string="From:",
+        help="Date Reservation starts ",
         required=True,
     )
     checkout = fields.Date(
         string="To:",
+        help="Date Reservation ends",
         required=True,
     )
     room_type_id = fields.Many2one(
+        string="Room Type",
+        help="Room Type reserved",
         comodel_name="pms.room.type",
         check_pms_properties=True,
     )
 
     num_rooms_available = fields.Integer(
         string="Available rooms",
-        compute="_compute_num_rooms_available",
+        help="Number of rooms that are available",
         store="true",
+        compute="_compute_num_rooms_available",
     )
     num_rooms_selected = fields.Many2one(
+        string="Selected rooms",
+        readonly=False,
+        store=True,
         comodel_name="pms.num.rooms.selection",
         inverse_name="folio_wizard_id",
-        string="Selected rooms",
-        compute="_compute_num_rooms_selected",
-        store=True,
-        readonly=False,
         domain="[('value', '<=', num_rooms_available), "
         "('room_type_id', '=', room_type_id)]",
+        compute="_compute_num_rooms_selected",
     )
     value_num_rooms_selected = fields.Integer(
-        compute="_compute_value_num_rooms_selected",
-        store=True,
+        string="Number of Rooms Selected",
         readonly=False,
+        store=True,
+        compute="_compute_value_num_rooms_selected",
     )
     price_per_room = fields.Float(
         string="Price per room",
+        help="Price per room in folio",
         compute="_compute_price_per_room",
     )
-    price_total = fields.Float(string="Total price", compute="_compute_price_total")
+    price_total = fields.Float(
+        string="Total price",
+        help="The total price in the folio",
+        compute="_compute_price_total",
+    )
     pms_property_id = fields.Many2one(
-        related="folio_wizard_id.pms_property_id",
         string="Property",
+        help="Propertiy with access to the element;",
+        related="folio_wizard_id.pms_property_id",
     )
     board_service_room_id = fields.Many2one(
         string="Board Service",

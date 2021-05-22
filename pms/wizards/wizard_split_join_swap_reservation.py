@@ -6,29 +6,30 @@ from odoo.exceptions import UserError
 
 class ReservationSplitJoinSwapWizard(models.TransientModel):
     _name = "pms.reservation.split.join.swap.wizard"
+    string = ("Operation",)
+    help = ("Operation to be applied on the reservation",)
     operation = fields.Selection(
         [
             ("swap", "Swap rooms"),
             ("split", "Split reservation"),
             ("join", "Join reservation"),
         ],
-        string="Operation",
-        help="Operation to be applied on the reservation",
         default=lambda self: self._context.get("default_operation")
         if self._context.get("default_operation")
         else "swap",
     )
     reservation_id = fields.Many2one(
         string="Reservation",
-        comodel_name="pms.reservation",
         default=lambda self: self.env["pms.reservation"]
         .browse(self._context.get("active_id"))
         .id
         if self._context.get("active_id")
         else False,
+        comodel_name="pms.reservation",
     )
     checkin = fields.Date(
         string="Check In",
+        help="Checkin in reservation",
         default=lambda self: self.env["pms.reservation"]
         .browse(self._context.get("active_id"))
         .checkin
@@ -37,6 +38,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
     )
     checkout = fields.Date(
         string="Check Out",
+        help="checkout in reservation",
         default=lambda self: self.env["pms.reservation"]
         .browse(self._context.get("active_id"))
         .checkout
@@ -45,15 +47,13 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
     )
     reservations = fields.Many2many(
         string="Reservations",
-        comodel_name="pms.reservation",
-        compute="_compute_reservations",
         readonly=False,
         store=True,
+        comodel_name="pms.reservation",
+        compute="_compute_reservations",
     )
     room_source = fields.Many2one(
         string="Room Source",
-        comodel_name="pms.room",
-        domain="[('id', 'in', allowed_rooms_sources)]",
         default=lambda self: self.env["pms.reservation"]
         .browse(self._context.get("active_id"))
         .preferred_room_id
@@ -62,6 +62,8 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
         .browse(self._context.get("active_id"))
         .splitted
         else False,
+        comodel_name="pms.room",
+        domain="[('id', 'in', allowed_rooms_sources)]",
     )
     room_target = fields.Many2one(
         string="Room Target",
@@ -70,25 +72,26 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
     )
     allowed_rooms_sources = fields.Many2many(
         string="Allowed rooms source",
+        store=True,
+        readonly=False,
         comodel_name="pms.room",
         relation="pms_wizard_split_join_swap_reservation_rooms_source",
         column1="wizard_id",
         column2="room_id",
         compute="_compute_allowed_rooms_source",
-        store=True,
-        readonly=False,
     )
     allowed_rooms_target = fields.Many2many(
         string="Allowed rooms target",
         comodel_name="pms.room",
+        store=True,
+        readonly=False,
         relation="pms_wizard_split_join_swap_reservation_rooms_target",
         column1="wizard_id",
         column2="room_id",
         compute="_compute_allowed_rooms_target",
-        store=True,
-        readonly=False,
     )
     reservation_lines_to_change = fields.One2many(
+        string="Reservations Lines To Change",
         comodel_name="pms.wizard.reservation.lines.split",
         inverse_name="reservation_wizard_id",
         compute="_compute_reservation_lines",
@@ -306,6 +309,7 @@ class ReservationLinesToSplit(models.TransientModel):
     _name = "pms.wizard.reservation.lines.split"
 
     reservation_wizard_id = fields.Many2one(
+        string="Reservation Wizard",
         comodel_name="pms.reservation.split.join.swap.wizard",
     )
     date = fields.Date(
@@ -319,9 +323,9 @@ class ReservationLinesToSplit(models.TransientModel):
     allowed_room_ids = fields.Many2many(
         string="Allowed Rooms",
         help="It contains all available rooms for this line",
+        store=True,
         comodel_name="pms.room",
         compute="_compute_allowed_room_ids",
-        store=True,
         # readonly=False
     )
 

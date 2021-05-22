@@ -10,39 +10,37 @@ class AvailabilityWizard(models.TransientModel):
     _description = "Wizard for massive changes on Availability Plans & Pricelists."
     _check_pms_properties_auto = True
 
-    def _default_avail_readonly(self):
-        return True if self._context.get("availability_plan_id") else False
-
-    def _default_pricelist_readonly(self):
-        return True if self._context.get("pricelist_id") else False
-
-    # Fields declaration
     pms_property_ids = fields.Many2many(
-        comodel_name="pms.property",
         string="Property",
+        comodel_name="pms.property",
         default=lambda self: self.env["pms.property"].browse(
             self.env.user.get_active_property_ids()[0]
         ),
     )
     massive_changes_on = fields.Selection(
-        [("pricelist", "Pricelist"), ("availability_plan", "Availability Plan")],
         string="On",
-        default="availability_plan",
+        selection=[
+            ("pricelist", "Pricelist"),
+            ("availability_plan", "Availability Plan"),
+        ],
         required=True,
+        default="availability_plan",
     )
     availability_plan_id = fields.Many2one(
-        comodel_name="pms.availability.plan",
         string="Availability Plan to apply massive changes",
+        comodel_name="pms.availability.plan",
         check_pms_properties=True,
         # can be setted by context from availability plan detail
     )
     pricelist_id = fields.Many2one(
-        comodel_name="product.pricelist",
         string="Pricelist to apply massive changes",
+        comodel_name="product.pricelist",
         check_pms_properties=True,
     )
     allowed_pricelist_ids = fields.One2many(
-        comodel_name="product.pricelist", compute="_compute_allowed_pricelist_ids"
+        string="Allowed pricelists",
+        comodel_name="product.pricelist",
+        compute="_compute_allowed_pricelist_ids",
     )
     start_date = fields.Date(
         string="From",
@@ -53,8 +51,8 @@ class AvailabilityWizard(models.TransientModel):
         required=True,
     )
     room_type_id = fields.Many2one(
-        comodel_name="pms.room.type",
         string="Room Type",
+        comodel_name="pms.room.type",
         check_pms_properties=True,
     )
     price = fields.Float(string="Price")
@@ -176,31 +174,45 @@ class AvailabilityWizard(models.TransientModel):
     )
 
     rules_to_overwrite = fields.One2many(
+        string="Rule to Overwrite",
+        readonly=True,
+        store=False,
         comodel_name="pms.availability.plan.rule",
         compute="_compute_rules_to_overwrite",
-        store=False,
-        readonly=True,
     )
     pricelist_items_to_overwrite = fields.One2many(
+        string="Pricelist Items to Override",
+        readonly=True,
+        store=False,
         comodel_name="product.pricelist.item",
         compute="_compute_pricelist_items_to_overwrite",
-        store=False,
-        readonly=True,
     )
     num_rules_to_overwrite = fields.Integer(
         string="Rules to overwrite on massive changes",
-        compute="_compute_num_rules_to_overwrite",
-        store=False,
         readonly=True,
+        store=False,
+        compute="_compute_num_rules_to_overwrite",
     )
     num_pricelist_items_to_overwrite = fields.Integer(
         string="Pricelist items to overwrite on massive changes",
         compute="_compute_num_pricelist_items_to_overwrite",
-        store=False,
         readonly=True,
+        store=False,
     )
-    avail_readonly = fields.Boolean(default=_default_avail_readonly)
-    pricelist_readonly = fields.Boolean(default=_default_pricelist_readonly)
+    avail_readonly = fields.Boolean(
+        string="Avialability Readonly",
+        default=lambda self: self._default_avail_readonly(),
+    )
+    pricelist_readonly = fields.Boolean(
+        string="Pricelist Readonly",
+        default=lambda self: self._default_pricelist_readonly(),
+    )
+
+    def _default_avail_readonly(self):
+        return True if self._context.get("availability_plan_id") else False
+
+    def _default_pricelist_readonly(self):
+        return True if self._context.get("pricelist_id") else False
 
     @api.depends("massive_changes_on")
     def _compute_allowed_pricelist_ids(self):
@@ -417,7 +429,6 @@ class AvailabilityWizard(models.TransientModel):
                 )
             return domain_overwrite
 
-    # actions
     def apply_massive_changes(self):
 
         for record in self:
