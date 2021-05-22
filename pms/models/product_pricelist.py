@@ -30,58 +30,40 @@ class ProductPricelist(models.Model):
         check_pms_properties=True,
     )
     company_id = fields.Many2one(
+        string="Company",
+        help="Company to which the pricelist belongs",
         check_pms_properties=True,
     )
     cancelation_rule_id = fields.Many2one(
-        "pms.cancelation.rule",
         string="Cancelation Policy",
+        help="Cancelation Policy included in the room",
+        comodel_name="pms.cancelation.rule",
         check_pms_properties=True,
     )
     pricelist_type = fields.Selection(
-        [("daily", "Daily Plan")], string="Pricelist Type", default="daily"
+        string="Pricelist Type",
+        help="Pricelist types, it can be Daily Plan",
+        default="daily",
+        selection=[("daily", "Daily Plan")],
     )
     pms_sale_channel_ids = fields.Many2many(
-        "pms.sale.channel",
         string="Available Channels",
+        help="Sale channel for which the pricelist is included",
+        comodel_name="pms.sale.channel",
         check_pms_properties=True,
     )
     availability_plan_id = fields.Many2one(
-        comodel_name="pms.availability.plan",
         string="Availability Plan",
+        help="Availability Plan for which the pricelist is included",
+        comodel_name="pms.availability.plan",
         ondelete="restrict",
         check_pms_properties=True,
     )
-    item_ids = fields.One2many(check_pms_properties=True)
-
-    # Constraints and onchanges
-    # @api.constrains("pricelist_type", "pms_property_ids")
-    # def _check_pricelist_type_property_ids(self):
-    #     for record in self:
-    #         if record.pricelist_type == "daily" and len(record.pms_property_ids) != 1:
-    #             raise ValidationError(
-    #                 _(
-    #                     "A daily pricelist is used as a daily Rate Plan "
-    #                     "for room types and therefore must be related with "
-    #                     "one and only one property."
-    #                 )
-    #             )
-
-    #         if record.pricelist_type == "daily" and len(record.pms_property_ids) == 1:
-    #             pms_property_id = (
-    #                 self.env["pms.property"].search(
-    #                     [("default_pricelist_id", "=", record.id)]
-    #                 )
-    #                 or None
-    #             )
-    #             if pms_property_id and pms_property_id != record.pms_property_ids:
-    #                 raise ValidationError(
-    #                     _("Relationship mismatch.")
-    #                     + " "
-    #                     + _(
-    #                         "This pricelist is used as default in a "
-    #                         "different property."
-    #                     )
-    #                 )
+    item_ids = fields.One2many(
+        string="Items",
+        help="Items for which the pricelist is made up",
+        check_pms_properties=True,
+    )
 
     def _compute_price_rule_get_items(
         self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
@@ -91,11 +73,6 @@ class ProductPricelist(models.Model):
             and self._context["property"]
             and self._context.get("consumption_date")
         ):
-            # board_service_id = self._context.get("board_service")
-            # on_board_service_bool = True if board_service_id else False
-            # self.env["product.pricelist.item"].flush(
-            #     ["price", "currency_id", "company_id"]
-            # )
             self.env.cr.execute(
                 """
                 SELECT item.id
@@ -159,7 +136,36 @@ class ProductPricelist(models.Model):
             )
         return items
 
-    # Action methods
+    # Constraints and onchanges
+    # @api.constrains("pricelist_type", "pms_property_ids")
+    # def _check_pricelist_type_property_ids(self):
+    #     for record in self:
+    #         if record.pricelist_type == "daily" and len(record.pms_property_ids) != 1:
+    #             raise ValidationError(
+    #                 _(
+    #                     "A daily pricelist is used as a daily Rate Plan "
+    #                     "for room types and therefore must be related with "
+    #                     "one and only one property."
+    #                 )
+    #             )
+
+    #         if record.pricelist_type == "daily" and len(record.pms_property_ids) == 1:
+    #             pms_property_id = (
+    #                 self.env["pms.property"].search(
+    #                     [("default_pricelist_id", "=", record.id)]
+    #                 )
+    #                 or None
+    #             )
+    #             if pms_property_id and pms_property_id != record.pms_property_ids:
+    #                 raise ValidationError(
+    #                     _("Relationship mismatch.")
+    #                     + " "
+    #                     + _(
+    #                         "This pricelist is used as default in a "
+    #                         "different property."
+    #                     )
+    #                 )
+
     def open_massive_changes_wizard(self):
 
         if self.ensure_one():

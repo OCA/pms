@@ -7,15 +7,22 @@ class PaymentReturn(models.Model):
     _inherit = "payment.return"
 
     # Fields declaration
-    folio_id = fields.Many2one("pms.folio", string="Folio")
+    folio_id = fields.Many2one(
+        string="Folio", help="Folio in payment return", comodel_name="pms.folio"
+    )
     pms_property_id = fields.Many2one(
-        "pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
+        string="Property",
+        help="Property with access to the element",
+        store=True,
+        readonly=True,
+        comodel_name="pms.property",
+        related="folio_id.pms_property_id",
     )
     company_id = fields.Many2one(
+        string="Company",
+        help="The company for Payment Return",
         check_pms_properties=True,
     )
-
-    # Business methods
 
     def action_confirm(self):
         pay = super(PaymentReturn, self).action_confirm()

@@ -15,63 +15,96 @@ class PmsCheckinPartner(models.Model):
     _rec_name = "identifier"
     _check_pms_properties_auto = True
 
-    # Fields declaration
     identifier = fields.Char(
-        "Identifier", readonly=True, index=True, default=lambda self: _("New")
+        string="Identifier",
+        help="Checkin Partner Id",
+        readonly=True,
+        index=True,
+        default=lambda self: _("New"),
     )
     partner_id = fields.Many2one(
-        "res.partner",
+        string="Partner",
+        help="Partner associated with checkin partner",
+        comodel_name="res.partner",
         domain="[('is_company', '=', False)]",
     )
     reservation_id = fields.Many2one(
-        "pms.reservation",
+        string="Reservation",
+        help="Reservation to which checkin partners belong",
+        comodel_name="pms.reservation",
         check_pms_properties=True,
     )
     folio_id = fields.Many2one(
-        "pms.folio",
-        compute="_compute_folio_id",
+        string="Folio",
+        help="Folio to which reservation of checkin partner belongs",
         store=True,
+        comodel_name="pms.folio",
+        compute="_compute_folio_id",
         check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(
-        "pms.property", store=True, readonly=True, related="folio_id.pms_property_id"
+        string="Property",
+        help="Property to which the folio associated belongs",
+        readonly=True,
+        store=True,
+        comodel_name="pms.property",
+        related="folio_id.pms_property_id",
     )
     name = fields.Char(
-        "Name",
-        compute="_compute_name",
-        store=True,
+        string="Name",
+        help="Checkin partner name",
         readonly=False,
+        store=True,
+        compute="_compute_name",
     )
     email = fields.Char(
-        "E-mail",
-        compute="_compute_email",
-        store=True,
+        string="E-mail",
+        help="Checkin Partner Email",
         readonly=False,
+        store=True,
+        compute="_compute_email",
     )
     mobile = fields.Char(
-        "Mobile",
+        string="Mobile",
+        help="Checkin Partner Mobile",
         compute="_compute_mobile",
         store=True,
         readonly=False,
     )
     image_128 = fields.Image(
+        string="Image",
+        help="Checkin Partner Image, it corresponds with Partner Image associated",
         related="partner_id.image_128",
     )
     segmentation_ids = fields.Many2many(
+        string="Segmentation",
+        help="Segmentation tags to classify checkin partners",
         related="reservation_id.segmentation_ids",
         readonly=True,
     )
     checkin = fields.Date(
-        related="reservation_id.checkin", store=True, depends=["reservation_id.checkin"]
+        string="Checkin",
+        help="Checkin date",
+        store=True,
+        related="reservation_id.checkin",
+        depends=["reservation_id.checkin"],
     )
     checkout = fields.Date(
-        related="reservation_id.checkout",
+        string="Checkout",
+        help="Checkout date",
         store=True,
+        related="reservation_id.checkout",
         depends=["reservation_id.checkout"],
     )
-    arrival = fields.Datetime("Enter")
-    departure = fields.Datetime("Exit")
+    arrival = fields.Datetime("Enter", help="Checkin partner arrival date and time")
+    departure = fields.Datetime(
+        string="Exit", help="Checkin partner departure date and time"
+    )
     state = fields.Selection(
+        string="State",
+        help="Status of the checkin partner regarding the reservation",
+        readonly=True,
+        store=True,
         selection=[
             ("draft", "Unkown Guest"),
             ("precheckin", "Pending arrival"),
@@ -79,10 +112,7 @@ class PmsCheckinPartner(models.Model):
             ("done", "Out"),
             ("cancelled", "Cancelled"),
         ],
-        string="State",
         compute="_compute_state",
-        store=True,
-        readonly=True,
     )
 
     # Compute
@@ -147,22 +177,6 @@ class PmsCheckinPartner(models.Model):
             if not record.mobile:
                 record.mobile = record.partner_id.mobile
 
-    @api.model
-    def _checkin_mandatory_fields(self, depends=False):
-        # api.depends need "reservation_id.state" in the lambda function
-        if depends:
-            return ["reservation_id.state", "name"]
-        return ["name"]
-
-    @api.model
-    def _checkin_partner_fields(self):
-        # api.depends need "reservation_id.state" in the lambda function
-        checkin_fields = self._checkin_mandatory_fields()
-        checkin_fields.extend(["mobile", "email"])
-        return checkin_fields
-
-    # Constraints and onchanges
-
     @api.constrains("departure", "arrival")
     def _check_departure(self):
         for record in self:
@@ -209,7 +223,6 @@ class PmsCheckinPartner(models.Model):
                 ):
                     raise ValidationError(_("'%s' is not a valid phone", record.mobile))
 
-    # CRUD
     @api.model
     def create(self, vals):
         # The checkin records are created automatically from adult depends
@@ -284,6 +297,41 @@ class PmsCheckinPartner(models.Model):
         reservations._compute_checkin_partner_ids()
         return res
 
+    @api.model
+    def _checkin_mandatory_fields(self, depends=False):
+        # api.depends need "reservation_id.state" in the lambda function
+        if depends:
+            return ["reservation_id.state", "name"]
+        return ["name"]
+
+    @api.model
+    def _checkin_partner_fields(self):
+        # api.depends need "reservation_id.state" in the lambda function
+        checkin_fields = self._checkin_mandatory_fields()
+        checkin_fields.extend(["mobile", "email"])
+        return checkin_fields
+
+    @api.model
+    def import_room_list_json(self, roomlist_json):
+        roomlist_json = json.loads(roomlist_json)
+        for checkin_dict in roomlist_json:
+            identifier = checkin_dict["identifier"]
+            reservation_id = checkin_dict["reservation_id"]
+            checkin = self.env["pms.checkin.partner"].search(
+                [("identifier", "=", identifier)]
+            )
+            reservation = self.env["pms.reservation"].browse(reservation_id)
+            if not checkin:
+                raise ValidationError(
+                    _("%s not found in checkins (%s)"), identifier, reservation.name
+                )
+            checkin_vals = {}
+            for key, value in checkin_dict.items():
+                if key in ("reservation_id", "folio_id", "identifier"):
+                    continue
+                checkin_vals[key] = value
+            checkin.write(checkin_vals)
+
     def action_on_board(self):
         for record in self:
             if record.reservation_id.checkin > fields.Date.today():
@@ -310,24 +358,3 @@ class PmsCheckinPartner(models.Model):
             }
             record.update(vals)
         return True
-
-    @api.model
-    def import_room_list_json(self, roomlist_json):
-        roomlist_json = json.loads(roomlist_json)
-        for checkin_dict in roomlist_json:
-            identifier = checkin_dict["identifier"]
-            reservation_id = checkin_dict["reservation_id"]
-            checkin = self.env["pms.checkin.partner"].search(
-                [("identifier", "=", identifier)]
-            )
-            reservation = self.env["pms.reservation"].browse(reservation_id)
-            if not checkin:
-                raise ValidationError(
-                    _("%s not found in checkins (%s)"), identifier, reservation.name
-                )
-            checkin_vals = {}
-            for key, value in checkin_dict.items():
-                if key in ("reservation_id", "folio_id", "identifier"):
-                    continue
-                checkin_vals[key] = value
-            checkin.write(checkin_vals)

@@ -7,7 +7,11 @@ class AccountPayment(models.Model):
     _inherit = "account.payment"
 
     # Fields declaration
-    folio_id = fields.Many2one("pms.folio", string="Folio Reference")
+    folio_id = fields.Many2one(
+        string="Folio Reference",
+        help="Folio in account payment",
+        comodel_name="pms.folio",
+    )
 
     # Business methods
 

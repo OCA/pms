@@ -11,70 +11,89 @@ class FolioWizard(models.TransientModel):
     )
     _check_pms_properties_auto = True
 
-    # Fields declaration
     start_date = fields.Date(
         string="From:",
+        help="Start date for creation of reservations and folios",
         required=True,
     )
     end_date = fields.Date(
         string="To:",
+        help="End date for creation of reservations and folios",
         required=True,
     )
     pricelist_id = fields.Many2one(
-        comodel_name="product.pricelist",
         string="Pricelist",
-        compute="_compute_pricelist_id",
-        store=True,
+        help="Pricelist applied in folio",
         readonly=False,
+        store=True,
+        comodel_name="product.pricelist",
+        compute="_compute_pricelist_id",
         check_pms_properties=True,
     )
     pms_property_id = fields.Many2one(
-        comodel_name="pms.property",
         string="Property",
+        help="Property to which the folio belongs",
         default=lambda self: self._default_pms_property_id(),
+        comodel_name="pms.property",
     )
     segmentation_ids = fields.Many2many(
-        "res.partner.category", string="Segmentation", ondelete="restrict"
+        string="Segmentation",
+        help="Partner Tags",
+        ondelete="restrict",
+        comodel_name="res.partner.category",
     )
     partner_id = fields.Many2one(
-        "res.partner",
+        string="Partner",
+        help="Partner who made the reservation",
+        comodel_name="res.partner",
         check_pms_properties=True,
     )
     folio_id = fields.Many2one(
-        "pms.folio",
+        string="Folio",
+        help="Folio in which are included new reservations",
+        comodel_name="pms.folio",
         check_pms_properties=True,
     )
     availability_results = fields.One2many(
+        strign="Availability Results",
+        help="Availability Results",
+        readonly=False,
+        store=True,
         comodel_name="pms.folio.availability.wizard",
         inverse_name="folio_wizard_id",
         compute="_compute_availability_results",
-        store=True,
-        readonly=False,
         check_pms_properties=True,
     )
     agency_id = fields.Many2one(
         string="Agency",
+        help="Agency that made the reservation",
         comodel_name="res.partner",
-        ondelete="restrict",
         domain=[("is_agency", "=", True)],
+        ondelete="restrict",
     )
     channel_type_id = fields.Many2one(
         string="Direct Sale Channel",
+        help="Sales Channel through which the reservation was managed",
         readonly=False,
         store=True,
         comodel_name="pms.sale.channel",
         domain=[("channel_type", "=", "direct")],
-        compute="_compute_channel_type_id",
         ondelete="restrict",
+        compute="_compute_channel_type_id",
     )
     total_price_folio = fields.Float(
-        string="Total Price", compute="_compute_total_price_folio"
+        string="Total Price",
+        help="Total price of folio with taxes",
+        compute="_compute_total_price_folio",
     )
     discount = fields.Float(
         string="Discount",
+        help="Discount that be applied in total price",
         default=0,
     )
-    can_create_folio = fields.Boolean(compute="_compute_can_create_folio")
+    can_create_folio = fields.Boolean(
+        string="Can create folio", compute="_compute_can_create_folio"
+    )
 
     def _default_pms_property_id(self):
         if self._context.get("default_folio_id"):
@@ -164,7 +183,6 @@ class FolioWizard(models.TransientModel):
                         key=lambda s: s.num_rooms_available, reverse=True
                     )
 
-    # actions
     def create_folio(self):
         for record in self:
             if not record.folio_id:

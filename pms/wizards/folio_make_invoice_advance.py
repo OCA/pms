@@ -10,6 +10,78 @@ class FolioAdvancePaymentInv(models.TransientModel):
     _name = "folio.advance.payment.inv"
     _description = "Folio Advance Payment Invoice"
 
+    partner_invoice_id = fields.Many2one(
+        string="Billing contact",
+        help="Invoice address for current partner",
+        default=lambda self: self._default_partner_invoice_id,
+        comodel_name="res.partner",
+    )
+    advance_payment_method = fields.Selection(
+        string="Create Invoice",
+        help="A standard invoice is issued with all the order \
+                lines ready for invoicing, \
+                according to their invoicing policy \
+                (based on ordered or delivered quantity).",
+        required=True,
+        default="delivered",
+        selection=[
+            ("delivered", "Regular invoice"),
+            ("percentage", "Down payment (percentage)"),
+            ("fixed", "Down payment (fixed amount)"),
+        ],
+    )
+    bill_services = fields.Boolean(
+        string="Bill Services", help="Bill Services", default=True
+    )
+    bill_rooms = fields.Boolean(string="Bill Rooms", help="Bill Rooms", default=True)
+    deduct_down_payments = fields.Boolean(
+        string="Deduct down payments", help="Deduct down payments", default=True
+    )
+    has_down_payments = fields.Boolean(
+        string="Has down payments",
+        help="Has down payments",
+        readonly=True,
+        default=lambda self: self._default_has_down_payment,
+    )
+    product_id = fields.Many2one(
+        string="Down Payment Product",
+        default=lambda self: self._default_product_id,
+        comodel_name="product.product",
+        domain=[("type", "=", "service")],
+    )
+    count = fields.Integer(
+        string="Order Count",
+        default=lambda self: self._count,
+    )
+    amount = fields.Float(
+        string="Down Payment Amount",
+        help="The percentage of amount to be invoiced in advance, taxes excluded.",
+        digits="Account",
+    )
+    currency_id = fields.Many2one(
+        string="Currency",
+        help="Currency used in invoices",
+        comodel_name="res.currency",
+        default=lambda self: self._default_currency_id,
+    )
+    fixed_amount = fields.Monetary(
+        string="Down Payment Amount (Fixed)",
+        help="The fixed amount to be invoiced in advance, taxes excluded.",
+    )
+    deposit_account_id = fields.Many2one(
+        string="Income Account",
+        help="Account used for deposits",
+        default=lambda self: self._default_deposit_account_id,
+        comodel_name="account.account",
+        domain=[("deprecated", "=", False)],
+    )
+    deposit_taxes_id = fields.Many2many(
+        string="Customer Taxes",
+        help="Taxes used for deposits",
+        default=lambda self: self._default_deposit_taxes_id,
+        comodel_name="account.tax",
+    )
+
     @api.model
     def _count(self):
         return len(self._context.get("active_ids", []))
@@ -57,64 +129,17 @@ class FolioAdvancePaymentInv(models.TransientModel):
             folio = self.env["pms.folio"].browse(self._context.get("active_id", []))
             return folio.partner_invoice_ids[0]
 
-    partner_invoice_id = fields.Many2one(
-        comodel_name="res.partner",
-        string="Billing contact",
-        default=_default_partner_invoice_id,
-    )
+    def _get_advance_details(self, order):
+        context = {"lang": order.partner_id.lang}
+        if self.advance_payment_method == "percentage":
+            amount = order.amount_untaxed * self.amount / 100
+            name = _("Down payment of %s%%") % (self.amount)
+        else:
+            amount = self.fixed_amount
+            name = _("Down Payment")
+        del context
 
-    advance_payment_method = fields.Selection(
-        [
-            ("delivered", "Regular invoice"),
-            ("percentage", "Down payment (percentage)"),
-            ("fixed", "Down payment (fixed amount)"),
-        ],
-        string="Create Invoice",
-        default="delivered",
-        required=True,
-        help="A standard invoice is issued with all the order \
-        lines ready for invoicing, \
-        according to their invoicing policy \
-        (based on ordered or delivered quantity).",
-    )
-    bill_services = fields.Boolean("Bill Services", default=True)
-    bill_rooms = fields.Boolean("Bill Rooms", default=True)
-    deduct_down_payments = fields.Boolean("Deduct down payments", default=True)
-    has_down_payments = fields.Boolean(
-        "Has down payments", default=_default_has_down_payment, readonly=True
-    )
-    product_id = fields.Many2one(
-        "product.product",
-        string="Down Payment Product",
-        domain=[("type", "=", "service")],
-        default=_default_product_id,
-    )
-    count = fields.Integer(default=_count, string="Order Count")
-    amount = fields.Float(
-        "Down Payment Amount",
-        digits="Account",
-        help="The percentage of amount to be invoiced in advance, taxes excluded.",
-    )
-    currency_id = fields.Many2one(
-        "res.currency", string="Currency", default=_default_currency_id
-    )
-    fixed_amount = fields.Monetary(
-        "Down Payment Amount (Fixed)",
-        help="The fixed amount to be invoiced in advance, taxes excluded.",
-    )
-    deposit_account_id = fields.Many2one(
-        "account.account",
-        string="Income Account",
-        domain=[("deprecated", "=", False)],
-        help="Account used for deposits",
-        default=_default_deposit_account_id,
-    )
-    deposit_taxes_id = fields.Many2many(
-        "account.tax",
-        string="Customer Taxes",
-        help="Taxes used for deposits",
-        default=_default_deposit_taxes_id,
-    )
+        return amount, name
 
     @api.onchange("advance_payment_method")
     def onchange_advance_payment_method(self):
@@ -160,18 +185,6 @@ class FolioAdvancePaymentInv(models.TransientModel):
         }
 
         return invoice_vals
-
-    def _get_advance_details(self, order):
-        context = {"lang": order.partner_id.lang}
-        if self.advance_payment_method == "percentage":
-            amount = order.amount_untaxed * self.amount / 100
-            name = _("Down payment of %s%%") % (self.amount)
-        else:
-            amount = self.fixed_amount
-            name = _("Down Payment")
-        del context
-
-        return amount, name
 
     def _create_invoice(self, order, line, amount):
         if (self.advance_payment_method == "percentage" and self.amount <= 0.00) or (

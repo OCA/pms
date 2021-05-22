@@ -10,25 +10,26 @@ class AccountMoveLine(models.Model):
     # Fields declaration
     # TODO: REVIEW why not a Many2one?
     folio_line_ids = fields.Many2many(
-        "folio.sale.line",
-        "folio_sale_line_invoice_rel",
-        "invoice_line_id",
-        "sale_line_id",
         string="Folio Lines",
+        help="The folio lines in the account move lines",
         copy=False,
+        comodel_name="folio.sale.line",
+        relation="folio_sale_line_invoice_rel",
+        column1="invoice_line_id",
+        column2="sale_line_id",
     )
     folio_ids = fields.Many2many(
-        "pms.folio",
-        "payment_folio_rel",
-        "move_id",
-        "folio_id",
         string="Folios",
+        comodel_name="pms.folio",
+        relation="payment_folio_rel",
+        column1="move_id",
+        column2="folio_id",
     )
     name_changed_by_user = fields.Boolean(
-        default=False,
-        readonly=False,
-        store=True,
         string="Custom label",
+        readonly=False,
+        default=False,
+        store=True,
         compute="_compute_name_changed_by_user",
     )
 
