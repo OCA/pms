@@ -81,7 +81,7 @@ class AvailabilityWizard(models.TransientModel):
         help="Board Service included in the room",
         comodel_name="pms.board.service.room.type",
         domain="[('pms_room_type_id','=',room_type_id)]",
-        tracking=True,
+        check_pms_properties=True,
     )
 
     @api.depends("room_type_id", "checkin", "checkout")

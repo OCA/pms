@@ -6,10 +6,11 @@ from odoo.exceptions import UserError
 
 class ReservationSplitJoinSwapWizard(models.TransientModel):
     _name = "pms.reservation.split.join.swap.wizard"
-    string = ("Operation",)
-    help = ("Operation to be applied on the reservation",)
+
     operation = fields.Selection(
-        [
+        string="Operation",
+        help="Operation to be applied on the reservation",
+        selection=[
             ("swap", "Swap rooms"),
             ("split", "Split reservation"),
             ("join", "Join reservation"),
@@ -45,7 +46,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
         if self._context.get("active_id")
         else False,
     )
-    reservations = fields.Many2many(
+    reservation_ids = fields.Many2many(
         string="Reservations",
         readonly=False,
         store=True,
@@ -100,7 +101,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
     )
 
     @api.depends("checkin", "checkout", "room_source", "room_target")
-    def _compute_reservations(self):
+    def _compute_reservation_ids(self):
         for record in self:
             if record.checkin and record.checkout:
                 reservation_ids = list()
@@ -131,9 +132,9 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
                     )
                     .sorted("rooms")
                 )
-                record.reservations = reservations
+                record.reservation_ids = reservations
             else:
-                record.reservations = False
+                record.reservation_ids = False
 
     @api.depends("reservation_id")
     def _compute_reservation_lines(self):
@@ -160,7 +161,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
     def _compute_allowed_rooms_source(self):
         for record in self:
             record.allowed_rooms_sources = (
-                record.reservations.reservation_line_ids.mapped("room_id")
+                record.reservation_ids.reservation_line_ids.mapped("room_id")
             )
 
     @api.depends_context("default_operation")
@@ -187,7 +188,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
                         (
                             "id",
                             "in",
-                            record.reservations.reservation_line_ids.mapped(
+                            record.reservation_ids.reservation_line_ids.mapped(
                                 "room_id"
                             ).ids,
                         )

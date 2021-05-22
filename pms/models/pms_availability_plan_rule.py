@@ -85,6 +85,7 @@ class PmsAvailabilityPlanRule(models.Model):
         ondelete="restrict",
         required=True,
         comodel_name="pms.property",
+        check_pms_properties=True,
     )
     avail_id = fields.Many2one(
         string="Avail record",
