@@ -2207,7 +2207,7 @@ msgstr "Asistente del Folio"
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.pms_partner_folios
-#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__statement_folio_ids
+#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line_folio_ids
 #: model:ir.model.fields,field_description:pms.field_account_move_line__folio_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__folios_count
 #: model:ir.model.fields,field_description:pms.field_res_partner__folios_count
