@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 
 class ReservationSplitJoinSwapWizard(models.TransientModel):
     _name = "pms.reservation.split.join.swap.wizard"
+    _description = "Operations in reservations"
 
     operation = fields.Selection(
         string="Operation",
@@ -308,6 +309,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
 
 class ReservationLinesToSplit(models.TransientModel):
     _name = "pms.wizard.reservation.lines.split"
+    _decription = "Lines available to split"
 
     reservation_wizard_id = fields.Many2one(
         string="Reservation Wizard",

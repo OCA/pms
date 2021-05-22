@@ -1326,7 +1326,7 @@ class PmsFolio(models.Model):
             .search(
                 [
                     ("journal_id", "=", journal.id),
-                    ("property_id", "=", property_folio_id[0]),
+                    ("pms_property_id", "=", property_folio_id[0]),
                     ("state", "=", "open"),
                 ]
             )
@@ -1338,7 +1338,7 @@ class PmsFolio(models.Model):
             st_values = {
                 "journal_id": journal.id,
                 "user_id": self.env.user.id,
-                "property_id": property_folio_id[0],
+                "pms_property_id": property_folio_id[0],
                 "name": str(fields.Datetime.now()),
             }
             statement = (
@@ -1351,7 +1351,7 @@ class PmsFolio(models.Model):
             "date": date,
             "amount": amount,
             "partner_id": partner.id if partner else False,
-            "statement_folio_ids": [(6, 0, folios.ids)],
+            "folio_ids": [(6, 0, folios.ids)],
             "reservation_ids": [(6, 0, reservation_ids)],
             "service_ids": [(6, 0, service_ids)],
             "payment_ref": folios.mapped("name"),

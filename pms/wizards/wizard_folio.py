@@ -5,10 +5,7 @@ from odoo import api, fields, models
 
 class FolioWizard(models.TransientModel):
     _name = "pms.folio.wizard"
-    _description = (
-        "Wizard to check availability by room type and pricelist &"
-        " creation of folios with its reservations"
-    )
+    _description = "Booking engine"
     _check_pms_properties_auto = True
 
     start_date = fields.Date(
@@ -56,7 +53,7 @@ class FolioWizard(models.TransientModel):
         check_pms_properties=True,
     )
     availability_results = fields.One2many(
-        strign="Availability Results",
+        string="Availability Results",
         help="Availability Results",
         readonly=False,
         store=True,
