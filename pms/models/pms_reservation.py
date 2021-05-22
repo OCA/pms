@@ -139,6 +139,7 @@ class PmsReservation(models.Model):
         default=lambda self: self.env.user.get_active_property_ids()[0],
         related="folio_id.pms_property_id",
         comodel_name="pms.property",
+        check_pms_properties=True,
     )
     reservation_line_ids = fields.One2many(
         string="Reservation Lines",
@@ -650,10 +651,9 @@ class PmsReservation(models.Model):
         "reservation_line_ids.date",
         "reservation_line_ids.room_id",
         "reservation_line_ids.occupies_availability",
-        "overbooking",
-        "state",
         "preferred_room_id",
         "pricelist_id",
+        "pms_property_id",
     )
     def _compute_allowed_room_ids(self):
         for reservation in self:

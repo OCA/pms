@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class AccountJournal(models.Model):
     _inherit = "account.journal"
+    _check_pms_properties_auto = True
 
     pms_property_ids = fields.Many2many(
         string="Properties",

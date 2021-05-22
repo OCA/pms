@@ -34,6 +34,7 @@ class PmsFolio(models.Model):
         comodel_name="pms.property",
         required=True,
         default=lambda self: self.env.user.get_active_property_ids()[0],
+        check_pms_properties=True,
     )
     partner_id = fields.Many2one(
         string="Partner",
