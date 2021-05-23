@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template
+            id="assets_backend"
+            name="hr_housekeeping assets"
+            inherit_id="web.assets_backend"
+        >
+            <xpath expr="." position="inside">
+                <link
+                    rel="stylesheet"
+                    type="text/scss"
+                    href="/pms_housekeeping/static/src/scss/pms_room_rack.scss"
+                />
+            </xpath>
+        </template>
+    </data>
+</odoo>

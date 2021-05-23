@@ -160,12 +160,12 @@
                         <field
                             name="partner_id"
                             placeholder="Guest"
-                            attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            attrs="{'invisible':[('reservation_type','in',('out_service'))]}"
                         />
                         <field
                             name="closure_reason_id"
                             placeholder="Closure reason"
-                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                            attrs="{'invisible':[('reservation_type','not in',('out_service'))]}"
                         />
                     </h1>
                     <group col="8">

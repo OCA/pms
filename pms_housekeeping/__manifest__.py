@@ -14,7 +14,7 @@
         "hr",
     ],
     "data": [
-        # "wizard/housekeeping_rack.xml",
+        "views/pms_housekeeping_templates.xml",
         "views/pms_reservation_views.xml",
         "views/pms_housekeeping_task_type_views.xml",
         "views/pms_housekeeping_task_views.xml",

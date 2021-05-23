@@ -215,7 +215,7 @@
                             name="partner_id"
                             default_focus="1"
                             placeholder="Lastname, Firstname"
-                            attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            attrs="{'invisible':[('reservation_type','in',('out_service'))]}"
                             required="1"
                         />
                         <field
@@ -223,7 +223,7 @@
                             default_focus="1"
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Closure Reason"
-                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                            attrs="{'invisible':[('reservation_type','not in',('out_service'))]}"
                         />
                     </h1>
                     <h3>
@@ -259,7 +259,7 @@
                     <field
                         name="out_service_description"
                         placeholder="Out service description"
-                        attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                        attrs="{'invisible':[('reservation_type','not in',('out_service'))]}"
                     />
                     <group col="8">
                         <group
@@ -275,7 +275,7 @@
                                 placeholder="email"
                                 widget="email"
                                 force_save="1"
-                                attrs="{'invisible': [('reservation_type','in',('out'))],
+                                attrs="{'invisible': [('reservation_type','in',('out_service'))],
                                        'readonly': [('partner_id', '!=', False),
                                                    ('partner_email','!=', False)]}"
                             />
@@ -286,7 +286,7 @@
                                 placeholder="mobile"
                                 widget="phone"
                                 force_save="1"
-                                attrs="{'invisible': [('reservation_type','in',('out'))],
+                                attrs="{'invisible': [('reservation_type','in',('out_service'))],
                                        'readonly': [('partner_id', '!=', False),
                                                    ('partner_mobile','!=', False)]}"
                             />
@@ -296,7 +296,7 @@
                                 nolabel="1"
                                 name="partner_internal_comment"
                                 string="Partner Note"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                                attrs="{'invisible': [('reservation_type','in',('out_service'))]}"
                             />
                             <field name="nights" />
                             <field placeholder="Arrival Hour" name="arrival_hour" />
@@ -323,11 +323,11 @@
                             />
                             <field
                                 name="adults"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                                attrs="{'invisible': [('reservation_type','in',('out_service'))]}"
                             />
                             <field
                                 name="children"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                                attrs="{'invisible': [('reservation_type','in',('out_service'))]}"
                             />
                             <field
                                 name="children_occupying"
@@ -340,7 +340,7 @@
                                 name="board_service_room_id"
                                 domain="[('pms_room_type_id', '=', room_type_id)]"
                                 options="{'no_create': True,'no_open': True}"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                                attrs="{'invisible': [('reservation_type','in',('out_service'))]}"
                             />
                             <field
                                 name="folio_internal_comment"
@@ -539,7 +539,7 @@
                         <page
                             name="persons"
                             string="Persons"
-                            attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                            attrs="{'invisible': [('reservation_type','in',('out_service'))]}"
                         >
                             <group colspan="2" cols="6">
                                 <field
@@ -561,7 +561,7 @@
                         <page
                             name="invoicing"
                             string="Invoicing"
-                            attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                            attrs="{'invisible': [('reservation_type','in',('out_service'))]}"
                         >
                         </page>
                         <page name="others" string="Others">
@@ -575,7 +575,7 @@
                                     <group>
                                         <!--<field
                                             name="channel_type"
-                                            attrs="{'required':[('reservation_type','not in',('staff','out'))]}"
+                                            attrs="{'required':[('reservation_type','not in',('staff','out_service'))]}"
                                         />-->
                                         <field name="reservation_type" />
                                     </group>

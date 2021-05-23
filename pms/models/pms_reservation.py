@@ -573,7 +573,7 @@ class PmsReservation(models.Model):
 
     def _compute_date_order(self):
         for record in self:
-            record.date_order = datetime.datetime.today()
+            record.date_order = fields.Date.today()
 
     # TODO:
     #  consider near_to_checkin & pending_notifications to order
@@ -676,7 +676,7 @@ class PmsReservation(models.Model):
     @api.depends("reservation_type", "agency_id", "folio_id")
     def _compute_partner_id(self):
         for reservation in self:
-            if reservation.reservation_type == "out":
+            if reservation.reservation_type == "out_service":
                 reservation.partner_id = reservation.pms_property_id.partner_id.id
             elif not reservation.partner_id:
                 if reservation.folio_id:
@@ -1093,7 +1093,7 @@ class PmsReservation(models.Model):
 
     def _compute_checkin_partner_count(self):
         for record in self:
-            if record.reservation_type != "out":
+            if record.reservation_type != "out_service":
                 record.checkin_partner_count = len(record.checkin_partner_ids)
                 record.checkin_partner_pending_count = record.adults - len(
                     record.checkin_partner_ids

@@ -80,10 +80,13 @@
         <field name="arch" type="xml">
             <tree string="Property Room">
                 <field name="sequence" widget="handle" />
+                <field name="next_arrival_datetime" widget="remaining_days" />
                 <field name="name" />
                 <field name="capacity" />
-                <field name="clean_status" />
-                <field name="clean_employee_id" />
+                <field name="occupation_status" />
+                <field name="next_departure_reservation_id" string="In House" />
+                <field name="next_departure_datetime" widget="remaining_days" />
+                <field name="next_arrival_reservation_id" string="Next arrival" />
             </tree>
         </field>
     </record>
@@ -134,61 +137,90 @@
         <field name="active" eval="True" />
         <field name="arch" type="xml">
             <kanban
-                default_group_by="ubication_id"
-                default_order="ubication_id"
-                class="o_res_partner_kanban"
                 sample="1"
+                default_group_by="ubication_id"
                 group_create="false"
                 create="false"
+                class="oe_background_grey o_kanban_dashboard o_room_rack_kanban"
             >
                 <field name="name" />
+                <field name="room_type_id" />
+                <field name="next_arrival_datetime" />
+                <field name="next_departure_datetime" />
+                <field name="next_departure_reservation_id" />
+                <field name="pms_property_id" />
+                <field name="occupation_status" />
+                <field name="color" />
+
                 <templates>
                     <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_global_click_edit">
-                            <div class="o_dropdown_kanban dropdown">
-                                <!-- Top-right drop down menu here... -->
-                            </div>
-                            <div class="oe_kanban_body">
-                                <!-- Content elements and fields go here... -->
-                                <div style="font-size: 1.5em;">
-                                    <field name="name" />
-                                       <!-- class="oe_stat_button" -->
-                                </div><div style="font-size: 1.1em;">
-                                    <field name="clean_status" />
+                        <div
+                            t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''}"
+                        >
+                            <div
+                                t-attf-class="d-flex flex-column p-0 oe_kanban_card oe_kanban_global_click"
+                            >
+                                <field name="occupation_status" invisible="1" />
+                                <div class="ribbon ribbon_free ribbon-top-right">
+                                    <span>Arrival <field
+                                            name="next_arrival_datetime"
+                                            widget="remaining_days"
+                                        /></span>
                                 </div>
-
+                                <!-- <div class="ribbon ribbon-top-right" attrs="{'invisible': [('occupation_status', '!=', 'occupied')]}">
+                                    <span>Departure <field name="next_departure_datetime" widget="remaining_days"/></span>
+                                </div>
+                                <div class="ribbon ribbon_out_service ribbon-top-right" attrs="{'invisible': [('occupation_status', '!=', 'out_service')]}">
+                                    <span>Out of Service </span>
+                                </div> -->
                             </div>
-
-
-                            <div class="oe_kanban_footer">
-                                <div class="oe_kanban_footer_left">
-                                    <!-- Left hand footer... -->
-                                    <field
-                                        name="housekeeping_task_ids"
-                                        widget="many2many_tags"
-                                        domain="[('state', '=', 'draft')]"
-                                    />
-                                    Default: <field name="clean_employee_id" />
-                                    <div>
-                                        <!-- <field name="clean_type" /> -->
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary col-12">
+                                        <span><t t-esc="record.name.value" /></span>
                                     </div>
+                                    <!-- <div class="o_kanban_record_subtitle col-12 text-muted">
+                                        <field name="user_id"/>
+                                    </div>
+                                    <field name="is_favorite" widget="boolean_favorite" nolabel="1"/>
+                                    <div t-if="record.alias_name.value and record.alias_domain.value and record.state.raw_value == 'recruit'" class="o_secondary o_job_alias">
+                                        <small> <i class="fa fa-envelope-o" role="img" aria-label="Alias" title="Alias"/> <field name="alias_id"/> </small>
+                                    </div> -->
                                 </div>
-                                <div class="oe_kanban_footer_right">
-                                    <!-- Right hand footer... -->
-                                    <a
-                                        type="object"
-                                        name="add_today_tasks"
-                                        help="Add the housekeeping tasks"
-                                    >
-                                        <span
-                                            class="fa fa-plus-square"
-                                            title="Add all today tasks"
-                                        />
-                                    </a>
-                                </div>
+                                <!-- <div class="o_kanban_manage_button_section">
+                                    <a class="o_kanban_manage_toggle_button" href="#"><i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/></a>
+                                </div> -->
                             </div>
-                            <div class="oe_clear" />
-                            <div>
+
+                            <div class="container o_kanban_card_content">
+                                <!-- <t t-if="record.state.raw_value == 'open'">
+                                    <div class="row">
+                                        <div class="col-12 o_kanban_primary_left">
+                                            <button class="btn btn-secondary" name="set_recruit" type="object">Start Recruitment</button>
+                                        </div>
+                                    </div>
+                                </t> -->
+                                <div class="o_primary">
+                                    <span><t t-esc="record.name.value" /></span>
+                                    <t
+                                        t-if="record.next_departure_reservation_id.value"
+                                    >
+                                        <span><t
+                                                t-esc="record.next_departure_reservation_id.value"
+                                            /></span>
+                                    </t>
+                                </div>
+                                <div
+                                    name="kanban_boxes"
+                                    class="row o_room_rack_kanban_boxes"
+                                >
+                                    <!-- <div class="o_room_rack_kanban_box o_kanban_primary_bottom bottom_block" style="padding-left:2px;">
+                                        <div class="o_link_trackers col-12">
+                                            Next Arrival:
+                                            <field name="next_arrival_datetime" widget="remaining_days"/> <br/>
+                                        </div>
+                                    </div> -->
+                                </div>
                             </div>
                         </div>
                     </t>
@@ -201,6 +233,7 @@
         <field name="name">Housekeeping</field>
         <field name="res_model">pms.room</field>
         <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="room_rack_view_search" />
         <field
             name="view_ids"
             eval="[

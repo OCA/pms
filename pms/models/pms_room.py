@@ -39,6 +39,7 @@ class PmsRoom(models.Model):
         default=lambda self: self.env.user.get_active_property_ids()[0],
         comodel_name="pms.property",
         ondelete="restrict",
+        check_pms_properties=True,
     )
     room_type_id = fields.Many2one(
         string="Property Room Type",
@@ -77,6 +78,42 @@ class PmsRoom(models.Model):
         " Order, Delivery Order and Customer Invoice/Credit Note",
         translate=True,
     )
+    occupation_status = fields.Selection(
+        string="Room Status",
+        selection=[
+            ("occupied", "Occupied"),
+            ("free", "Free"),
+            ("out_service", "Out of service"),
+        ],
+        help="Room status based on occupancy, next arrival, or out of service",
+        compute="_compute_occupation_status",
+    )
+    next_departure_reservation_id = fields.Many2one(
+        string="Currently reservation",
+        comodel_name="pms.reservation",
+        help="Reservation that currently occupies the room",
+        compute="_compute_occupation_status",
+    )
+    next_departure_datetime = fields.Datetime(
+        string="Next departure",
+        help="Expected departure from the reservation " "currently occupying the room",
+        compute="_compute_occupation_status",
+    )
+    next_arrival_reservation_id = fields.Many2one(
+        string="Next Reservation",
+        comodel_name="pms.reservation",
+        help="Next expected reservation",
+        compute="_compute_next_arrival",
+    )
+    next_arrival_datetime = fields.Datetime(
+        string="Next arrival",
+        help="Next expected arrival date",
+        compute="_compute_next_arrival",
+    )
+    color = fields.Integer(
+        string="Color Index",
+        default=1,
+    )
 
     _sql_constraints = [
         (
@@ -86,6 +123,63 @@ class PmsRoom(models.Model):
             "with the same name in the same property",
         )
     ]
+
+    def _compute_occupation_status(self):
+        for record in self:
+            # Set Status and next departure fields
+            current_reservation = (
+                self.env["pms.reservation.line"]
+                .search(
+                    [
+                        ("state", "in", ("onboard", "departure_delayed")),
+                        ("room_id", "=", record.id),
+                    ]
+                )
+                .reservation_id
+            )
+
+            record.occupation_status = "free"
+            record.next_departure_datetime = False
+            record.next_departure_reservation_id = False
+
+            if current_reservation:
+                record.occupation_status = "occupied"
+                record.next_departure_reservation_id = current_reservation
+                record.next_departure_datetime = current_reservation.checkout_datetime
+                if current_reservation.reservation_type == "out_service":
+                    record.occupation_status = "out_service"
+
+    def _compute_next_arrival(self):
+        today = fields.Date.today()
+        for record in self:
+            future_reservation_dates = (
+                self.env["pms.reservation.line"]
+                .search(
+                    [
+                        ("state", "in", ("draft", "confirm", "arrival_delayed")),
+                        ("room_id", "=", record.id),
+                        ("date", ">=", today),
+                    ]
+                )
+                .mapped("date")
+            )
+
+            record.next_arrival_reservation_id = (
+                self.env["pms.reservation.line"]
+                .search(
+                    [
+                        ("room_id", "=", record.id),
+                        ("date", "=", min(future_reservation_dates)),
+                    ]
+                )
+                .reservation_id
+            )
+
+            record.next_arrival_datetime = (
+                record.next_arrival_reservation_id.checkin_datetime
+                if record.next_arrival_reservation_id
+                else False
+            )
 
     def name_get(self):
         result = []

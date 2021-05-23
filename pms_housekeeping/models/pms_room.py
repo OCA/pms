@@ -84,7 +84,7 @@ class PmsRoom(models.Model):
             lambda reservation: reservation.date < date_clean
         )
 
-        if today_res.reservation_id.reservation_type == "out":
+        if today_res.reservation_id.reservation_type == "out_service":
             status = "dont_disturb"
             return status
         if len(today_res) == 0:
