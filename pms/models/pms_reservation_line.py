@@ -417,12 +417,7 @@ class PmsReservationLine(models.Model):
     @api.depends("room_id", "pms_property_id", "date", "occupies_availability")
     def _compute_avail_id(self):
         for record in self:
-            if (
-                record.room_id.room_type_id
-                and record.date
-                and record.pms_property_id
-                and record.occupies_availability
-            ):
+            if record.room_id.room_type_id and record.date and record.pms_property_id:
                 avail = self.env["pms.availability"].search(
                     [
                         ("date", "=", record.date),
