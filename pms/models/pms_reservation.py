@@ -1312,9 +1312,18 @@ class PmsReservation(models.Model):
         self.ensure_one()
         return self.folio_id.action_pay()
 
+    mail_sent = fields.Boolean("Mail Sent", default=False)
+
     def action_send_email(self):
         for record in self:
-            if record.state == "confirm":
+            if record.state == "confirm" and not record.mail_sent:
+                template = self.env.ref("pms.reservation_confirm_email")
+                template.send_mail(self.id)
+                record.mail_sent = True
+            elif (
+                record.state == "confirm" and record.mail_sent
+            ) or record.state == "onboard":
+                record.mail_sent = True
                 template = self.env.ref("pms.reservation_confirm_email")
                 template.send_mail(self.id)
 

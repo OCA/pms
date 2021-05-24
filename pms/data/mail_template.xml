@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-   <data noupdate="0">
+   <data noupdate="1">
          <record id="reservation_confirm_email" model="mail.template">
-             <field name="name">Confirmed Reservation</field>
+             <field name="name">Reservation</field>
              <field name="model_id" ref="pms.model_pms_reservation" />
              <field
                 name="subject"
-            >${object.pms_property_id.name} from ${object.company_id.name} has confirmed your reservation</field>
+            >${object.pms_property_id.name} from ${object.company_id.name} has confirmed/modified your reservation</field>
              <field
                 name="email_from"
             >"${object.company_id.name | safe}" &lt;${(object.company_id.email or user.email) | safe}&gt;</field>
@@ -14,9 +14,9 @@
              <field name="lang">${object.lang}</field>
              <field name="auto_delete" eval="True" />
              <field name="body_html" type="html">
-                  <div class="container">
+                 <div class="container">
                  <h1>${object.pms_property_id.name}</h1>
-            <div class="row">
+                <div class="row">
                 <div class="col-sm-4">
 
                     <t t-if="object.pms_property_id.partner_id.street">
@@ -31,17 +31,24 @@
             </div>
                  <div class="row" style="padding-top: 20px;">
                 <div class="col-sm-12">
-                    <p>
-                        Dear ${object.partner_id.name},
-                        <br />
-                        Thank you for your reservation.
+                    % if object.mail_sent
+                        <p>Your reservation has been modified.</p>
+                    % else
+                        <p>Thank you for your reservation</p>
+                    % endif
 
-                    </p>
+
+
                     <p>
                         Here is your confirmation code: <b>${object.name}</b>.
                     Keep this code for any question about your booking order.
                     </p>
-                    <p>You can find the reservation details below:</p>
+                    % if object.mail_sent
+                        <p>You can find the new reservation details below:</p>
+                    % else
+                        <p>You can find the reservation details below:</p>
+                    % endif
+
                 </div>
             </div>
                         <div class="row table-responsive" style="padding-top: 20px;">
@@ -80,10 +87,20 @@
                 </div>
             </div>
         <div class="row" style="padding-top: 20px;">
+            <!--This url should be to precheckin portal-->
                 <div class="col-sm-12">
-                    You can do your chekin online in
+                    % if object.mail_sent
+                        <p>You can do your chekin online in
+                            <a href="${object.get_portal_url()}">portal</a>
+                        </p>
+                    % endif
+                </div>
+                <div class="col-sm-12">
+                    You can check reservation details also in
                     <a href="${object.get_portal_url()}">portal</a>
                 </div>
+
+
             </div>
             <div class="row" style="padding-top: 20px;">
                 <div class="col-sm-12">
