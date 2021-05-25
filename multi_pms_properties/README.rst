@@ -25,7 +25,7 @@ multi_pms_properties
 
 |badge1| |badge2| |badge3| |badge4| |badge5| 
 
-Technical addon to support multipropety in pms
+Technical addon to support multiproperty in property management system (PMS).
 
 **Table of contents**
 
@@ -43,21 +43,14 @@ or with the ``--load`` command-line parameter
 
 ``server_wide_modules = "multi_pms_properties"``
 
-Configuration
-=============
+Usage
+=====
 
-Technical Module to Multi Property Manage System proposit.
-
-* Use the standar multicompany guidelines applied to pms.property:
+* Use the standard multicompany guidelines applied to pms.property:
 
   ``_check_pms_properties_auto like model attribute to autocheck  on create/write``
   ``check_pms_properties like field attribute to check relational record properties consistence``
   ``This module not implement propety dependent fields``
-
-Usage
-=====
-
-To use this module, you need implement pms.property functionality
 
 Bug Tracker
 ===========
@@ -75,13 +68,16 @@ Credits
 Authors
 ~~~~~~~
 
-* Therp BV
+* Commit [Sun]
 
 Contributors
 ~~~~~~~~~~~~
 
-* Dario Lodeiros <dario@commitsun.com>
-* Eric Antones <eric@commitsun.com>
+* `Commit [Sun] <https://www.commitsun.com>`:
+
+  * Dario Lodeiros
+  * Eric Antones
+  * Sara Lago
 
 Maintainers
 ~~~~~~~~~~~
