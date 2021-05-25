@@ -6,13 +6,13 @@
         <field name="arch" type="xml">
             <form>
                 <field name="txt_filename" invisible="1" />
+                <field name="can_be_sent" invisible="1" />
                 <div class="row">
-                    <div
-                        class="col-12"
-                        attrs="{'invisible': [('txt_message','=',False)]}"
-                    >
-                        <group>
+                    <div class="col-12">
+                        <group attrs="{'invisible': [('txt_message','=',False)]}">
                             <field name="txt_message" readonly="1" />
+                        </group>
+                        <group attrs="{'invisible': [('can_be_sent','=',False)]}">
                             <field
                                 name="txt_binary"
                                 filename="txt_filename"
@@ -37,6 +37,7 @@
                             class="btn btn-primary btn-sm"
                             type="object"
                             string="Send file"
+                            attrs="{'invisible': [('can_be_sent','=',False)]}"
                         />
                         </div>
                     </div>
