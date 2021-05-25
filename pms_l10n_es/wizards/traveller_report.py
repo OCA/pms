@@ -1,11 +1,12 @@
 import base64
 import datetime
-import io
 from datetime import date
 
+import os
 import requests
+from bs4 import BeautifulSoup as bs
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.modules.module import get_module_resource
 
@@ -14,9 +15,13 @@ class TravellerReport(models.TransientModel):
     _name = "traveller.report.wizard"
     _description = "Traveller Report"
 
-    txt_filename = fields.Char()
-    txt_binary = fields.Binary()
-    txt_message = fields.Char()
+    txt_filename = fields.Text()
+    txt_binary = fields.Binary(
+        string="File Download"
+    )
+    txt_message = fields.Char(
+        string="File Preview"
+    )
 
     def generate_file(self):
 
@@ -28,21 +33,17 @@ class TravellerReport(models.TransientModel):
         # build content
         content = self.generate_checkin_list(pms_property.id)
 
-        # get next sequence
-        sequence_num = self.env["ir.sequence"].next_by_code("traveller.report.wizard")
-
         # file creation
         txt_binary = self.env["traveller.report.wizard"].create(
             {
                 "txt_filename": pms_property.institution_property_id
-                + "."
-                + sequence_num,
+                + ".999",
                 "txt_binary": base64.b64encode(str.encode(content)),
                 "txt_message": content,
             }
         )
         return {
-            "name": _("Download File"),
+            "name": _("Preview & Send File"),
             "res_id": txt_binary.id,
             "res_model": "traveller.report.wizard",
             "target": "new",
@@ -133,41 +134,68 @@ class TravellerReport(models.TransientModel):
 
             return content
 
-    def send_file_gc(self):
-        # get the active property
-        pms_property = self.env["pms.property"].search(
-            [("id", "=", self.env.user.get_active_property_ids()[0])]
-        )
+    def send_file_gc(self, pms_property=False):
+        url = "https://hospederias.guardiacivil.es/"
+        login_route = "/hospederias/login.do"
+        upload_file_route = "/hospederias/cargaFichero.do"
+        called_from_user = False
+        if not pms_property:
+            called_from_user = True
+            # get the active property
+            pms_property = self.env["pms.property"].search(
+                [("id", "=", self.env.user.get_active_property_ids()[0])]
+            )
 
-        # get next sequence to send
-        sequence_num = self.env["ir.sequence"].next_by_code("traveller.report.wizard")
-
-        # generate content to send
-        f = io.StringIO(self.generate_checkin_list(pms_property.id))
-
-        session = requests.Session()
-
-        # send info to GC
-        # response = \
-        session.post(
-            url="https://"
-            + pms_property.institution_user
-            + ":"
-            + pms_property.institution_password
-            + "@hospederias.guardiacivil.es/hospederias/servlet/"
-            "ControlRecepcionFichero",
-            files={
-                "file": (
-                    pms_property.institution_user + "." + sequence_num,
-                    f,
-                    "application/octet-stream",
-                )
-            },
-            # TODO: review download file cert.pem
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 "
+                          "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
+                          "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
+        }
+        s = requests.session()
+        login_payload = {
+            "usuario": pms_property.institution_user,
+            "pswd": pms_property.institution_password,
+        }
+        s.post(
+            url + login_route,
+            headers=headers,
+            data=login_payload,
             verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
-        )
+            )
 
-        # TODO: review save log queue (oca/queue)
-        # print(response.content)
-        # if response.content != b'CORRECTO\r\n':
-        #     raise ValidationError(response.content.decode())
+        pwd = get_module_resource("pms_l10n_es", "wizards", "")
+        checkin_list_file = open(pwd + pms_property.institution_user + ".999", "w+")
+        checkin_list_file.write(self.generate_checkin_list(pms_property.id))
+        checkin_list_file.close()
+        files = {"fichero": open(pwd + pms_property.institution_user + ".999", "rb")}
+
+        response_file_sent = s.post(
+            url + upload_file_route,
+            data={"autoSeq": "on"},
+            files=files,
+            verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+            )
+        os.remove(pwd + pms_property.institution_user + ".999")
+        s.close()
+
+        soup = bs(response_file_sent.text, "html.parser")
+        errors = soup.select("#errores > tbody > tr > td > a")
+        if errors:
+            raise ValidationError(errors[2].text)
+        else:
+            if called_from_user:
+                message = {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('Sent succesfully!'),
+                        'message': _('Successful file sending'),
+                        'sticky': False,
+                    }
+                }
+                return message
+
+    @api.model
+    def send_file_gc_async(self):
+        for prop in self.env["pms.property"].search([]):
+            self.with_delay().send_file_gc(prop)
