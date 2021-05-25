@@ -1,8 +1,8 @@
 import base64
 import datetime
+import os
 from datetime import date
 
-import os
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -16,12 +16,8 @@ class TravellerReport(models.TransientModel):
     _description = "Traveller Report"
 
     txt_filename = fields.Text()
-    txt_binary = fields.Binary(
-        string="File Download"
-    )
-    txt_message = fields.Char(
-        string="File Preview"
-    )
+    txt_binary = fields.Binary(string="File Download")
+    txt_message = fields.Char(string="File Preview")
 
     def generate_file(self):
 
@@ -36,14 +32,13 @@ class TravellerReport(models.TransientModel):
         # file creation
         txt_binary = self.env["traveller.report.wizard"].create(
             {
-                "txt_filename": pms_property.institution_property_id
-                + ".999",
+                "txt_filename": pms_property.institution_property_id + ".999",
                 "txt_binary": base64.b64encode(str.encode(content)),
                 "txt_message": content,
             }
         )
         return {
-            "name": _("Preview & Send File"),
+            "name": _("Traveller Report"),
             "res_id": txt_binary.id,
             "res_model": "traveller.report.wizard",
             "target": "new",
@@ -148,8 +143,8 @@ class TravellerReport(models.TransientModel):
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 "
-                          "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
-                          "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
+            "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
+            "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
         }
         s = requests.session()
         login_payload = {
@@ -161,7 +156,7 @@ class TravellerReport(models.TransientModel):
             headers=headers,
             data=login_payload,
             verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
-            )
+        )
 
         pwd = get_module_resource("pms_l10n_es", "wizards", "")
         checkin_list_file = open(pwd + pms_property.institution_user + ".999", "w+")
@@ -174,7 +169,7 @@ class TravellerReport(models.TransientModel):
             data={"autoSeq": "on"},
             files=files,
             verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
-            )
+        )
         os.remove(pwd + pms_property.institution_user + ".999")
         s.close()
 
@@ -185,13 +180,13 @@ class TravellerReport(models.TransientModel):
         else:
             if called_from_user:
                 message = {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('Sent succesfully!'),
-                        'message': _('Successful file sending'),
-                        'sticky': False,
-                    }
+                    "type": "ir.actions.client",
+                    "tag": "display_notification",
+                    "params": {
+                        "title": _("Sent succesfully!"),
+                        "message": _("Successful file sending"),
+                        "sticky": False,
+                    },
                 }
                 return message
 
