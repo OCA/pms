@@ -1,2 +1,4 @@
 * Jose Luis Algara
-* Darío Lodeiros
+* `Commit [Sun] <https://www.commitsun.com>`:
+
+  * Dario Lodeiros

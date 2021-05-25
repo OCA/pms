@@ -4,7 +4,7 @@
 {
     "name": "Housekeeping",
     "version": "14.0.1.0.1",
-    "author": "Jose Luis Algara, " "Odoo Community Association (OCA)",
+    "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": True,
     "category": "pms",
