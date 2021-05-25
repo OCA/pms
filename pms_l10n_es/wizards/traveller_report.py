@@ -201,7 +201,6 @@ class TravellerReport(models.TransientModel):
             raise ValidationError(errors[2].text)
         else:
             if called_from_user:
-                # TODO: dont show notification when cannot be logged
                 message = {
                     "type": "ir.actions.client",
                     "tag": "display_notification",
