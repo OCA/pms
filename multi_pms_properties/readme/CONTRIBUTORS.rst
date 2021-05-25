@@ -1,2 +1,5 @@
-* Dario Lodeiros <dario@commitsun.com>
-* Eric Antones <eric@commitsun.com>
+* `Commit [Sun] <https://www.commitsun.com>`:
+
+  * Dario Lodeiros
+  * Eric Antones
+  * Sara Lago
