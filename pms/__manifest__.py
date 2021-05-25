@@ -8,11 +8,7 @@
     "development_status": "Alpha",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
-    "author": "Dario Lodeiros, "
-    "Alexadre Diaz, "
-    "Pablo Quesada, "
-    "Jose Luis Algara, "
-    "Odoo Community Association (OCA)",
+    "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": True,
     "installable": True,
