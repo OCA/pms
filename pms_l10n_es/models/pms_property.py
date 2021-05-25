@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup as bs
 
-from odoo import fields, models, _
+from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 from odoo.modules import get_module_resource
 
@@ -82,14 +82,14 @@ class PmsProperty(models.Model):
                     login_correct = soup.select(".cabecera2")
                     if login_correct:
                         message = {
-                                "type": "ir.actions.client",
-                                "tag": "display_notification",
-                                "params": {
-                                    "title": _("Connection Established!"),
-                                    "message": _("Connection established succesfully"),
-                                    "sticky": False,
-                                },
-                            }
+                            "type": "ir.actions.client",
+                            "tag": "display_notification",
+                            "params": {
+                                "title": _("Connection Established!"),
+                                "message": _("Connection established succesfully"),
+                                "sticky": False,
+                            },
+                        }
                         return message
                     else:
                         raise ValidationError(_("Connection could not be established"))
