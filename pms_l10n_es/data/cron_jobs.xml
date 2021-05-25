@@ -15,7 +15,7 @@
                 name="nextcall"
                 eval="datetime.now(pytz.timezone('UTC')).strftime('%Y-%m-%d 03:00:00')"
             />
-        <field name="code">model.send_file_gc()</field>
+        <field name="code">model.send_file_gc_async()</field>
     </record>
     </data>
 </odoo>
