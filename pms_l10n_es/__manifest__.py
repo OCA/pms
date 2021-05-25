@@ -18,6 +18,11 @@
         "partner_contact_nationality",
         "queue_job",
     ],
+    "external_dependencies": {
+        "python": [
+            "bs4",
+        ],
+    },
     "data": [
         "data/cron_jobs.xml",
         "data/queue_data.xml",
