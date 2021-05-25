@@ -1,1 +1,1 @@
-Technical addon to support multipropety in pms
+Technical addon to support multiproperty in property management system (PMS).
