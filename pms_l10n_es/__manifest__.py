@@ -4,7 +4,7 @@
 {
     "name": "PMS Spanish Adaptation",
     "version": "14.0.1.0.0",
-    "author": "CommitSun, " "Odoo Community Association (OCA)",
+    "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": True,
     "category": "Localization",
