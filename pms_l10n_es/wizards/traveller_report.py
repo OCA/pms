@@ -29,40 +29,36 @@ class TravellerReport(models.TransientModel):
         # build content
         content = self.generate_checkin_list(pms_property.id)
 
-        # file creation
-        txt_binary = self.env["traveller.report.wizard"].create(
-            {
-                "txt_filename": pms_property.institution_property_id + ".999",
-                "txt_binary": base64.b64encode(str.encode(content)),
-                "txt_message": content,
+        if content:
+            # file creation
+            txt_binary = self.env["traveller.report.wizard"].create(
+                {
+                    "txt_filename": pms_property.institution_property_id + ".999",
+                    "txt_binary": base64.b64encode(str.encode(content)),
+                    "txt_message": content,
+                }
+            )
+            return {
+                "name": _("Traveller Report"),
+                "res_id": txt_binary.id,
+                "res_model": "traveller.report.wizard",
+                "target": "new",
+                "type": "ir.actions.act_window",
+                "view_id": self.env.ref("pms_l10n_es.traveller_report_wizard").id,
+                "view_mode": "form",
+                "view_type": "form",
             }
-        )
-        return {
-            "name": _("Traveller Report"),
-            "res_id": txt_binary.id,
-            "res_model": "traveller.report.wizard",
-            "target": "new",
-            "type": "ir.actions.act_window",
-            "view_id": self.env.ref("pms_l10n_es.traveller_report_wizard").id,
-            "view_mode": "form",
-            "view_type": "form",
-        }
 
     def generate_checkin_list(self, property_id):
 
         # check if there's guests info pending to send
-        if (
-            self.env["pms.checkin.partner"].search_count(
-                [
-                    ("state", "=", "onboard"),
-                    ("arrival", ">=", str(date.today()) + " 0:00:00"),
-                    ("arrival", "<=", str(date.today()) + " 23:59:59"),
-                ]
-            )
-            == 0
+        if self.env["pms.checkin.partner"].search_count(
+            [
+                ("state", "=", "onboard"),
+                ("arrival", ">=", str(date.today()) + " 0:00:00"),
+                ("arrival", "<=", str(date.today()) + " 23:59:59"),
+            ]
         ):
-            raise ValidationError(_("There's no guests info to send"))
-        else:
 
             # get the active property
             pms_property = self.env["pms.property"].search([("id", "=", property_id)])
@@ -133,6 +129,7 @@ class TravellerReport(models.TransientModel):
         url = "https://hospederias.guardiacivil.es/"
         login_route = "/hospederias/login.do"
         upload_file_route = "/hospederias/cargaFichero.do"
+        logout_route = "/hospederias/logout.do"
         called_from_user = False
         if not pms_property:
             called_from_user = True
@@ -146,39 +143,65 @@ class TravellerReport(models.TransientModel):
             "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
             "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
         }
-        s = requests.session()
+        session = requests.session()
         login_payload = {
             "usuario": pms_property.institution_user,
             "pswd": pms_property.institution_password,
         }
-        s.post(
+
+        # login
+        response_login = session.post(
             url + login_route,
             headers=headers,
             data=login_payload,
             verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
         )
 
+        # check if authentication was successful / unsuccessful or the
+        # resource cannot be accessed
+        soup = bs(response_login.text, "html.parser")
+        errors_login = soup.select("#txterror > ul > li")
+        if errors_login:
+            raise ValidationError(errors_login[0].text)
+        else:
+            login_correct = soup.select(".cabecera2")
+            if not login_correct:
+                session.close()
+                raise ValidationError(_("Connection could not be established"))
+
+        # build the file to send
         pwd = get_module_resource("pms_l10n_es", "wizards", "")
         checkin_list_file = open(pwd + pms_property.institution_user + ".999", "w+")
         checkin_list_file.write(self.generate_checkin_list(pms_property.id))
         checkin_list_file.close()
         files = {"fichero": open(pwd + pms_property.institution_user + ".999", "rb")}
 
-        response_file_sent = s.post(
+        # send file
+        response_file_sent = session.post(
             url + upload_file_route,
             data={"autoSeq": "on"},
             files=files,
             verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
         )
+        # remove file locally
         os.remove(pwd + pms_property.institution_user + ".999")
-        s.close()
 
+        # logout & close connection
+        session.get(
+            url + logout_route,
+            headers=headers,
+            verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+        )
+        session.close()
+
+        # check if the file send has been correct
         soup = bs(response_file_sent.text, "html.parser")
         errors = soup.select("#errores > tbody > tr > td > a")
         if errors:
             raise ValidationError(errors[2].text)
         else:
             if called_from_user:
+                # TODO: dont show notification when cannot be logged
                 message = {
                     "type": "ir.actions.client",
                     "tag": "display_notification",
