@@ -7,12 +7,17 @@
             <form>
                 <field name="txt_filename" invisible="1" />
                 <div class="row">
-                    <div class="col-12"
+                    <div
+                        class="col-12"
                         attrs="{'invisible': [('txt_message','=',False)]}"
                     >
                         <group>
                             <field name="txt_message" readonly="1" />
-                            <field name="txt_binary" filename="txt_filename" readonly="1"/>
+                            <field
+                                name="txt_binary"
+                                filename="txt_filename"
+                                readonly="1"
+                            />
                         </group>
                     </div>
 
@@ -20,22 +25,22 @@
                     <div class="row ">
                         <div class="col-3">
                             <button
-                                name="generate_file"
-                                class="btn btn-primary btn-sm"
-                                type="object"
-                                string="Preview file"
-                            />
+                            name="generate_file"
+                            class="btn btn-primary btn-sm"
+                            type="object"
+                            string="Preview file"
+                        />
                         </div>
                         <div class="col-3">
                             <button
-                                name="send_file_gc"
-                                class="btn btn-primary btn-sm"
-                                type="object"
-                                string="Send file"
-                             />
+                            name="send_file_gc"
+                            class="btn btn-primary btn-sm"
+                            type="object"
+                            string="Send file"
+                        />
                         </div>
                     </div>
-                <footer/>
+                <footer />
             </form>
         </field>
     </record>
@@ -49,7 +54,7 @@
     </record>
     <menuitem
         id="menu_traveller_report"
-        name="Police File Download"
+        name="Traveller Report"
         sequence="30"
         parent="pms.pms_configuration_menu"
         action="action_traveller_report"
