@@ -8,7 +8,7 @@
     "summary": "Multi Properties Manager",
     "version": "14.0.1.0.0",
     "website": "https://github.com/OCA/pms",
-    "author": "Therp BV, Odoo Community Association (OCA)",
+    "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "category": "Pms",
     "depends": ["base"],
