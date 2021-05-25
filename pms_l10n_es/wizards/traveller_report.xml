@@ -5,36 +5,37 @@
         <field name="model">traveller.report.wizard</field>
         <field name="arch" type="xml">
             <form>
-                <sheet>
-                        <div>
+                <field name="txt_filename" invisible="1" />
+                <div class="row">
+                    <div class="col-12"
+                        attrs="{'invisible': [('txt_message','=',False)]}"
+                    >
+                        <group>
+                            <field name="txt_message" readonly="1" />
+                            <field name="txt_binary" filename="txt_filename" readonly="1"/>
+                        </group>
+                    </div>
+
+                </div>
+                    <div class="row ">
+                        <div class="col-3">
                             <button
-                            name="generate_file"
-                            class="btn btn-primary btn-sm"
-                            type="object"
-                            string="Generate Police file"
-                        />
-                            <field name="txt_filename" invisible="1" />
-                            <field
-                            name="txt_binary"
-                            filename="txt_filename"
-                            readonly="1"
-                            style="margin-left: 20px;"
-                        />
-                             <button
-                            name="send_file_gc"
-                            class="btn btn-primary btn-sm"
-                            type="object"
-                            string="Send file"
-                        />
+                                name="generate_file"
+                                class="btn btn-primary btn-sm"
+                                type="object"
+                                string="Preview file"
+                            />
                         </div>
-                    <group colspan="1">
-                        <div>
-                            <p>
-                                <field name="txt_message" readonly="1" />
-                            </p>
+                        <div class="col-3">
+                            <button
+                                name="send_file_gc"
+                                class="btn btn-primary btn-sm"
+                                type="object"
+                                string="Send file"
+                             />
                         </div>
-                    </group>
-                </sheet>
+                    </div>
+                <footer/>
             </form>
         </field>
     </record>

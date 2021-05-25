@@ -16,9 +16,12 @@
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",
+        "queue_job",
     ],
     "data": [
         "data/cron_jobs.xml",
+        "data/queue_data.xml",
+        "data/queue_job_function_data.xml",
         "data/pms_sequence.xml",
         "security/ir.model.access.csv",
         "views/pms_checkin_partner_views.xml",
@@ -27,5 +30,4 @@
         "wizards/traveller_report.xml",
     ],
     "installable": True,
-    "post_init_hook": "post_init_hook",
 }
