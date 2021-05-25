@@ -3,7 +3,7 @@
 
 {
     "name": "Rooming xlsx Management",
-    "author": "Commitsun, Odoo Community Association (OCA)",
+    "author": "Commit [Sun], Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/pms",
     "category": "Generic Modules/Property Management System",
     "version": "14.0.1.0.0",
