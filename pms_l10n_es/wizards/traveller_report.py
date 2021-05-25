@@ -19,6 +19,10 @@ class TravellerReport(models.TransientModel):
     txt_binary = fields.Binary(string="File Download")
     txt_message = fields.Char(string="File Preview")
 
+    can_be_sent = fields.Boolean(
+        default=False
+    )
+
     def generate_file(self):
 
         # get the active property
@@ -29,7 +33,11 @@ class TravellerReport(models.TransientModel):
         # build content
         content = self.generate_checkin_list(pms_property.id)
 
+        if not content:
+            content = _("There is no guest information to send")
+
         if content:
+            self.can_be_sent = True
             # file creation
             txt_binary = self.env["traveller.report.wizard"].create(
                 {
