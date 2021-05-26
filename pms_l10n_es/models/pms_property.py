@@ -1,3 +1,5 @@
+import time
+
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -64,6 +66,7 @@ class PmsProperty(models.Model):
                     data=login_payload,
                     verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
                 )
+                time.sleep(1)
                 # logout
                 session.get(
                     url + logout_route,
