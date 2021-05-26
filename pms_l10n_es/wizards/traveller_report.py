@@ -1,5 +1,6 @@
 import base64
 import datetime
+import io
 import os
 import time
 from datetime import date
@@ -32,7 +33,7 @@ class TravellerReport(models.TransientModel):
 
         if not pms_property.institution_property_id:
             raise ValidationError(
-                _("The guest information sending settins is not property updated.")
+                _("The guest information sending settings is not property updated.")
             )
         elif not content:
             raise ValidationError(_("There is no guest information to send."))
@@ -152,7 +153,7 @@ class TravellerReport(models.TransientModel):
             and pms_property.institution_password
         ):
             raise ValidationError(
-                _("The guest information sending settins is not complete.")
+                _("The guest information sending settings is not complete.")
             )
 
         content = self.generate_checkin_list(pms_property.id)
@@ -190,12 +191,8 @@ class TravellerReport(models.TransientModel):
                     raise ValidationError(_("Connection could not be established"))
 
             # build the file to send
-            pwd = get_module_resource("pms_l10n_es", "wizards", "")
-            checkin_list_file = open(pwd + pms_property.institution_user + ".999", "w+")
-            checkin_list_file.write(content)
-            checkin_list_file.close()
             files = {
-                "fichero": open(pwd + pms_property.institution_user + ".999", "rb")
+                "fichero": (pms_property.institution_user + ".999", content)
             }
             time.sleep(1)
 
@@ -206,8 +203,6 @@ class TravellerReport(models.TransientModel):
                 files=files,
                 verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
             )
-            # remove file locally
-            os.remove(pwd + pms_property.institution_user + ".999")
 
             time.sleep(1)
             # logout & close connection
@@ -222,6 +217,7 @@ class TravellerReport(models.TransientModel):
             soup = bs(response_file_sent.text, "html.parser")
             errors = soup.select("#errores > tbody > tr > td > a")
             if errors:
+                print(errors)
                 raise ValidationError(errors[2].text)
             else:
                 if called_from_user:
