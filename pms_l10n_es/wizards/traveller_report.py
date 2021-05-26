@@ -19,8 +19,6 @@ class TravellerReport(models.TransientModel):
     txt_binary = fields.Binary(string="File Download")
     txt_message = fields.Char(string="File Preview")
 
-    can_be_sent = fields.Boolean(default=False)
-
     def generate_file(self):
 
         # get the active property
@@ -31,11 +29,13 @@ class TravellerReport(models.TransientModel):
         # build content
         content = self.generate_checkin_list(pms_property.id)
 
-        if not content:
-            content = _("There is no guest information to send")
-
-        if content:
-            self.can_be_sent = True
+        if not pms_property.institution_property_id:
+            raise ValidationError(
+                _("The guest information sending settins is not property updated.")
+            )
+        elif not content:
+            raise ValidationError(_("There is no guest information to send."))
+        else:
             # file creation
             txt_binary = self.env["traveller.report.wizard"].create(
                 {
@@ -144,79 +144,94 @@ class TravellerReport(models.TransientModel):
                 [("id", "=", self.env.user.get_active_property_ids()[0])]
             )
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 "
-            "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
-            "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
-        }
-        session = requests.session()
-        login_payload = {
-            "usuario": pms_property.institution_user,
-            "pswd": pms_property.institution_password,
-        }
+        if not (
+            pms_property
+            and pms_property.institution_property_id
+            and pms_property.institution_user
+            and pms_property.institution_password
+        ):
+            raise ValidationError(
+                _("The guest information sending settins is not complete.")
+            )
 
-        # login
-        response_login = session.post(
-            url + login_route,
-            headers=headers,
-            data=login_payload,
-            verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
-        )
+        content = self.generate_checkin_list(pms_property.id)
 
-        # check if authentication was successful / unsuccessful or the
-        # resource cannot be accessed
-        soup = bs(response_login.text, "html.parser")
-        errors_login = soup.select("#txterror > ul > li")
-        if errors_login:
-            raise ValidationError(errors_login[0].text)
-        else:
-            login_correct = soup.select(".cabecera2")
-            if not login_correct:
-                session.close()
-                raise ValidationError(_("Connection could not be established"))
+        if content:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 "
+                "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
+                "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
+            }
+            session = requests.session()
+            login_payload = {
+                "usuario": pms_property.institution_user,
+                "pswd": pms_property.institution_password,
+            }
 
-        # build the file to send
-        pwd = get_module_resource("pms_l10n_es", "wizards", "")
-        checkin_list_file = open(pwd + pms_property.institution_user + ".999", "w+")
-        checkin_list_file.write(self.generate_checkin_list(pms_property.id))
-        checkin_list_file.close()
-        files = {"fichero": open(pwd + pms_property.institution_user + ".999", "rb")}
+            # login
+            response_login = session.post(
+                url + login_route,
+                headers=headers,
+                data=login_payload,
+                verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+            )
 
-        # send file
-        response_file_sent = session.post(
-            url + upload_file_route,
-            data={"autoSeq": "on"},
-            files=files,
-            verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
-        )
-        # remove file locally
-        os.remove(pwd + pms_property.institution_user + ".999")
+            # check if authentication was successful / unsuccessful or the
+            # resource cannot be accessed
+            soup = bs(response_login.text, "html.parser")
+            errors_login = soup.select("#txterror > ul > li")
+            if errors_login:
+                raise ValidationError(errors_login[0].text)
+            else:
+                login_correct = soup.select(".cabecera2")
+                if not login_correct:
+                    session.close()
+                    raise ValidationError(_("Connection could not be established"))
 
-        # logout & close connection
-        session.get(
-            url + logout_route,
-            headers=headers,
-            verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
-        )
-        session.close()
+            # build the file to send
+            pwd = get_module_resource("pms_l10n_es", "wizards", "")
+            checkin_list_file = open(pwd + pms_property.institution_user + ".999", "w+")
+            checkin_list_file.write(content)
+            checkin_list_file.close()
+            files = {
+                "fichero": open(pwd + pms_property.institution_user + ".999", "rb")
+            }
 
-        # check if the file send has been correct
-        soup = bs(response_file_sent.text, "html.parser")
-        errors = soup.select("#errores > tbody > tr > td > a")
-        if errors:
-            raise ValidationError(errors[2].text)
-        else:
-            if called_from_user:
-                message = {
-                    "type": "ir.actions.client",
-                    "tag": "display_notification",
-                    "params": {
-                        "title": _("Sent succesfully!"),
-                        "message": _("Successful file sending"),
-                        "sticky": False,
-                    },
-                }
-                return message
+            # send file
+            response_file_sent = session.post(
+                url + upload_file_route,
+                data={"autoSeq": "on"},
+                files=files,
+                verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+            )
+            # remove file locally
+            os.remove(pwd + pms_property.institution_user + ".999")
+
+            # logout & close connection
+            session.get(
+                url + logout_route,
+                headers=headers,
+                verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
+            )
+            session.close()
+
+            # check if the file send has been correct
+            soup = bs(response_file_sent.text, "html.parser")
+            errors = soup.select("#errores > tbody > tr > td > a")
+            if errors:
+                raise ValidationError(errors[2].text)
+            else:
+                if called_from_user:
+                    message = {
+                        "type": "ir.actions.client",
+                        "tag": "display_notification",
+                        "params": {
+                            "title": _("Sent succesfully!"),
+                            "message": _("Successful file sending"),
+                            "sticky": False,
+                        },
+                    }
+                    return message
 
     @api.model
     def send_file_gc_async(self):
