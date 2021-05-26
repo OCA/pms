@@ -19,9 +19,7 @@ class TravellerReport(models.TransientModel):
     txt_binary = fields.Binary(string="File Download")
     txt_message = fields.Char(string="File Preview")
 
-    can_be_sent = fields.Boolean(
-        default=False
-    )
+    can_be_sent = fields.Boolean(default=False)
 
     def generate_file(self):
 
