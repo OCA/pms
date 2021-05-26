@@ -571,6 +571,12 @@ class PmsReservation(models.Model):
         readonly=False,
     )
 
+    mail_sent = fields.Boolean(
+        string="Mail Sent",
+        help="Technical field used to indicate if confirmation email was sent",
+        default=False
+    )
+
     def _compute_date_order(self):
         for record in self:
             record.date_order = datetime.datetime.today()
@@ -1312,7 +1318,6 @@ class PmsReservation(models.Model):
         self.ensure_one()
         return self.folio_id.action_pay()
 
-    mail_sent = fields.Boolean("Mail Sent", default=False)
 
     def action_send_email(self):
         for record in self:

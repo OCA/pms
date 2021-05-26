@@ -40,6 +40,7 @@
                         states="confirm,onboard"
                         type="object"
                     />
+
                     <field name="state" widget="statusbar" />
                 </header>
                 <div

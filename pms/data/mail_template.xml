@@ -6,7 +6,13 @@
              <field name="model_id" ref="pms.model_pms_reservation" />
              <field
                 name="subject"
-            >${object.pms_property_id.name} from ${object.company_id.name} has confirmed/modified your reservation</field>
+            >
+                 % if object.mail_sent
+                    ${object.pms_property_id.name} from ${object.company_id.name} has modified your reservation
+                 % else
+                    ${object.pms_property_id.name} from ${object.company_id.name} has confirmed your reservation
+                 % endif
+             </field>
              <field
                 name="email_from"
             >"${object.company_id.name | safe}" &lt;${(object.company_id.email or user.email) | safe}&gt;</field>
@@ -14,18 +20,30 @@
              <field name="lang">${object.lang}</field>
              <field name="auto_delete" eval="True" />
              <field name="body_html" type="html">
+                 <head>
+                     <link
+                        rel="stylesheet"
+                        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+                        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+                        crossorigin="anonymous"
+                    />
+                 </head>
                  <div class="container">
                  <h1>${object.pms_property_id.name}</h1>
                 <div class="row">
                 <div class="col-sm-4">
 
-                    <t t-if="object.pms_property_id.partner_id.street">
-
-                       <p>${object.pms_property_id.partner_id.street}</p>
-                    </t>
+                    % if object.pms_property_id.partner_id.street
+                        <p>${object.pms_property_id.partner_id.street}</p>
+                    % endif
+                    % if object.pms_property_id.partner_id.street2
+                        <p>${object.pms_property_id.partner_id.street2}</p>
+                    % endif
                     <p>${object.pms_property_id.partner_id.zip}</p>
                     <p>${object.pms_property_id.partner_id.city},</p>
                     <p>${object.pms_property_id.partner_id.country_id.name}</p>
+                    <i class="glyphicon glyphicon-phone-alt">${object.pms_property_id.partner_id.phone}</i><br/>
+                    <i class="glyphicon glyphicon-envelope">${object.pms_property_id.partner_id.email}</i>
                 </div>
 
             </div>
@@ -89,7 +107,7 @@
         <div class="row" style="padding-top: 20px;">
             <!--This url should be to precheckin portal-->
                 <div class="col-sm-12">
-                    % if object.mail_sent
+                    % if not object.mail_sent
                         <p>You can do your chekin online in
                             <a href="${object.get_portal_url()}">portal</a>
                         </p>
