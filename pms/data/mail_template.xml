@@ -4,9 +4,7 @@
          <record id="reservation_confirm_email" model="mail.template">
              <field name="name">Reservation</field>
              <field name="model_id" ref="pms.model_pms_reservation" />
-             <field
-                name="subject"
-            >
+             <field name="subject">
                  % if object.mail_sent
                     ${object.pms_property_id.name} from ${object.company_id.name} has modified your reservation
                  % else
@@ -42,8 +40,12 @@
                     <p>${object.pms_property_id.partner_id.zip}</p>
                     <p>${object.pms_property_id.partner_id.city},</p>
                     <p>${object.pms_property_id.partner_id.country_id.name}</p>
-                    <i class="glyphicon glyphicon-phone-alt">${object.pms_property_id.partner_id.phone}</i><br/>
-                    <i class="glyphicon glyphicon-envelope">${object.pms_property_id.partner_id.email}</i>
+                    <i
+                                class="glyphicon glyphicon-phone-alt"
+                            >${object.pms_property_id.partner_id.phone}</i><br />
+                    <i
+                                class="glyphicon glyphicon-envelope"
+                            >${object.pms_property_id.partner_id.email}</i>
                 </div>
 
             </div>

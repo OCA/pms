@@ -574,7 +574,7 @@ class PmsReservation(models.Model):
     mail_sent = fields.Boolean(
         string="Mail Sent",
         help="Technical field used to indicate if confirmation email was sent",
-        default=False
+        default=False,
     )
 
     def _compute_date_order(self):
@@ -1317,7 +1317,6 @@ class PmsReservation(models.Model):
     def action_pay_folio(self):
         self.ensure_one()
         return self.folio_id.action_pay()
-
 
     def action_send_email(self):
         for record in self:
