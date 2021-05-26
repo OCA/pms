@@ -3,6 +3,7 @@
     <record model="ir.ui.view" id="pms_room_view_form">
         <field name="name">pms.room.form</field>
         <field name="model">pms.room</field>
+        <field name="priority" eval="30" />
         <field name="arch" type="xml">
             <form string="Property Room">
                 <sheet>
@@ -33,10 +34,6 @@
                                 invisible='True'
                             />
                         </h1>
-                        <!-- <label for="to_be_cleaned" string="To be Cleaned" />
-              <h2>
-                <field name="to_be_cleaned"/>
-              </h2> -->
                     </div>
                     <notebook>
                         <page name="information_pms_room" string="Information">
@@ -47,7 +44,7 @@
                                     force_save="1"
                                 />
                                 <field
-                                    name="floor_id"
+                                    name="ubication_id"
                                     string="Ubication"
                                     attrs="{'readonly':[('shared_room_id','!=', False)]}"
                                 />
@@ -245,7 +242,7 @@
         id="menu_open_pms_room_form"
         action="action_pms_room_form"
         sequence="5"
-        parent="pms.menu_pms_room"
+        parent="pms.pms_rooms_menu"
     />
     <!-- Room Categories -->
     <!-- <record id="product_category_tree_view" model="ir.ui.view">

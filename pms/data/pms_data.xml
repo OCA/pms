@@ -2,14 +2,13 @@
 <odoo>
     <data noupdate="1">
         <!-- Basic pms  -->
-        <record id="main_pms_room_type_restriction" model="pms.room.type.restriction">
-            <field name="name">Restriction Plan</field>
+        <record id="main_pms_availability_plan" model="pms.availability.plan">
+            <field name="name">Availability Plan</field>
         </record>
         <record id="main_pms_property" model="pms.property">
             <field name="name">My Property</field>
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
-            <field name="default_restriction_id" ref="main_pms_room_type_restriction" />
             <field name="street">Rua Street Demo, s/n</field>
             <field name="city">Commitsun city</field>
             <field name="country_id" ref="base.es" />
@@ -18,6 +17,8 @@
             <field name="email">commitsun@hootel.com</field>
             <field name="website">https://www.commitsun.com</field>
             <field name="folio_sequence_id" ref="pms.seq_pms_folio" />
+            <field name="checkin_sequence_id" ref="pms.seq_pms_checkin" />
+            <field name="reservation_sequence_id" ref="pms.seq_pms_reservation" />
         </record>
         <!-- pms.users -->
         <record id="base.user_root" model="res.users">

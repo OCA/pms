@@ -7,6 +7,7 @@
             <form string="Board Service Line">
                 <group>
                     <field name="name" />
+                    <field name="default_code" />
                     <field
                         name="pms_property_ids"
                         widget="many2many_tags"
@@ -17,8 +18,10 @@
                         <tree editable="bottom">
                             <field name="product_id" />
                             <field name="amount" />
+                            <field name="pms_property_ids" invisible="1" />
                         </tree>
                     </field>
+                    <field name="show_detail_report" />
                 </group>
             </form>
         </field>
@@ -29,7 +32,10 @@
         <field name="arch" type="xml">
             <tree string="Board Services">
                 <field name="name" />
+                <field name="default_code" />
                 <field name="amount" />
+                <field name="show_detail_report" />
+                <field name="pms_property_ids" invisible="1" />
             </tree>
         </field>
     </record>
@@ -43,6 +49,6 @@
         id="menu_open_pms_board_service_form_tree"
         action="open_pms_board_service_form_tree"
         sequence="25"
-        parent="pms.configuration_others"
+        parent="pms.pms_services_menu"
     />
 </odoo>

@@ -16,7 +16,6 @@
                             />
                             <field name="is_extra_bed" />
                             <field name="daily_limit" />
-                            <field name="show_in_calendar" />
                         </group>
                         <group>
                             <field name="per_day" />
@@ -32,4 +31,12 @@
             </xpath>
         </field>
     </record>
+
+    <menuitem
+        name="Services"
+        id="menu_services_pms"
+        action="product.product_template_action"
+        sequence="15"
+        parent="pms.pms_services_menu"
+    />
 </odoo>

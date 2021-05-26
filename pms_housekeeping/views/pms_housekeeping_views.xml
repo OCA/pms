@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pms_housekeeping_tree" model="ir.ui.view">
+        <field name="name">Housekeeping tree view</field>
+        <field name="model">pms.housekeeping</field>
+        <field name="type">tree</field>
+        <field name="mode">primary</field>
+        <field name="priority" eval="16" />
+        <field name="active" eval="True" />
+        <field name="arch" type="xml">
+            <tree string="Housekeeping tasks">
+                <field name="task_date" colspan="1" />
+                <field name="state" colspan="1" />
+                <field name="room_id" colspan="1" />
+                <field name="employee_id" colspan="1" />
+                <field name="task_id" colspan="1" />
+                <field name="task_start" />
+                <field name="task_end" />
+                <field name="notes" colspan="1" />
+                <field name="lostfound" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_pms_housekeeping_form" model="ir.ui.view">
+        <field name="name">Housekeeping form view</field>
+        <field name="model">pms.housekeeping</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Housekeeping">
+                <sheet>
+                    <group>
+                        <group col="2" colspan="2">
+                            <field name="task_id" />
+                        </group>
+                        <group col="4" colspan="2">
+                            <field name="task_date" />
+                            <field name="task_start" />
+                            <field name="state" />
+                            <field name="task_end" />
+                        </group>
+                        <group col="4" colspan="2">
+                            <field name="room_id" />
+                            <field name="employee_id" />
+                        </group>
+                        <group col="4" colspan="2">
+                            <field name="notes" />
+                            <field name="lostfound" />
+                        </group>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pms_housekeeping_rack_kanban" model="ir.ui.view">
+        <field name="name">Housekeeping today tasks kanban view</field>
+        <field name="model">pms.housekeeping</field>
+        <field name="type">kanban</field>
+        <field name="mode">primary</field>
+        <field name="priority" eval="16" />
+        <field name="active" eval="True" />
+        <field name="arch" type="xml">
+            <kanban
+                default_group_by="employee_id"
+                default_order="room_id"
+                class="o_res_partner_kanban"
+                sample="1"
+                group_create="false"
+                create="false"
+            >
+                <field name="color" />
+                <field name="state" />
+                <field name="employee_id" />
+
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+                            t-attf-class="oe_kanban_global_click
+                                           oe_kanban_color_#{kanban_getcolor(record.color.raw_value)}"
+                        >
+                            <div class="o_dropdown_kanban dropdown">
+                                <!-- Top-right drop down menu here... -->
+                                <a
+                                    class="dropdown-toggle btn"
+                                    data-toggle="dropdown"
+                                    role="button"
+                                    href="#"
+                                >
+                                    <span class="fa fa-ellipsis-v" title="menu" />
+                                </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <!-- Edit and Delete actions, if available: -->
+                                    <t t-if="widget.editable">
+                                        <a
+                                            role="menuitem"
+                                            type="edit"
+                                            class="dropdown-item"
+                                        >Edit</a>
+                                    </t>
+                                    <t t-if="widget.deletable">
+                                        <a
+                                            role="menuitem"
+                                            type="delete"
+                                            class="dropdown-item"
+                                        >Delete</a>
+                                    </t>
+                                    <!-- Color picker option: -->
+<!--                                    <ul class="oe_kanban_colorpicker" data-field="color"/>-->
+                                </div>
+                            </div>
+                            <div class="oe_kanban_body">
+                                <!-- Content elements and fields go here... -->
+
+                                <div style="font-size: 1.5em;">
+                                    <field name="task_id" />
+                                </div>
+                                <div style="font-size: 1.1em;">
+                                    <field name="room_id" />
+                                </div>
+
+                                <div class="o_kanban_image float-right">
+
+                                    <t t-if="record.employee_id.raw_value">
+                                        <img
+                                            alt="Employee image"
+                                            t-att-title="record.employee_id.value"
+                                            t-att-alt="record.employee_id.value"
+                                            t-att-src="kanban_image('hr.employee', 'image_128', record.employee_id.raw_value)"
+                                            width="40"
+                                            height="40"
+                                            class="oe_kanban_avatar"
+                                        />
+                                    </t>
+                                </div>
+                            </div>
+
+
+                            <div class="oe_kanban_footer">
+                                <div class="oe_kanban_footer_left">
+                                    <!-- Left hand footer... -->
+
+<!--                                    <div style="font-size: 0.8em;">-->
+<!--                                        <field name="state"/>-->
+<!--                                    </div>-->
+                                    <div style="font-size: 0.8em;">
+                                        <field name="notes" />
+                                    </div>
+                                    <div>
+                                        <!-- <field name="clean_type" /> -->
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_footer_right">
+                                    <field name="state" widget="state_selection" />
+
+                                </div>
+                            </div>
+                            <div class="oe_clear" />
+                            <div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_filter_housekeeping_rack" model="ir.ui.view">
+        <field name="model">pms.housekeeping</field>
+        <field name="arch" type="xml">
+            <search string="Housekeeping filters">
+                <field name="employee_id" />
+                <!--                <field name="room_id.floor_id" />-->
+                <field name="task_id" />
+                <!-- <filter name="filter_occupied" string="Occupied" domain="[('clean_status','=','occupied')]"/> -->
+
+                <searchpanel>
+                    <!--                    <field-->
+                    <!--                        name="room_id.floor_id"-->
+                    <!--                        string="Floor"-->
+                    <!--                        enable_counters="1"-->
+                    <!--                        select="multi"-->
+                    <!--                        icon="fa-hospital-o"-->
+                    <!--                    />-->
+                    <field
+                        name="task_id"
+                        string="Task type"
+                        enable_counters="1"
+                        select="multi"
+                        icon="fa-bath"
+                    />
+                    <field
+                        name="employee_id"
+                        string="Employee"
+                        enable_counters="1"
+                        select="multi"
+                        icon="fa-user"
+                    />
+                    <field
+                        name="room_id"
+                        string="Room"
+                        enable_counters="1"
+                        select="multi"
+                        icon="fa-bed"
+                    />
+                    <!-- <field name="clean_status" string="Clean Type" enable_counters="1" select="multi"/> -->
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+
+    <record model="ir.actions.act_window" id="action_pms_house_keeping_view_form">
+        <field name="name">Housekeeping</field>
+        <field name="res_model">pms.housekeeping</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_pms_house_keeping_view_today_form">
+        <field name="name">Housekeeping</field>
+        <field name="res_model">pms.housekeeping</field>
+        <field name="domain">[('task_date', '=',(context_today().strftime('%Y-%m-%d')))]
+        </field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <menuitem
+        name="Housekeeping"
+        id="menu_action_pms_house_keeping"
+        sequence="17"
+        parent="pms.pms_management_menu"
+    />
+    <menuitem
+        name="Room Rack"
+        id="menu_action_pms_house_keeping_view_rack"
+        action="pms_housekeeping.action_pms_room_rack_kanban"
+        sequence="10"
+        parent="pms_housekeeping.menu_action_pms_house_keeping"
+    />
+    <menuitem
+        name="Today Tasks"
+        id="menu_action_pms_house_keeping_view_today_form"
+        action="action_pms_house_keeping_view_today_form"
+        sequence="20"
+        parent="pms_housekeeping.menu_action_pms_house_keeping"
+    />
+    <menuitem
+        name="Tasks History"
+        id="menu_action_pms_house_keeping_view_form"
+        action="action_pms_house_keeping_view_form"
+        sequence="30"
+        parent="pms_housekeeping.menu_action_pms_house_keeping"
+    />
+
+</odoo>

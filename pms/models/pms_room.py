@@ -15,45 +15,86 @@ class PmsRoom(models.Model):
     _name = "pms.room"
     _description = "Property Room"
     _order = "sequence, room_type_id, name"
+    _check_pms_properties_auto = True
 
-    # Defaults and Gets
+    name = fields.Char(
+        string="Room Name",
+        help="Room Name",
+        required=True,
+    )
+    active = fields.Boolean(
+        string="Active", help="Determines if room is active", default=True
+    )
+    sequence = fields.Integer(
+        string="Sequence",
+        help="Field used to change the position of the rooms in tree view."
+        "Changing the position changes the sequence",
+        default=0,
+    )
+    pms_property_id = fields.Many2one(
+        string="Property",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        required=True,
+        default=lambda self: self.env.user.get_active_property_ids()[0],
+        comodel_name="pms.property",
+        ondelete="restrict",
+    )
+    room_type_id = fields.Many2one(
+        string="Property Room Type",
+        help="Unique room type for the rooms",
+        required=True,
+        comodel_name="pms.room.type",
+        ondelete="restrict",
+        check_pms_properties=True,
+    )
+    # TODO: design shared rooms
+    shared_room_id = fields.Many2one(
+        string="Shared Room",
+        help="The room can be sold by beds",
+        default=False,
+        comodel_name="pms.shared.room",
+    )
+    ubication_id = fields.Many2one(
+        string="Ubication",
+        help="At which ubication the room is located.",
+        comodel_name="pms.ubication",
+        check_pms_properties=True,
+    )
+    capacity = fields.Integer(
+        string="Capacity", help="The maximum number of people that can occupy a room"
+    )
+    extra_beds_allowed = fields.Integer(
+        string="Extra Beds Allowed",
+        help="Number of extra beds allowed in room",
+        required=True,
+        default="0",
+    )
+    description_sale = fields.Text(
+        string="Sale Description",
+        help="A description of the Product that you want to communicate to "
+        " your customers. This description will be copied to every Sales "
+        " Order, Delivery Order and Customer Invoice/Credit Note",
+        translate=True,
+    )
+
+    _sql_constraints = [
+        (
+            "room_property_unique",
+            "unique(name, pms_property_id)",
+            "you cannot have more than one room "
+            "with the same name in the same property",
+        )
+    ]
+
     def name_get(self):
         result = []
         for room in self:
             name = room.name
             if room.room_type_id:
-                name += " [%s]" % room.room_type_id.code_type
+                name += " [%s]" % room.room_type_id.default_code
             result.append((room.id, name))
         return result
-
-    # Fields declaration
-    name = fields.Char("Room Name", required=True)
-    pms_property_id = fields.Many2one(
-        "pms.property",
-        store=True,
-        readonly=True,
-    )
-    room_type_id = fields.Many2one(
-        "pms.room.type", "Property Room Type", required=True, ondelete="restrict"
-    )
-    shared_room_id = fields.Many2one("pms.shared.room", "Shared Room", default=False)
-    floor_id = fields.Many2one(
-        "pms.floor", "Ubication", help="At which floor the room is located."
-    )
-    capacity = fields.Integer("Capacity")
-    to_be_cleaned = fields.Boolean("To be Cleaned", default=False)
-    extra_beds_allowed = fields.Integer(
-        "Extra beds allowed", default="0", required=True
-    )
-    description_sale = fields.Text(
-        "Sale Description",
-        translate=True,
-        help="A description of the Product that you want to communicate to "
-        " your customers. This description will be copied to every Sales "
-        " Order, Delivery Order and Customer Invoice/Credit Note",
-    )
-    active = fields.Boolean("Active", default=True)
-    sequence = fields.Integer("Sequence", default=0)
 
     # Constraints and onchanges
     @api.constrains("capacity")
@@ -70,6 +111,11 @@ class PmsRoom(models.Model):
     # Business methods
 
     def get_capacity(self, extra_bed=0):
-        if not self.shared_room_id:
-            return self.capacity + extra_bed
-        return self.capacity
+        for record in self:
+            if not record.shared_room_id:
+                if extra_bed > record.extra_beds_allowed:
+                    raise ValidationError(
+                        _("Extra beds can't be greater than allowed beds for this room")
+                    )
+                return record.capacity + extra_bed
+            return record.capacity

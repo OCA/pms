@@ -15,7 +15,7 @@
                 name="nextcall"
                 eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"
             />
-            <field name="code">model.auto_no_show()</field>
+            <field name="code">model.auto_arrival_delayed()</field>
         </record>
         <!-- Set reservation like No Checout if checkout is not confirmed-->
         <record model="ir.cron" id="nocheckout_reservations">
@@ -28,7 +28,7 @@
             <field name="state">code</field>
             <field name="model_id" ref="model_pms_reservation" />
             <field name="nextcall" eval="DateTime.now()" />
-            <field name="code">model.auto_no_checkout()</field>
+            <field name="code">model.auto_departure_delayed()</field>
         </record>
         <!-- Scheduler For To Inform Guest About Reservation Before 24 Hours -->
         <record model="ir.cron" id="autocheckout_reservations">

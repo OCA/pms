@@ -1,6 +1,10 @@
 # Copyright 2017  Alexandre Díaz, Pablo Quesada, Darío Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
+
 from odoo import fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class ProductPricelist(models.Model):
@@ -10,17 +14,127 @@ class ProductPricelist(models.Model):
     """
 
     _inherit = "product.pricelist"
+    _check_pms_properties_auto = True
 
     # Fields declaration
     pms_property_ids = fields.Many2many(
-        "pms.property", string="Properties", required=False, ondelete="restrict"
+        string="Properties",
+        help="Properties with access to the element;"
+        " if not set, all properties can access",
+        required=False,
+        comodel_name="pms.property",
+        relation="product_pricelist_pms_property_rel",
+        column1="product_pricelist_id",
+        column2="pms_property_id",
+        ondelete="restrict",
+        check_pms_properties=True,
+    )
+    company_id = fields.Many2one(
+        string="Company",
+        help="Company to which the pricelist belongs",
+        check_pms_properties=True,
     )
     cancelation_rule_id = fields.Many2one(
-        "pms.cancelation.rule", string="Cancelation Policy"
+        string="Cancelation Policy",
+        help="Cancelation Policy included in the room",
+        comodel_name="pms.cancelation.rule",
+        check_pms_properties=True,
     )
     pricelist_type = fields.Selection(
-        [("daily", "Daily Plan")], string="Pricelist Type", default="daily"
+        string="Pricelist Type",
+        help="Pricelist types, it can be Daily Plan",
+        default="daily",
+        selection=[("daily", "Daily Plan")],
     )
+    pms_sale_channel_ids = fields.Many2many(
+        string="Available Channels",
+        help="Sale channel for which the pricelist is included",
+        comodel_name="pms.sale.channel",
+        check_pms_properties=True,
+    )
+    availability_plan_id = fields.Many2one(
+        string="Availability Plan",
+        help="Availability Plan for which the pricelist is included",
+        comodel_name="pms.availability.plan",
+        ondelete="restrict",
+        check_pms_properties=True,
+    )
+    item_ids = fields.One2many(
+        string="Items",
+        help="Items for which the pricelist is made up",
+        check_pms_properties=True,
+    )
+
+    def _compute_price_rule_get_items(
+        self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
+    ):
+        if (
+            "property" in self._context
+            and self._context["property"]
+            and self._context.get("consumption_date")
+        ):
+            self.env.cr.execute(
+                """
+                SELECT item.id
+                FROM   product_pricelist_item item
+                       LEFT JOIN product_category categ
+                            ON item.categ_id = categ.id
+                       LEFT JOIN product_pricelist_pms_property_rel cab
+                            ON item.pricelist_id = cab.product_pricelist_id
+                       LEFT JOIN product_pricelist_item_pms_property_rel lin
+                            ON item.id = lin.product_pricelist_item_id
+                       LEFT JOIN board_service_pricelist_item_rel board
+                            ON item.id = board.pricelist_item_id
+                WHERE  (lin.pms_property_id = %s OR lin.pms_property_id IS NULL)
+                   AND (cab.pms_property_id = %s OR cab.pms_property_id IS NULL)
+                   AND (item.product_tmpl_id IS NULL
+                        OR item.product_tmpl_id = ANY(%s))
+                   AND (item.product_id IS NULL OR item.product_id = ANY(%s))
+                   AND (item.categ_id IS NULL OR item.categ_id = ANY(%s))
+                   AND (item.pricelist_id = %s)
+                   AND (item.date_start IS NULL OR item.date_start <=%s)
+                   AND (item.date_end IS NULL OR item.date_end >=%s)
+                   AND (item.date_start_overnight IS NULL
+                        OR item.date_start_overnight <=%s)
+                   AND (item.date_end_overnight IS NULL
+                        OR item.date_end_overnight >=%s)
+                GROUP  BY item.id
+                ORDER  BY item.applied_on,
+                          /* REVIEW: priotrity date sale / date overnight */
+                          item.date_end - item.date_start ASC,
+                          item.date_end_overnight - item.date_start_overnight ASC,
+                          NULLIF((SELECT COUNT(1)
+                           FROM   product_pricelist_item_pms_property_rel l
+                           WHERE  item.id = l.product_pricelist_item_id)
+                          + (SELECT COUNT(1)
+                             FROM   product_pricelist_pms_property_rel c
+                             WHERE  item.pricelist_id = c.product_pricelist_id),0)
+                          NULLS LAST,
+                          item.id DESC;
+                """,
+                (
+                    self._context["property"],
+                    self._context["property"],
+                    prod_tmpl_ids,
+                    prod_ids,
+                    categ_ids,
+                    # on_board_service_bool,
+                    # board_service_id,
+                    self.id,
+                    date,
+                    date,
+                    self._context["consumption_date"],
+                    self._context["consumption_date"],
+                ),
+            )
+
+            item_ids = [x[0] for x in self.env.cr.fetchall()]
+            items = self.env["product.pricelist.item"].browse(item_ids)
+        else:
+            items = super(ProductPricelist, self)._compute_price_rule_get_items(
+                products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
+            )
+        return items
 
     # Constraints and onchanges
     # @api.constrains("pricelist_type", "pms_property_ids")
@@ -52,23 +166,17 @@ class ProductPricelist(models.Model):
     #                     )
     #                 )
 
-    def _compute_price_rule_get_items(
-        self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
-    ):
-        items = super(ProductPricelist, self)._compute_price_rule_get_items(
-            products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
-        )
-        # Discard the rules with defined properties other than the context,
-        # and we reorder the rules to return the most concrete property rule first
-        if "property" in self._context:
-            items_filtered = items.filtered(
-                lambda i: not i.pms_property_ids
-                or self._context["property"] in i.pms_property_ids.ids
-            )
-            return items_filtered.sorted(
-                key=lambda s: (
-                    (s.applied_on),
-                    ((s.date_end - s.date_start).days),
-                    ((not s.pms_property_ids, s), len(s.pms_property_ids)),
-                )
-            )
+    def open_massive_changes_wizard(self):
+
+        if self.ensure_one():
+            return {
+                "view_type": "form",
+                "view_mode": "form",
+                "name": "Massive changes on Pricelist: " + self.name,
+                "res_model": "pms.massive.changes.wizard",
+                "target": "new",
+                "type": "ir.actions.act_window",
+                "context": {
+                    "pricelist_id": self.id,
+                },
+            }

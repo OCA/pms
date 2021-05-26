@@ -4,14 +4,13 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-
-from .common import TestHotel
+from odoo.tests import common
 
 _logger = logging.getLogger(__name__)
 
 
 @freeze_time("2012-01-14")
-class TestPmsCheckinPartner(TestHotel):
+class TestPmsCheckinPartner(common.SavepointCase):
     @classmethod
     def arrange_single_checkin(cls):
         # Arrange for one checkin on one reservation
@@ -46,7 +45,6 @@ class TestPmsCheckinPartner(TestHotel):
         # ACTION
         self.arrange_single_checkin()
         checkins_count = len(self.reservation_1.checkin_partner_ids)
-
         # ASSERT
         self.assertEqual(
             checkins_count,
@@ -118,7 +116,6 @@ class TestPmsCheckinPartner(TestHotel):
                 "checkin": "2012-01-15",
             }
         )
-
         # ACT & ASSERT
         with self.assertRaises(ValidationError), self.cr.savepoint():
             self.checkin1.action_on_board()
@@ -188,7 +185,6 @@ class TestPmsCheckinPartner(TestHotel):
                             0,
                             {
                                 "partner_id": host4.id,
-                                "reservation_id": self.reservation_1.id,
                             },
                         )
                     ]
@@ -339,7 +335,7 @@ class TestPmsCheckinPartner(TestHotel):
             "Fail the checkins data ratio on reservation",
         )
 
-    def test_auto_no_show(self):
+    def test_auto_arrival_delayed(self):
 
         # ARRANGE
         self.arrange_folio_reservations()
@@ -348,19 +344,21 @@ class TestPmsCheckinPartner(TestHotel):
         # ACTION
         freezer = freeze_time("2012-01-15 10:00:00")
         freezer.start()
-        PmsReservation.auto_no_show()
+        PmsReservation.auto_arrival_delayed()
 
-        no_show_reservations = PmsReservation.search([("state", "=", "no_show")])
+        arrival_delayed_reservations = self.folio_1.reservation_ids.filtered(
+            lambda r: r.state == "arrival_delayed"
+        )
 
         # ASSERT
         self.assertEqual(
-            len(no_show_reservations),
+            len(arrival_delayed_reservations),
             3,
             "Reservations not set like No Show",
         )
         freezer.stop()
 
-    def test_auto_no_checkout(self):
+    def test_auto_departure_delayed(self):
 
         # ARRANGE
         self.arrange_single_checkin()
@@ -370,15 +368,158 @@ class TestPmsCheckinPartner(TestHotel):
         # ACTION
         freezer = freeze_time("2012-01-17 12:00:00")
         freezer.start()
-        PmsReservation.auto_no_checkout()
+        PmsReservation.auto_departure_delayed()
 
-        no_checkout_reservations = PmsReservation.search(
-            [("state", "=", "no_checkout")]
-        )
         freezer.stop()
         # ASSERT
         self.assertEqual(
-            len(no_checkout_reservations),
-            1,
-            "Reservations not set like No checkout",
+            self.reservation_1.state,
+            "departure_delayed",
+            "Reservations not set like Departure delayed",
         )
+
+    def test_not_valid_emails(self):
+        # TEST CASES
+        # emails that should be detected as incorrect
+
+        # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
+        test_cases = [
+            "myemail",
+            "myemail@",
+            "myemail@",
+            "myemail@.com",
+            ".myemail",
+            ".myemail@",
+            ".myemail@.com" ".myemail@.com." "123myemail@aaa.com",
+        ]
+        for mail in test_cases:
+            with self.subTest(i=mail):
+                with self.assertRaises(ValidationError):
+                    reservation.write(
+                        {
+                            "checkin_partner_ids": [
+                                (
+                                    0,
+                                    False,
+                                    {
+                                        "name": "Carlos",
+                                        "email": mail,
+                                    },
+                                )
+                            ]
+                        }
+                    )
+
+    def test_valid_emails(self):
+        # TEST CASES
+        # emails that should be detected as correct
+
+        # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
+        test_cases = [
+            "hello@commitsun.com",
+            "hi.welcome@commitsun.com",
+            "hi.welcome@dev.commitsun.com",
+            "hi.welcome@dev-commitsun.com",
+            "john.doe@xxx.yyy.zzz",
+        ]
+        for mail in test_cases:
+            with self.subTest(i=mail):
+                guest = self.env["pms.checkin.partner"].create(
+                    {
+                        "name": "Carlos",
+                        "email": mail,
+                        "reservation_id": reservation.id,
+                    }
+                )
+                self.assertEqual(
+                    mail,
+                    guest.email,
+                )
+                guest.unlink()
+
+    def test_not_valid_phone(self):
+        # TEST CASES
+        # phones that should be detected as incorrect
+
+        # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
+        test_cases = [
+            "phone",
+            "123456789123",
+            "123.456.789",
+            "123",
+            "123123",
+        ]
+        for phone in test_cases:
+            with self.subTest(i=phone):
+                with self.assertRaises(ValidationError):
+                    self.env["pms.checkin.partner"].create(
+                        {
+                            "name": "Carlos",
+                            "mobile": phone,
+                            "reservation_id": reservation.id,
+                        }
+                    )
+
+    def test_valid_phones(self):
+        # TEST CASES
+        # emails that should be detected as incorrect
+
+        # ARRANGE
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2012-01-14",
+                "checkout": "2012-01-17",
+                "room_type_id": self.env.ref("pms.pms_room_type_3").id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "adults": 3,
+                "pms_property_id": self.env.ref("pms.main_pms_property").id,
+            }
+        )
+        test_cases = [
+            "981 981 981",
+            "981981981",
+            "981 98 98 98",
+        ]
+        for mobile in test_cases:
+            with self.subTest(i=mobile):
+                guest = self.env["pms.checkin.partner"].create(
+                    {
+                        "name": "Carlos",
+                        "mobile": mobile,
+                        "reservation_id": reservation.id,
+                    }
+                )
+                self.assertEqual(
+                    mobile,
+                    guest.mobile,
+                )

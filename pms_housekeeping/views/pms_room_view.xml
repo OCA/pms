@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="inherit_pms_room_view_form" model="ir.ui.view">
+        <field name="name">view.model.form</field>
+        <field name="model">pms.room</field>
+        <field name="inherit_id" ref="pms.pms_room_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='information_pms_room']" position="inside">
+                <group colspan="4" col="4">
+                    <field name="clean_status" string="Clean Status" />
+                    <!-- <field name="clean_type" string="Clean Type" attrs="{'readonly': True}" /> -->
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pms_room_rack_form" model="ir.ui.view">
+        <field name="name">Room rack form view</field>
+        <field name="model">pms.room</field>
+        <field name="type">form</field>
+        <field name="priority" eval="40" />
+        <field name="active" eval="True" />
+        <field name="arch" type="xml">
+            <form string="Property Room">
+                <group col="4" colspan="4" name="header">
+                    <field
+                        name="name"
+                        readonly="1"
+                        nolabel="1"
+                        style="font-size: 2em;"
+                    />
+                    <group col="1">
+                        <field name="clean_employee_id" />
+                    </group>
+                    <group col="1">
+                        <field
+                            name="employee_picture"
+                            widget="image"
+                            class="oe_left oe_avatar"
+                            nolabel="1"
+                            readonly="1"
+                        />
+                    </group>
+                </group>
+                <group col="4" colspan="4" name="status" string="Clean type and status">
+                    <field
+                        name="clean_status"
+                        readonly="1"
+                        nolabel="1"
+                        style="font-size: 2em;"
+                    />
+                    <!-- <group col="1">
+                        <field name="clean_status" />
+                    </group> -->
+                </group>
+
+                <separator string="Task Lines" colspan="4" />
+
+                <field
+                    name="housekeeping_ids"
+                    readonly="0"
+                    context="{'default_state': 'to_do',
+                              'default_employee_id': clean_employee_id,
+                              'tree_view_ref':'view_pms_room_rack_tree',
+                              'form_view_ref':'view_pms_room_rack_form',
+                              'default_room_id': id}"
+                />
+
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pms_room_rack_tree" model="ir.ui.view">
+        <field name="name">Room rack tree view</field>
+        <field name="model">pms.room</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="20" />
+        <field name="active" eval="True" />
+        <field name="arch" type="xml">
+            <tree string="Property Room">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="capacity" />
+                <field name="clean_status" />
+                <field name="clean_employee_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_filter_room_rack" model="ir.ui.view">
+        <field name="model">pms.room</field>
+        <field name="arch" type="xml">
+            <search string="Housekeeping filters">
+                <field name="clean_employee_id" />
+                <field name="ubication_id" />
+                <field name="room_type_id" />
+                <!-- <filter name="filter_occupied" string="Occupied" domain="[('clean_status','=','occupied')]"/> -->
+
+                <searchpanel>
+                    <field
+                        name="room_type_id"
+                        string="Room type"
+                        enable_counters="1"
+                        select="multi"
+                        icon="fa-bed"
+                    />
+                    <field
+                        name="clean_employee_id"
+                        string="Employee"
+                        enable_counters="1"
+                        select="multi"
+                        icon="fa-user"
+                    />
+                    <field
+                        name="ubication_id"
+                        string="Ubication"
+                        enable_counters="1"
+                        select="multi"
+                        icon="fa-hospital-o"
+                    />
+                    <!-- <field name="clean_status" string="Clean Type" enable_counters="1" select="multi"/> -->
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_pms_room_rack_kanban" model="ir.ui.view">
+        <field name="name">Room rack kanban view</field>
+        <field name="model">pms.room</field>
+        <field name="type">kanban</field>
+        <field name="mode">primary</field>
+        <field name="priority" eval="16" />
+        <field name="active" eval="True" />
+        <field name="arch" type="xml">
+            <kanban
+                default_group_by="ubication_id"
+                default_order="ubication_id"
+                class="o_res_partner_kanban"
+                sample="1"
+                group_create="false"
+                create="false"
+            >
+                <field name="name" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click_edit">
+                            <div class="o_dropdown_kanban dropdown">
+                                <!-- Top-right drop down menu here... -->
+                            </div>
+                            <div class="oe_kanban_body">
+                                <!-- Content elements and fields go here... -->
+                                <div style="font-size: 1.5em;">
+                                    <field name="name" />
+                                       <!-- class="oe_stat_button" -->
+                                </div><div style="font-size: 1.1em;">
+                                    <field name="clean_status" />
+                                </div>
+
+                            </div>
+
+
+                            <div class="oe_kanban_footer">
+                                <div class="oe_kanban_footer_left">
+                                    <!-- Left hand footer... -->
+                                    <field
+                                        name="housekeeping_ids"
+                                        widget="many2many_tags"
+                                        domain="[('state', '=', 'draft')]"
+                                    />
+                                    Default: <field name="clean_employee_id" />
+                                    <div>
+                                        <!-- <field name="clean_type" /> -->
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_footer_right">
+                                    <!-- Right hand footer... -->
+                                    <a
+                                        type="object"
+                                        name="add_today_tasks"
+                                        help="Add the housekeeping tasks"
+                                    >
+                                        <span
+                                            class="fa fa-plus-square"
+                                            title="Add all today tasks"
+                                        />
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="oe_clear" />
+                            <div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_pms_room_rack_kanban">
+        <field name="name">Housekeeping</field>
+        <field name="res_model">pms.room</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_pms_room_rack_kanban')}),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('view_pms_room_rack_tree')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('view_pms_room_rack_form')})]"
+        />
+    </record>
+
+</odoo>

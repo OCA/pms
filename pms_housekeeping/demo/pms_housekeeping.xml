@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <!-- pms.housekeeping.task -->
+        <record id="pms_housekeeping_task_0" model="pms.housekeeping.task">
+            <field name="name">Full clean</field>
+            <field name="clean_type">exit</field>
+        </record>
+        <record id="pms_housekeeping_task_1" model="pms.housekeeping.task">
+            <field name="name">Soft clean</field>
+            <field name="clean_type">occupied</field>
+        </record>
+        <record id="pms_housekeeping_task_2" model="pms.housekeeping.task">
+            <field name="name">Review</field>
+        </record>
+        <record id="pms_housekeeping_task_3" model="pms.housekeeping.task">
+            <field name="name">Inspect</field>
+            <field name="def_employee_id" ref="hr.employee_vad" />
+            <field name="clean_type">exit</field>
+        </record>
+        <record id="pms_housekeeping_task_4" model="pms.housekeeping.task">
+            <field name="name">Inspect</field>
+            <field name="def_employee_id" ref="hr.employee_vad" />
+            <field name="clean_type">occupied</field>
+        </record>
+        <!-- pms.housekeeping -->
+        <record id="pms_housekeeping_0" model="pms.housekeeping">
+            <field name="room_id" ref="pms.pms_room_4" />
+            <field name="employee_id" ref="hr.employee_jep" />
+            <field name="task_id" ref="pms_housekeeping.pms_housekeeping_task_0" />
+            <field name="state">to_do</field>
+        </record>
+        <record id="pms_housekeeping_1" model="pms.housekeeping">
+            <field name="room_id" ref="pms.pms_room_3" />
+            <field name="employee_id" ref="hr.employee_jep" />
+            <field name="task_id" ref="pms_housekeeping.pms_housekeeping_task_0" />
+            <field name="state">to_do</field>
+        </record>
+        <record id="pms_housekeeping_2" model="pms.housekeeping">
+            <field name="room_id" ref="pms.pms_room_1" />
+            <field name="employee_id" ref="hr.employee_jep" />
+            <field name="task_id" ref="pms_housekeeping.pms_housekeeping_task_1" />
+            <field name="state">draft</field>
+        </record>
+        <record id="pms_housekeeping_3" model="pms.housekeeping">
+            <field name="room_id" ref="pms.pms_room_4" />
+            <field name="employee_id" ref="hr.employee_vad" />
+            <field name="task_id" ref="pms_housekeeping.pms_housekeeping_task_3" />
+            <field name="state">draft</field>
+        </record>
+        <record id="pms_housekeeping_4" model="pms.housekeeping">
+            <field name="notes">Need clean it again</field>
+            <field name="room_id" ref="pms.pms_room_2" />
+            <field name="employee_id" ref="hr.employee_mit" />
+            <field name="task_id" ref="pms_housekeeping.pms_housekeeping_task_2" />
+            <field name="state">to_do</field>
+        </record>
+        <record id="pms_housekeeping_5" model="pms.housekeeping">
+            <field name="room_id" ref="pms.pms_room_3" />
+            <field name="employee_id" ref="hr.employee_jog" />
+            <field name="task_id" ref="pms_housekeeping.pms_housekeeping_task_1" />
+            <field name="state">draft</field>
+        </record>
+    </data>
+</odoo>

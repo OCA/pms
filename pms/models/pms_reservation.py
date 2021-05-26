@@ -7,7 +7,6 @@ import time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_compare, float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -16,457 +15,603 @@ class PmsReservation(models.Model):
     _name = "pms.reservation"
     _description = "Reservation"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
-    _order = "priority desc, name"
+    _order = "priority desc, create_date desc, write_date desc"
+    # TODO:
+    #  consider near_to_checkin & pending_notifications to order
+    _check_pms_properties_auto = True
     _check_company_auto = True
 
-    # Default Methods ang Gets
-    def _get_default_checkin(self):
-        folio = False
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].checkin
-        else:
-            return fields.Date.today()
-
-    def _get_default_checkout(self):
-        folio = False
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].checkout
-        else:
-            return fields.Date.today() + datetime.timedelta(1)
-
-    def _get_default_arrival_hour(self):
-        folio = False
-        # TODO: Change by property env variable (like company)
-        default_arrival_hour = self.env.user.pms_property_id.default_arrival_hour
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].arrival_hour
-        else:
-            return default_arrival_hour
-
-    def _get_default_departure_hour(self):
-        folio = False
-        # TODO: Change by property env variable (like company)
-        default_departure_hour = self.env.user.pms_property_id.default_departure_hour
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].departure_hour
-        else:
-            return default_departure_hour
-
-    @api.model
-    def _get_default_pms_property(self):
-        # TODO: Change by property env variable (like company)
-        return self.env.user.pms_property_id
-
-    def _get_default_segmentation(self):
-        folio = False
-        segmentation_ids = False
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.segmentation_ids:
-            segmentation_ids = folio.segmentation_ids
-        return segmentation_ids
-
-    @api.model
-    def _default_diff_invoicing(self):
-        """
-        If the guest has an invoicing address set,
-        this method return diff_invoicing = True, else, return False
-        """
-        if "reservation_id" in self.env.context:
-            reservation = self.env["pms.reservation"].browse(
-                [self.env.context["reservation_id"]]
-            )
-        if reservation.partner_id.id == reservation.partner_invoice_id.id:
-            return False
-        return True
-
-    # Fields declaration
     name = fields.Text(
-        "Reservation Description",
-        compute="_compute_name",
-        store=True,
-        readonly=False,
-        # required=True,
+        string="Reservation Id",
+        help="Reservation Name",
+        readonly=True,
     )
-    priority = fields.Integer(compute="_compute_priority", store="True", index=True)
-
+    priority = fields.Integer(
+        string="Priority",
+        help="Priority of a reservation",
+        index=True,
+        store="True",
+        compute="_compute_priority",
+    )
     preferred_room_id = fields.Many2one(
-        "pms.room",
         string="Room",
-        tracking=True,
+        help="It's the preferred room assigned to reservation, "
+        "empty if reservation is splitted",
+        copy=False,
+        comodel_name="pms.room",
         ondelete="restrict",
-        domain="[('id', 'in', allowed_room_ids)]",
+        domain="["
+        "('id', 'in', allowed_room_ids),"
+        "('pms_property_id', '=', pms_property_id),"
+        "]",
+        tracking=True,
+        check_pms_properties=True,
     )
     allowed_room_ids = fields.Many2many(
-        "pms.room",
         string="Allowed Rooms",
+        help="It contains all available rooms for this reservation",
+        comodel_name="pms.room",
         compute="_compute_allowed_room_ids",
     )
     folio_id = fields.Many2one(
-        "pms.folio",
         string="Folio",
-        tracking=True,
+        help="The folio where the reservations are included",
+        copy=False,
+        comodel_name="pms.folio",
         ondelete="restrict",
+        tracking=True,
+        check_company=True,
+    )
+    sale_line_ids = fields.One2many(
+        comodel_name="folio.sale.line",
+        inverse_name="reservation_id",
+        string="Sale Lines",
+        copy=False,
     )
     board_service_room_id = fields.Many2one(
-        "pms.board.service.room.type",
         string="Board Service",
+        help="Board Service included in the room",
+        readonly=False,
+        store=True,
+        comodel_name="pms.board.service.room.type",
+        compute="_compute_board_service_room_id",
+        tracking=True,
+        check_pms_properties=True,
     )
     room_type_id = fields.Many2one(
-        "pms.room.type",
         string="Room Type",
-        tracking=True,
-        # required=True,
-        compute="_compute_room_type_id",
-        store=True,
+        help="Room Type sold on the reservation,"
+        "it doesn't necessarily correspond to"
+        " the room actually assigned",
         readonly=False,
+        copy=False,
+        store=True,
+        comodel_name="pms.room.type",
+        compute="_compute_room_type_id",
+        tracking=True,
+        check_pms_properties=True,
     )
     partner_id = fields.Many2one(
-        "res.partner",
-        tracking=True,
+        string="Customer",
+        help="Name of who made the reservation",
+        readonly=False,
+        store=True,
+        comodel_name="res.partner",
         ondelete="restrict",
         compute="_compute_partner_id",
-        store=True,
-        readonly=False,
+        tracking=True,
+        check_pms_properties=True,
     )
     agency_id = fields.Many2one(
-        related="folio_id.agency_id",
+        string="Agency",
+        help="Agency that made the reservation",
         readonly=False,
         store=True,
+        related="folio_id.agency_id",
+        tracking=True,
     )
     channel_type_id = fields.Many2one(
+        string="Channel Type",
+        help="Sales Channel through which the reservation was managed",
+        readonly=False,
+        store=True,
         related="folio_id.channel_type_id",
-        readonly=False,
-        store=True,
+        tracking=True,
     )
-    partner_invoice_id = fields.Many2one(
-        "res.partner",
-        string="Invoice Address",
-        help="Invoice address for current reservation.",
-        compute="_compute_partner_invoice_id",
-        store=True,
-        readonly=False,
+    closure_reason_id = fields.Many2one(
+        string="Closure Reason",
+        help="Reason why the reservation cannot be made",
+        related="folio_id.closure_reason_id",
+        check_pms_properties=True,
     )
-    closure_reason_id = fields.Many2one(related="folio_id.closure_reason_id")
     company_id = fields.Many2one(
-        related="folio_id.company_id", string="Company", store=True, readonly=True
+        string="Company",
+        help="Company to which the reservation belongs",
+        readonly=True,
+        store=True,
+        related="folio_id.company_id",
     )
     pms_property_id = fields.Many2one(
-        "pms.property",
-        default=_get_default_pms_property,  # required=True
+        string="Pms Property",
+        help="Property to which the reservation belongs",
+        store=True,
+        readonly=False,
+        default=lambda self: self.env.user.get_active_property_ids()[0],
+        related="folio_id.pms_property_id",
+        comodel_name="pms.property",
+        check_pms_properties=True,
     )
     reservation_line_ids = fields.One2many(
-        "pms.reservation.line",
-        "reservation_id",
-        compute="_compute_reservation_line_ids",
-        store=True,
+        string="Reservation Lines",
+        help="They are the lines of the reservation into a reservation,"
+        "they corresponds to the nights",
         readonly=False,
+        copy=False,
+        store=True,
+        compute="_compute_reservation_line_ids",
+        comodel_name="pms.reservation.line",
+        inverse_name="reservation_id",
+        check_pms_properties=True,
     )
     service_ids = fields.One2many(
-        "pms.service",
-        "reservation_id",
-        compute="_compute_service_ids",
-        store=True,
+        string="Services",
+        help="Included services in the reservation",
         readonly=False,
+        store=True,
+        comodel_name="pms.service",
+        inverse_name="reservation_id",
+        compute="_compute_service_ids",
+        check_company=True,
+        check_pms_properties=True,
     )
     pricelist_id = fields.Many2one(
-        "product.pricelist",
         string="Pricelist",
+        help="Pricelist that guides the prices of the reservation",
+        readonly=False,
+        store=True,
+        comodel_name="product.pricelist",
         ondelete="restrict",
         compute="_compute_pricelist_id",
-        store=True,
+        tracking=True,
+        check_pms_properties=True,
+    )
+    user_id = fields.Many2one(
+        string="Salesperson",
+        help="User who manages the reservation",
         readonly=False,
+        store=True,
+        related="folio_id.user_id",
+        depends=["folio_id.user_id"],
+        default=lambda self: self.env.user.id,
+    )
+    show_update_pricelist = fields.Boolean(
+        string="Has Pricelist Changed",
+        help="Technical Field, True if the pricelist was changed;\n"
+        " this will then display a recomputation button",
+        store=True,
+        compute="_compute_show_update_pricelist",
     )
     commission_percent = fields.Float(
         string="Commission percent (%)",
-        compute="_compute_commission_percent",
-        store=True,
+        help="Percentage corresponding to commission",
         readonly=False,
+        store=True,
+        compute="_compute_commission_percent",
+        tracking=True,
     )
     commission_amount = fields.Float(
         string="Commission amount",
+        help="Amount corresponding to commission",
+        store=True,
         compute="_compute_commission_amount",
-        store=True,
     )
-    # TODO: Warning Mens to update pricelist
     checkin_partner_ids = fields.One2many(
-        "pms.checkin.partner",
-        "reservation_id",
-        compute="_compute_checkin_partner_ids",
-        store=True,
+        string="Checkin Partners",
+        help="Guests who will occupy the room",
         readonly=False,
+        copy=False,
+        store=True,
+        compute="_compute_checkin_partner_ids",
+        comodel_name="pms.checkin.partner",
+        inverse_name="reservation_id",
+        check_pms_properties=True,
     )
     count_pending_arrival = fields.Integer(
-        "Pending Arrival",
-        compute="_compute_count_pending_arrival",
+        string="Pending Arrival",
+        help="Number of guest with pending checkin",
         store=True,
+        compute="_compute_count_pending_arrival",
     )
     checkins_ratio = fields.Integer(
         string="Pending Arrival Ratio",
+        help="Proportion of guest pending checkin",
         compute="_compute_checkins_ratio",
     )
     pending_checkin_data = fields.Integer(
-        "Checkin Data",
-        compute="_compute_pending_checkin_data",
+        string="Checkin Data",
+        help="Data missing at checkin",
         store=True,
+        compute="_compute_pending_checkin_data",
     )
     ratio_checkin_data = fields.Integer(
         string="Pending Checkin Data",
+        help="Proportion of guest data pending at checkin",
         compute="_compute_ratio_checkin_data",
     )
-    ready_for_checkin = fields.Boolean(compute="_compute_ready_for_checkin")
-    left_for_checkin = fields.Boolean(
-        compute="_compute_left_for_checkin", search="_search_left_for_checkin"
+    ready_for_checkin = fields.Boolean(
+        string="Ready for checkin",
+        help="Indicates the reservations with checkin_partner data enought to checkin",
+        compute="_compute_ready_for_checkin",
     )
-    checkin_today = fields.Boolean(
-        compute="_compute_checkin_today", search="_search_checkin_today"
+    allowed_checkin = fields.Boolean(
+        string="Allowed checkin",
+        help="Technical field, Indicates if there isn't a checkin_partner data"
+        "Only can be true if checkin is today or was in the past",
+        compute="_compute_allowed_checkin",
+        search="_search_allowed_checkin",
     )
-    departure_today = fields.Boolean(
-        compute="_compute_departure_today", search="_search_departure_today"
+
+    allowed_checkout = fields.Boolean(
+        string="Allowed checkout",
+        help="Technical field, Indicates that reservation is ready for checkout"
+        "only can be true if reservation state is 'onboard' or departure_delayed"
+        "and checkout is today or will be in the future",
+        compute="_compute_allowed_checkout",
+        search="_search_allowed_checkout",
     )
+
+    allowed_cancel = fields.Boolean(
+        string="Allowed cancel",
+        help="Technical field, Indicates that reservation can be cancelled,"
+        "that happened when state is 'cancelled', 'done', or 'departure_delayed'",
+        compute="_compute_allowed_cancel",
+        search="_search_allowed_cancel",
+    )
+
     segmentation_ids = fields.Many2many(
-        "res.partner.category",
         string="Segmentation",
+        help="Segmentation tags to classify reservations",
+        default=lambda self: self._get_default_segmentation(),
+        comodel_name="res.partner.category",
         ondelete="restrict",
-        default=_get_default_segmentation,
     )
     currency_id = fields.Many2one(
-        "res.currency",
-        related="pricelist_id.currency_id",
         string="Currency",
+        help="The currency used in relation to the pricelist",
         readonly=True,
+        store=True,
+        related="pricelist_id.currency_id",
+        depends=["pricelist_id"],
     )
     tax_ids = fields.Many2many(
-        "account.tax",
         string="Taxes",
-        ondelete="restrict",
+        help="Taxes applied in the reservation",
+        readonly="False",
+        store=True,
+        compute="_compute_tax_ids",
+        comodel_name="account.tax",
         domain=["|", ("active", "=", False), ("active", "=", True)],
     )
-    move_line_ids = fields.Many2many(
-        "account.move.line",
-        "reservation_move_rel",
-        "reservation_id",
-        "move_line_id",
-        string="Invoice Lines",
-        copy=False,
-    )
-    analytic_tag_ids = fields.Many2many("account.analytic.tag", string="Analytic Tags")
-    localizator = fields.Char(
-        string="Localizator", compute="_compute_localizator", store=True
-    )
     adults = fields.Integer(
-        "Adults",
-        tracking=True,
-        help="List of adults there in guest list. ",
-        compute="_compute_adults",
-        store=True,
+        string="Adults",
+        help="List of adults there in guest list",
         readonly=False,
+        store=True,
+        compute="_compute_adults",
+        tracking=True,
     )
     children_occupying = fields.Integer(
         string="Children occupying",
+        help="Number of children there in guest list whose presence counts",
     )
-
     children = fields.Integer(
-        "Children",
+        string="Children",
+        help="Number total of children there in guest list,"
+        "whose presence counts or not",
         readonly=False,
         tracking=True,
-        help="Number of children there in guest list.",
     )
-    to_assign = fields.Boolean("To Assign", tracking=True)
+    to_assign = fields.Boolean(
+        string="To Assign",
+        help="Technical field",
+        default=True,
+        tracking=True,
+    )
     state = fields.Selection(
-        [
+        string="State",
+        help="The state of the reservation. "
+        "It can be 'Pre-reservation', 'Pending arrival', 'On Board', 'Out', "
+        "'Cancelled', 'Arrival Delayed' or 'Departure Delayed'",
+        readonly=True,
+        index=True,
+        default=lambda *a: "draft",
+        copy=False,
+        selection=[
             ("draft", "Pre-reservation"),
             ("confirm", "Pending arrival"),
             ("onboard", "On Board"),
             ("done", "Out"),
             ("cancelled", "Cancelled"),
-            ("no_show", "No Show"),
-            ("no_checkout", "No Checkout"),
+            ("arrival_delayed", "Arrival Delayed"),
+            ("departure_delayed", "Departure delayed"),
         ],
-        string="Status",
-        default=lambda *a: "draft",
-        copy=False,
-        index=True,
         tracking=True,
-        readonly=True,
     )
     reservation_type = fields.Selection(
-        related="folio_id.reservation_type", default=lambda *a: "normal"
+        string="Reservation Type",
+        help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
+        default=lambda *a: "normal",
+        related="folio_id.reservation_type",
     )
     splitted = fields.Boolean(
-        "Splitted",
-        compute="_compute_splitted",
+        string="Splitted",
+        help="Field that indicates if the reservation is split. "
+        "A reservation is split when guests don't sleep in the same room every night",
         store=True,
+        compute="_compute_splitted",
     )
-
-    rooms = fields.Char(string="Room/s", compute="_compute_rooms", store=True)
-
-    credit_card_details = fields.Text(related="folio_id.credit_card_details")
-    cancelled_reason = fields.Selection(
-        [("late", "Late"), ("intime", "In time"), ("noshow", "No Show")],
-        string="Cause of cancelled",
+    rooms = fields.Char(
+        string="Room/s",
+        help="Rooms that are reserved",
+        compute="_compute_rooms",
+        store=True,
         tracking=True,
     )
-    out_service_description = fields.Text("Cause of out of service")
-    checkin = fields.Date("Check In", required=True, default=_get_default_checkin)
-    checkout = fields.Date("Check Out", required=True, default=_get_default_checkout)
+    credit_card_details = fields.Text(
+        string="Credit Card Details", help="", related="folio_id.credit_card_details"
+    )
+    cancelled_reason = fields.Selection(
+        string="Reason of cancellation",
+        help="Field indicating type of cancellation. "
+        "It can be 'late', 'intime' or 'noshow'",
+        copy=False,
+        selection=[("late", "Late"), ("intime", "In time"), ("noshow", "No Show")],
+        tracking=True,
+    )
+    out_service_description = fields.Text(
+        string="Cause of out of service",
+        help="Indicates the cause of out of service",
+    )
+    checkin = fields.Date(
+        string="Check In",
+        help="It is the checkin date of the reservation, ",
+        required=True,
+        default=lambda self: self._get_default_checkin(),
+        copy=False,
+        tracking=True,
+    )
+    checkout = fields.Date(
+        string="Check Out",
+        help="It is the checkout date of the reservation, ",
+        required=True,
+        default=lambda self: self._get_default_checkout(),
+        copy=False,
+        tracking=True,
+    )
     arrival_hour = fields.Char(
-        "Arrival Hour",
-        default=_get_default_arrival_hour,
-        help="Default Arrival Hour (HH:MM)",
+        string="Arrival Hour",
+        help="Arrival Hour (HH:MM)",
+        readonly=False,
+        store=True,
+        compute="_compute_arrival_hour",
     )
     departure_hour = fields.Char(
-        "Departure Hour",
-        default=_get_default_departure_hour,
-        help="Default Departure Hour (HH:MM)",
+        string="Departure Hour",
+        help="Departure Hour (HH:MM)",
+        readonly=False,
+        store=True,
+        compute="_compute_departure_hour",
     )
     checkin_datetime = fields.Datetime(
-        "Exact Arrival",
+        string="Exact Arrival",
+        help="This field is the day and time of arrival of the reservation."
+        "It is formed with the checkin and arrival_hour fields",
         compute="_compute_checkin_datetime",
     )
     checkout_datetime = fields.Datetime(
-        "Exact Departure",
+        string="Exact Departure",
+        help="This field is the day and time of departure of the reservation."
+        "It is formed with the checkout and departure_hour fields",
         compute="_compute_checkout_datetime",
     )
-    # TODO: As checkin_partner_count is a computed field, it can't not
-    # be used in a domain filer Non-stored field
-    # pms.reservation.checkin_partner_count cannot be searched
-    # searching on a computed field can also be enabled by setting the
-    # search parameter. The value is a method name returning a Domains
     checkin_partner_count = fields.Integer(
-        "Checkin counter", compute="_compute_checkin_partner_count"
+        string="Checkin counter",
+        help="Number of checkin partners in a reservation",
+        compute="_compute_checkin_partner_count",
     )
     checkin_partner_pending_count = fields.Integer(
-        "Checkin Pending Num",
+        string="Checkin Pending Num",
+        help="Number of checkin partners pending to checkin in a reservation",
         compute="_compute_checkin_partner_count",
         search="_search_checkin_partner_pending",
     )
-    overbooking = fields.Boolean("Is Overbooking", default=False)
-    reselling = fields.Boolean("Is Reselling", default=False)
-    nights = fields.Integer("Nights", compute="_compute_nights", store=True)
-    origin = fields.Char("Origin", compute="_compute_origin", store=True)
-    detail_origin = fields.Char(
-        "Detail Origin", compute="_compute_detail_origin", store=True
+    overbooking = fields.Boolean(
+        string="Is Overbooking",
+        help="Indicate if exists overbooking",
+        default=False,
+        copy=False,
     )
-    folio_pending_amount = fields.Monetary(related="folio_id.pending_amount")
-    shared_folio = fields.Boolean(compute="_compute_shared")
-    # Used to notify is the reservation folio has other reservations/services
-    email = fields.Char("E-mail", related="partner_id.email")
-    mobile = fields.Char("Mobile", related="partner_id.mobile")
-    phone = fields.Char("Phone", related="partner_id.phone")
+    nights = fields.Integer(
+        string="Nights",
+        help="Number of nights of a reservation",
+        compute="_compute_nights",
+        store=True,
+    )
+    folio_pending_amount = fields.Monetary(
+        string="Pending Amount",
+        help="The amount that remains to be paid from folio",
+        related="folio_id.pending_amount",
+        tracking=True,
+    )
+    folio_payment_state = fields.Selection(
+        string="Payment State",
+        help="The status of the folio payment",
+        store=True,
+        related="folio_id.payment_state",
+        tracking=True,
+    )
+    shared_folio = fields.Boolean(
+        string="Shared Folio",
+        help="Used to notify is the reservation folio has other reservations/services",
+        compute="_compute_shared_folio",
+    )
+    partner_email = fields.Char(
+        string="E-mail",
+        help="E-mail of the checkin partner associated to the reservation",
+        related="partner_id.email",
+    )
+    partner_mobile = fields.Char(
+        string="Mobile",
+        help="Mobile of the checkin partner associated to the reservation",
+        related="partner_id.mobile",
+    )
+    partner_phone = fields.Char(
+        string="Phone",
+        help="Phone of the checkin partner associated to the reservation",
+        related="partner_id.phone",
+    )
     partner_internal_comment = fields.Text(
-        string="Internal Partner Notes", related="partner_id.comment"
+        string="Internal Partner Notes",
+        help="Internal reservation comment",
+        related="partner_id.comment",
     )
+    partner_requests = fields.Text(
+        string="Partner Requests",
+        help="Guest requests",
+    )
+
     folio_internal_comment = fields.Text(
-        string="Internal Folio Notes", related="folio_id.internal_comment"
+        string="Internal Folio Notes",
+        help="Internal comment for folio",
+        related="folio_id.internal_comment",
     )
-    preconfirm = fields.Boolean("Auto confirm to Save", default=True)
+    preconfirm = fields.Boolean(
+        string="Auto confirm to Save",
+        help="Technical field that indicates the reservation is not comfirm yet",
+        default=True,
+    )
     invoice_status = fields.Selection(
-        [
+        string="Invoice Status",
+        help="The status of the invoices in folio. Can be 'invoiced',"
+        " 'to invoice' or 'no'.",
+        compute="_compute_invoice_status",
+        store=True,
+        readonly=True,
+        selection=[
+            ("upselling", "Upselling Opportunity"),
             ("invoiced", "Fully Invoiced"),
             ("to invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
         ],
-        string="Invoice Status",
-        compute="_compute_invoice_status",
-        store=True,
-        readonly=True,
         default="no",
     )
-    qty_to_invoice = fields.Float(
-        compute="_compute_get_to_invoice_qty",
-        string="To Invoice",
-        store=True,
-        readonly=True,
-        digits=("Product Unit of Measure"),
+    analytic_tag_ids = fields.Many2many(
+        string="Analytic Tags",
+        comodel_name="account.analytic.tag",
+        relation="pms_reservation_account_analytic_tag",
+        column1="reservation_id",
+        column2="account_analytic_tag_id",
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
     )
-    qty_invoiced = fields.Float(
-        compute="_compute_get_invoice_qty",
-        string="Invoiced",
-        store=True,
-        readonly=True,
-        digits=("Product Unit of Measure"),
+    analytic_line_ids = fields.One2many(
+        string="Analytic lines",
+        comodel_name="account.analytic.line",
+        inverse_name="so_line",
     )
     price_subtotal = fields.Monetary(
         string="Subtotal",
+        help="Subtotal price without taxes",
         readonly=True,
         store=True,
         compute="_compute_amount_reservation",
     )
     price_total = fields.Monetary(
         string="Total",
+        help="Total price with taxes",
         readonly=True,
         store=True,
         compute="_compute_amount_reservation",
+        tracking=True,
     )
     price_tax = fields.Float(
         string="Taxes Amount",
+        help="Total of taxes in a reservation",
         readonly=True,
         store=True,
         compute="_compute_amount_reservation",
     )
     price_services = fields.Monetary(
         string="Services Total",
+        help="Total price from services of a reservation",
         readonly=True,
         store=True,
-        compute="_compute_amount_room_services",
+        compute="_compute_price_services",
     )
     price_room_services_set = fields.Monetary(
         string="Room Services Total",
+        help="Total price of room and services",
         readonly=True,
         store=True,
-        compute="_compute_amount_set",
+        compute="_compute_price_room_services_set",
     )
     discount = fields.Float(
         string="Discount (€)",
+        help="Discount of total price in reservation",
+        readonly=False,
+        store=True,
         digits=("Discount"),
         compute="_compute_discount",
+        tracking=True,
+    )
+    date_order = fields.Date(
+        string="Date Order",
+        help="Order date of reservation",
+        compute="_compute_date_order",
         store=True,
+        readonly=False,
     )
 
-    # Compute and Search methods
-    @api.depends("checkin", "checkout", "room_type_id")
-    def _compute_name(self):
-        for reservation in self:
-            if (
-                reservation.room_type_id
-                and reservation.checkin
-                and reservation.checkout
-            ):
-                checkin_str = reservation.checkin.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                checkout_str = reservation.checkout.strftime(DEFAULT_SERVER_DATE_FORMAT)
-                reservation.name = (
-                    reservation.room_type_id.name
-                    + ": "
-                    + checkin_str
-                    + " - "
-                    + checkout_str
-                )
-            else:
-                reservation.name = "/"
+    def _compute_date_order(self):
+        for record in self:
+            record.date_order = datetime.datetime.today()
 
+    # TODO:
+    #  consider near_to_checkin & pending_notifications to order
     @api.depends("checkin")
     def _compute_priority(self):
-        # TODO: Logic priority (100 by example)
-        self.priority = 100
+        for record in self:
+            record.priority = 0
+
+            # we can give weights for each condition
+            if not record.to_assign:
+                record.priority += 1
+            if not record.allowed_checkin:
+                record.priority += 10
+            if record.allowed_checkout:
+                record.priority += 100
+            if record.state == "onboard" and record.folio_pending_amount > 0:
+                record.priority += 1000
+
+    @api.depends("pricelist_id", "room_type_id")
+    def _compute_board_service_room_id(self):
+        for reservation in self:
+            if reservation.pricelist_id and reservation.room_type_id:
+                board_service_default = self.env["pms.board.service.room.type"].search(
+                    [
+                        ("pms_room_type_id", "=", reservation.room_type_id.id),
+                        ("by_default", "=", True),
+                    ]
+                )
+                if (
+                    not reservation.board_service_room_id
+                    or not reservation.board_service_room_id.pms_room_type_id
+                    == reservation.room_type_id
+                ):
+                    reservation.board_service_room_id = (
+                        board_service_default.id if board_service_default else False
+                    )
+            elif not reservation.board_service_room_id:
+                reservation.board_service_room_id = False
 
     @api.depends("preferred_room_id")
     def _compute_room_type_id(self):
@@ -503,7 +648,12 @@ class PmsReservation(models.Model):
             )
 
     @api.depends(
-        "reservation_line_ids.date", "overbooking", "state", "preferred_room_id"
+        "reservation_line_ids.date",
+        "reservation_line_ids.room_id",
+        "reservation_line_ids.occupies_availability",
+        "preferred_room_id",
+        "pricelist_id",
+        "pms_property_id",
     )
     def _compute_allowed_room_ids(self):
         for reservation in self:
@@ -513,36 +663,26 @@ class PmsReservation(models.Model):
                         [("active", "=", True)]
                     )
                     return
-                rooms_available = self.env[
-                    "pms.room.type.availability"
-                ].rooms_available(
+                rooms_available = self.env["pms.availability.plan"].rooms_available(
                     checkin=reservation.checkin,
                     checkout=reservation.checkout,
-                    room_type_id=False,  # Allow chosen any available room
+                    room_type_id=False,  # Allows to choose any available room
                     current_lines=reservation.reservation_line_ids.ids,
+                    pricelist_id=reservation.pricelist_id.id,
+                    pms_property_id=reservation.pms_property_id.id,
                 )
                 reservation.allowed_room_ids = rooms_available
 
-    @api.depends("reservation_type", "agency_id")
+    @api.depends("reservation_type", "agency_id", "folio_id")
     def _compute_partner_id(self):
         for reservation in self:
             if reservation.reservation_type == "out":
                 reservation.partner_id = reservation.pms_property_id.partner_id.id
-            if reservation.folio_id:
-                reservation.partner_id = reservation.folio_id.partner_id
-            else:
-                reservation.partner_id = False
-            if not reservation.partner_id and reservation.agency_id:
-                reservation.partner_id = reservation.agency_id
-
-    @api.depends("partner_id")
-    def _compute_partner_invoice_id(self):
-        for reservation in self:
-            if reservation.folio_id and reservation.folio_id.partner_id:
-                addr = reservation.folio_id.partner_id.address_get(["invoice"])
-            else:
-                addr = reservation.partner_id.address_get(["invoice"])
-            reservation.partner_invoice_id = addr["invoice"]
+            elif not reservation.partner_id:
+                if reservation.folio_id:
+                    reservation.partner_id = reservation.folio_id.partner_id
+                elif reservation.agency_id:
+                    reservation.partner_id = reservation.agency_id
 
     @api.depends("checkin", "checkout")
     def _compute_reservation_line_ids(self):
@@ -582,6 +722,13 @@ class PmsReservation(models.Model):
                     ("is_board_service", "=", True),
                 ]
             )
+            # Avoid recalculating services if the boardservice has not changed
+            if (
+                old_board_lines
+                and reservation.board_service_room_id
+                == reservation._origin.board_service_room_id
+            ):
+                return
             if reservation.board_service_room_id:
                 board = self.env["pms.board.service.room.type"].browse(
                     reservation.board_service_room_id.id
@@ -596,21 +743,54 @@ class PmsReservation(models.Model):
                     board_services.append((0, False, res))
                 reservation.service_ids -= old_board_lines
                 reservation.service_ids = board_services
+            elif old_board_lines:
+                reservation.service_ids -= old_board_lines
 
-    @api.depends("partner_id")
+    @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
         for reservation in self:
-            if reservation.folio_id:
-                pricelist_id = reservation.folio_id.pricelist_id.id
-            else:
-                pricelist_id = (
-                    reservation.partner_id.property_product_pricelist
-                    and reservation.partner_id.property_product_pricelist.id
-                    or self.env.user.pms_property_id.default_pricelist_id.id
+            if reservation.agency_id and reservation.agency_id.apply_pricelist:
+                reservation.pricelist_id = (
+                    reservation.agency_id.property_product_pricelist.id
                 )
-            if reservation.pricelist_id.id != pricelist_id:
-                # TODO: Warning change de pricelist?
-                reservation.pricelist_id = pricelist_id
+            elif (
+                reservation.partner_id
+                and reservation.partner_id.property_product_pricelist
+            ):
+                reservation.pricelist_id = (
+                    reservation.partner_id.property_product_pricelist.id
+                )
+            elif not reservation.pricelist_id.id:
+                if (
+                    reservation.folio_id
+                    and len(reservation.folio_id.reservation_ids.mapped("pricelist_id"))
+                    == 1
+                ):
+                    reservation.pricelist_id = (
+                        reservation.folio_id.reservation_ids.mapped("pricelist_id")
+                    )
+                else:
+                    reservation.pricelist_id = (
+                        reservation.pms_property_id.default_pricelist_id.id
+                    )
+
+    @api.depends("pricelist_id", "room_type_id")
+    def _compute_show_update_pricelist(self):
+        for reservation in self:
+            if (
+                sum(reservation.reservation_line_ids.mapped("price")) > 0
+                and (
+                    reservation.pricelist_id
+                    and reservation._origin.pricelist_id != reservation.pricelist_id
+                )
+                or (
+                    reservation.room_type_id
+                    and reservation._origin.room_type_id != reservation.room_type_id
+                )
+            ):
+                reservation.show_update_pricelist = True
+            else:
+                reservation.show_update_pricelist = False
 
     @api.depends("adults")
     def _compute_checkin_partner_ids(self):
@@ -630,7 +810,7 @@ class PmsReservation(models.Model):
                 )
             elif leftover_unassigneds_count > 0:
                 for i in range(0, leftover_unassigneds_count):
-                    unassigned_checkins[i].sudo().unlink()
+                    reservation.checkin_partner_ids = [(2, unassigned_checkins[i].id)]
             elif reservation.adults > len(reservation.checkin_partner_ids):
                 checkins_lst = []
                 count_new_checkins = reservation.adults - len(
@@ -646,9 +826,9 @@ class PmsReservation(models.Model):
                             },
                         )
                     )
-                reservation.with_context(
-                    {"auto_create_checkin": True}
-                ).checkin_partner_ids = checkins_lst
+                reservation.checkin_partner_ids = checkins_lst
+            elif reservation.adults == 0:
+                reservation.checkin_partner_ids = False
 
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
     def _compute_count_pending_arrival(self):
@@ -686,40 +866,44 @@ class PmsReservation(models.Model):
                 / reservation.adults
             )
 
-    def _compute_left_for_checkin(self):
+    def _compute_allowed_checkin(self):
         # Reservations still pending entry today
         for record in self:
-            record.left_for_checkin = (
+            record.allowed_checkin = (
                 True
                 if (
-                    record.state in ["draft", "confirm", "no_show"]
+                    record.state in ["draft", "confirm", "arrival_delayed"]
                     and record.checkin <= fields.Date.today()
                 )
                 else False
             )
 
-    def _search_left_for_checkin(self, operator, value):
-        if operator not in ("=",):
-            raise UserError(
-                _("Invalid domain operator %s for left of checkin", operator)
+    def _compute_allowed_checkout(self):
+        # Reservations still pending checkout today
+        for record in self:
+            record.allowed_checkout = (
+                True
+                if (
+                    record.state in ["onboard", "departure_delayed"]
+                    and record.checkout >= fields.Date.today()
+                )
+                else False
             )
 
-        if value not in (True,):
-            raise UserError(
-                _("Invalid domain right operand %s for left of checkin", value)
+    def _compute_allowed_cancel(self):
+        # Reservations can be cancelled
+        for record in self:
+            record.allowed_cancel = (
+                True
+                if (record.state not in ["cancelled", "done", "departure_delayed"])
+                else False
             )
-
-        today = fields.Date.context_today(self)
-        return [
-            ("state", "in", ("draft", "confirm", "no_show")),
-            ("checkin", "<=", today),
-        ]
 
     def _compute_ready_for_checkin(self):
         # Reservations with hosts data enought to checkin
         for record in self:
             record.ready_for_checkin = (
-                record.left_for_checkin
+                record.allowed_checkin
                 and len(
                     record.checkin_partner_ids.filtered(
                         lambda c: c.state == "precheckin"
@@ -728,43 +912,46 @@ class PmsReservation(models.Model):
                 >= 1
             )
 
-    def _compute_checkin_today(self):
+    def _compute_access_url(self):
+        super(PmsReservation, self)._compute_access_url()
+        for reservation in self:
+            reservation.access_url = "/my/reservations/%s" % (reservation.id)
+
+    @api.depends("pms_property_id", "folio_id")
+    def _compute_arrival_hour(self):
         for record in self:
-            record.checkin_today = (
-                True if record.checkin == fields.Date.today() else False
-            )
-            # REVIEW: Late checkin?? (next day)
+            if not record.arrival_hour and record.pms_property_id:
+                default_arrival_hour = record.pms_property_id.default_arrival_hour
+                if (
+                    record.folio_id
+                    and record.folio_id.reservation_ids
+                    and record.folio_id.reservation_ids[0].arrival_hour
+                ):
+                    record.arrival_hour = record.folio_id.reservation_ids[
+                        0
+                    ].arrival_hour
+                else:
+                    record.arrival_hour = default_arrival_hour
+            elif not record.arrival_hour:
+                record.arrival_hour = False
 
-    def _search_checkin_today(self, operator, value):
-        if operator not in ("=", "!="):
-            raise UserError(_("Invalid domain operator %s", operator))
-
-        if value not in (False, True):
-            raise UserError(_("Invalid domain right operand %s", value))
-
-        today = fields.Date.context_today(self)
-
-        return [("checkin", operator, today)]
-
-    def _compute_departure_today(self):
+    @api.depends("pms_property_id", "folio_id")
+    def _compute_departure_hour(self):
         for record in self:
-            record.departure_today = (
-                True if record.checkout == fields.Date.today() else False
-            )
-
-    def _search_departure_today(self, operator, value):
-        if operator not in ("=", "!="):
-            raise UserError(_("Invalid domain operator %s", operator))
-
-        if value not in (False, True):
-            raise UserError(_("Invalid domain right operand %s", value))
-
-        searching_for_true = (operator == "=" and value) or (
-            operator == "!=" and not value
-        )
-        today = fields.Date.context_today(self)
-
-        return [("checkout", searching_for_true, today)]
+            if not record.departure_hour and record.pms_property_id:
+                default_departure_hour = record.pms_property_id.default_departure_hour
+                if (
+                    record.folio_id
+                    and record.folio_id.reservation_ids
+                    and record.folio_id.reservation_ids[0].departure_hour
+                ):
+                    record.departure_hour = record.folio_id.reservation_ids[
+                        0
+                    ].departure_hour
+                else:
+                    record.departure_hour = default_departure_hour
+            elif not record.departure_hour:
+                record.departure_hour = False
 
     @api.depends("agency_id")
     def _compute_commission_percent(self):
@@ -798,99 +985,52 @@ class PmsReservation(models.Model):
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
     def _compute_splitted(self):
+        # REVIEW: Updating preferred_room_id here avoids cyclical dependency
         for reservation in self:
-            if len(reservation.reservation_line_ids.mapped("room_id")) > 1:
+            room_ids = reservation.reservation_line_ids.mapped("room_id.id")
+            if len(room_ids) > 1:
                 reservation.splitted = True
+                reservation.preferred_room_id = False
             else:
                 reservation.splitted = False
-                reservation.preferred_room_id = reservation.reservation_line_ids[
-                    0
-                ].room_id
+                if room_ids:
+                    reservation.preferred_room_id = room_ids[0]
 
-    @api.depends("state", "qty_to_invoice", "qty_invoiced")
+    @api.depends(
+        "sale_line_ids",
+        "sale_line_ids.invoice_status",
+    )
     def _compute_invoice_status(self):
         """
         Compute the invoice status of a Reservation. Possible statuses:
-        - no: if the Folio is not in status 'sale' or 'done', we consider
-          that there is nothing to invoice. This is also hte default value
-          if the conditions of no other status is met.
-        - to invoice: we refer to the quantity to invoice of the line.
-          Refer to method `_compute_get_to_invoice_qty()` for more information
-          on how this quantity is calculated.
-        - invoiced: the quantity invoiced is larger or equal to the
-          quantity ordered.
+        Base on folio sale line invoice status
         """
-        precision = self.env["decimal.precision"].precision_get(
-            "Product Unit of Measure"
-        )
         for line in self:
-            if line.state == "draft":
-                line.invoice_status = "no"
-            elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                line.invoice_status = "to invoice"
-            elif (
-                float_compare(
-                    line.qty_invoiced,
-                    len(line.reservation_line_ids),
-                    precision_digits=precision,
-                )
-                >= 0
-            ):
-                line.invoice_status = "invoiced"
+            states = list(set(line.sale_line_ids.mapped("invoice_status")))
+            if len(states) == 1:
+                line.invoice_status = states[0]
+            elif len(states) >= 1:
+                if "to_invoice" in states:
+                    line.invoice_status = "to_invoice"
+                elif "invoiced" in states:
+                    line.invoice_status = "invoiced"
+                else:
+                    line.invoice_status = "no"
             else:
                 line.invoice_status = "no"
-
-    @api.depends("qty_invoiced", "nights", "folio_id.state")
-    def _compute_get_to_invoice_qty(self):
-        """
-        Compute the quantity to invoice. If the invoice policy is order,
-        the quantity to invoice is calculated from the ordered quantity.
-        Otherwise, the quantity delivered is used.
-        """
-        for line in self:
-            if line.folio_id.state not in ["draft"]:
-                line.qty_to_invoice = len(line.reservation_line_ids) - line.qty_invoiced
-            else:
-                line.qty_to_invoice = 0
-
-    @api.depends("move_line_ids.move_id.state", "move_line_ids.quantity")
-    def _compute_get_invoice_qty(self):
-        """
-        Compute the quantity invoiced. If case of a refund, the quantity
-        invoiced is decreased. We must check day per day and sum or
-        decreased on 1 unit per invoice_line
-        """
-        for line in self:
-            qty_invoiced = 0.0
-            for day in line.reservation_line_ids:
-                invoice_lines = day.move_line_ids.filtered(
-                    lambda r: r.move_id.state != "cancel"
-                )
-                qty_invoiced += len(
-                    invoice_lines.filtered(lambda r: r.move_id.type == "out_invoice")
-                ) - len(
-                    invoice_lines.filtered(lambda r: r.move_id.type == "out_refund")
-                )
-            line.qty_invoiced = qty_invoiced
 
     @api.depends("reservation_line_ids")
     def _compute_nights(self):
         for res in self:
             res.nights = len(res.reservation_line_ids)
 
-    @api.depends("folio_id", "checkin", "checkout")
-    def _compute_localizator(self):
-        # TODO: Compute localizator by reservation
-        for record in self:
-            record.localizator = fields.date.today()
-
     @api.depends("service_ids.price_total")
-    def _compute_amount_room_services(self):
+    def _compute_price_services(self):
         for record in self:
             record.price_services = sum(record.mapped("service_ids.price_total"))
 
     @api.depends("price_services", "price_total")
-    def _compute_amount_set(self):
+    def _compute_price_room_services_set(self):
         for record in self:
             record.price_room_services_set = record.price_services + record.price_total
 
@@ -938,10 +1078,140 @@ class PmsReservation(models.Model):
                     }
                 )
 
+    def _compute_shared_folio(self):
+        # Has this reservation more charges associates in folio?,
+        # Yes?, then, this is share folio ;)
+        for record in self:
+            if record.folio_id:
+                record.shared_folio = len(record.folio_id.reservation_ids) > 1 or any(
+                    record.folio_id.service_ids.filtered(
+                        lambda x: x.reservation_id.id != record.id
+                    )
+                )
+            else:
+                record.shared_folio = False
+
+    def _compute_checkin_partner_count(self):
+        for record in self:
+            if record.reservation_type != "out":
+                record.checkin_partner_count = len(record.checkin_partner_ids)
+                record.checkin_partner_pending_count = record.adults - len(
+                    record.checkin_partner_ids
+                )
+            else:
+                record.checkin_partner_count = 0
+                record.checkin_partner_pending_count = 0
+
+    @api.depends("room_type_id")
+    def _compute_tax_ids(self):
+        for record in self:
+            record = record.with_company(record.company_id)
+            product = self.env["product.product"].browse(
+                record.room_type_id.product_id.id
+            )
+            record.tax_ids = product.taxes_id.filtered(
+                lambda t: t.company_id == record.env.company
+            )
+
+    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
+    def _compute_rooms(self):
+        self.rooms = False
+        for reservation in self:
+            if reservation.splitted:
+                reservation.rooms = ", ".join(
+                    [r for r in reservation.reservation_line_ids.mapped("room_id.name")]
+                )
+            else:
+                reservation.rooms = reservation.preferred_room_id.name
+
+    def _search_allowed_checkin(self, operator, value):
+        if operator not in ("=",):
+            raise UserError(
+                _("Invalid domain operator %s for left of checkin", operator)
+            )
+
+        if value not in (True,):
+            raise UserError(
+                _("Invalid domain right operand %s for left of checkin", value)
+            )
+
+        today = fields.Date.context_today(self)
+        return [
+            ("state", "in", ("draft", "confirm", "arrival_delayed")),
+            ("checkin", "<=", today),
+        ]
+
+    def _search_allowed_checkout(self, operator, value):
+        if operator not in ("=",):
+            raise UserError(
+                _("Invalid domain operator %s for left of checkout", operator)
+            )
+
+        if value not in (True,):
+            raise UserError(
+                _("Invalid domain right operand %s for left of checkout", value)
+            )
+
+        today = fields.Date.context_today(self)
+        return [
+            ("state", "in", ("onboard", "departure_delayed")),
+            ("checkout", ">=", today),
+        ]
+
+    def _search_allowed_cancel(self, operator, value):
+        if operator not in ("=",):
+            raise UserError(
+                _("Invalid domain operator %s for left of cancel", operator)
+            )
+
+        if value not in (True,):
+            raise UserError(
+                _("Invalid domain right operand %s for left of cancel", value)
+            )
+        return [
+            ("state", "not in", ("cancelled", "done", "departure_delayed")),
+        ]
+
+    def _search_checkin_partner_pending(self, operator, value):
+        self.ensure_one()
+        recs = self.search([]).filtered(lambda x: x.checkin_partner_pending_count > 0)
+        return [("id", "in", [x.id for x in recs])] if recs else []
+
+    def _get_default_checkin(self):
+        folio = False
+        if "folio_id" in self._context:
+            folio = self.env["pms.folio"].search(
+                [("id", "=", self._context["folio_id"])]
+            )
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].checkin
+        else:
+            return fields.Date.today()
+
+    def _get_default_checkout(self):
+        folio = False
+        if "folio_id" in self._context:
+            folio = self.env["pms.folio"].search(
+                [("id", "=", self._context["folio_id"])]
+            )
+        if folio and folio.reservation_ids:
+            return folio.reservation_ids[0].checkout
+        else:
+            return fields.Date.today() + datetime.timedelta(1)
+
+    def _get_default_segmentation(self):
+        folio = False
+        segmentation_ids = False
+        if "folio_id" in self._context:
+            folio = self.env["pms.folio"].search(
+                [("id", "=", self._context["folio_id"])]
+            )
+        if folio and folio.segmentation_ids:
+            segmentation_ids = folio.segmentation_ids
+        return segmentation_ids
+
     # TODO: Use default values on checkin /checkout is empty
-    @api.constrains(
-        "checkin", "checkout", "state", "preferred_room_id", "overbooking", "reselling"
-    )
+    @api.constrains("checkin", "checkout", "state", "preferred_room_id", "overbooking")
     def check_dates(self):
         """
         1.-When date_order is less then checkin date or
@@ -949,9 +1219,7 @@ class PmsReservation(models.Model):
         3.-Check the reservation dates are not occuped
         """
         for record in self:
-            if fields.Date.from_string(record.checkin) >= fields.Date.from_string(
-                record.checkout
-            ):
+            if record.checkin >= record.checkout:
                 raise ValidationError(
                     _(
                         "Room line Check In Date Should be \
@@ -959,13 +1227,13 @@ class PmsReservation(models.Model):
                     )
                 )
 
-    @api.constrains("checkin_partner_ids", "adults")
-    def _max_checkin_partner_ids(self):
-        for record in self:
-            if len(record.checkin_partner_ids) > record.adults:
-                raise models.ValidationError(
-                    _("The room already is completed (%s)", record.name)
-                )
+    # @api.constrains("checkin_partner_ids", "adults")
+    # def _max_checkin_partner_ids(self):
+    #     for record in self:
+    #         if len(record.checkin_partner_ids) > record.adults:
+    #             raise models.ValidationError(
+    #                 _("The room already is completed (%s)", record.name)
+    #             )
 
     @api.constrains("adults")
     def _check_adults(self):
@@ -975,7 +1243,7 @@ class PmsReservation(models.Model):
             )
             for room in record.reservation_line_ids.room_id:
                 if record.adults + record.children_occupying > room.get_capacity(
-                    len(extra_bed)
+                    sum(extra_bed.mapped("product_qty"))
                 ):
                     raise ValidationError(
                         _(
@@ -1023,33 +1291,10 @@ class PmsReservation(models.Model):
             if record.agency_id and not record.agency_id.is_agency:
                 raise ValidationError(_("booking agency with wrong configuration: "))
 
-    # @api.constrains("reservation_type", "partner_id")
-    # def _check_partner_reservation(self):
-    #     for reservation in self:
-    #         if (
-    #             reservation.reservation_type == "out"
-    #             and reservation.partner_id.id != \
-    #                   reservation.pms_property_id.partner_id.id
-    #         ):
-    #             raise models.ValidationError(
-    #                 _("The partner on out reservations must be a property partner")
-    #             )
-
-    # @api.constrains("closure_reason_id", "reservation_type")
-    # def _check_clousure_reservation(self):
-    #     for reservation in self:
-    #         if reservation.closure_reason_id and \
-    #               reservation.reservation_type != "out":
-    #             raise models.ValidationError(
-    #                 _("Only the out reservations can has a clousure reason")
-    #             )
-
-    # self._compute_tax_ids() TODO: refact
-
     # Action methods
 
     def open_folio(self):
-        action = self.env.ref("pms.open_pms_folio1_form_tree_all").read()[0]
+        action = self.env.ref("pms.open_pms_folio1_form_tree_all").sudo().read()[0]
         if self.folio_id:
             action["views"] = [(self.env.ref("pms.pms_folio_view_form").id, "form")]
             action["res_id"] = self.folio_id.id
@@ -1058,7 +1303,7 @@ class PmsReservation(models.Model):
         return action
 
     def open_reservation_form(self):
-        action = self.env.ref("pms.open_pms_reservation_form_tree_all").read()[0]
+        action = self.env.ref("pms.open_pms_reservation_form_tree_all").sudo().read()[0]
         action["views"] = [(self.env.ref("pms.pms_reservation_view_form").id, "form")]
         action["res_id"] = self.id
         return action
@@ -1067,43 +1312,20 @@ class PmsReservation(models.Model):
         self.ensure_one()
         return self.folio_id.action_pay()
 
-    def action_pay_reservation(self):
-        self.ensure_one()
-        partner = self.partner_id.id
-        amount = min(self.price_room_services_set, self.folio_pending_amount)
-        note = self.folio_id.name + " (" + self.name + ")"
-        view_id = self.env.ref("pms.account_payment_view_form_folio").id
-        return {
-            "name": _("Register Payment"),
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "account.payment",
-            "type": "ir.actions.act_window",
-            "view_id": view_id,
-            "context": {
-                "default_folio_id": self.folio_id.id,
-                "default_room_id": self.id,
-                "default_amount": amount,
-                "default_payment_type": "inbound",
-                "default_partner_type": "customer",
-                "default_partner_id": partner,
-                "default_communication": note,
-            },
-            "target": "new",
-        }
-
     def open_reservation_wizard(self):
-        rooms_available = self.env["pms.room.type.availability"].rooms_available(
+        rooms_available = self.env["pms.availability.plan"].rooms_available(
             checkin=self.checkin,
             checkout=self.checkout,
             current_lines=self.reservation_line_ids.ids,
+            pricelist_id=self.pricelist_id.id,
+            pms_property_id=self.pms_property_id.id,
         )
         # REVIEW: check capacity room
         return {
             "view_type": "form",
             "view_mode": "form",
             "name": "Unify the reservation",
-            "res_model": "pms.reservation.wizard",
+            "res_model": "pms.reservation.split.join.swap.wizard",
             "target": "new",
             "type": "ir.actions.act_window",
             "context": {
@@ -1111,7 +1333,6 @@ class PmsReservation(models.Model):
             },
         }
 
-    # ORM Overrides
     @api.model
     def name_search(self, name="", args=None, operator="ilike", limit=100):
         if args is None:
@@ -1135,14 +1356,36 @@ class PmsReservation(models.Model):
             result.append((res.id, name))
         return result
 
+    # REVIEW: Is it necessary?
+    def copy_data(self, default=None):
+        rooms_available = self.env["pms.availability.plan"].rooms_available(
+            self.checkin,
+            self.checkout,
+            room_type_id=self.room_type_id.id,
+            pricelist_id=self.pricelist_id.id,
+            pms_property_id=self.pms_property_id.id,
+        )
+        if self.preferred_room_id.id in rooms_available.ids:
+            default["preferred_room_id"] = self.preferred_room_id.id
+        if self.room_type_id.id in rooms_available.mapped("room_type_id.id"):
+            default["room_type_id"] = self.room_type_id.id
+        return super(PmsReservation, self).copy_data(default)
+
     @api.model
     def create(self, vals):
-        if "folio_id" in vals:
+        if vals.get("folio_id"):
             folio = self.env["pms.folio"].browse(vals["folio_id"])
-        elif "partner_id" in vals:
+            vals.update({"pms_property_id": folio.pms_property_id.id})
+        elif "pms_property_id" in vals and (
+            "partner_id" in vals or "agency_id" in vals
+        ):
             folio_vals = {
-                "partner_id": int(vals.get("partner_id")),
+                "pms_property_id": vals["pms_property_id"],
             }
+            if vals.get("partner_id"):
+                folio_vals["partner_id"] = vals.get("partner_id")
+            elif vals.get("agency_id"):
+                folio_vals["agency_id"] = vals.get("agency_id")
             # Create the folio in case of need
             # (To allow to create reservations direct)
             folio = self.env["pms.folio"].create(folio_vals)
@@ -1152,40 +1395,36 @@ class PmsReservation(models.Model):
                     "reservation_type": vals.get("reservation_type"),
                 }
             )
+        else:
+            raise ValidationError(
+                _("The client and Property are mandatory in the reservation")
+            )
+        if vals.get("name", _("New")) == _("New") or "name" not in vals:
+            pms_property_id = (
+                self.env.user.get_active_property_ids()[0]
+                if "pms_property_id" not in vals
+                else vals["pms_property_id"]
+            )
+            pms_property = self.env["pms.property"].browse(pms_property_id)
+            vals["name"] = pms_property.reservation_sequence_id._next_do()
         record = super(PmsReservation, self).create(vals)
         if record.preconfirm:
             record.confirm()
         return record
 
-    # Business methods
-
-    def _compute_shared(self):
-        # Has this reservation more charges associates in folio?,
-        # Yes?, then, this is share folio ;)
-        for record in self:
-            if record.folio_id:
-                record.shared_folio = len(record.folio_id.reservation_ids) > 1 or any(
-                    record.folio_id.service_ids.filtered(
-                        lambda x: x.reservation_id.id != record.id
-                    )
-                )
-            else:
-                record.shared_folio = False
-
-    def _autoassign(self):
+    def update_prices(self):
         self.ensure_one()
-        room_chosen = False
-        rooms_available = self.env["pms.room.type.availability"].rooms_available(
-            checkin=self.checkin,
-            checkout=self.checkout,
-            room_type_id=self.room_type_id.id or False,
+        for line in self.reservation_line_ids:
+            line.with_context(force_recompute=True)._compute_price()
+        self.show_update_pricelist = False
+        self.message_post(
+            body=_(
+                """Prices have been recomputed according to pricelist <b>%s</b>
+                 and room type <b>%s</b>""",
+                self.pricelist_id.display_name,
+                self.room_type_id.name,
+            )
         )
-        if rooms_available:
-            room_chosen = rooms_available[0]
-        else:
-            # We can split reserve night on multi rooms
-            room_chosen = False
-        return room_chosen
 
     @api.model
     def autocheckout(self):
@@ -1207,26 +1446,6 @@ class PmsReservation(models.Model):
         self.ensure_one()
         self.overbooking = not self.overbooking
 
-    def generate_copy_values(self, checkin=False, checkout=False):
-        self.ensure_one()
-        return {
-            "name": self.name,
-            "adults": self.adults,
-            "children": self.children,
-            "checkin": checkin or self.checkin,
-            "checkout": checkout or self.checkout,
-            "folio_id": self.folio_id.id,
-            "state": self.state,
-            "overbooking": self.overbooking,
-            "reselling": self.reselling,
-            "price_total": self.price_total,
-            "price_tax": self.price_tax,
-            "price_subtotal": self.price_subtotal,
-            "splitted": self.splitted,
-            "room_type_id": self.room_type_id.id,
-            "preferred_room_id": self.preferred_room_id.id,
-        }
-
     def confirm(self):
         for record in self:
             vals = {}
@@ -1242,22 +1461,30 @@ class PmsReservation(models.Model):
 
     def action_cancel(self):
         for record in self:
-            cancel_reason = (
-                "intime"
-                if self._context.get("no_penalty", False)
-                else record.compute_cancelation_reason()
-            )
-            if self._context.get("no_penalty", False):
-                _logger.info("Modified Reservation - No Penalty")
-            record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
-            # record._compute_cancelled_discount()
-            record.folio_id._compute_amount()
+            # else state = cancelled
+            if not record.allowed_cancel:
+                raise UserError(_("This reservation cannot be cancelled"))
+            else:
+                cancel_reason = (
+                    "intime"
+                    if self._context.get("no_penalty", False)
+                    else record.compute_cancelation_reason()
+                )
+                if self._context.get("no_penalty", False):
+                    _logger.info("Modified Reservation - No Penalty")
+                record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
+                # record._compute_cancelled_discount()
+                record.folio_id._compute_amount()
+
+    def action_assign(self):
+        for record in self:
+            record.to_assign = False
 
     def compute_cancelation_reason(self):
         self.ensure_one()
         pricelist = self.pricelist_id
         if pricelist and pricelist.cancelation_rule_id:
-            tz_property = self.env.user.pms_property_id.tz
+            tz_property = self.pms_property_id.tz
             today = fields.Date.context_today(self.with_context(tz=tz_property))
             days_diff = (
                 fields.Date.from_string(self.checkin) - fields.Date.from_string(today)
@@ -1270,54 +1497,10 @@ class PmsReservation(models.Model):
                 return "intime"
         return False
 
-    def draft(self):
-        for record in self:
-            record.state = "draft"
-            record.reservation_line_ids.update({"cancel_discount": 0})
-
-    # INFO: This function is not in use and should include `dto` in the search
-    @api.model
-    def get_reservations_dates(self, dfrom, dto, room_type=False):
-        """
-        @param self: The object pointer
-        @param dfrom: range date from
-        @param dto: range date to
-        @return: dictionary of lists with reservations (a hash of arrays!)
-                 with the reservations dates between dfrom and dto
-        reservations_dates
-            {'2018-07-30': [pms.reservation(29,), pms.reservation(30,),
-                           pms.reservation(31,)],
-             '2018-07-31': [pms.reservation(22,), pms.reservation(35,),
-                           pms.reservation(36,)],
-            }
-        """
-        domain = [("date", ">=", dfrom), ("date", "<", dto)]
-        lines = self.env["pms.reservation.line"].search(domain)
-        reservations_dates = {}
-        for record in lines:
-            reservations_dates.setdefault(record.date, []).append(
-                [record.reservation_id, record.reservation_id.room_type_id]
-            )
-        return reservations_dates
-
-    def _compute_checkin_partner_count(self):
-        for record in self:
-            if record.reservation_type != "out":
-                record.checkin_partner_count = len(record.checkin_partner_ids)
-                record.checkin_partner_pending_count = (
-                    record.adults + record.children
-                ) - len(record.checkin_partner_ids)
-            else:
-                record.checkin_partner_count = 0
-                record.checkin_partner_pending_count = 0
-
-    def _search_checkin_partner_pending(self, operator, value):
-        self.ensure_one()
-        recs = self.search([]).filtered(lambda x: x.checkin_partner_pending_count > 0)
-        return [("id", "in", [x.id for x in recs])] if recs else []
-
     def action_reservation_checkout(self):
         for record in self:
+            if not record.allowed_checkout:
+                raise UserError(_("This reservation cannot be check out"))
             record.state = "done"
             if record.checkin_partner_ids:
                 record.checkin_partner_ids.filtered(
@@ -1325,7 +1508,7 @@ class PmsReservation(models.Model):
                 ).action_done()
         return True
 
-    def action_checks(self):
+    def action_checkin_partner_view(self):
         self.ensure_one()
         tree_id = self.env.ref("pms.pms_checkin_partner_reservation_view_tree").id
         return {
@@ -1339,10 +1522,14 @@ class PmsReservation(models.Model):
                 "popup": True,
             },
             "domain": [("reservation_id", "=", self.id), ("state", "=", "draft")],
+            "search_view_id": [
+                self.env.ref("pms.pms_checkin_partner_view_folio_search").id,
+                "search",
+            ],
             "target": "new",
         }
 
-    def action_onboard(self):
+    def action_checkin_partner_onboard_view(self):
         self.ensure_one()
         kanban_id = self.env.ref("pms.pms_checkin_partner_kanban_view").id
         return {
@@ -1355,23 +1542,27 @@ class PmsReservation(models.Model):
                 "edit": True,
                 "popup": True,
             },
+            "search_view_id": [
+                self.env.ref("pms.pms_checkin_partner_view_folio_search").id,
+                "search",
+            ],
             "domain": [("reservation_id", "=", self.id)],
             "target": "new",
         }
 
     @api.model
-    def auto_no_show(self):
+    def auto_arrival_delayed(self):
         # No show when pass 1 day from checkin day
-        no_show_reservations = self.env["pms.reservation"].search(
+        arrival_delayed_reservations = self.env["pms.reservation"].search(
             [
                 ("state", "in", ("draft", "confirm")),
                 ("checkin", "<", fields.Date.today()),
             ]
         )
-        no_show_reservations.state = "no_show"
+        arrival_delayed_reservations.state = "arrival_delayed"
 
     @api.model
-    def auto_no_checkout(self):
+    def auto_departure_delayed(self):
         # No checkout when pass checkout hour
         reservations = self.env["pms.reservation"].search(
             [
@@ -1381,32 +1572,12 @@ class PmsReservation(models.Model):
         )
         for reservation in reservations:
             if reservation.checkout_datetime <= fields.Datetime.now():
-                reservations.state = "no_checkout"
+                reservations.state = "departure_delayed"
 
-    def unify(self):
-        # TODO
-        return True
-
-    def _compute_tax_ids(self):
-        for record in self:
-            # If company_id is set, always filter taxes by the company
-            folio = record.folio_id or self.env.context.get("default_folio_id")
-            product = self.env["product.product"].browse(
-                record.room_type_id.product_id.id
-            )
-            record.tax_ids = product.taxes_id.filtered(
-                lambda r: not record.company_id or r.company_id == folio.company_id
-            )
-
-    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
-    def _compute_rooms(self):
-        self.rooms = False
-
-        for reservation in self:
-            if reservation.splitted:
-                reservation.rooms = ", ".join(
-                    [r for r in reservation.reservation_line_ids.mapped("room_id.name")]
-                )
-                reservation.preferred_room_id = False
-            else:
-                reservation.rooms = reservation.preferred_room_id.name
+    def preview_reservation(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "target": "self",
+            "url": self.get_portal_url(),
+        }

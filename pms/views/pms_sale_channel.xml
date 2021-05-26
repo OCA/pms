@@ -9,6 +9,9 @@
                     <group>
                         <field name="name" colspan="1" />
                         <field name="channel_type" />
+                        <field name="is_on_line" />
+                        <field name="product_pricelist_ids" widget="many2many_tags" />
+                        <field name="pms_property_ids" widget="many2many_tags" />
                     </group>
                 </sheet>
             </form>
@@ -21,6 +24,9 @@
             <tree string=" Sale Channel">
                 <field name="name" />
                 <field name="channel_type" />
+                <field name="is_on_line" />
+                <field name="product_pricelist_ids" widget="many2many_tags" />
+                <field name="pms_property_ids" />
             </tree>
         </field>
     </record>
@@ -30,10 +36,10 @@
         <field name="view_mode">tree,form</field>
     </record>
     <menuitem
-        name="Sale Channel"
+        name="Sale Channels"
         id="menu_open_pms_sale_channel_form_tree"
         action="open_pms_sale_channel_form_tree"
-        sequence="21"
-        parent="pms.configuration_others"
+        sequence="55"
+        parent="pms.revenue_management_menu"
     />
 </odoo>

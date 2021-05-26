@@ -21,24 +21,21 @@
                             <group
                                 colspan="4"
                                 col="4"
-                                string="Price and Restriction Plans"
+                                string="Price and Availability Plans"
                             >
                                 <field name="default_pricelist_id" required="True" />
-                                <field name="default_restriction_id" required="True" />
                             </group>
                             <group string="Timezone">
                                 <field name="tz" widget="timezone_mismatch" />
                             </group>
                             <group string="Sequences">
                                 <field name="folio_sequence_id" />
+                                <field name="reservation_sequence_id" />
+                                <field name="checkin_sequence_id" />
                             </group>
                             <group colspan="4" col="4" string="Check-in hours">
                                 <field name="default_arrival_hour" />
                                 <field name="default_departure_hour" />
-                            </group>
-                            <group colspan="4" col="4" string="Cancellation policies">
-                                <field name="default_cancel_policy_days" />
-                                <field name="default_cancel_policy_percent" />
                             </group>
                         </page>
                         <page string="Rooms" name="property_rooms">
@@ -70,9 +67,16 @@
     <!-- menus -->
     <menuitem
         action="pms_property_action"
-        id="pms_property_menu"
+        id="general_property_menu"
         parent="base.menu_users"
         sequence="10"
+        name="Properties"
+    />
+    <menuitem
+        action="pms_property_action"
+        id="pms_property_menu"
+        parent="pms.pms_configuration_menu"
+        sequence="65"
         name="Properties"
     />
 </odoo>

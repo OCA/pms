@@ -28,8 +28,6 @@
                             force_save="1"
                         />
                     </group>
-                    <field name="price_unit" invisible="1" />
-                    <field name="discount" invisible="1" />
                     <field name="tax_ids" widget="many2many_tags" invisible="1" />
                     <field name="price_subtotal" invisible="1" />
                     <field name="price_tax" invisible="1" />
@@ -38,6 +36,13 @@
                         <tree string="Days" editable="bottom">
                             <field name="date" />
                             <field name="day_qty" />
+                            <field name="price_unit" />
+                            <field
+                                name="discount"
+                                attrs="{'readonly':[('is_board_service','=', True)]}"
+                            />
+                            <field name="price_day_total" />
+                            <field name="is_board_service" invisible="1" />
                         </tree>
                     </field>
                 </sheet>
@@ -57,7 +62,7 @@
                 <button
                     type="object"
                     class="oe_stat_button"
-                    icon="fa fa-1x fa-bed"
+                    icon="fa-1x fa-bed"
                     name="open_service_ids"
                     attrs="{'invisible':[('is_board_service','=', False)]}"
                 />
@@ -83,12 +88,10 @@
                 <button
                     type="object"
                     class="oe_stat_button"
-                    icon="fa fa-2x fa-bars"
+                    icon="fa-2x fa-bars"
                     name="open_service_ids"
                     attrs="{'invisible': [('per_day','=',False)]}"
                 />
-                <field name="price_unit" />
-                <field name="discount" />
                 <field name="tax_ids" widget="many2many_tags" />
                 <field name="price_subtotal" />
                 <field name="price_tax" />
@@ -97,6 +100,12 @@
                     <tree string="Days">
                         <field name="date" />
                         <field name="day_qty" />
+                        <field
+                            name="discount"
+                            attrs="{'readonly':[('is_board_service','=', True)]}"
+                        />
+                        <field name="price_unit" />
+                        <field name="is_board_service" invisible="1" />
                     </tree>
                 </field>
             </tree>
@@ -108,6 +117,7 @@
         <field name="arch" type="xml">
             <search string="Reservation Service">
                 <field name="name" />
+                <field name="folio_id" />
                 <field name="product_id" />
                 <field name="product_qty" />
                 <newline />

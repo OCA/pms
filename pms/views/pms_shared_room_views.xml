@@ -32,7 +32,7 @@
                             string="Information"
                         >
                             <group colspan="4" col="4">
-                                <field name="floor_id" string="Ubication" />
+                                <field name="ubication_id" string="Ubication" />
                                 <field name="room_type_id" string="Room Type" />
                                 <field name="beds" />
                                 <field name="sequence" />
@@ -127,7 +127,7 @@
         name="Shared Rooms"
         id="menu_open_pms_shared_room_form"
         action="action_pms_shared_room_form"
-        sequence="5"
-        parent="pms.menu_pms_room"
+        sequence="55"
+        parent="pms.pms_rooms_menu"
     />
 </odoo>

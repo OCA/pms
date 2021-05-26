@@ -4,11 +4,11 @@ from freezegun import freeze_time
 
 from odoo.exceptions import ValidationError
 
-from .common import TestHotel
+from .common import TestPms
 
 
 @freeze_time("2010-01-01")
-class TestPmsSaleChannel(TestHotel):
+class TestPmsSaleChannel(TestPms):
     def test_not_agency_as_agency(self):
         # ARRANGE
         PmsReservation = self.env["pms.reservation"]
@@ -23,6 +23,7 @@ class TestPmsSaleChannel(TestHotel):
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                     "agency_id": not_agency.id,
+                    "pms_property_id": self.pms_property1.id,
                 }
             )
 
@@ -31,17 +32,20 @@ class TestPmsSaleChannel(TestHotel):
         PmsReservation = self.env["pms.reservation"]
         PmsSaleChannel = self.env["pms.sale.channel"]
         # ACT
-        salechannel = PmsSaleChannel.create({"channel_type": "direct"})
-        reservation = PmsReservation.create(
+        sale_channel1 = PmsSaleChannel.create({"channel_type": "direct"})
+        partner1 = self.env["res.partner"].create({"name": "partner1"})
+        reservation1 = PmsReservation.create(
             {
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
-                "channel_type_id": salechannel.id,
+                "channel_type_id": sale_channel1.id,
+                "partner_id": partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # ASSERT
         self.assertEqual(
-            reservation.channel_type_id.channel_type,
+            reservation1.channel_type_id.channel_type,
             "direct",
             "Sale channel is not direct",
         )
@@ -50,27 +54,28 @@ class TestPmsSaleChannel(TestHotel):
         # ARRANGE
         PmsReservation = self.env["pms.reservation"]
         PmsSaleChannel = self.env["pms.sale.channel"]
-        salechannel = PmsSaleChannel.create(
+        sale_channel1 = PmsSaleChannel.create(
             {"name": "Test Indirect", "channel_type": "indirect"}
         )
         # ACT
-        agency = self.env["res.partner"].create(
+        agency1 = self.env["res.partner"].create(
             {
                 "name": "partner1",
                 "is_agency": True,
-                "sale_channel_id": salechannel.id,
+                "sale_channel_id": sale_channel1.id,
             }
         )
-        reservation = PmsReservation.create(
+        reservation1 = PmsReservation.create(
             {
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
-                "agency_id": agency.id,
+                "agency_id": agency1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # ASSERT
         self.assertEqual(
-            reservation.agency_id.is_agency,
+            reservation1.agency_id.is_agency,
             True,
             "Agency_id doesn't correspond to an agency",
         )
@@ -79,13 +84,13 @@ class TestPmsSaleChannel(TestHotel):
         # ARRANGE
         PmsSaleChannel = self.env["pms.sale.channel"]
         # ACT
-        saleChannel = PmsSaleChannel.create({"channel_type": "indirect"})
-        agency = self.env["res.partner"].create(
-            {"name": "example", "is_agency": True, "sale_channel_id": saleChannel.id}
+        saleChannel1 = PmsSaleChannel.create({"channel_type": "indirect"})
+        agency1 = self.env["res.partner"].create(
+            {"name": "example", "is_agency": True, "sale_channel_id": saleChannel1.id}
         )
         # ASSERT
         self.assertEqual(
-            agency.sale_channel_id.channel_type,
+            agency1.sale_channel_id.channel_type,
             "indirect",
             "An agency should be a indirect channel",
         )

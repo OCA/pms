@@ -8,12 +8,9 @@ odoo.define("web.SwitchPmsMenu", function (require) {
      */
 
     var config = require("web.config");
-    // Var core = require("web.core");
-    var session = require("pms.session");
+    var session = require("web.session");
     var SystrayMenu = require("web.SystrayMenu");
     var Widget = require("web.Widget");
-
-    // Var _t = core._t;
 
     var SwitchPmsMenu = Widget.extend({
         template: "SwitchPmsMenu",
@@ -50,7 +47,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
             )
                 .split(",")
                 .map(function (id) {
-                    return parseInt(id);
+                    return parseInt(id, 10);
                 });
             this.user_pms_properties =
                 session.user_pms_properties.allowed_pms_properties;
@@ -74,9 +71,9 @@ odoo.define("web.SwitchPmsMenu", function (require) {
          */
         _onSwitchPmsPropertyClick: function (ev) {
             if (
-                ev.type == "keydown" &&
-                ev.which != $.ui.keyCode.ENTER &&
-                ev.which != $.ui.keyCode.SPACE
+                ev.type === "keydown" &&
+                ev.which !== $.ui.keyCode.ENTER &&
+                ev.which !== $.ui.keyCode.SPACE
             ) {
                 return;
             }
@@ -124,9 +121,9 @@ odoo.define("web.SwitchPmsMenu", function (require) {
          */
         _onTogglePmsPropertyClick: function (ev) {
             if (
-                ev.type == "keydown" &&
-                ev.which != $.ui.keyCode.ENTER &&
-                ev.which != $.ui.keyCode.SPACE
+                ev.type === "keydown" &&
+                ev.which !== $.ui.keyCode.ENTER &&
+                ev.which !== $.ui.keyCode.SPACE
             ) {
                 return;
             }
