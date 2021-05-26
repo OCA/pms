@@ -1,6 +1,7 @@
 import base64
 import datetime
 import os
+import time
 from datetime import date
 
 import requests
@@ -196,6 +197,7 @@ class TravellerReport(models.TransientModel):
             files = {
                 "fichero": open(pwd + pms_property.institution_user + ".999", "rb")
             }
+            time.sleep(1)
 
             # send file
             response_file_sent = session.post(
@@ -207,6 +209,7 @@ class TravellerReport(models.TransientModel):
             # remove file locally
             os.remove(pwd + pms_property.institution_user + ".999")
 
+            time.sleep(1)
             # logout & close connection
             session.get(
                 url + logout_route,
