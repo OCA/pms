@@ -1,7 +1,5 @@
 import base64
 import datetime
-import io
-import os
 import time
 from datetime import date
 
@@ -191,9 +189,7 @@ class TravellerReport(models.TransientModel):
                     raise ValidationError(_("Connection could not be established"))
 
             # build the file to send
-            files = {
-                "fichero": (pms_property.institution_user + ".999", content)
-            }
+            files = {"fichero": (pms_property.institution_user + ".999", content)}
             time.sleep(1)
 
             # send file
@@ -215,10 +211,13 @@ class TravellerReport(models.TransientModel):
 
             # check if the file send has been correct
             soup = bs(response_file_sent.text, "html.parser")
-            errors = soup.select("#errores > tbody > tr > td > a")
+            errors = soup.select("#errores > tbody > tr")
             if errors:
-                print(errors)
-                raise ValidationError(errors[2].text)
+                msg = "Errores en el fichero:\n"
+                for e in errors:
+                    msg += "Error en línea " + e.select("a")[0].text + ": "
+                    msg += e.select("a")[2].text + "\n"
+                raise ValidationError(msg)
             else:
                 if called_from_user:
                     message = {
