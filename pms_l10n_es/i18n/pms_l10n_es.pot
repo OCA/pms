@@ -1,23 +1,17 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * partner_firstname
+# 	* pms_l10n_es
 #
-# Translators:
-# OCA Transbot <transbot@odoo-community.org>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 11.0\n"
+"Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-03 20:26+0000\n"
-"PO-Revision-Date: 2018-07-13 09:34+0000\n"
-"Last-Translator: Enric Tobella <etobella@creublanca.es>\n"
-"Language-Team: Spanish (https://www.transifex.com/oca/teams/23907/es/)\n"
-"Language: es\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.0.1\n"
+"Plural-Forms: \n"
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__birthdate_date
@@ -27,7 +21,7 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_res_partner
 msgid "Contact"
-msgstr "Contacto"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__document_type__d
@@ -108,9 +102,8 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__firstname
-#, fuzzy
 msgid "First Name"
-msgstr "Nombre"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__gender
@@ -137,9 +130,8 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__lastname
-#, fuzzy
 msgid "Last Name"
-msgstr "Apellido"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__gender__male
@@ -164,9 +156,8 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__lastname2
-#, fuzzy
 msgid "Second Last Name"
-msgstr "Apellido"
+msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,help:pms_l10n_es.field_pms_checkin_partner__document_type
@@ -181,42 +172,3 @@ msgstr ""
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__res_partner__document_type__n
 msgid "Spanish residence permit"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Config Settings"
-#~ msgstr "res.config.settings"
-
-#~ msgid "Contacts require a name."
-#~ msgstr "Los contactos requieren un nombre."
-
-#~ msgid "Error(s) with partner %d's name."
-#~ msgstr "Errores con el nombre de la empresa %d."
-
-#~ msgid "No name is set."
-#~ msgstr "No se ha establecido ningún nombre."
-
-#~ msgid "Order to compose partner fullname"
-#~ msgstr "Orden para generar el nombre completo"
-
-#, fuzzy
-#~ msgid "Partner Names Order"
-#~ msgstr "Orden de los nombres"
-
-#~ msgid "Partner Names Order Changed"
-#~ msgstr "Se ha cambiado el Orden de los Nombres"
-
-#~ msgid "Partner names order"
-#~ msgstr "Orden de los nombres"
-
-#~ msgid "Recalculate names"
-#~ msgstr "Recalcular nombres"
-
-#~ msgid ""
-#~ "Recalculate names for all partners. This process could take so much time "
-#~ "if there are more than 10,000 active partners"
-#~ msgstr ""
-#~ "Recalcular todos los nombres. Este proceso puede tardar si se tienen más "
-#~ "de 10.000 personas asociadas"
-
-#~ msgid "Users"
-#~ msgstr "Usuarios"
