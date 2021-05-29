@@ -4455,6 +4455,11 @@ msgid "Name of who made the reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__nationality_id
+msgid "Nationality"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_checkin_partner.py:0
 #: code:addons/pms/models/pms_checkin_partner.py:0
 #: code:addons/pms/models/pms_checkin_partner.py:0
