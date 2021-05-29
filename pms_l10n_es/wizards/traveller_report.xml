@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="traveller_report_wizard" model="ir.ui.view">
+        <field name="name">Traveller Report</field>
+        <field name="model">traveller.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="txt_filename" invisible="1" />
+                <div class="row">
+                    <div class="col-12">
+                        <group attrs="{'invisible': [('txt_message','=',False)]}">
+                            <field name="txt_message" readonly="1" />
+                        </group>
+                        <group attrs="{'invisible': [('txt_message','=',False)]}">
+                            <field
+                                name="txt_binary"
+                                filename="txt_filename"
+                                readonly="1"
+                            />
+                        </group>
+                    </div>
+
+                </div>
+                    <div class="row ">
+                        <div class="col-3">
+                            <button
+                            name="generate_file"
+                            class="btn btn-primary btn-sm"
+                            type="object"
+                            string="Preview file"
+                        />
+                        </div>
+                        <div class="col-3">
+                            <button
+                            name="send_file_gc"
+                            class="btn btn-primary btn-sm"
+                            type="object"
+                            string="Send file"
+                            attrs="{'invisible': [('txt_message','=',False)]}"
+                        />
+                        </div>
+                    </div>
+                <footer />
+            </form>
+        </field>
+    </record>
+    <record id="action_traveller_report" model="ir.actions.act_window">
+        <field name="name">Traveller Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">traveller.report.wizard</field>
+        <field name="view_id" ref="traveller_report_wizard" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        id="menu_traveller_report"
+        name="Traveller Report"
+        sequence="30"
+        parent="pms.pms_configuration_menu"
+        action="action_traveller_report"
+    />
+</odoo>
