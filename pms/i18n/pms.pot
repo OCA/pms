@@ -2028,6 +2028,14 @@ msgid "Daily Plan"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/product_pricelist.py:0
+#, python-format
+msgid ""
+"Daily Plan must have fixed price, only one property and its items must be "
+"daily"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__daily_limit
 #: model:ir.model.fields,field_description:pms.field_product_product__daily_limit
 #: model:ir.model.fields,field_description:pms.field_product_template__daily_limit
