@@ -149,4 +149,6 @@ class ResPartner(models.Model):
 
     @api.model
     def _get_key_fields(self):
-        return []
+        key_fields = super(ResPartner, self)._get_key_fields()
+        key_fields.extend(["document_number"])
+        return key_fields

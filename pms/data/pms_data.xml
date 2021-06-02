@@ -52,5 +52,26 @@
             <field name="name">Agency</field>
             <field name="channel_type">indirect</field>
         </record>
+        <!--res.partner_category_id-->
+        <record id="document_type_passport" model="res.partner.id_category">
+            <field name="name">Passport</field>
+            <field name="code">P</field>
+        </record>
+        <record id="document_type_driving_license" model="res.partner.id_category">
+            <field name="name">Driving License</field>
+            <field name="code">C</field>
+        </record>
+        <record id="document_type_identification_document" model="res.partner.id_category">
+            <field name="name">Identification Document</field>
+            <field name="code">I</field>
+        </record>
+        <record id="document_type_spanish_residence" model="res.partner.id_category">
+            <field name="name">Spanish Residence permit</field>
+            <field name="code">N</field>
+        </record>
+        <record id="document_type_european_residence" model="res.partner.id_category">
+            <field name="name">European Residence permit</field>
+            <field name="code">X</field>
+        </record>
     </data>
 </odoo>
