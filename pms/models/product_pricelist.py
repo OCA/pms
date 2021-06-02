@@ -69,6 +69,7 @@ class ProductPricelist(models.Model):
     def _compute_price_rule_get_items(
         self, products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
     ):
+        board_service = True if self._context.get("board_service") else False
         if (
             "property" in self._context
             and self._context["property"]
@@ -84,8 +85,6 @@ class ProductPricelist(models.Model):
                             ON item.pricelist_id = cab.product_pricelist_id
                        LEFT JOIN product_pricelist_item_pms_property_rel lin
                             ON item.id = lin.product_pricelist_item_id
-                       LEFT JOIN board_service_pricelist_item_rel board
-                            ON item.id = board.pricelist_item_id
                 WHERE  (lin.pms_property_id = %s OR lin.pms_property_id IS NULL)
                    AND (cab.pms_property_id = %s OR cab.pms_property_id IS NULL)
                    AND (item.product_tmpl_id IS NULL
@@ -119,8 +118,6 @@ class ProductPricelist(models.Model):
                     prod_tmpl_ids,
                     prod_ids,
                     categ_ids,
-                    # on_board_service_bool,
-                    # board_service_id,
                     self.id,
                     date,
                     date,
@@ -131,6 +128,13 @@ class ProductPricelist(models.Model):
 
             item_ids = [x[0] for x in self.env.cr.fetchall()]
             items = self.env["product.pricelist.item"].browse(item_ids)
+            if board_service:
+                items = items.filtered(
+                    lambda x: x.board_service_room_type_id.id
+                    == self._context.get("board_service")
+                )
+            else:
+                items = items.filtered(lambda x: not x.board_service_room_type_id.id)
         else:
             items = super(ProductPricelist, self)._compute_price_rule_get_items(
                 products_qty_partner, date, uom_id, prod_tmpl_ids, prod_ids, categ_ids
