@@ -61,7 +61,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         self.test_room_type_class = self.env["pms.room.type.class"].create(
             {"name": "Room", "default_code": "ROOM"}
         )
-
         # pms.room.type
         self.test_room_type_single = self.env["pms.room.type"].create(
             {
@@ -71,13 +70,68 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "class_id": self.test_room_type_class.id,
             }
         )
-        # pms.room.type
         self.test_room_type_double = self.env["pms.room.type"].create(
             {
                 "pms_property_ids": [self.test_property.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
                 "class_id": self.test_room_type_class.id,
+            }
+        )
+
+        # pms.board.service
+        self.test_board_service_only_breakfast = self.env["pms.board.service"].create(
+            {
+                "name": "Test Only Breakfast",
+                "default_code": "CB1",
+            }
+        )
+        self.test_board_service_half_board = self.env["pms.board.service"].create(
+            {
+                "name": "Test Half Board",
+                "default_code": "CB2",
+            }
+        )
+        # product.product 1
+        self.test_service_breakfast = self.env["product.product"].create(
+            {"name": "Test Breakfast"}
+        )
+        self.test_service_dinner = self.env["product.product"].create(
+            {"name": "Test Dinner"}
+        )
+        self.test_service_spa = self.env["product.product"].create({"name": "Test Spa"})
+        # pms.board.service.room.type
+        self.test_board_service_single = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.test_room_type_single.id,
+                "pms_board_service_id": self.test_board_service_only_breakfast.id,
+            }
+        )
+        self.test_board_service_double = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.test_room_type_double.id,
+                "pms_board_service_id": self.test_board_service_half_board.id,
+            }
+        )
+        # pms.board.service.line
+        self.board_service_line_single_1 = self.env["pms.board.service.line"].create(
+            {
+                "product_id": self.test_service_breakfast.id,
+                "pms_board_service_id": self.test_board_service_only_breakfast.id,
+            }
+        )
+        self.board_service_line_double_1 = self.env["pms.board.service.line"].create(
+            {
+                "product_id": self.test_service_breakfast.id,
+                "pms_board_service_id": self.test_board_service_half_board.id,
+            }
+        )
+        self.board_service_line_double_2 = self.board_service_line = self.env[
+            "pms.board.service.line"
+        ].create(
+            {
+                "product_id": self.test_service_dinner.id,
+                "pms_board_service_id": self.test_board_service_half_board.id,
             }
         )
 
@@ -498,7 +552,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
 
-        wizard = self.env["pms.massive.changes.wizard"].create(
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "pricelist",
                 "availability_plan_ids": [
@@ -522,7 +576,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             self.test_availability_plan.id,
             self.test_availability_plan_2.id,
         ]
-        for avail_plan_id in wizard["availability_plan_ids"].ids:
+        for avail_plan_id in wizard_result["availability_plan_ids"].ids:
             with self.subTest(k=avail_plan_id):
                 self.assertIn(
                     avail_plan_id,
@@ -541,7 +595,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
 
-        wizard = self.env["pms.massive.changes.wizard"].create(
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "pricelist",
                 "pricelist_ids": [
@@ -555,18 +609,18 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
         pricelist_ids = [self.test_pricelist.id, self.test_pricelist_2.id]
-        for pricelist_id in wizard["pricelist_ids"].ids:
+        for pricelist_id in wizard_result["pricelist_ids"].ids:
             with self.subTest(k=pricelist_id):
                 self.assertIn(
                     pricelist_id, pricelist_ids, "Pricelist has not been write "
                 )
 
     @freeze_time("2025-02-01")
-    def test_several_room_types(self):
+    def test_several_room_types_pricelist(self):
         self.create_common_scenario()
         date_from = fields.date.today()
         date_to = date_from + datetime.timedelta(days=6)
-        wizard = self.env["pms.massive.changes.wizard"].create(
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
             {
                 "massive_changes_on": "pricelist",
                 "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
@@ -584,8 +638,341 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
         room_type_ids = [self.test_room_type_double.id, self.test_room_type_double.id]
-        for room_type_id in wizard["room_type_ids"].ids:
+        for room_type_id in wizard_result["room_type_ids"].ids:
             with self.subTest(k=room_type_id):
                 self.assertIn(
                     room_type_id, room_type_ids, "Room type has not been write "
                 )
+
+    @freeze_time("2025-02-01")
+    def test_several_room_types_availability_plan(self):
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = date_from + datetime.timedelta(days=6)
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "availability_plan",
+                "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
+                "room_type_ids": [
+                    (
+                        6,
+                        0,
+                        [self.test_room_type_double.id, self.test_room_type_double.id],
+                    )
+                ],
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+            }
+        )
+
+        room_type_ids = [self.test_room_type_double.id, self.test_room_type_double.id]
+        for room_type_id in wizard_result["room_type_ids"].ids:
+            with self.subTest(k=room_type_id):
+                self.assertIn(
+                    room_type_id, room_type_ids, "Room type has not been write "
+                )
+
+    @freeze_time("2025-02-01")
+    def test_one_board_service_room_type_no_board_service(self):
+        # TEST CASE
+        # Call to wizard with one board service room type and no
+        # board service.
+        # The wizard must create as many pricelist items as there
+        # are services on the given board service.
+
+        # ARRANGE
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "apply_pricelists_on": "board_services",
+                "board_service_room_type_ids": [
+                    (
+                        6,
+                        0,
+                        [self.test_board_service_single.id],
+                    )
+                ],
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+                "date_types": "consumption_dates",
+            }
+        )
+        # ACT
+        wizard_result.apply_massive_changes()
+
+        items_created = self.env["product.pricelist.item"].search(
+            [
+                ("pricelist_id", "=", self.test_pricelist.id),
+                ("pms_property_ids", "=", self.test_property.id),
+                ("product_id", "=", self.board_service_line_single_1.product_id.id),
+            ]
+        )
+        # ASSERT
+        self.assertIn(
+            self.test_service_breakfast,
+            items_created.mapped("product_id"),
+            "The wizard must create as many pricelist items as there "
+            "are services on the given board service.",
+        )
+
+    @freeze_time("2025-02-01")
+    def test_one_board_service_room_type_with_board_service(self):
+        # TEST CASE
+        # Call to wizard with one board service room type and
+        # board service.
+        # The wizard must create one pricelist items with
+        # the board service given.
+
+        # ARRANGE
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "apply_pricelists_on": "board_services",
+                "board_service_room_type_ids": [
+                    (
+                        6,
+                        0,
+                        [self.test_board_service_single.id],
+                    )
+                ],
+                "board_service": self.board_service_line_single_1.product_id.id,
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+                "date_types": "consumption_dates",
+            }
+        )
+        # ACT
+        wizard_result.apply_massive_changes()
+
+        items_created = self.env["product.pricelist.item"].search(
+            [
+                ("pricelist_id", "=", self.test_pricelist.id),
+                ("pms_property_ids", "=", self.test_property.id),
+                ("product_id", "=", self.board_service_line_single_1.product_id.id),
+            ]
+        )
+        # ASSERT
+        self.assertIn(
+            self.test_service_breakfast,
+            items_created.mapped("product_id"),
+            "The wizard must create one pricelist items with "
+            " the board service given.",
+        )
+
+    @freeze_time("2025-02-01")
+    def test_several_board_service_room_type_no_board_service(self):
+        # TEST CASE
+        # Call to wizard with several board service room type and no
+        # board service.
+        # The wizard must create as many pricelist items as there
+        # are services on the given board services.
+
+        # ARRANGE
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        product_ids_expected = (
+            self.test_board_service_double.pms_board_service_id.board_service_line_ids.mapped(
+                "product_id"
+            ).ids
+            + self.test_board_service_single.pms_board_service_id.board_service_line_ids.mapped(
+                "product_id"
+            ).ids
+        )
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "apply_pricelists_on": "board_services",
+                "board_service_room_type_ids": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.test_board_service_single.id,
+                            self.test_board_service_double.id,
+                        ],
+                    )
+                ],
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+                "date_types": "consumption_dates",
+            }
+        )
+        # ACT
+        wizard_result.apply_massive_changes()
+
+        items_created = self.env["product.pricelist.item"].search(
+            [
+                ("pricelist_id", "=", self.test_pricelist.id),
+                ("pms_property_ids", "=", self.test_property.id),
+                ("product_id", "in", product_ids_expected),
+            ]
+        )
+        # ASSERT
+        self.assertEqual(
+            set(product_ids_expected),
+            set(items_created.mapped("product_id").ids),
+            "The wizard should create as many pricelist items as there"
+            " are services on the given board services.",
+        )
+
+    @freeze_time("2025-02-01")
+    def test_several_board_service_room_type_with_board_service(self):
+        # TEST CASE
+        # Call to wizard with several board service room types and
+        # board service.
+        # The wizard must create as many pricelist items as there
+        # are services on the given board services.
+
+        # ARRANGE
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        board_service_id_double = self.test_board_service_double.pms_board_service_id
+        board_service_id_single = self.test_board_service_single.pms_board_service_id
+        product_ids_expected = list(
+            set(board_service_id_double.board_service_line_ids.mapped("product_id").ids)
+            & set(
+                board_service_id_single.board_service_line_ids.mapped("product_id").ids
+            )
+        )
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "apply_pricelists_on": "board_services",
+                "board_service_room_type_ids": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.test_board_service_single.id,
+                            self.test_board_service_double.id,
+                        ],
+                    )
+                ],
+                "board_service": self.test_service_breakfast.id,
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+                "date_types": "consumption_dates",
+            }
+        )
+        # ACT
+        wizard_result.apply_massive_changes()
+
+        items_created = self.env["product.pricelist.item"].search(
+            [
+                ("pricelist_id", "=", self.test_pricelist.id),
+                ("pms_property_ids", "=", self.test_property.id),
+                ("product_id", "in", product_ids_expected),
+            ]
+        )
+        # ASSERT
+        self.assertEqual(
+            set(product_ids_expected),
+            set(items_created.mapped("product_id").ids),
+            "The wizard should create as many pricelist items as there"
+            " are services on the given board services.",
+        )
+
+    @freeze_time("2025-02-01")
+    def test_service(self):
+        # TEST CASE
+        # Call to wizard with one service (product_id)
+        # The wizard must create one pricelist items with
+        # the given service (product_id).
+
+        # ARRANGE
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "apply_pricelists_on": "service",
+                "service": self.test_service_spa.id,
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+                "date_types": "consumption_dates",
+            }
+        )
+        # ACT
+        wizard_result.apply_massive_changes()
+
+        items_created = self.env["product.pricelist.item"].search(
+            [
+                ("pricelist_id", "=", self.test_pricelist.id),
+                ("pms_property_ids", "=", self.test_property.id),
+                ("product_id", "=", self.test_service_spa.id),
+            ]
+        )
+        # ASSERT
+        self.assertIn(
+            self.test_service_spa.id,
+            items_created.mapped("product_id").ids,
+            "The wizard should create one pricelist items with"
+            " the given service (product_id).",
+        )
+
+    @freeze_time("2025-02-01")
+    def test_sale_dates(self):
+        # TEST CASE
+        # Call to wizard with one service (product_id)
+        # and dates of SALE
+        # The wizard must create one pricelist items with
+        # the given service (product_id) and dates of SALE.
+
+        # ARRANGE
+        self.create_common_scenario()
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        wizard_result = self.env["pms.massive.changes.wizard"].create(
+            {
+                "massive_changes_on": "pricelist",
+                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "apply_pricelists_on": "service",
+                "service": self.test_service_spa.id,
+                "pms_property_ids": [self.test_property.id],
+                "start_date": date_from,
+                "end_date": date_to,
+                "date_types": "sale_dates",
+            }
+        )
+        # ACT
+        wizard_result.apply_massive_changes()
+
+        items_created = self.env["product.pricelist.item"].search(
+            [
+                ("pricelist_id", "=", self.test_pricelist.id),
+                ("pms_property_ids", "=", self.test_property.id),
+                ("product_id", "=", self.test_service_spa.id),
+            ]
+        )
+
+        expected_dates = [
+            datetime.datetime.combine(date_from, datetime.datetime.min.time()),
+            datetime.datetime.combine(date_to, datetime.datetime.max.time()),
+        ]
+        # ASSERT
+        self.assertEqual(
+            expected_dates,
+            items_created.mapped("date_start") + items_created.mapped("date_end"),
+            "The wizard should create one pricelist items with"
+            " the given service (product_id) and dates of sale.",
+        )

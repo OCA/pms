@@ -1,6 +1,6 @@
 # Copyright 2017  Alexandre Díaz, Pablo Quesada, Darío Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ProductPricelistItem(models.Model):
@@ -26,18 +26,10 @@ class ProductPricelistItem(models.Model):
         string="End Date Overnight",
         help="End date to apply daily pricelist items",
     )
-    on_board_service = fields.Boolean(
-        string="On Board Service",
-        help="Those included in Board Services",
-    )
-    board_service_room_type_ids = fields.Many2many(
-        string="Board Services",
-        help="""Specify a Board services on Room Types.""",
+    board_service_room_type_id = fields.Many2one(
+        string="Board Service",
+        help="Specify a Board services on Room Types.",
         comodel_name="pms.board.service.room.type",
-        relation="board_service_pricelist_item_rel",
-        column1="pricelist_item_id",
-        column2="board_service_id",
-        ondelete="cascade",
         check_pms_properties=True,
     )
     pricelist_id = fields.Many2one(
@@ -55,3 +47,68 @@ class ProductPricelistItem(models.Model):
         help="Product template associated with the item",
         check_pms_properties=True,
     )
+    allowed_board_service_product_ids = fields.Many2many(
+        string="Allowed board service products",
+        comodel_name="product.product",
+        store=True,
+        readonly=False,
+        compute="_compute_allowed_board_service_product_ids",
+    )
+
+    allowed_board_service_room_type_ids = fields.Many2many(
+        string="Allowed board service room types",
+        comodel_name="pms.board.service.room.type",
+        store=True,
+        readonly=False,
+        compute="_compute_allowed_board_service_room_type_ids",
+    )
+
+    @api.depends("board_service_room_type_id")
+    def _compute_allowed_board_service_product_ids(self):
+        for record in self:
+            domain = []
+            if record.board_service_room_type_id:
+                domain.append(
+                    (
+                        "id",
+                        "in",
+                        record.board_service_room_type_id.board_service_line_ids.mapped(
+                            "product_id"
+                        ).ids,
+                    )
+                )
+            allowed_board_service_product_ids = self.env["product.product"].search(
+                domain
+            )
+            record.allowed_board_service_product_ids = allowed_board_service_product_ids
+
+    @api.depends("product_id")
+    def _compute_allowed_board_service_room_type_ids(self):
+        for record in self:
+            allowed_board_service_room_type_ids = []
+            all_board_service_room_type_ids = self.env[
+                "pms.board.service.room.type"
+            ].search([])
+            if record.product_id:
+                for board_service_room_type_id in all_board_service_room_type_ids:
+                    if (
+                        record.product_id
+                        in board_service_room_type_id.board_service_line_ids.mapped(
+                            "product_id"
+                        )
+                    ):
+                        allowed_board_service_room_type_ids.append(
+                            board_service_room_type_id.id
+                        )
+            else:
+                allowed_board_service_room_type_ids = (
+                    all_board_service_room_type_ids.ids
+                )
+            domain = []
+            if allowed_board_service_room_type_ids:
+                domain.append(("id", "in", allowed_board_service_room_type_ids))
+            record.allowed_board_service_room_type_ids = (
+                self.env["pms.board.service.room.type"].search(domain)
+                if domain
+                else False
+            )
