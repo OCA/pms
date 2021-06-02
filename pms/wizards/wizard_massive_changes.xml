@@ -9,9 +9,10 @@
                     <field name="massive_changes_on" invisible="1" />
                     <field name="avail_readonly" invisible="1" />
                     <field name="pricelist_readonly" invisible="1" />
+                    <field name="allowed_board_services" invisible="1" />
                 </group>
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-5">
                         <group>
                             <field
                                 name="start_date"
@@ -27,9 +28,14 @@
                                 name="massive_changes_on"
                                 attrs="{'invisible':['|', ('avail_readonly','=',True), ('pricelist_readonly', '=', True)]}"
                             />
+                            <field
+                                name="apply_pricelists_on"
+                                widget="radio"
+                                attrs="{'invisible':[('massive_changes_on','!=','pricelist')]}"
+                            />
                         </group>
                     </div>
-                    <div class="col-6">
+                    <div class="col-7">
                         <group class="">
                             <field name="pms_property_ids" widget="many2many_tags" />
                             <field
@@ -59,6 +65,31 @@
                                 default_focus="1"
                                 widget="many2many_tags"
                                 options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible':[('apply_pricelists_on','!=','room_types'),('massive_changes_on', '=','pricelist')],'required': []}"
+                            />
+                            <field
+                                name="board_service_room_type_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible':['|', ('apply_pricelists_on','!=','board_services'),('massive_changes_on', '=','availability_plan')],
+                                'required': [('apply_pricelists_on','=','board_services')]}"
+                            />
+                            <field
+                                name="board_service"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible':['|', ('apply_pricelists_on','!=','board_services'),('massive_changes_on', '=','availability_plan')],
+                                'required': [('apply_pricelists_on','=','board_services')]}"
+                            />
+                            <field
+                                name="service"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible':['|', ('apply_pricelists_on','!=','service'),('massive_changes_on', '=','availability_plan')]}"
+                            />
+                            <field
+                                name="date_types"
+                                widget="radio"
+                                options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible':[('massive_changes_on', '=','availability_plan')]}"
                             />
                         </group>
 
@@ -421,6 +452,7 @@
                             name="closed_departure"
                             attrs="{'column_invisible':[('parent.apply_closed_departure', '==', False)]}"
                         />
+                        <field name="pms_property_id" />
                     </tree>
                 </field>
                 <field
@@ -431,9 +463,13 @@
                      <tree>
                          <field name="pricelist_id" />
                          <field string="Applicable on" name="name" />
+                         <field name="board_service_room_type_id" />
+                         <field string="Sale Date Start" name="date_start" />
+                         <field string="Sale Date End" name="date_end" />
                          <field name="date_start_overnight" />
                          <field name="date_end_overnight" />
                          <field name="price" />
+                         <field name="pms_property_ids" widget="many2many_tags" />
                     </tree>
                 </field>
                 <footer>
