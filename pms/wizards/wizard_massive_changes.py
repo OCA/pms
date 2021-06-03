@@ -524,8 +524,8 @@ class AvailabilityWizard(models.TransientModel):
                         )
                     )
                 elif record.date_types == "consumption_dates":
-                    domain.append(("date_start_overnight", ">=", record.start_date))
-                    domain.append(("date_end_overnight", "<=", record.end_date))
+                    domain.append(("date_start_consumption", ">=", record.start_date))
+                    domain.append(("date_end_consumption", "<=", record.end_date))
 
                 product_ids = self.generate_product_ids_to_filter(
                     record.apply_pricelists_on,
@@ -570,9 +570,9 @@ class AvailabilityWizard(models.TransientModel):
                         items_filtered = False
                         if record.date_types == "consumption_dates":
                             items_filtered = items.filtered(
-                                lambda x: x.date_end_overnight
+                                lambda x: x.date_end_consumption
                                 and week_days_to_apply[
-                                    x.date_end_overnight.timetuple()[6]
+                                    x.date_end_consumption.timetuple()[6]
                                 ]
                             )
                         elif record.date_types == "sale_dates":
@@ -702,8 +702,8 @@ class AvailabilityWizard(models.TransientModel):
                 date, datetime.datetime.max.time()
             )
         else:
-            vals["date_start_overnight"] = date
-            vals["date_end_overnight"] = date
+            vals["date_start_consumption"] = date
+            vals["date_end_consumption"] = date
         return vals
 
     @api.model

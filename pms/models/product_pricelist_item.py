@@ -18,12 +18,12 @@ class ProductPricelistItem(models.Model):
         ondelete="restrict",
         check_pms_properties=True,
     )
-    date_start_overnight = fields.Date(
-        string="Start Date Overnight",
+    date_start_consumption = fields.Date(
+        string="Start Date Consumption",
         help="Start date to apply daily pricelist items",
     )
-    date_end_overnight = fields.Date(
-        string="End Date Overnight",
+    date_end_consumption = fields.Date(
+        string="End Date Consumption",
         help="End date to apply daily pricelist items",
     )
     board_service_room_type_id = fields.Many2one(

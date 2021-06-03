@@ -619,8 +619,8 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_ids": [self.test_property.id],
             }
         ).apply_massive_changes()
-        vals["date_start_overnight"] = date_from
-        vals["date_end_overnight"] = date_to
+        vals["date_start_consumption"] = date_from
+        vals["date_end_consumption"] = date_to
 
         del vals["date_start"]
         del vals["date_end"]
@@ -682,12 +682,13 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
                 # ASSERT
                 pricelist_items = self.test_pricelist.item_ids.sorted(
-                    key=lambda s: s.date_start_overnight
+                    key=lambda s: s.date_start_consumption
                 )
 
                 # ASSERT
                 self.assertTrue(
-                    pricelist_items[index].date_start_overnight.timetuple()[6] == index
+                    pricelist_items[index].date_start_consumption.timetuple()[6]
+                    == index
                     and test_case[index],
                     "Rule not created on correct day of week",
                 )
