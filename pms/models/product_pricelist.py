@@ -94,15 +94,15 @@ class ProductPricelist(models.Model):
                    AND (item.pricelist_id = %s)
                    AND (item.date_start IS NULL OR item.date_start <=%s)
                    AND (item.date_end IS NULL OR item.date_end >=%s)
-                   AND (item.date_start_overnight IS NULL
-                        OR item.date_start_overnight <=%s)
-                   AND (item.date_end_overnight IS NULL
-                        OR item.date_end_overnight >=%s)
+                   AND (item.date_start_consumption IS NULL
+                        OR item.date_start_consumption <=%s)
+                   AND (item.date_end_consumption IS NULL
+                        OR item.date_end_consumption >=%s)
                 GROUP  BY item.id
                 ORDER  BY item.applied_on,
-                          /* REVIEW: priotrity date sale / date overnight */
+                          /* REVIEW: priotrity date sale / date consumption */
                           item.date_end - item.date_start ASC,
-                          item.date_end_overnight - item.date_start_overnight ASC,
+                          item.date_end_consumption - item.date_start_consumption ASC,
                           NULLIF((SELECT COUNT(1)
                            FROM   product_pricelist_item_pms_property_rel l
                            WHERE  item.id = l.product_pricelist_item_id)
@@ -147,7 +147,7 @@ class ProductPricelist(models.Model):
             if record.item_ids:
                 for item in record.item_ids:
                     days_diff = (
-                        item.date_end_overnight - item.date_start_overnight
+                        item.date_end_consumption - item.date_start_consumption
                     ).days
                     if record.pricelist_type == "daily" and (
                         item.compute_price != "fixed"

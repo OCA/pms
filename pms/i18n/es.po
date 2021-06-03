@@ -2681,8 +2681,8 @@ msgid "Employee"
 msgstr "Empleado/a"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__date_end_overnight
-msgid "End Date Overnight"
+#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__date_end_consumption
+msgid "End Date Consumption"
 msgstr "Fin Noche Pernocta"
 
 #. module: pms
@@ -2691,7 +2691,7 @@ msgid "End date for creation of reservations and folios"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_product_pricelist_item__date_end_overnight
+#: model:ir.model.fields,help:pms.field_product_pricelist_item__date_end_consumption
 msgid "End date to apply daily pricelist items"
 msgstr "Fecha límite para aplicar los ítems de la tarifa diaria"
 
@@ -7370,8 +7370,8 @@ msgid "Stage"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__date_start_overnight
-msgid "Start Date Overnight"
+#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__date_start_consumption
+msgid "Start Date Consumption"
 msgstr "Fecha de Inicio Durante la Noche"
 
 #. module: pms
@@ -7380,7 +7380,7 @@ msgid "Start date for creation of reservations and folios"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_product_pricelist_item__date_start_overnight
+#: model:ir.model.fields,help:pms.field_product_pricelist_item__date_start_consumption
 msgid "Start date to apply daily pricelist items"
 msgstr "Fecha de inicio para aplicar los items de tarifa diarios"
 
