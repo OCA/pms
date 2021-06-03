@@ -410,7 +410,8 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     @freeze_time("2025-02-01")
     def test_several_room_types_availability_plan(self):
         # TEST CASE
-        #
+        # If several room types are set, the wizard should create as
+        # many rules as room types.
 
         # ARRANGE
         self.create_common_scenario()
@@ -454,6 +455,55 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 .ids
             ),
             "The wizard should create as many rules as room types given.",
+        )
+
+    @freeze_time("1980-12-01")
+    def test_several_properties_availability_plan(self):
+        # TEST CASE
+        # If several properties are set, the wizard should create as
+        # many rules as properties.
+
+        # ARRANGE
+        self.create_common_scenario()
+        self.test_property2 = self.env["pms.property"].create(
+            {
+                "name": "MY 2nd PMS TEST",
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        self.test_room_type_double.pms_property_ids = [
+            (6, 0, [self.test_property.id, self.test_property2.id])
+        ]
+        expected_properties = [
+            self.test_property.id,
+            self.test_property2.id,
+        ]
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        vals_wizard = {
+            "massive_changes_on": "availability_plan",
+            "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
+            "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
+            "pms_property_ids": [
+                (6, 0, [self.test_property.id, self.test_property2.id])
+            ],
+            "start_date": date_from,
+            "end_date": date_to,
+        }
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+        # ASSERT
+        self.assertEqual(
+            set(expected_properties),
+            set(
+                self.env["pms.availability.plan.rule"]
+                .search([("availability_plan_id", "=", self.test_availability_plan.id)])
+                .mapped("pms_property_id")
+                .ids
+            ),
+            "The wizard should create as many rules as properties given.",
         )
 
     # MASSIVE CHANGE WIZARD TESTS ON PRICELIST ITEMS
@@ -1031,4 +1081,51 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             items_created.mapped("date_start") + items_created.mapped("date_end"),
             "The wizard should create one pricelist items with"
             " the given service (product_id) and dates of sale.",
+        )
+
+    def test_several_properties_pricelist(self):
+        # TEST CASE
+        # If several properties are set, the wizard should create as
+        # many items as properties.
+
+        # ARRANGE
+        self.create_common_scenario()
+        self.test_property2 = self.env["pms.property"].create(
+            {
+                "name": "MY 2nd PMS TEST",
+                "company_id": self.env.ref("base.main_company").id,
+            }
+        )
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        expected_properties = [
+            self.test_property.id,
+            self.test_property2.id,
+        ]
+        vals_wizard = {
+            "massive_changes_on": "pricelist",
+            "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+            "apply_pricelists_on": "service",
+            "service": self.test_service_spa.id,
+            "pms_property_ids": [
+                (6, 0, [self.test_property.id, self.test_property2.id])
+            ],
+            "start_date": date_from,
+            "end_date": date_to,
+            "date_types": "sale_dates",
+        }
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+        # ASSERT
+        self.assertEqual(
+            set(expected_properties),
+            set(
+                self.env["product.pricelist.item"]
+                .search([("pricelist_id", "=", self.test_pricelist.id)])
+                .mapped("pms_property_ids")
+                .ids
+            ),
+            "The wizard should create as many items as properties given.",
         )
