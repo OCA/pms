@@ -32,6 +32,8 @@ class PmsBoardServiceRoomType(models.Model):
         column1="pms_board_service_room_type_id",
         column2="pms_property_id",
         check_pms_properties=True,
+        compute="_compute_pms_property_ids",
+        store=True,
     )
     pms_room_type_id = fields.Many2one(
         string="Room Type",
@@ -61,6 +63,43 @@ class PmsBoardServiceRoomType(models.Model):
         string="Apply by Default",
         help="Indicates if this board service is applied by default in the room type",
     )
+
+    @api.depends(
+        "pms_room_type_id",
+        "pms_room_type_id.pms_property_ids",
+        "pms_board_service_id",
+        "pms_board_service_id.pms_property_ids",
+    )
+    def _compute_pms_property_ids(self):
+        for record in self:
+            if (
+                record.pms_room_type_id.pms_property_ids
+                and record.pms_board_service_id.pms_property_ids
+            ):
+                record.pms_property_ids = self.env["pms.property"].search(
+                    [
+                        (
+                            "id",
+                            "in",
+                            list(
+                                set(record.pms_room_type_id.pms_property_ids.ids)
+                                & set(record.pms_board_service_id.pms_property_ids.ids)
+                            ),
+                        )
+                    ]
+                )
+            elif (
+                record.pms_room_type_id.pms_property_ids
+                and not record.pms_board_service_id.pms_property_ids
+            ):
+                record.pms_property_ids = record.pms_room_type_id.pms_property_ids
+            elif (
+                not record.pms_room_type_id.pms_property_ids
+                and record.pms_board_service_id.pms_property_ids
+            ):
+                record.pms_property_ids = record.pms_board_service_id.pms_property_ids
+            else:
+                record.pms_property_ids = False
 
     @api.depends("board_service_line_ids.amount")
     def _compute_board_amount(self):
@@ -107,27 +146,10 @@ class PmsBoardServiceRoomType(models.Model):
 
     @api.model
     def create(self, vals):
-        properties = False
+        # properties = False
         if "pms_board_service_id" in vals:
             vals.update(
                 self.prepare_board_service_reservation_ids(vals["pms_board_service_id"])
-            )
-            board_service = self.env["pms.board.service"].browse(
-                vals["pms_board_service_id"]
-            )
-            properties = board_service.pms_property_ids
-        if "pms_room_type_id" in vals:
-            room_type = self.env["pms.room.type"].browse(vals["pms_room_type_id"])
-            properties = (
-                properties + room_type.pms_property_ids
-                if properties
-                else room_type.pms_property_ids
-            )
-        if properties:
-            vals.update(
-                {
-                    "pms_property_ids": properties,
-                }
             )
         return super(PmsBoardServiceRoomType, self).create(vals)
 
