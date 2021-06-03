@@ -31,7 +31,7 @@
                                 name="partner_id"
                                 domain="[('is_company','=', False)]"
                             />
-                            <field name="firstname"/>
+                            <field name="firstname" />
                             <field name="lastname" />
                             <field name="lastname2" />
                             <field name="gender" />
@@ -40,6 +40,8 @@
                             <field name="document_number" />
                             <field name="document_expedition_date" />
                             <field name="nationality_id" />
+                            <field name="email" />
+                            <field name="mobile" />
                             <field name="pms_property_id" invisible="1" />
                             <field name="arrival" />
                             <field name="departure" />
@@ -77,7 +79,7 @@
                 />
                 <field name="identifier" />
                 <field name="partner_id" />
-                <field name="firstname"/>
+                <field name="firstname" />
                 <field name="lastname" />
                 <field name="lastname2" />
                 <field name="gender" />
@@ -122,7 +124,7 @@
                 <field name="reservation_id" />
                 <field name="pms_property_id" invisible="1" />
                 <field name="partner_id" domain="[('is_company','=', False)]" />
-                <field name="firstname"/>
+                <field name="firstname" />
                 <field name="lastname" />
                 <field name="lastname2" />
                 <field name="gender" />
@@ -164,7 +166,7 @@
                 <field name="partner_id" domain="[('is_company','=', False)]" />
                  <field name="reservation_id" />
                 <field name="pms_property_id" invisible="1" />
-                <field name="firstname"/>
+                <field name="firstname" />
                 <field name="lastname" />
                 <field name="lastname2" />
                 <field name="gender" />
@@ -177,8 +179,6 @@
                 <field name="email" />
                 <field name="arrival" />
                 <field name="departure" />
-                <field name="reservation_id" />
-                <field name="pms_property_id" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" />
             </tree>
@@ -202,11 +202,9 @@
                 <field name="identifier" />
                 <field name="reservation_id" />
                 <field name="folio_id" />
-                <field name="pms_property_id" />
-                 <field name="reservation_id" />
                 <field name="pms_property_id" invisible="1" />
                 <field name="partner_id" domain="[('is_company','=', False)]" />
-                <field name="firstname"/>
+                <field name="firstname" />
                 <field name="lastname" />
                 <field name="lastname2" />
                 <field name="gender" />
