@@ -19,8 +19,8 @@
                 expr="//field[@name='item_ids']/tree/field[@name='base']"
                 position="after"
             >
-                <field name="date_start_overnight" />
-                <field name="date_end_overnight" />
+                <field name="date_start_consumption" />
+                <field name="date_end_consumption" />
                 <field
                     name="pms_property_ids"
                     widget="many2many_tags"
