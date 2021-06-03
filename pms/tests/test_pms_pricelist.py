@@ -335,7 +335,7 @@ class TestPmsPricelist(common.SavepointCase):
             " item created previously according to the SALE date.",
         )
 
-    def test_board_service_pricelist_item_apply_overnight_dates(self):
+    def test_board_service_pricelist_item_apply_consumption_dates(self):
         # TEST CASE
         # Pricelist item is created to apply on board services
         # at CONSUMPTION date.
@@ -349,8 +349,8 @@ class TestPmsPricelist(common.SavepointCase):
         expected_price = 1000.0
         vals = {
             "pricelist_id": self.pricelist.id,
-            "date_start_overnight": date_from,
-            "date_end_overnight": date_to,
+            "date_start_consumption": date_from,
+            "date_end_consumption": date_to,
             "compute_price": "fixed",
             "applied_on": "0_product_variant",
             "product_id": self.test_service_breakfast.id,
@@ -379,7 +379,7 @@ class TestPmsPricelist(common.SavepointCase):
             " pricelist item created previously according to the CONSUMPTION date.",
         )
 
-    def test_board_service_pricelist_item_not_apply_overnight_dates(self):
+    def test_board_service_pricelist_item_not_apply_consumption_dates(self):
         # TEST CASE
         # Pricelist item is created to apply on board services
         # at CONSUMPTION date.
@@ -520,7 +520,7 @@ class TestPmsPricelist(common.SavepointCase):
             " pricelist item created previously according to the SALE date.",
         )
 
-    def test_room_type_pricelist_item_apply_overnight_dates(self):
+    def test_room_type_pricelist_item_apply_consumption_dates(self):
         # TEST CASE
         # Pricelist item is created to apply on room types
         # at CONSUMPTION date.
@@ -534,8 +534,8 @@ class TestPmsPricelist(common.SavepointCase):
         expected_price = 1000.0
         vals = {
             "pricelist_id": self.pricelist.id,
-            "date_start_overnight": date_from,
-            "date_end_overnight": date_to,
+            "date_start_consumption": date_from,
+            "date_end_consumption": date_to,
             "compute_price": "fixed",
             "applied_on": "0_product_variant",
             "product_id": self.room_type.product_id.id,
@@ -562,7 +562,7 @@ class TestPmsPricelist(common.SavepointCase):
             " pricelist item created previously according to the CONSUMPTION date.",
         )
 
-    def test_room_type_pricelist_item_not_apply_overnight_dates(self):
+    def test_room_type_pricelist_item_not_apply_consumption_dates(self):
         # TEST CASE
         # Pricelist item is created to apply on room types
         # at CONSUMPTION date.
@@ -701,7 +701,7 @@ class TestPmsPricelist(common.SavepointCase):
             " item created previously according to the SALE date.",
         )
 
-    def test_service_pricelist_item_apply_overnight_dates(self):
+    def test_service_pricelist_item_apply_consumption_dates(self):
         # TEST CASE
         # Pricelist item is created to apply on services at CONSUMPTION date.
         # The reservation created take into account the service
@@ -714,8 +714,8 @@ class TestPmsPricelist(common.SavepointCase):
         expected_price = 1000.0
         vals = {
             "pricelist_id": self.pricelist.id,
-            "date_start_overnight": date_from,
-            "date_end_overnight": date_to,
+            "date_start_consumption": date_from,
+            "date_end_consumption": date_to,
             "compute_price": "fixed",
             "applied_on": "0_product_variant",
             "product_id": self.test_service_breakfast.id,
@@ -743,7 +743,7 @@ class TestPmsPricelist(common.SavepointCase):
             " pricelist item created previously according to the CONSUMPTION date.",
         )
 
-    def test_service_pricelist_item_not_apply_overnight_dates(self):
+    def test_service_pricelist_item_not_apply_consumption_dates(self):
         # TEST CASE
         # Pricelist item is created to apply on services at CONSUMPTION date.
         # The reservation created DONT take into account the service pricelist
@@ -796,43 +796,43 @@ class TestPmsPricelist(common.SavepointCase):
             {
                 "compute_price": "fixed",
                 "pms_property_ids": [self.property1.id, self.property2.id],
-                "date_start_overnight": datetime.datetime.now(),
-                "date_end_overnight": datetime.datetime.today()
+                "date_start_consumption": datetime.datetime.now(),
+                "date_end_consumption": datetime.datetime.today()
                 + datetime.timedelta(days=1),
             },
             {
                 "compute_price": "fixed",
                 "pms_property_ids": False,
-                "date_start_overnight": datetime.datetime.now(),
-                "date_end_overnight": datetime.datetime.today()
+                "date_start_consumption": datetime.datetime.now(),
+                "date_end_consumption": datetime.datetime.today()
                 + datetime.timedelta(days=1),
             },
             {
                 "compute_price": "percentage",
                 "pms_property_ids": [self.property1.id],
-                "date_start_overnight": datetime.datetime.now(),
-                "date_end_overnight": datetime.datetime.today()
+                "date_start_consumption": datetime.datetime.now(),
+                "date_end_consumption": datetime.datetime.today()
                 + datetime.timedelta(days=1),
             },
             {
                 "compute_price": "percentage",
                 "pms_property_ids": [self.property1.id, self.property2.id],
-                "date_start_overnight": datetime.datetime.now(),
-                "date_end_overnight": datetime.datetime.today()
+                "date_start_consumption": datetime.datetime.now(),
+                "date_end_consumption": datetime.datetime.today()
                 + datetime.timedelta(days=1),
             },
             {
                 "compute_price": "percentage",
                 "pms_property_ids": False,
-                "date_start_overnight": datetime.datetime.now(),
-                "date_end_overnight": datetime.datetime.today()
+                "date_start_consumption": datetime.datetime.now(),
+                "date_end_consumption": datetime.datetime.today()
                 + datetime.timedelta(days=1),
             },
             {
                 "compute_price": "fixed",
                 "pms_property_ids": [self.property1.id],
-                "date_start_overnight": datetime.datetime.now(),
-                "date_end_overnight": datetime.datetime.today()
+                "date_start_consumption": datetime.datetime.now(),
+                "date_end_consumption": datetime.datetime.today()
                 + datetime.timedelta(days=3),
             },
         ]
@@ -847,8 +847,8 @@ class TestPmsPricelist(common.SavepointCase):
                             "compute_price": tc["compute_price"],
                             "applied_on": "0_product_variant",
                             "product_id": self.room_type.product_id.id,
-                            "date_start_overnight": tc["date_start_overnight"],
-                            "date_end_overnight": tc["date_end_overnight"],
+                            "date_start_consumption": tc["date_start_consumption"],
+                            "date_end_consumption": tc["date_end_consumption"],
                         }
                     )
                     self.pricelist_test = self.env["product.pricelist"].create(
@@ -870,8 +870,8 @@ class TestPmsPricelist(common.SavepointCase):
                 "compute_price": "fixed",
                 "applied_on": "0_product_variant",
                 "product_id": self.room_type.product_id.id,
-                "date_start_overnight": datetime.datetime.now(),
-                "date_end_overnight": datetime.datetime.today()
+                "date_start_consumption": datetime.datetime.now(),
+                "date_end_consumption": datetime.datetime.today()
                 + datetime.timedelta(days=1),
             }
         )
