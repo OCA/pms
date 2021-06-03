@@ -25,11 +25,11 @@
     },
     "data": [
         "data/cron_jobs.xml",
+        "data/pms_data.xml",
         "data/queue_data.xml",
         "data/queue_job_function_data.xml",
         "security/ir.model.access.csv",
         "views/pms_property_views.xml",
-        #"views/res_partner_views.xml",
         "wizards/traveller_report.xml",
     ],
     "installable": True,

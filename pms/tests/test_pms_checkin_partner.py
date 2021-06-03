@@ -16,7 +16,7 @@ class TestPmsCheckinPartner(common.SavepointCase):
         # Arrange for one checkin on one reservation
         cls.host1 = cls.env["res.partner"].create(
             {
-                "name": "Miguel",
+                "name": "Miguel Lopez",
                 "phone": "654667733",
                 "email": "miguel@example.com",
             }

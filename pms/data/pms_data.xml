@@ -61,7 +61,10 @@
             <field name="name">Driving License</field>
             <field name="code">C</field>
         </record>
-        <record id="document_type_identification_document" model="res.partner.id_category">
+        <record
+            id="document_type_identification_document"
+            model="res.partner.id_category"
+        >
             <field name="name">Identification Document</field>
             <field name="code">I</field>
         </record>
