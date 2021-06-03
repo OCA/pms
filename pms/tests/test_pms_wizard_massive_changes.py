@@ -354,6 +354,108 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             "another rules for the same day and room type",
         )
 
+    @freeze_time("2025-12-01")
+    def test_several_availability_plan(self):
+        # TEST CASE
+        # If several availability plans are set, the wizard should create as
+        # many rules as availability plans.
+
+        # ARRANGE
+        self.create_common_scenario()
+        self.test_availability_plan_2 = self.env["pms.availability.plan"].create(
+            {
+                "name": "Second availability plan for TEST",
+                "pms_pricelist_ids": [self.test_pricelist.id],
+            }
+        )
+        expected_av_plans = [
+            self.test_availability_plan.id,
+            self.test_availability_plan_2.id,
+        ]
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        vals_wizard = {
+            "massive_changes_on": "availability_plan",
+            "availability_plan_ids": [
+                (
+                    6,
+                    0,
+                    [
+                        self.test_availability_plan.id,
+                        self.test_availability_plan_2.id,
+                    ],
+                )
+            ],
+            "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
+            "pms_property_ids": [self.test_property.id],
+            "start_date": date_from,
+            "end_date": date_to,
+        }
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+        # ASSERT
+        self.assertEqual(
+            set(expected_av_plans),
+            set(
+                self.env["pms.availability.plan.rule"]
+                .search([("room_type_id", "=", self.test_room_type_double.id)])
+                .mapped("availability_plan_id")
+                .ids
+            ),
+            "The wizard should create as many rules as availability plans given.",
+        )
+
+    @freeze_time("2025-02-01")
+    def test_several_room_types_availability_plan(self):
+        # TEST CASE
+        #
+
+        # ARRANGE
+        self.create_common_scenario()
+        self.test_availability_plan_2 = self.env["pms.availability.plan"].create(
+            {
+                "name": "Second availability plan for TEST",
+                "pms_pricelist_ids": [self.test_pricelist.id],
+            }
+        )
+        expected_room_types = [
+            self.test_room_type_double.id,
+            self.test_room_type_single.id,
+        ]
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        vals_wizard = {
+            "massive_changes_on": "availability_plan",
+            "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
+            "room_type_ids": [
+                (
+                    6,
+                    0,
+                    [self.test_room_type_double.id, self.test_room_type_single.id],
+                )
+            ],
+            "pms_property_ids": [self.test_property.id],
+            "start_date": date_from,
+            "end_date": date_to,
+        }
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+        # ASSERT
+        self.assertEqual(
+            set(expected_room_types),
+            set(
+                self.env["pms.availability.plan.rule"]
+                .search([("availability_plan_id", "=", self.test_availability_plan.id)])
+                .mapped("room_type_id")
+                .ids
+            ),
+            "The wizard should create as many rules as room types given.",
+        )
+
     # MASSIVE CHANGE WIZARD TESTS ON PRICELIST ITEMS
 
     @freeze_time("1980-12-01")
@@ -540,138 +642,92 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                     "Rule not created on correct day of week",
                 )
 
-    @freeze_time("2025-12-01")
-    def test_several_availability_plan(self):
-        self.create_common_scenario()
-        date_from = fields.date.today()
-        date_to = date_from + datetime.timedelta(days=6)
-        self.test_availability_plan_2 = self.env["pms.availability.plan"].create(
-            {
-                "name": "Second availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.test_pricelist.id])],
-            }
-        )
-
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "pricelist",
-                "availability_plan_ids": [
-                    (
-                        6,
-                        0,
-                        [
-                            self.test_availability_plan.id,
-                            self.test_availability_plan_2.id,
-                        ],
-                    )
-                ],
-                "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
-                "pms_property_ids": [self.test_property.id],
-                "start_date": date_from,
-                "end_date": date_to,
-            }
-        )
-
-        availability_plan_ids = [
-            self.test_availability_plan.id,
-            self.test_availability_plan_2.id,
-        ]
-        for avail_plan_id in wizard_result["availability_plan_ids"].ids:
-            with self.subTest(k=avail_plan_id):
-                self.assertIn(
-                    avail_plan_id,
-                    availability_plan_ids,
-                    "Availability plan has not been write ",
-                )
-
     @freeze_time("2025-01-01")
     def test_several_pricelists(self):
+        # TEST CASE
+        # If several pricelist are set, the wizard should create as
+        # many items as pricelists.
+
+        # ARRANGE
         self.create_common_scenario()
-        date_from = fields.date.today()
-        date_to = date_from + datetime.timedelta(days=6)
         self.test_pricelist_2 = self.env["product.pricelist"].create(
             {
                 "name": "test pricelist 2",
             }
         )
+        expected_pricelists = [self.test_pricelist.id, self.test_pricelist_2.id]
 
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "pricelist",
-                "pricelist_ids": [
-                    (6, 0, [self.test_pricelist.id, self.test_pricelist_2.id])
-                ],
-                "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
-                "pms_property_ids": [self.test_property.id],
-                "start_date": date_from,
-                "end_date": date_to,
-            }
+        date_from = fields.date.today()
+        date_to = fields.date.today()
+        vals_wizard = {
+            "massive_changes_on": "pricelist",
+            "pricelist_ids": [
+                (6, 0, [self.test_pricelist.id, self.test_pricelist_2.id])
+            ],
+            "room_type_ids": [(6, 0, [self.test_room_type_double.id])],
+            "pms_property_ids": [self.test_property.id],
+            "start_date": date_from,
+            "end_date": date_to,
+        }
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+        # ASSERT
+        self.assertEqual(
+            set(expected_pricelists),
+            set(
+                self.env["product.pricelist.item"]
+                .search([("product_id", "=", self.test_room_type_double.product_id.id)])
+                .mapped("pricelist_id")
+                .ids
+            ),
+            "The wizard should create as many items as pricelists given.",
         )
-
-        pricelist_ids = [self.test_pricelist.id, self.test_pricelist_2.id]
-        for pricelist_id in wizard_result["pricelist_ids"].ids:
-            with self.subTest(k=pricelist_id):
-                self.assertIn(
-                    pricelist_id, pricelist_ids, "Pricelist has not been write "
-                )
 
     @freeze_time("2025-02-01")
     def test_several_room_types_pricelist(self):
+        # TEST CASE
+        # If several room types are set, the wizard should create as
+        # many items as room types.
+
+        # ARRANGE
         self.create_common_scenario()
         date_from = fields.date.today()
-        date_to = date_from + datetime.timedelta(days=6)
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "pricelist",
-                "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
-                "room_type_ids": [
-                    (
-                        6,
-                        0,
-                        [self.test_room_type_double.id, self.test_room_type_double.id],
-                    )
-                ],
-                "pms_property_ids": [self.test_property.id],
-                "start_date": date_from,
-                "end_date": date_to,
-            }
-        )
-
-        room_type_ids = [self.test_room_type_double.id, self.test_room_type_double.id]
-        for room_type_id in wizard_result["room_type_ids"].ids:
-            with self.subTest(k=room_type_id):
-                self.assertIn(
-                    room_type_id, room_type_ids, "Room type has not been write "
+        date_to = fields.date.today()
+        expected_product_ids = [
+            self.test_room_type_double.product_id.id,
+            self.test_room_type_single.product_id.id,
+        ]
+        vals_wizard = {
+            "massive_changes_on": "pricelist",
+            "pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+            "room_type_ids": [
+                (
+                    6,
+                    0,
+                    [self.test_room_type_double.id, self.test_room_type_single.id],
                 )
-
-    @freeze_time("2025-02-01")
-    def test_several_room_types_availability_plan(self):
-        self.create_common_scenario()
-        date_from = fields.date.today()
-        date_to = date_from + datetime.timedelta(days=6)
-        wizard_result = self.env["pms.massive.changes.wizard"].create(
-            {
-                "massive_changes_on": "availability_plan",
-                "availability_plan_ids": [(6, 0, [self.test_availability_plan.id])],
-                "room_type_ids": [
-                    (
-                        6,
-                        0,
-                        [self.test_room_type_double.id, self.test_room_type_double.id],
-                    )
-                ],
-                "pms_property_ids": [self.test_property.id],
-                "start_date": date_from,
-                "end_date": date_to,
-            }
+            ],
+            "pms_property_ids": [self.test_property.id],
+            "start_date": date_from,
+            "end_date": date_to,
+        }
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+        # ASSERT
+        self.assertEqual(
+            set(expected_product_ids),
+            set(
+                self.env["product.pricelist.item"]
+                .search([("pricelist_id", "=", self.test_pricelist.id)])
+                .mapped("product_id")
+                .ids
+            ),
+            "The wizard should create as many items as room types given.",
         )
-
-        room_type_ids = [self.test_room_type_double.id, self.test_room_type_double.id]
-        for room_type_id in wizard_result["room_type_ids"].ids:
-            with self.subTest(k=room_type_id):
-                self.assertIn(
-                    room_type_id, room_type_ids, "Room type has not been write "
-                )
 
     @freeze_time("2025-02-01")
     def test_one_board_service_room_type_no_board_service(self):
