@@ -146,13 +146,10 @@ class ProductPricelist(models.Model):
         for record in self:
             if record.item_ids:
                 for item in record.item_ids:
-                    days_diff = (
-                        item.date_end_consumption - item.date_start_consumption
-                    ).days
                     if record.pricelist_type == "daily" and (
                         item.compute_price != "fixed"
                         or len(record.pms_property_ids) != 1
-                        or days_diff > 1
+                        or item.date_end_consumption != item.date_start_consumption
                     ):
                         raise ValidationError(
                             _(
