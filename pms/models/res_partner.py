@@ -56,6 +56,29 @@ class ResPartner(models.Model):
         check_pms_properties=True,
     )
 
+    pms_checkin_partner_ids = fields.One2many(
+        string="Checkin Partners",
+        help="Associated checkin partners",
+        comodel_name="pms.checkin.partner",
+        inverse_name="partner_id",
+    )
+
+    firstname = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_firstname",
+    )
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
+    def _compute_firstname(self):
+        if hasattr(super(), "_compute_firstname"):
+            super()._compute_field()
+
+    #    for record in self:
+    #         if not record.firstname:
+    #             print(record.pms_checkin_partner_ids.mapped("firstname"))
+    #             #record.firstname =
+
     def _compute_reservations_count(self):
         # TODO: recuperar las reservas de los folios del partner
         pms_reservation_obj = self.env["pms.reservation"]

@@ -137,9 +137,9 @@ class PmsCheckinPartner(models.Model):
     )
     lastname = fields.Char(
         string="Last Name",
-        compute="_compute_lastname",
-        store=True,
         readonly=False,
+        store=True,
+        compute="_compute_lastname",
     )
     lastname2 = fields.Char(
         string="Second Last Name",
@@ -206,7 +206,10 @@ class PmsCheckinPartner(models.Model):
                                     _("Document_type e document_number not match(DT)")
                                 )
 
-    @api.depends("partner_id", "partner_id.id_numbers", "document_expedition_date")
+    @api.depends(
+        "partner_id",
+        "partner_id.id_numbers",
+    )
     def _compute_document_expedition_date(self):
         for record in self:
             if record.partner_id and record.partner_id.id_numbers:
@@ -214,14 +217,22 @@ class PmsCheckinPartner(models.Model):
                     record.document_expedition_date = record.partner_id.id_numbers[
                         0
                     ].valid_from
+                else:
+                    id_number = self.env["res.partner.id_number"].search(
+                        [
+                            ("partner_id", "=", record.partner_id.id),
+                            ("category_id", "=", record.document_type),
+                            ("name", "=", record.document_number),
+                        ]
+                    )
+                    if not id_number.valid_from:
+                        id_number.write({"valid_from": record.document_expedition_date})
 
     @api.depends("partner_id", "partner_id.firstname")
     def _compute_firstname(self):
         for record in self:
             if not record.firstname:
                 record.firstname = record.partner_id.firstname
-            elif not record.partner_id.firstname:
-                record.partner_id.write({"firstname": record.firstname})
 
     @api.depends("partner_id", "partner_id.lastname")
     def _compute_lastname(self):
@@ -247,7 +258,10 @@ class PmsCheckinPartner(models.Model):
             elif not record.partner_id.birthdate_date:
                 record.partner_id.write({"birthdate_date": record.birthdate_date})
 
-    @api.depends("partner_id", "partner_id.gender")
+    @api.depends(
+        "partner_id",
+        "partner_id.gender",
+    )
     def _compute_gender(self):
         for record in self:
             if not record.gender:
@@ -328,22 +342,31 @@ class PmsCheckinPartner(models.Model):
             elif not record.partner_id.mobile:
                 record.partner_id.write({"mobile": record.mobile})
 
-    @api.depends(
-        "document_number", "document_type", "document_expedition_date", "firstname"
-    )
+    @api.depends("partner_id")
+    def _compute_document_id(self):
+        for record in self:
+            if record.partner_id:
+                id_number_id = self.env["res.partner.id_number"].create(
+                    {
+                        "partner_id": record.partner_id.id,
+                        "name": record.document_number,
+                        "category_id": record.document_type.id,
+                        "valid_from": record.document_expedition_date,
+                    }
+                )
+                record.document_id = id_number_id
+            else:
+                record.document_id = False
+
+    @api.depends("document_number", "document_type", "firstname")
     def _compute_partner_id(self):
         for record in self:
             if not record.partner_id:
-                if (
-                    record.document_number
-                    and record.document_type
-                    and record.document_expedition_date
-                ):
+                if record.document_number and record.document_type:
                     number = self.env["res.partner.id_number"].search(
                         [
                             ("name", "=", record.document_number),
                             ("category_id", "=", record.document_type.id),
-                            ("valid_from", "=", record.document_expedition_date),
                         ]
                     )
                     partner = self.env["res.partner"].search(
@@ -361,21 +384,6 @@ class PmsCheckinPartner(models.Model):
                             }
                             partner = self.env["res.partner"].create(partner_values)
                     record.partner_id = partner
-
-    @api.depends("partner_id")
-    def _compute_document_id(self):
-        for record in self:
-            id_number_id = self.env["res.partner.id_number"].create(
-                {
-                    "partner_id": record.partner_id,
-                    "name": record.document_number,
-                    "category_id": record.document_type.id,
-                    "valid_from": record.document_expedition_date,
-                }
-            )
-            partner = self.env["res.partner"].browse(record.partner_id)
-            partner.update({"id_numbers": [(4, [id_number_id.id])]})
-            record.document_id = id_number_id
 
     @api.constrains("departure", "arrival")
     def _check_departure(self):
@@ -485,8 +493,16 @@ class PmsCheckinPartner(models.Model):
     @api.model
     def _checkin_partner_fields(self):
         # api.depends need "reservation_id.state" in the lambda function
-        checkin_fields = self._checkin_mandatory_fields()
-        checkin_fields.extend(["mobile", "email"])
+        checkin_fields = [
+            "firstname",
+            "lastname",
+            "lastname2",
+            "mobile",
+            "email",
+            "gender",
+            "nationality_id",
+            "birthdate_date",
+        ]
         return checkin_fields
 
     @api.model
