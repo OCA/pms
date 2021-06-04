@@ -870,9 +870,8 @@ class TestPmsPricelist(common.SavepointCase):
                 "compute_price": "fixed",
                 "applied_on": "0_product_variant",
                 "product_id": self.room_type.product_id.id,
-                "date_start_consumption": datetime.datetime.now(),
-                "date_end_consumption": datetime.datetime.today()
-                + datetime.timedelta(days=1),
+                "date_start_consumption": datetime.date.today(),
+                "date_end_consumption": datetime.date.today(),
             }
         )
         self.pricelist_test = self.env["product.pricelist"].create(
