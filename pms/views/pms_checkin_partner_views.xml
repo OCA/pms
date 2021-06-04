@@ -42,6 +42,7 @@
                             <field name="nationality_id" />
                             <field name="email" />
                             <field name="mobile" />
+                            <field name="document_id" invisible="1" />
                             <field name="pms_property_id" invisible="1" />
                             <field name="arrival" />
                             <field name="departure" />
