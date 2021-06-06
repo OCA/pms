@@ -626,6 +626,16 @@ msgid "Allowed Rooms"
 msgstr "Habitaciones Permitidas"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__allowed_board_service_product_ids
+msgid "Allowed board service products"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__allowed_board_service_room_type_ids
+msgid "Allowed board service room types"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__allowed_cancel
 #, fuzzy
 msgid "Allowed cancel"
@@ -660,6 +670,11 @@ msgstr "Habitaciones Permitidas"
 #, fuzzy
 msgid "Allowed rooms target"
 msgstr "Habitaciones Permitidas"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__allowed_board_services
+msgid "Allowed services"
+msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_board_service.py:0
@@ -794,6 +809,7 @@ msgstr "Líneas Analíticas"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
+#: model_terms:ir.ui.view,arch_db:pms.product_pricelist_item_view_tree
 msgid "Applicable on"
 msgstr "Aplicable en"
 
@@ -917,6 +933,11 @@ msgid "Apply changes to Quota"
 msgstr "Aplicar Cambios"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__apply_pricelists_on
+msgid "Apply pricelists on"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__state__arrival_delayed
 msgid "Arrival Delayed"
 msgstr ""
@@ -1005,12 +1026,17 @@ msgid "Availability Plan Name"
 msgstr "Nombre del Plan de Disponibilidad"
 
 #. module: pms
+#: model:ir.actions.act_window,name:pms.availability_plan_rule_view_tree_action
+msgid "Availability Plan Rules"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_product_pricelist__availability_plan_id
 msgid "Availability Plan for which the pricelist is included"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__availability_plan_id
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__availability_plan_ids
 msgid "Availability Plan to apply massive changes"
 msgstr "Plan de Disponibilidad para aplicar cambios masivos"
 
@@ -1146,6 +1172,7 @@ msgstr "Blacklisted Phone is Phone"
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__pms_board_service_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__board_service_room_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__board_service_room_id
+#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__board_service_room_type_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_report_view_tree
 msgid "Board Service"
@@ -1226,7 +1253,7 @@ msgstr "Servicio de Habitación incluído en la Habitación"
 #: model:ir.actions.act_window,name:pms.open_pms_board_service_form_tree
 #: model:ir.model,name:pms.model_pms_board_service
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__board_service_room_type_ids
-#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__board_service_room_type_ids
+#: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__apply_pricelists_on__board_services
 #: model:ir.ui.menu,name:pms.menu_open_pms_board_service_form_tree
 #: model_terms:ir.ui.view,arch_db:pms.pms_board_service_view_tree
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_type_view_form
@@ -1245,6 +1272,11 @@ msgstr "Pms Board Service Room Type"
 msgid ""
 "Board Services Room Type corresponding to this Board Service,One board "
 "service for several room types"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__board_service
+msgid "Board service"
 msgstr ""
 
 #. module: pms
@@ -1864,6 +1896,11 @@ msgid "Consumed"
 msgstr "Consumido"
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__date_types__consumption_dates
+msgid "Consumption Dates"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_res_partner
 #: model:ir.model.fields,field_description:pms.field_pms_property__child_ids
 #: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
@@ -2168,6 +2205,14 @@ msgid "Daily Plan"
 msgstr "Plan Diario"
 
 #. module: pms
+#: code:addons/pms/models/product_pricelist.py:0
+#, python-format
+msgid ""
+"Daily Plan must have fixed price, only one property and its items must be "
+"daily"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__daily_limit
 #: model:ir.model.fields,field_description:pms.field_product_product__daily_limit
 #: model:ir.model.fields,field_description:pms.field_product_template__daily_limit
@@ -2235,6 +2280,11 @@ msgstr "Fecha en la cual se confirma el folio."
 #: model:ir.model.fields,help:pms.field_pms_folio__confirmation_date
 msgid "Date on which the folio is confirmed."
 msgstr "Fecha en la cual se confirma el folio."
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__date_types
+msgid "Date types"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
@@ -4716,6 +4766,11 @@ msgid "Name of who made the reservation"
 msgstr "Ningún checkin fue realizado en esta reserva"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__nationality_id
+msgid "Nationality"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_checkin_partner.py:0
 #: code:addons/pms/models/pms_folio.py:0
 #: code:addons/pms/models/pms_reservation.py:0
@@ -5014,12 +5069,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "On Board"
 msgstr "On Board"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_product_pricelist_item__on_board_service
-#, fuzzy
-msgid "On Board Service"
-msgstr "Servicio de Habitación"
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_folio_search
@@ -5716,7 +5765,7 @@ msgid "Pricelist that use this rule"
 msgstr "Tarifas que usan esta regla"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__pricelist_id
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__pricelist_ids
 msgid "Pricelist to apply massive changes"
 msgstr "Tarifas a aplicar en los cambios masivos"
 
@@ -5731,6 +5780,11 @@ msgstr ""
 #: model:ir.ui.menu,name:pms.pricelist_menu
 msgid "Pricelists"
 msgstr "Tarifas"
+
+#. module: pms
+#: model:ir.actions.act_window,name:pms.product_pricelist_item_action2
+msgid "Pricelists Items"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_sale_channel__product_pricelist_ids
@@ -6585,7 +6639,7 @@ msgstr "Tipo de Habitación"
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__room_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__pms_room_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio_availability_wizard__room_type_id
-#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__room_type_id
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__room_type_ids
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__room_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__room_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_shared_room__room_type_id
@@ -6633,6 +6687,7 @@ msgid "Room Type:"
 msgstr "Tipo de Habitación:"
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__apply_pricelists_on__room_types
 #: model:ir.ui.menu,name:pms.menu_open_pms_room_type_form_tree
 msgid "Room Types"
 msgstr "Tipos de Habitación"
@@ -6710,6 +6765,11 @@ msgstr "Motor de Reservas"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_shared_room__room_type_id
 msgid "Room type which the shared room belongs"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__board_service_room_type_ids
+msgid "Room type's board services"
 msgstr ""
 
 #. module: pms
@@ -6821,6 +6881,23 @@ msgstr "El Canal de Venta debe ser Indicado"
 #, fuzzy
 msgid "Sale Channels"
 msgstr "Canal de Venta"
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
+#: model_terms:ir.ui.view,arch_db:pms.product_pricelist_item_view_tree
+msgid "Sale Date End"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
+#: model_terms:ir.ui.view,arch_db:pms.product_pricelist_item_view_tree
+msgid "Sale Date Start"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__date_types__sale_dates
+msgid "Sale Dates"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room__description_sale
@@ -7053,7 +7130,9 @@ msgstr "Secuencias"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__service_ids
+#: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__service
 #: model:ir.model.fields,field_description:pms.field_pms_service__product_id
+#: model:ir.model.fields.selection,name:pms.selection__pms_massive_changes_wizard__apply_pricelists_on__service
 #: model_terms:ir.ui.view,arch_db:pms.product_template_view_form
 msgid "Service"
 msgstr "Servicio"
@@ -7334,7 +7413,7 @@ msgid "Some properties do not belong to the allowed companies"
 msgstr "Algunas propiedades no pertenecen a las compañías permitidas"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_product_pricelist_item__board_service_room_type_ids
+#: model:ir.model.fields,help:pms.field_product_pricelist_item__board_service_room_type_id
 #, fuzzy
 msgid "Specify a Board services on Room Types."
 msgstr "Pms Board Service Room Type"
@@ -8258,12 +8337,6 @@ msgid "This will update all unit prices based on the currently set pricelist."
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_product_pricelist_item__on_board_service
-#, fuzzy
-msgid "Those included in Board Services"
-msgstr "Es Servicio de Habitación"
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 #: model_terms:ir.ui.view,arch_db:pms.wizard_folio_changes_view_form
 msgid "Thursday"
@@ -8948,6 +9021,14 @@ msgstr ""
 msgid ""
 "you cannot have more than one room with the same name in the same property"
 msgstr ""
+
+#, fuzzy
+#~ msgid "On Board Service"
+#~ msgstr "Servicio de Habitación"
+
+#, fuzzy
+#~ msgid "Those included in Board Services"
+#~ msgstr "Es Servicio de Habitación"
 
 #~ msgid ""
 #~ "&amp;nbsp;<span>\n"
