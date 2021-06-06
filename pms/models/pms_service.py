@@ -143,7 +143,7 @@ class PmsService(models.Model):
         compute="_compute_invoice_status",
         selection=[
             ("invoiced", "Fully Invoiced"),
-            ("to invoice", "To Invoice"),
+            ("to_invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
         ],
     )

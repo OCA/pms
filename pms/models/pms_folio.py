@@ -397,7 +397,7 @@ class PmsFolio(models.Model):
         store=True,
         selection=[
             ("invoiced", "Fully Invoiced"),
-            ("to invoice", "To Invoice"),
+            ("to_invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
         ],
         compute="_compute_get_invoice_status",
@@ -692,7 +692,7 @@ class PmsFolio(models.Model):
         - no: if the Folio is in status 'draft', we consider that there is nothing to
           invoice. This is also the default value if the conditions of no
           other status is met.
-        - to invoice: if any SO line is 'to invoice', the whole SO is 'to invoice'
+        - to_invoice: if any SO line is 'to_invoice', the whole SO is 'to_invoice'
         - invoiced: if all SO lines are invoiced, the SO is invoiced.
         """
         unconfirmed_orders = self.filtered(lambda so: so.state in ["draft"])
@@ -720,9 +720,9 @@ class PmsFolio(models.Model):
             if order.state in ("draft"):
                 order.invoice_status = "no"
             elif any(
-                invoice_status == "to invoice" for invoice_status in line_invoice_status
+                invoice_status == "to_invoice" for invoice_status in line_invoice_status
             ):
-                order.invoice_status = "to invoice"
+                order.invoice_status = "to_invoice"
             elif line_invoice_status and all(
                 invoice_status == "invoiced" for invoice_status in line_invoice_status
             ):
