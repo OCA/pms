@@ -30,7 +30,7 @@
                         string="Create Invoice"
                         type="action"
                         class="btn-primary"
-                        attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"
+                        attrs="{'invisible': [('invoice_status', '!=', 'to_invoice')]}"
                     />
                     <field
                         name="state"
@@ -321,8 +321,8 @@
                                     />
                                     <field
                                         name="product_uom_qty"
-                                        decoration-info="(not display_type and invoice_status == 'to invoice')"
-                                        decoration-bf="(not display_type and invoice_status == 'to invoice')"
+                                        decoration-info="(not display_type and invoice_status == '')"
+                                        decoration-bf="(not display_type and invoice_status == '')"
                                         context="{
                                             'partner_id': parent.partner_id,
                                             'quantity': product_uom_qty,
@@ -333,8 +333,8 @@
                                     />
                                     <field
                                         name="qty_invoiced"
-                                        decoration-info="(not display_type and invoice_status == 'to invoice')"
-                                        decoration-bf="(not display_type and invoice_status == 'to invoice')"
+                                        decoration-info="(not display_type and invoice_status == '')"
+                                        decoration-bf="(not display_type and invoice_status == '')"
                                         string="Invoiced"
                                         attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"
                                         optional="show"
@@ -506,7 +506,7 @@
                     name="invoice_status"
                     widget="badge"
                     decoration-success="invoice_status == 'invoiced'"
-                    decoration-info="invoice_status == 'to invoice'"
+                    decoration-info="invoice_status == ''"
                     optional="show"
                 />
                 <field
@@ -579,7 +579,7 @@
                 <filter
                     name="to_invoice"
                     string="To invoice"
-                    domain="[('invoice_status', '=', 'to invoice')]"
+                    domain="[('invoice_status', '=', '')]"
                 />
                 <filter
                     name="payment_pending"

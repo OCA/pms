@@ -81,12 +81,11 @@ class FolioSaleLine(models.Model):
         string="Invoice Status",
         help="Invoice Status; it can be: upselling, invoiced, to invoice, no",
         readonly=True,
-        default="no",
         store=True,
         selection=[
             ("upselling", "Upselling Opportunity"),
             ("invoiced", "Fully Invoiced"),
-            ("to invoice", "To Invoice"),
+            ("to_invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
         ],
         compute="_compute_invoice_status",
@@ -512,7 +511,7 @@ class FolioSaleLine(models.Model):
             # why status to_invoice?? this behavior is copied from sale order
             # https://github.com/OCA/OCB/blob/14.0/addons/sale/models/sale.py#L1160
             elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                line.invoice_status = "to invoice"
+                line.invoice_status = "to_invoice"
             elif (
                 float_compare(
                     line.qty_invoiced,
