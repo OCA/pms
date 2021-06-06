@@ -493,17 +493,16 @@ class PmsReservation(models.Model):
     invoice_status = fields.Selection(
         string="Invoice Status",
         help="The status of the invoices in folio. Can be 'invoiced',"
-        " 'to invoice' or 'no'.",
-        compute="_compute_invoice_status",
+        " 'to_invoice' or 'no'.",
         store=True,
         readonly=True,
         selection=[
             ("upselling", "Upselling Opportunity"),
             ("invoiced", "Fully Invoiced"),
-            ("to invoice", "To Invoice"),
+            ("to_invoice", "To Invoice"),
             ("no", "Nothing to Invoice"),
         ],
-        default="no",
+        compute="_compute_invoice_status",
     )
     analytic_tag_ids = fields.Many2many(
         string="Analytic Tags",
