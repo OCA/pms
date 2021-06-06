@@ -13,7 +13,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
     partner_invoice_id = fields.Many2one(
         string="Billing contact",
         help="Invoice address for current partner",
-        default=lambda self: self._default_partner_invoice_id,
+        default=lambda self: self._default_partner_invoice_id(),
         comodel_name="res.partner",
     )
     advance_payment_method = fields.Selection(
@@ -41,17 +41,17 @@ class FolioAdvancePaymentInv(models.TransientModel):
         string="Has down payments",
         help="Has down payments",
         readonly=True,
-        default=lambda self: self._default_has_down_payment,
+        default=lambda self: self._default_has_down_payment(),
     )
     product_id = fields.Many2one(
         string="Down Payment Product",
-        default=lambda self: self._default_product_id,
+        default=lambda self: self._default_product_id(),
         comodel_name="product.product",
         domain=[("type", "=", "service")],
     )
     count = fields.Integer(
         string="Order Count",
-        default=lambda self: self._count,
+        default=lambda self: self._count(),
     )
     amount = fields.Float(
         string="Down Payment Amount",
@@ -62,7 +62,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
         string="Currency",
         help="Currency used in invoices",
         comodel_name="res.currency",
-        default=lambda self: self._default_currency_id,
+        default=lambda self: self._default_currency_id(),
     )
     fixed_amount = fields.Monetary(
         string="Down Payment Amount (Fixed)",
@@ -71,14 +71,14 @@ class FolioAdvancePaymentInv(models.TransientModel):
     deposit_account_id = fields.Many2one(
         string="Income Account",
         help="Account used for deposits",
-        default=lambda self: self._default_deposit_account_id,
+        default=lambda self: self._default_deposit_account_id(),
         comodel_name="account.account",
         domain=[("deprecated", "=", False)],
     )
     deposit_taxes_id = fields.Many2many(
         string="Customer Taxes",
         help="Taxes used for deposits",
-        default=lambda self: self._default_deposit_taxes_id,
+        default=lambda self: self._default_deposit_taxes_id(),
         comodel_name="account.tax",
     )
 
