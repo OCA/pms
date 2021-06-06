@@ -42,6 +42,7 @@
         <field name="model">pms.availability.plan.rule</field>
         <field name="arch" type="xml">
             <tree string="Availability rules">
+                <field name="availability_plan_id" />
                 <field name="date" />
                 <field name="room_type_id" />
                 <field name="quota" />
@@ -56,5 +57,13 @@
                 <field name="pms_property_id" />
             </tree>
         </field>
+    </record>
+    <record id="availability_plan_rule_view_tree_action" model="ir.actions.act_window">
+        <field name="name">Availability Plan Rules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.availability.plan.rule</field>
+        <field name="context">{'group_by':'availability_plan_id'}</field>
+        <field name="view_id" ref="availability_plan_rule_view_tree" />
+        <field name="view_mode">tree</field>
     </record>
 </odoo>

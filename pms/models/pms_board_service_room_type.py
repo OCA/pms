@@ -109,6 +109,15 @@ class PmsBoardServiceRoomType(models.Model):
                 total += service.amount
             record.update({"amount": total})
 
+    def name_get(self):
+        res = []
+        for record in self:
+            name = "{} - {}".format(
+                record.pms_board_service_id.name, record.pms_room_type_id.name
+            )
+            res.append((record.id, name))
+        return res
+
     @api.constrains("by_default")
     def constrains_duplicated_board_defaul(self):
         for record in self:
