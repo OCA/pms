@@ -25,6 +25,14 @@
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
+                    <div
+                        class="alert alert-danger"
+                        role="danger"
+                        style="margin-bottom:0px;"
+                        attrs="{'invisible': [('incongruences','=',False)]}"
+                    >
+                        <field name="incongruences" />
+                    </div>
                     <group name="group_top">
                         <group name="group_left">
                             <field
@@ -165,7 +173,7 @@
                 />
                 <field name="identifier" />
                 <field name="partner_id" domain="[('is_company','=', False)]" />
-                 <field name="reservation_id" />
+                <field name="reservation_id" />
                 <field name="pms_property_id" invisible="1" />
                 <field name="firstname" />
                 <field name="lastname" />
