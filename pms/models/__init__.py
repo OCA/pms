@@ -46,3 +46,4 @@ from . import account_bank_statement_line
 from . import account_bank_statement
 from . import account_journal
 from . import pms_availability
+from . import res_partner_id_number

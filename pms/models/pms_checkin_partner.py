@@ -25,11 +25,11 @@ class PmsCheckinPartner(models.Model):
     partner_id = fields.Many2one(
         string="Partner",
         help="Partner associated with checkin partner",
+        readonly=False,
+        store=True,
         comodel_name="res.partner",
         domain="[('is_company', '=', False)]",
         compute="_compute_partner_id",
-        store=True,
-        readonly=False,
     )
     reservation_id = fields.Many2one(
         string="Reservation",
@@ -67,9 +67,9 @@ class PmsCheckinPartner(models.Model):
     mobile = fields.Char(
         string="Mobile",
         help="Checkin Partner Mobile",
-        compute="_compute_mobile",
-        store=True,
         readonly=False,
+        store=True,
+        compute="_compute_mobile",
     )
     image_128 = fields.Image(
         string="Image",
@@ -79,8 +79,8 @@ class PmsCheckinPartner(models.Model):
     segmentation_ids = fields.Many2many(
         string="Segmentation",
         help="Segmentation tags to classify checkin partners",
-        related="reservation_id.segmentation_ids",
         readonly=True,
+        related="reservation_id.segmentation_ids",
     )
     checkin = fields.Date(
         string="Checkin",
@@ -116,68 +116,77 @@ class PmsCheckinPartner(models.Model):
     )
 
     gender = fields.Selection(
-        [("male", "Male"), ("female", "Female"), ("other", "Other")],
         string="Gender",
-        compute="_compute_gender",
-        store=True,
+        help="host gender",
         readonly=False,
+        store=True,
+        compute="_compute_gender",
+        selection=[("male", "Male"), ("female", "Female"), ("other", "Other")],
     )
     nationality_id = fields.Many2one(
         string="Nationality ID",
+        help="host nationality",
+        readonly=False,
+        store=True,
         compute="_compute_nationality",
         comodel_name="res.country",
-        store=True,
-        readonly=False,
     )
     firstname = fields.Char(
         string="First Name",
-        compute="_compute_firstname",
-        store=True,
+        help="host firstname",
         readonly=False,
+        store=True,
+        compute="_compute_firstname",
     )
     lastname = fields.Char(
         string="Last Name",
+        help="host lastname",
         readonly=False,
         store=True,
         compute="_compute_lastname",
     )
     lastname2 = fields.Char(
         string="Second Last Name",
-        compute="_compute_lastname2",
-        store=True,
+        help="host second lastname",
         readonly=False,
+        store=True,
+        compute="_compute_lastname2",
     )
     birthdate_date = fields.Date(
         string="Birthdate",
-        compute="_compute_birth_date",
-        store=True,
+        help="host birthdate",
         readonly=False,
+        store=True,
+        compute="_compute_birth_date",
     )
     document_number = fields.Char(
         string="Document Number",
-        compute="_compute_document_number",
-        store=True,
+        help="Host document number",
         readonly=False,
+        store=True,
+        compute="_compute_document_number",
     )
     document_type = fields.Many2one(
         string="Document Type",
-        comodel_name="res.partner.id_category",
         help="Select a valid document type",
-        compute="_compute_document_type",
-        store=True,
         readonly=False,
+        store=True,
+        comodel_name="res.partner.id_category",
+        compute="_compute_document_type",
     )
     document_expedition_date = fields.Date(
         string="Expedition Date",
         help="Date on which document_type was issued",
-        compute="_compute_document_expedition_date",
-        store=True,
         readonly=False,
+        store=True,
+        compute="_compute_document_expedition_date",
     )
 
     document_id = fields.Many2one(
         string="Document",
-        help="Select a valid document type",
+        help="Technical field",
+        readonly=False,
+        store=True,
         comodel_name="res.partner.id_number",
         compute="_compute_document_id",
     )
@@ -198,13 +207,6 @@ class PmsCheckinPartner(models.Model):
                         record.document_type = record.partner_id.id_numbers[
                             0
                         ].category_id
-                else:
-                    for number in record.partner_id.id_numbers:
-                        if record.document_number == number.name:
-                            if record.document_type != number.category_id:
-                                raise ValidationError(
-                                    _("Document_type e document_number not match(DT)")
-                                )
 
     @api.depends(
         "partner_id",
@@ -217,16 +219,6 @@ class PmsCheckinPartner(models.Model):
                     record.document_expedition_date = record.partner_id.id_numbers[
                         0
                     ].valid_from
-                else:
-                    id_number = self.env["res.partner.id_number"].search(
-                        [
-                            ("partner_id", "=", record.partner_id.id),
-                            ("category_id", "=", record.document_type),
-                            ("name", "=", record.document_number),
-                        ]
-                    )
-                    if not id_number.valid_from:
-                        id_number.write({"valid_from": record.document_expedition_date})
 
     @api.depends("partner_id", "partner_id.firstname")
     def _compute_firstname(self):
@@ -239,24 +231,18 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.lastname:
                 record.lastname = record.partner_id.lastname
-            elif not record.partner_id.lastname:
-                record.partner_id.write({"lastname": record.lastname})
 
     @api.depends("partner_id", "partner_id.lastname2")
     def _compute_lastname2(self):
         for record in self:
             if not record.lastname2:
                 record.lastname2 = record.partner_id.lastname2
-            elif not record.partner_id.lastname2:
-                record.partner_id.write({"lastname2": record.lastname2})
 
     @api.depends("partner_id", "partner_id.birthdate_date")
     def _compute_birth_date(self):
         for record in self:
             if not record.birthdate_date:
                 record.birthdate_date = record.partner_id.birthdate_date
-            elif not record.partner_id.birthdate_date:
-                record.partner_id.write({"birthdate_date": record.birthdate_date})
 
     @api.depends(
         "partner_id",
@@ -264,18 +250,14 @@ class PmsCheckinPartner(models.Model):
     )
     def _compute_gender(self):
         for record in self:
-            if not record.gender:
+            if not record.gender and record.partner_id.gender:
                 record.gender = record.partner_id.gender
-            elif not record.partner_id.gender:
-                record.partner_id.write({"gender": record.gender})
 
     @api.depends("partner_id", "partner_id.lastname")
     def _compute_nationality(self):
         for record in self:
             if not record.nationality_id:
                 record.nationality_id = record.partner_id.nationality_id
-            elif not record.partner_id.nationality_id:
-                record.partner_id.write({"nationality_id": record.nationality_id})
 
     @api.depends("reservation_id", "folio_id", "reservation_id.preferred_room_id")
     def _compute_identifier(self):
@@ -331,30 +313,31 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.email:
                 record.email = record.partner_id.email
-            elif not record.partner_id.email:
-                record.partner_id.write({"email": record.email})
 
     @api.depends("partner_id", "partner_id.mobile")
     def _compute_mobile(self):
         for record in self:
             if not record.mobile:
                 record.mobile = record.partner_id.mobile
-            elif not record.partner_id.mobile:
-                record.partner_id.write({"mobile": record.mobile})
 
     @api.depends("partner_id")
     def _compute_document_id(self):
         for record in self:
             if record.partner_id:
-                id_number_id = self.env["res.partner.id_number"].create(
-                    {
-                        "partner_id": record.partner_id.id,
-                        "name": record.document_number,
-                        "category_id": record.document_type.id,
-                        "valid_from": record.document_expedition_date,
-                    }
-                )
-                record.document_id = id_number_id
+                if (
+                    not record.document_id
+                    and record.document_number
+                    and record.document_type
+                ):
+                    id_number_id = self.env["res.partner.id_number"].create(
+                        {
+                            "partner_id": record.partner_id.id,
+                            "name": record.document_number,
+                            "category_id": record.document_type.id,
+                            "valid_from": record.document_expedition_date,
+                        }
+                    )
+                    record.document_id = id_number_id
             else:
                 record.document_id = False
 
