@@ -191,6 +191,12 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_document_id",
     )
 
+    incongruences = fields.Char(
+        string="Incongruences",
+        help="Technical field",
+        compute="_compute_incongruences",
+    )
+
     @api.depends("partner_id", "partner_id.id_numbers")
     def _compute_document_number(self):
         for record in self:
@@ -367,6 +373,35 @@ class PmsCheckinPartner(models.Model):
                             }
                             partner = self.env["res.partner"].create(partner_values)
                     record.partner_id = partner
+
+    @api.depends(
+        "firstname",
+        "lastname",
+        "lastname2",
+        "gender",
+        "birthdate_date",
+        "nationality_id",
+        "email",
+        "mobile",
+    )
+    def _compute_incongruences(self):
+        for record in self:
+            incongruous_fields = ""
+            if record.partner_id:
+                for field in record._checkin_partner_fields():
+                    if (
+                        record.partner_id[field]
+                        and record.partner_id[field] != record[field]
+                    ):
+                        incongruous_fields += record._fields[field].string + ", "
+                if incongruous_fields:
+                    record.incongruences = (
+                        incongruous_fields + "field/s don't correspond to saved host"
+                    )
+                else:
+                    record.incongruences = False
+            else:
+                record.incongruences = False
 
     @api.constrains("departure", "arrival")
     def _check_departure(self):
