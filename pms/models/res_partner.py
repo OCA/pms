@@ -125,7 +125,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             birthdate = record.pms_checkin_partner_ids.mapped("birthdate_date")
-            if not record.birthdate_date and birthdate:
+            if birthdate:
                 record.birthdate_date = birthdate[0]
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.nationality_id")
