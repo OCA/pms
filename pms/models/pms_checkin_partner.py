@@ -204,7 +204,7 @@ class PmsCheckinPartner(models.Model):
                 if record.partner_id.id_numbers:
                     record.document_number = record.partner_id.id_numbers[0].name
 
-    @api.depends("partner_id", "partner_id.id_numbers", "document_type")
+    @api.depends("partner_id", "partner_id.id_numbers")
     def _compute_document_type(self):
         for record in self:
             if record.partner_id and record.partner_id.id_numbers:
@@ -229,25 +229,25 @@ class PmsCheckinPartner(models.Model):
     @api.depends("partner_id", "partner_id.firstname")
     def _compute_firstname(self):
         for record in self:
-            if not record.firstname:
+            if not record.firstname or record.partner_id.firstname:
                 record.firstname = record.partner_id.firstname
 
     @api.depends("partner_id", "partner_id.lastname")
     def _compute_lastname(self):
         for record in self:
-            if not record.lastname:
+            if not record.lastname or record.partner_id.lastname:
                 record.lastname = record.partner_id.lastname
 
     @api.depends("partner_id", "partner_id.lastname2")
     def _compute_lastname2(self):
         for record in self:
-            if not record.lastname2:
+            if not record.lastname2 or record.partner_id.lastname2:
                 record.lastname2 = record.partner_id.lastname2
 
     @api.depends("partner_id", "partner_id.birthdate_date")
     def _compute_birth_date(self):
         for record in self:
-            if not record.birthdate_date:
+            if not record.birthdate_date or record.partner_id.birthdate_date:
                 record.birthdate_date = record.partner_id.birthdate_date
 
     @api.depends(
@@ -256,13 +256,13 @@ class PmsCheckinPartner(models.Model):
     )
     def _compute_gender(self):
         for record in self:
-            if not record.gender and record.partner_id.gender:
+            if not record.gender or record.partner_id.gender:
                 record.gender = record.partner_id.gender
 
     @api.depends("partner_id", "partner_id.lastname")
     def _compute_nationality(self):
         for record in self:
-            if not record.nationality_id:
+            if not record.nationality_id or record.partner_id.nationality_id:
                 record.nationality_id = record.partner_id.nationality_id
 
     @api.depends("reservation_id", "folio_id", "reservation_id.preferred_room_id")
@@ -311,19 +311,19 @@ class PmsCheckinPartner(models.Model):
     )
     def _compute_name(self):
         for record in self:
-            if not record.name:
+            if not record.name or record.partner_id.name:
                 record.name = record.partner_id.name
 
     @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
         for record in self:
-            if not record.email:
+            if not record.email or record.partner_id.email:
                 record.email = record.partner_id.email
 
     @api.depends("partner_id", "partner_id.mobile")
     def _compute_mobile(self):
         for record in self:
-            if not record.mobile:
+            if not record.mobile or record.partner_id.mobile:
                 record.mobile = record.partner_id.mobile
 
     @api.depends("partner_id")
@@ -335,14 +335,23 @@ class PmsCheckinPartner(models.Model):
                     and record.document_number
                     and record.document_type
                 ):
-                    id_number_id = self.env["res.partner.id_number"].create(
-                        {
-                            "partner_id": record.partner_id.id,
-                            "name": record.document_number,
-                            "category_id": record.document_type.id,
-                            "valid_from": record.document_expedition_date,
-                        }
+                    id_number_id = self.env["res.partner.id_number"].search(
+                        [
+                            ("partner_id", "=", record.partner_id.id),
+                            ("name", "=", record.document_number),
+                            ("category_id", "=", record.document_type.id),
+                        ]
                     )
+                    if not id_number_id:
+                        id_number_id = self.env["res.partner.id_number"].create(
+                            {
+                                "partner_id": record.partner_id.id,
+                                "name": record.document_number,
+                                "category_id": record.document_type.id,
+                                "valid_from": record.document_expedition_date,
+                            }
+                        )
+
                     record.document_id = id_number_id
             else:
                 record.document_id = False
