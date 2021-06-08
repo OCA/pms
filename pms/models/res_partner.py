@@ -116,7 +116,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             gender = record.pms_checkin_partner_ids.mapped("gender")
-            if not record.gender and gender:
+            if gender:
                 record.gender = gender[0]
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.birthdate_date")
@@ -134,7 +134,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             nationality = record.pms_checkin_partner_ids.nationality_id
-            if not record.nationality_id and nationality:
+            if nationality:
                 record.nationality_id = nationality[0]
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.email")
@@ -143,7 +143,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             email = record.pms_checkin_partner_ids.mapped("email")
-            if not record.email and email:
+            if email:
                 record.email = email[0]
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.mobile")
@@ -152,7 +152,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             mobile = record.pms_checkin_partner_ids.mapped("mobile")
-            if not record.mobile and mobile:
+            if mobile:
                 record.mobile = mobile[0]
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
@@ -161,7 +161,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             firstname = record.pms_checkin_partner_ids.mapped("firstname")
-            if not record.firstname and firstname:
+            if firstname:
                 record.firstname = firstname[0]
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname")
@@ -170,7 +170,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             lastname = record.pms_checkin_partner_ids.mapped("lastname")
-            if not record.lastname and lastname:
+            if lastname:
                 record.lastname = lastname[0]
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname2")
@@ -179,7 +179,7 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             lastname2 = record.pms_checkin_partner_ids.mapped("lastname2")
-            if not record.lastname2 and lastname2:
+            if lastname2:
                 record.lastname2 = lastname2[0]
 
     def _compute_reservations_count(self):
