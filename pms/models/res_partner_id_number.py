@@ -7,7 +7,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ResPartnerIdNumber(models.Model):
@@ -30,5 +31,16 @@ class ResPartnerIdNumber(models.Model):
                 "document_expedition_date"
             )
             if expedition_date:
-                if not record.valid_from and expedition_date[0]:
-                    record.valid_from = expedition_date[0]
+                record.valid_from = expedition_date[0]
+
+    @api.constrains("partner_id", "category_id")
+    def _check_category_id_unique(self):
+        for record in self:
+            id_number = self.env["res.partner.id_number"].search(
+                [
+                    ("partner_id", "=", record.partner_id.id),
+                    ("category_id", "=", record.category_id.id),
+                ]
+            )
+            if id_number:
+                raise ValidationError(_("Partner already has this document type"))
