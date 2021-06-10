@@ -4,7 +4,7 @@ from .common import TestPms
 
 
 class TestPmsBoardService(TestPms):
-    def test_pms_board_service_line_product_property_integrity(self):
+    def test_pms_bsl_product_property_integrity(self):
         """
         Creation of a board service line without property, of a product
         only available for a specific property.
@@ -30,7 +30,7 @@ class TestPmsBoardService(TestPms):
                 }
             )
 
-    def test_pms_board_service_line_board_service_integrity(self):
+    def test_pms_bsl_board_service_property_integrity(self):
         """
         Creation of a board service line without property, of board service
         only available for a specific property.
@@ -65,7 +65,7 @@ class TestPmsBoardService(TestPms):
                 }
             )
 
-    def test_pms_board_service_line_board_service_line_integrity(self):
+    def test_pms_bsl_board_service_line_prop_integrity(self):
         """
         Creation of a board service line with a specific property,
         of board service without property.
