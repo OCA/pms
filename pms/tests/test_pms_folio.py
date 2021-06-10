@@ -10,7 +10,8 @@ freeze_time("2000-02-02")
 
 
 class TestPmsFolio(common.SavepointCase):
-    def create_common_scenario(self):
+    def setUp(self):
+        super().setUp()
         # create a room type availability
         self.room_type_availability = self.env["pms.availability.plan"].create(
             {"name": "Availability plan for TEST"}
@@ -88,7 +89,6 @@ class TestPmsFolio(common.SavepointCase):
         )
 
     def create_multiproperty_scenario(self):
-        self.create_common_scenario()
         self.property1 = self.env["pms.property"].create(
             {
                 "name": "Property_1",
@@ -124,7 +124,6 @@ class TestPmsFolio(common.SavepointCase):
 
     def test_commission_and_partner_correct(self):
         # ARRANGE
-        self.create_common_scenario()
         PmsFolio = self.env["pms.folio"]
         PmsReservation = self.env["pms.reservation"]
         PmsPartner = self.env["res.partner"]
@@ -175,7 +174,6 @@ class TestPmsFolio(common.SavepointCase):
             )
 
     def test_compute_folio_priority(self):
-        self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
@@ -209,7 +207,6 @@ class TestPmsFolio(common.SavepointCase):
         # Folio is paid after execute
         #
         # ARRANGE
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -241,7 +238,6 @@ class TestPmsFolio(common.SavepointCase):
         #
         # ARRANGE
         left_to_pay = 1
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -288,7 +284,6 @@ class TestPmsFolio(common.SavepointCase):
             )
 
     def _test_compute_currency(self):
-        self.create_common_scenario()
         self.currency1 = self.env["res.currency"].create(
             {
                 "name": "currency1",
