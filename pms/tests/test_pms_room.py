@@ -27,7 +27,12 @@ class TestPmsRoom(TestPms):
             }
         )
 
-    def test_check_property_ubication(self):
+    def test_inconsistency_room_ubication_property(self):
+        """
+        Room property and its ubication properties are inconsistent.
+        A Room with property that is not included in available properties
+        for its ubication cannot be created.
+        """
         # ARRANGE
         ubication1 = self.env["pms.ubication"].create(
             {
@@ -37,8 +42,12 @@ class TestPmsRoom(TestPms):
                 ],
             }
         )
-        # ACT & ARRANGE
-        with self.assertRaises(UserError, msg="Room has been created and it should't"):
+        # ACT & ASSERT
+        with self.assertRaises(
+            UserError,
+            msg="The room should not be created if its property is not included "
+            "in the available properties for its ubication.",
+        ):
             self.env["pms.room"].create(
                 {
                     "name": "Room 101",
@@ -48,7 +57,44 @@ class TestPmsRoom(TestPms):
                 }
             )
 
-    def test_check_property_room_type(self):
+    def test_consistency_room_ubication_property(self):
+        """
+        Room property and its ubication properties are consistent.
+        A Room with property included in available properties
+        for its ubication can be created.
+        """
+        # ARRANGE
+        ubication1 = self.env["pms.ubication"].create(
+            {
+                "name": "UbicationTest",
+                "pms_property_ids": [
+                    (4, self.pms_property1.id),
+                ],
+            }
+        )
+        # ACT
+        new_room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+                "ubication_id": ubication1.id,
+            }
+        )
+        # ASSERT
+        self.assertIn(
+            new_room1.pms_property_id,
+            ubication1.pms_property_ids,
+            "The room should be created if its property belongs to the availabe"
+            "properties for its ubication.",
+        )
+
+    def test_inconsistency_room_type_property(self):
+        """
+        Room property and its room type properties are inconsistent.
+        A Room with property that is not included in available properties
+        for its room type cannot be created.
+        """
         # ARRANGE
         self.pms_property3 = self.env["pms.property"].create(
             {
@@ -58,7 +104,11 @@ class TestPmsRoom(TestPms):
             }
         )
         # ACT & ARRANGE
-        with self.assertRaises(UserError, msg="Room has been created and it should't"):
+        with self.assertRaises(
+            UserError,
+            msg="The room should not be created if its property is not included "
+            "in the available properties for its room type.",
+        ):
             self.env["pms.room"].create(
                 {
                     "name": "Room 101",
@@ -67,9 +117,32 @@ class TestPmsRoom(TestPms):
                 }
             )
 
-    @mute_logger("odoo.sql_db")
-    def test_name_property_unique_01(self):
+    def test_consistency_room_type_property(self):
         """
+        Room property and its room type properties are inconsistent.
+        A Room with property included in available properties
+        for its room type can be created.
+        """
+        # ARRANGE & ACT
+        room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+            }
+        )
+        # ASSERT
+        self.assertIn(
+            room1.pms_property_id,
+            self.room_type1.pms_property_ids,
+            "The room should be created if its property is included "
+            "in the available properties for its room type.",
+        )
+
+    @mute_logger("odoo.sql_db")
+    def test_room_name_uniqueness_by_property(self):
+        """
+        Check that there are no two rooms with the same name in the same property
         PRE:    - room1 'Room 101' exists
                 - room1 has pms_property1
         ACT:    - create a new room2
@@ -89,7 +162,9 @@ class TestPmsRoom(TestPms):
         )
         # ACT & ASSERT
         with self.assertRaises(
-            IntegrityError, msg="Room has been created and it shouldn't"
+            IntegrityError,
+            msg="The room should not be created if its name is equal "
+            "to another room that belongs to the same property.",
         ):
             self.env["pms.room"].create(
                 {
@@ -99,8 +174,9 @@ class TestPmsRoom(TestPms):
                 }
             )
 
-    def test_name_property_unique_02(self):
+    def test_room_name_duplicated_different_property(self):
         """
+        Check that two rooms with the same name can exist in multiple properties
         PRE:    - room1 'Room 101' exists
                 - room1 has pms_property1
         ACT:    - create a new room2
@@ -126,4 +202,7 @@ class TestPmsRoom(TestPms):
                 }
             )
         except IntegrityError:
-            self.fail("Duplicated Room found but it shouldn't")
+            self.fail(
+                "The room should be created even if its name is equal "
+                "to another room, but that room not belongs to the same property."
+            )

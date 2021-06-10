@@ -113,6 +113,10 @@ class ResPartner(models.Model):
         for record in self:
             if record.is_agency and not record.sale_channel_id:
                 raise models.ValidationError(_("Sale Channel must be entered"))
+            if record.is_agency and record.sale_channel_id.channel_type != "indirect":
+                raise models.ValidationError(
+                    _("Sale Channel for an agency must be indirect")
+                )
             if not record.is_agency and record.sale_channel_id:
                 record.sale_channel_id = None
 
