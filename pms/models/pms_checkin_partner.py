@@ -189,6 +189,7 @@ class PmsCheckinPartner(models.Model):
         store=True,
         comodel_name="res.partner.id_number",
         compute="_compute_document_id",
+        ondelete="restrict",
     )
 
     incongruences = fields.Char(
@@ -356,7 +357,9 @@ class PmsCheckinPartner(models.Model):
             else:
                 record.document_id = False
 
-    @api.depends("document_number", "document_type", "firstname")
+    @api.depends(
+        "document_number", "document_type", "firstname", "lastname", "lastname2"
+    )
     def _compute_partner_id(self):
         for record in self:
             if not record.partner_id:
@@ -465,9 +468,7 @@ class PmsCheckinPartner(models.Model):
                 for number in record.partner_id.id_numbers:
                     if record.document_type == number.category_id:
                         if record.document_number != number.name:
-                            raise ValidationError(
-                                _("Document_type e document_number not match(DN)")
-                            )
+                            raise ValidationError(_("Document_type has already exists"))
 
     @api.model
     def create(self, vals):
