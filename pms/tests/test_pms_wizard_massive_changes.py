@@ -3,11 +3,11 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
+
 from .common import TestPms
 
 
 class TestPmsWizardMassiveChanges(TestPms):
-
     def setUp(self):
         super().setUp()
         self.availability_plan1 = self.env["pms.availability.plan"].create(
@@ -40,9 +40,7 @@ class TestPmsWizardMassiveChanges(TestPms):
                 self.env["pms.massive.changes.wizard"].create(
                     {
                         "massive_changes_on": "availability_plan",
-                        "availability_plan_ids": [
-                            (6, 0, [self.availability_plan1.id])
-                        ],
+                        "availability_plan_ids": [(6, 0, [self.availability_plan1.id])],
                         "start_date": fields.date.today(),
                         "end_date": fields.date.today() + datetime.timedelta(days=days),
                         "room_type_ids": [(6, 0, [room_type_double.id])],
@@ -406,9 +404,7 @@ class TestPmsWizardMassiveChanges(TestPms):
             "massive_changes_on": "availability_plan",
             "availability_plan_ids": [(6, 0, [self.availability_plan1.id])],
             "room_type_ids": [(6, 0, [room_type_double.id])],
-            "pms_property_ids": [
-                (6, 0, [self.pms_property1.id, pms_property2.id])
-            ],
+            "pms_property_ids": [(6, 0, [self.pms_property1.id, pms_property2.id])],
             "start_date": date_from,
             "end_date": date_to,
         }
@@ -462,11 +458,7 @@ class TestPmsWizardMassiveChanges(TestPms):
                 ).apply_massive_changes()
                 # ASSERT
                 self.assertEqual(
-                    len(
-                        self.pricelist1.item_ids
-                        if self.pricelist1.item_ids
-                        else []
-                    ),
+                    len(self.pricelist1.item_ids if self.pricelist1.item_ids else []),
                     num_exp_items_to_create,
                     "the number of rules created by the wizard should include all the "
                     "days between start and finish (both included)",
@@ -647,9 +639,7 @@ class TestPmsWizardMassiveChanges(TestPms):
         date_to = fields.date.today()
         vals_wizard = {
             "massive_changes_on": "pricelist",
-            "pricelist_ids": [
-                (6, 0, [self.pricelist1.id, pricelist2.id])
-            ],
+            "pricelist_ids": [(6, 0, [self.pricelist1.id, pricelist2.id])],
             "room_type_ids": [(6, 0, [room_type_double.id])],
             "pms_property_ids": [self.pms_property1.id],
             "start_date": date_from,
@@ -919,9 +909,7 @@ class TestPmsWizardMassiveChanges(TestPms):
         service_breakfast = self.env["product.product"].create(
             {"name": "Test Breakfast"}
         )
-        service_dinner = self.env["product.product"].create(
-            {"name": "Test Dinner"}
-        )
+        service_dinner = self.env["product.product"].create({"name": "Test Dinner"})
         board_service_single = self.env["pms.board.service.room.type"].create(
             {
                 "pms_room_type_id": room_type_single.id,
@@ -934,19 +922,19 @@ class TestPmsWizardMassiveChanges(TestPms):
                 "pms_board_service_id": board_service_half_board.id,
             }
         )
-        board_service_line_single_1 = self.env["pms.board.service.line"].create(
+        self.env["pms.board.service.line"].create(
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_only_breakfast.id,
             }
         )
-        board_service_line_double_1 = self.env["pms.board.service.line"].create(
+        self.env["pms.board.service.line"].create(
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_half_board.id,
             }
         )
-        board_service_line_double_2 = self.env["pms.board.service.line"].create(
+        self.env["pms.board.service.line"].create(
             {
                 "product_id": service_dinner.id,
                 "pms_board_service_id": board_service_half_board.id,
@@ -1040,9 +1028,7 @@ class TestPmsWizardMassiveChanges(TestPms):
         service_breakfast = self.env["product.product"].create(
             {"name": "Test Breakfast"}
         )
-        service_dinner = self.env["product.product"].create(
-            {"name": "Test Dinner"}
-        )
+        service_dinner = self.env["product.product"].create({"name": "Test Dinner"})
         board_service_single = self.env["pms.board.service.room.type"].create(
             {
                 "pms_room_type_id": room_type_single.id,
@@ -1055,19 +1041,19 @@ class TestPmsWizardMassiveChanges(TestPms):
                 "pms_board_service_id": board_service_half_board.id,
             }
         )
-        board_service_line_single_1 = self.env["pms.board.service.line"].create(
+        self.env["pms.board.service.line"].create(
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_only_breakfast.id,
             }
         )
-        board_service_line_double_1 = self.env["pms.board.service.line"].create(
+        self.env["pms.board.service.line"].create(
             {
                 "product_id": service_breakfast.id,
                 "pms_board_service_id": board_service_half_board.id,
             }
         )
-        board_service_line_double_2 = self.env["pms.board.service.line"].create(
+        self.env["pms.board.service.line"].create(
             {
                 "product_id": service_dinner.id,
                 "pms_board_service_id": board_service_half_board.id,
@@ -1230,9 +1216,7 @@ class TestPmsWizardMassiveChanges(TestPms):
             "pricelist_ids": [(6, 0, [self.pricelist1.id])],
             "apply_pricelists_on": "service",
             "service": service_spa.id,
-            "pms_property_ids": [
-                (6, 0, [self.pms_property1.id, pms_property2.id])
-            ],
+            "pms_property_ids": [(6, 0, [self.pms_property1.id, pms_property2.id])],
             "start_date": date_from,
             "end_date": date_to,
             "date_types": "sale_dates",
