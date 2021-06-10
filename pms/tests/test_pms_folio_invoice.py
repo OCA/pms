@@ -6,10 +6,7 @@ from odoo.tests import common
 class TestPmsFolioInvoice(common.SavepointCase):
     def setUp(self):
         super(TestPmsFolioInvoice, self).setUp()
-
-    def create_common_scenario(self):
-        # create a room type availability
-        # sequences
+        # create a room type availability and sequences
         self.folio_sequence = self.env["ir.sequence"].create(
             {
                 "name": "PMS Folio",
@@ -95,7 +92,6 @@ class TestPmsFolioInvoice(common.SavepointCase):
 
     def test_invoice_full_folio(self):
         # ARRANGE
-        self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -121,7 +117,6 @@ class TestPmsFolioInvoice(common.SavepointCase):
 
     def test_invoice_partial_folio_by_steps(self):
         # ARRANGE
-        self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -162,7 +157,6 @@ class TestPmsFolioInvoice(common.SavepointCase):
 
     def test_invoice_partial_folio_diferent_partners(self):
         # ARRANGE
-        self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -208,7 +202,6 @@ class TestPmsFolioInvoice(common.SavepointCase):
 
     def test_invoice_partial_folio_wrong_qtys(self):
         # ARRANGE
-        self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
