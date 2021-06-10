@@ -42,5 +42,5 @@ class ResPartnerIdNumber(models.Model):
                     ("category_id", "=", record.category_id.id),
                 ]
             )
-            if id_number:
+            if len(id_number) > 1:
                 raise ValidationError(_("Partner already has this document type"))
