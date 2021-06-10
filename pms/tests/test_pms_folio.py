@@ -1,12 +1,8 @@
 import datetime
 
-from freezegun import freeze_time
-
 from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import common
-
-freeze_time("2000-02-02")
 
 
 class TestPmsFolio(common.SavepointCase):
