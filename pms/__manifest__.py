@@ -25,6 +25,7 @@
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",
+        "partner_identification_unique_by_category",
     ],
     "data": [
         "security/pms_security.xml",
