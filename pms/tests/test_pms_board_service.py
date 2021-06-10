@@ -25,6 +25,9 @@ class TestBoardService(TestPms):
     # external integrity
     def test_external_case_01(self):
         """
+        Creation of board service with the same code as an existing one
+        belonging to the same property should fail.
+
         PRE:    - board service bs1 exists
                 - board_service1 has code c1
                 - board_service1 has pms_property1
@@ -61,6 +64,9 @@ class TestBoardService(TestPms):
 
     def test_external_case_02(self):
         """
+        Creation of board service with properties and one of its
+        properties has the same code on its board services should fail.
+
         PRE:    - board service bs1 exists
                 - board_service1 has code c1
                 - board_service1 has property pms_property1
@@ -114,6 +120,7 @@ class TestBoardService(TestPms):
                 }
             )
 
+    # TODO: REVIEW. THE NEXT 2 TESTS CHECK THE SAME
     def test_single_case_01(self):
         """
         PRE:    - board service bs1 exists
@@ -179,6 +186,9 @@ class TestBoardService(TestPms):
 
     def test_single_case_03(self):
         """
+        Search for a specific board service code and its property.
+        The board service exists but not in the property given.
+
         PRE:    - board_service1 exists
                 - board_service1 has code c1
                 - board_service1 with 2 properties pms_property1 and pms_property2
@@ -218,6 +228,10 @@ class TestBoardService(TestPms):
 
     def test_single_case_04(self):
         """
+        Search for a specific board service and its property.
+        The board service exists without property, then
+        the search foundS the result.
+
         PRE:    - board_service1 exists
                 - board_service1 has code c1
                 - board_service1 properties are null
@@ -246,9 +260,15 @@ class TestBoardService(TestPms):
             "Expected board service not found",
         )
 
-    # tests with more than one board service
+    # TODO: REVIEW. THE NEXT 2 TESTS CHECK THE SAME
     def test_multiple_case_01(self):
         """
+        Search for a specific board service and its property.
+        There is one board service without properties and
+        another one with the same code that belongs to 2 properties.
+        The search founds only the board service that match the
+        property given.
+
         PRE:    - board_service1 exists
                 - board_service1 has code c1
                 - board_service1 has 2 properties pms_property1 and pms_property2
@@ -278,12 +298,10 @@ class TestBoardService(TestPms):
                 "pms_property_ids": False,
             }
         )
-
         # ACT
         board_services = self.env["pms.board.service"].get_unique_by_property_code(
             self.pms_property1.id, "c1"
         )
-
         # ASSERT
         self.assertEqual(
             board_services.id,
@@ -293,6 +311,12 @@ class TestBoardService(TestPms):
 
     def test_multiple_case_02(self):
         """
+        Search for a specific board service and its property.
+        There is one board service without properties and
+        another one with the same code that belongs to 2 properties.
+        The search founds only the board service that match the
+        property given.
+
         PRE:    - board_service1 exists
                 - board_service1 has code c1
                 - board_service1 has property pms_property1
@@ -302,7 +326,7 @@ class TestBoardService(TestPms):
                 - board_service2 has no properties
         ACT:    - search board service with code c1 and pms_property2
                 - pms_property2 have company company1
-        POST:   - only board_service1 board service found
+        POST:   - only board_service2 board service found
         """
         # ARRANGE
         self.pms_property2 = self.env["pms.property"].create(
@@ -312,7 +336,6 @@ class TestBoardService(TestPms):
                 "default_pricelist_id": self.pricelist1.id,
             }
         )
-        # board_service1
         self.env["pms.board.service"].create(
             {
                 "name": "Board service 1",
@@ -340,8 +363,15 @@ class TestBoardService(TestPms):
             "Expected board service not found",
         )
 
+    # TODO: REVIEW. THE NEXT 2 TESTS CHECK THE SAME
     def test_multiple_case_03(self):
         """
+        Search for a specific board service and its property.
+        There is one board service without properties and
+        another one with the same code that belongs to one property.
+        The search founds only the board service that match the
+        property given that it's not the same as the 2nd one.
+
         PRE:    - board_service1 exists
                 - board_service1 has code c1
                 - board_service1 has property pms_property1
@@ -384,6 +414,12 @@ class TestBoardService(TestPms):
 
     def test_multiple_case_04(self):
         """
+        Search for a specific board service and its property.
+        There is one board service without properties and
+        another one with the same code that belongs to 2 properties.
+        The search founds only the board service that match the
+        property given.
+
         PRE:    - board_service1 exists
                 - board_service1 has code c1
                 - board_service1 has property pms_property1
