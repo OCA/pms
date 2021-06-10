@@ -4,9 +4,6 @@ from .common import TestPms
 
 
 class TestPmsBoardService(TestPms):
-    def setUp(self):
-        super().setUp()
-
     def test_pms_board_service_line_product_property_integrity(self):
         """
         Creation of a board service line without property, of a product
