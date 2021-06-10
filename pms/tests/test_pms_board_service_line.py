@@ -1,75 +1,103 @@
 from odoo.exceptions import UserError
-from odoo.tests import common
+
+from .common import TestPms
 
 
-class TestPmsBoardService(common.SavepointCase):
-    def test_property_integrity(self):
-        self.company1 = self.env["res.company"].create(
-            {
-                "name": "Pms_Company_Test",
-            }
-        )
-        self.folio_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Folio",
-                "code": "pms.folio",
-                "padding": 4,
-                "company_id": self.company1.id,
-            }
-        )
-        self.reservation_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Reservation",
-                "code": "pms.reservation",
-                "padding": 4,
-                "company_id": self.company1.id,
-            }
-        )
-        self.checkin_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Checkin",
-                "code": "pms.checkin.partner",
-                "padding": 4,
-                "company_id": self.company1.id,
-            }
-        )
-        self.property1 = self.env["pms.property"].create(
-            {
-                "name": "Pms_property_test1",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-        self.property2 = self.env["pms.property"].create(
-            {
-                "name": "Pms_property_test2",
-                "company_id": self.company1.id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-        self.product = self.env["product.product"].create(
-            {"name": "Product", "pms_property_ids": self.property1}
-        )
+class TestPmsBoardService(TestPms):
+    def setUp(self):
+        super().setUp()
 
-        self.board_service = self.env["pms.board.service"].create(
+    def test_pms_board_service_line_product_property_integrity(self):
+        """
+        Creation of a board service line without property, of a product
+        only available for a specific property.
+        """
+        # ARRANGE
+        product = self.env["product.product"].create(
+            {"name": "Product", "pms_property_ids": [self.pms_property1.id]}
+        )
+        board_service = self.env["pms.board.service"].create(
             {
                 "name": "Board Service",
                 "default_code": "CB",
             }
         )
-        with self.assertRaises(UserError):
-            board_service_line = self.board_service_line = self.env[
-                "pms.board.service.line"
-            ].create(
+        # ACT & ASSERT
+        with self.assertRaises(
+            UserError, msg="Board service line shouldnt be created."
+        ):
+            self.env["pms.board.service.line"].create(
                 {
-                    "product_id": self.product.id,
-                    "pms_board_service_id": self.board_service.id,
+                    "product_id": product.id,
+                    "pms_board_service_id": board_service.id,
                 }
             )
-            board_service_line.pms_property_ids = [self.property2.id]
+
+    def test_pms_board_service_line_board_service_integrity(self):
+        """
+        Creation of a board service line without property, of board service
+        only available for a specific property.
+        """
+        # ARRANGE
+        pms_property2 = self.env["pms.property"].create(
+            {
+                "name": "Property 1",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+        product = self.env["product.product"].create(
+            {"name": "Product", "pms_property_ids": [self.pms_property1.id]}
+        )
+
+        board_service = self.env["pms.board.service"].create(
+            {
+                "name": "Board Service",
+                "default_code": "CB",
+                "pms_property_ids": [pms_property2.id],
+            }
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            UserError, msg="Board service line shouldnt be created."
+        ):
+            self.env["pms.board.service.line"].create(
+                {
+                    "product_id": product.id,
+                    "pms_board_service_id": board_service.id,
+                }
+            )
+
+    def test_pms_board_service_line_board_service_line_integrity(self):
+        """
+        Creation of a board service line with a specific property,
+        of board service without property.
+        """
+        # ARRANGE
+        pms_property2 = self.env["pms.property"].create(
+            {
+                "name": "Property 1",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+        product = self.env["product.product"].create(
+            {"name": "Product", "pms_property_ids": [self.pms_property1.id]}
+        )
+        board_service = self.env["pms.board.service"].create(
+            {
+                "name": "Board Service",
+                "default_code": "CB",
+            }
+        )
+        # ACT & ASSERT
+        with self.assertRaises(
+            UserError, msg="Board service line shouldnt be created."
+        ):
+            self.env["pms.board.service.line"].create(
+                {
+                    "product_id": product.id,
+                    "pms_board_service_id": board_service.id,
+                    "pms_property_ids": [pms_property2.id],
+                }
+            )
