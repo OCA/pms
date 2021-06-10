@@ -4,7 +4,8 @@ from .common import TestPms
 
 
 class TestPmsFolioSaleLine(TestPms):
-    def create_common_scenario(self):
+    def setUp(self):
+        super().setUp()
         # create a room type availability
         self.room_type_availability = self.env["pms.availability.plan"].create(
             {"name": "Availability plan for TEST"}
@@ -53,7 +54,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 1
-        self.create_common_scenario()
 
         # ACT
         r_test = self.env["pms.reservation"].create(
@@ -81,7 +81,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 2
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -112,7 +111,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 2
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -143,7 +141,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 2
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -175,7 +172,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 1
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -207,7 +203,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -242,7 +237,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -278,7 +272,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.property.id,
@@ -315,7 +308,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -375,7 +367,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -435,7 +426,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -498,7 +488,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -561,7 +550,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -623,7 +611,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same board service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -684,7 +671,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same board service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -751,7 +737,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same board service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -821,7 +806,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -871,7 +855,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -923,7 +906,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -976,7 +958,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1030,7 +1011,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1082,7 +1062,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1134,7 +1113,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1187,7 +1165,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1242,7 +1219,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_folio_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1289,7 +1265,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_folio_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
