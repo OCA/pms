@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-3">
                             <button
-                            name="send_file_gc"
+                            name="send_file_institution"
                             class="btn btn-primary btn-sm"
                             type="object"
                             string="Send file"
@@ -55,8 +55,8 @@
     <menuitem
         id="menu_traveller_report"
         name="Traveller Report"
-        sequence="30"
-        parent="pms.pms_configuration_menu"
+        sequence="27"
+        parent="pms.menu_reservations"
         action="action_traveller_report"
     />
 </odoo>
