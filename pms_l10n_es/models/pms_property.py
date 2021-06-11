@@ -14,7 +14,7 @@ class PmsProperty(models.Model):
     institution = fields.Selection(
         [
             ("guardia_civil", "Guardia Civil"),
-            ("policia_nacional", "Policía Nacional (soon)"),
+            ("policia_nacional", "Policía Nacional"),
             ("ertxaintxa", "Ertxaintxa (soon)"),
             ("mossos", "Mossos_d'esquadra (soon)"),
         ],
@@ -24,7 +24,6 @@ class PmsProperty(models.Model):
     )
     institution_property_id = fields.Char(
         string="Institution property id",
-        size=10,
         help="Id provided by institution to send data from property.",
     )
     institution_user = fields.Char(
@@ -35,30 +34,27 @@ class PmsProperty(models.Model):
         help="Password provided by institution to send the data.",
     )
 
-    def test_gc_connection(self):
-        for pms_property in self:
+    def test_connection(self):
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 "
+            "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
+            "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
+        }
+        for record in self:
             if (
-                pms_property.institution == "guardia_civil"
-                and pms_property.institution_property_id
-                and pms_property.institution_user
-                and pms_property.institution_password
+                record.institution == "guardia_civil"
+                and record.institution_property_id
+                and record.institution_user
+                and record.institution_password
             ):
-
                 url = "https://hospederias.guardiacivil.es/"
                 login_route = "/hospederias/login.do"
                 logout_route = "/hospederias/logout.do"
-
-                headers = {
-                    "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 "
-                    "Build/MRA58N) AppleWebKit/537.36 (KHTML, like "
-                    "Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
-                }
                 session = requests.session()
                 login_payload = {
-                    "usuario": pms_property.institution_user,
-                    "pswd": pms_property.institution_password,
+                    "usuario": record.institution_user,
+                    "pswd": record.institution_password,
                 }
-
                 # login
                 response_login = session.post(
                     url + login_route,
@@ -66,7 +62,7 @@ class PmsProperty(models.Model):
                     data=login_payload,
                     verify=get_module_resource("pms_l10n_es", "static", "cert.pem"),
                 )
-                time.sleep(1)
+                time.sleep(0.1)
                 # logout
                 session.get(
                     url + logout_route,
@@ -96,3 +92,62 @@ class PmsProperty(models.Model):
                         return message
                     else:
                         raise ValidationError(_("Connection could not be established"))
+            elif (
+                record.institution == "policia_nacional"
+                and record.institution_property_id
+                and record.institution_user
+                and record.institution_password
+            ):
+                url = "https://webpol.policia.es/e-hotel"
+                pre_login_route = "/login"
+                login_route = "/execute_login"
+                home_route = "/inicio"
+                logout_route = "/execute_logout"
+                session = requests.session()
+                response_pre_login = session.post(
+                    url + pre_login_route,
+                    headers=headers,
+                    verify=False,
+                )
+                soup = bs(response_pre_login.text, "html.parser")
+                token = soup.select("input[name='_csrf']")[0]["value"]
+                time.sleep(0.1)
+                login_payload = {
+                    "username": record.institution_user,
+                    "password": record.institution_password,
+                    "_csrf": token,
+                }
+                session.post(
+                    url + login_route,
+                    headers=headers,
+                    data=login_payload,
+                    verify=False,
+                )
+                time.sleep(0.1)
+                response_home = session.get(
+                    url + home_route,
+                    headers=headers,
+                    verify=False,
+                )
+                soup = bs(response_home.text, "html.parser")
+                login_correct = soup.select("#datosUsuarioBanner")
+                if login_correct:
+                    session.post(
+                        url + logout_route,
+                        headers=headers,
+                        verify=False,
+                        data={"_csrf": token},
+                    )
+
+                    message = {
+                        "type": "ir.actions.client",
+                        "tag": "display_notification",
+                        "params": {
+                            "title": _("Connection Established!"),
+                            "message": _("Connection established succesfully"),
+                            "sticky": False,
+                        },
+                    }
+                    return message
+                else:
+                    raise ValidationError(_("Connection could not be established"))
