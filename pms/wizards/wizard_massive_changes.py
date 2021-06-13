@@ -378,6 +378,46 @@ class AvailabilityWizard(models.TransientModel):
                     ]
                 )
 
+    def _rules_to_overwrite_by_plans(self, availability_plans):
+        self.ensure_one()
+        domain = [
+            ("availability_plan_id", "in", availability_plans.ids),
+        ]
+
+        if self.room_type_ids:
+            domain.append(("room_type_id", "in", self.room_type_ids.ids))
+        if self.start_date:
+            domain.append(("date", ">=", self.start_date))
+        if self.end_date:
+            domain.append(("date", "<=", self.end_date))
+
+        domain_overwrite = self.build_domain_rules()
+        if len(domain_overwrite):
+            if len(domain_overwrite) == 1:
+                domain.append(domain_overwrite[0][0])
+            else:
+                domain_overwrite = expression.OR(domain_overwrite)
+                domain.extend(domain_overwrite)
+
+        rules = self.env["pms.availability.plan.rule"]
+        if self.start_date and self.end_date:
+            rules = rules.search(domain)
+            if not self.apply_on_all_week and self.start_date and self.end_date:
+                week_days_to_apply = (
+                    self.apply_on_monday,
+                    self.apply_on_tuesday,
+                    self.apply_on_wednesday,
+                    self.apply_on_thursday,
+                    self.apply_on_friday,
+                    self.apply_on_saturday,
+                    self.apply_on_sunday,
+                )
+                rules = rules.filtered(
+                    lambda x: week_days_to_apply[x.date.timetuple()[6]]
+                )
+
+        return rules
+
     @api.depends(
         "start_date",
         "end_date",
@@ -420,50 +460,9 @@ class AvailabilityWizard(models.TransientModel):
                 ]
                 record.massive_changes_on = "availability_plan"
 
-            if record.availability_plan_ids:
-                domain = [
-                    ("availability_plan_id", "in", record.availability_plan_ids.ids),
-                ]
-
-                if record.room_type_ids:
-                    domain.append(("room_type_id", "in", record.room_type_ids.ids))
-                if record.start_date:
-                    domain.append(("date", ">=", record.start_date))
-                if record.end_date:
-                    domain.append(("date", "<=", record.end_date))
-
-                domain_overwrite = self.build_domain_rules()
-                if len(domain_overwrite):
-                    if len(domain_overwrite) == 1:
-                        domain.append(domain_overwrite[0][0])
-                    else:
-                        domain_overwrite = expression.OR(domain_overwrite)
-                        domain.extend(domain_overwrite)
-                week_days_to_apply = (
-                    record.apply_on_monday,
-                    record.apply_on_tuesday,
-                    record.apply_on_wednesday,
-                    record.apply_on_thursday,
-                    record.apply_on_friday,
-                    record.apply_on_saturday,
-                    record.apply_on_sunday,
-                )
-                if record.start_date and record.end_date:
-                    rules = self.env["pms.availability.plan.rule"].search(domain)
-                    if (
-                        not record.apply_on_all_week
-                        and record.start_date
-                        and record.end_date
-                    ):
-                        record.rules_to_overwrite = rules.filtered(
-                            lambda x: week_days_to_apply[x.date.timetuple()[6]]
-                        )
-                    else:
-                        record.rules_to_overwrite = rules
-                else:
-                    record.rules_to_overwrite = False
-            else:
-                record.rules_to_overwrite = False
+            record.rules_to_overwrite = record._rules_to_overwrite_by_plans(
+                record.availability_plan_ids
+            )
 
     @api.depends(
         "start_date",
