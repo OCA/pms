@@ -4722,6 +4722,14 @@ msgid "Multi Properties"
 msgstr "Multipropiedad"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pms.field_pms_property__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "My Reservations"
 msgstr "Mis reservas"
