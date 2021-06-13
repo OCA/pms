@@ -173,6 +173,17 @@ class PmsReservationLine(models.Model):
                 and not line.room_id
             ):
                 free_room_select = True if reservation.preferred_room_id else False
+
+                # Check if the room assigment is manual or automatic to set the
+                # to_assign value on reservation
+                if (
+                    free_room_select
+                    and reservation.preferred_room_id.id
+                    not in reservation.reservation_line_ids.room_id.ids
+                ):
+                    # This case is a preferred_room_id manually assigned
+                    reservation.to_assign = False
+
                 # we get the rooms available for the entire stay
                 rooms_available = self.env["pms.availability.plan"].rooms_available(
                     checkin=line.reservation_id.checkin,
