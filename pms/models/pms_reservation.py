@@ -313,9 +313,9 @@ class PmsReservation(models.Model):
     )
     to_assign = fields.Boolean(
         string="To Assign",
-        help="Technical field",
+        help="It is True if the room of the reservation has been assigned "
+        "automatically, False if it was confirmed by a person in charge",
         default=True,
-        tracking=True,
     )
     state = fields.Selection(
         string="State",
@@ -614,6 +614,12 @@ class PmsReservation(models.Model):
 
     @api.depends("preferred_room_id")
     def _compute_room_type_id(self):
+        """
+        This method set False to_assign when the user
+        directly chooses the preferred_room_id,
+        otherwise, action_assign will be used when the user manually confirms
+        or changes the preferred_room_id of the reservation
+        """
         for reservation in self:
             if reservation.preferred_room_id and not reservation.room_type_id:
                 reservation.room_type_id = reservation.preferred_room_id.room_type_id.id
