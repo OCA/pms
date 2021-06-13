@@ -87,6 +87,7 @@ class PmsReservation(models.Model):
         copy=False,
         store=True,
         comodel_name="pms.room.type",
+        ondelete="restrict",
         compute="_compute_room_type_id",
         tracking=True,
         check_pms_properties=True,
