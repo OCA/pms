@@ -109,6 +109,7 @@ class PmsReservation(models.Model):
         readonly=False,
         store=True,
         related="folio_id.agency_id",
+        depends=["folio_id.agency_id"],
         tracking=True,
     )
     channel_type_id = fields.Many2one(

@@ -1,73 +1,37 @@
 import datetime
 
+from freezegun import freeze_time
+
 from odoo import fields
 from odoo.exceptions import UserError
-from odoo.tests import common
+
+from .common import TestPms
 
 
-class TestPmsFolio(common.SavepointCase):
+class TestPmsFolio(TestPms):
+
+    # SetUp and Common Scenarios methods
+
     def setUp(self):
+        """
+        - common + room_type_double with 2 rooms (double1 and double2) in pms_property1
+        """
         super().setUp()
-        # create a room type availability
-        self.room_type_availability = self.env["pms.availability.plan"].create(
-            {"name": "Availability plan for TEST"}
-        )
-        # sequences
-        self.folio_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Folio",
-                "code": "pms.folio",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.reservation_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Reservation",
-                "code": "pms.reservation",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.checkin_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Checkin",
-                "code": "pms.checkin.partner",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        # create a property
-        self.property = self.env["pms.property"].create(
-            {
-                "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-
-        # create room type class
-        self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "default_code": "ROOM"}
-        )
 
         # create room type
         self.room_type_double = self.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class.id,
+                "class_id": self.room_type_class1.id,
                 "price": 25,
             }
         )
         # create room
-        self.room1 = self.env["pms.room"].create(
+        self.double1 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 101",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
@@ -75,9 +39,9 @@ class TestPmsFolio(common.SavepointCase):
         )
 
         # create room
-        self.room2 = self.env["pms.room"].create(
+        self.double2 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 102",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
@@ -85,227 +49,344 @@ class TestPmsFolio(common.SavepointCase):
         )
 
     def create_multiproperty_scenario(self):
-        self.property1 = self.env["pms.property"].create(
-            {
-                "name": "Property_1",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-
-        self.property2 = self.env["pms.property"].create(
+        """
+        Just 2 properties to majors
+        """
+        self.pms_property2 = self.env["pms.property"].create(
             {
                 "name": "Property_2",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
-        self.property3 = self.env["pms.property"].create(
+        self.pms_property3 = self.env["pms.property"].create(
             {
                 "name": "Property_3",
                 "company_id": self.env.ref("base.main_company").id,
                 "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
             }
         )
 
-    def test_commission_and_partner_correct(self):
-        # ARRANGE
-        PmsFolio = self.env["pms.folio"]
-        PmsReservation = self.env["pms.reservation"]
+    def create_sale_channel_scenario(self):
+        """
+        Method to simplified scenario on sale channel tests:
+        - create a sale_channel1 like indirect
+        - create a agency1 like sale_channel1 agency
+        """
         PmsPartner = self.env["res.partner"]
         PmsSaleChannel = self.env["pms.sale.channel"]
-        # ACT
-        saleChannel = PmsSaleChannel.create(
+
+        self.sale_channel1 = PmsSaleChannel.create(
             {"name": "saleChannel1", "channel_type": "indirect"}
         )
-        agency = PmsPartner.create(
+        self.agency1 = PmsPartner.create(
             {
                 "name": "partner1",
                 "is_agency": True,
                 "invoice_to_agency": True,
                 "default_commission": 15,
-                "sale_channel_id": saleChannel.id,
+                "sale_channel_id": self.sale_channel1.id,
             }
         )
 
-        folio = PmsFolio.create(
+    def create_configuration_accounting_scenario(self):
+        """
+        Method to simplified scenario to payments and accounting:
+        # REVIEW:
+        - Use new property with odoo demo data company to avoid account configuration
+        - Emule SetUp with new property:
+            - create demo_room_type_double
+            - Create 2 rooms room_type_double
+        """
+        self.pms_property_demo = self.env["pms.property"].create(
             {
-                "agency_id": agency.id,
-                "pms_property_id": self.property.id,
+                "name": "Property Based on Comapany Demo",
+                "company_id": self.env.ref("base.main_company").id,
+                "default_pricelist_id": self.env.ref("product.list0").id,
             }
         )
-
-        reservation = PmsReservation.create(
+        # create room type
+        self.demo_room_type_double = self.env["pms.room.type"].create(
             {
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
-                "agency_id": agency.id,
-                "folio_id": folio.id,
+                "pms_property_ids": [self.pms_property_demo.id],
+                "name": "Double Test",
+                "default_code": "Demo_DBL_Test",
+                "class_id": self.room_type_class1.id,
+                "price": 25,
             }
         )
-
-        commission = 0
-        for reservation in folio.reservation_ids:
-            commission += reservation.commission_amount
-
-        # ASSERT
-        self.assertEqual(
-            folio.commission,
-            commission,
-            "Folio commission don't math with his reservation commission",
-        )
-        if folio.agency_id:
-            self.assertEqual(
-                folio.agency_id, folio.partner_id, "Agency has to be the partner"
-            )
-
-    def test_compute_folio_priority(self):
-        r1 = self.env["pms.reservation"].create(
+        # create rooms
+        self.double1 = self.env["pms.room"].create(
             {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property_demo.id,
+                "name": "Double 101",
+                "room_type_id": self.demo_room_type_double.id,
+                "capacity": 2,
             }
         )
-        r1.allowed_checkin = False
+        self.double2 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property_demo.id,
+                "name": "Double 102",
+                "room_type_id": self.demo_room_type_double.id,
+                "capacity": 2,
+            }
+        )
+
+    # TestCases: Sale Channels
+
+    def test_default_agency_commission(self):
+        """
+        Check the total commission of a folio with agency based on the
+        reservation night price and the preconfigured commission in the agency.
+        -------
+        Agency with 15% default commision, folio with one reservation
+        and 3 nights at 20$ by night (60$ total)
+        """
+        # ARRANGE
+        self.create_sale_channel_scenario()
+        commission = (20 + 20 + 20) * 0.15
+
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "agency_id": self.agency1.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
 
         self.env["pms.reservation"].create(
             {
-                "folio_id": r1.folio_id.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "reservation_line_ids": [
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today(),
+                            "price": 20,
+                        },
+                    ),
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today() + datetime.timedelta(days=1),
+                            "price": 20,
+                        },
+                    ),
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today() + datetime.timedelta(days=2),
+                            "price": 20,
+                        },
+                    ),
+                ],
+                "folio_id": folio1.id,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            commission, folio1.commission, "The folio compute commission is wrong"
+        )
+
+    def test_reservation_agency_without_partner(self):
+        """
+        Check that a reservation / folio created with an agency
+        and without a partner will automatically take the partner.
+        -------
+        Create the folio1 and the reservation1, only set agency_id,
+        and the partner_id should be the agency itself.
+        """
+        # ARRANGE
+        self.create_sale_channel_scenario()
+
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "agency_id": self.agency1.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+
+        reservation1 = self.env["pms.reservation"].create(
+            {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "folio_id": folio1.id,
             }
         )
 
+        # ASSERT
         self.assertEqual(
-            r1.priority,
-            r1.folio_id.max_reservation_prior,
-            "The max. reservation priority on the whole folio is incorrect",
+            reservation1.agency_id, folio1.partner_id, "Agency has to be the partner"
         )
 
+    # TestCases: Priority
+
+    def test_compute_folio_priority(self):
+        """
+        Check the priority of a folio based on its reservations
+        #TODO: Commented test waiting to redefine the priority calculation
+        """
+        # reservation1 = self.env["pms.reservation"].create(
+        #     {
+        #         "checkin": fields.date.today(),
+        #         "checkout": fields.date.today() + datetime.timedelta(days=1),
+        #         "room_type_id": self.room_type_double.id,
+        #         "partner_id": self.env.ref("base.res_partner_12").id,
+        #         "pms_property_id": self.property.id,
+        #     }
+        # )
+        # reservation1.allowed_checkin = False
+
+        # self.env["pms.reservation"].create(
+        #     {
+        #         "folio_id": reservation1.folio_id.id,
+        #         "checkin": fields.date.today(),
+        #         "checkout": fields.date.today() + datetime.timedelta(days=1),
+        #         "room_type_id": self.room_type_double.id,
+        #         "partner_id": self.env.ref("base.res_partner_12").id,
+        #         "pms_property_id": self.property.id,
+        #     }
+        # )
+
+        # self.assertEqual(
+        #     reservation1.priority,
+        #     reservation1.folio_id.max_reservation_prior,
+        #     "The max. reservation priority on the whole folio is incorrect",
+        # )
+
+    # TestCases: Payments
+    @freeze_time("1980-11-01")
     def test_full_pay_folio(self):
-        # TEST CASE
-        # Folio is paid after execute
-        #
+        """
+        After making the payment of a folio for the entire amount,
+        check that there is nothing pending.
+        -----
+        We create a reservation (autocalculates the amounts) and
+        then make the payment using the do_payment method of the folio,
+        directly indicating the pending amount on the folio of the newly
+        created reservation
+        """
         # ARRANGE
-        r_test = self.env["pms.reservation"].create(
+        self.create_configuration_accounting_scenario()
+        reservation1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property_demo.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": self.demo_room_type_double.id,
             }
         )
+
+        # ACTION
         self.env["pms.folio"].do_payment(
-            self.env["account.journal"].browse(
-                r_test.folio_id.pms_property_id._get_payment_methods().ids[0]
+            journal=self.env["account.journal"].browse(
+                reservation1.folio_id.pms_property_id._get_payment_methods().ids[0]
             ),
-            self.env["account.journal"]
-            .browse(r_test.folio_id.pms_property_id._get_payment_methods().ids[0])
+            receivable_account=self.env["account.journal"]
+            .browse(reservation1.folio_id.pms_property_id._get_payment_methods().ids[0])
             .suspense_account_id,
-            self.env.user,
-            r_test.folio_id.pending_amount,
-            r_test.folio_id,
-            partner=r_test.partner_id,
+            user=self.env.user,
+            amount=reservation1.folio_id.pending_amount,
+            folio=reservation1.folio_id,
+            partner=reservation1.partner_id,
             date=fields.date.today(),
         )
-        self.assertFalse(r_test.folio_id.pending_amount)
 
+        # ASSERT
+        self.assertFalse(
+            reservation1.folio_id.pending_amount,
+            "The pending amount of a folio paid in full has not been zero",
+        )
+
+    @freeze_time("1980-11-01")
     def test_partial_pay_folio(self):
-        # TEST CASE
-        # Folio is partially paid after execute
-        #
+        """
+        After making the payment of a folio for the partial amount,
+        We check that the pending amount is the one that corresponds to it.
+        -----
+        We create a reservation (autocalculates the amounts) and
+        then make the payment using the do_payment method of the folio,
+        directly indicating the pending amount on the folio MINUS 1$
+        of the newly created reservation
+        """
         # ARRANGE
+        self.create_configuration_accounting_scenario()
         left_to_pay = 1
-        r_test = self.env["pms.reservation"].create(
+        reservation1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property_demo.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "room_type_id": self.room_type_double.id,
+                "room_type_id": self.demo_room_type_double.id,
             }
         )
+
+        # ACTION
         self.env["pms.folio"].do_payment(
-            self.env["account.journal"].browse(
-                r_test.folio_id.pms_property_id._get_payment_methods().ids[0]
+            journal=self.env["account.journal"].browse(
+                reservation1.folio_id.pms_property_id._get_payment_methods().ids[0]
             ),
-            self.env["account.journal"]
-            .browse(r_test.folio_id.pms_property_id._get_payment_methods().ids[0])
+            receivable_account=self.env["account.journal"]
+            .browse(reservation1.folio_id.pms_property_id._get_payment_methods().ids[0])
             .suspense_account_id,
-            self.env.user,
-            r_test.folio_id.pending_amount - left_to_pay,
-            r_test.folio_id,
-            partner=r_test.partner_id,
+            user=self.env.user,
+            amount=reservation1.folio_id.pending_amount - left_to_pay,
+            folio=reservation1.folio_id,
+            partner=reservation1.partner_id,
             date=fields.date.today(),
         )
-        self.assertEqual(r_test.folio_id.pending_amount, left_to_pay)
 
-    def test_closure_reason_property(self):
+        # ASSERT
+        self.assertEqual(
+            reservation1.folio_id.pending_amount,
+            left_to_pay,
+            "The pending amount on a partially paid folio it \
+            does not correspond to the amount that it should",
+        )
+
+    # TestCases: Property Consistencies
+
+    def test_folio_closure_reason_consistency_properties(self):
+        """
+        Check the multioproperty consistencia between
+        clousure reasons and folios
+        -------
+        create multiproperty scenario (3 properties in total) and
+        a new clousure reason in pms_property1 and pms_property2, then, create
+        a new folio in property3 and try to set the clousure_reason
+        waiting a error property consistency.
+        """
+        # ARRANGE
         self.create_multiproperty_scenario()
         cl_reason = self.env["room.closure.reason"].create(
             {
                 "name": "closure_reason_test",
                 "pms_property_ids": [
-                    (4, self.property1.id),
-                    (4, self.property2.id),
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property2.id),
                 ],
             }
         )
 
-        with self.assertRaises(UserError):
+        # ACTION & ASSERT
+        with self.assertRaises(
+            UserError,
+            msg="Folio created with clousure_reason_id with properties inconsistence",
+        ):
             self.env["pms.folio"].create(
                 {
-                    "pms_property_id": self.property3.id,
+                    "pms_property_id": self.pms_property3.id,
                     "closure_reason_id": cl_reason.id,
                 }
             )
-
-    def _test_compute_currency(self):
-        self.currency1 = self.env["res.currency"].create(
-            {
-                "name": "currency1",
-                "symbol": "C",
-            }
-        )
-        self.pricelist = self.env["product.pricelist"].create(
-            {
-                "name": "pricelist 1",
-                "pms_property_ids": [
-                    (4, self.property.id),
-                ],
-                "currency_id": self.currency1.id,
-            }
-        )
-        self.reservation1 = self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.property.id,
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pricelist_id": self.pricelist.id,
-            }
-        )
-        self.assertEqual(
-            self.currency1.id,
-            self.reservation1.folio_id.currency_id.id,
-            "Currency must match",
-        )

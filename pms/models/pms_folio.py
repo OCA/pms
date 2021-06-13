@@ -140,7 +140,6 @@ class PmsFolio(models.Model):
     commission = fields.Float(
         string="Commission",
         readonly=True,
-        default=0,
         store=True,
         compute="_compute_commission",
     )
@@ -642,7 +641,7 @@ class PmsFolio(models.Model):
                 or False
             )
 
-    @api.depends("reservation_ids")
+    @api.depends("reservation_ids", "reservation_ids.commission_amount")
     def _compute_commission(self):
         for folio in self:
             for reservation in folio.reservation_ids:
