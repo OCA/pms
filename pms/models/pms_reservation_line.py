@@ -208,8 +208,12 @@ class PmsReservationLine(models.Model):
                         # if the preferred room is NOT available
                         else:
                             raise ValidationError(
-                                _("%s: No room available.")
-                                % (reservation.preferred_room_id.name)
+                                _("%s: No room available in %s <-> %s.")
+                                % (
+                                    reservation.preferred_room_id.name,
+                                    line.reservation_id.checkin,
+                                    line.reservation_id.checkout,
+                                )
                             )
 
                     # otherwise we assign the first of those
