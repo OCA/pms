@@ -6881,6 +6881,12 @@ msgstr "Tipo del Canal de Venta"
 #. module: pms
 #: code:addons/pms/models/res_partner.py:0
 #, python-format
+msgid "Sale Channel for an agency must be indirect"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/res_partner.py:0
+#, python-format
 msgid "Sale Channel must be entered"
 msgstr "El Canal de Venta debe ser Indicado"
 
