@@ -40,3 +40,4 @@ from . import test_pms_board_service_room_type_line
 from . import test_pms_folio_invoice
 from . import test_pms_folio_sale_line
 from . import test_pms_wizard_split_join_swap_reservation
+from . import test_product_template
