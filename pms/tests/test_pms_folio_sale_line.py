@@ -1197,7 +1197,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ACT
         r_test.service_ids.filtered(
-            lambda x: x.id == extra_service
+            lambda x: x.id == extra_service.id
         ).service_line_ids.price_unit = 50
         r_test.service_ids.service_line_ids.flush()
 
