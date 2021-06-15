@@ -1261,6 +1261,20 @@ class PmsReservation(models.Model):
                     )
                 )
 
+    @api.constrains("reservation_line_ids")
+    def check_consecutive_dates(self):
+        """
+        simply convert date objects to integers using the .toordinal() method
+        of datetime objects. The difference between the maximum and minimum value
+        of the set of ordinal dates is one more than the length of the set
+        """
+        for record in self:
+            if record.reservation_line_ids and len(record.reservation_line_ids) > 1:
+                dates = record.reservation_line_ids.mapped("date")
+                date_ints = {d.toordinal() for d in dates}
+                if not (max(date_ints) - min(date_ints) == len(date_ints) - 1):
+                    raise ValidationError(_("Reservation dates should be consecutives"))
+
     # @api.constrains("checkin_partner_ids", "adults")
     # def _max_checkin_partner_ids(self):
     #     for record in self:

@@ -151,6 +151,84 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     @freeze_time("1980-11-01")
+    def test_reservation_dates_not_consecutive(self):
+        """
+        Check the constrain if not consecutive dates
+        ----------------
+        Create correct reservation set 3 reservation lines consecutives (nights)
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        customer = self.env.ref("base.res_partner_12")
+        today = fields.date.today()
+        tomorrow = fields.date.today() + datetime.timedelta(days=1)
+        three_days_later = fields.date.today() + datetime.timedelta(days=3)
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Error, it has been allowed to create a reservation with non-consecutive days",
+        ):
+            self.env["pms.reservation"].create(
+                {
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": customer.id,
+                    "pms_property_id": self.property.id,
+                    "reservation_line_ids": [
+                        (0, False, {"date": today}),
+                        (0, False, {"date": tomorrow}),
+                        (0, False, {"date": three_days_later}),
+                    ],
+                }
+            )
+
+    @freeze_time("1980-11-01")
+    def test_reservation_dates_compute_checkin_out(self):
+        """
+        Check the reservation creation with specific reservation lines
+        anc compute checkin checkout
+        ----------------
+        Create reservation with correct reservation lines and check
+        the checkin and checkout fields. Take into account that the
+        checkout of the reservation must be the day after the last night
+        (view checkout assertEqual)
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        customer = self.env.ref("base.res_partner_12")
+        today = fields.date.today()
+        tomorrow = fields.date.today() + datetime.timedelta(days=1)
+        two_days_later = fields.date.today() + datetime.timedelta(days=2)
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "partner_id": customer.id,
+                "pms_property_id": self.property.id,
+                "reservation_line_ids": [
+                    (0, False, {"date": today}),
+                    (0, False, {"date": tomorrow}),
+                    (0, False, {"date": two_days_later}),
+                ],
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            reservation.checkin,
+            today,
+            "The calculated checkin of the reservation does \
+            not correspond to the first day indicated in the dates",
+        )
+        self.assertEqual(
+            reservation.checkout,
+            two_days_later + datetime.timedelta(days=1),
+            "The calculated checkout of the reservation does \
+            not correspond to the last day indicated in the dates",
+        )
+
+    @freeze_time("1980-11-01")
     def test_create_reservation_start_date(self):
         # TEST CASE
         # reservation should start on checkin day
