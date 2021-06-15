@@ -377,16 +377,18 @@ class PmsReservation(models.Model):
     checkin = fields.Date(
         string="Check In",
         help="It is the checkin date of the reservation, ",
-        required=True,
-        default=lambda self: self._get_default_checkin(),
+        compute="_compute_checkin",
+        readonly=False,
+        store=True,
         copy=False,
         tracking=True,
     )
     checkout = fields.Date(
         string="Check Out",
         help="It is the checkout date of the reservation, ",
-        required=True,
-        default=lambda self: self._get_default_checkout(),
+        compute="_compute_checkout",
+        readonly=False,
+        store=True,
         copy=False,
         tracking=True,
     )
@@ -924,6 +926,53 @@ class PmsReservation(models.Model):
         for reservation in self:
             reservation.access_url = "/my/reservations/%s" % (reservation.id)
 
+    @api.depends("reservation_line_ids")
+    def _compute_checkin(self):
+        """
+        Allows to calculate the checkin by default or when the create
+        specifically indicates the lines of the reservation
+        """
+        for record in self:
+            if record.reservation_line_ids:
+                checkin_line_date = min(record.reservation_line_ids.mapped("date"))
+                # check if the checkin was created directly as reservation_line_id:
+                if checkin_line_date != record.checkin:
+                    record.checkin = checkin_line_date
+            elif not record.checkin:
+                # default checkout other folio reservations or today
+                if len(record.folio_id.reservation_ids) > 1:
+                    record.checkin = record.folio_id.reservation_ids[0].checkin
+                else:
+                    record.checkin = fields.date.today()
+
+    @api.depends("reservation_line_ids", "checkin")
+    def _compute_checkout(self):
+        """
+        Allows to calculate the checkout by default or when the create
+        specifically indicates the lines of the reservation
+        """
+        for record in self:
+            if record.reservation_line_ids:
+                checkout_line_date = max(
+                    record.reservation_line_ids.mapped("date")
+                ) + datetime.timedelta(days=1)
+                # check if the checkout was created directly as reservation_line_id:
+                if checkout_line_date != record.checkout:
+                    record.checkout = checkout_line_date
+            # default checkout if checkin is set
+            elif record.checkin and not record.checkout:
+                if len(record.folio_id.reservation_ids) > 1:
+                    record.checkin = record.folio_id.reservation_ids[0].checkout
+                else:
+                    record.checkout = record.checkin + datetime.timedelta(days=1)
+            elif not record.checkout:
+                record.checkout = False
+            # date checking
+            if record.checkin and record.checkout and record.checkin >= record.checkout:
+                raise UserError(
+                    _("The checkout date must be greater than the checkin date")
+                )
+
     @api.depends("pms_property_id", "folio_id")
     def _compute_arrival_hour(self):
         for record in self:
@@ -975,7 +1024,7 @@ class PmsReservation(models.Model):
         for reservation in self:
             if reservation.commission_percent > 0:
                 reservation.commission_amount = (
-                    reservation.price_total * reservation.commission_percent
+                    reservation.price_total * reservation.commission_percent / 100
                 )
             else:
                 reservation.commission_amount = 0
@@ -1183,28 +1232,6 @@ class PmsReservation(models.Model):
         self.ensure_one()
         recs = self.search([]).filtered(lambda x: x.checkin_partner_pending_count > 0)
         return [("id", "in", [x.id for x in recs])] if recs else []
-
-    def _get_default_checkin(self):
-        folio = False
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].checkin
-        else:
-            return fields.Date.today()
-
-    def _get_default_checkout(self):
-        folio = False
-        if "folio_id" in self._context:
-            folio = self.env["pms.folio"].search(
-                [("id", "=", self._context["folio_id"])]
-            )
-        if folio and folio.reservation_ids:
-            return folio.reservation_ids[0].checkout
-        else:
-            return fields.Date.today() + datetime.timedelta(1)
 
     def _get_default_segmentation(self):
         folio = False
