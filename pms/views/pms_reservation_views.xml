@@ -34,6 +34,13 @@
                         states="onboard,departure_delayed"
                         type="object"
                     />
+                    <button
+                        name="action_send_email"
+                        string="Send email"
+                        states="confirm,onboard"
+                        type="object"
+                    />
+
                     <field name="state" widget="statusbar" />
                 </header>
                 <div

@@ -571,6 +571,12 @@ class PmsReservation(models.Model):
         readonly=False,
     )
 
+    mail_sent = fields.Boolean(
+        string="Mail Sent",
+        help="Technical field used to indicate if confirmation email was sent",
+        default=False,
+    )
+
     def _compute_date_order(self):
         for record in self:
             record.date_order = datetime.datetime.today()
@@ -1311,6 +1317,19 @@ class PmsReservation(models.Model):
     def action_pay_folio(self):
         self.ensure_one()
         return self.folio_id.action_pay()
+
+    def action_send_email(self):
+        for record in self:
+            if record.state == "confirm" and not record.mail_sent:
+                template = self.env.ref("pms.reservation_confirm_email")
+                template.send_mail(self.id)
+                record.mail_sent = True
+            elif (
+                record.state == "confirm" and record.mail_sent
+            ) or record.state == "onboard":
+                record.mail_sent = True
+                template = self.env.ref("pms.reservation_confirm_email")
+                template.send_mail(self.id)
 
     def open_reservation_wizard(self):
         rooms_available = self.env["pms.availability.plan"].rooms_available(
