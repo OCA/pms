@@ -198,14 +198,14 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_incongruences",
     )
 
-    @api.depends("partner_id", "partner_id.id_numbers")
+    @api.depends("partner_id")
     def _compute_document_number(self):
         for record in self:
             if not record.document_number:
                 if record.partner_id.id_numbers:
                     record.document_number = record.partner_id.id_numbers[0].name
 
-    @api.depends("partner_id", "partner_id.id_numbers")
+    @api.depends("partner_id")
     def _compute_document_type(self):
         for record in self:
             if record.partner_id and record.partner_id.id_numbers:
@@ -217,7 +217,6 @@ class PmsCheckinPartner(models.Model):
 
     @api.depends(
         "partner_id",
-        "partner_id.id_numbers",
     )
     def _compute_document_expedition_date(self):
         for record in self:
@@ -227,44 +226,55 @@ class PmsCheckinPartner(models.Model):
                         0
                     ].valid_from
 
-    @api.depends("partner_id", "partner_id.firstname")
+    @api.depends("partner_id")
     def _compute_firstname(self):
         for record in self:
-            if not record.firstname or record.partner_id.firstname:
+            if not record.firstname and record.partner_id.firstname:
                 record.firstname = record.partner_id.firstname
+            elif not record.firstname:
+                record.firstname = False
 
-    @api.depends("partner_id", "partner_id.lastname")
+    @api.depends("partner_id")
     def _compute_lastname(self):
         for record in self:
-            if not record.lastname or record.partner_id.lastname:
+            if not record.lastname and record.partner_id.lastname:
                 record.lastname = record.partner_id.lastname
+            elif not record.lastname:
+                record.lastname = False
 
-    @api.depends("partner_id", "partner_id.lastname2")
+    @api.depends("partner_id")
     def _compute_lastname2(self):
         for record in self:
-            if not record.lastname2 or record.partner_id.lastname2:
+            if not record.lastname2 and record.partner_id.lastname2:
                 record.lastname2 = record.partner_id.lastname2
+            elif not record.lastname2:
+                record.lastname2 = False
 
-    @api.depends("partner_id", "partner_id.birthdate_date")
+    @api.depends("partner_id")
     def _compute_birth_date(self):
         for record in self:
-            if not record.birthdate_date or record.partner_id.birthdate_date:
+            if not record.birthdate_date and record.partner_id.birthdate_date:
                 record.birthdate_date = record.partner_id.birthdate_date
+            elif not record.birthdate_date:
+                record.birthdate_date = False
 
     @api.depends(
         "partner_id",
-        "partner_id.gender",
     )
     def _compute_gender(self):
         for record in self:
-            if not record.gender or record.partner_id.gender:
+            if not record.gender and record.partner_id.gender:
                 record.gender = record.partner_id.gender
+            elif not record.gender:
+                record.gender = False
 
-    @api.depends("partner_id", "partner_id.lastname")
+    @api.depends("partner_id")
     def _compute_nationality(self):
         for record in self:
-            if not record.nationality_id or record.partner_id.nationality_id:
+            if not record.nationality_id and record.partner_id.nationality_id:
                 record.nationality_id = record.partner_id.nationality_id
+            elif not record.nationality_id:
+                record.nationality_id = False
 
     @api.depends("reservation_id", "folio_id", "reservation_id.preferred_room_id")
     def _compute_identifier(self):
@@ -514,6 +524,11 @@ class PmsCheckinPartner(models.Model):
             return ["reservation_id.state", "name"]
         mandatory_fields = [
             "name",
+            "birthdate_date",
+            "gender",
+            "document_number",
+            "document_type",
+            "document_expedition_date",
         ]
 
         return mandatory_fields
@@ -560,6 +575,7 @@ class PmsCheckinPartner(models.Model):
                 raise ValidationError(_("It is not yet checkin day!"))
             if record.reservation_id.checkout <= fields.Date.today():
                 raise ValidationError(_("Its too late to checkin"))
+
             if any(
                 not getattr(record, field) for field in self._checkin_mandatory_fields()
             ):
