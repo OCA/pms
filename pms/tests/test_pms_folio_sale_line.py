@@ -1,5 +1,7 @@
 import datetime
 
+from odoo import fields
+
 from .common import TestPms
 
 
@@ -32,11 +34,13 @@ class TestPmsFolioSaleLine(TestPms):
 
     # RESERVATION LINES
     def test_comp_fsl_rooms_all_same_group(self):
-        # TEST CASE
-        # 2-night reservation and same price, discount & cancel_discount for
-        # all nights
-        # should generate just 1 reservation sale line
-
+        """
+        check the grouping of the reservation lines on the sale line folio
+        when the price, discount match-
+        ------------
+        reservation with 3 nights with the same price,
+        should generate just 1 reservation sale line
+        """
         # ARRANGE
         expected_sale_lines = 1
 
@@ -44,8 +48,35 @@ class TestPmsFolioSaleLine(TestPms):
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "reservation_line_ids": [
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today(),
+                            "price": 20,
+                            "discount": 10,
+                        },
+                    ),
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today() + datetime.timedelta(days=1),
+                            "price": 20,
+                            "discount": 10,
+                        },
+                    ),
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today() + datetime.timedelta(days=2),
+                            "price": 20,
+                            "discount": 10,
+                        },
+                    ),
+                ],
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
