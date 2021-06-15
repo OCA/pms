@@ -27,11 +27,20 @@ class ResPartnerIdNumber(models.Model):
         if hasattr(super(), "_compute_valid_from"):
             super()._compute_field()
         for record in self:
-            expedition_date = record.partner_id.pms_checkin_partner_ids.mapped(
-                "document_expedition_date"
-            )
-            if expedition_date:
-                record.valid_from = expedition_date[0]
+            if not record.valid_from and record.pms_checkin_partner_ids:
+                document_expedition_date = list(
+                    set(
+                        record.pms_checkin_partner_ids.mapped(
+                            "document_expedition_date"
+                        )
+                    )
+                )
+                if len(document_expedition_date) == 1:
+                    record.valid_from = document_expedition_date[0]
+                else:
+                    record.valid_from = False
+            elif not record.valid_from:
+                record.valid_from = False
 
     @api.constrains("partner_id", "category_id")
     def _check_category_id_unique(self):

@@ -115,72 +115,122 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_gender"):
             super()._compute_field()
         for record in self:
-            gender = record.pms_checkin_partner_ids.mapped("gender")
-            if gender:
-                record.gender = gender[0]
+            if not record.gender and record.pms_checkin_partner_ids:
+                gender = list(set(record.pms_checkin_partner_ids.mapped("gender")))
+                if len(gender) == 1:
+                    record.gender = gender[0]
+                else:
+                    record.gender = False
+            elif not record.gender:
+                record.gender = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.birthdate_date")
     def _compute_birthdate_date(self):
         if hasattr(super(), "_compute_birthdate_date"):
             super()._compute_field()
         for record in self:
-            birthdate = record.pms_checkin_partner_ids.mapped("birthdate_date")
-            if birthdate:
-                record.birthdate_date = birthdate[0]
+            if not record.birthdate_date and record.pms_checkin_partner_ids:
+                birthdate = list(
+                    set(record.pms_checkin_partner_ids.mapped("birthdate_date"))
+                )
+                if len(birthdate) == 1:
+                    record.birthdate_date = birthdate[0]
+                else:
+                    record.birthdate_date = False
+            elif not record.birthdate_date:
+                record.birthdate_date = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.nationality_id")
     def _compute_nationality_id(self):
         if hasattr(super(), "_compute_nationality_id"):
             super()._compute_field()
         for record in self:
-            nationality = record.pms_checkin_partner_ids.nationality_id
-            if nationality:
-                record.nationality_id = nationality[0]
+            if not record.nationality_id and record.pms_checkin_partner_ids:
+                nationality_id = list(
+                    set(record.pms_checkin_partner_ids.mapped("nationality_id"))
+                )
+                if len(nationality_id) == 1:
+                    record.nationality_id = nationality_id[0]
+                else:
+                    record.nationality_id = False
+            elif not record.nationality_id:
+                record.nationality_id = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.email")
     def _compute_email(self):
         if hasattr(super(), "_compute_email"):
             super()._compute_field()
-        for record in self:
-            email = record.pms_checkin_partner_ids.mapped("email")
-            if email:
-                record.email = email[0]
+            for record in self:
+                if not record.email and record.pms_checkin_partner_ids:
+                    email = list(set(record.pms_checkin_partner_ids.mapped("email")))
+                    if len(email) == 1:
+                        record.email = email[0]
+                    else:
+                        record.email = False
+                elif not record.email:
+                    record.email = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.mobile")
     def _compute_mobile(self):
         if hasattr(super(), "_compute_mobile"):
             super()._compute_field()
-        for record in self:
-            mobile = record.pms_checkin_partner_ids.mapped("mobile")
-            if mobile:
-                record.mobile = mobile[0]
+            for record in self:
+                if not record.mobile and record.pms_checkin_partner_ids:
+                    mobile = list(set(record.pms_checkin_partner_ids.mapped("mobile")))
+                    if len(mobile) == 1:
+                        record.mobile = mobile[0]
+                    else:
+                        record.mobile = False
+                elif not record.mobile:
+                    record.mobile = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
     def _compute_firstname(self):
         if hasattr(super(), "_compute_firstname"):
             super()._compute_field()
-        for record in self:
-            firstname = record.pms_checkin_partner_ids.mapped("firstname")
-            if firstname:
-                record.firstname = firstname[0]
+            for record in self:
+                if not record.firstname and record.pms_checkin_partner_ids:
+                    firstname = list(
+                        set(record.pms_checkin_partner_ids.mapped("firstname"))
+                    )
+                    if len(firstname) == 1:
+                        record.firstname = firstname[0]
+                    else:
+                        record.firstname = False
+                elif not record.firstname:
+                    record.firstname = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname")
     def _compute_lastname(self):
         if hasattr(super(), "_compute_lastname"):
             super()._compute_field()
-        for record in self:
-            lastname = record.pms_checkin_partner_ids.mapped("lastname")
-            if lastname:
-                record.lastname = lastname[0]
+            for record in self:
+                if not record.lastname and record.pms_checkin_partner_ids:
+                    lastname = list(
+                        set(record.pms_checkin_partner_ids.mapped("lastname"))
+                    )
+                    if len(lastname) == 1:
+                        record.lastname = lastname[0]
+                    else:
+                        record.lastname = False
+                elif not record.lastname:
+                    record.lastname = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname2")
     def _compute_lastname2(self):
         if hasattr(super(), "_compute_lastname2"):
             super()._compute_field()
-        for record in self:
-            lastname2 = record.pms_checkin_partner_ids.mapped("lastname2")
-            if lastname2:
-                record.lastname2 = lastname2[0]
+            for record in self:
+                if not record.lastname2 and record.pms_checkin_partner_ids:
+                    lastname2 = list(
+                        set(record.pms_checkin_partner_ids.mapped("lastname2"))
+                    )
+                    if len(lastname2) == 1:
+                        record.lastname2 = lastname2[0]
+                    else:
+                        record.lastname2 = False
+                elif not record.lastname2:
+                    record.lastname2 = False
 
     def _compute_reservations_count(self):
         # TODO: recuperar las reservas de los folios del partner
