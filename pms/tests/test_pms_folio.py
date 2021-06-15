@@ -262,7 +262,7 @@ class TestPmsFolio(TestPms):
         # )
 
     # TestCases: Payments
-    @freeze_time("1980-11-01")
+    @freeze_time("2000-02-02")
     def test_full_pay_folio(self):
         """
         After making the payment of a folio for the entire amount,
@@ -307,7 +307,7 @@ class TestPmsFolio(TestPms):
             "The pending amount of a folio paid in full has not been zero",
         )
 
-    @freeze_time("1980-11-01")
+    @freeze_time("2000-02-02")
     def test_partial_pay_folio(self):
         """
         After making the payment of a folio for the partial amount,
