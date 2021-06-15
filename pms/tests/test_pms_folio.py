@@ -214,7 +214,7 @@ class TestPmsFolio(TestPms):
 
         reservation1 = self.env["pms.reservation"].create(
             {
-                "room_type_id": self.demo_room_type_double.id,
+                "room_type_id": self.room_type_double.id,
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "folio_id": folio1.id,
