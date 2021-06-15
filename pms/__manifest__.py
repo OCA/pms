@@ -4,7 +4,7 @@
 {
     "name": "PMS (Property Management System)",
     "summary": "A property management system",
-    "version": "14.0.1.0.5",
+    "version": "14.0.1.0.6",
     "development_status": "Alpha",
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
