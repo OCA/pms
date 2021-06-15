@@ -158,8 +158,8 @@ class TestPmsFolio(TestPms):
 
         self.env["pms.reservation"].create(
             {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "folio_id": folio1.id,
+                "room_type_id": self.room_type_double.id,
                 "reservation_line_ids": [
                     (
                         0,
@@ -186,7 +186,6 @@ class TestPmsFolio(TestPms):
                         },
                     ),
                 ],
-                "folio_id": folio1.id,
             }
         )
         # ASSERT
@@ -215,6 +214,7 @@ class TestPmsFolio(TestPms):
 
         reservation1 = self.env["pms.reservation"].create(
             {
+                "room_type_id": self.demo_room_type_double.id,
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "folio_id": folio1.id,
