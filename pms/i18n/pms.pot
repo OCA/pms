@@ -1737,6 +1737,11 @@ msgid "Confirm"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+msgid "Confirm Assigned Room"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Confirm Sale"
 msgstr ""
@@ -3888,6 +3893,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__allowed_room_ids
 msgid "It contains all available rooms for this reservation"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__to_assign
+msgid ""
+"It is True if the room of the reservation has been assigned automatically, "
+"False if it was confirmed by a person in charge"
 msgstr ""
 
 #. module: pms
@@ -7307,11 +7319,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__valid_product_template_attribute_line_ids
 msgid "Technical compute"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__to_assign
-msgid "Technical field"
 msgstr ""
 
 #. module: pms
