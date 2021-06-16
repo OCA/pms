@@ -845,14 +845,11 @@ class AvailabilityWizard(models.TransientModel):
                 if date in rules_to_overwrite.mapped(
                     "date"
                 ) and room_type in rules_to_overwrite.mapped("room_type_id"):
-                    overwrite = rules_to_overwrite.search(
-                        [
-                            ("room_type_id", "=", room_type.id),
-                            ("date", "=", date),
-                        ]
+                    overwrite = rules_to_overwrite.filtered(
+                        lambda x: x.room_type_id == room_type and x.date == date
                     )
                     overwrite.write(vals)
-                    new_items.append(overwrite.id)
+                    new_items += overwrite.ids
                 else:
                     plan_rule = self.env["pms.availability.plan.rule"].create(
                         {
