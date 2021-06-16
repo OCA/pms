@@ -176,6 +176,8 @@ class PmsReservationLine(models.Model):
 
                 # Check if the room assigment is manual or automatic to set the
                 # to_assign value on reservation
+                # REVIEW: SRP Issue?¿ (set reservation to_assign value on
+                # compute_room_id in reservation_line)
                 if (
                     free_room_select
                     and reservation.preferred_room_id.id
