@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests import common, tagged
+from odoo.tests import common
 
 
 @freeze_time("2012-01-14")
@@ -915,7 +915,6 @@ class TestPmsReservations(common.SavepointCase):
             res.to_assign, "Reservation with preferred_room_id set to to_assign = True"
         )
 
-    @tagged("herefail")
     def test_reservation_auto_assign_after_create(self):
         """
         When assigning a room manually to a reservation marked "to be assigned",
@@ -927,6 +926,10 @@ class TestPmsReservations(common.SavepointCase):
         """
         # ARRANGE
         self.create_common_scenario()
+        # set the priority of the rooms to control the room chosen by auto assign
+        self.room1.sequence = 1
+        self.room2.sequence = 2
+
         res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
@@ -938,13 +941,8 @@ class TestPmsReservations(common.SavepointCase):
         )
 
         # ACT
-        # we need to force the change of room assigned automatically (which we do not know)
-        if res.preferred_room_id.id == self.room1.id:
-            res.preferred_room_id = self.room2.id
-        else:
-            res.preferred_room_id.id = self.room1.id
-
-        res.flush()
+        # res shoul be room1 in preferred_room_id (minor sequence)
+        res.preferred_room_id = self.room2.id
 
         # ASSERT
         self.assertFalse(
