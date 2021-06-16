@@ -89,6 +89,15 @@ class PmsProperty(models.Model):
         selection=_tz_get,
     )
 
+    cardex_warning = fields.Text(
+        string="Warning in Cardex",
+        default="Time to access rooms: 14: 00h. "
+        "Departure time: 12: 00h. If the accommodation "
+        "is not left at that time, the establishment will "
+        "charge a day's stay according to current rate that day",
+        help="Notice under the signature on the traveler's ticket.",
+    )
+
     @api.constrains("default_arrival_hour")
     def _check_arrival_hour(self):
         for record in self:
