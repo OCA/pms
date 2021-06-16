@@ -282,7 +282,11 @@ class PmsFolio(models.Model):
         help="The type of the reservation. "
         "Can be 'Normal', 'Staff' or 'Out of Service'",
         default=lambda *a: "normal",
-        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
+        selection=[
+            ("normal", "Normal"),
+            ("staff", "Staff"),
+            ("out_service", "Out of Service"),
+        ],
     )
     date_order = fields.Datetime(
         string="Order Date",
@@ -795,7 +799,7 @@ class PmsFolio(models.Model):
     )
     def _compute_amount(self):
         for record in self:
-            if record.reservation_type in ("staff", "out"):
+            if record.reservation_type in ("staff", "out_service"):
                 vals = {
                     "pending_amount": 0,
                     "invoices_paid": 0,

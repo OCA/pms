@@ -93,7 +93,7 @@
         <record id="pms_folio_4" model="pms.folio">
             <field name="partner_id" ref="main_pms_property" />
             <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">out</field>
+            <field name="reservation_type">out_service</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
                 name="reservation_ids"
@@ -104,7 +104,7 @@
                     'checkout': (DateTime.today() + timedelta(days=17)),
                     'adults': 1,
                     'state': 'confirm',
-                    'reservation_type': 'out',
+                    'reservation_type': 'out_service',
                     'closure_reason_id': ref('pms_room_closure_reason_0'),
                     'out_service_description': 'Change of lighting',
                     })]"
@@ -225,7 +225,7 @@
         <record id="pms_folio_8" model="pms.folio">
             <field name="partner_id" ref="main_pms_property" />
             <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">out</field>
+            <field name="reservation_type">out_service</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field
                 name="reservation_ids"
@@ -236,7 +236,7 @@
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
                     'state': 'confirm',
-                    'reservation_type': 'out',
+                    'reservation_type': 'out_service',
                     'closure_reason_id': ref('pms_room_closure_reason_0'),
                     'out_service_description': 'Door arrangement',
                     })]"

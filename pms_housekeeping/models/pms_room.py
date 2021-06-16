@@ -25,9 +25,9 @@ def kanban_card_color(state):
 class PmsRoom(models.Model):
     _inherit = "pms.room"
 
-    housekeeping_ids = fields.One2many(
+    housekeeping_task_ids = fields.One2many(
         string="Housekeeping tasks",
-        comodel_name="pms.housekeeping",
+        comodel_name="pms.housekeeping.task",
         inverse_name="room_id",
         domain=[("task_date", "=", datetime.now().date())],
     )
@@ -84,7 +84,7 @@ class PmsRoom(models.Model):
             lambda reservation: reservation.date < date_clean
         )
 
-        if today_res.reservation_id.reservation_type == "out":
+        if today_res.reservation_id.reservation_type == "out_service":
             status = "dont_disturb"
             return status
         if len(today_res) == 0:
@@ -117,8 +117,8 @@ class PmsRoom(models.Model):
             for task in tasks:
                 new_task = self.env["pms.housekeeping"]
                 employee = (
-                    task.def_employee_id.id
-                    if len(task.def_employee_id) > 0
+                    task.default_employee_id.id
+                    if len(task.default_employee_id) > 0
                     else room.clean_employee_id.id
                 )
                 new_task.create(
