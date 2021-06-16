@@ -1869,6 +1869,11 @@ msgid "Confirm"
 msgstr "Confirmar"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+msgid "Confirm Assigned Room"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Confirm Sale"
 msgstr "Confirmar Venta"
@@ -4122,6 +4127,13 @@ msgstr ""
 #, fuzzy
 msgid "It contains all available rooms for this reservation"
 msgstr "Ningún checkin fue realizado en esta reserva"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__to_assign
+msgid ""
+"It is True if the room of the reservation has been assigned automatically, "
+"False if it was confirmed by a person in charge"
+msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_checkin_partner.py:0
@@ -7687,12 +7699,6 @@ msgid "Technical compute"
 msgstr "Computación técnica"
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_reservation__to_assign
-#, fuzzy
-msgid "Technical field"
-msgstr "Computación técnica"
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__display_type
 msgid "Technical field for UX purpose."
 msgstr "Campo técnico para fines de UX."
@@ -9035,6 +9041,10 @@ msgstr ""
 msgid ""
 "you cannot have more than one room with the same name in the same property"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Technical field"
+#~ msgstr "Computación técnica"
 
 #, fuzzy
 #~ msgid "On Board Service"
