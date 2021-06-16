@@ -14,6 +14,7 @@
     "installable": True,
     "depends": [
         "base",
+        "base_automation",
         "mail",
         # "account_payment_return",
         # "partner_firstname",
@@ -68,6 +69,7 @@
         "views/folio_portal_templates.xml",
         "views/reservation_portal_templates.xml",
         "wizards/wizard_split_join_swap_reservation.xml",
+        "views/pms_automated_mails_views.xml",
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",
     ],
