@@ -37,6 +37,9 @@
                                 <field name="default_arrival_hour" />
                                 <field name="default_departure_hour" />
                             </group>
+                            <group string="Print in cardex">
+                                <field name="cardex_warning" />
+                            </group>
                         </page>
                         <page string="Rooms" name="property_rooms">
                             <group>
