@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests import common
+from odoo.tests import common, tagged
 
 
 @freeze_time("2012-01-14")
@@ -866,8 +866,94 @@ class TestPmsReservations(common.SavepointCase):
         # ASSERT
         self.assertEqual(r1, reservations[0])
 
-    @freeze_time("1981-11-01")
     def test_reservation_action_assign(self):
+        """
+        Checks the correct operation of the assign method
+        ---------------
+        Create a new reservation with only room_type(autoassign -> to_assign = True),
+        and the we call to action_assign method to confirm the assignation
+        """
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        # ACT
+        res.action_assign()
+        # ASSERT
+        self.assertFalse(res.to_assign, "The reservation should be marked as assigned")
+
+    def test_reservation_auto_assign_on_create(self):
+        """
+        When creating a reservation with a specific room,
+        it is not necessary to mark it as to be assigned
+        ---------------
+        Create a new reservation with specific preferred_room_id,
+        "to_assign" should be set to false automatically
+        """
+        # ARRANGE
+        self.create_common_scenario()
+
+        # ACT
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room1.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        # ASSERT
+        self.assertFalse(
+            res.to_assign, "Reservation with preferred_room_id set to to_assign = True"
+        )
+
+    @tagged("herefail")
+    def test_reservation_auto_assign_after_create(self):
+        """
+        When assigning a room manually to a reservation marked "to be assigned",
+        this field should be automatically unchecked
+        ---------------
+        Create a new reservation without preferred_room_id (only room_type),
+        "to_assign" is True, then set preferred_room_id and "to_assign" should
+        be set to false automatically
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        # ACT
+        # we need to force the change of room assigned automatically (which we do not know)
+        if res.preferred_room_id.id == self.room1.id:
+            res.preferred_room_id = self.room2.id
+        else:
+            res.preferred_room_id.id = self.room1.id
+
+        res.flush()
+
+        # ASSERT
+        self.assertFalse(
+            res.to_assign,
+            "The reservation should be marked as assigned automatically \
+            when assigning the specific room",
+        )
+
+    def test_reservation_to_assign_on_create(self):
         # TEST CASE
         # the reservation action assign
         # change the reservation to 'to_assign' = False
