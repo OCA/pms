@@ -15,12 +15,20 @@
                     <field name="splitted" invisible="True" />
                     <field name="tax_ids" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
+                    <field name="to_assign" invisible="1" />
                     <button
                         name="confirm"
                         string="Confirm"
                         class="oe_highlight"
                         type="object"
                         attrs="{'invisible':[('state','not in',('draft','cancelled'))]}"
+                    />
+                    <button
+                        name="action_assign"
+                        string="Confirm Assigned Room"
+                        class="oe_highlight"
+                        type="object"
+                        attrs="{'invisible':['|',('preferred_room_id','=',False),('to_assign', '=', False)]}"
                     />
                     <button
                         name="action_cancel"
