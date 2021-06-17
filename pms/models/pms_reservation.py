@@ -1340,6 +1340,16 @@ class PmsReservation(models.Model):
                 raise ValidationError(_("booking agency with wrong configuration: "))
 
     # Action methods
+    def print_all_checkins(self):
+        checkins = self.env["pms.checkin.partner"]
+        for record in self:
+            checkins += record.checkin_partner_ids.filtered(
+                lambda s: s.state in ("onboard", "done")
+            )
+        if checkins:
+            return self.env.ref("pms.action_report_viajero").report_action(checkins)
+        else:
+            raise ValidationError(_("Some checkin partners  "))
 
     def open_folio(self):
         action = self.env.ref("pms.open_pms_folio1_form_tree_all").sudo().read()[0]
