@@ -27,10 +27,10 @@ class ResPartnerIdNumber(models.Model):
         if hasattr(super(), "_compute_valid_from"):
             super()._compute_field()
         for record in self:
-            if not record.valid_from and record.pms_checkin_partner_ids:
+            if not record.valid_from and record.partner_id.pms_checkin_partner_ids:
                 document_expedition_date = list(
                     set(
-                        record.pms_checkin_partner_ids.mapped(
+                        record.partner_id.pms_checkin_partner_ids.mapped(
                             "document_expedition_date"
                         )
                     )
