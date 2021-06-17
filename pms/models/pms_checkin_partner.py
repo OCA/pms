@@ -325,13 +325,13 @@ class PmsCheckinPartner(models.Model):
             if not record.name or record.partner_id.name:
                 record.name = record.partner_id.name
 
-    @api.depends("partner_id", "partner_id.email")
+    @api.depends("partner_id")
     def _compute_email(self):
         for record in self:
             if not record.email or record.partner_id.email:
                 record.email = record.partner_id.email
 
-    @api.depends("partner_id", "partner_id.mobile")
+    @api.depends("partner_id")
     def _compute_mobile(self):
         for record in self:
             if not record.mobile or record.partner_id.mobile:
