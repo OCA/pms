@@ -24,7 +24,7 @@
                     <div class="row ">
                         <div class="col-3">
                             <button
-                            name="generate_file"
+                            name="generate_file_from_user_action"
                             class="btn btn-primary btn-sm"
                             type="object"
                             string="Preview file"

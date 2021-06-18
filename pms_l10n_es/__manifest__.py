@@ -24,9 +24,9 @@
         ],
     },
     "data": [
-        # "data/cron_jobs.xml",
-        # "data/queue_data.xml",
-        # "data/queue_job_function_data.xml",
+        "data/cron_jobs.xml",
+        "data/queue_data.xml",
+        "data/queue_job_function_data.xml",
         "security/ir.model.access.csv",
         "views/pms_checkin_partner_views.xml",
         "views/pms_property_views.xml",
