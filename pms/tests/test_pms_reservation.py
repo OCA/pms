@@ -104,6 +104,9 @@ class TestPmsReservations(common.SavepointCase):
             }
         )
         self.demo_user = self.env.ref("base.user_admin")
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
 
     def create_multiproperty_scenario(self):
         self.create_common_scenario()
@@ -831,6 +834,16 @@ class TestPmsReservations(common.SavepointCase):
                 "name": "Miguel",
                 "phone": "654667733",
                 "email": "miguel@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "30065089H",
+                "valid_from": datetime.date.today(),
+                "partner_id": host.id,
             }
         )
         r1 = self.env["pms.reservation"].create(
@@ -1004,6 +1017,16 @@ class TestPmsReservations(common.SavepointCase):
                 "name": "Miguel",
                 "phone": "654667733",
                 "email": "miguel@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "30065089H",
+                "valid_from": datetime.date.today(),
+                "partner_id": host.id,
             }
         )
         r1 = self.env["pms.reservation"].create(
