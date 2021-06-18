@@ -56,12 +56,48 @@
         <record id="document_type_passport" model="res.partner.id_category">
             <field name="name">Passport</field>
             <field name="code">P</field>
-            <field name="has_unique_numbers">True</field>
+<!--            <field name="has_unique_numbers">True</field>-->
         </record>
         <record id="document_type_driving_license" model="res.partner.id_category">
             <field name="name">Driving License</field>
             <field name="code">C</field>
-            <field name="has_unique_numbers">True</field>
+            <field name="validation_code">
+letters = {
+    0: "T",
+    1: "R",
+    2: "W",
+    3: "A",
+    4: "G",
+    5: "M",
+    6: "Y",
+    7: "F",
+    8: "P",
+    9: "D",
+    10: "X",
+    11: "B",
+    12: "N",
+    13: "J",
+    14: "Z",
+    15: "S",
+    16: "Q",
+    17: "V",
+    18: "H",
+    19: "L",
+    20: "C",
+    21: "K",
+    22: "E",
+}
+dni_number = id_number.name[0:8]
+dni_letter = id_number.name[
+    len(id_number.name) - 1 : len(id_number.name)
+]
+if dni_number.isdigit() and not dni_letter.isdigit():
+    if letters.get(int(dni_number) % 23) != dni_letter.upper():
+        failed = True
+else:
+    failed = True
+            </field>
+<!--            <field name="has_unique_numbers">True</field>-->
         </record>
         <record
             id="document_type_identification_document"
@@ -69,17 +105,37 @@
         >
             <field name="name">Identification Document</field>
             <field name="code">I</field>
-            <field name="has_unique_numbers">True</field>
+<!--            <field name="has_unique_numbers">True</field>-->
         </record>
         <record id="document_type_spanish_residence" model="res.partner.id_category">
             <field name="name">Spanish Residence permit</field>
             <field name="code">N</field>
-            <field name="has_unique_numbers">True</field>
+            <field name="validation_code">
+permit_first_letter=id_number.name[0:1]
+permit_last_letter = id_number.name[
+    len(id_number.name) - 1 : len(id_number.name)
+]
+if (permit_first_letter.upper() in ['X','Y']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
+    failed = False
+else:
+    failed = True
+            </field>
+<!--            <field name="has_unique_numbers">True</field>-->
         </record>
         <record id="document_type_european_residence" model="res.partner.id_category">
             <field name="name">European Residence permit</field>
             <field name="code">X</field>
-            <field name="has_unique_numbers">True</field>
+            <field name="validation_code">
+permit_first_letter=id_number.name[0:1]
+permit_last_letter = id_number.name[
+    len(id_number.name) - 1 : len(id_number.name)
+]
+if (permit_first_letter.upper() in ['X','Y']) and id_number.name[1:8].isdigit() and not permit_last_letter.isdigit():
+    failed = False
+else:
+    failed = True
+            </field>
+<!--            <field name="has_unique_numbers">True</field>-->
         </record>
     </data>
 </odoo>
