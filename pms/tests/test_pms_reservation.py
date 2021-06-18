@@ -1294,6 +1294,16 @@ class TestPmsReservations(common.SavepointCase):
                 "name": "Miguel",
                 "phone": "654667733",
                 "email": "miguel@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "30065000H",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.host1.id,
             }
         )
         self.host2 = self.env["res.partner"].create(
@@ -1301,6 +1311,16 @@ class TestPmsReservations(common.SavepointCase):
                 "name": "Brais",
                 "phone": "654437733",
                 "email": "brais@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "30065089H",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.host2.id,
             }
         )
         self.reservation = self.env["pms.reservation"].create(
