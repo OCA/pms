@@ -1,14 +1,16 @@
 import base64
 import datetime
+import io
 import json
 import time
 from datetime import date
 
+import PyPDF2
 import requests
 from bs4 import BeautifulSoup as bs
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import MissingError, ValidationError
 from odoo.modules.module import get_module_resource
 
 
@@ -20,24 +22,27 @@ class TravellerReport(models.TransientModel):
     txt_binary = fields.Binary(string="File Download")
     txt_message = fields.Char(string="File Preview")
 
-    def generate_file(self):
+    def generate_file_from_user_action(self):
 
         # get the active property
         pms_property = self.env["pms.property"].search(
             [("id", "=", self.env.user.get_active_property_ids()[0])]
         )
+        # check if there's institution settings properly established
+        if (
+            not pms_property
+            or not pms_property.institution_property_id
+            or not pms_property.institution_user
+            or not pms_property.institution_password
+        ):
+            raise ValidationError(
+                _("The guest information sending settings is not property updated.")
+            )
 
         # build content
         content = self.generate_checkin_list(pms_property.id)
 
-        if not pms_property.institution_property_id:
-            raise ValidationError(
-                _("The guest information sending settings is not property updated.")
-            )
-        elif not content:
-            raise ValidationError(_("There is no guest information to send."))
-        else:
-            # file creation
+        if content:
             txt_binary = self.env["traveller.report.wizard"].create(
                 {
                     "txt_filename": pms_property.institution_property_id + ".999",
@@ -68,42 +73,27 @@ class TravellerReport(models.TransientModel):
 
             # get the active property
             pms_property = self.env["pms.property"].search([("id", "=", property_id)])
-
-            # check if the GC configuration info is properly set
-            if not (
-                pms_property.name
-                and pms_property.institution_property_id
-                and pms_property.institution_user
-                and pms_property.institution_password
-            ):
-                raise ValidationError(
-                    _("Check the GC configuration to send the guests info")
-                )
-            else:
-                # get checkin partners info to send
-                lines = self.env["pms.checkin.partner"].search(
-                    [
-                        ("state", "=", "onboard"),
-                        ("arrival", ">=", str(date.today()) + " 0:00:00"),
-                        ("arrival", "<=", str(date.today()) + " 23:59:59"),
-                    ]
-                )
-
-                # build the property info record
-                # 1 | property id | property name | date | nº of checkin partners
-
-                content = (
-                    "1|"
-                    + pms_property.institution_property_id.upper()
-                    + "|"
-                    + pms_property.name.upper()
-                    + "|"
-                    + datetime.datetime.now().strftime("%Y%m%d|%H%M")
-                    + "|"
-                    + str(len(lines))
-                    + "\n"
-                )
-
+            # get checkin partners info to send
+            lines = self.env["pms.checkin.partner"].search(
+                [
+                    ("state", "=", "onboard"),
+                    ("arrival", ">=", str(date.today()) + " 0:00:00"),
+                    ("arrival", "<=", str(date.today()) + " 23:59:59"),
+                ]
+            )
+            # build the property info record
+            # 1 | property id | property name | date | nº of checkin partners
+            content = (
+                "1|"
+                + pms_property.institution_property_id.upper()
+                + "|"
+                + pms_property.name.upper()
+                + "|"
+                + datetime.datetime.now().strftime("%Y%m%d|%H%M")
+                + "|"
+                + str(len(lines))
+                + "\n"
+            )
             # build each checkin partner line's record
             # 2|DNI nº|Doc.number|doc.type|exp.date|lastname|lastname2|name|...
             # ...gender|birthdate|nation.|checkin
@@ -198,14 +188,16 @@ class TravellerReport(models.TransientModel):
                     msg += e.select("a")[2].text + "\n"
                 self.env["pms.log.institution.traveller.report"].create(
                     {
-                        "txt_message": msg,
+                        "error_sending_data": True,
+                        "txt_incidencies_from_institution": msg,
                     }
                 )
                 raise ValidationError(msg)
             else:
                 self.env["pms.log.institution.traveller.report"].create(
                     {
-                        "txt_message": "Successful file sending",
+                        "error_sending_data": False,
+                        "txt_message": _("Successful file sending"),
                     }
                 )
                 if called_from_user:
@@ -250,6 +242,10 @@ class TravellerReport(models.TransientModel):
         token = bs(response_pre_login.text, "html.parser").select(
             "input[name='_csrf']"
         )[0]["value"]
+
+        if not token:
+            raise MissingError(_("Could not get token login."))
+
         # do login
         session.post(
             base_url + login_route,
@@ -272,8 +268,12 @@ class TravellerReport(models.TransientModel):
         time.sleep(0.1)
         soup = bs(response_name_file_route.text, "html.parser")
         file_name = soup.select("#msjNombreFichero > b > u")[0].text
+
+        if not file_name:
+            raise MissingError(_("Could not get next file name to send."))
+
         # send file
-        session.post(
+        upload_result = session.post(
             base_url + upload_file_route,
             headers=headers,
             verify=False,
@@ -284,7 +284,12 @@ class TravellerReport(models.TransientModel):
             },
             files={"fichero": (file_name, file_content)},
         )
+
+        if upload_result.status_code != 200:
+            raise MissingError(_("Could not upload file."))
+
         time.sleep(0.1)
+
         # retrieve property data
         response_pre_files_sent_list_route = session.post(
             base_url + pre_get_list_files_sent_route,
@@ -296,7 +301,11 @@ class TravellerReport(models.TransientModel):
                 "_csrf": token,
             },
         )
+        if response_pre_files_sent_list_route.status_code != 200:
+            raise MissingError(_("Could not get property_info."))
+
         time.sleep(0.1)
+
         soup = bs(response_pre_files_sent_list_route.text, "html.parser")
         property_specific_data = {
             "codigoHospederia": soup.select("#codigoHospederia")[0]["value"],
@@ -321,7 +330,7 @@ class TravellerReport(models.TransientModel):
         }
         # retrieve list of sent files
         file_data = dict()
-        for _attempt in range(1, 5):
+        for _attempt in range(1, 10):
             response_files_sent_list_route = session.post(
                 base_url + files_sent_list_route,
                 headers=headers,
@@ -343,10 +352,10 @@ class TravellerReport(models.TransientModel):
                 file_data = file_data[0]
                 break
             else:
-                time.sleep(0.5)
+                time.sleep(1)
 
         if not file_data:
-            raise ValidationError(_("Could not send file"))
+            raise ValidationError(_("Could not get last file sent"))
         else:
             response_last_file_errors_route = session.post(
                 base_url + last_file_errors_route,
@@ -373,6 +382,9 @@ class TravellerReport(models.TransientModel):
                 },
             )
 
+            if response_last_file_errors_route.status_code != 200:
+                raise ValidationError(_("Could last files sent"))
+
             time.sleep(0.1)
             soup = bs(response_last_file_errors_route.text, "html.parser")
             # get file sent pdf report
@@ -381,10 +393,30 @@ class TravellerReport(models.TransientModel):
                 headers=headers,
                 verify=False,
             )
+
+            if response_last_file_errors_route.status_code != 200:
+                raise ValidationError(_("Could last files sent"))
+
             time.sleep(0.1)
+            pdfReader = PyPDF2.PdfFileReader(
+                io.BytesIO(response_last_file_errors_route.content)
+            )
+
+            if (
+                pdfReader.getPage(0).extractText().find("ERRORES Y AVISOS HUESPEDES")
+                == -1
+            ):
+                message = _("Successful file sending")
+                error = False
+            else:
+                message = _("Errors (check the pdf file).")
+                error = True
+
             self.env["pms.log.institution.traveller.report"].create(
                 {
-                    "fileIncidenciesFromInstitution": base64.b64encode(
+                    "error_sending_data": error,
+                    "txt_incidencies_from_institution": message,
+                    "file_incidencies_from_institution": base64.b64encode(
                         response_last_file_errors_route.content
                     ),
                     "txt_filename": file_name + ".pdf",
@@ -400,24 +432,17 @@ class TravellerReport(models.TransientModel):
         )
 
         session.close()
-        # file creation
-        txt_binary = self.env["traveller.report.wizard"].create(
-            {
-                "txt_filename": pms_property.institution_property_id + ".999",
-                "txt_binary": base64.b64encode(response_last_file_errors_route.content),
-                "txt_message": "download pdf report",
+        if called_from_user:
+            message = {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Sent succesfully!"),
+                    "message": _("Successful file sending"),
+                    "sticky": False,
+                },
             }
-        )
-        return {
-            "name": _("Traveller Report"),
-            "res_id": txt_binary.id,
-            "res_model": "traveller.report.wizard",
-            "target": "new",
-            "type": "ir.actions.act_window",
-            "view_id": self.env.ref("pms_l10n_es.traveller_report_wizard").id,
-            "view_mode": "form",
-            "view_type": "form",
-        }
+            return message
 
     def send_file_institution(self, pms_property=False):
         called_from_user = False
@@ -426,11 +451,11 @@ class TravellerReport(models.TransientModel):
             pms_property = self.env["pms.property"].search(
                 [("id", "=", self.env.user.get_active_property_ids()[0])]
             )
-        if not (
-            pms_property
-            and pms_property.institution_property_id
-            and pms_property.institution_user
-            and pms_property.institution_password
+        if (
+            not pms_property
+            or not pms_property.institution_property_id
+            or not pms_property.institution_user
+            or not pms_property.institution_password
         ):
             raise ValidationError(
                 _("The guest information sending settings is not complete.")
@@ -439,9 +464,9 @@ class TravellerReport(models.TransientModel):
         if pms_property.institution == "policia_nacional":
             return self.send_file_pn(file_content, called_from_user, pms_property)
         elif pms_property.institution == "guardia_civil":
-            self.send_file_gc(file_content, called_from_user, pms_property)
+            return self.send_file_gc(file_content, called_from_user, pms_property)
 
     @api.model
-    def send_file_gc_async(self):
+    def send_file_institution_async(self):
         for prop in self.env["pms.property"].search([]):
-            self.with_delay().send_file_gc(prop)
+            self.with_delay().send_file_institution(prop)
