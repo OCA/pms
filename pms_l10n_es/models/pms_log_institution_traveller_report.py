@@ -9,10 +9,14 @@ class PmsLogInstitutionTravellerReport(models.Model):
         string="Date and time",
         default=fields.Datetime.now,
     )
-    txtIncidenciesFromInstitution = fields.Text(
+    error_sending_data = fields.Boolean(
+        string="Error sending data",
+        required=True,
+    )
+    txt_incidencies_from_institution = fields.Text(
         string="Detailed message",
     )
-    fileIncidenciesFromInstitution = fields.Binary(
+    file_incidencies_from_institution = fields.Binary(
         string="Detailed file",
     )
     txt_filename = fields.Text()

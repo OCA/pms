@@ -28,7 +28,7 @@ msgstr ""
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
-msgid "Check the GC configuration to send the guests info"
+msgid "Check the institution configuration to send the guests info"
 msgstr ""
 
 #. module: pms_l10n_es

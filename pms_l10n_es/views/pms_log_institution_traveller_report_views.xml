@@ -8,10 +8,11 @@
                 <sheet>
                     <group>
                         <field name="txt_filename" invisible="1" />
+                        <field name="error_sending_data" />
                         <field name="date" />
-                        <field name="txtIncidenciesFromInstitution" select="1" />
+                        <field name="txt_incidencies_from_institution" select="1" />
                         <field
-                            name="fileIncidenciesFromInstitution"
+                            name="file_incidencies_from_institution"
                             filename="txt_filename"
                             readonly="1"
                         />
@@ -24,12 +25,17 @@
         <field name="name">pms.log.institution.traveller.report.tree</field>
         <field name="model">pms.log.institution.traveller.report</field>
         <field name="arch" type="xml">
-            <tree string=" Property Ubications" create="false">
+            <tree
+                string="Property Ubications"
+                create="false"
+                decoration-danger="error_sending_data"
+            >
                 <field name="date" />
-                <field name="txtIncidenciesFromInstitution" />
+                <field name="error_sending_data" />
+                <field name="txt_incidencies_from_institution" />
                 <field name="txt_filename" string="File" />
                 <field
-                    name="fileIncidenciesFromInstitution"
+                    name="file_incidencies_from_institution"
                     filename="txt_filename"
                     readonly="1"
                     string="Size"

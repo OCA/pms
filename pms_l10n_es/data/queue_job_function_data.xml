@@ -6,7 +6,7 @@
     >
         <field name="model_id" ref="pms_l10n_es.model_traveller_report_wizard" />
         <field name="method">send_file_async</field>
-        <field name="channel_id" ref="pms_l10n_es.channel_gc_file_send" />
+        <field name="channel_id" ref="pms_l10n_es.channel_institution_file_send" />
         <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
     </record>
 </odoo>
