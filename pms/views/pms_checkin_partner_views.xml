@@ -29,9 +29,9 @@
                         class="alert alert-danger"
                         role="danger"
                         style="margin-bottom:0px;"
-                        attrs="{'invisible': [('incongruences','=',False)]}"
+                        attrs="{'invisible': [('partner_incongruences','=',False)]}"
                     >
-                        <field name="incongruences" />
+                        <field name="partner_incongruences" />
                     </div>
                     <group name="group_top">
                         <group name="group_left">

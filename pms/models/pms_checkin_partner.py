@@ -192,10 +192,12 @@ class PmsCheckinPartner(models.Model):
         ondelete="restrict",
     )
 
-    incongruences = fields.Char(
-        string="Incongruences",
-        help="Technical field",
-        compute="_compute_incongruences",
+    partner_incongruences = fields.Char(
+        string="partner_incongruences",
+        help="indicates that some partner fields \
+            on the checkin do not correspond to that of \
+            the associated partner",
+        compute="_compute_partner_incongruences",
     )
 
     @api.depends("partner_id")
@@ -405,25 +407,29 @@ class PmsCheckinPartner(models.Model):
         "nationality_id",
         "email",
         "mobile",
+        "partner_id",
     )
-    def _compute_incongruences(self):
+    def _compute_partner_incongruences(self):
         for record in self:
-            incongruous_fields = ""
+            incongruous_fields = False
             if record.partner_id:
                 for field in record._checkin_partner_fields():
                     if (
                         record.partner_id[field]
                         and record.partner_id[field] != record[field]
                     ):
-                        incongruous_fields += record._fields[field].string + ", "
+                        if not incongruous_fields:
+                            incongruous_fields = record._fields[field].string
+                        else:
+                            incongruous_fields += ", " + record._fields[field].string
                 if incongruous_fields:
-                    record.incongruences = (
-                        incongruous_fields + "field/s don't correspond to saved host"
+                    record.partner_incongruences = (
+                        incongruous_fields + " field/s don't correspond to saved host"
                     )
                 else:
-                    record.incongruences = False
+                    record.partner_incongruences = False
             else:
-                record.incongruences = False
+                record.partner_incongruences = False
 
     @api.constrains("departure", "arrival")
     def _check_departure(self):

@@ -62,6 +62,22 @@
                     </bold>
                 </div>
                 <div
+                    class="alert alert-info"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('partner_incongruences','=',False)]}"
+                >
+                    <field name="partner_incongruences" />
+                    <bold>
+                        <button
+                            class="alert-link"
+                            type="object"
+                            name="open_partner"
+                            string="View Customer"
+                        />
+                    </bold>
+                </div>
+                <div
                     class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
