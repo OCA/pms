@@ -15,7 +15,7 @@ class PmsReservation(models.Model):
     _name = "pms.reservation"
     _description = "Reservation"
     _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
-    _order = "priority desc, create_date desc, write_date desc"
+    _order = "priority asc, create_date desc, write_date desc"
     # TODO:
     #  consider near_to_checkin & pending_notifications to order
     _check_pms_properties_auto = True
@@ -594,22 +594,58 @@ class PmsReservation(models.Model):
         for record in self:
             record.date_order = datetime.datetime.today()
 
-    # TODO:
-    #  consider near_to_checkin & pending_notifications to order
-    @api.depends("checkin")
+    @api.depends(
+        "checkin",
+        "checkout",
+        "state",
+        "folio_payment_state",
+        "to_assign",
+    )
     def _compute_priority(self):
+        # TODO: Notifications priority
         for record in self:
-            record.priority = 0
+            if record.to_assign:
+                record.priority = 1
+            elif record.state in ("arrival_delayed", "departure_delayed"):
+                record.priority = 1
+            elif record.state == "cancelled":
+                if record.pending_amount > 0:
+                    record.priority = 2
+            elif record.state == "onboard":
+                record.priority = record.onboard_priority()
+            elif record.state in ("draf", "confirm"):
+                record.priority = record.reservations_future_priority()
+            elif record.state == "done":
+                record.priority = record.reservations_past_priority()
 
-            # we can give weights for each condition
-            if not record.to_assign:
-                record.priority += 1
-            if not record.allowed_checkin:
-                record.priority += 10
-            if record.allowed_checkout:
-                record.priority += 100
-            if record.state == "onboard" and record.folio_pending_amount > 0:
-                record.priority += 1000
+    def onboard_priority(self):
+        self.ensure_one()
+        if self.pending_amount > 0:
+            return (self.checkout - fields.date.today()).days
+
+    def reservations_future_priority(self):
+        self.ensure_one()
+        days_for_checkin = (self.checkin - fields.date.today()).days
+        if days_for_checkin < 3:
+            return 5 + days_for_checkin
+        elif days_for_checkin < 20:
+            return 15 + days_for_checkin
+        else:
+            return 50 + days_for_checkin
+
+    def reservations_past_priority(self):
+        self.ensure_one()
+        if self.pending_amount > 0:
+            return 3
+        days_from_checkout = (fields.date.today() - self.checkout).days
+        if days_from_checkout < 1:
+            return 6
+        elif days_from_checkout < 15:
+            return 50 + days_from_checkout
+        elif days_from_checkout < 90:
+            return 500 + days_from_checkout
+        elif days_from_checkout < 300:
+            return 1000 + days_from_checkout
 
     @api.depends("pricelist_id", "room_type_id")
     def _compute_board_service_room_id(self):
@@ -1594,6 +1630,12 @@ class PmsReservation(models.Model):
         for res in res_without_checkin:
             msg = _("No checkin was made for this reservation")
             res.message_post(subject=_("No Checkins!"), subtype="mt_comment", body=msg)
+        return True
+
+    @api.model
+    def update_daily_priority_reservation(self):
+        reservations = self.env["pms.reservation"].search([("priority", "<", 1000)])
+        reservations._compute_priority()
         return True
 
     def overbooking_button(self):
