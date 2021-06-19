@@ -309,7 +309,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
 
 class ReservationLinesToSplit(models.TransientModel):
     _name = "pms.wizard.reservation.lines.split"
-    _decription = "Lines available to split"
+    _description = "Lines available to split"
 
     reservation_wizard_id = fields.Many2one(
         string="Reservation Wizard",
