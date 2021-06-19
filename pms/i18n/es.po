@@ -72,8 +72,8 @@ msgstr "%s no encontrado en los checkins (%s)"
 #. module: pms
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
-msgid "%s: No room available."
-msgstr "%s: Habitación no disponible."
+msgid "%s: No room available in %s <-> %s."
+msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_reservation_line.py:0
@@ -6458,6 +6458,12 @@ msgid "Reservation availability plan"
 msgstr "Plan de Disponibilidad de la Reserva"
 
 #. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "Reservation dates should be consecutives"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__reservation_id
 msgid "Reservation in which the service is included"
 msgstr ""
@@ -7801,6 +7807,12 @@ msgid "The checkin partners on a folio"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "The checkout date must be greater than the checkin date"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/res_users.py:0
 #, python-format
 msgid "The chosen property is not in the allowed properties for this user"
@@ -9041,6 +9053,9 @@ msgstr ""
 msgid ""
 "you cannot have more than one room with the same name in the same property"
 msgstr ""
+
+#~ msgid "%s: No room available."
+#~ msgstr "%s: Habitación no disponible."
 
 #, fuzzy
 #~ msgid "Technical field"
