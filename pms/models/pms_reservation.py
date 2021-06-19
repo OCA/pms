@@ -480,17 +480,19 @@ class PmsReservation(models.Model):
         readonly=False,
         compute="_compute_mobile",
     )
+    partner_internal_comment = fields.Text(
+        string="Internal Partner Notes",
+        help="Internal reservation comment",
+        store=True,
+        readonly=False,
+        compute="_compute_partner_internal_comment",
+    )
     partner_incongruences = fields.Char(
         string="partner_incongruences",
         help="indicates that some partner fields \
             on the reservation do not correspond to that of \
             the associated partner",
         compute="_compute_partner_incongruences",
-    )
-    partner_internal_comment = fields.Text(
-        string="Internal Partner Notes",
-        help="Internal reservation comment",
-        related="partner_id.comment",
     )
     partner_requests = fields.Text(
         string="Partner Requests",
@@ -1183,6 +1185,14 @@ class PmsReservation(models.Model):
             elif not record.partner_mobile:
                 record.partner_mobile = False
 
+    @api.depends("partner_id", "partner_id.comment")
+    def _compute_partner_internal_comment(self):
+        for record in self:
+            if record.partner_id and not record.partner_internal_comment:
+                record.partner_internal_comment = record.partner_id.comment
+            elif not record.partner_internal_comment:
+                record.partner_internal_comment = False
+
     @api.depends(
         "partner_name",
         "partner_email",
@@ -1478,6 +1488,7 @@ class PmsReservation(models.Model):
         if not (name == "" and operator == "ilike"):
             args += [
                 "|",
+                ("name", operator, name),
                 ("folio_id.name", operator, name),
                 ("preferred_room_id.name", operator, name),
             ]
@@ -1488,9 +1499,7 @@ class PmsReservation(models.Model):
     def name_get(self):
         result = []
         for res in self:
-            name = u"{} ({})".format(
-                res.folio_id.name, res.rooms if res.rooms else "No room"
-            )
+            name = u"{} ({})".format(res.name, res.rooms if res.rooms else "No room")
             result.append((res.id, name))
         return result
 

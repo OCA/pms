@@ -161,18 +161,6 @@
                     <h2>
                         <field name="name" />
                     </h2>
-                    <h1>
-                        <field
-                            name="partner_name"
-                            placeholder="Guest"
-                            attrs="{'invisible':[('reservation_type','in',('out'))]}"
-                        />
-                        <field
-                            name="closure_reason_id"
-                            placeholder="Closure reason"
-                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"
-                        />
-                    </h1>
                     <group col="8">
                         <group
                             colspan="2"
@@ -180,9 +168,32 @@
                             string="General Info"
                             name="contact_details"
                         >
-                            <field name="email" placeholder="email" />
-                            <field name="mobile" placeholder="mobile" />
-                            <field name="partner_internal_comment" />
+                            <field
+                                name="partner_name"
+                                placeholder="Guest"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="email"
+                                placeholder="email"
+                                widget="email"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="mobile"
+                                placeholder="mobile"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="partner_internal_comment"
+                                placeholder="Comments about the customer"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="closure_reason_id"
+                                placeholder="Closure reason"
+                                attrs="{'invisible':[('reservation_type','not in',('out'))]}"
+                            />
                             <field
                                 name="segmentation_ids"
                                 widget="many2many_tags"
