@@ -459,20 +459,26 @@ class PmsReservation(models.Model):
         help="Used to notify is the reservation folio has other reservations/services",
         compute="_compute_shared_folio",
     )
+    partner_name = fields.Char(
+        string="Name",
+        help="Customer Name",
+        store=True,
+        readonly=False,
+        compute="_compute_partner_name",
+    )
     partner_email = fields.Char(
         string="E-mail",
-        help="E-mail of the checkin partner associated to the reservation",
-        related="partner_id.email",
+        help="Customer E-mail",
+        store=True,
+        readonly=False,
+        compute="_compute_email",
     )
     partner_mobile = fields.Char(
         string="Mobile",
-        help="Mobile of the checkin partner associated to the reservation",
-        related="partner_id.mobile",
-    )
-    partner_phone = fields.Char(
-        string="Phone",
-        help="Phone of the checkin partner associated to the reservation",
-        related="partner_id.phone",
+        help="Customer Mobile",
+        store=True,
+        readonly=False,
+        compute="_compute_mobile",
     )
     partner_internal_comment = fields.Text(
         string="Internal Partner Notes",
@@ -483,7 +489,6 @@ class PmsReservation(models.Model):
         string="Partner Requests",
         help="Guest requests",
     )
-
     folio_internal_comment = fields.Text(
         string="Internal Folio Notes",
         help="Internal comment for folio",
@@ -1146,6 +1151,30 @@ class PmsReservation(models.Model):
                 )
             else:
                 record.shared_folio = False
+
+    @api.depends("partner_id", "partner_id.name")
+    def _compute_partner_name(self):
+        for record in self:
+            if record.partner_id and not record.partner_name:
+                record.partner_name = record.partner_id.name
+            elif not record.partner_name:
+                record.partner_name = False
+
+    @api.depends("partner_id", "partner_id.email")
+    def _compute_email(self):
+        for record in self:
+            if record.partner_id and not record.partner_email:
+                record.partner_email = record.partner_id.email
+            elif not record.partner_email:
+                record.partner_email = False
+
+    @api.depends("partner_id", "partner_id.mobile")
+    def _compute_mobile(self):
+        for record in self:
+            if record.partner_id and not record.partner_mobile:
+                record.partner_mobile = record.partner_id.mobile
+            elif not record.partner_mobile:
+                record.partner_mobile = False
 
     def _compute_checkin_partner_count(self):
         for record in self:
