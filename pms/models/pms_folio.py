@@ -633,6 +633,10 @@ class PmsFolio(models.Model):
         for folio in self:
             if folio.agency_id and folio.agency_id.invoice_to_agency:
                 folio.partner_id = folio.agency_id.id
+            elif folio.agency_id and not folio.partner_name:
+                # if the customer not is the agency but we dont know the customer's name,
+                # set the name provisional
+                folio.partner_name = _("Reservation from ") + folio.agency_id.name
             elif not folio.partner_id:
                 folio.partner_id = False
 

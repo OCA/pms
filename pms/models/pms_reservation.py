@@ -698,12 +698,10 @@ class PmsReservation(models.Model):
                 )
                 reservation.allowed_room_ids = rooms_available
 
-    @api.depends("reservation_type", "agency_id", "folio_id")
+    @api.depends("reservation_type", "agency_id", "folio_id", "folio_id.agency_id")
     def _compute_partner_id(self):
         for reservation in self:
-            if reservation.reservation_type == "out":
-                reservation.partner_id = reservation.pms_property_id.partner_id.id
-            elif not reservation.partner_id:
+            if not reservation.partner_id:
                 if reservation.folio_id:
                     reservation.partner_id = reservation.folio_id.partner_id
                 elif reservation.agency_id:
