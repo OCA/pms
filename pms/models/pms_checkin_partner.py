@@ -12,6 +12,7 @@ from odoo.exceptions import ValidationError
 class PmsCheckinPartner(models.Model):
     _name = "pms.checkin.partner"
     _description = "Partner Checkins"
+    _inherit = ["portal.mixin"]
     _rec_name = "identifier"
     _check_pms_properties_auto = True
 
@@ -177,6 +178,28 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.mobile:
                 record.mobile = record.partner_id.mobile
+
+
+    def _compute_access_url(self):
+        super(PmsCheckinPartner, self)._compute_access_url()
+        for checkin in self:
+            checkin.access_url = "/my/precheckin/%s" % (checkin.id)
+
+    @api.model
+    def _checkin_mandatory_fields(self, depends=False):
+        # api.depends need "reservation_id.state" in the lambda function
+        if depends:
+            return ["reservation_id.state", "name"]
+        return ["name"]
+
+    @api.model
+    def _checkin_partner_fields(self):
+        # api.depends need "reservation_id.state" in the lambda function
+        checkin_fields = self._checkin_mandatory_fields()
+        checkin_fields.extend(["mobile", "email"])
+        return checkin_fields
+
+    # Constraints and onchanges
 
     @api.constrains("departure", "arrival")
     def _check_departure(self):

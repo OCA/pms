@@ -926,6 +926,11 @@ class PmsReservation(models.Model):
         for reservation in self:
             reservation.access_url = "/my/reservations/%s" % (reservation.id)
 
+    def _compute_precheckin_url(self):
+        super(PmsReservation, self)._compute_access_url()
+        for reservation in self:
+            reservation.access_url = "/my/reservations/precheckin/%s" % (reservation.id)
+            
     @api.depends("reservation_line_ids")
     def _compute_checkin(self):
         """
