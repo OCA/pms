@@ -338,6 +338,13 @@ class PmsFolio(models.Model):
         readonly=False,
         compute="_compute_mobile",
     )
+    partner_incongruences = fields.Char(
+        string="partner_incongruences",
+        help="indicates that some partner fields \
+            on the folio do not correspond to that of \
+            the associated partner",
+        compute="_compute_partner_incongruences",
+    )
     partner_internal_comment = fields.Text(
         string="Internal Partner Notes",
         help="Internal notes of the partner",
@@ -770,6 +777,36 @@ class PmsFolio(models.Model):
             elif not record.mobile:
                 record.mobile = False
 
+    @api.depends(
+        "partner_name",
+        "email",
+        "mobile",
+        "partner_id",
+    )
+    def _compute_partner_incongruences(self):
+        fields_mapping = {
+            "partner_name": "name",
+            "email": "email",
+            "mobile": "mobile",
+        }
+        for record in self:
+            incongruous_fields = False
+            if record.partner_id:
+                for k, v in fields_mapping.items():
+                    if record.partner_id[v] and record.partner_id[v] != record[k]:
+                        if not incongruous_fields:
+                            incongruous_fields = v
+                        else:
+                            incongruous_fields += ", " + v
+                if incongruous_fields:
+                    record.partner_incongruences = (
+                        incongruous_fields + " field/s don't correspond to saved host"
+                    )
+                else:
+                    record.partner_incongruences = False
+            else:
+                record.partner_incongruences = False
+
     @api.depends("sale_line_ids.price_total")
     def _compute_amount_all(self):
         """
@@ -976,6 +1013,20 @@ class PmsFolio(models.Model):
                 "default_partner_id": partner,
             },
             "target": "new",
+        }
+
+    def open_partner(self):
+        """ Utility method used to add an "View Customer" button in folio views """
+        self.ensure_one()
+        partner_form_id = self.env.ref("base.view_partner_address_form").id
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "res.partner",
+            "view_mode": "form",
+            "views": [(partner_form_id, "form")],
+            "res_id": self.partner_id.id,
+            "target": "new",
+            "flags": {"form": {"action_buttons": True}},
         }
 
     def open_moves_folio(self):

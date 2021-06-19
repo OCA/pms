@@ -39,6 +39,22 @@
                         statusbar_visible="draft,sent,sale,done"
                     />
                 </header>
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('partner_incongruences','=',False)]}"
+                >
+                    <field name="partner_incongruences" />
+                    <bold>
+                        <button
+                            class="alert-link"
+                            type="object"
+                            name="open_partner"
+                            string="View Customer"
+                        />
+                    </bold>
+                </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button

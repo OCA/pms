@@ -3788,8 +3788,8 @@ msgid "Income Account"
 msgstr "Cuenta de Ingresos"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__incongruences
-msgid "Incongruences"
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__partner_incongruences
+msgid "partner_incongruences"
 msgstr ""
 
 #. module: pms
@@ -7963,7 +7963,7 @@ msgstr "Computación técnica"
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_id
-#: model:ir.model.fields,help:pms.field_pms_checkin_partner__incongruences
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_incongruences
 #, fuzzy
 msgid "Technical field"
 msgstr "Computación técnica"

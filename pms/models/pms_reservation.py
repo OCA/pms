@@ -480,6 +480,13 @@ class PmsReservation(models.Model):
         readonly=False,
         compute="_compute_mobile",
     )
+    partner_incongruences = fields.Char(
+        string="partner_incongruences",
+        help="indicates that some partner fields \
+            on the reservation do not correspond to that of \
+            the associated partner",
+        compute="_compute_partner_incongruences",
+    )
     partner_internal_comment = fields.Text(
         string="Internal Partner Notes",
         help="Internal reservation comment",
@@ -1176,6 +1183,36 @@ class PmsReservation(models.Model):
             elif not record.partner_mobile:
                 record.partner_mobile = False
 
+    @api.depends(
+        "partner_name",
+        "partner_email",
+        "partner_mobile",
+        "partner_id",
+    )
+    def _compute_partner_incongruences(self):
+        fields_mapping = {
+            "partner_name": "name",
+            "partner_email": "email",
+            "partner_mobile": "mobile",
+        }
+        for record in self:
+            incongruous_fields = False
+            if record.partner_id:
+                for k, v in fields_mapping.items():
+                    if record.partner_id[v] and record.partner_id[v] != record[k]:
+                        if not incongruous_fields:
+                            incongruous_fields = v
+                        else:
+                            incongruous_fields += ", " + v
+                if incongruous_fields:
+                    record.partner_incongruences = (
+                        incongruous_fields + " field/s don't correspond to saved host"
+                    )
+                else:
+                    record.partner_incongruences = False
+            else:
+                record.partner_incongruences = False
+
     def _compute_checkin_partner_count(self):
         for record in self:
             if record.reservation_type != "out":
@@ -1369,6 +1406,20 @@ class PmsReservation(models.Model):
                 raise ValidationError(_("booking agency with wrong configuration: "))
 
     # Action methods
+    def open_partner(self):
+        """ Utility method used to add an "View Customer" button in folio views """
+        self.ensure_one()
+        partner_form_id = self.env.ref("base.view_partner_address_form").id
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "res.partner",
+            "view_mode": "form",
+            "views": [(partner_form_id, "form")],
+            "res_id": self.partner_id.id,
+            "target": "new",
+            "flags": {"form": {"action_buttons": True}},
+        }
+
     def print_all_checkins(self):
         checkins = self.env["pms.checkin.partner"]
         for record in self:
