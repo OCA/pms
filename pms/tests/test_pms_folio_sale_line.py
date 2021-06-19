@@ -1,43 +1,31 @@
 import datetime
 
+from odoo import fields
+
 from .common import TestPms
 
 
 class TestPmsFolioSaleLine(TestPms):
-    def create_common_scenario(self):
-        # create a room type availability
-        self.room_type_availability = self.env["pms.availability.plan"].create(
-            {"name": "Availability plan for TEST"}
-        )
-
-        # create a property
-        self.property = self.env["pms.property"].create(
-            {
-                "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-            }
-        )
-
-        # create room type class
-        self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "default_code": "ROOM"}
-        )
+    def setUp(self):
+        """
+        - common + room_type_avalability_plan
+        """
+        super().setUp()
 
         # create room type
         self.room_type_double = self.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class.id,
+                "class_id": self.room_type_class1.id,
                 "price": 25,
             }
         )
         # create room
         self.room1 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 101",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
@@ -46,21 +34,49 @@ class TestPmsFolioSaleLine(TestPms):
 
     # RESERVATION LINES
     def test_comp_fsl_rooms_all_same_group(self):
-        # TEST CASE
-        # 2-night reservation and same price, discount & cancel_discount for
-        # all nights
-        # should generate just 1 reservation sale line
-
+        """
+        check the grouping of the reservation lines on the sale line folio
+        when the price, discount match-
+        ------------
+        reservation with 3 nights with the same price,
+        should generate just 1 reservation sale line
+        """
         # ARRANGE
         expected_sale_lines = 1
-        self.create_common_scenario()
 
         # ACT
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "pms_property_id": self.pms_property1.id,
+                "reservation_line_ids": [
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today(),
+                            "price": 20,
+                            "discount": 10,
+                        },
+                    ),
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today() + datetime.timedelta(days=1),
+                            "price": 20,
+                            "discount": 10,
+                        },
+                    ),
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today() + datetime.timedelta(days=2),
+                            "price": 20,
+                            "discount": 10,
+                        },
+                    ),
+                ],
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
@@ -81,10 +97,9 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 2
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -112,10 +127,9 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 2
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -143,10 +157,9 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 2
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -175,10 +188,9 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_sale_lines = 1
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -207,10 +219,9 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -242,10 +253,9 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -278,10 +288,9 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -315,7 +324,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -345,7 +353,7 @@ class TestPmsFolioSaleLine(TestPms):
         # ACT
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -375,7 +383,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -404,7 +411,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -435,7 +442,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -464,7 +470,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -498,7 +504,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -527,7 +532,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -561,7 +566,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_board_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -590,7 +594,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -623,7 +627,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same board service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -651,7 +654,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -684,7 +687,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same board service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -716,7 +718,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -751,7 +753,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same board service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -783,7 +784,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -821,7 +822,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -832,7 +832,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -871,7 +871,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -882,7 +881,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -923,7 +922,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -934,7 +932,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -976,7 +974,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -987,7 +984,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -1030,7 +1027,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_extra_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1041,7 +1037,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -1082,7 +1078,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1093,7 +1088,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -1134,7 +1129,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1145,7 +1139,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -1187,7 +1181,6 @@ class TestPmsFolioSaleLine(TestPms):
         # Should keep the same reservation service sales line record.
 
         # ARRANGE
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1198,7 +1191,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -1220,7 +1213,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ACT
         r_test.service_ids.filtered(
-            lambda x: x.id == extra_service
+            lambda x: x.id == extra_service.id
         ).service_line_ids.price_unit = 50
         r_test.service_ids.service_line_ids.flush()
 
@@ -1242,7 +1235,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_folio_service_sale_lines = 1
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1250,7 +1242,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
@@ -1289,7 +1281,6 @@ class TestPmsFolioSaleLine(TestPms):
 
         # ARRANGE
         expected_folio_service_sale_lines = 2
-        self.create_common_scenario()
         product_test1 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1303,7 +1294,7 @@ class TestPmsFolioSaleLine(TestPms):
 
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
