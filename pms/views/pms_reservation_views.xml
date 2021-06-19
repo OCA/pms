@@ -130,8 +130,8 @@
                             type="object"
                             icon="fa-print"
                             attrs="{'invisible':[
-                        ('checkin_partner_ids','=', [])
-                    ]}"
+                                ('checkin_partner_ids','=', [])
+                            ]}"
                         />
                         <button
                             name="preview_reservation"
@@ -221,55 +221,26 @@
                         bg_color="bg-warning"
                         attrs="{'invisible': [('folio_payment_state', '!=', 'partial')]}"
                     />
-                    <span
-                        class="label label-danger"
+                    <div
+                        class="card bg-danger mb8"
                         attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
                     >
-                        Cancelled Reservation!
-                    </span>
-                    <span
-                        class="label label-warning"
+                        <div class="card-body bg-danger">
+                            <i class="fa fa-danger" /> Cancelled Reservation!
+                        </div>
+                    </div>
+                    <div
+                        class="card bg-warning mb8"
                         attrs="{'invisible': [('overbooking', '=', False)]}"
                     >
-                        OverBooking!
-                    </span>
+                        <div class="card-body bg-warning">
+                            <i class="fa fa-warning" /> OverBooking
+                        </div>
+                    </div>
                     <h1>
-                        <field nolabel="1" colspan="2" name="name" />
-                        <field
-                            name="room_type_id"
-                            placeholder="Room Type"
-                            on_change="1"
-                            nolabel="1"
-                            context="{'checkin': checkin, 'checkout': checkout, 'pms_property_id':pms_property_id, 'pricelist_id':pricelist_id}"
-                            options="{'no_create': True,'no_open': True}"
-                            style="margin-right: 30px;"
-                        />
-                        <field
-                            name="partner_name"
-                            default_focus="1"
-                            placeholder="Lastname, Firstname"
-                            attrs="{'invisible':[('reservation_type','in',('out'))]}"
-                            required="1"
-                        />
-                        <field name="partner_id" invisible="1" />
-                        <field
-                            name="closure_reason_id"
-                            default_focus="1"
-                            options="{'no_create': True,'no_open': True}"
-                            placeholder="Closure Reason"
-                            attrs="{'invisible':[('reservation_type','not in',('out'))]}"
-                        />
+                        <field nolabel="1" name="name" />
                     </h1>
                     <h3>
-                        <field
-                            name="preferred_room_id"
-                            select="1"
-                            nolabel="1"
-                            options="{'no_create': True,'no_open': True}"
-                            placeholder="Room"
-                            style="margin-right: 30px;"
-                            attrs="{'invisible': [('splitted','=',True)]}"
-                        />
                         <field
                             name="checkin"
                             widget="daterange"
@@ -290,6 +261,30 @@
                             options="{'related_start_date': 'checkin'}"
                         />
                     </h3>
+                    <h3>
+                        <field
+                            name="room_type_id"
+                            placeholder="Room Type"
+                            on_change="1"
+                            nolabel="1"
+                            context="{'checkin': checkin, 'checkout': checkout, 'pms_property_id':pms_property_id, 'pricelist_id':pricelist_id}"
+                            options="{'no_create': True,'no_open': True}"
+                        />
+                        <i
+                            class="fa fa-long-arrow-right mx-2"
+                            aria-label="Arrow icon"
+                            title="Arrow"
+                        />
+                        <field
+                            name="preferred_room_id"
+                            select="1"
+                            nolabel="1"
+                            options="{'no_create': True,'no_open': True}"
+                            placeholder="Room"
+                            style="margin-right: 30px;"
+                            attrs="{'invisible': [('splitted','=',True)]}"
+                        />
+                    </h3>
                     <field
                         name="out_service_description"
                         placeholder="Out service description"
@@ -302,35 +297,33 @@
                             string="General Info"
                             name="contact_details"
                         >
+                            <field name="partner_id" invisible="1" />
+                            <field
+                                name="partner_name"
+                                placeholder="Guest"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
                             <field
                                 name="partner_email"
-                                colspan="2"
-                                nolabel="1"
                                 placeholder="email"
                                 widget="email"
-                                force_save="1"
-                                attrs="{'invisible': [('reservation_type','in',('out'))],
-                                       'readonly': [('partner_id', '!=', False),
-                                                   ('partner_email','!=', False)]}"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
                                 name="partner_mobile"
-                                colspan="2"
-                                nolabel="1"
                                 placeholder="mobile"
                                 widget="phone"
-                                force_save="1"
-                                attrs="{'invisible': [('reservation_type','in',('out'))],
-                                       'readonly': [('partner_id', '!=', False),
-                                                   ('partner_mobile','!=', False)]}"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
-                                placeholder="Partner Notes"
-                                colspan="2"
-                                nolabel="1"
                                 name="partner_internal_comment"
-                                string="Partner Note"
-                                attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                                placeholder="Comments about the customer"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="closure_reason_id"
+                                placeholder="Closure reason"
+                                attrs="{'invisible':[('reservation_type','not in',('out'))]}"
                             />
                             <field name="nights" />
                             <field placeholder="Arrival Hour" name="arrival_hour" />
@@ -786,6 +779,7 @@
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
             <search string="Reservation Detail">
+                <field name="name" />
                 <field name="partner_id" />
                 <field name="folio_id" />
                 <field name="agency_id" />
