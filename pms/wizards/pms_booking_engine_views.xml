@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <odoo>
-    <record id="folio_wizard" model="ir.ui.view">
+    <record id="booking_engine" model="ir.ui.view">
         <field name="name">Folio Wizard</field>
-        <field name="model">pms.folio.wizard</field>
+        <field name="model">pms.booking.engine</field>
         <field name="arch" type="xml">
             <form class="pt-1">
                 <div class="row">
@@ -141,19 +141,19 @@
         </field>
     </record>
 
-    <record id="action_wizard_folio" model="ir.actions.act_window">
+    <record id="action_booking_engine" model="ir.actions.act_window">
         <field name="name">Folio creation</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">pms.folio.wizard</field>
-        <field name="view_id" ref="folio_wizard" />
+        <field name="res_model">pms.booking.engine</field>
+        <field name="view_id" ref="booking_engine" />
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
     <menuitem
         name="Booking Engine"
-        id="menu_pms_folio_wizard"
-        action="action_wizard_folio"
+        id="menu_pms_booking_engine"
+        action="action_booking_engine"
         sequence="55"
         parent="pms.menu_reservations"
     />

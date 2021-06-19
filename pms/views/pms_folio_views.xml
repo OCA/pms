@@ -140,7 +140,7 @@
                         <button
                             type="action"
                             class="oe_stat_button"
-                            name="%(action_wizard_folio)d"
+                            name="%(action_booking_engine)d"
                             icon="fa-users"
                             context="{'default_folio_id': id, 'default_partner_id': partner_id, 'default_pricelist_id': pricelist_id}"
                         >

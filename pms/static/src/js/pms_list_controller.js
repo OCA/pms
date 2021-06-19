@@ -11,7 +11,7 @@ odoo.define("booking.engine.tree", function (require) {
                 self.do_action({
                     name: "Booking Engine",
                     type: "ir.actions.act_window",
-                    res_model: "pms.folio.wizard",
+                    res_model: "pms.booking.engine",
                     target: "new",
                     views: [[false, "form"]],
                     context: {is_modal: true},

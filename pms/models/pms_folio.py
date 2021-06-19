@@ -987,7 +987,7 @@ class PmsFolio(models.Model):
     def _check_required_partner_name(self):
         for record in self:
             if not record.partner_name:
-                raise models.ValidationError(_("You musyt assign a customer name"))
+                raise models.ValidationError(_("You must assign a customer name"))
 
     @api.model
     def create(self, vals):

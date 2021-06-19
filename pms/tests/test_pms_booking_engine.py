@@ -202,7 +202,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         ]
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -213,7 +213,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
         # force pricelist load
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -234,11 +234,11 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         for discount in discounts:
             with self.subTest(k=discount):
                 # ACT
-                wizard_folio.discount = discount["discount"]
+                booking_engine.discount = discount["discount"]
 
                 # ASSERT
                 self.assertEqual(
-                    wizard_folio.total_price_folio,
+                    booking_engine.total_price_folio,
                     discount["expected_price"],
                     "The total price calculation is wrong",
                 )
@@ -284,7 +284,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         pricelist_item.flush()
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -293,7 +293,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -315,7 +315,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
         # ASSERT
         self.assertEqual(
-            wizard_folio.total_price_folio,
+            booking_engine.total_price_folio,
             expected_price_total,
             "The total price calculation is wrong",
         )
@@ -355,7 +355,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #     pricelist_item.flush()
 
     #     # create folio wizard with partner id => pricelist & start-end dates
-    #     wizard_folio = self.env["pms.folio.wizard"].create(
+    #     booking_engine = self.env["pms.booking.engine"].create(
     #         {
     #             "start_date": checkin,
     #             "end_date": checkout,
@@ -363,7 +363,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #             "pricelist_id": self.test_pricelist.id,
     #         }
     #     )
-    #     wizard_folio.flush()
+    #     booking_engine.flush()
 
     #     # availability items belonging to test property
     #     lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -395,7 +395,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
     #             # ASSERT
     #             self.assertEqual(
-    #                 wizard_folio.total_price_folio,
+    #                 booking_engine.total_price_folio,
     #                 tc["expected_price"],
     #                 "The total price calculation is wrong",
     #             )
@@ -413,7 +413,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -422,7 +422,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -440,7 +440,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         lines_availability_test[0].num_rooms_selected = value
 
         # ACT
-        wizard_folio.create_folio()
+        booking_engine.create_folio()
 
         # ASSERT
         folio = self.env["pms.folio"].search_count(
@@ -462,7 +462,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -471,7 +471,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -489,10 +489,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         lines_availability_test[0].num_rooms_selected = value
         lines_availability_test[0].value_num_rooms_selected = 2
         lines_availability_test.flush()
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # ACT
-        wizard_folio.create_folio()
+        booking_engine.create_folio()
 
         folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
         folio.flush()
@@ -513,7 +513,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -522,7 +522,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -541,7 +541,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         lines_availability_test[0].value_num_rooms_selected = 1
 
         # ACT
-        wizard_folio.create_folio()
+        booking_engine.create_folio()
         vals = {
             "partner_id": self.partner_id.id,
             "pricelist_id": self.test_pricelist.id,
@@ -570,7 +570,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         checkout = fields.date.today() + datetime.timedelta(days=1)
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -579,7 +579,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -598,7 +598,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         lines_availability_test[0].value_num_rooms_selected = 1
 
         # ACT
-        wizard_folio.create_folio()
+        booking_engine.create_folio()
 
         folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
 
@@ -639,7 +639,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         discount = 0.5
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -649,7 +649,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -668,7 +668,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         lines_availability_test[0].value_num_rooms_selected = 1
 
         # ACT
-        wizard_folio.create_folio()
+        booking_engine.create_folio()
 
         folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
 
@@ -705,7 +705,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -714,9 +714,9 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
-        room_type_plan_avail = wizard_folio.availability_results.filtered(
+        room_type_plan_avail = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         ).num_rooms_available
 
@@ -747,7 +747,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
         # create folio wizard with partner id => pricelist & start-end dates
-        wizard_folio = self.env["pms.folio.wizard"].create(
+        booking_engine = self.env["pms.booking.engine"].create(
             {
                 "start_date": checkin,
                 "end_date": checkout,
@@ -756,9 +756,9 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-        wizard_folio.flush()
+        booking_engine.flush()
 
-        room_type_plan_avail = wizard_folio.availability_results.filtered(
+        room_type_plan_avail = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         ).num_rooms_available
 
