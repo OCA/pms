@@ -602,3 +602,17 @@ class PmsCheckinPartner(models.Model):
             }
             record.update(vals)
         return True
+
+    def open_partner(self):
+        """ Utility method used to add an "View Customer" button in folio views """
+        self.ensure_one()
+        partner_form_id = self.env.ref("base.view_partner_address_form").id
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "res.partner",
+            "view_mode": "form",
+            "views": [(partner_form_id, "form")],
+            "res_id": self.partner_id.id,
+            "target": "new",
+            "flags": {"form": {"action_buttons": True}},
+        }
