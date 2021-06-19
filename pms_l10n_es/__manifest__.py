@@ -31,6 +31,7 @@
         "views/pms_checkin_partner_views.xml",
         "views/pms_property_views.xml",
         "views/res_partner_views.xml",
+        "views/pms_log_institution_traveller_report_views.xml",
         "wizards/traveller_report.xml",
     ],
     "installable": True,
