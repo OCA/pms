@@ -5485,7 +5485,7 @@ msgid "Parent name"
 msgstr "Nombre del Padre"
 
 #. module: pms
-#: model:ir.actions.report,name:pms.action_report_viajero
+#: model:ir.actions.report,name:pms.action_traveller_report
 msgid "Parte de Viajero"
 msgstr ""
 

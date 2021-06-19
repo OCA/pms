@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <report
-            id="action_report_viajero"
+            id="action_traveller_report"
             string="Parte de Viajero"
             model="pms.checkin.partner"
             report_type="qweb-pdf"
