@@ -757,7 +757,7 @@ class TestPmsReservations(common.SavepointCase):
                 "pms_property_id": self.property.id,
             }
         )
-        r1.to_assign = False
+        r1.action_assign()
         # ACT
         reservations = self.env["pms.reservation"].search(
             [("pms_property_id", "=", self.property.id)]
@@ -766,9 +766,61 @@ class TestPmsReservations(common.SavepointCase):
         self.assertEqual(r1, reservations[0])
 
     @freeze_time("1981-11-01")
-    def test_order_priority_allowed_checkin(self):
+    def test_order_priority_checkin(self):
         # ARRANGE
         self.create_common_scenario()
+        r1 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=2),
+                "preferred_room_id": self.room1.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        r2 = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=1),
+                "checkout": fields.date.today() + datetime.timedelta(days=2),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        r1.flush()
+        r2.flush()
+        # ACT
+        reservations = self.env["pms.reservation"].search(
+            [("pms_property_id", "=", self.property.id)]
+        )
+        # ASSERT
+        self.assertEqual(r1, reservations[0])
+
+    @freeze_time("1981-11-01")
+    def test_order_priority_checkout(self):
+        # ARRANGE
+        self.create_common_scenario()
+        id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "miguel@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        self.host2 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "Brais@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
         r1 = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
@@ -778,46 +830,39 @@ class TestPmsReservations(common.SavepointCase):
                 "pms_property_id": self.property.id,
             }
         )
-        self.env["pms.reservation"].create(
+        r2 = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "checkout": fields.date.today() + datetime.timedelta(days=2),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "pms_property_id": self.property.id,
             }
         )
-        r1.allowed_checkin = False
-        # ACT
-        reservations = self.env["pms.reservation"].search(
-            [("pms_property_id", "=", self.property.id)]
-        )
-        # ASSERT
-        self.assertEqual(r1, reservations[0])
-
-    @freeze_time("1981-11-01")
-    def test_order_priority_allowed_checkout(self):
-        # ARRANGE
-        self.create_common_scenario()
-        r1 = self.env["pms.reservation"].create(
+        checkin1 = self.env["pms.checkin.partner"].create(
             {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.host1.id,
+                "reservation_id": r1.id,
+                "document_type": id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
             }
         )
-        self.env["pms.reservation"].create(
+        checkin2 = self.env["pms.checkin.partner"].create(
             {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.host1.id,
+                "reservation_id": r2.id,
+                "document_type": id_category.id,
+                "document_number": "55562998N",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
             }
         )
-        r1.allowed_checkout = True
+        checkin1.action_on_board()
+        checkin2.action_on_board()
+        r1.flush()
+        r2.flush()
         # ACT
         reservations = self.env["pms.reservation"].search(
             [("pms_property_id", "=", self.property.id)]
