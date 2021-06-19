@@ -27,7 +27,7 @@
                             <field name="institution_password" password="True" />
                          </group>
                          <button
-                            name="test_gc_connection"
+                            name="test_connection"
                             class="btn btn-primary btn-sm"
                             type="object"
                             string="Test user/password"
