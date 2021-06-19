@@ -40,7 +40,7 @@
                     />
                 </header>
                 <div
-                    class="alert alert-info"
+                    class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
                     attrs="{'invisible': [('partner_incongruences','=',False)]}"
