@@ -147,7 +147,7 @@
                     </h2>
                     <h1>
                         <field
-                            name="partner_id"
+                            name="partner_name"
                             placeholder="Guest"
                             attrs="{'invisible':[('reservation_type','in',('out'))]}"
                         />
@@ -166,7 +166,6 @@
                         >
                             <field name="email" placeholder="email" />
                             <field name="mobile" placeholder="mobile" />
-                            <field name="phone" />
                             <field name="partner_internal_comment" />
                             <field
                                 name="segmentation_ids"
@@ -242,6 +241,7 @@
 
                     </group>
                     <group invisible="1">
+                        <field name="partner_id" invisible="1" />
                         <field name="payment_state" invisible="1" force_save="1" />
                         <field name="move_ids" invisible="1" />
                         <field name="invoice_status" invisible="1" />
@@ -474,7 +474,8 @@
                 default_order="create_date desc"
             >
                 <field name="name" />
-                <field name="partner_id" select="1" />
+                <field name="partner_id" invisible="1" />
+                <field name="partner_name" select="1" />
                 <field name="date_order" select="1" />
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />
                 <field name="reservation_ids" widget="many2many_tags" optional="show" />
@@ -540,7 +541,8 @@
         <field name="arch" type="xml">
             <kanban class="o_res_partner_kanban" limit="80">
                 <field name="name" />
-                <field name="partner_id" />
+                <field name="partner_id" invisible="1" />
+                <field name="partner_name" />
                 <field name="reservation_ids" />
                 <field name="service_ids" />
                 <field name="pending_amount" />
@@ -558,7 +560,8 @@
                             />
                             <div class="oe_kanban_details">
                                 <strong class="oe_partner_heading">
-                                    <field name="partner_id" />
+                                    <field name="partner_name" />
+                                    <field name="partner_id" invisible="1" />
                                 </strong>
                                 <div class="oe_kanban_partner_links" />
                             </div>

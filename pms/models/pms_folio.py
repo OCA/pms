@@ -317,14 +317,26 @@ class PmsFolio(models.Model):
         ],
         tracking=True,
     )
+    partner_name = fields.Char(
+        string="Name",
+        help="Customer Name",
+        store=True,
+        readonly=False,
+        compute="_compute_partner_name",
+    )
     email = fields.Char(
-        string="E-mail", help="Partner Email", related="partner_id.email"
+        string="E-mail",
+        help="Customer E-mail",
+        store=True,
+        readonly=False,
+        compute="_compute_email",
     )
     mobile = fields.Char(
-        string="Mobile", help="Partner Mobile", related="partner_id.mobile"
-    )
-    phone = fields.Char(
-        string="Phone", help="Partner Phone", related="partner_id.phone"
+        string="Mobile",
+        help="Customer Mobile",
+        store=True,
+        readonly=False,
+        compute="_compute_mobile",
     )
     partner_internal_comment = fields.Text(
         string="Internal Partner Notes",
@@ -733,6 +745,30 @@ class PmsFolio(models.Model):
                 order.invoice_status = "upselling"
             else:
                 order.invoice_status = "no"
+
+    @api.depends("partner_id", "partner_id.name")
+    def _compute_partner_name(self):
+        for record in self:
+            if record.partner_id and not record.partner_name:
+                record.partner_name = record.partner_id.name
+            elif not record.partner_name:
+                record.partner_name = False
+
+    @api.depends("partner_id", "partner_id.email")
+    def _compute_email(self):
+        for record in self:
+            if record.partner_id and not record.email:
+                record.email = record.partner_id.email
+            elif not record.email:
+                record.email = False
+
+    @api.depends("partner_id", "partner_id.mobile")
+    def _compute_mobile(self):
+        for record in self:
+            if record.partner_id and not record.mobile:
+                record.mobile = record.partner_id.mobile
+            elif not record.mobile:
+                record.mobile = False
 
     @api.depends("sale_line_ids.price_total")
     def _compute_amount_all(self):
