@@ -26,12 +26,20 @@
                 </header>
                 <sheet>
                     <div
-                        class="alert alert-danger"
-                        role="danger"
+                        class="alert alert-warning"
+                        role="alert"
                         style="margin-bottom:0px;"
                         attrs="{'invisible': [('partner_incongruences','=',False)]}"
                     >
                         <field name="partner_incongruences" />
+                        <bold>
+                            <button
+                                class="alert-link"
+                                type="object"
+                                name="open_partner"
+                                string="View Customer"
+                            />
+                        </bold>
                     </div>
                     <group name="group_top">
                         <group name="group_left">
