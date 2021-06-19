@@ -482,10 +482,10 @@ class PmsReservation(models.Model):
     )
     partner_internal_comment = fields.Text(
         string="Internal Partner Notes",
-        help="Internal reservation comment",
+        help="Internal notes of the partner",
+        related="partner_id.comment",
         store=True,
         readonly=False,
-        compute="_compute_partner_internal_comment",
     )
     partner_incongruences = fields.Char(
         string="partner_incongruences",
@@ -502,6 +502,8 @@ class PmsReservation(models.Model):
         string="Internal Folio Notes",
         help="Internal comment for folio",
         related="folio_id.internal_comment",
+        store=True,
+        readonly=False,
     )
     preconfirm = fields.Boolean(
         string="Auto confirm to Save",
@@ -1184,14 +1186,6 @@ class PmsReservation(models.Model):
                 record.partner_mobile = record.partner_id.mobile
             elif not record.partner_mobile:
                 record.partner_mobile = False
-
-    @api.depends("partner_id", "partner_id.comment")
-    def _compute_partner_internal_comment(self):
-        for record in self:
-            if record.partner_id and not record.partner_internal_comment:
-                record.partner_internal_comment = record.partner_id.comment
-            elif not record.partner_internal_comment:
-                record.partner_internal_comment = False
 
     @api.depends(
         "partner_name",
