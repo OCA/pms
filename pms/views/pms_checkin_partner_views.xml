@@ -74,6 +74,7 @@
             </form>
         </field>
     </record>
+
     <record id="pms_checkin_partner_reservation_view_tree" model="ir.ui.view">
         <field name="name">pms.checkin.partner.reservation.view.tree</field>
         <field name="model">pms.checkin.partner</field>

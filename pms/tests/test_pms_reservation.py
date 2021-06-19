@@ -832,7 +832,7 @@ class TestPmsReservations(common.SavepointCase):
         host = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -1015,7 +1015,7 @@ class TestPmsReservations(common.SavepointCase):
         host = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -1076,7 +1076,7 @@ class TestPmsReservations(common.SavepointCase):
         host = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
             }
         )
@@ -1292,7 +1292,7 @@ class TestPmsReservations(common.SavepointCase):
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -1309,7 +1309,7 @@ class TestPmsReservations(common.SavepointCase):
         self.host2 = self.env["res.partner"].create(
             {
                 "name": "Brais",
-                "phone": "654437733",
+                "mobile": "654437733",
                 "email": "brais@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -1661,14 +1661,14 @@ class TestPmsReservations(common.SavepointCase):
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
             }
         )
         self.host2 = self.env["res.partner"].create(
             {
                 "name": "Brais",
-                "phone": "654437733",
+                "mobile": "654437733",
                 "email": "brais@example.com",
             }
         )
@@ -1709,14 +1709,14 @@ class TestPmsReservations(common.SavepointCase):
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
             }
         )
         self.host2 = self.env["res.partner"].create(
             {
                 "name": "Brais",
-                "phone": "654437733",
+                "mobile": "654437733",
                 "email": "brais@example.com",
             }
         )
@@ -1761,7 +1761,7 @@ class TestPmsReservations(common.SavepointCase):
         host = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
             }
         )

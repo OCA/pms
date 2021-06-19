@@ -229,12 +229,13 @@
                             style="margin-right: 30px;"
                         />
                         <field
-                            name="partner_id"
+                            name="partner_name"
                             default_focus="1"
                             placeholder="Lastname, Firstname"
                             attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             required="1"
                         />
+                        <field name="partner_id" invisible="1" />
                         <field
                             name="closure_reason_id"
                             default_focus="1"
@@ -666,7 +667,8 @@
                 />
                 <field name="folio_id" decoration-bf="1" />
                 <field name="allowed_room_ids" invisible="1" />
-                <field name="partner_id" />
+                <field name="partner_id" invisible="1" />
+                <field name="partner_name" />
                 <field name="room_type_id" optional="show" />
                 <field name="adults" optional="show" />
                 <field name="ratio_checkin_data" widget="progressbar" optional="show" />
@@ -752,7 +754,7 @@
             >
                 <attribute name="invisible">True</attribute>
             </xpath> -->
-            <xpath expr="//field[@name='partner_id']" position="attributes">
+            <xpath expr="//field[@name='partner_name']" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//field[@name='folio_pending_amount']" position="attributes">

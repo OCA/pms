@@ -164,7 +164,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         self.partner_id = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
             }
         )
