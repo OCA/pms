@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
-        <report
-            id="action_traveller_report"
-            string="Parte de Viajero"
-            model="pms.checkin.partner"
-            report_type="qweb-pdf"
-            name="pms.report_viajero"
-            file="pms.report_viajero"
-            paperformat="report_viajero_paperformat"
-        />
+        <record id="action_traveller_report" model="ir.actions.report">
+            <field name="name">Traveller Report</field>
+            <field name="model">pms.checkin.partner</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pms.report_viajero</field>
+            <field name="report_file">pms.report_viajero</field>
+            <field name="paperformat_id" ref="traveller_report_paperformat" />
+            <field
+                name="print_report_name"
+            >(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
+        </record>
     </data>
 </odoo>
