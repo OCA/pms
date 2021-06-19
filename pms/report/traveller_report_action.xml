@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <report
+            id="action_report_viajero"
+            string="Parte de Viajero"
+            model="pms.checkin.partner"
+            report_type="qweb-pdf"
+            name="pms.report_viajero"
+            file="pms.report_viajero"
+            paperformat="report_viajero_paperformat"
+        />
+    </data>
+</odoo>

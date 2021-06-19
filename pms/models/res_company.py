@@ -13,3 +13,8 @@ class ResCompany(models.Model):
         comodel_name="pms.property",
         inverse_name="company_id",
     )
+
+    privacy_policy = fields.Text(
+        string="Privacy Policy",
+        help="Authorization by the user for the" "manage of their personal data",
+    )

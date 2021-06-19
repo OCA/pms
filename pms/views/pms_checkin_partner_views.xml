@@ -25,14 +25,32 @@
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
+                    <div
+                        class="alert alert-danger"
+                        role="danger"
+                        style="margin-bottom:0px;"
+                        attrs="{'invisible': [('incongruences','=',False)]}"
+                    >
+                        <field name="incongruences" />
+                    </div>
                     <group name="group_top">
                         <group name="group_left">
                             <field
                                 name="partner_id"
-                                required="True"
                                 domain="[('is_company','=', False)]"
                             />
-                            <field name="name" />
+                            <field name="firstname" />
+                            <field name="lastname" />
+                            <field name="lastname2" />
+                            <field name="gender" />
+                            <field name="birthdate_date" />
+                            <field name="document_type" />
+                            <field name="document_number" />
+                            <field name="document_expedition_date" />
+                            <field name="nationality_id" />
+                            <field name="email" />
+                            <field name="mobile" />
+                            <field name="document_id" invisible="1" />
                             <field name="pms_property_id" invisible="1" />
                             <field name="arrival" />
                             <field name="departure" />
@@ -44,6 +62,14 @@
                             <field name="pms_property_id" invisible="1" />
                         </group>
                     </group>
+                    <button
+                        type="action"
+                        class="btn-primary float-right"
+                        icon="fa-file-pdf-o"
+                        name="%(action_report_viajero)d"
+                        string="Print in PDF"
+                        attrs="{'invisible': [('state','not in', ('onboard','done'))]}"
+                    />
                 </sheet>
             </form>
         </field>
@@ -70,7 +96,15 @@
                 />
                 <field name="identifier" />
                 <field name="partner_id" />
-                <field name="name" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
                 <field name="mobile" />
                 <field name="email" />
                 <field name="arrival" />
@@ -107,7 +141,15 @@
                 <field name="reservation_id" />
                 <field name="pms_property_id" invisible="1" />
                 <field name="partner_id" domain="[('is_company','=', False)]" />
-                <field name="name" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
                 <field name="mobile" />
                 <field name="email" />
                 <field name="arrival" invisible="1" />
@@ -139,13 +181,21 @@
                 />
                 <field name="identifier" />
                 <field name="partner_id" domain="[('is_company','=', False)]" />
-                <field name="name" />
+                <field name="reservation_id" />
+                <field name="pms_property_id" invisible="1" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
                 <field name="mobile" />
                 <field name="email" />
                 <field name="arrival" />
                 <field name="departure" />
-                <field name="reservation_id" />
-                <field name="pms_property_id" invisible="1" />
                 <field name="folio_id" force_save="1" invisible="1" />
                 <field name="state" />
             </tree>
@@ -167,11 +217,19 @@
             >
                 <field name="id" />
                 <field name="identifier" />
-                <field name="partner_id" />
                 <field name="reservation_id" />
                 <field name="folio_id" />
-                <field name="pms_property_id" />
-                <field name="name" />
+                <field name="pms_property_id" invisible="1" />
+                <field name="partner_id" domain="[('is_company','=', False)]" />
+                <field name="firstname" />
+                <field name="lastname" />
+                <field name="lastname2" />
+                <field name="gender" />
+                <field name="birthdate_date" />
+                <field name="document_type" />
+                <field name="document_number" />
+                <field name="document_expedition_date" />
+                <field name="nationality_id" />
                 <field name="email" />
                 <field name="mobile" />
                 <field name="arrival" />

@@ -109,6 +109,15 @@
                         attrs="{'invisible': [('folio_id','=',False)]}"
                     >
                         <button
+                            name="print_all_checkins"
+                            string="Print All Checkins"
+                            type="object"
+                            icon="fa-print"
+                            attrs="{'invisible':[
+                        ('checkin_partner_ids','=', [])
+                    ]}"
+                        />
+                        <button
                             name="preview_reservation"
                             type="object"
                             class="oe_stat_button"

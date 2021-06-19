@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_viajero">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="docs">
+            <img
+                    t-attf-src="data:image/*;base64,{{docs.pms_property_id.company_id.logo}}"
+                    t-att-alt="docs.pms_property_id.company_id.name"
+                />
+            <p>PART OF TRAVELERS ENTRY</p>
+            <p>Document number:
+                <strong><span t-field="docs.id" /></strong>/
+                <span t-field="docs.reservation_id" />
+            </p>
+            <p>
+                Total amount (Reservation Card):
+                <strong><span
+                            t-field="docs.reservation_id.folio_id.amount_total"
+                        /></strong>
+            </p>
+            <div class="property">
+                <strong><span t-field="docs.pms_property_id.name" /></strong><br />
+                <strong>CIF:
+                    <span t-field="docs.pms_property_id.company_id.vat" /></strong><br
+                    />
+                <span t-field="docs.pms_property_id.company_id.name" /><br />
+                <strong><span t-field="docs.pms_property_id.company_id.street" />
+                    <span
+                            t-field="docs.pms_property_id.company_id.street2"
+                        /></strong><br />
+                <strong><span t-field="docs.pms_property_id.company_id.zip" />
+                    <span t-field="docs.pms_property_id.company_id.city" /></strong><b
+                    />
+            </div>
+            <p>TRAVELER'S DOCUMENT</p>
+
+            <table>
+                <tr>
+                    <td>Document number</td>
+                    <td><strong><span t-field="docs.document_number" /></strong></td>
+                </tr>
+                <tr>
+                    <td>Type</td>
+                    <td><strong><span t-field="docs.document_type" /></strong></td>
+                </tr>
+                <tr>
+                    <td>Expedition date</td>
+                    <td><strong><span
+                                    t-field="docs.document_expedition_date"
+                                /></strong></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td><strong> <span t-field="docs.firstname" /></strong></td>
+                </tr>
+                <tr>
+                    <td>Lastnames</td>
+                    <td><strong><span t-field="docs.lastname" /><span
+                                    t-field="docs.lastname2"
+                                /></strong></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        Gender</td>
+                    <td>
+                        <strong>
+                            <span t-field="docs.gender" /></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Birthdate</td>
+                    <td>
+                        <strong>
+                            <span t-field="docs.birthdate_date" /></strong>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        Entry date</td>
+                    <td>
+                        <strong>
+                            <span t-field="docs.arrival" /></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Exit date</td>
+                    <td>
+                        <strong><span t-field="docs.departure" /></strong>
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <p class="date">
+                    <span t-field="docs.pms_property_id.partner_id.city" />, at
+                    <span
+                            t-esc="time.strftime('%Y-%m-%d')"
+                            t-options="{&quot;widget&quot;: &quot;date&quot;}"
+                        />
+                </p>
+                <div class="firma" /><br />
+                <p>Traveler's signature</p>
+                <p><span t-field="docs.pms_property_id.cardex_warning" /></p>
+                <p><span t-field="docs.pms_property_id.company_id.privacy_policy" /></p>
+            </div>
+              <p style="page-break-after:always;" />
+            <img
+                    t-attf-src="data:image/*;base64,{{docs.pms_property_id.company_id.logo}}"
+                    t-att-alt="docs.pms_property_id.company_id.name"
+                />
+            <p>PART OF TRAVELERS ENTRY</p>
+            <p>Document number:
+                <strong><span t-field="docs.id" /></strong>/
+                <span t-field="docs.reservation_id" />
+            </p>
+            <p>
+                Total amount (Reservation Card):
+                <strong><span
+                            t-field="docs.reservation_id.folio_id.amount_total"
+                        /></strong>
+            </p>
+            <div class="property">
+                <strong><span t-field="docs.pms_property_id.name" /></strong><br />
+                <strong>CIF:
+                    <span t-field="docs.pms_property_id.company_id.vat" /></strong><br
+                    />
+                <span t-field="docs.pms_property_id.company_id.name" /><br />
+                <strong><span t-field="docs.pms_property_id.company_id.street" />
+                    <span
+                            t-field="docs.pms_property_id.company_id.street2"
+                        /></strong><br />
+                <strong><span t-field="docs.pms_property_id.company_id.zip" />
+                    <span t-field="docs.pms_property_id.company_id.city" /></strong><b
+                    />
+            </div>
+            <p>TRAVELER'S DOCUMENT</p>
+
+            <table>
+                <tr>
+                    <td>Document number</td>
+                    <td><strong><span t-field="docs.document_number" /></strong></td>
+                </tr>
+                <tr>
+                    <td>Type</td>
+                    <td><strong><span t-field="docs.document_type" /></strong></td>
+                </tr>
+                <tr>
+                    <td>Expedition date</td>
+                    <td><strong><span
+                                    t-field="docs.document_expedition_date"
+                                /></strong></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td><strong> <span t-field="docs.firstname" /></strong></td>
+                </tr>
+                <tr>
+                    <td>Lastnames</td>
+                    <td><strong><span t-field="docs.lastname" /><span
+                                    t-field="docs.lastname2"
+                                /></strong></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        Gender</td>
+                    <td>
+                        <strong>
+                            <span t-field="docs.gender" /></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Birthdate</td>
+                    <td>
+                        <strong>
+                            <span t-field="docs.birthdate_date" /></strong>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        Entry date</td>
+                    <td>
+                        <strong>
+                            <span t-field="docs.arrival" /></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Exit date</td>
+                    <td>
+                        <strong><span t-field="docs.departure" /></strong>
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <p class="date">
+                    <span t-field="docs.pms_property_id.partner_id.city" />, at
+                    <span
+                            t-esc="time.strftime('%Y-%m-%d')"
+                            t-options="{&quot;widget&quot;: &quot;date&quot;}"
+                        />
+                </p>
+                <p><strong>Copy for the host</strong></p>
+                <p><span t-field="docs.pms_property_id.cardex_warning" /></p>
+                <p><span t-field="docs.pms_property_id.company_id.privacy_policy" /></p>
+            </div>
+                <div class="final" />
+                <p style="page-break-after:always;" />
+            <style>
+                table{
+                    width: 100%;
+                    border: 1;
+                    border-style: double;
+                    margin-top:8px;
+                }
+                td:first-child{
+                    width:40%;
+                    padding-left:3px;
+                    border:double;
+                    border-width:1px;
+                }
+                td:last-child{
+                    width:100%;
+                    padding-left:3px;
+                    border:double;
+                    border-width:1px;
+                }
+                .firma{
+                    width: 85%;
+                    border:dotted 1px;
+                    height: 80px;
+                    margin:0 auto;
+                }
+                p,.property{
+                    text-align: center;
+                    font-family: kiro, Verdana, Geneva, sans-serif;
+                }
+                .date{
+                    margin-top:8px;
+                }
+
+            </style>
+            </t>
+        </t>
+    </template>
+</odoo>
