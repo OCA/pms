@@ -60,7 +60,7 @@ msgstr ""
 #. module: pms
 #: code:addons/pms/models/pms_reservation_line.py:0
 #, python-format
-msgid "%s: No room available."
+msgid "%s: No room available in %s <-> %s."
 msgstr ""
 
 #. module: pms
@@ -6130,6 +6130,12 @@ msgid "Reservation availability plan"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "Reservation dates should be consecutives"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__reservation_id
 msgid "Reservation in which the service is included"
 msgstr ""
@@ -7417,6 +7423,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__checkin_partner_ids
 msgid "The checkin partners on a folio"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "The checkout date must be greater than the checkin date"
 msgstr ""
 
 #. module: pms
