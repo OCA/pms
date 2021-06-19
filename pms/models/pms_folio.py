@@ -318,8 +318,8 @@ class PmsFolio(models.Model):
         tracking=True,
     )
     partner_name = fields.Char(
-        string="Name",
-        help="Customer Name",
+        string="Customer Name",
+        help="In the name of whom the reservation is made",
         store=True,
         readonly=False,
         compute="_compute_partner_name",
@@ -982,6 +982,12 @@ class PmsFolio(models.Model):
                 raise models.ValidationError(
                     _("The Sale Channel does not correspond to the agency's")
                 )
+
+    @api.constrains("name")
+    def _check_required_partner_name(self):
+        for record in self:
+            if not record.partner_name:
+                raise models.ValidationError(_("You musyt assign a customer name"))
 
     @api.model
     def create(self, vals):

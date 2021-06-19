@@ -460,8 +460,8 @@ class PmsReservation(models.Model):
         compute="_compute_shared_folio",
     )
     partner_name = fields.Char(
-        string="Name",
-        help="Customer Name",
+        string="Customer Name",
+        help="To whom the room is assigned",
         store=True,
         readonly=False,
         compute="_compute_partner_name",
@@ -1433,7 +1433,7 @@ class PmsReservation(models.Model):
         if checkins:
             return self.env.ref("pms.action_traveller_report").report_action(checkins)
         else:
-            raise ValidationError(_("Some checkin partners  "))
+            raise ValidationError(_("There are no checkins to print"))
 
     def open_folio(self):
         action = self.env.ref("pms.open_pms_folio1_form_tree_all").sudo().read()[0]
@@ -1516,7 +1516,16 @@ class PmsReservation(models.Model):
     def create(self, vals):
         if vals.get("folio_id"):
             folio = self.env["pms.folio"].browse(vals["folio_id"])
-            vals.update({"pms_property_id": folio.pms_property_id.id})
+            default_vals = {"pms_property_id": folio.pms_property_id.id}
+            if folio.partner_id:
+                default_vals["partner_id"] = folio.partner_id
+            elif folio.partner_name:
+                default_vals["partner_name"] = folio.partner_name
+                default_vals["partner_mobile"] = folio.mobile
+                default_vals["partner_email"] = folio.email
+            else:
+                raise ValidationError(_("Partner contact name is required"))
+            vals.update(default_vals)
         elif "pms_property_id" in vals and (
             "partner_id" in vals or "agency_id" in vals
         ):
@@ -1527,6 +1536,12 @@ class PmsReservation(models.Model):
                 folio_vals["partner_id"] = vals.get("partner_id")
             elif vals.get("agency_id"):
                 folio_vals["agency_id"] = vals.get("agency_id")
+            elif vals.get("partner_name"):
+                folio_vals["partner_name"] = vals.get("partner_name")
+                folio_vals["mobile"] = vals.get("partner_mobile")
+                folio_vals["email"] = vals.get("partner_email")
+            else:
+                raise ValidationError(_("Partner contact name is required"))
             # Create the folio in case of need
             # (To allow to create reservations direct)
             folio = self.env["pms.folio"].create(folio_vals)
