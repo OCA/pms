@@ -1376,7 +1376,7 @@ class PmsReservation(models.Model):
                 lambda s: s.state in ("onboard", "done")
             )
         if checkins:
-            return self.env.ref("pms.action_report_viajero").report_action(checkins)
+            return self.env.ref("pms.action_traveller_report").report_action(checkins)
         else:
             raise ValidationError(_("Some checkin partners  "))
 
