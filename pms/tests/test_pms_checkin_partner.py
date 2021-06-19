@@ -51,7 +51,7 @@ class TestPmsCheckinPartner(TestPms):
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "miguel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -107,7 +107,7 @@ class TestPmsCheckinPartner(TestPms):
         host2 = self.env["res.partner"].create(
             {
                 "name": "Carlos",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "carlos@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -224,7 +224,7 @@ class TestPmsCheckinPartner(TestPms):
         host2 = self.env["res.partner"].create(
             {
                 "name": "Carlos",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "carlos@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -241,7 +241,7 @@ class TestPmsCheckinPartner(TestPms):
         host3 = self.env["res.partner"].create(
             {
                 "name": "Enmanuel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "enmanuel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -258,7 +258,7 @@ class TestPmsCheckinPartner(TestPms):
         host4 = self.env["res.partner"].create(
             {
                 "name": "Enrique",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "enrique@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -314,7 +314,7 @@ class TestPmsCheckinPartner(TestPms):
         self.host2 = self.env["res.partner"].create(
             {
                 "name": "Carlos",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "carlos@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -331,7 +331,7 @@ class TestPmsCheckinPartner(TestPms):
         self.host3 = self.env["res.partner"].create(
             {
                 "name": "Enmanuel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "enmanuel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -389,7 +389,7 @@ class TestPmsCheckinPartner(TestPms):
         self.host2 = self.env["res.partner"].create(
             {
                 "name": "Carlos",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "carlos@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -442,7 +442,7 @@ class TestPmsCheckinPartner(TestPms):
         self.host2 = self.env["res.partner"].create(
             {
                 "name": "Carlos",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "carlos@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -459,7 +459,7 @@ class TestPmsCheckinPartner(TestPms):
         self.host3 = self.env["res.partner"].create(
             {
                 "name": "Enmanuel",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "enmanuel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -476,7 +476,7 @@ class TestPmsCheckinPartner(TestPms):
         self.host4 = self.env["res.partner"].create(
             {
                 "name": "Enrique",
-                "phone": "654667733",
+                "mobile": "654667733",
                 "email": "enrique@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
@@ -889,7 +889,7 @@ class TestPmsCheckinPartner(TestPms):
         host = self.env["res.partner"].create(
             {
                 "name": "Ricardo",
-                "phone": "666555666",
+                "mobile": "666555666",
                 "email": "ricardo@example.com",
                 "birthdate_date": "1995-11-14",
                 "gender": "male",
