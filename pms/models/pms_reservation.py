@@ -1518,7 +1518,7 @@ class PmsReservation(models.Model):
             folio = self.env["pms.folio"].browse(vals["folio_id"])
             default_vals = {"pms_property_id": folio.pms_property_id.id}
             if folio.partner_id:
-                default_vals["partner_id"] = folio.partner_id
+                default_vals["partner_id"] = folio.partner_id.id
             elif folio.partner_name:
                 default_vals["partner_name"] = folio.partner_name
                 default_vals["partner_mobile"] = folio.mobile
