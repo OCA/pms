@@ -591,8 +591,7 @@ class PmsCheckinPartner(models.Model):
                 "arrival": fields.Datetime.now(),
             }
             record.update(vals)
-            if record.reservation_id.allowed_checkin:
-                record.reservation_id.state = "onboard"
+            record.reservation_id.state = "onboard"
 
     def action_done(self):
         for record in self.filtered(lambda c: c.state == "onboard"):

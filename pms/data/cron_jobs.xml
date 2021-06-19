@@ -46,5 +46,20 @@
             />
             <field name="code">model.autocheckout()</field>
         </record>
+        <record model="ir.cron" id="priority_reservations">
+            <field name="name">Recompute priority on reservations</field>
+            <field name="interval_number">1</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False" />
+            <field name="state">code</field>
+            <field name="model_id" ref="model_pms_reservation" />
+            <field
+                name="nextcall"
+                eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:30:00')"
+            />
+            <field name="code">model.update_daily_priority_reservation()</field>
+        </record>
     </data>
 </odoo>
