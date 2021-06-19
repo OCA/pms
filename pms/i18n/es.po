@@ -109,6 +109,11 @@ msgstr ""
 "'Order - %s' % (object.name)"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid ", at"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 msgid "<b>Days:</b>"
 msgstr ""
@@ -285,6 +290,11 @@ msgstr "<strong>Vendedor/a:</strong>"
 #, fuzzy
 msgid "<strong>Checkout:</strong>"
 msgstr "<strong>Total</strong>"
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "<strong>Copy for the host</strong>"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
@@ -956,6 +966,13 @@ msgid "Arrival Hour (HH:MM)"
 msgstr "Hora de Llegada (GMT)"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__pms_checkin_partner_ids
+#: model:ir.model.fields,help:pms.field_res_partner__pms_checkin_partner_ids
+#: model:ir.model.fields,help:pms.field_res_users__pms_checkin_partner_ids
+msgid "Associated checkin partners"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room__ubication_id
 #: model:ir.model.fields,help:pms.field_pms_shared_room__ubication_id
 msgid "At which ubication the room is located."
@@ -973,6 +990,11 @@ msgstr "Nº de adjuntos"
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__product_template_attribute_value_ids
 msgid "Attribute Values"
 msgstr "Valores del Atributo"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_company__privacy_policy
+msgid "Authorization by the user for themanage of their personal data"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__preconfirm
@@ -1146,7 +1168,11 @@ msgid "Billing contact"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__birthdate_date
 #: model:ir.model.fields,field_description:pms.field_pms_property__birthdate_date
+#: model:ir.model.fields,field_description:pms.field_res_partner__birthdate_date
+#: model:ir.model.fields,field_description:pms.field_res_users__birthdate_date
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
 msgid "Birthdate"
 msgstr ""
 
@@ -1325,6 +1351,11 @@ msgid "By Week"
 msgstr "Por Semana"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "CIF:"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__call
 msgid "Call Center"
 msgstr "Centro de Llamadas"
@@ -1433,6 +1464,11 @@ msgstr "No puede borrar este parámetro"
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_kanban
 msgid "Capacity"
 msgstr "Capacidad"
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.company_view_form
+msgid "Cardex Settings"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__cancelled_reason
@@ -1547,7 +1583,10 @@ msgstr "Cliente del Checkin"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__checkin_partner_ids
+#: model:ir.model.fields,field_description:pms.field_pms_property__pms_checkin_partner_ids
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkin_partner_ids
+#: model:ir.model.fields,field_description:pms.field_res_partner__pms_checkin_partner_ids
+#: model:ir.model.fields,field_description:pms.field_res_users__pms_checkin_partner_ids
 #, fuzzy
 msgid "Checkin Partners"
 msgstr "Cliente del Checkin"
@@ -2276,6 +2315,11 @@ msgid "Date from %s to %s \n"
 msgstr "Fecha deste %s hasta %s \n"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_expedition_date
+msgid "Date on which document_type was issued"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__date_order
 #, fuzzy
 msgid "Date on which folio is sold"
@@ -2587,6 +2631,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template__display_name
 #: model:ir.model.fields,field_description:pms.field_res_company__display_name
 #: model:ir.model.fields,field_description:pms.field_res_partner__display_name
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__display_name
 #: model:ir.model.fields,field_description:pms.field_res_users__display_name
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__display_name
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__display_name
@@ -2598,6 +2643,37 @@ msgstr "Nombre Mostrado"
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__display_type
 msgid "Display Type"
 msgstr "Tipo Mostrado"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_id
+msgid "Document"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_number
+msgid "Document Number"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_type
+msgid "Document Type"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Document number"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Document number:"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_checkin_partner.py:0
+#, python-format
+msgid "Document_type has already exists"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__pms_domain
@@ -2684,6 +2760,11 @@ msgid "Draft"
 msgstr "Borrador"
 
 #. module: pms
+#: model:res.partner.id_category,name:pms.document_type_driving_license
+msgid "Driving License"
+msgstr ""
+
+#. module: pms
 #. openerp-web
 #: code:addons/pms/static/src/xml/pms_base_templates.xml:0
 #, python-format
@@ -2727,6 +2808,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__email
+#: model:ir.model.fields,field_description:pms.field_res_partner__email
+#: model:ir.model.fields,field_description:pms.field_res_users__email
 msgid "Email"
 msgstr "Email"
 
@@ -2756,6 +2839,16 @@ msgid "Enter"
 msgstr "Entrada"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Entry date"
+msgstr ""
+
+#. module: pms
+#: model:res.partner.id_category,name:pms.document_type_european_residence
+msgid "European Residence permit"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkin_datetime
 msgid "Exact Arrival"
 msgstr "Llegada Exacta"
@@ -2769,6 +2862,21 @@ msgstr "Salida exacta"
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__departure
 msgid "Exit"
 msgstr "Salida"
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Exit date"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_expedition_date
+msgid "Expedition Date"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Expedition date"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__property_account_expense_id
@@ -2819,6 +2927,11 @@ msgstr "Servicio de Seguimiento"
 #: code:addons/pms/models/pms_room.py:0
 #, python-format
 msgid "Extra beds can't be greater than allowed beds for this room"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__female
+msgid "Female"
 msgstr ""
 
 #. module: pms
@@ -2925,7 +3038,14 @@ msgid "First Floor"
 msgstr "Primer Piso"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__firstname
+msgid "First Name"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__firstname
+#: model:ir.model.fields,field_description:pms.field_res_partner__firstname
+#: model:ir.model.fields,field_description:pms.field_res_users__firstname
 #, fuzzy
 msgid "First name"
 msgstr "Primer Día"
@@ -3222,7 +3342,10 @@ msgid "Future"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__gender
 #: model:ir.model.fields,field_description:pms.field_pms_property__gender
+#: model:ir.model.fields,field_description:pms.field_res_partner__gender
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
 msgid "Gender"
 msgstr ""
 
@@ -3378,6 +3501,11 @@ msgid "History"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_number
+msgid "Host document number"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_kanban_view
 msgid "Hosted's Name"
 msgstr "Nombre del huésped"
@@ -3436,6 +3564,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_template__id
 #: model:ir.model.fields,field_description:pms.field_res_company__id
 #: model:ir.model.fields,field_description:pms.field_res_partner__id
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__id
 #: model:ir.model.fields,field_description:pms.field_res_users__id
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__id
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__id
@@ -3463,6 +3592,16 @@ msgstr "Icono"
 #: model:ir.model.fields,help:pms.field_pms_room_type__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr "Icono para indicar una actividad excepcional."
+
+#. module: pms
+#: model:res.partner.id_category,name:pms.document_type_identification_document
+msgid "Identification Document"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__id_numbers
+msgid "Identification Numbers"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__default_code
@@ -3647,6 +3786,11 @@ msgstr "Unificar la reserva"
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__property_account_income_id
 msgid "Income Account"
 msgstr "Cuenta de Ingresos"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__incongruences
+msgid "Incongruences"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__overbooking
@@ -4313,12 +4457,18 @@ msgstr "Lenguaje"
 #: model:ir.model.fields,field_description:pms.field_product_template____last_update
 #: model:ir.model.fields,field_description:pms.field_res_company____last_update
 #: model:ir.model.fields,field_description:pms.field_res_partner____last_update
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_number____last_update
 #: model:ir.model.fields,field_description:pms.field_res_users____last_update
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason____last_update
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes____last_update
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio____last_update
 msgid "Last Modified on"
 msgstr "Última modificación en"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__lastname
+msgid "Last Name"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__write_uid
@@ -4398,6 +4548,8 @@ msgstr "Última Actualización en"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__lastname
+#: model:ir.model.fields,field_description:pms.field_res_partner__lastname
+#: model:ir.model.fields,field_description:pms.field_res_users__lastname
 #, fuzzy
 msgid "Last name"
 msgstr "Nombre del Padre"
@@ -4417,6 +4569,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Lastname, Firstname"
 msgstr "Apellido, Nombre"
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Lastnames"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__cancelled_reason__late
@@ -4495,6 +4652,11 @@ msgstr "Adjunto Principal"
 #: model:room.closure.reason,name:pms.pms_room_closure_reason_0
 msgid "Maintenance"
 msgstr "Mantenimiento"
+
+#. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__male
+msgid "Male"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__service_type
@@ -4708,6 +4870,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_folio__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_property__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_mobile
+#: model:ir.model.fields,field_description:pms.field_res_partner__mobile
+#: model:ir.model.fields,field_description:pms.field_res_users__mobile
 msgid "Mobile"
 msgstr "Móvil"
 
@@ -4754,6 +4918,7 @@ msgstr "Mis reservas"
 #: model_terms:ir.ui.view,arch_db:pms.availability_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_shared_room_view_form
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
 msgid "Name"
 msgstr "Nombre"
 
@@ -4787,7 +4952,14 @@ msgstr "Ningún checkin fue realizado en esta reserva"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__nationality_id
+#: model:ir.model.fields,field_description:pms.field_res_partner__nationality_id
+#: model:ir.model.fields,field_description:pms.field_res_users__nationality_id
 msgid "Nationality"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__nationality_id
+msgid "Nationality ID"
 msgstr ""
 
 #. module: pms
@@ -4917,6 +5089,11 @@ msgstr "Nada para Facturar"
 #, python-format
 msgid "Nothing to invoice"
 msgstr "Nada paraFacturar"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__cardex_warning
+msgid "Notice under the signature on the traveler's ticket."
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_shared_room__beds
@@ -5215,6 +5392,11 @@ msgstr ""
 "Cantiadad entregada: facturas entregadas al cliente."
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__other
+msgid "Other"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Other data"
 msgstr "Otra fecha"
@@ -5270,6 +5452,11 @@ msgid "Overbookings"
 msgstr "Overbookings"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "PART OF TRAVELERS ENTRY"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_pms_folio
 msgid "PMS Folio"
 msgstr "PMS Folio"
@@ -5296,6 +5483,11 @@ msgstr "Pagado/a"
 #: model:ir.model.fields,field_description:pms.field_pms_property__parent_name
 msgid "Parent name"
 msgstr "Nombre del Padre"
+
+#. module: pms
+#: model:ir.actions.report,name:pms.action_report_viajero
+msgid "Parte de Viajero"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
@@ -5334,6 +5526,11 @@ msgid "Partner Email"
 msgstr "Cliente"
 
 #. module: pms
+#: model:ir.model,name:pms.model_res_partner_id_number
+msgid "Partner ID Number"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__mobile
 #, fuzzy
 msgid "Partner Mobile"
@@ -5368,6 +5565,12 @@ msgid "Partner Tags"
 msgstr "Cliente"
 
 #. module: pms
+#: code:addons/pms/models/res_partner_id_number.py:0
+#, python-format
+msgid "Partner already has this document type"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__partner_id
 msgid "Partner associated with checkin partner"
 msgstr ""
@@ -5382,6 +5585,11 @@ msgstr "Unificar la reserva"
 #: model:ir.model.fields,field_description:pms.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
 msgstr "Cliente con el mismo ID de Impuestos"
+
+#. module: pms
+#: model:res.partner.id_category,name:pms.document_type_passport
+msgid "Passport"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.wizard_payment_folio_view_form
@@ -5838,6 +6046,21 @@ msgid "Print"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+msgid "Print All Checkins"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
+msgid "Print in PDF"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Print in cardex"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__priority
 msgid "Priority"
 msgstr "Prioridad"
@@ -5847,6 +6070,12 @@ msgstr "Prioridad"
 #, fuzzy
 msgid "Priority of a reservation"
 msgstr "Unificar la reserva"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_company__privacy_policy
+#: model_terms:ir.ui.view,arch_db:pms.company_view_form
+msgid "Privacy Policy"
+msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_amenity_view_form
@@ -7059,7 +7288,14 @@ msgid "Second Floor"
 msgstr "Segundo Piso"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__lastname2
+msgid "Second Last Name"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__lastname2
+#: model:ir.model.fields,field_description:pms.field_res_partner__lastname2
+#: model:ir.model.fields,field_description:pms.field_res_users__lastname2
 msgid "Second last name"
 msgstr ""
 
@@ -7108,6 +7344,11 @@ msgstr "Habitaciones sugeridas para unificar las reservas:"
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Segmentation..."
 msgstr "Segmentación..."
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_type
+msgid "Select a valid document type"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__categ_id
@@ -7439,10 +7680,21 @@ msgid "Sold"
 msgstr "Vendido"
 
 #. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "Some checkin partners  "
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/res_users.py:0
 #, python-format
 msgid "Some properties do not belong to the allowed companies"
 msgstr "Algunas propiedades no pertenecen a las compañías permitidas"
+
+#. module: pms
+#: model:res.partner.id_category,name:pms.document_type_spanish_residence
+msgid "Spanish Residence permit"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_product_pricelist_item__board_service_room_type_id
@@ -7634,6 +7886,11 @@ msgid "System Parameter"
 msgstr "Parámetro del sistema"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "TRAVELER'S DOCUMENT"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 msgid "Tables Detail"
 msgstr "Detalles de la tabla"
@@ -7702,6 +7959,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__valid_product_template_attribute_line_ids
 msgid "Technical compute"
+msgstr "Computación técnica"
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_id
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__incongruences
+#, fuzzy
+msgid "Technical field"
 msgstr "Computación técnica"
 
 #. module: pms
@@ -8495,6 +8759,11 @@ msgid "Total amount"
 msgstr "Cantidad total"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Total amount (Reservation Card):"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__credit
 msgid "Total amount this customer owes you."
 msgstr "Cantidad total que este cliente le debe."
@@ -8578,6 +8847,11 @@ msgid "Transactions"
 msgstr "Transacciones"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+msgid "Traveler's signature"
+msgstr ""
+
+#. module: pms
 #: model:pms.room.type,name:pms.pms_room_type_3
 #: model:product.product,name:pms.pms_room_type_3_product_product
 msgid "Triple"
@@ -8596,6 +8870,7 @@ msgstr "Martes"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__reservation_type
+#: model_terms:ir.ui.view,arch_db:pms.report_viajero
 msgid "Type"
 msgstr "TIpo"
 
@@ -8825,6 +9100,16 @@ msgid "Valid Product Attribute Lines"
 msgstr "Líneas de atributo de producto válidas"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_res_partner_id_number__valid_from
+msgid "Valid from"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_res_partner_id_number__valid_from
+msgid "Validation period stating date."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__value
 msgid "Value"
 msgstr "Valor"
@@ -8894,6 +9179,11 @@ msgstr "Etiqueta de unidad de medida de volumen"
 #, python-format
 msgid "Warning for %s"
 msgstr "Advertencia para %s"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__cardex_warning
+msgid "Warning in Cardex"
+msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_service__channel_type__web
@@ -8992,6 +9282,36 @@ msgid "email"
 msgstr "email"
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__birthdate_date
+msgid "host birthdate"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__firstname
+msgid "host firstname"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__gender
+msgid "host gender"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__lastname
+msgid "host lastname"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__nationality_id
+msgid "host nationality"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__lastname2
+msgid "host second lastname"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "mobile"
@@ -9056,10 +9376,6 @@ msgstr ""
 
 #~ msgid "%s: No room available."
 #~ msgstr "%s: Habitación no disponible."
-
-#, fuzzy
-#~ msgid "Technical field"
-#~ msgstr "Computación técnica"
 
 #, fuzzy
 #~ msgid "On Board Service"
