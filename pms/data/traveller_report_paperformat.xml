@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
-        <record id="report_viajero_paperformat" model="report.paperformat">
+        <record id="traveller_report_paperformat" model="report.paperformat">
             <field name="name">Traveller Report PaperFormat</field>
             <field name="default" eval="True" />
             <field name="format">custom</field>

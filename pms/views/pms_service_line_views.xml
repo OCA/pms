@@ -202,18 +202,18 @@
         action="action_pms_service_line_form" sequence="8"
         parent="pms.menu_pms_service" />
 -->
-    <act_window
-        id="action_service_line"
-        name="Services By Day"
-        res_model="pms.service.line"
-        view_mode="tree,form,calendar,pivot,graph"
-        view_id="pms.pms_service_line_report_view_tree"
-        context="{
+    <record model="ir.actions.act_window" id="action_service_line">
+        <field name="name">Services By Day</field>
+        <field name="res_model">pms.service.line</field>
+        <field name="view_mode">tree,form,calendar,pivot,graph</field>
+        <field name="view_id" ref="pms.pms_service_line_report_view_tree" />
+        <field name="context">{
             'search_default_next_7_days': 1,
             'search_default_date_by_day': 1,
             'search_default_group_product_id': 1,
-        }"
-    />
+        }</field>
+    </record>
+
     <menuitem
         id="menu_pms_service_line"
         name="Services by Day"

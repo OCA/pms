@@ -1,14 +1,11 @@
 <?xml version="1.0" ?>
 <odoo>
-    <act_window
-        id="action_checkin_partner"
-        name="Action checkin"
-        res_model="pms.checkin.partner"
-        view_mode="kanban,tree,form,calendar,graph,pivot"
-        context="{
-            'search_default_future':1,
-        }"
-    />
+    <record model="ir.actions.act_window" id="action_checkin_partner">
+        <field name="name">Checkins</field>
+        <field name="res_model">pms.checkin.partner</field>
+        <field name="view_mode">kanban,tree,form,calendar,graph,pivot</field>
+        <field name="context">{'search_default_future':1,}</field>
+    </record>
     <menuitem
         id="menu_pms_checkin_partner"
         name="Checkins"
