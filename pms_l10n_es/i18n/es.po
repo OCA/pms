@@ -19,94 +19,204 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 3.0.1\n"
 
-#. module: partner_firstname
-#: code:addons/partner_firstname/models/res_users.py:0
-#, python-format
-msgid "%s (copy)"
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__birthdate_date
+msgid "Birthdate"
 msgstr ""
 
-#. module: partner_firstname
-#: model:ir.model,name:partner_firstname.model_res_config_settings
-#, fuzzy
-msgid "Config Settings"
-msgstr "res.config.settings"
-
-#. module: partner_firstname
-#: model:ir.model,name:partner_firstname.model_res_partner
+#. module: pms_l10n_es
+#: model:ir.model,name:pms_l10n_es.model_res_partner
 msgid "Contact"
 msgstr "Contacto"
 
-#. module: partner_firstname
-#: model:ir.model.constraint,message:partner_firstname.constraint_res_partner_check_name
-msgid "Contacts require a name."
-msgstr "Los contactos requieren un nombre."
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__document_type__d
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__res_partner__document_type__d
+msgid "DNI"
+msgstr ""
 
-#. module: partner_firstname
-#: code:addons/partner_firstname/exceptions.py:0
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__display_name
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__document_type
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__document_type
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_users__document_type
+msgid "Doc. type"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__document_number
+msgid "Document Number"
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/models/res_partner.py:0
 #, python-format
-msgid "Error(s) with partner %d's name."
-msgstr "Errores con el nombre de la empresa %d."
+msgid "Document Number Partner %s already exist (%s)"
+msgstr ""
 
-#. module: partner_firstname
-#: model:ir.model.fields,field_description:partner_firstname.field_res_partner__firstname
-#: model:ir.model.fields,field_description:partner_firstname.field_res_users__firstname
-msgid "First name"
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__document_type
+msgid "Document Type"
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/models/res_partner.py:0
+#, python-format
+msgid "Document Type field are mandatory"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__document_expedition_date
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__document_expedition_date
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_users__document_expedition_date
+msgid "Document expedition date"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__document_number
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__document_number
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_users__document_number
+msgid "Document number"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__document_type__c
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__res_partner__document_type__c
+msgid "Driving License"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__document_type__x
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__res_partner__document_type__x
+msgid "European residence permit"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__document_expedition_date
+msgid "Expedition Date"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__gender__female
+msgid "Female"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__firstname
+#, fuzzy
+msgid "First Name"
 msgstr "Nombre"
 
-#. module: partner_firstname
-#: model:ir.model.fields,field_description:partner_firstname.field_res_partner__lastname
-#: model:ir.model.fields,field_description:partner_firstname.field_res_users__lastname
-msgid "Last name"
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__gender
+msgid "Gender"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__document_type__i
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__res_partner__document_type__i
+msgid "Identification Document"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner____last_update
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__lastname
+#, fuzzy
+msgid "Last Name"
 msgstr "Apellido"
 
-#. module: partner_firstname
-#: model:ir.model.fields,field_description:partner_firstname.field_res_partner__name
-#: model:ir.model.fields,field_description:partner_firstname.field_res_users__name
-msgid "Name"
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__gender__male
+msgid "Male"
 msgstr ""
 
-#. module: partner_firstname
-#: code:addons/partner_firstname/exceptions.py:0
-#, python-format
-msgid "No name is set."
-msgstr "No se ha establecido ningún nombre."
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__gender__other
+msgid "Other"
+msgstr ""
 
-#. module: partner_firstname
-#: model:ir.model.fields,help:partner_firstname.field_res_config_settings__partner_names_order
-msgid "Order to compose partner fullname"
-msgstr "Orden para generar el nombre completo"
+#. module: pms_l10n_es
+#: model:ir.model,name:pms_l10n_es.model_pms_checkin_partner
+msgid "Partner Checkins"
+msgstr ""
 
-#. module: partner_firstname
-#: model_terms:ir.ui.view,arch_db:partner_firstname.res_config_settings_view_form
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__document_type__p
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__res_partner__document_type__p
+msgid "Passport"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__lastname2
 #, fuzzy
-msgid "Partner Names Order"
-msgstr "Orden de los nombres"
+msgid "Second Last Name"
+msgstr "Apellido"
 
-#. module: partner_firstname
-#: model:ir.model.fields,field_description:partner_firstname.field_res_config_settings__partner_names_order_changed
-msgid "Partner Names Order Changed"
-msgstr "Se ha cambiado el Orden de los Nombres"
-
-#. module: partner_firstname
-#: model:ir.model.fields,field_description:partner_firstname.field_res_config_settings__partner_names_order
-msgid "Partner names order"
-msgstr "Orden de los nombres"
-
-#. module: partner_firstname
-#: model_terms:ir.ui.view,arch_db:partner_firstname.res_config_settings_view_form
-msgid "Recalculate names"
-msgstr "Recalcular nombres"
-
-#. module: partner_firstname
-#: model_terms:ir.ui.view,arch_db:partner_firstname.res_config_settings_view_form
-msgid ""
-"Recalculate names for all partners. This process could take so much time if "
-"there are more than 10,000 active partners"
+#. module: pms_l10n_es
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_checkin_partner__document_type
+#: model:ir.model.fields,help:pms_l10n_es.field_pms_property__document_type
+#: model:ir.model.fields,help:pms_l10n_es.field_res_partner__document_type
+#: model:ir.model.fields,help:pms_l10n_es.field_res_users__document_type
+msgid "Select a valid document type"
 msgstr ""
-"Recalcular todos los nombres. Este proceso puede tardar si se tienen más de "
-"10.000 personas asociadas"
 
-#. module: partner_firstname
-#: model:ir.model,name:partner_firstname.model_res_users
-msgid "Users"
-msgstr "Usuarios"
+#. module: pms_l10n_es
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__document_type__n
+#: model:ir.model.fields.selection,name:pms_l10n_es.selection__res_partner__document_type__n
+msgid "Spanish residence permit"
+msgstr ""
+
+#, fuzzy
+#~ msgid "Config Settings"
+#~ msgstr "res.config.settings"
+
+#~ msgid "Contacts require a name."
+#~ msgstr "Los contactos requieren un nombre."
+
+#~ msgid "Error(s) with partner %d's name."
+#~ msgstr "Errores con el nombre de la empresa %d."
+
+#~ msgid "No name is set."
+#~ msgstr "No se ha establecido ningún nombre."
+
+#~ msgid "Order to compose partner fullname"
+#~ msgstr "Orden para generar el nombre completo"
+
+#, fuzzy
+#~ msgid "Partner Names Order"
+#~ msgstr "Orden de los nombres"
+
+#~ msgid "Partner Names Order Changed"
+#~ msgstr "Se ha cambiado el Orden de los Nombres"
+
+#~ msgid "Partner names order"
+#~ msgstr "Orden de los nombres"
+
+#~ msgid "Recalculate names"
+#~ msgstr "Recalcular nombres"
+
+#~ msgid ""
+#~ "Recalculate names for all partners. This process could take so much time "
+#~ "if there are more than 10,000 active partners"
+#~ msgstr ""
+#~ "Recalcular todos los nombres. Este proceso puede tardar si se tienen más "
+#~ "de 10.000 personas asociadas"
+
+#~ msgid "Users"
+#~ msgstr "Usuarios"

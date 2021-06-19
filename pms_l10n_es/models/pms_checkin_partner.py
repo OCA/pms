@@ -62,18 +62,25 @@ class PmsCheckinPartner(models.Model):
         store=True,
         readonly=False,
     )
-
-    @api.depends("partner_id", "partner_id.lastname")
-    def _compute_lastname(self):
-        for record in self:
-            if not record.lastname:
-                record.lastname = record.partner_id.lastname
+    nationality_id = fields.Many2one(
+        string="Nationality ID",
+        compute="_compute_nationality",
+        comodel_name="res.country",
+        store=True,
+        readonly=False,
+    )
 
     @api.depends("partner_id", "partner_id.firstname")
     def _compute_firstname(self):
         for record in self:
             if not record.firstname:
                 record.firstname = record.partner_id.firstname
+
+    @api.depends("partner_id", "partner_id.lastname")
+    def _compute_lastname(self):
+        for record in self:
+            if not record.lastname:
+                record.lastname = record.partner_id.lastname
 
     @api.depends("partner_id", "partner_id.lastname2")
     def _compute_lastname2(self):
@@ -113,6 +120,12 @@ class PmsCheckinPartner(models.Model):
             if not record.gender:
                 record.gender = record.partner_id.gender
 
+    @api.depends("partner_id", "partner_id.lastname")
+    def _compute_nationality(self):
+        for record in self:
+            if not record.nationality_id:
+                record.nationality_id = record.partner_id.nationality_id
+
     @api.model
     def _checkin_mandatory_fields(self, depends=False):
         mandatory_fields = super(PmsCheckinPartner, self)._checkin_mandatory_fields(
@@ -120,7 +133,6 @@ class PmsCheckinPartner(models.Model):
         )
         mandatory_fields.extend(
             [
-                "lastname2",
                 "birthdate_date",
                 "document_number",
                 "document_type",

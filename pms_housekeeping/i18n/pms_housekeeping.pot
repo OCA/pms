@@ -1,0 +1,395 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_housekeeping
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_rack_kanban
+msgid "<span class=\"fa fa-ellipsis-v\" title=\"menu\"/>"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_room_rack_kanban
+msgid "<span class=\"fa fa-plus-square\" title=\"Add all today tasks\"/>"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__active
+msgid "Active"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_room_rack_kanban
+msgid "Add the housekeeping tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.actions.server,name:pms_housekeeping.add_all_today_tasks_ir_actions_server
+#: model:ir.cron,cron_name:pms_housekeeping.add_all_today_tasks
+#: model:ir.cron,name:pms_housekeeping.add_all_today_tasks
+msgid "Automatic add all today housekeeping tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__clean_type__clean
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__clean_status__clean
+msgid "Clean"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.inherit_pms_room_view_form
+msgid "Clean Status"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__task_date
+msgid "Clean date"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__clean_type
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__clean_status
+msgid "Clean type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_room_rack_form
+msgid "Clean type and status"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,help:pms_housekeeping.field_pms_room__clean_employee_id
+msgid "Cleaning employee assigned by default"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__color
+msgid "Color Index"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__create_uid
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__create_date
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__clean_employee_id
+msgid "Default employee"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_room_rack_kanban
+msgid "Default:"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_rack_kanban
+msgid "Delete"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__display_name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__display_name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_reservation__display_name
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__clean_type__dont_disturb
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__clean_status__dont_disturb
+msgid "Don't disturb"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping__state__done
+msgid "Done"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_reservation__dont_disturb
+msgid "Dont disturb"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping__state__draft
+msgid "Draft"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_rack_kanban
+msgid "Edit"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__employee_id
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_housekeeping_rack
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_room_rack
+msgid "Employee"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__def_employee_id
+msgid "Employee assigned by default"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_rack_kanban
+msgid "Employee image"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__employee_picture
+msgid "Employee picture"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__clean_type__exit
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__clean_status__exit
+msgid "Exit"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_0
+msgid "Full clean"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_house_keeping_tasks_view_form
+msgid "House Keeping Tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_housekeeping
+msgid "HouseKeeping"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_housekeeping_task
+msgid "HouseKeeping Tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.actions.act_window,name:pms_housekeeping.action_pms_house_keeping_view_form
+#: model:ir.actions.act_window,name:pms_housekeeping.action_pms_house_keeping_view_today_form
+#: model:ir.actions.act_window,name:pms_housekeeping.action_pms_room_rack_kanban
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_house_keeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_form
+msgid "Housekeeping"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.actions.act_window,name:pms_housekeeping.action_pms_house_keeping_tasks_view_form
+msgid "Housekeeping Tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_housekeeping_rack
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_room_rack
+msgid "Housekeeping filters"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__housekeeping_ids
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_tree
+msgid "Housekeeping tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__id
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__id
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_reservation__id
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping__state__in_progress
+msgid "In Progress"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_3
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_4
+msgid "Inspect"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__clean_type__inspected
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__clean_status__inspected
+msgid "Inspected"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__notes
+msgid "Internal Notes"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping____last_update
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task____last_update
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_reservation____last_update
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_room____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__write_uid
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__write_date
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__lostfound
+msgid "Lost and Found"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__clean_type__occupied
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__clean_status__occupied
+msgid "Occupied"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__clean_type__picked_up
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__clean_status__picked_up
+msgid "Picked up"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__pms_property_ids
+msgid "Properties"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,help:pms_housekeeping.field_pms_housekeeping_task__pms_property_ids
+msgid ""
+"Properties with access to the element; if not set, all properties can access"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_room
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_room_rack_form
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_room_rack_tree
+msgid "Property Room"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_housekeeping_tasks_tree
+msgid "Property Ubications"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model,name:pms_housekeeping.model_pms_reservation
+msgid "Reservation"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_2
+msgid "Review"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__room_id
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_housekeeping_rack
+msgid "Room"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_house_keeping_view_rack
+msgid "Room Rack"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_room_rack
+msgid "Room type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_1
+msgid "Soft clean"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping_task__clean_type__staff
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_room__clean_status__staff
+msgid "Staff"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__task_id
+msgid "Task"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_pms_room_rack_form
+msgid "Task Lines"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping_task__name
+msgid "Task Name"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__state
+msgid "Task State"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__task_end
+msgid "Task end at"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__task_start
+msgid "Task start at"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_housekeeping_rack
+msgid "Task type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_house_keeping_view_form
+msgid "Tasks History"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping__state__to_do
+msgid "To Do"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_house_keeping_view_today_form
+msgid "Today Tasks"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_room_rack
+msgid "Ubication"
+msgstr ""

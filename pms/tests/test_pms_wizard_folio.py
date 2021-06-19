@@ -271,8 +271,8 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         pricelist_item = self.env["product.pricelist.item"].create(
             {
                 "pricelist_id": self.test_pricelist.id,
-                "date_start_overnight": checkin,
-                "date_end_overnight": checkin,
+                "date_start_consumption": checkin,
+                "date_end_consumption": checkin,
                 "compute_price": "fixed",
                 "applied_on": "1_product",
                 "product_tmpl_id": product_tmpl.id,
@@ -343,8 +343,8 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #     pricelist_item = self.env["product.pricelist.item"].create(
     #         {
     #             "pricelist_id": self.test_pricelist.id,
-    #             "date_start_overnight": checkin,
-    #             "date_end_overnight": checkin,
+    #             "date_start_consumption": checkin,
+    #             "date_end_consumption": checkin,
     #             "compute_price": "fixed",
     #             "applied_on": "1_product",
     #             "product_tmpl_id": product_tmpl_id,

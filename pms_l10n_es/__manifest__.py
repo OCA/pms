@@ -3,7 +3,7 @@
 
 {
     "name": "PMS Spanish Adaptation",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.0.1",
     "author": "Commit [Sun], Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "application": True,
@@ -15,10 +15,23 @@
         "partner_second_lastname",
         "partner_contact_gender",
         "partner_contact_birthdate",
+        "partner_contact_nationality",
+        "queue_job",
     ],
+    "external_dependencies": {
+        "python": [
+            "bs4",
+        ],
+    },
     "data": [
+        "data/cron_jobs.xml",
+        "data/queue_data.xml",
+        "data/queue_job_function_data.xml",
+        "security/ir.model.access.csv",
         "views/pms_checkin_partner_views.xml",
+        "views/pms_property_views.xml",
         "views/res_partner_views.xml",
+        "wizards/traveller_report.xml",
     ],
     "installable": True,
 }

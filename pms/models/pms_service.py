@@ -544,10 +544,10 @@ class PmsService(models.Model):
                 board_service=board_room_type.id if board_room_type else False,
                 uom=self.product_id.uom_id.id,
                 fiscal_position=False,
-                property=self.pms_property_id.id,
+                property=self.reservation_id.pms_property_id.id,
             )
             if date:
-                product_context["date_overnight"] = date
+                product_context["consumption_date"] = date
             if reservation and self.is_board_service:
                 product_context["board_service"] = reservation.board_service_room_id.id
             product = self.product_id.with_context(product_context)

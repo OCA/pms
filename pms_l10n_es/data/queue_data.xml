@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="channel_gc_file_send" model="queue.job.channel">
+            <field name="name">gc_file_send</field>
+            <field name="parent_id" ref="queue_job.channel_root" />
+        </record>
+    </data>
+</odoo>

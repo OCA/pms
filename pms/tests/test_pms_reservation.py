@@ -151,6 +151,84 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     @freeze_time("1980-11-01")
+    def test_reservation_dates_not_consecutive(self):
+        """
+        Check the constrain if not consecutive dates
+        ----------------
+        Create correct reservation set 3 reservation lines consecutives (nights)
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        customer = self.env.ref("base.res_partner_12")
+        today = fields.date.today()
+        tomorrow = fields.date.today() + datetime.timedelta(days=1)
+        three_days_later = fields.date.today() + datetime.timedelta(days=3)
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Error, it has been allowed to create a reservation with non-consecutive days",
+        ):
+            self.env["pms.reservation"].create(
+                {
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": customer.id,
+                    "pms_property_id": self.property.id,
+                    "reservation_line_ids": [
+                        (0, False, {"date": today}),
+                        (0, False, {"date": tomorrow}),
+                        (0, False, {"date": three_days_later}),
+                    ],
+                }
+            )
+
+    @freeze_time("1980-11-01")
+    def test_reservation_dates_compute_checkin_out(self):
+        """
+        Check the reservation creation with specific reservation lines
+        anc compute checkin checkout
+        ----------------
+        Create reservation with correct reservation lines and check
+        the checkin and checkout fields. Take into account that the
+        checkout of the reservation must be the day after the last night
+        (view checkout assertEqual)
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        customer = self.env.ref("base.res_partner_12")
+        today = fields.date.today()
+        tomorrow = fields.date.today() + datetime.timedelta(days=1)
+        two_days_later = fields.date.today() + datetime.timedelta(days=2)
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "partner_id": customer.id,
+                "pms_property_id": self.property.id,
+                "reservation_line_ids": [
+                    (0, False, {"date": today}),
+                    (0, False, {"date": tomorrow}),
+                    (0, False, {"date": two_days_later}),
+                ],
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            reservation.checkin,
+            today,
+            "The calculated checkin of the reservation does \
+            not correspond to the first day indicated in the dates",
+        )
+        self.assertEqual(
+            reservation.checkout,
+            two_days_later + datetime.timedelta(days=1),
+            "The calculated checkout of the reservation does \
+            not correspond to the last day indicated in the dates",
+        )
+
+    @freeze_time("1980-11-01")
     def test_create_reservation_start_date(self):
         # TEST CASE
         # reservation should start on checkin day
@@ -788,8 +866,92 @@ class TestPmsReservations(common.SavepointCase):
         # ASSERT
         self.assertEqual(r1, reservations[0])
 
-    @freeze_time("1981-11-01")
     def test_reservation_action_assign(self):
+        """
+        Checks the correct operation of the assign method
+        ---------------
+        Create a new reservation with only room_type(autoassign -> to_assign = True),
+        and the we call to action_assign method to confirm the assignation
+        """
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        # ACT
+        res.action_assign()
+        # ASSERT
+        self.assertFalse(res.to_assign, "The reservation should be marked as assigned")
+
+    def test_reservation_auto_assign_on_create(self):
+        """
+        When creating a reservation with a specific room,
+        it is not necessary to mark it as to be assigned
+        ---------------
+        Create a new reservation with specific preferred_room_id,
+        "to_assign" should be set to false automatically
+        """
+        # ARRANGE
+        self.create_common_scenario()
+
+        # ACT
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room1.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        # ASSERT
+        self.assertFalse(
+            res.to_assign, "Reservation with preferred_room_id set to to_assign = True"
+        )
+
+    def test_reservation_auto_assign_after_create(self):
+        """
+        When assigning a room manually to a reservation marked "to be assigned",
+        this field should be automatically unchecked
+        ---------------
+        Create a new reservation without preferred_room_id (only room_type),
+        "to_assign" is True, then set preferred_room_id and "to_assign" should
+        be set to false automatically
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        # set the priority of the rooms to control the room chosen by auto assign
+        self.room1.sequence = 1
+        self.room2.sequence = 2
+
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        # ACT
+        # res shoul be room1 in preferred_room_id (minor sequence)
+        res.preferred_room_id = self.room2.id
+
+        # ASSERT
+        self.assertFalse(
+            res.to_assign,
+            "The reservation should be marked as assigned automatically \
+            when assigning the specific room",
+        )
+
+    def test_reservation_to_assign_on_create(self):
         # TEST CASE
         # the reservation action assign
         # change the reservation to 'to_assign' = False
