@@ -8151,7 +8151,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__invoice_status
 msgid ""
-"The status of the invoices in folio. Can be 'invoiced', 'to invoice' or 'no'."
+"The status of the invoices in folio. Can be 'invoiced', 'to_invoice' or 'no'."
 msgstr ""
 
 #. module: pms
