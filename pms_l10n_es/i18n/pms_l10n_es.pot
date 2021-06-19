@@ -26,12 +26,7 @@ msgid "Birthdate"
 msgstr ""
 
 #. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "Check the institution configuration to send the guests info"
-msgstr ""
-
-#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/models/pms_property.py:0
 #: code:addons/pms_l10n_es/models/pms_property.py:0
 #, python-format
 msgid "Connection Established!"
@@ -39,12 +34,14 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/models/pms_property.py:0
+#: code:addons/pms_l10n_es/models/pms_property.py:0
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Connection could not be established"
 msgstr ""
 
 #. module: pms_l10n_es
+#: code:addons/pms_l10n_es/models/pms_property.py:0
 #: code:addons/pms_l10n_es/models/pms_property.py:0
 #, python-format
 msgid "Connection established succesfully"
@@ -56,11 +53,50 @@ msgid "Contact"
 msgstr ""
 
 #. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Could last files sent"
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Could not get last file sent"
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Could not get next file name to send."
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Could not get property_info."
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Could not get token login."
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Could not upload file."
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__create_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__create_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__create_date
 msgid "Created on"
 msgstr ""
@@ -72,7 +108,23 @@ msgid "DNI"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__date
+msgid "Date and time"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__file_incidencies_from_institution
+msgid "Detailed file"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__txt_incidencies_from_institution
+msgid "Detailed message"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__display_name
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__display_name
@@ -129,6 +181,17 @@ msgid "Driving License"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__error_sending_data
+msgid "Error sending data"
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#, python-format
+msgid "Errors (check the pdf file)."
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__ertxaintxa
 msgid "Ertxaintxa (soon)"
 msgstr ""
@@ -147,6 +210,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_checkin_partner__gender__female
 msgid "Female"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
+msgid "File"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -181,6 +249,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__id
@@ -225,6 +294,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner____last_update
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard____last_update
@@ -237,13 +307,30 @@ msgid "Last Name"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__write_uid
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__write_date
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.ui.menu,name:pms_l10n_es.menu_open_pms_log_institution_traveller_report_form_tree
+msgid "Log institution traveller report"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_form
+msgid "Log institution traveller report detail"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.actions.act_window,name:pms_l10n_es.open_pms_log_institution_traveller_report_form_tree
+msgid "Log of sending files to institutions"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -284,7 +371,7 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__policia_nacional
-msgid "Policía Nacional (soon)"
+msgid "Policía Nacional"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -295,6 +382,16 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_property
 msgid "Property"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
+msgid "Property Ubications"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model,name:pms_l10n_es.model_pms_log_institution_traveller_report
+msgid "Report of daily sending files of travellers to institutions."
 msgstr ""
 
 #. module: pms_l10n_es
@@ -317,8 +414,14 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Sent succesfully!"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model_terms:ir.ui.view,arch_db:pms_l10n_es.pms_log_institution_traveller_report_view_tree
+msgid "Size"
 msgstr ""
 
 #. module: pms_l10n_es
@@ -328,6 +431,9 @@ msgid "Spanish residence permit"
 msgstr ""
 
 #. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
+#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "Successful file sending"
@@ -352,12 +458,6 @@ msgstr ""
 
 #. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
-#, python-format
-msgid "There is no guest information to send."
-msgstr ""
-
-#. module: pms_l10n_es
-#: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #: model:ir.actions.act_window,name:pms_l10n_es.action_traveller_report
 #: model:ir.model,name:pms_l10n_es.model_traveller_report_wizard
 #: model:ir.ui.menu,name:pms_l10n_es.menu_traveller_report
@@ -366,6 +466,7 @@ msgid "Traveller Report"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__txt_filename
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__txt_filename
 msgid "Txt Filename"
 msgstr ""
