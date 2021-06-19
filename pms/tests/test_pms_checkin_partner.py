@@ -51,7 +51,6 @@ class TestPmsCheckinPartner(TestPms):
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
-                "mobile": "654667733",
                 "email": "miguel@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",

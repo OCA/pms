@@ -349,6 +349,8 @@ class PmsFolio(models.Model):
         string="Internal Partner Notes",
         help="Internal notes of the partner",
         related="partner_id.comment",
+        store=True,
+        readonly=False,
     )
     credit_card_details = fields.Text(
         string="Credit Card Details",

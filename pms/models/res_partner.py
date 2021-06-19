@@ -12,12 +12,12 @@ class ResPartner(models.Model):
     _inherit = "res.partner"
 
     reservations_count = fields.Integer(
-        string="Reservations",
+        string="Number of Reservations",
         help="Number of reservations of the partner",
         compute="_compute_reservations_count",
     )
     folios_count = fields.Integer(
-        string="Folios",
+        string="Number of Folios",
         help="Number of folios of the partner",
         compute="_compute_folios_count",
     )
@@ -55,32 +55,39 @@ class ResPartner(models.Model):
     company_id = fields.Many2one(
         check_pms_properties=True,
     )
-
     pms_checkin_partner_ids = fields.One2many(
         string="Checkin Partners",
         help="Associated checkin partners",
         comodel_name="pms.checkin.partner",
         inverse_name="partner_id",
     )
-
+    pms_reservation_ids = fields.One2many(
+        string="Reservations",
+        help="Associated reservation",
+        comodel_name="pms.reservation",
+        inverse_name="partner_id",
+    )
+    pms_folio_ids = fields.One2many(
+        string="Folios",
+        help="Associated Folios",
+        comodel_name="pms.folio",
+        inverse_name="partner_id",
+    )
     gender = fields.Selection(
         readonly=False,
         store=True,
         compute="_compute_gender",
     )
-
     birthdate_date = fields.Date(
         readonly=False,
         store=True,
         compute="_compute_birthdate_date",
     )
-
     nationality_id = fields.Many2one(
         readonly=False,
         store=True,
         compute="_compute_nationality_id",
     )
-
     email = fields.Char(
         readonly=False,
         store=True,
@@ -91,7 +98,6 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_mobile",
     )
-
     firstname = fields.Char(
         readonly=False,
         store=True,
@@ -103,11 +109,13 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_lastname",
     )
-
     lastname2 = fields.Char(
         readonly=False,
         store=True,
         compute="_compute_lastname2",
+    )
+    comment = fields.Text(
+        tracking=True,
     )
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
@@ -116,7 +124,9 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             if not record.gender and record.pms_checkin_partner_ids:
-                gender = list(set(record.pms_checkin_partner_ids.mapped("gender")))
+                gender = list(
+                    filter(None, set(record.pms_checkin_partner_ids.mapped("gender")))
+                )
                 if len(gender) == 1:
                     record.gender = gender[0]
                 else:
@@ -131,7 +141,10 @@ class ResPartner(models.Model):
         for record in self:
             if not record.birthdate_date and record.pms_checkin_partner_ids:
                 birthdate = list(
-                    set(record.pms_checkin_partner_ids.mapped("birthdate_date"))
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("birthdate_date")),
+                    )
                 )
                 if len(birthdate) == 1:
                     record.birthdate_date = birthdate[0]
@@ -147,7 +160,10 @@ class ResPartner(models.Model):
         for record in self:
             if not record.nationality_id and record.pms_checkin_partner_ids:
                 nationality_id = list(
-                    set(record.pms_checkin_partner_ids.mapped("nationality_id"))
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("nationality_id")),
+                    )
                 )
                 if len(nationality_id) == 1:
                     record.nationality_id = nationality_id[0]
@@ -156,13 +172,34 @@ class ResPartner(models.Model):
             elif not record.nationality_id:
                 record.nationality_id = False
 
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.email")
+    @api.depends(
+        "pms_checkin_partner_ids",
+        "pms_checkin_partner_ids.email",
+        "pms_reservation_ids",
+        "pms_reservation_ids.partner_email",
+        "pms_folio_ids",
+        "pms_folio_ids.email",
+    )
     def _compute_email(self):
         if hasattr(super(), "_compute_email"):
             super()._compute_field()
         for record in self:
-            if not record.email and record.pms_checkin_partner_ids:
-                email = list(set(record.pms_checkin_partner_ids.mapped("email")))
+            if (
+                not record.email
+                and record.pms_checkin_partner_ids
+                or record.pms_reservation_ids
+                or record.pms_folio_ids
+            ):
+                email = list(
+                    filter(
+                        None,
+                        set(
+                            record.pms_checkin_partner_ids.mapped("email")
+                            + record.pms_reservation_ids.mapped("partner_email")
+                            + record.pms_folio_ids.mapped("email"),
+                        ),
+                    )
+                )
                 if len(email) == 1:
                     record.email = email[0]
                 else:
@@ -170,13 +207,34 @@ class ResPartner(models.Model):
             elif not record.email:
                 record.email = False
 
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.mobile")
+    @api.depends(
+        "pms_checkin_partner_ids",
+        "pms_checkin_partner_ids.mobile",
+        "pms_reservation_ids",
+        "pms_reservation_ids.partner_mobile",
+        "pms_folio_ids",
+        "pms_folio_ids.mobile",
+    )
     def _compute_mobile(self):
         if hasattr(super(), "_compute_mobile"):
             super()._compute_field()
         for record in self:
-            if not record.mobile and record.pms_checkin_partner_ids:
-                mobile = list(set(record.pms_checkin_partner_ids.mapped("mobile")))
+            if (
+                not record.mobile
+                and record.pms_checkin_partner_ids
+                or record.pms_reservation_ids
+                or record.pms_folio_ids
+            ):
+                mobile = list(
+                    filter(
+                        None,
+                        set(
+                            record.pms_checkin_partner_ids.mapped("mobile")
+                            + record.pms_reservation_ids.mapped("partner_mobile")
+                            + record.pms_folio_ids.mapped("mobile"),
+                        ),
+                    )
+                )
                 if len(mobile) == 1:
                     record.mobile = mobile[0]
                 else:
@@ -191,7 +249,9 @@ class ResPartner(models.Model):
         for record in self:
             if not record.firstname and record.pms_checkin_partner_ids:
                 firstname = list(
-                    set(record.pms_checkin_partner_ids.mapped("firstname"))
+                    filter(
+                        None, set(record.pms_checkin_partner_ids.mapped("firstname"))
+                    )
                 )
                 if len(firstname) == 1:
                     record.firstname = firstname[0]
@@ -206,7 +266,9 @@ class ResPartner(models.Model):
             super()._compute_field()
         for record in self:
             if not record.lastname and record.pms_checkin_partner_ids:
-                lastname = list(set(record.pms_checkin_partner_ids.mapped("lastname")))
+                lastname = list(
+                    filter(None, set(record.pms_checkin_partner_ids.mapped("lastname")))
+                )
                 if len(lastname) == 1:
                     record.lastname = lastname[0]
                 else:
@@ -221,7 +283,9 @@ class ResPartner(models.Model):
         for record in self:
             if not record.lastname2 and record.pms_checkin_partner_ids:
                 lastname2 = list(
-                    set(record.pms_checkin_partner_ids.mapped("lastname2"))
+                    filter(
+                        None, set(record.pms_checkin_partner_ids.mapped("lastname2"))
+                    )
                 )
                 if len(lastname2) == 1:
                     record.lastname2 = lastname2[0]
