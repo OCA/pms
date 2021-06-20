@@ -735,149 +735,833 @@ class TestPmsReservations(common.SavepointCase):
                 }
             )
 
-    @freeze_time("1981-11-01")
-    def test_order_priority_to_assign(self):
-        # ARRANGE
-        self.create_common_scenario()
-        r1 = self.env["pms.reservation"].create(
-            {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
-            }
-        )
-        self.env["pms.reservation"].create(
-            {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
-            }
-        )
-        r1.to_assign = False
-        # ACT
-        reservations = self.env["pms.reservation"].search(
-            [("pms_property_id", "=", self.property.id)]
-        )
-        # ASSERT
-        self.assertEqual(r1, reservations[0])
+    @freeze_time("1981-11-10")
+    def test_to_assign_priority_reservation(self):
+        """
+        To assign reservation must have priority = 1
+        ------
+        Create a reservation with only room_type (to_assign = True),
+        regardless of the rest of the fields the priority must be 1
 
-    @freeze_time("1981-11-01")
-    def test_order_priority_allowed_checkin(self):
+        NOTE:
+        WORK FLOW PRIORITY COMPUTE
+        Check reservation priority
+        --------
+        1 - TO ASSIGN, ARRIVAL DELAYED, DEPARTURE DELAYED (= 1)
+        2 - CANCELLED with pending amount (= 2)
+        3 - DONE with pending amount (= 3)
+        4 - ONBOARD with pending amount (= days for checkout)
+        5 - CONFIRM/DRAFT with arrival in less than 3 days (= 2 * days for checkin)
+        6 - ONBOARD all paid (= 3 * days for checkout)
+        7 - DONE with days from checkout < 1 (= 6)
+        8 - CONFIRM/DRAFT with arrival between 3 and 20 days (= 3 * days for checkin)
+        9 - CONFIRM/DRAFT with arrival in more than 20 days (= 4 * days for checkin)
+        10 - DONE with days from checkout < 15 (= 5 * days from checkout)
+        11 - DONE with days from checkout between 15 and 90 included (= 10 * days from checkout)
+        12 - DONE with days from checkout > 90 (= 100 * days from checkout)
+        """
         # ARRANGE
+        expected_priority = 1
         self.create_common_scenario()
-        r1 = self.env["pms.reservation"].create(
-            {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
-            }
-        )
-        self.env["pms.reservation"].create(
-            {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
-            }
-        )
-        r1.allowed_checkin = False
-        # ACT
-        reservations = self.env["pms.reservation"].search(
-            [("pms_property_id", "=", self.property.id)]
-        )
-        # ASSERT
-        self.assertEqual(r1, reservations[0])
 
-    @freeze_time("1981-11-01")
-    def test_order_priority_allowed_checkout(self):
-        # ARRANGE
-        self.create_common_scenario()
-        r1 = self.env["pms.reservation"].create(
-            {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
-            }
-        )
-        self.env["pms.reservation"].create(
-            {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
-            }
-        )
-        r1.allowed_checkout = True
         # ACT
-        reservations = self.env["pms.reservation"].search(
-            [("pms_property_id", "=", self.property.id)]
-        )
-        # ASSERT
-        self.assertEqual(r1, reservations[0])
-
-    @freeze_time("1981-11-01")
-    def test_order_priority_state_onboard_and_pending_amount(self):
-        # ARRANGE
-        self.create_common_scenario()
-        host = self.env["res.partner"].create(
+        res = self.env["pms.reservation"].create(
             {
-                "name": "Miguel",
-                "mobile": "654667733",
-                "email": "miguel@example.com",
+                "checkin": fields.date.today() + datetime.timedelta(days=30),
+                "checkout": fields.date.today() + datetime.timedelta(days=31),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a reservation to be assigned \
+                should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_arrival_delayed_priority_reservation(self):
+        """
+        Arrival delayed reservation must have priority = 1
+        ------
+        Create a reservation with checkin date yesterday, and without checkin action,
+        regardless of the rest of the fields the priority must be 1
+        """
+        # ARRANGE
+        expected_priority = 1
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=-1),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room1.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        # ACT
+        res.auto_arrival_delayed()
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a arrival delayed reservation \
+                should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_departure_delayed_priority_reservation(self):
+        """
+        To departure delayed reservation must have priority = 1
+        ------
+        Create a reservation and make the work flow to onboard state,
+        using jump dates, we make the reservation should have left yesterday,
+        regardless of the rest of the fields the priority must be 1
+        """
+        # ARRANGE
+        expected_priority = 1
+        self.create_common_scenario()
+        freezer = freeze_time("1981-10-08")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
                 "birthdate_date": "1995-12-10",
                 "gender": "male",
             }
         )
-        self.env["res.partner.id_number"].create(
+        checkin1 = self.env["pms.checkin.partner"].create(
             {
-                "category_id": self.id_category.id,
-                "name": "30065089H",
-                "valid_from": datetime.date.today(),
-                "partner_id": host.id,
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
             }
         )
-        r1 = self.env["pms.reservation"].create(
-            {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
-                "partner_id": host.id,
-                "pms_property_id": self.property.id,
-            }
+        checkin1.action_on_board()
+        freezer.stop()
+
+        # ACT
+        res.auto_departure_delayed()
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a departure delayed reservation \
+                should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
         )
-        r1.flush()
-        checkin = self.env["pms.checkin.partner"].create(
-            {
-                "partner_id": host.id,
-                "reservation_id": r1.id,
-            }
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
         )
-        checkin.action_on_board()
-        self.env["pms.reservation"].create(
+
+    @freeze_time("1981-11-10")
+    def test_cancelled_pending_amount_priority_reservation(self):
+        """
+        Cancelled with pending payments reservation must have priority = 2
+        ------
+        create a reservation and cancel it ensuring that there are
+        pending payments in it, the priority must be 2
+        """
+        # ARRANGE
+        expected_priority = 2
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
             {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today() + datetime.timedelta(days=55),
+                "checkout": fields.date.today() + datetime.timedelta(days=56),
+                "preferred_room_id": self.room2.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "pms_property_id": self.property.id,
             }
         )
+
         # ACT
-        reservations = self.env["pms.reservation"].search(
-            [("pms_property_id", "=", self.property.id)]
-        )
+        res.action_cancel()
+        computed_priority = res.priority
+
         # ASSERT
-        self.assertEqual(r1, reservations[0])
+        error_msm = (
+            (
+                "The priority of a cancelled reservation with pending amount \
+                should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_done_with_pending_amountpriority_reservation(self):
+        """
+        Done with pending amount reservation must have priority = 3
+        ------
+        Create a reservation and make the work flow to onboard - done state,
+        using jump dates, we make the checkout reservation with pending amount,
+        regardless of the rest of the fields the priority must be 3
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 3
+        freezer = freeze_time("1981-10-08")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+        checkin1.action_on_board()
+
+        freezer.stop()
+        freezer = freeze_time("1981-10-09")
+        freezer.start()
+
+        res.action_reservation_checkout()
+
+        # ACT
+        res.auto_departure_delayed()
+        computed_priority = res.priority
+        freezer.stop()
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a done reservation with pending amount\
+                should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_onboard_with_pending_amount_priority_reservation(self):
+        """
+        Onboard with pending amount reservation must have priority = days for checkout
+        ------
+        Create a reservation with 3 nights and make the work flow to onboard,
+        using jump dates, we set today in 2 nights before checkout,
+        regardless of the rest of the fields the priority must be 2
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 3
+        freezer = freeze_time("1981-10-08")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+
+        # ACT
+        checkin1.action_on_board()
+        computed_priority = res.priority
+        freezer.stop()
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a onboard with payment amount reservation \
+                should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_confirm_arriva_lt_3_days_priority_reservation(self):
+        """
+        Confirm reservation with arrival in less than 3 days, priority = 2 * days for checkout
+        ------
+        Create a reservation with checkin date on 2 days
+        regardless of the rest of the fields the priority must be 2 * 2 = 4
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 4
+
+        # ACT
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=2),
+                "checkout": fields.date.today() + datetime.timedelta(days=5),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a confirm with less than 3 days for arrival \
+                reservation should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_onboard_all_pay_priority_reservation(self):
+        """
+        Onboard with all pay reservation must have priority = 3 * days for checkout
+        ------
+        Create a reservation with 3 nights and make the work flow to onboard,
+        using jump dates, we set today in 2 nights before checkout,
+        regardless of the rest of the fields the priority must be 3 * 3 = 9
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 9
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+
+        # ACT
+        checkin1.action_on_board()
+        # REVIEW: set to 0 the price to avoid make the payment
+        # (config account company issues in test)
+        res.reservation_line_ids.write({"price": 0})
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of onboard all pay reservation \
+                should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_done_yesterday_all_paid_amountpriority_reservation(self):
+        """
+        Checkout yesterday without pending amount reservation must have priority = 6
+        ------
+        Create a reservation and make the work flow to onboard - done state,
+        using jump dates, we make the checkout reservation without pending amount,
+        and set today 1 day after,
+        regardless of the rest of the fields the priority must be 6
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 6
+        freezer = freeze_time("1981-10-08")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+        checkin1.action_on_board()
+
+        freezer.stop()
+        freezer = freeze_time("1981-10-09")
+        freezer.start()
+
+        res.action_reservation_checkout()
+        # REVIEW: set to 0 the price to avoid make the payment
+        # (config account company issues in test)
+        res.reservation_line_ids.write({"price": 0})
+
+        # ACT
+        freezer.stop()
+        freezer = freeze_time("1981-10-10")
+        freezer.start()
+
+        res.update_daily_priority_reservation()
+        computed_priority = res.priority
+        freezer.stop()
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a done reservation without pending amount\
+                and checkout yesterday should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_confirm_arriva_bt_3_and_20_days_priority_reservation(self):
+        """
+        Confirm reservation with arrival between 3 and 20 days, priority = 3 * days for checkout
+        ------
+        Create a reservation with checkin date on 15 days
+        regardless of the rest of the fields the priority must be 3 * 15 = 45
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 45
+
+        # ACT
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=15),
+                "checkout": fields.date.today() + datetime.timedelta(days=20),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a confirm with between 3 and 20 days for arrival \
+                reservation should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_confirm_arrival_more_than_20_days_priority_reservation(self):
+        """
+        Confirm reservation with arrival more than 20 days, priority = 4 * days for checkout
+        ------
+        Create a reservation with checkin date on 21 days
+        regardless of the rest of the fields the priority must be 4 * 21 = 84
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 84
+
+        # ACT
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=21),
+                "checkout": fields.date.today() + datetime.timedelta(days=25),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a confirm with more than 20 days for arrival \
+                reservation should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_done_checkout_lt_15_days_before_all_paid_priority_reservation(self):
+        """
+        Checkout less than 15 days before without pending amount reservation
+        must have priority = 5 * days from checkout
+        ------
+        Create a reservation and make the work flow to onboard - done state,
+        using jump dates, we make the checkout reservation without pending amount,
+        and set today 6 day after,
+        regardless of the rest of the fields the priority must be 6 * 5 = 30
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 30
+        freezer = freeze_time("1981-10-09")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+        checkin1.action_on_board()
+
+        freezer.stop()
+        freezer = freeze_time("1981-10-10")
+        freezer.start()
+
+        res.action_reservation_checkout()
+        # REVIEW: set to 0 the price to avoid make the payment
+        # (config account company issues in test)
+        res.reservation_line_ids.write({"price": 0})
+
+        # ACT
+        freezer.stop()
+        freezer = freeze_time("1981-10-16")
+        freezer.start()
+
+        res.update_daily_priority_reservation()
+        computed_priority = res.priority
+        freezer.stop()
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a done reservation without pending amount\
+                and checkout less than 15 days before should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_done_checkout_bt_30_and_90_days_before_all_paid_priority_reservation(self):
+        """
+        Checkout between 30 and 90 days before without pending amount reservation
+        must have priority = 10 * days from checkout
+        ------
+        Create a reservation and make the work flow to onboard - done state,
+        using jump dates, we make the checkout reservation without pending amount,
+        and set today 45 day after,
+        regardless of the rest of the fields the priority must be 10 * 45 = 450
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 450
+        freezer = freeze_time("1981-10-09")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+        checkin1.action_on_board()
+
+        freezer.stop()
+        freezer = freeze_time("1981-10-10")
+        freezer.start()
+
+        res.action_reservation_checkout()
+        # REVIEW: set to 0 the price to avoid make the payment
+        # (config account company issues in test)
+        res.reservation_line_ids.write({"price": 0})
+
+        # ACT
+        freezer.stop()
+        freezer = freeze_time("1981-11-24")
+        freezer.start()
+
+        res.update_daily_priority_reservation()
+        computed_priority = res.priority
+        freezer.stop()
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a done reservation without pending amount\
+                and checkout between 30 and 90 days before should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_done_checkout_mt_90_days_before_all_paid_priority_reservation(self):
+        """
+        Checkout more than 90 days before without pending amount reservation
+        must have priority = 100 * days from checkout
+        ------
+        Create a reservation and make the work flow to onboard - done state,
+        using jump dates, we make the checkout reservation without pending amount,
+        and set today 91 day after,
+        regardless of the rest of the fields the priority must be 100 * 91 = 9100
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        expected_priority = 9100
+        freezer = freeze_time("1981-10-09")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
+        )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+        checkin1.action_on_board()
+
+        freezer.stop()
+        freezer = freeze_time("1981-10-10")
+        freezer.start()
+
+        res.action_reservation_checkout()
+        # REVIEW: set to 0 the price to avoid make the payment
+        # (config account company issues in test)
+        res.reservation_line_ids.write({"price": 0})
+
+        # ACT
+        freezer.stop()
+        freezer = freeze_time("1982-01-09")
+        freezer.start()
+
+        res.update_daily_priority_reservation()
+        computed_priority = res.priority
+        freezer.stop()
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a done reservation without pending amount\
+                and checkout more than 90 days before should be %d and this is %d"
+            )
+            % (expected_priority, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            expected_priority,
+            error_msm,
+        )
 
     def test_reservation_action_assign(self):
         """
