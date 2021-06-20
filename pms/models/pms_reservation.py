@@ -650,7 +650,7 @@ class PmsReservation(models.Model):
         if self.folio_pending_amount > 0:
             return 3
         days_from_checkout = (fields.date.today() - self.checkout).days
-        if days_from_checkout < 1:
+        if days_from_checkout <= 1:
             return 6
         elif days_from_checkout < 15:
             return 5 * days_from_checkout
