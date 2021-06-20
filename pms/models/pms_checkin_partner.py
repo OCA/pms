@@ -222,8 +222,9 @@ class PmsCheckinPartner(models.Model):
     )
     def _compute_document_expedition_date(self):
         for record in self:
-            if record.partner_id and record.partner_id.id_numbers:
-                if not record.document_expedition_date:
+            if not record.document_expedition_date:
+                record.document_expedition_date = False
+                if record.partner_id and record.partner_id.id_numbers:
                     record.document_expedition_date = record.partner_id.id_numbers[
                         0
                     ].valid_from
