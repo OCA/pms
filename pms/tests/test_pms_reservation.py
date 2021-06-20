@@ -735,38 +735,205 @@ class TestPmsReservations(common.SavepointCase):
                 }
             )
 
-    @freeze_time("1981-11-01")
-    def test_order_priority_to_assign(self):
+    @freeze_time("1981-11-10")
+    def test_to_assign_priority_reservation(self):
+        """
+        To assign reservation must have priority = 1
+        ------
+        Create a reservation with only room_type (to_assign = True),
+        regardless of the rest of the fields the priority must be 1
+
+        NOTE:
+        WORK FLOW PRIORITY COMPUTE
+        Check reservation priority
+        --------
+        1 - TO ASSIGN, ARRIVAL DELAYED, DEPARTURE DELAYED (= 1)
+        2 - CANCELLED with pending amount (= 2)
+        3 - DONE with pending amount (= 3)
+        4 - ONBOARD with pending amount (= days for checkout)
+        5 - CONFIRM/DRAFT with arrival in less than 3 days (= 2 * days for checkin)
+        6 - ONBOARD all paid (= 3 * days for checkout)
+        7 - DONE with days from checkout < 1 (= 6)
+        8 - CONFIRM/DRAFT with arrival between 3 and 20 days (= 2 * days for checkin)
+        9 - CONFIRM/DRAFT with arrival in more than 20 days (= 4 * days for checkin)
+        10 - DONE with days from checkout < 15 (= 5 * days from checkout)
+        11 - DONE with days from checkout between 15 and 90 included (= 10 * days from checkout)
+        12 - DONE with days from checkout > 90 (= 100 * days from checkout)
+        """
         # ARRANGE
         self.create_common_scenario()
-        r1 = self.env["pms.reservation"].create(
+
+        # ACT
+        res = self.env["pms.reservation"].create(
             {
-                "checkin": fields.date.today() + datetime.timedelta(days=3),
-                "checkout": fields.date.today() + datetime.timedelta(days=4),
+                "checkin": fields.date.today() + datetime.timedelta(days=30),
+                "checkout": fields.date.today() + datetime.timedelta(days=31),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "pms_property_id": self.property.id,
             }
         )
-        r2 = self.env["pms.reservation"].create(
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a reservation to be assigned \
+                should be %d and this is %d"
+            )
+            % (1, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            1,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_arrival_delayed_priority_reservation(self):
+        """
+        Arrival delayed reservation must have priority = 1
+        ------
+        Create a reservation with checkin date yesterday, and without checkin action,
+        regardless of the rest of the fields the priority must be 1
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=-1),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room1.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        # ACT
+        res.auto_arrival_delayed()
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a arrival delayed reservation \
+                should be %d and this is %d"
+            )
+            % (1, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            1,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_departure_delayed_priority_reservation(self):
+        """
+        To departure delayed reservation must have priority = 1
+        ------
+        Create a reservation and make the work flow to onboard state,
+        using jump dates, we make the reservation should have left yesterday,
+        regardless of the rest of the fields the priority must be 1
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        freezer = freeze_time("1981-10-08")
+        freezer.start()
+        res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "room_type_id": self.room_type_double.id,
+                "preferred_room_id": self.room2.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "pms_property_id": self.property.id,
             }
         )
-        r2.action_assign()
-        # ACT
-        reservations = self.env["pms.reservation"].search(
-            [("pms_property_id", "=", self.property.id)]
+        host1 = self.env["res.partner"].create(
+            {
+                "firstname": "Pepe",
+                "lastname": "Paz",
+                "email": "pepe@example.com",
+                "birthdate_date": "1995-12-10",
+                "gender": "male",
+            }
         )
+        checkin1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": host1.id,
+                "reservation_id": res.id,
+                "document_type": self.id_category.id,
+                "document_number": "77156490T",
+                "document_expedition_date": fields.date.today()
+                + datetime.timedelta(days=665),
+            }
+        )
+        checkin1.action_on_board()
+        freezer.stop()
+
+        # ACT
+        res.auto_departure_delayed()
+        computed_priority = res.priority
+
         # ASSERT
-        self.assertEqual(r1, reservations[0])
+        error_msm = (
+            (
+                "The priority of a departure delayed reservation \
+                should be %d and this is %d"
+            )
+            % (1, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            1,
+            error_msm,
+        )
+
+    @freeze_time("1981-11-10")
+    def test_cancelled_pending_amount_priority_reservation(self):
+        """
+        Cancelled with pending payments reservation must have priority = 2
+        ------
+        create a reservation and cancel it ensuring that there are
+        pending payments in it, the priority must be 2
+        """
+        # ARRANGE
+        self.create_common_scenario()
+        res = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=55),
+                "checkout": fields.date.today() + datetime.timedelta(days=56),
+                "preferred_room_id": self.room2.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.property.id,
+            }
+        )
+
+        # ACT
+        res.action_cancel()
+        computed_priority = res.priority
+
+        # ASSERT
+        error_msm = (
+            (
+                "The priority of a cancelled reservation with pending amount \
+                should be %d and this is %d"
+            )
+            % (2, computed_priority)
+        )
+
+        self.assertEqual(
+            computed_priority,
+            2,
+            error_msm,
+        )
 
     @freeze_time("1981-11-01")
     def test_order_priority_checkin(self):
+        # TODO: refact to tests priority flow defined above
         # ARRANGE
         self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
@@ -798,6 +965,7 @@ class TestPmsReservations(common.SavepointCase):
 
     @freeze_time("1981-11-01")
     def test_order_priority_checkout(self):
+        # TODO: refact to tests priority flow defined above
         # ARRANGE
         self.create_common_scenario()
         self.host1 = self.env["res.partner"].create(
@@ -869,6 +1037,7 @@ class TestPmsReservations(common.SavepointCase):
 
     @freeze_time("1981-11-01")
     def test_order_priority_state_onboard_and_pending_amount(self):
+        # TODO: refact to tests priority flow defined above
         # ARRANGE
         self.create_common_scenario()
         host = self.env["res.partner"].create(
