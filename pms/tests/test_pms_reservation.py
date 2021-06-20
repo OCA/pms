@@ -741,14 +741,14 @@ class TestPmsReservations(common.SavepointCase):
         self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
             {
-                "checkin": fields.date.today(),
-                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "checkin": fields.date.today() + datetime.timedelta(days=3),
+                "checkout": fields.date.today() + datetime.timedelta(days=4),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
                 "pms_property_id": self.property.id,
             }
         )
-        self.env["pms.reservation"].create(
+        r2 = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
@@ -757,7 +757,7 @@ class TestPmsReservations(common.SavepointCase):
                 "pms_property_id": self.property.id,
             }
         )
-        r1.action_assign()
+        r2.action_assign()
         # ACT
         reservations = self.env["pms.reservation"].search(
             [("pms_property_id", "=", self.property.id)]
@@ -800,9 +800,6 @@ class TestPmsReservations(common.SavepointCase):
     def test_order_priority_checkout(self):
         # ARRANGE
         self.create_common_scenario()
-        id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
         self.host1 = self.env["res.partner"].create(
             {
                 "firstname": "Pepe",
@@ -843,7 +840,7 @@ class TestPmsReservations(common.SavepointCase):
             {
                 "partner_id": self.host1.id,
                 "reservation_id": r1.id,
-                "document_type": id_category.id,
+                "document_type": self.id_category.id,
                 "document_number": "77156490T",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),
@@ -851,9 +848,9 @@ class TestPmsReservations(common.SavepointCase):
         )
         checkin2 = self.env["pms.checkin.partner"].create(
             {
-                "partner_id": self.host1.id,
+                "partner_id": self.host2.id,
                 "reservation_id": r2.id,
-                "document_type": id_category.id,
+                "document_type": self.id_category.id,
                 "document_number": "55562998N",
                 "document_expedition_date": fields.date.today()
                 + datetime.timedelta(days=665),

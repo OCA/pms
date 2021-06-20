@@ -611,6 +611,12 @@ class PmsReservation(models.Model):
             elif record.state == "cancelled":
                 if record.pending_amount > 0:
                     record.priority = 2
+                elif record.checkout >= fields.date.today():
+                    record.priority = 100
+                else:
+                    record.priority = (
+                        1000 * (fields.date.today() - record.checkout).days
+                    )
             elif record.state == "onboard":
                 record.priority = record.onboard_priority()
             elif record.state in ("draf", "confirm"):
