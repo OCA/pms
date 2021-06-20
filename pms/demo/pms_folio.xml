@@ -567,6 +567,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_2'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
