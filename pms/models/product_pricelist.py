@@ -147,7 +147,7 @@ class ProductPricelist(models.Model):
                 for item in record.item_ids:
                     if record.pricelist_type == "daily" and (
                         item.compute_price != "fixed"
-                        or len(record.pms_property_ids) != 1
+                        or len(item.pms_property_ids) != 1
                         or not item.date_end_consumption
                         or not item.date_start_consumption
                         or item.date_end_consumption != item.date_start_consumption
