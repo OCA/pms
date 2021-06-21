@@ -257,7 +257,7 @@ class TestPmsFolio(TestPms):
 
         # self.assertEqual(
         #     reservation1.priority,
-        #     reservation1.folio_id.max_reservation_prior,
+        #     reservation1.folio_id.max_reservation_priority,
         #     "The max. reservation priority on the whole folio is incorrect",
         # )
 

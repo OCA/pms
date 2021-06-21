@@ -404,10 +404,11 @@ class PmsFolio(models.Model):
     reservations_pending_count = fields.Integer(
         compute="_compute_reservations_pending_arrival"
     )
-    max_reservation_prior = fields.Integer(
+    max_reservation_priority = fields.Integer(
         string="Max reservation priority on the entire folio",
         help="Max reservation priority on the entire folio",
-        compute="_compute_max_reservation_prior",
+        compute="_compute_max_reservation_priority",
+        store=True,
     )
     invoice_status = fields.Selection(
         string="Invoice Status",
@@ -926,10 +927,11 @@ class PmsFolio(models.Model):
                 }
                 record.update(vals)
 
-    def _compute_max_reservation_prior(self):
+    @api.depends("reservation_ids", "reservation_ids.priority")
+    def _compute_max_reservation_priority(self):
         for record in self:
             reservation_priors = record.reservation_ids.mapped("priority")
-            record.max_reservation_prior = max(reservation_priors)
+            record.max_reservation_priority = max(reservation_priors)
 
     def _compute_checkin_partner_count(self):
         for record in self:
