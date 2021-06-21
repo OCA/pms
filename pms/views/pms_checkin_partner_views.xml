@@ -73,7 +73,7 @@
                         icon="fa-file-pdf-o"
                         name="%(action_traveller_report)d"
                         string="Print in PDF"
-                        attrs="{'invisible': [('state','not in', ('onboard','done'))]}"
+                        attrs="{'invisible': [('state','not in', ('precheckin','onboard','done'))]}"
                     />
                 </sheet>
             </form>

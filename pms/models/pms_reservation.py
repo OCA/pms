@@ -1474,7 +1474,7 @@ class PmsReservation(models.Model):
         checkins = self.env["pms.checkin.partner"]
         for record in self:
             checkins += record.checkin_partner_ids.filtered(
-                lambda s: s.state in ("onboard", "done")
+                lambda s: s.state in ("precheckin", "onboard", "done")
             )
         if checkins:
             return self.env.ref("pms.action_traveller_report").report_action(checkins)
