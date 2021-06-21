@@ -7,18 +7,18 @@
                     t-attf-src="data:image/*;base64,{{docs.pms_property_id.company_id.logo}}"
                     t-att-alt="docs.pms_property_id.company_id.name"
                 />
-            <p>PART OF TRAVELERS ENTRY</p>
-            <p>Document number:
+            <p class="title">PART OF TRAVELERS ENTRY</p>
+            <p class="checknumber">Document number:
                 <strong><span t-field="docs.id" /></strong>/
                 <span t-field="docs.reservation_id" />
             </p>
-            <p>
+            <p class="amount">
                 Total amount (Reservation Card):
                 <strong><span
                             t-field="docs.reservation_id.folio_id.amount_total"
                         /></strong>
             </p>
-            <div class="property">
+            <div class="property amount">
                 <strong><span t-field="docs.pms_property_id.name" /></strong><br />
                 <strong>CIF:
                     <span t-field="docs.pms_property_id.company_id.vat" /></strong><br
@@ -32,7 +32,7 @@
                     <span t-field="docs.pms_property_id.company_id.city" /></strong><b
                     />
             </div>
-            <p>TRAVELER'S DOCUMENT</p>
+            <p class="title2">TRAVELER'S DOCUMENT</p>
 
             <table>
                 <tr>
@@ -106,7 +106,7 @@
                         />
                 </p>
                 <div class="firma" /><br />
-                <p>Traveler's signature</p>
+                <p class="signature">Traveler's signature</p>
                 <p><span t-field="docs.pms_property_id.cardex_warning" /></p>
                 <p><span t-field="docs.pms_property_id.company_id.privacy_policy" /></p>
             </div>
@@ -115,18 +115,18 @@
                     t-attf-src="data:image/*;base64,{{docs.pms_property_id.company_id.logo}}"
                     t-att-alt="docs.pms_property_id.company_id.name"
                 />
-            <p>PART OF TRAVELERS ENTRY</p>
-            <p>Document number:
+            <p class="title">PART OF TRAVELERS ENTRY</p>
+            <p class="checknumber">Document number:
                 <strong><span t-field="docs.id" /></strong>/
                 <span t-field="docs.reservation_id" />
             </p>
-            <p>
+            <p class="amount">
                 Total amount (Reservation Card):
                 <strong><span
                             t-field="docs.reservation_id.folio_id.amount_total"
                         /></strong>
             </p>
-            <div class="property">
+            <div class="property amount">
                 <strong><span t-field="docs.pms_property_id.name" /></strong><br />
                 <strong>CIF:
                     <span t-field="docs.pms_property_id.company_id.vat" /></strong><br
@@ -140,7 +140,7 @@
                     <span t-field="docs.pms_property_id.company_id.city" /></strong><b
                     />
             </div>
-            <p>TRAVELER'S DOCUMENT</p>
+            <p class="title2">TRAVELER'S DOCUMENT</p>
 
             <table>
                 <tr>
@@ -224,7 +224,7 @@
                     width: 100%;
                     border: 1;
                     border-style: double;
-                    margin-top:8px;
+                    margin-top:12px;
                 }
                 td:first-child{
                     width:40%;
@@ -251,7 +251,27 @@
                 .date{
                     margin-top:8px;
                 }
-
+               .title{
+                    font-size:1.9em;
+               }
+               .title2{
+                   font-size:1.32em;
+               }
+               .amount{
+                  font-size:1.8em;
+               }
+               .checknumber{
+                  font-size:1.81em;
+               }
+               td{
+                 font-size:180%;
+               }
+                p, span{
+                    font-size:1.2em;
+                }
+                .signature, .date{
+                    font-size: 1.2em;
+                }
             </style>
             </t>
         </t>
