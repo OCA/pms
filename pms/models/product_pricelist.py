@@ -125,7 +125,6 @@ class ProductPricelist(models.Model):
                     self._context["consumption_date"],
                 ),
             )
-
             item_ids = [x[0] for x in self.env.cr.fetchall()]
             items = self.env["product.pricelist.item"].browse(item_ids)
             if board_service:
@@ -149,6 +148,8 @@ class ProductPricelist(models.Model):
                     if record.pricelist_type == "daily" and (
                         item.compute_price != "fixed"
                         or len(record.pms_property_ids) != 1
+                        or not item.date_end_consumption
+                        or not item.date_start_consumption
                         or item.date_end_consumption != item.date_start_consumption
                     ):
                         raise ValidationError(
