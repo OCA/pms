@@ -929,7 +929,7 @@ class PmsFolio(models.Model):
 
     @api.depends("reservation_ids", "reservation_ids.priority")
     def _compute_max_reservation_priority(self):
-        for record in self:
+        for record in self.filtered("reservation_ids"):
             reservation_priors = record.reservation_ids.mapped("priority")
             record.max_reservation_priority = max(reservation_priors)
 
