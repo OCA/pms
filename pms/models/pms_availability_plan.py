@@ -145,7 +145,9 @@ class PmsAvailabilityPlan(models.Model):
             current_lines = []
         rooms_not_avail = (
             Avail.search(domain)
-            .reservation_line_ids.filtered(lambda l: l.id and l.id not in current_lines)
+            .reservation_line_ids.filtered(
+                lambda l: l.occupies_availability and l.id and l.id not in current_lines
+            )
             .room_id.ids
         )
         domain_rooms = []
