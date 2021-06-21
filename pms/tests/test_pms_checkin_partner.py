@@ -824,7 +824,7 @@ class TestPmsCheckinPartner(TestPms):
         # ASSERT
         self.assertTrue(self.host1.mobile, "Partner mobile must be added")
 
-    def _test_partner_id_numbers_created_from_checkin(self):
+    def test_partner_id_numbers_created_from_checkin(self):
         """
         Some of the required data of the checkin_partner to create the partner are document_type
         and document_number, with them an id_number is created associated with the partner that
@@ -841,6 +841,8 @@ class TestPmsCheckinPartner(TestPms):
                 "reservation_id": self.reservation_1.id,
             }
         )
+
+        checkin.flush()
 
         # ASSERT
         self.assertTrue(
@@ -864,12 +866,13 @@ class TestPmsCheckinPartner(TestPms):
             "Checkin partner email and partner email shouldn't match",
         )
 
-    def _test_partner_modified_previous_checkin_not_modified(self):
+    def test_partner_modified_previous_checkin_not_modified(self):
         """
         If a partner modifies any of its fields, these change mustn't be reflected
         in the previous checkins associated with it
         """
         # ARRANGE
+        self.checkin1.flush()
         self.host1.gender = "female"
         # ASSERT
         self.assertNotEqual(
