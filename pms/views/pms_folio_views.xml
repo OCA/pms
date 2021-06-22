@@ -74,6 +74,20 @@
                         <button
                             type="action"
                             class="oe_stat_button"
+                            name="%(open_pms_reservation_form_tree_all)d"
+                            icon="fa-window-close"
+                            context="{'search_default_folio_id': id, 'default_folio_id': id, 'search_default_cancelled': True}"
+                            attrs="{'invisible': [('number_of_cancelled_rooms', '=', 0)]}"
+                        >
+                            <field
+                                name="number_of_cancelled_rooms"
+                                widget="statinfo"
+                                string="Cancelled Rooms"
+                            />
+                        </button>
+                        <button
+                            type="action"
+                            class="oe_stat_button"
                             name="%(action_pms_services_form)d"
                             icon="fa-coffee"
                             context="{'search_default_folio_id': id, 'default_folio_id': id}"
