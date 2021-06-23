@@ -450,7 +450,7 @@ class FolioSaleLine(models.Model):
                         currency=line.folio_id.currency_id,
                         quantity=line.product_uom_qty,
                         product=line.product_id,
-                        partner=line.folio_id.partner_shipping_id,
+                        partner=line.folio_id.partner_id,
                     )["total_excluded"]
 
                 if any(

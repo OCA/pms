@@ -63,6 +63,12 @@ class PmsFolio(models.Model):
         store="True",
         compute="_compute_number_of_rooms",
     )
+    number_of_cancelled_rooms = fields.Integer(
+        string="Number of Cancelled Rooms",
+        help="Number of cancelled rooms in folio.",
+        store="True",
+        compute="_compute_number_of_cancelled_rooms",
+    )
     number_of_services = fields.Integer(
         string="Number of Services",
         help="Number of services in the folio",
@@ -202,10 +208,6 @@ class PmsFolio(models.Model):
         help="The number of rooms left to occupy.",
         store=True,
         compute="_compute_count_rooms_pending_arrival",
-    )
-    checkins_ratio = fields.Integer(
-        string="Pending Arrival Ratio",
-        compute="_compute_checkins_ratio",
     )
     pending_checkin_data = fields.Integer(
         string="Checkin Data",
@@ -396,14 +398,6 @@ class PmsFolio(models.Model):
         compute="_compute_amount_all",
         tracking=True,
     )
-    reservation_pending_arrival_ids = fields.One2many(
-        string="Pending Arrival Rooms",
-        comodel_name="pms.checkin.partner",
-        compute="_compute_reservations_pending_arrival",
-    )
-    reservations_pending_count = fields.Integer(
-        compute="_compute_reservations_pending_arrival"
-    )
     max_reservation_priority = fields.Integer(
         string="Max reservation priority on the entire folio",
         help="Max reservation priority on the entire folio",
@@ -579,6 +573,13 @@ class PmsFolio(models.Model):
         for folio in self:
             folio.number_of_rooms = len(
                 folio.reservation_ids.filtered(lambda a: a.state != "cancelled")
+            )
+
+    @api.depends("reservation_ids", "reservation_ids.state")
+    def _compute_number_of_cancelled_rooms(self):
+        for folio in self:
+            folio.number_of_cancelled_rooms = len(
+                folio.reservation_ids.filtered(lambda a: a.state == "cancelled")
             )
 
     @api.depends("service_ids", "service_ids.product_qty")
@@ -1132,11 +1133,13 @@ class PmsFolio(models.Model):
         return True
 
     def action_confirm(self):
-        for folio in self.filtered(
-            lambda folio: folio.partner_id not in folio.message_partner_ids
-        ):
-            folio.message_subscribe([folio.partner_id.id])
-        self.write({"state": "confirm", "confirmation_date": fields.Datetime.now()})
+        self.filtered(lambda x: x.state != "confirm").write(
+            {"state": "confirm", "confirmation_date": fields.Datetime.now()}
+        )
+
+        if self.env.context.get("confirm_all_reservations"):
+            self.reservation_ids.confirm()
+
         # if self.env.context.get('send_email'):
         # self.force_quotation_send()
 
