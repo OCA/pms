@@ -4710,8 +4710,8 @@ msgid "Massive changes on Pricelist & Availability Plans"
 msgstr "Cambios masivos en las tarifas y planes de disponibilidad"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__max_reservation_prior
-#: model:ir.model.fields,help:pms.field_pms_folio__max_reservation_prior
+#: model:ir.model.fields,field_description:pms.field_pms_folio__max_reservation_priority
+#: model:ir.model.fields,help:pms.field_pms_folio__max_reservation_priority
 msgid "Max reservation priority on the entire folio"
 msgstr ""
 
