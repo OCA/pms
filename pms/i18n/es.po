@@ -1454,6 +1454,11 @@ msgid "Cancelled"
 msgstr "Cancelado"
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid "Cancelled Rooms"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/ir_config_parameter.py:0
 #, python-format
 msgid "Cannot delete this parameter"
@@ -5115,6 +5120,11 @@ msgid "Number of Actions"
 msgstr "Número de Acciones"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__number_of_cancelled_rooms
+msgid "Number of Cancelled Rooms"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__folios_count
 #: model:ir.model.fields,field_description:pms.field_res_partner__folios_count
 #: model:ir.model.fields,field_description:pms.field_res_users__folios_count
@@ -5148,6 +5158,11 @@ msgstr "Número de reglas de precio"
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_shared_room__beds
 msgid "Number of beds in a shared room"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__number_of_cancelled_rooms
+msgid "Number of cancelled rooms in folio."
 msgstr ""
 
 #. module: pms
@@ -5687,15 +5702,9 @@ msgid "Pending Arrival"
 msgstr "Llegada Pendiente"
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__checkins_ratio
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkins_ratio
 msgid "Pending Arrival Ratio"
 msgstr "Ratio de Llegadas Pendientes"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__reservation_pending_arrival_ids
-msgid "Pending Arrival Rooms"
-msgstr "Habitaciones Pendientes de Llegada"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__ratio_checkin_data
@@ -6754,11 +6763,6 @@ msgstr "Reservas"
 #, fuzzy
 msgid "Reservations Lines To Change"
 msgstr "Líneas de la Reserva"
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__reservations_pending_count
-msgid "Reservations Pending Count"
-msgstr "Recuento de reservas pendientes"
 
 #. module: pms
 #: model:ir.model,name:pms.model_pms_reservation_line
@@ -9420,6 +9424,12 @@ msgstr ""
 msgid ""
 "you cannot have more than one room with the same name in the same property"
 msgstr ""
+
+#~ msgid "Pending Arrival Rooms"
+#~ msgstr "Habitaciones Pendientes de Llegada"
+
+#~ msgid "Reservations Pending Count"
+#~ msgstr "Recuento de reservas pendientes"
 
 #~ msgid ""
 #~ "<span class=\"label label-danger\" attrs=\"{'invisible': [('state', 'not "
