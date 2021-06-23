@@ -5243,6 +5243,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_folio__partner_id
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__partner_id
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
+#: model_terms:ir.ui.view,arch_db:pms.view_partner_data_form
 msgid "Partner"
 msgstr ""
 
