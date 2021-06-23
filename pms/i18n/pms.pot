@@ -1348,6 +1348,11 @@ msgid "Cancelled"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid "Cancelled Rooms"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/ir_config_parameter.py:0
 #, python-format
 msgid "Cannot delete this parameter"
@@ -4860,6 +4865,11 @@ msgid "Number of Actions"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__number_of_cancelled_rooms
+msgid "Number of Cancelled Rooms"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__folios_count
 #: model:ir.model.fields,field_description:pms.field_res_partner__folios_count
 #: model:ir.model.fields,field_description:pms.field_res_users__folios_count
@@ -4891,6 +4901,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_shared_room__beds
 msgid "Number of beds in a shared room"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__number_of_cancelled_rooms
+msgid "Number of cancelled rooms in folio."
 msgstr ""
 
 #. module: pms
@@ -5408,14 +5423,8 @@ msgid "Pending Arrival"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__checkins_ratio
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkins_ratio
 msgid "Pending Arrival Ratio"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__reservation_pending_arrival_ids
-msgid "Pending Arrival Rooms"
 msgstr ""
 
 #. module: pms
@@ -6441,11 +6450,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__reservation_lines_to_change
 msgid "Reservations Lines To Change"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__reservations_pending_count
-msgid "Reservations Pending Count"
 msgstr ""
 
 #. module: pms
