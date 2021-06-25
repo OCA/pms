@@ -604,7 +604,7 @@ class PmsCheckinPartner(models.Model):
         return True
 
     def open_partner(self):
-        """ Utility method used to add an "View Customer" button in folio views """
+        """ Utility method used to add an "View Customer" button in checkin partner views """
         self.ensure_one()
         partner_form_id = self.env.ref("pms.view_partner_data_form").id
         return {
