@@ -1,6 +1,6 @@
 import datetime
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class BookingEngine(models.TransientModel):
@@ -39,6 +39,13 @@ class BookingEngine(models.TransientModel):
         help="Partner Tags",
         ondelete="restrict",
         comodel_name="res.partner.category",
+    )
+    partner_name = fields.Char(
+        string="Partner name",
+        help="In whose name is the reservation",
+        compute="_compute_partner_name",
+        readonly=False,
+        store=True,
     )
     partner_id = fields.Many2one(
         string="Partner",
@@ -126,6 +133,28 @@ class BookingEngine(models.TransientModel):
                 record.total_price_folio += line.price_total
             record.total_price_folio = record.total_price_folio * (1 - record.discount)
 
+    @api.depends("agency_id")
+    def _compute_partner_id(self):
+        for record in self:
+            if record.agency_id and record.agency_id.invoice_to_agency:
+                record.partner_id = record.agency_id.id
+            elif not record.partner_id:
+                record.partner_id = False
+
+    @api.depends("partner_id")
+    def _compute_partner_name(self):
+        for record in self:
+            if record.partner_id:
+                record.partner_name = record.partner_id.name
+            if (
+                record.agency_id
+                and not record.agency_id.invoice_to_agency
+                and not record.partner_name
+            ):
+                record.partner_name = _("Reservation from ") + record.agency_id.name
+            elif not record.partner_name:
+                record.partner_name = False
+
     @api.depends(
         "start_date",
         "end_date",
@@ -187,7 +216,10 @@ class BookingEngine(models.TransientModel):
                 folio = self.env["pms.folio"].create(
                     {
                         "pricelist_id": record.pricelist_id.id,
-                        "partner_id": record.partner_id.id,
+                        "partner_id": record.partner_id.id
+                        if record.partner_id
+                        else False,
+                        "partner_name": record.partner_name,
                         "pms_property_id": record.pms_property_id.id,
                         "agency_id": record.agency_id.id,
                         "channel_type_id": record.channel_type_id.id,
@@ -204,7 +236,10 @@ class BookingEngine(models.TransientModel):
                             "checkin": line.checkin,
                             "checkout": line.checkout,
                             "room_type_id": line.room_type_id.id,
-                            "partner_id": record.partner_id.id,
+                            "partner_id": record.partner_id.id
+                            if record.partner_id
+                            else False,
+                            "partner_name": record.partner_name,
                             "pricelist_id": record.pricelist_id.id,
                             "pms_property_id": folio.pms_property_id.id,
                             "board_service_room_id": line.board_service_room_id.id,
