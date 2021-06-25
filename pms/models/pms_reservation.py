@@ -1457,9 +1457,9 @@ class PmsReservation(models.Model):
 
     # Action methods
     def open_partner(self):
-        """ Utility method used to add an "View Customer" button in folio views """
+        """ Utility method used to add an "View Customer" button in reservation views """
         self.ensure_one()
-        partner_form_id = self.env.ref("base.view_partner_address_form").id
+        partner_form_id = self.env.ref("pms.view_partner_data_form").id
         return {
             "type": "ir.actions.act_window",
             "res_model": "res.partner",
