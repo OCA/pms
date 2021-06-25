@@ -184,9 +184,8 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_email"):
             super()._compute_field()
         for record in self:
-            if (
-                not record.email
-                and record.pms_checkin_partner_ids
+            if not record.email and (
+                record.pms_checkin_partner_ids
                 or record.pms_reservation_ids
                 or record.pms_folio_ids
             ):
@@ -219,9 +218,8 @@ class ResPartner(models.Model):
         if hasattr(super(), "_compute_mobile"):
             super()._compute_field()
         for record in self:
-            if (
-                not record.mobile
-                and record.pms_checkin_partner_ids
+            if not record.mobile and (
+                record.pms_checkin_partner_ids
                 or record.pms_reservation_ids
                 or record.pms_folio_ids
             ):
