@@ -297,7 +297,7 @@
                             string="General Info"
                             name="contact_details"
                         >
-                            <field name="partner_id" invisible="1" />
+                            <field name="partner_id" invisible="0" />
                             <field
                                 name="partner_name"
                                 placeholder="Guest"
