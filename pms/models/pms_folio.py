@@ -620,15 +620,19 @@ class PmsFolio(models.Model):
         for record in self:
             record.company_id = record.pms_property_id.company_id
 
-    @api.depends("partner_id", "agency_id")
+    @api.depends(
+        "partner_id", "agency_id", "reservation_ids", "reservation_ids.pricelist_id"
+    )
     def _compute_pricelist_id(self):
         for folio in self:
-            if folio.agency_id and folio.agency_id.apply_pricelist:
-                folio.pricelist_id = folio.agency_id.property_product_pricelist.id
+            if len(folio.reservation_ids.pricelist_id) == 1:
+                folio.pricelist_id = folio.reservation_ids.pricelist_id
+            elif folio.agency_id and folio.agency_id.apply_pricelist:
+                folio.pricelist_id = folio.agency_id.property_product_pricelist
             elif folio.partner_id and folio.partner_id.property_product_pricelist:
-                folio.pricelist_id = folio.partner_id.property_product_pricelist.id
-            elif not folio.pricelist_id.id:
-                folio.pricelist_id = folio.pms_property_id.default_pricelist_id.id
+                folio.pricelist_id = folio.partner_id.property_product_pricelist
+            elif not folio.pricelist_id:
+                folio.pricelist_id = folio.pms_property_id.default_pricelist_id
 
     @api.depends("agency_id")
     def _compute_partner_id(self):

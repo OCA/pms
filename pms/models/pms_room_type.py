@@ -195,10 +195,10 @@ class PmsRoomType(models.Model):
         )
         return super().create(vals)
 
-    def unlink(self):
-        for record in self:
-            record.product_id.unlink()
-        return super().unlink()
+    # def unlink(self):
+    #     for record in self:
+    #         record.product_id.unlink()
+    #     return super().unlink()
 
     def get_capacity(self):
         self.ensure_one()
