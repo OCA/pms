@@ -236,8 +236,8 @@ class PmsReservation(models.Model):
         compute="_compute_pending_checkin_data",
     )
     ratio_checkin_data = fields.Integer(
-        string="Pending Checkin Data",
-        help="Proportion of guest data pending at checkin",
+        string="Complete cardex",
+        help="Proportion of guest data complete at checkin",
         compute="_compute_ratio_checkin_data",
     )
     ready_for_checkin = fields.Boolean(
@@ -265,7 +265,7 @@ class PmsReservation(models.Model):
     allowed_cancel = fields.Boolean(
         string="Allowed cancel",
         help="Technical field, Indicates that reservation can be cancelled,"
-        "that happened when state is 'cancelled', 'done', or 'departure_delayed'",
+        "that happened when state is 'cancel', 'done', or 'departure_delayed'",
         compute="_compute_allowed_cancel",
         search="_search_allowed_cancel",
     )
@@ -333,7 +333,7 @@ class PmsReservation(models.Model):
             ("confirm", "Pending arrival"),
             ("onboard", "On Board"),
             ("done", "Out"),
-            ("cancelled", "Cancelled"),
+            ("cancel", "Cancelled"),
             ("arrival_delayed", "Arrival Delayed"),
             ("departure_delayed", "Departure delayed"),
         ],
@@ -609,8 +609,8 @@ class PmsReservation(models.Model):
                 "departure_delayed",
             ):
                 record.priority = 1
-            elif record.state == "cancelled":
-                record.priority = record.cancelled_priority()
+            elif record.state == "cancel":
+                record.priority = record.cancel_priority()
             elif record.state == "onboard":
                 record.priority = record.onboard_priority()
             elif record.state in ("draf", "confirm"):
@@ -618,7 +618,7 @@ class PmsReservation(models.Model):
             elif record.state == "done":
                 record.priority = record.reservations_past_priority()
 
-    def cancelled_priority(self):
+    def cancel_priority(self):
         self.ensure_one()
         if self.folio_pending_amount > 0:
             return 2
@@ -731,7 +731,7 @@ class PmsReservation(models.Model):
     def _compute_allowed_room_ids(self):
         for reservation in self:
             if reservation.checkin and reservation.checkout:
-                if reservation.overbooking or reservation.state in ("cancelled"):
+                if reservation.overbooking or reservation.state in ("cancel"):
                     reservation.allowed_room_ids = self.env["pms.room"].search(
                         [("active", "=", True)]
                     )
@@ -930,7 +930,9 @@ class PmsReservation(models.Model):
     @api.depends("pending_checkin_data")
     def _compute_ratio_checkin_data(self):
         self.ratio_checkin_data = 0
-        for reservation in self.filtered(lambda r: r.adults > 0):
+        for reservation in self.filtered(
+            lambda r: r.adults > 0 and r.state != "cancel"
+        ):
             reservation.ratio_checkin_data = (
                 (reservation.adults - reservation.pending_checkin_data)
                 * 100
@@ -966,7 +968,7 @@ class PmsReservation(models.Model):
         for record in self:
             record.allowed_cancel = (
                 True
-                if (record.state not in ["cancelled", "done", "departure_delayed"])
+                if (record.state not in ["cancel", "done", "departure_delayed"])
                 else False
             )
 
@@ -1341,7 +1343,7 @@ class PmsReservation(models.Model):
                 _("Invalid domain right operand %s for left of cancel", value)
             )
         return [
-            ("state", "not in", ("cancelled", "done", "departure_delayed")),
+            ("state", "not in", ("cancel", "done", "departure_delayed")),
         ]
 
     def _search_checkin_partner_pending(self, operator, value):
@@ -1573,7 +1575,7 @@ class PmsReservation(models.Model):
                 raise ValidationError(_("Partner contact name is required"))
             vals.update(default_vals)
         elif "pms_property_id" in vals and (
-            "partner_id" in vals or "agency_id" in vals
+            "partner_name" in vals or "partner_id" in vals or "agency_id" in vals
         ):
             folio_vals = {
                 "pms_property_id": vals["pms_property_id"],
@@ -1598,9 +1600,7 @@ class PmsReservation(models.Model):
                 }
             )
         else:
-            raise ValidationError(
-                _("The client and Property are mandatory in the reservation")
-            )
+            raise ValidationError(_("The Property are mandatory in the reservation"))
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
             pms_property_id = (
                 self.env.user.get_active_property_ids()[0]
@@ -1632,7 +1632,7 @@ class PmsReservation(models.Model):
     def autocheckout(self):
         reservations = self.env["pms.reservation"].search(
             [
-                ("state", "not in", ["done", "cancelled"]),
+                ("state", "not in", ["done", "cancel"]),
                 ("checkout", "<", fields.Date.today()),
             ]
         )
@@ -1669,7 +1669,7 @@ class PmsReservation(models.Model):
 
     def action_cancel(self):
         for record in self:
-            # else state = cancelled
+            # else state = cancel
             if not record.allowed_cancel:
                 raise UserError(_("This reservation cannot be cancelled"))
             else:
@@ -1680,8 +1680,8 @@ class PmsReservation(models.Model):
                 )
                 if self._context.get("no_penalty", False):
                     _logger.info("Modified Reservation - No Penalty")
-                record.write({"state": "cancelled", "cancelled_reason": cancel_reason})
-                # record._compute_cancelled_discount()
+                record.write({"state": "cancel", "cancelled_reason": cancel_reason})
+                # record._compute_cancel_discount()
                 record.folio_id._compute_amount()
 
     def action_assign(self):

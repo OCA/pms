@@ -342,7 +342,7 @@ class ReservationLinesToSplit(models.TransientModel):
             reservation = line.reservation_wizard_id.reservation_id
             rooms_available = False
             if line.date and reservation:
-                if reservation.overbooking or reservation.state in ("cancelled"):
+                if reservation.overbooking or reservation.state in ("cancel"):
                     line.allowed_room_ids = self.env["pms.room"].search(
                         [("active", "=", True)]
                     )
