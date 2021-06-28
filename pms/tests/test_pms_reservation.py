@@ -2046,7 +2046,7 @@ class TestPmsReservations(common.SavepointCase):
                 "name": "Host1",
             }
         )
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(UserError):
             self.env["pms.reservation"].create(
                 {
                     "checkin": fields.date.today() + datetime.timedelta(days=3),
@@ -2066,8 +2066,8 @@ class TestPmsReservations(common.SavepointCase):
         with self.assertRaises(ValidationError):
             self.env["pms.reservation"].create(
                 {
-                    "checkin": fields.date.today() + datetime.timedelta(days=3),
-                    "checkout": fields.date.today(),
+                    "checkin": fields.date.today(),
+                    "checkout": fields.date.today() + datetime.timedelta(days=3),
                     "pms_property_id": self.property.id,
                     "partner_id": self.host1.id,
                     "room_type_id": self.room_type_double.id,

@@ -745,6 +745,8 @@ class PmsReservation(models.Model):
                     pms_property_id=reservation.pms_property_id.id,
                 )
                 reservation.allowed_room_ids = rooms_available
+            else:
+                reservation.allowed_room_ids = False
 
     @api.depends("reservation_type", "agency_id", "folio_id", "folio_id.agency_id")
     def _compute_partner_id(self):
@@ -759,30 +761,35 @@ class PmsReservation(models.Model):
     def _compute_reservation_line_ids(self):
         for reservation in self:
             cmds = []
-            days_diff = (reservation.checkout - reservation.checkin).days
-            for i in range(0, days_diff):
-                idate = reservation.checkin + datetime.timedelta(days=i)
-                old_line = reservation.reservation_line_ids.filtered(
-                    lambda r: r.date == idate
-                )
-                if not old_line:
-                    cmds.append(
-                        (
-                            0,
-                            False,
-                            {"date": idate},
-                        )
+            if reservation.checkout and reservation.checkin:
+                days_diff = (reservation.checkout - reservation.checkin).days
+                for i in range(0, days_diff):
+                    idate = reservation.checkin + datetime.timedelta(days=i)
+                    old_line = reservation.reservation_line_ids.filtered(
+                        lambda r: r.date == idate
                     )
-            reservation.reservation_line_ids -= (
-                reservation.reservation_line_ids.filtered_domain(
-                    [
-                        "|",
-                        ("date", ">=", reservation.checkout),
-                        ("date", "<", reservation.checkin),
-                    ]
+                    if not old_line:
+                        cmds.append(
+                            (
+                                0,
+                                False,
+                                {"date": idate},
+                            )
+                        )
+                reservation.reservation_line_ids -= (
+                    reservation.reservation_line_ids.filtered_domain(
+                        [
+                            "|",
+                            ("date", ">=", reservation.checkout),
+                            ("date", "<", reservation.checkin),
+                        ]
+                    )
                 )
-            )
-            reservation.reservation_line_ids = cmds
+                reservation.reservation_line_ids = cmds
+            else:
+                if not reservation.reservation_line_ids:
+                    reservation.reservation_line_ids = False
+            reservation.check_in_out_dates()
 
     @api.depends("board_service_room_id")
     def _compute_service_ids(self):
@@ -822,27 +829,21 @@ class PmsReservation(models.Model):
         for reservation in self:
             if reservation.agency_id and reservation.agency_id.apply_pricelist:
                 reservation.pricelist_id = (
-                    reservation.agency_id.property_product_pricelist.id
+                    reservation.agency_id.property_product_pricelist
                 )
             elif (
                 reservation.partner_id
                 and reservation.partner_id.property_product_pricelist
             ):
                 reservation.pricelist_id = (
-                    reservation.partner_id.property_product_pricelist.id
+                    reservation.partner_id.property_product_pricelist
                 )
             elif not reservation.pricelist_id.id:
-                if (
-                    reservation.folio_id
-                    and len(reservation.folio_id.reservation_ids.mapped("pricelist_id"))
-                    == 1
-                ):
-                    reservation.pricelist_id = (
-                        reservation.folio_id.reservation_ids.mapped("pricelist_id")
-                    )
+                if reservation.folio_id and reservation.folio_id.pricelist_id:
+                    reservation.pricelist_id = reservation.folio_id.pricelist_id
                 else:
                     reservation.pricelist_id = (
-                        reservation.pms_property_id.default_pricelist_id.id
+                        reservation.pms_property_id.default_pricelist_id
                     )
 
     @api.depends("pricelist_id", "room_type_id")
@@ -1008,6 +1009,7 @@ class PmsReservation(models.Model):
                     record.checkin = record.folio_id.reservation_ids[0].checkin
                 else:
                     record.checkin = fields.date.today()
+            record.check_in_out_dates()
 
     @api.depends("reservation_line_ids", "checkin")
     def _compute_checkout(self):
@@ -1032,10 +1034,7 @@ class PmsReservation(models.Model):
             elif not record.checkout:
                 record.checkout = False
             # date checking
-            if record.checkin and record.checkout and record.checkin >= record.checkout:
-                raise UserError(
-                    _("The checkout date must be greater than the checkin date")
-                )
+            record.check_in_out_dates()
 
     @api.depends("pms_property_id", "folio_id")
     def _compute_arrival_hour(self):
@@ -1362,17 +1361,19 @@ class PmsReservation(models.Model):
             segmentation_ids = folio.segmentation_ids
         return segmentation_ids
 
-    # TODO: Use default values on checkin /checkout is empty
-    @api.constrains("checkin", "checkout", "state", "preferred_room_id", "overbooking")
-    def check_dates(self):
+    def check_in_out_dates(self):
         """
         1.-When date_order is less then checkin date or
         Checkout date should be greater than the checkin date.
         3.-Check the reservation dates are not occuped
         """
         for record in self:
-            if record.checkin >= record.checkout:
-                raise ValidationError(
+            if (
+                record.checkout
+                and record.checkout
+                and record.checkin >= record.checkout
+            ):
+                raise UserError(
                     _(
                         "Room line Check In Date Should be \
                     less than the Check Out Date!"
@@ -1432,24 +1433,29 @@ class PmsReservation(models.Model):
     @api.constrains("arrival_hour")
     def _check_arrival_hour(self):
         for record in self:
-            try:
-                time.strptime(record.arrival_hour, "%H:%M")
-                return True
-            except ValueError:
-                raise ValidationError(
-                    _("Format Arrival Hour (HH:MM) Error: %s", record.arrival_hour)
-                )
+            if record.arrival_hour:
+                try:
+                    time.strptime(record.arrival_hour, "%H:%M")
+                    return True
+                except ValueError:
+                    raise ValidationError(
+                        _("Format Arrival Hour (HH:MM) Error: %s", record.arrival_hour)
+                    )
 
     @api.constrains("departure_hour")
     def _check_departure_hour(self):
         for record in self:
-            try:
-                time.strptime(record.departure_hour, "%H:%M")
-                return True
-            except ValueError:
-                raise ValidationError(
-                    _("Format Departure Hour (HH:MM) Error: %s", record.departure_hour)
-                )
+            if record.departure_hour:
+                try:
+                    time.strptime(record.departure_hour, "%H:%M")
+                    return True
+                except ValueError:
+                    raise ValidationError(
+                        _(
+                            "Format Departure Hour (HH:MM) Error: %s",
+                            record.departure_hour,
+                        )
+                    )
 
     @api.constrains("agency_id")
     def _no_agency_as_agency(self):
