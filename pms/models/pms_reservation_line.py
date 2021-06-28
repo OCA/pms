@@ -367,10 +367,7 @@ class PmsReservationLine(models.Model):
     @api.depends("reservation_id.state", "reservation_id.overbooking")
     def _compute_occupies_availability(self):
         for line in self:
-            if (
-                line.reservation_id.state == "cancelled"
-                or line.reservation_id.overbooking
-            ):
+            if line.reservation_id.state == "cancel" or line.reservation_id.overbooking:
                 line.occupies_availability = False
             else:
                 line.occupies_availability = True
@@ -383,7 +380,7 @@ class PmsReservationLine(models.Model):
             # TODO: Review cancel logic
             # reservation = line.reservation_id
             # pricelist = reservation.pricelist_id
-            # if reservation.state == "cancelled":
+            # if reservation.state == "cancel":
             #     if (
             #         reservation.cancelled_reason
             #         and pricelist
@@ -468,7 +465,7 @@ class PmsReservationLine(models.Model):
     @api.constrains("state")
     def constrains_service_cancel(self):
         for record in self:
-            if record.state == "cancelled":
+            if record.state == "cancel":
                 room_services = record.reservation_id.service_ids
                 for service in room_services:
                     cancel_lines = service.service_line_ids.filtered(

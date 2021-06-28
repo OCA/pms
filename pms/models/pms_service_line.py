@@ -176,9 +176,9 @@ class PmsServiceLine(models.Model):
             # TODO: Review cancel logic
             # reservation = line.reservation_id.reservation_id
             # pricelist = reservation.pricelist_id
-            # if reservation.state == "cancelled":
+            # if reservation.state == "cancel":
             #     if (
-            #         reservation.cancelled_reason
+            #         reservation.cancel_reason
             #         and pricelist
             #         and pricelist.cancelation_rule_id
             #     ):
