@@ -259,7 +259,7 @@
                                 <div class="col pl-md-0">
                                     <div
                                         t-field="reservation.partner_id"
-                                        t-options='{"widget": "contact", "fields": ["name", "partner_email", "partner_mobile"]}'
+                                        t-options='{"widget": "contact", "fields": ["name", "email", "mobile"]}'
                                     />
                                 </div>
                             </div>

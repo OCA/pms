@@ -176,7 +176,7 @@ class ResPartner(models.Model):
         "pms_checkin_partner_ids",
         "pms_checkin_partner_ids.email",
         "pms_reservation_ids",
-        "pms_reservation_ids.partner_email",
+        "pms_reservation_ids.email",
         "pms_folio_ids",
         "pms_folio_ids.email",
     )
@@ -194,7 +194,7 @@ class ResPartner(models.Model):
                         None,
                         set(
                             record.pms_checkin_partner_ids.mapped("email")
-                            + record.pms_reservation_ids.mapped("partner_email")
+                            + record.pms_reservation_ids.mapped("email")
                             + record.pms_folio_ids.mapped("email"),
                         ),
                     )
@@ -210,7 +210,7 @@ class ResPartner(models.Model):
         "pms_checkin_partner_ids",
         "pms_checkin_partner_ids.mobile",
         "pms_reservation_ids",
-        "pms_reservation_ids.partner_mobile",
+        "pms_reservation_ids.mobile",
         "pms_folio_ids",
         "pms_folio_ids.mobile",
     )
@@ -228,7 +228,7 @@ class ResPartner(models.Model):
                         None,
                         set(
                             record.pms_checkin_partner_ids.mapped("mobile")
-                            + record.pms_reservation_ids.mapped("partner_mobile")
+                            + record.pms_reservation_ids.mapped("mobile")
                             + record.pms_folio_ids.mapped("mobile"),
                         ),
                     )
