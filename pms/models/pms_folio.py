@@ -764,62 +764,17 @@ class PmsFolio(models.Model):
     @api.depends("partner_id", "partner_id.name", "reservation_ids.partner_name")
     def _compute_partner_name(self):
         for record in self:
-<<<<<<< HEAD
-            if record.partner_id and not record.partner_name:
-                record.partner_name = record.partner_id.name
-            # if there is only one customer name in the folio reservations
-            # we update the partner name of the folio when the partner name of
-            # the reservations is modified
-            elif (
-                len(record.reservation_ids.mapped("partner_name")) == 1
-                and not record.partner_name
-            ):
-                record.partner_name = record.reservation_ids[0].partner_name
-            elif not record.partner_name:
-                record.partner_name = False
-=======
             self._apply_partner_name(record)
->>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends("partner_id", "partner_id.email", "reservation_ids.partner_email")
     def _compute_email(self):
         for record in self:
-<<<<<<< HEAD
-            if record.partner_id and not record.email:
-                record.email = record.partner_id.email
-            # if there is only one customer email in the folio reservations
-            # we update the partner email of the folio when the partner email of
-            # the reservations is modified
-            elif (
-                len(record.reservation_ids.mapped("partner_email")) == 1
-                and not record.email
-            ):
-                record.email = record.reservation_ids[0].partner_email
-            elif not record.email:
-                record.email = False
-=======
             self._apply_email(record)
->>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends("partner_id", "partner_id.mobile", "reservation_ids.partner_mobile")
     def _compute_mobile(self):
         for record in self:
-<<<<<<< HEAD
-            if record.partner_id and not record.mobile:
-                record.mobile = record.partner_id.mobile
-            # if there is only one customer mobile in the folio reservations
-            # we update the partner mobile of the folio when the partner mobile of
-            # the reservations is modified
-            elif (
-                len(record.reservation_ids.mapped("partner_mobile")) == 1
-                and not record.mobile
-            ):
-                record.mobile = record.reservation_ids[0].partner_mobile
-            elif not record.mobile:
-                record.mobile = False
-=======
             self._apply_mobile(record)
->>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends(
         "partner_name",
