@@ -572,14 +572,14 @@ class PmsFolio(models.Model):
     def _compute_number_of_rooms(self):
         for folio in self:
             folio.number_of_rooms = len(
-                folio.reservation_ids.filtered(lambda a: a.state != "cancelled")
+                folio.reservation_ids.filtered(lambda a: a.state != "cancel")
             )
 
     @api.depends("reservation_ids", "reservation_ids.state")
     def _compute_number_of_cancelled_rooms(self):
         for folio in self:
             folio.number_of_cancelled_rooms = len(
-                folio.reservation_ids.filtered(lambda a: a.state == "cancelled")
+                folio.reservation_ids.filtered(lambda a: a.state == "cancel")
             )
 
     @api.depends("service_ids", "service_ids.product_qty")
@@ -912,7 +912,7 @@ class PmsFolio(models.Model):
                 total = record.amount_total
                 # REVIEW: Must We ignored services in cancelled folios
                 # pending amount?
-                if record.state == "cancelled":
+                if record.state == "cancel":
                     total = total - sum(record.service_ids.mapped("price_total"))
                 # Compute 'payment_state'.
                 if total <= paid_out:
@@ -938,7 +938,7 @@ class PmsFolio(models.Model):
         for record in self:
             if record.reservation_type == "normal" and record.reservation_ids:
                 filtered_reservs = record.reservation_ids.filtered(
-                    lambda x: x.state != "cancelled"
+                    lambda x: x.state != "cancel"
                 )
                 mapped_checkin_partner = filtered_reservs.mapped(
                     "checkin_partner_ids.id"
@@ -1122,7 +1122,7 @@ class PmsFolio(models.Model):
     def action_cancel(self):
         for folio in self:
             for reservation in folio.reservation_ids.filtered(
-                lambda res: res.state != "cancelled"
+                lambda res: res.state != "cancel"
             ):
                 reservation.action_cancel()
             self.write(

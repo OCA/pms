@@ -896,7 +896,7 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     @freeze_time("1981-11-10")
-    def test_cancelled_pending_amount_priority_reservation(self):
+    def test_cancel_pending_amount_priority_reservation(self):
         """
         Cancelled with pending payments reservation must have priority = 2
         ------
@@ -1672,7 +1672,7 @@ class TestPmsReservations(common.SavepointCase):
     def test_reservation_action_cancel(self):
         # TEST CASE
         # the reservation action cancel
-        # change the state of the reservation to 'cancelled'
+        # change the state of the reservation to 'cancel'
         # ARRANGE
         self.create_common_scenario()
         res = self.env["pms.reservation"].create(
@@ -1687,7 +1687,7 @@ class TestPmsReservations(common.SavepointCase):
         # ACT
         res.action_cancel()
         # ASSERT
-        self.assertEqual(res.state, "cancelled", "The reservation should be cancelled")
+        self.assertEqual(res.state, "cancel", "The reservation should be cancelled")
 
     @freeze_time("1981-11-01")
     def test_reservation_action_checkout(self):
@@ -2210,7 +2210,7 @@ class TestPmsReservations(common.SavepointCase):
             }
         )
 
-        reservation.state = "cancelled"
+        reservation.state = "cancel"
 
         with self.assertRaises(UserError):
             reservation.action_cancel()

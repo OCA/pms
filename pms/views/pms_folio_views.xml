@@ -76,7 +76,7 @@
                             class="oe_stat_button"
                             name="%(open_pms_reservation_form_tree_all)d"
                             icon="fa-window-close"
-                            context="{'search_default_folio_id': id, 'default_folio_id': id, 'search_default_cancelled': True}"
+                            context="{'search_default_folio_id': id, 'default_folio_id': id, 'search_default_cancel': True}"
                             attrs="{'invisible': [('number_of_cancelled_rooms', '=', 0)]}"
                         >
                             <field
@@ -554,7 +554,7 @@
                 <field
                     name="payment_state"
                     decoration-success="payment_state == 'paid'"
-                    decoration-danger="payment_state == 'not_paid' and state in ['cancelled','onboard','done','arrival_delayed','departure_delayed']"
+                    decoration-danger="payment_state == 'not_paid' and state in ['cancel','onboard','done','arrival_delayed','departure_delayed']"
                     decoration-info="payment_state == 'not_paid' and state in ['draft','confirm',]"
                     decoration-warning="payment_state == 'partial'"
                     widget="badge"

@@ -110,7 +110,7 @@ class PmsCheckinPartner(models.Model):
             ("precheckin", "Pending arrival"),
             ("onboard", "On Board"),
             ("done", "Out"),
-            ("cancelled", "Cancelled"),
+            ("cancel", "Cancelled"),
         ],
         compute="_compute_state",
     )
@@ -279,23 +279,6 @@ class PmsCheckinPartner(models.Model):
             elif not record.nationality_id:
                 record.nationality_id = False
 
-    @api.depends("reservation_id", "folio_id", "reservation_id.preferred_room_id")
-    def _compute_identifier(self):
-        for record in self:
-            # TODO: Identifier
-            checkins = []
-            if record.reservation_id.filtered("preferred_room_id"):
-                checkins = record.reservation_id.checkin_partner_ids
-                record.identifier = (
-                    record.reservation_id.preferred_room_id.name
-                    + "-"
-                    + str(len(checkins) - 1)
-                )
-            elif record.folio_id:
-                record.identifier = record.folio_id.name + "-" + str(len(checkins) - 1)
-            else:
-                record.identifier = False
-
     @api.depends("reservation_id", "reservation_id.folio_id")
     def _compute_folio_id(self):
         for record in self.filtered("reservation_id"):
@@ -306,9 +289,9 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if not record.state:
                 record.state = "draft"
-            if record.reservation_id.state == "cancelled":
-                record.state = "cancelled"
-            elif record.state in ("draft", "cancelled"):
+            if record.reservation_id.state == "cancel":
+                record.state = "cancel"
+            elif record.state in ("draft", "cancel"):
                 if any(
                     not getattr(record, field)
                     for field in record._checkin_mandatory_fields()
@@ -509,7 +492,7 @@ class PmsCheckinPartner(models.Model):
                     else vals["pms_property_id"]
                 )
                 pms_property = self.env["pms.property"].browse(pms_property_id)
-                vals["identifier"] = pms_property.folio_sequence_id._next_do()
+                vals["identifier"] = pms_property.checkin_sequence_id._next_do()
             return super(PmsCheckinPartner, self).create(vals)
         if len(draft_checkins) > 0:
             draft_checkins[0].write(vals)

@@ -182,7 +182,7 @@ class TestPmsFolioSaleLine(TestPms):
 
     def test_comp_fsl_rooms_one_full_cancel_discount(self):
         # TEST CASE
-        # 2-night reservation with 100% cancelled discount for 1 night
+        # 2-night reservation with 100% cancel discount for 1 night
         # should generate just 1 reservation sale line because the
         #   full cancel discount shouldn't be present @ invoice lines
 
@@ -560,7 +560,7 @@ class TestPmsFolioSaleLine(TestPms):
 
     def test_comp_fsl_board_services_one_full_cancel_discount(self):
         # TEST CASE
-        # 2-night reservation with 100% cancelled discount for 1 board service
+        # 2-night reservation with 100% cancel discount for 1 board service
         # should generate just 1 board service sale line because the
         #   full cancel discount shouldn't be present @ invoice lines
 

@@ -21,7 +21,7 @@
                         string="Confirm"
                         class="oe_highlight"
                         type="object"
-                        attrs="{'invisible':[('state','not in',('draft','cancelled'))]}"
+                        attrs="{'invisible':[('state','not in',('draft','cancel'))]}"
                     />
                     <button
                         name="action_assign"
@@ -223,7 +223,7 @@
                     />
                     <div
                         class="card bg-danger mb8"
-                        attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
+                        attrs="{'invisible': [('state', 'not in', ('cancel'))]}"
                     >
                         <div class="card-body bg-danger">
                             <i class="fa fa-danger" /> Cancelled Reservation!
@@ -346,7 +346,7 @@
                             />-->
                             <field
                                 name="cancelled_reason"
-                                attrs="{'invisible': [('state', 'not in', ('cancelled'))]}"
+                                attrs="{'invisible': [('state', 'not in', ('cancel'))]}"
                             />
                             <field
                                 name="adults"
@@ -471,7 +471,7 @@
                                     <field name="discount" />
                                     <field
                                         name="cancel_discount"
-                                        attrs="{'column_invisible': [('parent.state','!=','cancelled')]}"
+                                        attrs="{'column_invisible': [('parent.state','!=','cancel')]}"
                                     />
                                     <field name="pms_property_id" invisible="1" />
                                 </tree>
@@ -659,22 +659,14 @@
                 decoration-bf="splitted"
                 js_class="pms_booking_engine_request_tree"
             >
-                <!--TODO: charget booking engine button (view type list is not present
-                in the view registry -->
-                <!--js_class="pms_booking_engine_request_tree"-->
+                <field name="folio_id" optional="show" decoration-bf="1" />
+                <field name="name" optional="show" />
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
                 <field name="checkin" />
                 <field name="checkout" />
                 <field name="nights" />
-                <button
-                    type="object"
-                    class="oe_stat_button"
-                    icon="fa-file"
-                    name="open_folio"
-                />
-                <field name="folio_id" decoration-bf="1" />
                 <field name="allowed_room_ids" invisible="1" />
                 <field name="partner_id" invisible="1" />
                 <field name="partner_name" />
@@ -696,7 +688,7 @@
                     decoration-success="state == 'onboard'"
                     decoration-info="state == 'confirm'"
                     decoration-primary="state == 'departure_delayed'"
-                    decoration-danger="state == 'cancelled'"
+                    decoration-danger="state == 'cancel'"
                     decoration-bf="state == 'draft'"
                     decoration-warning="state == 'arrival_delayed'"
                     widget="badge"
@@ -705,7 +697,7 @@
                 <field
                     name="folio_payment_state"
                     decoration-success="folio_payment_state == 'paid'"
-                    decoration-danger="folio_payment_state == 'not_paid' and state in ['cancelled','onboard','done','arrival_delayed','departure_delayed']"
+                    decoration-danger="folio_payment_state == 'not_paid' and state in ['cancel','onboard','done','arrival_delayed','departure_delayed']"
                     decoration-info="folio_payment_state == 'not_paid' and state in ['draft','confirm',]"
                     decoration-warning="folio_payment_state == 'partial'"
                     widget="badge"
@@ -790,8 +782,8 @@
                 />
                 <filter
                     string="Cancelled"
-                    name="cancelled"
-                    domain="[('state', '=', 'cancelled')]"
+                    name="cancel"
+                    domain="[('state', '=', 'cancel')]"
                 />
                 <filter
                     string="On Board"
