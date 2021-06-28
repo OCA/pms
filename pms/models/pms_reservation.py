@@ -466,14 +466,14 @@ class PmsReservation(models.Model):
         readonly=False,
         compute="_compute_partner_name",
     )
-    partner_email = fields.Char(
+    email = fields.Char(
         string="E-mail",
         help="Customer E-mail",
         store=True,
         readonly=False,
         compute="_compute_email",
     )
-    partner_mobile = fields.Char(
+    mobile = fields.Char(
         string="Mobile",
         help="Customer Mobile",
         store=True,
@@ -752,10 +752,12 @@ class PmsReservation(models.Model):
     def _compute_partner_id(self):
         for reservation in self:
             if not reservation.partner_id:
-                if reservation.folio_id:
+                if reservation.folio_id and reservation.folio_id.partner_id:
                     reservation.partner_id = reservation.folio_id.partner_id
-                elif reservation.agency_id:
+                elif reservation.agency_id and reservation.agency_id.invoice_to_agency:
                     reservation.partner_id = reservation.agency_id
+                elif not reservation.folio_id and not reservation.agency_id:
+                    reservation.partner_id = False
 
     @api.depends("checkin", "checkout")
     def _compute_reservation_line_ids(self):
@@ -1213,44 +1215,56 @@ class PmsReservation(models.Model):
     @api.depends("partner_id", "partner_id.name", "folio_id.partner_name")
     def _compute_partner_name(self):
         for record in self:
+<<<<<<< HEAD
             if record.partner_id and not record.partner_name:
                 record.partner_name = record.partner_id.name
             elif record.folio_id.partner_name and not record.partner_name:
                 record.partner_name = record.folio_id.partner_name
             elif not record.partner_name:
                 record.partner_name = False
+=======
+            self.folio_id._apply_partner_name(record)
+>>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
         for record in self:
+<<<<<<< HEAD
             if record.partner_id and not record.partner_email:
                 record.partner_email = record.partner_id.email
             elif record.folio_id.email and not record.partner_email:
                 record.partner_email = record.folio_id.partner_email
             elif not record.partner_email:
                 record.partner_email = False
+=======
+            self.folio_id._apply_email(record)
+>>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends("partner_id", "partner_id.mobile")
     def _compute_mobile(self):
         for record in self:
+<<<<<<< HEAD
             if record.partner_id and not record.partner_mobile:
                 record.partner_mobile = record.partner_id.mobile
             elif record.folio_id.mobile and not record.partner_mobile:
                 record.partner_mobile = record.folio_id.partner_mobile
             elif not record.partner_mobile:
                 record.partner_mobile = False
+=======
+            self.folio_id._apply_mobile(record)
+>>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends(
         "partner_name",
-        "partner_email",
-        "partner_mobile",
+        "email",
+        "mobile",
         "partner_id",
     )
     def _compute_partner_incongruences(self):
         fields_mapping = {
             "partner_name": "name",
-            "partner_email": "email",
-            "partner_mobile": "mobile",
+            "email": "email",
+            "mobile": "mobile",
         }
         for record in self:
             incongruous_fields = False
@@ -1581,8 +1595,8 @@ class PmsReservation(models.Model):
                 default_vals["partner_id"] = folio.partner_id.id
             elif folio.partner_name:
                 default_vals["partner_name"] = folio.partner_name
-                default_vals["partner_mobile"] = folio.mobile
-                default_vals["partner_email"] = folio.email
+                default_vals["mobile"] = folio.mobile
+                default_vals["email"] = folio.email
             else:
                 raise ValidationError(_("Partner contact name is required"))
             vals.update(default_vals)
@@ -1598,8 +1612,8 @@ class PmsReservation(models.Model):
                 folio_vals["agency_id"] = vals.get("agency_id")
             elif vals.get("partner_name"):
                 folio_vals["partner_name"] = vals.get("partner_name")
-                folio_vals["mobile"] = vals.get("partner_mobile")
-                folio_vals["email"] = vals.get("partner_email")
+                folio_vals["mobile"] = vals.get("mobile")
+                folio_vals["email"] = vals.get("email")
             else:
                 raise ValidationError(_("Partner contact name is required"))
             # Create the folio in case of need

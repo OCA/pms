@@ -304,13 +304,13 @@
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
-                                name="partner_email"
+                                name="email"
                                 placeholder="email"
                                 widget="email"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
-                                name="partner_mobile"
+                                name="mobile"
                                 placeholder="mobile"
                                 widget="phone"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
