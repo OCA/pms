@@ -1028,6 +1028,11 @@ msgid "Avail record"
 msgstr "Disponibilidad solo lectura"
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_availability__avail_rule_ids
+msgid "Avail record rules"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__avail_id
 #, fuzzy
 msgid "Availability Day"
@@ -1445,9 +1450,9 @@ msgid "Cancelation Rules"
 msgstr "Reglas de Cancelación"
 
 #. module: pms
-#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__state__cancelled
+#: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__state__cancel
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__state__cancel
-#: model:ir.model.fields.selection,name:pms.selection__pms_reservation__state__cancelled
+#: model:ir.model.fields.selection,name:pms.selection__pms_reservation__state__cancel
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_kanban_view
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Cancelled"
@@ -1897,6 +1902,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__contact_address
 msgid "Complete Address"
 msgstr "Dirección Completa"
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__ratio_checkin_data
+msgid "Complete cardex"
+msgstr ""
 
 #. module: pms
 #: model:pms.room.type.class,name:pms.pms_room_type_class_1
@@ -5718,7 +5728,6 @@ msgstr "Ratio de Llegadas Pendientes"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__ratio_checkin_data
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__ratio_checkin_data
 msgid "Pending Checkin Data"
 msgstr "Detos del Checkin Pendientes"
 
@@ -6406,7 +6415,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__ratio_checkin_data
-msgid "Proportion of guest data pending at checkin"
+msgid "Proportion of guest data complete at checkin"
 msgstr ""
 
 #. module: pms
@@ -8000,7 +8009,7 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_reservation__allowed_cancel
 msgid ""
 "Technical field, Indicates that reservation can be cancelled,that happened "
-"when state is 'cancelled', 'done', or 'departure_delayed'"
+"when state is 'cancel', 'done', or 'departure_delayed'"
 msgstr ""
 
 #. module: pms
@@ -8023,6 +8032,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_folio__note
 msgid "Terms and conditions"
 msgstr "Términos y condiciones"
+
+#. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "The Property are mandatory in the reservation"
+msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_folio.py:0
@@ -8082,24 +8097,12 @@ msgid "The checkin partners on a folio"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/pms_reservation.py:0
-#, python-format
-msgid "The checkout date must be greater than the checkin date"
-msgstr ""
-
-#. module: pms
 #: code:addons/pms/models/res_users.py:0
 #, python-format
 msgid "The chosen property is not in the allowed properties for this user"
 msgstr ""
 "La propiedad escogida no se encuentra en las propiedades permitidas para "
 "este usuario"
-
-#. module: pms
-#: code:addons/pms/models/pms_reservation.py:0
-#, python-format
-msgid "The client and Property are mandatory in the reservation"
-msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__closure_reason_id
