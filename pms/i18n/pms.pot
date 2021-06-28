@@ -3606,6 +3606,11 @@ msgid "In time"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_engine__partner_name
+msgid "In whose name is the reservation"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation__service_ids
 msgid "Included services in the reservation"
 msgstr ""
@@ -5306,6 +5311,11 @@ msgid "Partner contact name is required"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_engine__partner_name
+msgid "Partner name"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_booking_engine__partner_id
 msgid "Partner who made the reservation"
 msgstr ""
@@ -6390,6 +6400,7 @@ msgstr ""
 
 #. module: pms
 #: code:addons/pms/models/pms_folio.py:0
+#: code:addons/pms/wizards/pms_booking_engine.py:0
 #, python-format
 msgid "Reservation from "
 msgstr ""
