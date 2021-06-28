@@ -89,7 +89,7 @@
                 editable="bottom"
                 decoration-danger="state == 'draft'"
                 decoration-info="state == 'done'"
-                decoration-muted="state == 'cancelled'"
+                decoration-muted="state == 'cancel'"
                 decoration-success="state == 'onboard'"
             >
                 <button
@@ -133,7 +133,7 @@
                 create="false"
                 decoration-danger="state == 'draft'"
                 decoration-info="state == 'done'"
-                decoration-muted="state == 'cancelled'"
+                decoration-muted="state == 'cancel'"
                 decoration-success="state == 'onboard'"
             >
                 <button
@@ -174,7 +174,7 @@
             <tree
                 create="false"
                 decoration-danger="state == 'draft'"
-                decoration-muted="state == 'cancelled' or state =='done'"
+                decoration-muted="state == 'cancel' or state =='done'"
                 decoration-success="state == 'onboard'"
             >
                 <button
@@ -262,7 +262,7 @@
                                     />
                                     <img
                                         alt="Cancelled"
-                                        t-if="record.state.raw_value === 'cancelled'"
+                                        t-if="record.state.raw_value === 'cancel'"
                                         t-att-src="&quot;pms/static/description/avatar.png&quot;"
                                     />
                                 </t>
@@ -401,7 +401,7 @@
                     string="Future"
                     name="future"
                     domain="[('checkin', '&gt;=', context_today().strftime('%Y-%m-%d')),
-                        ('state', 'not in', ['cancelled'])]"
+                        ('state', 'not in', ['cancel'])]"
                     help="Show all future checkins"
                 />
                 <group expand="0" string="Group By">

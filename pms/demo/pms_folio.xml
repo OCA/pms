@@ -68,7 +68,7 @@
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
-                    'state': 'cancelled',
+                    'state': 'cancel',
                     })]"
             />
         </record>
@@ -388,7 +388,7 @@
                     'checkin': (DateTime.today() + timedelta(days=22)),
                     'checkout': (DateTime.today() + timedelta(days=23)),
                     'adults': 1,
-                    'state': 'cancelled',
+                    'state': 'cancel',
                     })]"
             />
         </record>
