@@ -789,6 +789,7 @@ class PmsReservation(models.Model):
             else:
                 if not reservation.reservation_line_ids:
                     reservation.reservation_line_ids = False
+            reservation.check_in_out_dates()
 
     @api.depends("board_service_room_id")
     def _compute_service_ids(self):
@@ -1008,6 +1009,7 @@ class PmsReservation(models.Model):
                     record.checkin = record.folio_id.reservation_ids[0].checkin
                 else:
                     record.checkin = fields.date.today()
+            record.check_in_out_dates()
 
     @api.depends("reservation_line_ids", "checkin")
     def _compute_checkout(self):
@@ -1032,10 +1034,7 @@ class PmsReservation(models.Model):
             elif not record.checkout:
                 record.checkout = False
             # date checking
-            if record.checkin and record.checkout and record.checkin >= record.checkout:
-                raise UserError(
-                    _("The checkout date must be greater than the checkin date")
-                )
+            record.check_in_out_dates()
 
     @api.depends("pms_property_id", "folio_id")
     def _compute_arrival_hour(self):
@@ -1362,22 +1361,24 @@ class PmsReservation(models.Model):
             segmentation_ids = folio.segmentation_ids
         return segmentation_ids
 
-    # TODO: make this check on computes (checkin/checkout)
-    # @api.constrains("checkin", "checkout", "state", "preferred_room_id", "overbooking")
-    # def check_dates(self):
-    #     """
-    #     1.-When date_order is less then checkin date or
-    #     Checkout date should be greater than the checkin date.
-    #     3.-Check the reservation dates are not occuped
-    #     """
-    #     for record in self:
-    #         if record.checkin >= record.checkout:
-    #             raise ValidationError(
-    #                 _(
-    #                     "Room line Check In Date Should be \
-    #                 less than the Check Out Date!"
-    #                 )
-    #             )
+    def check_in_out_dates(self):
+        """
+        1.-When date_order is less then checkin date or
+        Checkout date should be greater than the checkin date.
+        3.-Check the reservation dates are not occuped
+        """
+        for record in self:
+            if (
+                record.checkout
+                and record.checkout
+                and record.checkin >= record.checkout
+            ):
+                raise UserError(
+                    _(
+                        "Room line Check In Date Should be \
+                    less than the Check Out Date!"
+                    )
+                )
 
     @api.constrains("reservation_line_ids")
     def check_consecutive_dates(self):
