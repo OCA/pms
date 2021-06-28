@@ -4,82 +4,35 @@ from freezegun import freeze_time
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests import common
+
+from .common import TestPms
 
 
-@freeze_time("2012-01-14")
-class TestPmsReservations(common.SavepointCase):
-    def create_common_scenario(self):
-
-        self.test_pricelist1 = self.env["product.pricelist"].create(
-            {
-                "name": "test pricelist 1",
-            }
-        )
+class TestPmsReservations(TestPms):
+    def setUp(self):
+        super().setUp()
         # create a room type availability
         self.room_type_availability = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
+                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
             }
-        )
-
-        # create a sequences
-        self.folio_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Folio",
-                "code": "pms.folio",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.reservation_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Reservation",
-                "code": "pms.reservation",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.checkin_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Checkin",
-                "code": "pms.checkin.partner",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        # create a property
-        self.property = self.env["pms.property"].create(
-            {
-                "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist1.id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-
-        # create room type class
-        self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "default_code": "ROOM"}
         )
 
         # create room type
         self.room_type_double = self.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class.id,
+                "class_id": self.room_type_class1.id,
             }
         )
 
         # create rooms
         self.room1 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 101",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
@@ -88,7 +41,7 @@ class TestPmsReservations(common.SavepointCase):
 
         self.room2 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 102",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
@@ -97,63 +50,25 @@ class TestPmsReservations(common.SavepointCase):
 
         self.room3 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 103",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
             }
         )
-        self.demo_user = self.env.ref("base.user_admin")
+        self.partner1 = self.env["res.partner"].create(
+            {
+                "firstname": "Jaime",
+                "lastname": "García",
+                "email": "jaime@example.com",
+                "birthdate_date": "1983-03-01",
+                "gender": "male",
+            }
+        )
         self.id_category = self.env["res.partner.id_category"].create(
             {"name": "DNI", "code": "D"}
         )
 
-    def create_multiproperty_scenario(self):
-        self.create_common_scenario()
-        self.property1 = self.env["pms.property"].create(
-            {
-                "name": "Property_1",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-
-        self.property2 = self.env["pms.property"].create(
-            {
-                "name": "Property_2",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-
-        self.property3 = self.env["pms.property"].create(
-            {
-                "name": "Property_3",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-        self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room Class", "default_code": "RCTEST"}
-        )
-
-        self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Board Service Test",
-                "default_code": "CB",
-            }
-        )
-
-    @freeze_time("1980-11-01")
     def test_reservation_dates_not_consecutive(self):
         """
         Check the constrain if not consecutive dates
@@ -161,8 +76,6 @@ class TestPmsReservations(common.SavepointCase):
         Create correct reservation set 3 reservation lines consecutives (nights)
         """
         # ARRANGE
-        self.create_common_scenario()
-        customer = self.env.ref("base.res_partner_12")
         today = fields.date.today()
         tomorrow = fields.date.today() + datetime.timedelta(days=1)
         three_days_later = fields.date.today() + datetime.timedelta(days=3)
@@ -175,8 +88,8 @@ class TestPmsReservations(common.SavepointCase):
             self.env["pms.reservation"].create(
                 {
                     "room_type_id": self.room_type_double.id,
-                    "partner_id": customer.id,
-                    "pms_property_id": self.property.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
                     "reservation_line_ids": [
                         (0, False, {"date": today}),
                         (0, False, {"date": tomorrow}),
@@ -185,7 +98,6 @@ class TestPmsReservations(common.SavepointCase):
                 }
             )
 
-    @freeze_time("1980-11-01")
     def test_reservation_dates_compute_checkin_out(self):
         """
         Check the reservation creation with specific reservation lines
@@ -197,8 +109,6 @@ class TestPmsReservations(common.SavepointCase):
         (view checkout assertEqual)
         """
         # ARRANGE
-        self.create_common_scenario()
-        customer = self.env.ref("base.res_partner_12")
         today = fields.date.today()
         tomorrow = fields.date.today() + datetime.timedelta(days=1)
         two_days_later = fields.date.today() + datetime.timedelta(days=2)
@@ -207,8 +117,8 @@ class TestPmsReservations(common.SavepointCase):
         reservation = self.env["pms.reservation"].create(
             {
                 "room_type_id": self.room_type_double.id,
-                "partner_id": customer.id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
                 "reservation_line_ids": [
                     (0, False, {"date": today}),
                     (0, False, {"date": tomorrow}),
@@ -231,23 +141,25 @@ class TestPmsReservations(common.SavepointCase):
             not correspond to the last day indicated in the dates",
         )
 
-    @freeze_time("1980-11-01")
     def test_create_reservation_start_date(self):
-        # TEST CASE
+        """
+        Check that the reservation checkin and the first reservation date are equal.
+        ----------------
+        Create a reservation and check if the first reservation line date are the same
+        date that the checkin date.
+        """
         # reservation should start on checkin day
 
         # ARRANGE
-        self.create_common_scenario()
         today = fields.date.today()
         checkin = today + datetime.timedelta(days=8)
         checkout = checkin + datetime.timedelta(days=11)
-        customer = self.env.ref("base.res_partner_12")
         reservation_vals = {
             "checkin": checkin,
             "checkout": checkout,
             "room_type_id": self.room_type_double.id,
-            "partner_id": customer.id,
-            "pms_property_id": self.property.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
         }
 
         # ACT
@@ -259,22 +171,23 @@ class TestPmsReservations(common.SavepointCase):
             "Reservation lines don't start in the correct date",
         )
 
-    @freeze_time("1980-11-01")
     def test_create_reservation_end_date(self):
-        # TEST CASE
-        # reservation should end on checkout day
-        self.create_common_scenario()
+        """
+        Check that the reservation checkout and the last reservation date are equal.
+        ----------------
+        Create a reservation and check if the last reservation line date are the same
+        date that the checkout date.
+        """
         # ARRANGE
         today = fields.date.today()
         checkin = today + datetime.timedelta(days=8)
         checkout = checkin + datetime.timedelta(days=11)
-        customer = self.env.ref("base.res_partner_12")
         reservation_vals = {
             "checkin": checkin,
             "checkout": checkout,
             "room_type_id": self.room_type_double.id,
-            "partner_id": customer.id,
-            "pms_property_id": self.property.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
         }
 
         # ACT
@@ -286,7 +199,6 @@ class TestPmsReservations(common.SavepointCase):
             "Reservation lines don't end in the correct date",
         )
 
-    @freeze_time("1980-11-01")
     def test_split_reservation01(self):
         """
         # TEST CASE
@@ -301,17 +213,16 @@ class TestPmsReservations(common.SavepointCase):
         +------------+------+------+------+----+----+----+
         """
         # ARRANGE
-        self.create_common_scenario()
 
         # ACT
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r_test.flush()
@@ -325,7 +236,6 @@ class TestPmsReservations(common.SavepointCase):
             "The entire reservation should be allocated in the preferred room",
         )
 
-    @freeze_time("1980-11-01")
     def test_split_reservation02(self):
         """
         # TEST CASE
@@ -340,17 +250,16 @@ class TestPmsReservations(common.SavepointCase):
         +------------+------+------+------+----+----+----+
         """
         # ARRANGE
-        self.create_common_scenario()
 
         # ACT
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r_test.flush()
@@ -358,7 +267,6 @@ class TestPmsReservations(common.SavepointCase):
         # ASSERT
         self.assertFalse(r_test.splitted, "The reservation shouldn't be splitted")
 
-    @freeze_time("1980-11-01")
     def test_split_reservation03(self):
         """
         # TEST CASE
@@ -374,16 +282,15 @@ class TestPmsReservations(common.SavepointCase):
         +------------+------+------+------+------+----+----+
         """
         # ARRANGE
-        self.create_common_scenario()
 
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
@@ -391,12 +298,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
@@ -404,12 +311,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r3 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
@@ -417,12 +324,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r4 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
@@ -432,12 +339,12 @@ class TestPmsReservations(common.SavepointCase):
         # ACT
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r_test.flush()
@@ -448,7 +355,6 @@ class TestPmsReservations(common.SavepointCase):
             "The reservation shouldn't have more than 2 changes",
         )
 
-    @freeze_time("1980-11-01")
     def test_split_reservation04(self):
         """
         # TEST CASE
@@ -463,16 +369,15 @@ class TestPmsReservations(common.SavepointCase):
         +------------+------+------+------+------+----+----+
         """
         # ARRANGE
-        self.create_common_scenario()
 
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room2.id
@@ -480,12 +385,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room3.id
@@ -493,12 +398,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r3 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room1.id
@@ -506,12 +411,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r4 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r4.reservation_line_ids[0].room_id = self.room3.id
@@ -519,12 +424,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r5 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=2),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r5.reservation_line_ids[0].room_id = self.room2.id
@@ -533,12 +438,12 @@ class TestPmsReservations(common.SavepointCase):
         # ACT
         r_test = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r_test.flush()
@@ -555,7 +460,6 @@ class TestPmsReservations(common.SavepointCase):
             3, rooms, "The reservation shouldn't be splitted in more than 3 roomss"
         )
 
-    @freeze_time("1980-11-01")
     def test_split_reservation05(self):
         """
         # TEST CASE
@@ -569,16 +473,15 @@ class TestPmsReservations(common.SavepointCase):
         +------------+------+------+------+----+----+----+
         """
         # ARRANGE
-        self.create_common_scenario()
 
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -588,17 +491,16 @@ class TestPmsReservations(common.SavepointCase):
         with self.assertRaises(ValidationError):
             r_test = self.env["pms.reservation"].create(
                 {
-                    "pms_property_id": self.property.id,
+                    "pms_property_id": self.pms_property1.id,
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                     "adults": 2,
                     "preferred_room_id": self.room1.id,
-                    "partner_id": self.env.ref("base.res_partner_12").id,
+                    "partner_id": self.partner1.id,
                 }
             )
             r_test.flush()
 
-    @freeze_time("1980-11-01")
     def test_split_reservation06(self):
         """
         # TEST CASE
@@ -612,16 +514,15 @@ class TestPmsReservations(common.SavepointCase):
         +------------+------+------+------+----+----+----+
         """
         # ARRANGE
-        self.create_common_scenario()
 
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -632,17 +533,16 @@ class TestPmsReservations(common.SavepointCase):
         with self.assertRaises(ValidationError):
             r_test = self.env["pms.reservation"].create(
                 {
-                    "pms_property_id": self.property.id,
+                    "pms_property_id": self.pms_property1.id,
                     "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                     "adults": 2,
                     "preferred_room_id": self.room1.id,
-                    "partner_id": self.env.ref("base.res_partner_12").id,
+                    "partner_id": self.partner1.id,
                 }
             )
             r_test.flush()
 
-    @freeze_time("1980-11-01")
     def test_split_reservation07(self):
         """
         # TEST CASE
@@ -656,16 +556,14 @@ class TestPmsReservations(common.SavepointCase):
         +------------+------+------+------+----+----+----+
         """
         # ARRANGE
-        self.create_common_scenario()
-
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.reservation_line_ids[0].room_id = self.room1
@@ -675,12 +573,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2.reservation_line_ids[0].room_id = self.room2
@@ -690,12 +588,12 @@ class TestPmsReservations(common.SavepointCase):
 
         r3 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r3.reservation_line_ids[0].room_id = self.room3
@@ -707,35 +605,41 @@ class TestPmsReservations(common.SavepointCase):
         with self.assertRaises(ValidationError):
             self.env["pms.reservation"].create(
                 {
-                    "pms_property_id": self.property.id,
+                    "pms_property_id": self.pms_property1.id,
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                     "adults": 2,
                     "room_type_id": self.room_type_double.id,
-                    "partner_id": self.env.ref("base.res_partner_12").id,
+                    "partner_id": self.partner1.id,
                 }
             )
 
     def test_manage_children_raise(self):
         # TEST CASE
-        # reservation with 2 adults and 1 children occupyin
-        # shouldn be higher than room capacity
-        # the capacity for xid pms.pms_room_type_0 is 2 in demo data
+        """
+        Check if the error occurs when trying to put more people than the capacity of the room.
+        --------------
+         Create a reservation with a double room whose capacity is two and try to create
+         it with two adults and a child occupying the room.
+        """
         # NO ARRANGE
         # ACT & ASSERT
-        with self.assertRaises(ValidationError), self.cr.savepoint():
+        with self.assertRaises(
+            ValidationError,
+            msg="The number of people is lower than the capacity of the room",
+        ):
             self.env["pms.reservation"].create(
                 {
                     "adults": 2,
                     "children_occupying": 1,
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
-                    "room_type_id": self.browse_ref("pms.pms_room_type_0").id,
-                    "partner_id": self.env.ref("base.res_partner_12").id,
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
                 }
             )
 
-    @freeze_time("1981-11-10")
     def test_to_assign_priority_reservation(self):
         """
         To assign reservation must have priority = 1
@@ -762,7 +666,6 @@ class TestPmsReservations(common.SavepointCase):
         """
         # ARRANGE
         expected_priority = 1
-        self.create_common_scenario()
 
         # ACT
         res = self.env["pms.reservation"].create(
@@ -770,8 +673,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today() + datetime.timedelta(days=30),
                 "checkout": fields.date.today() + datetime.timedelta(days=31),
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         computed_priority = res.priority
@@ -791,7 +694,6 @@ class TestPmsReservations(common.SavepointCase):
             error_msm,
         )
 
-    @freeze_time("1981-11-10")
     def test_arrival_delayed_priority_reservation(self):
         """
         Arrival delayed reservation must have priority = 1
@@ -801,14 +703,13 @@ class TestPmsReservations(common.SavepointCase):
         """
         # ARRANGE
         expected_priority = 1
-        self.create_common_scenario()
         res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today() + datetime.timedelta(days=-1),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
@@ -842,7 +743,6 @@ class TestPmsReservations(common.SavepointCase):
         """
         # ARRANGE
         expected_priority = 1
-        self.create_common_scenario()
         freezer = freeze_time("1981-10-08")
         freezer.start()
         res = self.env["pms.reservation"].create(
@@ -850,8 +750,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -895,7 +795,6 @@ class TestPmsReservations(common.SavepointCase):
             error_msm,
         )
 
-    @freeze_time("1981-11-10")
     def test_cancel_pending_amount_priority_reservation(self):
         """
         Cancelled with pending payments reservation must have priority = 2
@@ -905,14 +804,13 @@ class TestPmsReservations(common.SavepointCase):
         """
         # ARRANGE
         expected_priority = 2
-        self.create_common_scenario()
         res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today() + datetime.timedelta(days=55),
                 "checkout": fields.date.today() + datetime.timedelta(days=56),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
@@ -945,7 +843,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 3
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 3
         freezer = freeze_time("1981-10-08")
         freezer.start()
@@ -954,8 +851,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1015,7 +912,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 2
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 3
         freezer = freeze_time("1981-10-08")
         freezer.start()
@@ -1024,8 +920,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=3),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1068,7 +964,6 @@ class TestPmsReservations(common.SavepointCase):
             error_msm,
         )
 
-    @freeze_time("1981-11-10")
     def test_confirm_arriva_lt_3_days_priority_reservation(self):
         """
         Confirm reservation with arrival in less than 3 days, priority = 2 * days for checkout
@@ -1077,7 +972,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 2 * 2 = 4
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 4
 
         # ACT
@@ -1086,8 +980,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today() + datetime.timedelta(days=2),
                 "checkout": fields.date.today() + datetime.timedelta(days=5),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         computed_priority = res.priority
@@ -1107,7 +1001,6 @@ class TestPmsReservations(common.SavepointCase):
             error_msm,
         )
 
-    @freeze_time("1981-11-10")
     def test_onboard_all_pay_priority_reservation(self):
         """
         Onboard with all pay reservation must have priority = 3 * days for checkout
@@ -1117,15 +1010,14 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 3 * 3 = 9
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 9
         res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=3),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1181,7 +1073,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 6
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 6
         freezer = freeze_time("1981-10-08")
         freezer.start()
@@ -1190,8 +1081,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1248,7 +1139,6 @@ class TestPmsReservations(common.SavepointCase):
             error_msm,
         )
 
-    @freeze_time("1981-11-10")
     def test_confirm_arriva_bt_3_and_20_days_priority_reservation(self):
         """
         Confirm reservation with arrival between 3 and 20 days, priority = 3 * days for checkout
@@ -1257,7 +1147,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 3 * 15 = 45
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 45
 
         # ACT
@@ -1266,8 +1155,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today() + datetime.timedelta(days=15),
                 "checkout": fields.date.today() + datetime.timedelta(days=20),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         computed_priority = res.priority
@@ -1287,7 +1176,6 @@ class TestPmsReservations(common.SavepointCase):
             error_msm,
         )
 
-    @freeze_time("1981-11-10")
     def test_confirm_arrival_more_than_20_days_priority_reservation(self):
         """
         Confirm reservation with arrival more than 20 days, priority = 4 * days for checkout
@@ -1296,7 +1184,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 4 * 21 = 84
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 84
 
         # ACT
@@ -1305,8 +1192,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today() + datetime.timedelta(days=21),
                 "checkout": fields.date.today() + datetime.timedelta(days=25),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         computed_priority = res.priority
@@ -1338,7 +1225,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 6 * 5 = 30
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 30
         freezer = freeze_time("1981-10-09")
         freezer.start()
@@ -1347,8 +1233,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1417,7 +1303,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 10 * 45 = 450
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 450
         freezer = freeze_time("1981-10-09")
         freezer.start()
@@ -1426,8 +1311,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1496,7 +1381,6 @@ class TestPmsReservations(common.SavepointCase):
         regardless of the rest of the fields the priority must be 100 * 91 = 9100
         """
         # ARRANGE
-        self.create_common_scenario()
         expected_priority = 9100
         freezer = freeze_time("1981-10-09")
         freezer.start()
@@ -1505,8 +1389,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         host1 = self.env["res.partner"].create(
@@ -1570,14 +1454,13 @@ class TestPmsReservations(common.SavepointCase):
         Create a new reservation with only room_type(autoassign -> to_assign = True),
         and the we call to action_assign method to confirm the assignation
         """
-        self.create_common_scenario()
         res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # ACT
@@ -1594,7 +1477,6 @@ class TestPmsReservations(common.SavepointCase):
         "to_assign" should be set to false automatically
         """
         # ARRANGE
-        self.create_common_scenario()
 
         # ACT
         res = self.env["pms.reservation"].create(
@@ -1602,8 +1484,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
@@ -1622,7 +1504,6 @@ class TestPmsReservations(common.SavepointCase):
         be set to false automatically
         """
         # ARRANGE
-        self.create_common_scenario()
         # set the priority of the rooms to control the room chosen by auto assign
         self.room1.sequence = 1
         self.room2.sequence = 2
@@ -1632,8 +1513,8 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
@@ -1649,18 +1530,19 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     def test_reservation_to_assign_on_create(self):
-        # TEST CASE
-        # the reservation action assign
-        # change the reservation to 'to_assign' = False
+        """
+        Check the reservation action assign.
+        Create a reservation and change the reservation to 'to_assign' = False
+        through action_assign() method
+        """
         # ARRANGE
-        self.create_common_scenario()
         res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # ACT
@@ -1668,20 +1550,21 @@ class TestPmsReservations(common.SavepointCase):
         # ASSERT
         self.assertFalse(res.to_assign, "The reservation should be marked as assigned")
 
-    @freeze_time("1981-11-01")
     def test_reservation_action_cancel(self):
-        # TEST CASE
-        # the reservation action cancel
-        # change the state of the reservation to 'cancel'
+        """
+        Check if the reservation has been cancelled correctly.
+        -------------
+        Create a reservation and change his state to cancelled
+        through the action_cancel() method.
+        """
         # ARRANGE
-        self.create_common_scenario()
         res = self.env["pms.reservation"].create(
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
-                "pms_property_id": self.property.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # ACT
@@ -1692,10 +1575,14 @@ class TestPmsReservations(common.SavepointCase):
     @freeze_time("1981-11-01")
     def test_reservation_action_checkout(self):
         # TEST CASE
-        # the reservation action checkout
-        # change the state of the reservation to 'done'
+        """
+        Check that when the date of a reservation passes, it goes to the 'done' status.
+        -------------
+        Create a host, a reservation and a check-in partner. Assign the partner and the
+        reservation to the check-in partner and after one day of the reservation it
+        must be in the 'done' status
+        """
         # ARRANGE
-        self.create_common_scenario()
         host = self.env["res.partner"].create(
             {
                 "name": "Miguel",
@@ -1719,7 +1606,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": host.id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         r1.flush()
@@ -1756,7 +1643,28 @@ class TestPmsReservations(common.SavepointCase):
         +---------------+------+------+------+----+----+
         """
         # ARRANGE
-        self.create_multiproperty_scenario()
+        self.property2 = self.env["pms.property"].create(
+            {
+                "name": "Property_2",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+
+        self.property3 = self.env["pms.property"].create(
+            {
+                "name": "Property_3",
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
+            }
+        )
+
+        self.board_service = self.env["pms.board.service"].create(
+            {
+                "name": "Board Service Test",
+                "default_code": "CB",
+            }
+        )
         host = self.env["res.partner"].create(
             {
                 "name": "Miguel",
@@ -1768,7 +1676,7 @@ class TestPmsReservations(common.SavepointCase):
             {
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
-                "pms_property_id": self.property1.id,
+                "pms_property_id": self.pms_property1.id,
                 "partner_id": host.id,
             }
         )
@@ -1781,7 +1689,7 @@ class TestPmsReservations(common.SavepointCase):
                 ],
                 "name": "Single",
                 "default_code": "SIN",
-                "class_id": self.room_type_class.id,
+                "class_id": self.room_type_class1.id,
                 "list_price": 30,
             }
         )
@@ -1823,16 +1731,18 @@ class TestPmsReservations(common.SavepointCase):
                 with self.assertRaises(UserError):
                     self.reservation_test.write(test_case)
 
-    @freeze_time("1950-11-01")
     def _test_check_date_order(self):
-        self.create_common_scenario()
-        customer = self.env.ref("base.res_partner_12")
+        """
+        Check that the date order of a reservation is correct.
+        ---------------
+        Create a reservation with today's date and then check that the date order is also today
+        """
         reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=3),
-                "partner_id": customer.id,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -1844,14 +1754,18 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     def _test_check_checkin_datetime(self):
-        self.create_common_scenario()
-        customer = self.env.ref("base.res_partner_12")
+        """
+        Check that the checkin datetime of a reservation is correct.
+        ------------------
+        Create a reservation and then check if the checkin datetime
+        it is correct
+        """
         reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": fields.date.today() + datetime.timedelta(days=300),
                 "checkout": fields.date.today() + datetime.timedelta(days=305),
-                "partner_id": customer.id,
+                "partner_id": self.partner1.id,
             }
         )
         r = reservation.checkin
@@ -1865,11 +1779,17 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     def test_check_allowed_room_ids(self):
-        self.create_common_scenario()
-        customer = self.env.ref("base.res_partner_12")
+        """
+        Check available rooms after creating a reservation.
+        -----------
+        Create an availability rule, create a reservation,
+        and then check that the allopwed_room_ids field of the
+        reservation and the room_type_id.room_ids field of the
+        availability rule match.
+        """
         availability_rule = self.env["pms.availability.plan.rule"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "room_type_id": self.room_type_double.id,
                 "availability_plan_id": self.room_type_availability.id,
                 "date": fields.date.today() + datetime.timedelta(days=153),
@@ -1877,12 +1797,12 @@ class TestPmsReservations(common.SavepointCase):
         )
         reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
-                "partner_id": customer.id,
+                "partner_id": self.partner1.id,
                 "room_type_id": self.room_type_double.id,
-                "pricelist_id": self.test_pricelist1.id,
+                "pricelist_id": self.pricelist1.id,
             }
         )
         self.assertEqual(
@@ -1891,8 +1811,15 @@ class TestPmsReservations(common.SavepointCase):
             "Rooms allowed don't match",
         )
 
-    def _test_partner_is_agency(self):
-        self.create_common_scenario()
+    def test_partner_is_agency(self):
+        """
+        Check that a reservation created with an agency and without a partner
+        assigns that agency as a partner.
+        -------------
+        Create an agency and then create a reservation to which that agency
+        assigns but does not associate any partner.
+        Then check that the partner of that reservation is the same as the agency
+        """
         sale_channel1 = self.env["pms.sale.channel"].create(
             {"name": "Test Indirect", "channel_type": "indirect"}
         )
@@ -1901,17 +1828,16 @@ class TestPmsReservations(common.SavepointCase):
                 "name": "partner1",
                 "is_agency": True,
                 "sale_channel_id": sale_channel1.id,
+                "invoice_to_agency": True,
             }
         )
 
         reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
-                # "partner_id": False,
                 "agency_id": agency.id,
-                # "folio_id":False,
             }
         )
 
@@ -1924,12 +1850,21 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     def test_agency_pricelist(self):
-        self.create_common_scenario()
+        """
+        Check that a pricelist of a reservation created with an
+        agency and without a partner and the pricelist of that
+        agency are the same.
+        -------------
+        Create an agency with field apply_pricelist is True and
+        then create a reservation to which that agency
+        assigns but does not associate any partner.
+        Then check that the pricelist of that reservation is the same as the agency
+        """
         sale_channel1 = self.env["pms.sale.channel"].create(
             {
                 "name": "Test Indirect",
                 "channel_type": "indirect",
-                "product_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
+                "product_pricelist_ids": [(6, 0, [self.pricelist1.id])],
             }
         )
         agency = self.env["res.partner"].create(
@@ -1943,13 +1878,12 @@ class TestPmsReservations(common.SavepointCase):
 
         reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
             }
         )
-
         self.assertEqual(
             reservation.pricelist_id.id,
             reservation.agency_id.property_product_pricelist.id,
@@ -1957,14 +1891,18 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     def test_compute_access_url(self):
-        self.create_common_scenario()
-        customer = self.env.ref("base.res_partner_12")
+        """
+        Check that the access_url field of the reservation is created with a correct value.
+        -------------
+        Create a reservation and then check that the access_url field has the value
+        my/reservation/(reservation.id)
+        """
         reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
-                "partner_id": customer.id,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -1972,7 +1910,15 @@ class TestPmsReservations(common.SavepointCase):
         self.assertEqual(reservation.access_url, url, "Reservation url isn't correct")
 
     def test_compute_ready_for_checkin(self):
-        self.create_common_scenario()
+        """
+        Check that the ready_for_checkin field is True when the reservation
+        checkin day is today.
+        ---------------
+        Create two hosts, create a reservation with a checkin date today,
+        and associate two checkin partners with that reservation and with
+        each of the hosts.
+        Then check that the ready_for_checkin field of the reservation is True
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
@@ -2013,7 +1959,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkout": "2012-01-17",
                 "partner_id": self.host1.id,
                 "allowed_checkin": True,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "adults": 3,
             }
         )
@@ -2033,14 +1979,19 @@ class TestPmsReservations(common.SavepointCase):
         self.reservation.checkin_partner_ids = [
             (6, 0, [self.checkin1.id, self.checkin2.id])
         ]
-
         self.assertTrue(
             self.reservation.ready_for_checkin,
             "Reservation should is ready for checkin",
         )
 
-    def test_check_checkin_less_checkout(self):
-        self.create_common_scenario()
+    def test_check_checkout_less_checkin(self):
+        """
+        Check that a reservation cannot be created with the
+        checkin date greater than the checkout date
+        ---------------
+        Create a reservation with the checkin date 3 days
+        after the checkout date, this should throw an error.
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Host1",
@@ -2051,13 +2002,20 @@ class TestPmsReservations(common.SavepointCase):
                 {
                     "checkin": fields.date.today() + datetime.timedelta(days=3),
                     "checkout": fields.date.today(),
-                    "pms_property_id": self.property.id,
+                    "pms_property_id": self.pms_property1.id,
                     "partner_id": self.host1.id,
                 }
             )
 
-    def test_check_adults(self):
-        self.create_common_scenario()
+    def test_check_more_adults_than_beds(self):
+        """
+        Check that a reservation cannot be created when the field
+        adults is greater than the capacity of the room.
+        -------------
+        Try to create a reservation with a double room and the
+        field 'adults'=4, this should throw a mistake because the
+        room capacity is lesser than the number of adults.
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Host1",
@@ -2068,15 +2026,20 @@ class TestPmsReservations(common.SavepointCase):
                 {
                     "checkin": fields.date.today(),
                     "checkout": fields.date.today() + datetime.timedelta(days=3),
-                    "pms_property_id": self.property.id,
+                    "pms_property_id": self.pms_property1.id,
                     "partner_id": self.host1.id,
                     "room_type_id": self.room_type_double.id,
                     "adults": 4,
                 }
             )
 
-    def test_check_arrival_hour(self):
-        self.create_common_scenario()
+    def test_check_format_arrival_hour(self):
+        """
+        Check that the format of the arrival_hour field is correct(HH:mm)
+        -------------
+        Create a reservation with the wrong arrival hour date
+        format (HH:mm:ss), this should throw an error.
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Host1",
@@ -2087,14 +2050,19 @@ class TestPmsReservations(common.SavepointCase):
                 {
                     "checkin": fields.date.today(),
                     "checkout": fields.date.today() + datetime.timedelta(days=3),
-                    "pms_property_id": self.property.id,
+                    "pms_property_id": self.pms_property1.id,
                     "partner_id": self.host1.id,
                     "arrival_hour": "14:00:00",
                 }
             )
 
-    def test_check_departure_hour(self):
-        self.create_common_scenario()
+    def test_check_format_departure_hour(self):
+        """
+        Check that the format of the departure_hour field is correct(HH:mm)
+        -------------
+        Create a reservation with the wrong departure hour date
+        format (HH:mm:ss), this should throw an error.
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Host1",
@@ -2105,22 +2073,26 @@ class TestPmsReservations(common.SavepointCase):
                 {
                     "checkin": fields.date.today(),
                     "checkout": fields.date.today() + datetime.timedelta(days=3),
-                    "pms_property_id": self.property.id,
+                    "pms_property_id": self.pms_property1.id,
                     "partner_id": self.host1.id,
                     "departure_hour": "14:00:00",
                 }
             )
 
     def test_check_property_integrity_room(self):
-        self.create_common_scenario()
+        """
+        Check that a reservation cannot be created with a room
+        of a different property.
+        ------------
+         Try to create a reservation for property2 with a
+         preferred_room that belongs to property1, this
+         should throw an error .
+        """
         self.property2 = self.env["pms.property"].create(
             {
                 "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist1.id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
             }
         )
         self.host1 = self.env["res.partner"].create(
@@ -2129,7 +2101,7 @@ class TestPmsReservations(common.SavepointCase):
             }
         )
         self.room_type_double.pms_property_ids = [
-            (6, 0, [self.property.id, self.property2.id])
+            (6, 0, [self.pms_property1.id, self.property2.id])
         ]
         with self.assertRaises(ValidationError):
             self.env["pms.reservation"].create(
@@ -2144,7 +2116,14 @@ class TestPmsReservations(common.SavepointCase):
             )
 
     def test_shared_folio_true(self):
-        self.create_common_scenario()
+        """
+        Check that the shared_folio field of a reservation whose
+        folio has other reservations is True.
+        ---------
+        Create a reservation and then create another reservation with
+        its folio_id = folio_id of the previous reservation. This
+        should set shared_folio to True
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Host1",
@@ -2154,7 +2133,7 @@ class TestPmsReservations(common.SavepointCase):
             {
                 "checkin": fields.date.today() + datetime.timedelta(days=60),
                 "checkout": fields.date.today() + datetime.timedelta(days=65),
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "partner_id": self.host1.id,
             }
         )
@@ -2162,7 +2141,7 @@ class TestPmsReservations(common.SavepointCase):
             {
                 "checkin": fields.date.today() + datetime.timedelta(days=60),
                 "checkout": fields.date.today() + datetime.timedelta(days=64),
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "partner_id": self.host1.id,
                 "folio_id": self.reservation.folio_id.id,
             }
@@ -2173,7 +2152,10 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     def test_shared_folio_false(self):
-        self.create_common_scenario()
+        """
+        Check that the shared_folio field for a reservation whose folio has no
+        other reservations is False.
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Host1",
@@ -2183,7 +2165,7 @@ class TestPmsReservations(common.SavepointCase):
             {
                 "checkin": fields.date.today() + datetime.timedelta(days=60),
                 "checkout": fields.date.today() + datetime.timedelta(days=65),
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "partner_id": self.host1.id,
             }
         )
@@ -2192,9 +2174,16 @@ class TestPmsReservations(common.SavepointCase):
             "Folio.reservations = 1, so reservation.shared_folio must be False",
         )
 
-    @freeze_time("1982-11-01")
     def test_reservation_action_cancel_fail(self):
-        self.create_common_scenario()
+        """
+        Check that a reservation cannot be in the cancel state if
+        the cancellation is not allowed.
+        ---------
+         Create a reservation, put its state = "canceled" and then try to
+         pass its state to cancel using the action_cancel () method. This
+         should throw an error because a reservation with state cancel cannot
+         be canceled again.
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Host1",
@@ -2206,7 +2195,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.host1.id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
@@ -2215,14 +2204,20 @@ class TestPmsReservations(common.SavepointCase):
         with self.assertRaises(UserError):
             reservation.action_cancel()
 
-    @freeze_time("1983-11-01")
     def test_cancelation_reason_noshow(self):
-        self.create_common_scenario()
+        """
+        Check that if a reservation has already passed and there is no check-in,
+        the reason for cancellation must be 'no-show'
+        ------
+        Create a cancellation rule that is assigned to a pricelist. Then create
+        a reservation with a past date and the action_cancel method is launched.
+        The canceled_reason field is verified to be is equal to "no_show"
+        """
         Pricelist = self.env["product.pricelist"]
         self.cancelation_rule = self.env["pms.cancelation.rule"].create(
             {
                 "name": "Cancelation Rule Test",
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "penalty_noshow": 50,
             }
         )
@@ -2230,7 +2225,7 @@ class TestPmsReservations(common.SavepointCase):
         self.pricelist = Pricelist.create(
             {
                 "name": "Pricelist Test",
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "cancelation_rule_id": self.cancelation_rule.id,
             }
         )
@@ -2246,7 +2241,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkout": fields.date.today() + datetime.timedelta(days=-3),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.host1.id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist.id,
             }
         )
@@ -2260,14 +2255,21 @@ class TestPmsReservations(common.SavepointCase):
             "cancelled_reason must be 'noshow'",
         )
 
-    @freeze_time("1984-11-01")
     def test_cancelation_reason_intime(self):
-        self.create_common_scenario()
+        """
+        Check that if a reservation is canceled on time according
+        to the cancellation rules the canceled_reason field must be "intime"
+        ------
+        Create a cancellation rule assigned to a price list with
+        the field days_intime = 3. Then create a reservation with
+        a checkin date within 5 days and launch the action_cancel method.
+        canceled_reason field must be "intime"
+        """
         Pricelist = self.env["product.pricelist"]
         self.cancelation_rule = self.env["pms.cancelation.rule"].create(
             {
                 "name": "Cancelation Rule Test",
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "days_intime": 3,
             }
         )
@@ -2275,7 +2277,7 @@ class TestPmsReservations(common.SavepointCase):
         self.pricelist = Pricelist.create(
             {
                 "name": "Pricelist Test",
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "cancelation_rule_id": self.cancelation_rule.id,
             }
         )
@@ -2291,7 +2293,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkout": fields.date.today() + datetime.timedelta(days=8),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.host1.id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist.id,
             }
         )
@@ -2299,16 +2301,25 @@ class TestPmsReservations(common.SavepointCase):
         reservation.action_cancel()
         reservation.flush()
 
-        self.assertEqual(reservation.cancelled_reason, "intime", "-----------")
+        self.assertEqual(
+            reservation.cancelled_reason, "intime", "Cancelled reason must be 'intime'"
+        )
 
-    @freeze_time("1985-11-01")
     def _test_cancelation_reason_late(self):
-        self.create_common_scenario()
+        """
+        Check that if a reservation is canceled outside the cancellation
+        period, the canceled_reason field of the reservation must be "late" .
+        ---------
+        Create a cancellation rule with the days_late = 3 field.
+        A reservation is created with a check-in date for tomorrow and the
+        action_cancel method is launched. As the reservation was canceled
+        after the deadline, the canceled_reason field must be late
+        """
         Pricelist = self.env["product.pricelist"]
         self.cancelation_rule = self.env["pms.cancelation.rule"].create(
             {
                 "name": "Cancelation Rule Test",
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "days_late": 3,
             }
         )
@@ -2316,7 +2327,7 @@ class TestPmsReservations(common.SavepointCase):
         self.pricelist = Pricelist.create(
             {
                 "name": "Pricelist Test",
-                "pms_property_ids": [self.property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "cancelation_rule_id": self.cancelation_rule.id,
             }
         )
@@ -2332,7 +2343,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkout": fields.date.today() + datetime.timedelta(days=4),
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.host1.id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist.id,
             }
         )
@@ -2341,7 +2352,14 @@ class TestPmsReservations(common.SavepointCase):
         self.assertEqual(reservation.cancelled_reason, "late", "-----------")
 
     def test_compute_checkin_partner_count(self):
-        self.create_common_scenario()
+        """
+        Check that the number of guests of a reservation is equal
+        to the checkin_partner_count field of that same reservation.
+        -------------
+        Create 2 checkin partners. Create a reservation with those
+        two checkin partners. The checkin_partner_count field must
+        be equal to the number of checkin partners in the reservation.
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
@@ -2361,7 +2379,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": "2013-01-14",
                 "checkout": "2013-01-17",
                 "partner_id": self.host1.id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "adults": 3,
             }
         )
@@ -2389,7 +2407,17 @@ class TestPmsReservations(common.SavepointCase):
         )
 
     def test_compute_checkin_partner_pending_count(self):
-        self.create_common_scenario()
+        """
+        Check that the checkin_partner_count field gives
+        the expected result.
+        --------------
+        Create a reservation with 3 adults and associate 2
+        checkin partners with that reservation. The
+        checkin_partner_pending_count field must be the
+        same as the difference between the adults in the
+        reservation and the number of checkin_partner_ids in
+        the reservation
+        """
         self.host1 = self.env["res.partner"].create(
             {
                 "name": "Miguel",
@@ -2409,7 +2437,7 @@ class TestPmsReservations(common.SavepointCase):
                 "checkin": "2014-01-14",
                 "checkout": "2014-01-17",
                 "partner_id": self.host1.id,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
                 "adults": 3,
             }
         )
@@ -2439,9 +2467,16 @@ class TestPmsReservations(common.SavepointCase):
             "Checkin_partner_pending_count isn't correct",
         )
 
-    @freeze_time("1982-11-01")
     def test_reservation_action_checkout_fail(self):
-        self.create_common_scenario()
+        """
+        Check that a reservation cannot be checkout because
+        the checkout is not allowed.
+        ---------------
+        Create a reservation and try to launch the action_reservation_checkout
+        method, but this should throw an error, because for the
+        checkout to be allowed, the reservation must be in "onboard"
+        or "departure_delayed" state
+        """
         host = self.env["res.partner"].create(
             {
                 "name": "Miguel",
@@ -2455,9 +2490,82 @@ class TestPmsReservations(common.SavepointCase):
                 "checkout": fields.date.today() + datetime.timedelta(days=1),
                 "partner_id": host.id,
                 "allowed_checkout": True,
-                "pms_property_id": self.property.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
         with self.assertRaises(UserError):
             reservation.action_reservation_checkout()
+
+    def test_partner_name_folio(self):
+        """
+        Check that a reservation without a partner_name
+        is associated with the partner_name of its folio
+        ----------
+        Create a folio with a partner_name. Then create a
+        reservation with folio_id = folio.id and without
+        partner_name. The partner name of the reservation
+        and the folio must be the same
+        """
+
+        # ARRANGE
+        self.folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Solón",
+            }
+        )
+
+        self.reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": "2014-01-14",
+                "checkout": "2014-01-17",
+                "pms_property_id": self.pms_property1.id,
+                "folio_id": self.folio1.id,
+            }
+        )
+        # ACT AND ASSERT
+        self.assertEqual(
+            self.folio1.partner_name,
+            self.reservation.partner_name,
+            "The folio partner name and the reservation partner name doesn't correspond",
+        )
+
+    def test_partner_is_agency_not_invoice_to_agency(self):
+        """
+        Check that a reservation without partner_name but with
+        an agency whose field invoice_to_agency = False will
+        be set as partner_name "Reservation_from (agency name)"
+        -------------
+        Create an agency with invoice_to_agency = False
+        and then create a reservation to which that agency
+        assigns but does not associate any partner.
+        Then check that the partner_name of that reservation is "Reservation from (agency name)"
+        """
+        sale_channel1 = self.env["pms.sale.channel"].create(
+            {"name": "Test Indirect", "channel_type": "indirect"}
+        )
+        agency = self.env["res.partner"].create(
+            {
+                "name": "partner1",
+                "is_agency": True,
+                "sale_channel_id": sale_channel1.id,
+            }
+        )
+
+        reservation = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "checkin": fields.date.today() + datetime.timedelta(days=150),
+                "checkout": fields.date.today() + datetime.timedelta(days=152),
+                "agency_id": agency.id,
+            }
+        )
+
+        reservation.flush()
+
+        self.assertEqual(
+            reservation.partner_name,
+            "Reservation from " + agency.name,
+            "Partner name doesn't match with to the expected",
+        )

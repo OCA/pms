@@ -1215,44 +1215,17 @@ class PmsReservation(models.Model):
     @api.depends("partner_id", "partner_id.name", "folio_id.partner_name")
     def _compute_partner_name(self):
         for record in self:
-<<<<<<< HEAD
-            if record.partner_id and not record.partner_name:
-                record.partner_name = record.partner_id.name
-            elif record.folio_id.partner_name and not record.partner_name:
-                record.partner_name = record.folio_id.partner_name
-            elif not record.partner_name:
-                record.partner_name = False
-=======
             self.folio_id._apply_partner_name(record)
->>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
         for record in self:
-<<<<<<< HEAD
-            if record.partner_id and not record.partner_email:
-                record.partner_email = record.partner_id.email
-            elif record.folio_id.email and not record.partner_email:
-                record.partner_email = record.folio_id.partner_email
-            elif not record.partner_email:
-                record.partner_email = False
-=======
             self.folio_id._apply_email(record)
->>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends("partner_id", "partner_id.mobile")
     def _compute_mobile(self):
         for record in self:
-<<<<<<< HEAD
-            if record.partner_id and not record.partner_mobile:
-                record.partner_mobile = record.partner_id.mobile
-            elif record.folio_id.mobile and not record.partner_mobile:
-                record.partner_mobile = record.folio_id.partner_mobile
-            elif not record.partner_mobile:
-                record.partner_mobile = False
-=======
             self.folio_id._apply_mobile(record)
->>>>>>> [REF]pms: Refactor computes of partner_id, partner_name, email and mobile in folio and reservation
 
     @api.depends(
         "partner_name",
