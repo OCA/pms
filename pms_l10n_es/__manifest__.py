@@ -36,6 +36,7 @@
         "views/pms_log_institution_traveller_report_views.xml",
         "views/pms_ine_tourism_category.xml",
         "wizards/traveller_report.xml",
+        "wizards/wizard_ine.xml",
     ],
     "installable": True,
 }
