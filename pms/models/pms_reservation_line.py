@@ -188,13 +188,13 @@ class PmsReservationLine(models.Model):
 
                 # we get the rooms available for the entire stay
                 rooms_available = self.env["pms.availability.plan"].rooms_available(
-                    checkin=line.reservation_id.checkin,
-                    checkout=line.reservation_id.checkout,
+                    checkin=reservation.checkin,
+                    checkout=reservation.checkout,
                     room_type_id=reservation.room_type_id.id
                     if not free_room_select
                     else False,
-                    current_lines=line.reservation_id.reservation_line_ids.ids,
-                    pricelist_id=line.reservation_id.pricelist_id.id,
+                    current_lines=reservation.reservation_line_ids.ids,
+                    pricelist_id=reservation.pricelist_id.id,
                     pms_property_id=line.pms_property_id.id,
                 )
                 # if there is availability for the entire stay
@@ -209,14 +209,18 @@ class PmsReservationLine(models.Model):
 
                         # if the preferred room is NOT available
                         else:
-                            raise ValidationError(
-                                _("%s: No room available in %s <-> %s.")
-                                % (
-                                    reservation.preferred_room_id.name,
-                                    line.reservation_id.checkin,
-                                    line.reservation_id.checkout,
+                            if self.env.context.get("force_overbooking"):
+                                reservation.overbooking = True
+                                line.room_id = reservation.preferred_room_id
+                            else:
+                                raise ValidationError(
+                                    _("%s: No room available in %s <-> %s.")
+                                    % (
+                                        reservation.preferred_room_id.name,
+                                        reservation.checkin,
+                                        reservation.checkout,
+                                    )
                                 )
-                            )
 
                     # otherwise we assign the first of those
                     # available for the entire stay
@@ -224,17 +228,21 @@ class PmsReservationLine(models.Model):
                         line.room_id = rooms_available[0]
                 # check that the reservation cannot be allocated even by dividing it
                 elif not self.env["pms.availability.plan"].splitted_availability(
-                    checkin=line.reservation_id.checkin,
-                    checkout=line.reservation_id.checkout,
-                    room_type_id=line.reservation_id.room_type_id.id,
+                    checkin=reservation.checkin,
+                    checkout=reservation.checkout,
+                    room_type_id=reservation.room_type_id.id,
                     current_lines=line._origin.reservation_id.reservation_line_ids.ids,
-                    pricelist=line.reservation_id.pricelist_id,
+                    pricelist=reservation.pricelist_id,
                     pms_property_id=line.pms_property_id.id,
                 ):
-                    raise ValidationError(
-                        _("%s: No room type available")
-                        % (line.reservation_id.room_type_id.name)
-                    )
+                    if self.env.context.get("force_overbooking"):
+                        reservation.overbooking = True
+                        line.room_id = reservation.room_type_id.room_ids[0]
+                    else:
+                        raise ValidationError(
+                            _("%s: No room type available")
+                            % (reservation.room_type_id.name)
+                        )
 
                 # the reservation can be allocated into several rooms
                 else:
@@ -350,7 +358,7 @@ class PmsReservationLine(models.Model):
                     lang=partner.lang,
                     partner=partner.id,
                     quantity=1,
-                    date=line.reservation_id.date_order,
+                    date=reservation.date_order,
                     consumption_date=line.date,
                     pricelist=reservation.pricelist_id.id,
                     uom=product.uom_id.id,
@@ -359,8 +367,8 @@ class PmsReservationLine(models.Model):
                 line.price = self.env["account.tax"]._fix_tax_included_price_company(
                     line._get_display_price(product),
                     product.taxes_id,
-                    line.reservation_id.tax_ids,
-                    line.reservation_id.company_id,
+                    reservation.tax_ids,
+                    reservation.company_id,
                 )
                 # TODO: Out of service 0 amount
 
