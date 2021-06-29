@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <!-- pms.sale.channel-->
+        <record id="main_pms_sale_channel_wubook" model="pms.sale.channel">
+            <field name="name">Wubook Engine</field>
+            <field name="channel_type">direct</field>
+            <field name="is_on_line">True</field>
+        </record>
+        <record id="main_pms_sale_channel_wubook_ota" model="pms.sale.channel">
+            <field name="name">Wubook OTAs</field>
+            <field name="channel_type">indirect</field>
+            <field name="is_on_line">True</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="availability_view_form" model="ir.ui.view">
+        <field name="name">pms.availability.plan.wubook.connector.form</field>
+        <field name="model">pms.availability.plan</field>
+        <field name="inherit_id" ref="connector_pms.availability_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='connector']">
+                <group string="Wubook">
+                    <field name="channel_wubook_bind_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="backend_id" />
+                            <field name="odoo_id" />
+                            <field name="external_id" />
+                            <field name="sync_date" />
+                            <button
+                                type="object"
+                                title="Resynchronize (import)"
+                                name="resync_import"
+                                class="fa fa-download"
+                            />
+                            <button
+                                type="object"
+                                title="Resynchronize (export)"
+                                name="resync_export"
+                                class="fa fa-upload"
+                            />
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
