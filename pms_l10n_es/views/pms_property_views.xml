@@ -34,6 +34,27 @@
                         />
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="o_horizontal_separator">
+                            INE Settings
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <group>
+                            <field name="ine_tourism" />
+                            <field name="ine_category_id" />
+                        </group>
+                    </div>
+                    <div class="col-6">
+                        <group>
+                            <field name="ine_rooms" />
+                            <field name="ine_seats" />
+                            <field name="ine_permanent_staff" />
+                            <field name="ine_eventual_staff" />
+                        </group>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>
