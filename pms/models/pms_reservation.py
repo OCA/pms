@@ -1426,13 +1426,13 @@ class PmsReservation(models.Model):
     @api.constrains("adults")
     def _check_adults(self):
         for record in self:
-            extra_bed = record.service_ids.filtered(
-                lambda r: r.product_id.is_extra_bed is True
-            )
-            for room in record.reservation_line_ids.room_id:
-                if record.adults + record.children_occupying > room.get_capacity(
-                    sum(extra_bed.mapped("product_qty"))
-                ):
+            for line in record.reservation_line_ids:
+                extra_beds = record.service_ids.service_line_ids.filtered(
+                    lambda x: x.date == line.date and x.product_id.is_extra_bed is True
+                )
+                if (
+                    record.adults + record.children_occupying
+                ) > line.room_id.get_capacity(len(extra_beds)):
                     raise ValidationError(
                         _(
                             "Persons can't be higher than room capacity (%s)",
