@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="pms_ine_wizard" model="ir.ui.view">
+        <field name="name">INE</field>
+        <field name="model">pms.ine.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div class="row">
+                    <div class="col-6">
+                        <group>
+                            <field
+                                name="start_date"
+                                widget="daterange"
+                                options="{'related_end_date': 'end_date'}"
+                            />
+                            <field
+                                name="end_date"
+                                widget="daterange"
+                                options="{'related_start_date': 'start_date'}"
+                            />
+                        </group>
+                    </div>
+                   <div class="col-6">
+                       <group>
+                           <field name="pms_property_id" />
+                       </group>
+                   </div>
+                </div>
+                <group>
+                    <field name="txt_filename" />
+                    <field name="txt_message" />
+                    <field name="txt_binary" filename="txt_filename" readonly="1" />
+                </group>
+                <div class="col-3">
+                    <button
+                        name="generate_ine_file"
+                        class="btn btn-primary btn-sm"
+                        type="object"
+                        string="Preview file"
+                    />
+                </div>
+                <footer />
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ine_report" model="ir.actions.act_window">
+        <field name="name">Generate INE file</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.ine.wizard</field>
+        <field name="view_id" ref="pms_ine_wizard" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        id="menu_ine"
+        name="Generate INE file"
+        sequence="31"
+        parent="pms.menu_reservations"
+        action="action_ine_report"
+    />
+</odoo>
