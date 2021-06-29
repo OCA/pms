@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+    <!-- room type -->
+    <record
+        id="wubook_pms_room_type_import_record_job_function"
+        model="queue.job.function"
+    >
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_pms_room_type"
+        />
+        <field name="method">import_record</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field
+            name="related_action"
+            eval='{"func_name": "wubook_import_record_related_action", "kwargs": {"name": "Wubook Room Type"}}'
+        />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+    <record
+        id="wubook_pms_room_type_export_record_job_function"
+        model="queue.job.function"
+    >
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_pms_room_type"
+        />
+        <field name="method">export_record</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field
+            name="related_action"
+            eval='{"func_name": "wubook_export_record_related_action", "kwargs": {"name": "Wubook room type"}}'
+        />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+    <record
+        id="wubook_pms_room_type_import_data_job_function"
+        model="queue.job.function"
+    >
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_pms_room_type"
+        />
+        <field name="method">import_data</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+        <record
+        id="wubook_pms_room_type_export_data_job_function"
+        model="queue.job.function"
+    >
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_pms_room_type"
+        />
+        <field name="method">export_data</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+
+    <!-- pricelist -->
+    <record
+        id="wubook_product_pricelist_import_record_job_function"
+        model="queue.job.function"
+    >
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_product_pricelist"
+        />
+        <field name="method">import_record</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field
+            name="related_action"
+            eval='{"func_name": "wubook_import_record_related_action", "kwargs": {"name": "Wubook Pricelist"}}'
+        />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+
+    <!-- availability plan -->
+    <record
+        id="wubook_pms_availability_plan_import_record_job_function"
+        model="queue.job.function"
+    >
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_pms_availability_plan"
+        />
+        <field name="method">import_record</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field
+            name="related_action"
+            eval='{"func_name": "wubook_import_record_related_action", "kwargs": {"name": "Wubook Availability Plan"}}'
+        />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+
+    <!-- folio -->
+    <record id="wubook_pms_folio_import_record_job_function" model="queue.job.function">
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_pms_folio"
+        />
+        <field name="method">import_record</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field
+            name="related_action"
+            eval='{"func_name": "wubook_import_record_related_action", "kwargs": {"name": "Wubook Folio"}}'
+        />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+
+    <!-- availability -->
+    <record
+        id="wubook_pms_availability_export_record_job_function"
+        model="queue.job.function"
+    >
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_pms_availability"
+        />
+        <field name="method">export_record</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field
+            name="related_action"
+            eval='{"func_name": "wubook_export_record_related_action", "kwargs": {"name": "Wubook Availability"}}'
+        />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+</odoo>

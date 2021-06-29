@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="massive_changes_wizard" model="ir.ui.view">
+        <field name="name">Availability Wubook Wizard</field>
+        <field name="model">pms.massive.changes.wizard</field>
+        <field name="inherit_id" ref="pms.massive_changes_wizard" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='massive_changes_on']/..">
+                <field name="inconsistent_rule_count" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='massive_changes_on']/.." position="before">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('inconsistent_rule_count', '=', 0)]}"
+                ><p>
+                    It exists <strong><field
+                                name="inconsistent_rule_count"
+                            /></strong> other Availability Plan Rule(s) with different <strong
+                        >Quota</strong> and/or <strong
+                        >Max. Availability</strong> for the same Wubook backend.
+                    If you continue all of them <strong
+                        >will be replaced</strong> by the values set here
+                </p>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
