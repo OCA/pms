@@ -2,3 +2,4 @@
 # from . import pms_checkin_partner
 from . import pms_property
 from . import pms_log_institution_traveller_report
+from . import res_country_state
