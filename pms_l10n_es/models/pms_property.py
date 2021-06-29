@@ -33,6 +33,26 @@ class PmsProperty(models.Model):
         string="Institution password",
         help="Password provided by institution to send the data.",
     )
+    ine_tourism = fields.Char(
+        "Tourism number",
+        help="Registration number in the Ministry of Tourism. Used for INE statistics.",
+    )
+    ine_rooms = fields.Integer(
+        "Rooms Available", default=0, help="Used for INE statistics."
+    )
+    ine_seats = fields.Integer(
+        "Beds available", default=0, help="Used for INE statistics."
+    )
+    ine_permanent_staff = fields.Integer(
+        "Permanent Staff", default=0, help="Used for INE statistics."
+    )
+    ine_eventual_staff = fields.Integer(
+        "Eventual Staff", default=0, help="Used for INE statistics."
+    )
+    ine_category_id = fields.Many2one(
+        "pms.ine.tourism.category",
+        help="Hotel category in the Ministry of Tourism. Used for INE statistics.",
+    )
 
     def test_connection(self):
         headers = {
