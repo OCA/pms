@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="channel_wubook_backend_view_form" model="ir.ui.view">
+        <field name="name">channel.wubook.backend.form</field>
+        <field name="model">channel.wubook.backend</field>
+        <field name="arch" type="xml">
+            <form string="PMS Channel Backend" create="0">
+                <header />
+                <sheet>
+                    <group>
+                        <field name="username" />
+                        <field name="password" password="1" />
+                    </group>
+                    <group>
+                        <field name="url" />
+                        <field name="property_code" />
+                        <field name="pkey" />
+                    </group>
+                    <notebook>
+                        <page name="syncronization" string="Syncronization">
+                            <group>
+                                <label
+                                    for="import_room_types"
+                                    string="Import Room Types"
+                                />
+                                <div>
+                                    <button
+                                        name="import_room_types"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
+                                    for="export_room_types"
+                                    string="Export Room Types"
+                                />
+                                <div>
+                                    <button
+                                        name="export_room_types"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
+                                    for="pricelist_date_from"
+                                    string="Import Pricelists"
+                                />
+                                <div>
+                                    <field
+                                        name="pricelist_date_from"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Date From"
+                                        widget="daterange"
+                                        options="{'related_end_date': 'pricelist_date_to'}"
+                                        attrs="{'required':['|', ('pricelist_date_from', '!=', False),
+                                           ('pricelist_date_to', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="pricelist_date_to"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Date To"
+                                        widget="daterange"
+                                        options="{'related_start_date': 'pricelist_date_from'}"
+                                        attrs="{'required':['|', ('pricelist_date_to', '!=', False),
+                                           ('pricelist_date_from', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="pricelist_ids"
+                                        nolabel="1"
+                                        placeholder="Pricelists"
+                                        widget="many2many_tags"
+                                    />
+                                    <field
+                                        name="pricelist_room_type_ids"
+                                        nolabel="1"
+                                        placeholder="Room types"
+                                        widget="many2many_tags"
+                                    />
+                                    <button
+                                        name="import_pricelists"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
+                                    for="export_pricelists"
+                                    string="Export Pricelists"
+                                />
+                                <div>
+                                    <button
+                                        name="export_pricelists"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
+                                    for="plan_date_from"
+                                    string="Import Avaliability Plans"
+                                />
+                                <div>
+                                    <field
+                                        name="plan_date_from"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Date From"
+                                        widget="daterange"
+                                        options="{'related_end_date': 'plan_date_to'}"
+                                        attrs="{'required':['|', ('plan_date_from', '!=', False),
+                                           ('plan_date_to', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="plan_date_to"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Date To"
+                                        widget="daterange"
+                                        options="{'related_start_date': 'plan_date_from'}"
+                                        attrs="{'required':['|', ('plan_date_to', '!=', False),
+                                           ('plan_date_from', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="plan_room_type_ids"
+                                        nolabel="1"
+                                        placeholder="Room types"
+                                        widget="many2many_tags"
+                                    />
+                                    <button
+                                        name="import_availability_plans"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
+                                    for="export_availability_plans"
+                                    string="Export Availability Plans"
+                                />
+                                <div>
+                                    <button
+                                        name="export_availability_plans"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
+                                    for="avail_date_from"
+                                    string="Export Availability"
+                                />
+                                <div>
+                                    <field
+                                        name="avail_date_from"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Date From"
+                                        widget="daterange"
+                                        options="{'related_end_date': 'avail_date_to'}"
+                                        attrs="{'required':['|', ('avail_date_from', '!=', False),
+                                           ('avail_date_to', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="avail_date_to"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Date To"
+                                        widget="daterange"
+                                        options="{'related_start_date': 'avail_date_from'}"
+                                        attrs="{'required':['|', ('avail_date_to', '!=', False),
+                                           ('avail_date_from', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="avail_room_type_ids"
+                                        nolabel="1"
+                                        placeholder="Room types"
+                                        widget="many2many_tags"
+                                    />
+                                    <button
+                                        name="export_availability"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
+                                    for="folio_date_arrival_from"
+                                    string="Import Folios"
+                                />
+                                <div>
+                                    <field
+                                        name="folio_date_arrival_from"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Arrival Date From"
+                                        widget="daterange"
+                                        options="{'related_end_date': 'folio_date_arrival_to'}"
+                                        attrs="{'required':['|', ('folio_date_arrival_from', '!=', False),
+                                           ('folio_date_arrival_to', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="folio_date_arrival_to"
+                                        class="oe_inline"
+                                        nolabel="1"
+                                        placeholder="Arrival Date To"
+                                        widget="daterange"
+                                        options="{'related_start_date': 'folio_date_arrival_from'}"
+                                        attrs="{'required':['|', ('folio_date_arrival_to', '!=', False),
+                                           ('folio_date_arrival_from', '!=', False)]}"
+                                    />
+                                    <div>
+                                        <label for="folio_mark" string="Mark" />
+                                        <field
+                                            name="folio_mark"
+                                            placeholder="Mark"
+                                            class="oe_inline"
+                                        />
+                                    </div>
+                                     <div>
+                                        <label
+                                            for="folio_reservation_code"
+                                            string="Reservation Code"
+                                        />
+                                        <field
+                                            name="folio_reservation_code"
+                                            placeholder="Reservation Code"
+                                        />
+                                    </div>
+                                    <button
+                                        name="import_folios"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import in Background"
+                                    />
+                                </div>
+                            </group>
+                        </page>
+                        <page string="Push">
+                            <group colspan="4" col="4">
+                                <field name="security_token" />
+                                <button
+                                    name="generate_security_key"
+                                    string="Generate Token"
+                                    type="object"
+                                    class="oe_edit_only btn-primary"
+                                />
+                            </group>
+                            <group>
+                                <button
+                                    name="set_push_url"
+                                    string="Set Push URL's"
+                                    type="object"
+                                    class="btn-primary"
+                                />
+                            </group>
+                        </page>
+                        <page string="Booking Engine">
+                            <group>
+                                <field name="pricelist_external_id" class="oe_inline" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
