@@ -15,5 +15,4 @@ class PmsFolio(models.Model):
 
     reservation_origin_code = fields.Integer(
         string="Reservation Origin Code",
-        required=True,
     )
