@@ -22,12 +22,12 @@ class ChannelWubookPmsAvailabilityMapperExport(Component):
     # @changed_by('sale_avail')
     @mapping
     def avail(self, record):
-        return {"avail": record["sale_avail"]}
+        return {"avail": record.sale_avail}
 
     # @changed_by('date')
     @mapping
     def date(self, record):
-        return {"date": record["date"]}
+        return {"date": record.date}
 
     # @changed_by('room_type_id')
     @mapping
