@@ -25,7 +25,7 @@ class ChannelWubookProductPriceBinding(models.Model):
         date_to,
         pricelist_ids,
         room_type_ids,
-        delayed=False,
+        delayed=True,
     ):
         """ Prepare the batch import of Pricelists from Channel """
         domain = []
