@@ -10,7 +10,7 @@ class ChannelWubookPmsAvailabilityListener(Component):
     _name = "channel.wubook.pms.availability.listener"
     _inherit = "channel.wubook.listener"
 
-    _apply_on = "channel.wubook.pms.availability"
+    _apply_on = "pms.availability"
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_create(self, record, fields=None):
@@ -18,3 +18,10 @@ class ChannelWubookPmsAvailabilityListener(Component):
             self.env["channel.wubook.pms.availability"].export_record(
                 backend_id, record
             )
+
+
+class ChannelWubookPmsAvailabilityBindingListener(Component):
+    _name = "channel.wubook.pms.availability.binding.listener"
+    _inherit = "channel.wubook.binding.listener"
+
+    _apply_on = "channel.wubook.pms.availability"
