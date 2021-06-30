@@ -96,7 +96,7 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
                         {
                             "name": "TEMP-%s"
                             % format(random.randint(0, 0xFFFFFFFF), "x"),
-                            "pms_property_id": rec.backend_record.pms_property_id.id,
+                            "pms_property_id": rec.backend_id.pms_property_id.id,
                             "capacity": rec.occupancy,
                         },
                     )
