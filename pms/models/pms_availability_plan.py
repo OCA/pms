@@ -187,6 +187,7 @@ class PmsAvailabilityPlan(models.Model):
             ("room_type_id", "=", room_type_id),
             ("pms_property_id", "=", pms_property_id),
         ]
+        pricelist = False
         if pricelist_id:
             pricelist = self.env["product.pricelist"].browse(pricelist_id)
         if pricelist and pricelist.availability_plan_id:
