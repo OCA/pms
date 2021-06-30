@@ -187,8 +187,7 @@ class ChannelWubookBackend(models.Model):
         for rec in self:
             if rec.avail_date_to < rec.avail_date_from:
                 raise UserError(_("Date to must be greater than date from"))
-            # rec.env["channel.wubook.pms.availability"].with_delay().export_data(
-            rec.env["channel.wubook.pms.availability"].export_data(
+            rec.env["channel.wubook.pms.availability"].with_delay().export_data(
                 rec,
                 rec.avail_date_from,
                 rec.avail_date_to,
@@ -212,10 +211,7 @@ class ChannelWubookBackend(models.Model):
             else:
                 if rec.folio_date_arrival_to < rec.folio_date_arrival_from:
                     raise UserError(_("Date to must be greater than date from"))
-                rec.env["channel.wubook.pms.folio"].import_data(
-                    # rec.env["channel.wubook.pms.folio"].with_context(
-                    #     test_queue_job_no_delay=True
-                    # ).with_delay().import_data(
+                rec.env["channel.wubook.pms.folio"].with_delay().import_data(
                     rec,
                     rec.folio_date_arrival_from,
                     rec.folio_date_arrival_to,
