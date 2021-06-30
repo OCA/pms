@@ -102,10 +102,10 @@ class ChannelWubookProductPricelistAdapter(Component):
         if pl_external_id not in plans_by_id:
             raise ValidationError(
                 _(
-                    "The External Pricelist ID '%s' defined on the Backend "
-                    "configuration does not exist on Backend"
+                    "The External Parity Pricelist ID '%s' defined on the Backend "
+                    "configuration does not exist on Backend.\nIt should be one of these: %s"
                 )
-                % pl_external_id
+                % (pl_external_id, all_plans)
             )
 
         # normalize pricing plans
