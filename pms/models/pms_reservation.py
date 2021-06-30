@@ -1210,11 +1210,13 @@ class PmsReservation(models.Model):
             else:
                 record.shared_folio = False
 
-    @api.depends("partner_id", "partner_id.name")
+    @api.depends("partner_id", "partner_id.name", "folio_id.partner_name")
     def _compute_partner_name(self):
         for record in self:
             if record.partner_id and not record.partner_name:
                 record.partner_name = record.partner_id.name
+            elif record.folio_id.partner_name and not record.partner_name:
+                record.partner_name = record.folio_id.partner_name
             elif not record.partner_name:
                 record.partner_name = False
 
@@ -1223,6 +1225,8 @@ class PmsReservation(models.Model):
         for record in self:
             if record.partner_id and not record.partner_email:
                 record.partner_email = record.partner_id.email
+            elif record.folio_id.email and not record.partner_email:
+                record.partner_email = record.folio_id.partner_email
             elif not record.partner_email:
                 record.partner_email = False
 
@@ -1231,6 +1235,8 @@ class PmsReservation(models.Model):
         for record in self:
             if record.partner_id and not record.partner_mobile:
                 record.partner_mobile = record.partner_id.mobile
+            elif record.folio_id.mobile and not record.partner_mobile:
+                record.partner_mobile = record.folio_id.partner_mobile
             elif not record.partner_mobile:
                 record.partner_mobile = False
 
