@@ -31,7 +31,7 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
         date_from,
         date_to,
         room_type_ids,
-        delayed=False,
+        delayed=True,
     ):
         """ Prepare the batch import of Availability Plans from Channel """
         domain = []
