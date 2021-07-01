@@ -761,17 +761,17 @@ class PmsFolio(models.Model):
             else:
                 order.invoice_status = "no"
 
-    @api.depends("partner_id", "partner_id.name", "reservation_ids.partner_name")
+    @api.depends("partner_id", "partner_id.name")
     def _compute_partner_name(self):
         for record in self:
             self._apply_partner_name(record)
 
-    @api.depends("partner_id", "partner_id.email", "reservation_ids.partner_email")
+    @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
         for record in self:
             self._apply_email(record)
 
-    @api.depends("partner_id", "partner_id.mobile", "reservation_ids.partner_mobile")
+    @api.depends("partner_id", "partner_id.mobile")
     def _compute_mobile(self):
         for record in self:
             self._apply_mobile(record)
