@@ -367,6 +367,9 @@ class PmsReservation(models.Model):
         help="Field indicating type of cancellation. "
         "It can be 'late', 'intime' or 'noshow'",
         copy=False,
+        compute="_compute_cancelled_reason",
+        readonly=False,
+        store=True,
         selection=[("late", "Late"), ("intime", "In time"), ("noshow", "No Show")],
         tracking=True,
     )
@@ -580,6 +583,16 @@ class PmsReservation(models.Model):
         store=True,
         digits=("Discount"),
         compute="_compute_discount",
+        tracking=True,
+    )
+
+    services_discount = fields.Float(
+        string="Services discount (€)",
+        help="Services discount",
+        readonly=False,
+        store=True,
+        digits=("Discount"),
+        compute="_compute_services_discount",
         tracking=True,
     )
     date_order = fields.Date(
@@ -1145,10 +1158,12 @@ class PmsReservation(models.Model):
         for res in self:
             res.nights = len(res.reservation_line_ids)
 
-    @api.depends("service_ids.price_total")
+    @api.depends("service_ids.price_total", "services_discount")
     def _compute_price_services(self):
         for record in self:
-            record.price_services = sum(record.mapped("service_ids.price_total"))
+            record.price_services = (
+                sum(record.mapped("service_ids.price_total")) - record.services_discount
+            )
 
     @api.depends("price_services", "price_total")
     def _compute_price_room_services_set(self):
@@ -1156,7 +1171,8 @@ class PmsReservation(models.Model):
             record.price_room_services_set = record.price_services + record.price_total
 
     @api.depends(
-        "reservation_line_ids.discount", "reservation_line_ids.cancel_discount"
+        "reservation_line_ids.discount",
+        "reservation_line_ids.cancel_discount",
     )
     def _compute_discount(self):
         for record in self:
@@ -1166,7 +1182,16 @@ class PmsReservation(models.Model):
                 price = line.price - first_discount
                 cancel_discount = price * ((line.cancel_discount or 0.0) * 0.01)
                 discount += first_discount + cancel_discount
+
             record.discount = discount
+
+    @api.depends("service_ids.discount")
+    def _compute_services_discount(self):
+        for record in self:
+            services_discount = 0
+            for service in record.service_ids:
+                services_discount += service.discount
+            record.services_discount = services_discount
 
     @api.depends("reservation_line_ids.price", "discount", "tax_ids")
     def _compute_amount_reservation(self):
@@ -1672,37 +1697,39 @@ class PmsReservation(models.Model):
             if not record.allowed_cancel:
                 raise UserError(_("This reservation cannot be cancelled"))
             else:
-                cancel_reason = (
-                    "intime"
-                    if self._context.get("no_penalty", False)
-                    else record.compute_cancelation_reason()
-                )
-                if self._context.get("no_penalty", False):
-                    _logger.info("Modified Reservation - No Penalty")
-                record.write({"state": "cancel", "cancelled_reason": cancel_reason})
-                # record._compute_cancel_discount()
+                record.state = "cancel"
                 record.folio_id._compute_amount()
 
     def action_assign(self):
         for record in self:
             record.to_assign = False
 
-    def compute_cancelation_reason(self):
-        self.ensure_one()
-        pricelist = self.pricelist_id
-        if pricelist and pricelist.cancelation_rule_id:
-            tz_property = self.pms_property_id.tz
-            today = fields.Date.context_today(self.with_context(tz=tz_property))
-            days_diff = (
-                fields.Date.from_string(self.checkin) - fields.Date.from_string(today)
-            ).days
-            if days_diff < 0:
-                return "noshow"
-            elif days_diff < pricelist.cancelation_rule_id.days_intime:
-                return "late"
-            else:
-                return "intime"
-        return False
+    @api.depends("state")
+    def _compute_cancelled_reason(self):
+        for record in self:
+            # self.ensure_one()
+            if record.state == "cancel":
+                pricelist = record.pricelist_id
+                if record._context.get("no_penalty", False):
+                    record.cancelled_reason = "intime"
+                    _logger.info("Modified Reservation - No Penalty")
+                elif pricelist and pricelist.cancelation_rule_id:
+                    tz_property = record.pms_property_id.tz
+                    today = fields.Date.context_today(
+                        record.with_context(tz=tz_property)
+                    )
+                    days_diff = (
+                        fields.Date.from_string(record.checkin)
+                        - fields.Date.from_string(today)
+                    ).days
+                    if days_diff < 0:
+                        record.cancelled_reason = "noshow"
+                    elif days_diff < pricelist.cancelation_rule_id.days_intime:
+                        record.cancelled_reason = "late"
+                    else:
+                        record.cancelled_reason = "intime"
+                else:
+                    record.cancelled_reason = False
 
     def action_reservation_checkout(self):
         for record in self:
