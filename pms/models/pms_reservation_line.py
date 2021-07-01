@@ -174,18 +174,6 @@ class PmsReservationLine(models.Model):
             ):
                 free_room_select = True if reservation.preferred_room_id else False
 
-                # Check if the room assigment is manual or automatic to set the
-                # to_assign value on reservation
-                # REVIEW: SRP Issue?¿ (set reservation to_assign value on
-                # compute_room_id in reservation_line)
-                if (
-                    free_room_select
-                    and reservation.preferred_room_id.id
-                    not in reservation.reservation_line_ids.room_id.ids
-                ):
-                    # This case is a preferred_room_id manually assigned
-                    reservation.to_assign = False
-
                 # we get the rooms available for the entire stay
                 rooms_available = self.env["pms.availability.plan"].rooms_available(
                     checkin=reservation.checkin,
@@ -197,6 +185,16 @@ class PmsReservationLine(models.Model):
                     pricelist_id=reservation.pricelist_id.id,
                     pms_property_id=line.pms_property_id.id,
                 )
+                # Check if the room assigment is manual or automatic to set the
+                # to_assign value on reservation
+                manual_assigned = False
+                if (
+                    free_room_select
+                    and reservation.preferred_room_id.id
+                    not in reservation.reservation_line_ids.room_id.ids
+                ):
+                    # This case is a preferred_room_id manually assigned
+                    manual_assigned = True
                 # if there is availability for the entire stay
                 if rooms_available:
 
@@ -206,6 +204,9 @@ class PmsReservationLine(models.Model):
                         # if the preferred room is available
                         if reservation.preferred_room_id in rooms_available:
                             line.room_id = reservation.preferred_room_id
+                            reservation.to_assign = (
+                                False if manual_assigned else reservation.to_assign
+                            )
 
                         # if the preferred room is NOT available
                         else:
