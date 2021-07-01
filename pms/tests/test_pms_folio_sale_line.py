@@ -32,6 +32,47 @@ class TestPmsFolioSaleLine(TestPms):
             }
         )
 
+        self.product_test1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+                "per_day": True,
+            }
+        )
+        self.product_test2 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+                "per_day": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service_test = self.board_service = self.env[
+            "pms.board.service"
+        ].create(
+            {
+                "name": "Test Board Service",
+                "default_code": "TPS",
+            }
+        )
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test1.id,
+                "amount": 8,
+            }
+        )
+        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service_test.id,
+            }
+        )
+        self.extra_service = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product_test2.id,
+            }
+        )
+
     # RESERVATION LINES
     def test_comp_fsl_rooms_all_same_group(self):
         """
@@ -91,9 +132,15 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_rooms_different_prices(self):
-        # TEST CASE
-        # 2-night reservation and different price per night
-        #   should generate 2 reservation sale lines
+        """
+        Check that a reservation with two nights and different prices per
+        night generates two sale lines.
+        ------------
+        Create a reservation with a double room as a room type and 2 nights,
+        which has a price of 25.0 per night. Then the price of one of the reservation
+        lines is changed to 50.0. As there are two different prices per
+        night in the reservation the sale lines of the folio should be 2 .
+        """
 
         # ARRANGE
         expected_sale_lines = 2
@@ -121,9 +168,15 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_rooms_different_discount(self):
-        # TEST CASE
-        # 2-night reservationwith different discount per night
-        # should generate 2 reservation sale lines
+        """
+        Check that a reservation with two nights and different discount per
+        night generates two sale lines.
+        ------------
+        Create a reservation with a double room as a room type and 2 nights, which has
+        a default discount of 0 per night. Then the discount of one of the reservation
+        lines is changed to 50.0. As there are two different discounts per night in the
+        reservation the sale lines of the folio should be 2.
+        """
 
         # ARRANGE
         expected_sale_lines = 2
@@ -151,9 +204,17 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_rooms_different_cancel_discount(self):
-        # TEST CASE
-        # 2-night-reservation with different discount per night
-        # should generate 2 reservation sale lines
+        """
+        Check that a reservation with two nights and different cancel
+        discount per night generates two sale lines.
+        ------------
+        Create a reservation with a double room as a room type and 2 nights,
+        which has a default cancel discount of 0 per night. Then the cancel discount
+        of one of the reservation lines is changed to 50.0. As there are two
+        different cancel discount per night in the reservation the sale lines of
+        the folio should be 2. As one of the reservation lines has a 100% cancel
+        discount, the sale line should be 1 .
+        """
 
         # ARRANGE
         expected_sale_lines = 2
@@ -181,11 +242,14 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_rooms_one_full_cancel_discount(self):
-        # TEST CASE
-        # 2-night reservation with 100% cancel discount for 1 night
-        # should generate just 1 reservation sale line because the
-        #   full cancel discount shouldn't be present @ invoice lines
-
+        """
+        Check that a reservation with a 100% cancel discount on one night
+        does not generate different sale lines.
+        ----------------
+        Create a reservation with a double room as a room type, which has
+        a default cancel discount of 0 per night. Then the cancel discount
+        of one of the reservation lines is changed to 100.0.
+        """
         # ARRANGE
         expected_sale_lines = 1
         r_test = self.env["pms.reservation"].create(
@@ -213,11 +277,16 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_rooms_increase_stay(self):
-        # TEST CASE
-        # 2-night reservation increases 1 night with the same price,
-        # discount and cancel discount for all the reservation nights
-        # Should keep the same reservation sales line record.
-
+        """
+        Check when adding a night to a reservation after creating it and this night
+        has the same price, cancel and cancel discount values, the sales line that
+        were created with the reservation are maintained.
+        ---------
+        Create a reservation of 2 nights for a double room. The value of the sale lines
+        of that reservation is stored in a variable. Then one more night is added to the
+        reservation and it is verified that the sale lines are the same as the value of
+        the previously saved variable.
+        """
         # ARRANGE
         r_test = self.env["pms.reservation"].create(
             {
@@ -247,11 +316,15 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_rooms_decrease_stay(self):
-        # TEST CASE
-        # 2-night reservation decreases 1 night with the same price,
-        # discount & cancel_discount for all the reservation nights
-        # Should keep the same reservation sales line record.
-
+        """
+        Check when a night is removed from a reservation after creating
+        it, the sales lines that were created with the reservation are kept.
+        ---------
+        Create a reservation of 2 nights for a double room. The value of the sale lines
+        of that reservation is stored in a variable. Then it is removed one night at
+        reservation and it is verified that the reservation sale lines are equal to the value of
+        the previously saved variable.
+        """
         # ARRANGE
         r_test = self.env["pms.reservation"].create(
             {
@@ -281,12 +354,18 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_rooms_same_stay(self):
-        # TEST CASE
-        # Price is changed for all nights of a 2-night reservation. But
-        #   price, discount & cancel discount after the change is the same
-        #   for all nights.
-        # Should keep the same reservation sales line record.
-
+        """
+        Check that when changing the price of all the reservation lines in a
+        reservation, which before the change had the same price, discount
+        and cancel discount values, the same sale lines that existed before
+        the change are kept.
+        ------------------
+        Create a reservation of 2 nights for a double room with a price of 25.0.
+        The value of the sale lines of that reservation is stored in a variable.
+        Then the value of the price of all the reservation lines is changed to 50.0
+        and it is verified that the reservation sale lines are equal to the value
+        of the previously saved variable.
+        """
         # ARRANGE
         r_test = self.env["pms.reservation"].create(
             {
@@ -317,38 +396,17 @@ class TestPmsFolioSaleLine(TestPms):
 
     # BOARD SERVICES
     def test_comp_fsl_board_services_all_same_group(self):
-        # TEST CASE
-        # 2-night reservation and same price, discount & cancel_discount for
-        # all reservation board services
-        # should generate just 1 board service sale line
 
+        """
+        Check that the board services of reservation with the same price, discount
+        and cancel discount values, should only generate one sale line.
+        ----------------
+        Create a reservation of 2 nights, for a double room with a board service
+        room per night. Then it is verified that the length of the sale lines of the
+        board services in the reservation is equal to 1.
+        """
         # ARRANGE
         expected_board_service_sale_lines = 1
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
 
         # ACT
         r_test = self.env["pms.reservation"].create(
@@ -359,7 +417,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
 
@@ -377,38 +435,18 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_board_services_different_prices(self):
-        # TEST CASE
-        # 2-night reservation and different price per day on board services
-        # should generate just 1 board service sale line
-
+        """
+        Check that the board services of reservation with different prices
+        should generate several sale lines.
+        ----------------
+        Create a reservation of 2 nights, for a double room with a board service
+        room per night. Then change the price of the first board service line to
+        1.0 and it is verified that the length of the sale lines of the board services
+        in the reservation is equal to 2 because there are 2 different board service
+        prices in the reservation.
+        """
         # ARRANGE
         expected_board_service_sale_lines = 2
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -417,7 +455,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
         r_test.service_ids[0].service_line_ids[0].price_unit = 1.0
@@ -436,38 +474,18 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_board_services_different_discount(self):
-        # TEST CASE
-        # 2-night reservation and different discount per day on board services
-        # should generate 2 board service sale lines
-
+        """
+        Check that the board services of reservation with different discounts
+        should generate several sale lines.
+        ----------------
+        Create a reservation of 2 nights, for a double room with a board service
+        room per night. Then change the discount of the first board service line
+        to 1.0 and it is verified that the length of the sale lines of the board services
+        in the reservation is equal to 2 because there are 2 different board service
+        discounts in the reservation.
+        """
         # ARRANGE
         expected_board_service_sale_lines = 2
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -476,7 +494,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
 
@@ -497,39 +515,19 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_board_services_different_cancel_discount(self):
-        # TEST CASE
-        # 2-night reservation and different cancel discount per day on
-        #   board services
-        # should generate 2 board service sale lines
+        """
+        Check that the board services of reservation with different cancel
+        discounts should generate several sale lines.
+        ----------------
+        Create a reservation of 2 nights, for a double room with a board service
+        room per night. Then change the cancel discount of the first board service line
+        to 1.0 and it is verified that the length of the sale lines of the board services
+        in the reservation is equal to 2 because there are 2 different board service
+        cancel discounts in the reservation.
+        """
 
         # ARRANGE
         expected_board_service_sale_lines = 2
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -538,7 +536,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
 
@@ -559,39 +557,18 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_board_services_one_full_cancel_discount(self):
-        # TEST CASE
-        # 2-night reservation with 100% cancel discount for 1 board service
-        # should generate just 1 board service sale line because the
-        #   full cancel discount shouldn't be present @ invoice lines
+        """
+        Check that the board services of reservation with 100% cancel
+        discount should generate only 1 sale line.
+        ----------------
+        Create a reservation of 2 nights, for a double room with a board service
+        room per night. Then change the cancel discount of the first board service line
+        to 100.0 and it is verified that the length of the sale lines of the board services
+        in the reservation is equal to 1.
+        """
 
         # ARRANGE
         expected_board_service_sale_lines = 1
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -600,7 +577,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
 
@@ -621,37 +598,19 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_board_services_increase_stay(self):
-        # TEST CASE
-        # 2-night reservation increases 1 night with the same price,
-        # discount & cancel_discount for all the board services
-        # Should keep the same board service sales line record.
+        """
+        Check when adding a night to a reservation with board services room,
+        after creating it and this board service has the same price, cancel
+        and cancel discount values, the sale lines that were created with the
+        reservation are kept.
+        ---------
+        Create a reservation of 2 nights for a double room with a board service.
+        The value of the sale lines of that board services is stored in a variable.
+        Then one more night is added to the reservation and it is verified that
+        the sale lines are the same as the value of the previously saved variable.
+        """
 
         # ARRANGE
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -660,7 +619,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
         previous_folio_board_service_sale_line = r_test.folio_id.sale_line_ids.filtered(
@@ -681,41 +640,19 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_board_services_decrease_stay(self):
-        # TEST CASE
-        # 2-night reservation decreases 1 night with the same price,
-        # discount & cancel_discount for all the board services
-        # Should keep the same board service sales line record.
+        """
+        Check when removing a night to a reservation with board services room,
+        after creating it and this board service has the same price, cancel
+        and cancel discount values, the sale lines that were created with the
+        reservation are kept.
+        ---------
+        Create a reservation of 2 nights for a double room with a board service.
+        The value of the sale lines of that board services is stored in a variable.
+        Then one night is removed to the reservation and it is verified that
+        the sale lines are the same as the value of the previously saved variable.
+        """
 
         # ARRANGE
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
-
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -724,7 +661,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
 
@@ -746,42 +683,19 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_board_services_same_stay(self):
-        # TEST CASE
-        # Price is changed for all board services of a 2-night reservation.
-        # But price, discount & cancel discount after the change is the same
-        #   for all nights.
-        # Should keep the same board service sales line record.
-
+        """
+        Check that when changing the price of all board services in a
+        reservation, which before the change had the same price, discount
+        and cancel discount values, the same sale lines that existed before
+        the change are kept.
+        ------------------
+        Create a reservation of 2 nights for a double room with a board service
+        price of 8.0. The value of the sale lines of the board services is stored
+        in a variable. Then the value of the price of all the reservation board services
+        is changed to 50 and it is verified that the reservation sale lines are equal to
+        the value of the previously saved variable.
+        """
         # ARRANGE
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-            }
-        )
-
-        board_service_test = self.board_service = self.env["pms.board.service"].create(
-            {
-                "name": "Test Board Service",
-                "default_code": "TPS",
-            }
-        )
-
-        self.env["pms.board.service.line"].create(
-            {
-                "pms_board_service_id": board_service_test.id,
-                "product_id": product_test1.id,
-                "amount": 8,
-            }
-        )
-
-        board_service_room_type = self.env["pms.board.service.room.type"].create(
-            {
-                "pms_room_type_id": self.room_type_double.id,
-                "pms_board_service_id": board_service_test.id,
-            }
-        )
-
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -790,7 +704,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
                 "partner_id": self.env.ref("base.res_partner_12").id,
-                "board_service_room_id": board_service_room_type.id,
+                "board_service_room_id": self.board_service_room_type.id,
             }
         )
 
@@ -815,21 +729,17 @@ class TestPmsFolioSaleLine(TestPms):
 
     # RESERVATION EXTRA DAILY SERVICES
     def test_comp_fsl_res_extra_services_all_same_group(self):
-        # TEST CASE
-        # 2-night reservation and same price, discount & cancel_discount for
-        # all reservation services
-        # should generate just 1 reservation service sale line
-
+        """
+        Check that when adding a service that is not a board service to a
+        reservation with the same price, cancel and cancel discount, the
+        number of sales lines is kept.
+        ------------------
+        Create a 2 night reservation. Then a service is added with
+        is_board_service = False and it is verified that the length of
+        the sale lines of the reservation is 1.
+        """
         # ARRANGE
         expected_extra_service_sale_lines = 1
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -840,15 +750,8 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-
         # ACT
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
 
         # ASSERT
@@ -856,7 +759,7 @@ class TestPmsFolioSaleLine(TestPms):
             expected_extra_service_sale_lines,
             len(
                 r_test.folio_id.sale_line_ids.filtered(
-                    lambda x: x.service_id == extra_service
+                    lambda x: x.service_id == self.extra_service
                 )
             ),
             "Folio should contain {} reservation service sale lines".format(
@@ -865,20 +768,19 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_res_extra_services_different_prices(self):
-        # TEST CASE
-        # 2-night reservation and different price per day on services
-        # should generate just 1 reservation service sale line
+        """
+        Check that a reservation of several nights and with different
+        prices per day on services should generate several sale lines.
+        -----------------
+        Create a reservation for 2 nights. Then add a service to this
+        reservation and the price of the first service line is changed
+        to 44.5. It is verified that the length of the reservation's sale
+        lines is equal to 2, because there are two different prices per day
+        for service lines.
+        """
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -889,13 +791,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
 
         # ACT
@@ -907,7 +803,7 @@ class TestPmsFolioSaleLine(TestPms):
             expected_extra_service_sale_lines,
             len(
                 r_test.folio_id.sale_line_ids.filtered(
-                    lambda x: x.service_id == extra_service
+                    lambda x: x.service_id == self.extra_service
                 )
             ),
             "Folio should contain {} reservation service sale lines".format(
@@ -916,20 +812,19 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_res_extra_services_different_discount(self):
-        # TEST CASE
-        # 2-night reservation and different discount per day on reservation services
-        # should generate 2 reservation service sale lines
+        """
+        Check that a reservation of several nights and with different
+        discount per day on services should generate several sale lines.
+        -----------------
+        Create a reservation for 2 nights. Then add a service to this
+        reservation and the discount of the first service line is changed
+        to 44.5. It is verified that the length of the reservation's sale
+        lines is equal to 2, because there are two different discounts per day
+        for service lines.
+        """
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -940,13 +835,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
 
         # ACT
@@ -958,7 +847,7 @@ class TestPmsFolioSaleLine(TestPms):
             expected_extra_service_sale_lines,
             len(
                 r_test.folio_id.sale_line_ids.filtered(
-                    lambda x: x.service_id == extra_service
+                    lambda x: x.service_id == self.extra_service
                 )
             ),
             "Folio should contain {} reservation service sale lines".format(
@@ -967,21 +856,20 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_res_extra_services_different_cancel_discount(self):
-        # TEST CASE
-        # 2-night reservation and different cancel discount per day on
-        #   reservation services
-        # should generate 2 reservation service sale lines
+        """
+        Check that a reservation of several nights and with different
+        cancel discount per day on services should generate several sale
+        lines.
+        -----------------
+        Create a reservation for 2 nights. Then add a service to this
+        reservation and the cancel discount of the first service line is changed
+        to 44.5. It is verified that the length of the reservation's sale
+        lines is equal to 2, because there are two different cancel discounts per
+        day for service lines.
+        """
 
         # ARRANGE
         expected_extra_service_sale_lines = 2
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -992,13 +880,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
 
         # ACT
@@ -1010,7 +892,7 @@ class TestPmsFolioSaleLine(TestPms):
             expected_extra_service_sale_lines,
             len(
                 r_test.folio_id.sale_line_ids.filtered(
-                    lambda x: x.service_id == extra_service
+                    lambda x: x.service_id == self.extra_service
                 )
             ),
             "Folio should contain {} reservation service sale lines".format(
@@ -1019,22 +901,18 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_res_extra_services_one_full_cancel_discount(self):
-        # TEST CASE
-        # 2-night reservation with 100% cancelled discount for 1 reservation
-        #   service
-        # should generate just 1 reservation service sale line because the
-        #   full cancel discount shouldn't be present @ invoice lines
+        """
+        Check that a reservation of several nights and with a 100% cancel
+        discount for a service should generate only 1 sale line.
+        -----------------
+        Create a reservation for 2 nights. Then add a service to this
+        reservation and the cancel discount of the first service line is changed
+        to 100%. It is verified that the length of the reservation sale
+        lines is equal to 1.
+        """
 
         # ARRANGE
         expected_extra_service_sale_lines = 1
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -1045,13 +923,7 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
 
         # ACT
@@ -1063,7 +935,7 @@ class TestPmsFolioSaleLine(TestPms):
             expected_extra_service_sale_lines,
             len(
                 r_test.folio_id.sale_line_ids.filtered(
-                    lambda x: x.service_id == extra_service
+                    lambda x: x.service_id == self.extra_service
                 )
             ),
             "Folio should contain {} reservation service sale lines".format(
@@ -1072,20 +944,19 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_res_extra_services_increase_stay(self):
-        # TEST CASE
-        # 2-night reservation increases 1 night with the same price,
-        # discount & cancel_discount for all the reservation services
-        # Should keep the same reservation service sales line record.
+        """
+        Check when adding a night to a reservation after creating it and this services
+        has the same price, cancel and cancel discount values, the sales line that
+        were created with the reservation are maintained.
+        ---------
+        Create a reservation of 2 nights for a double room and add a service to this
+        reservation. The value of the sale lines of that reservation services is stored
+        in a variable. Then one more night is added to the reservation and it is verified
+        that the reservation service sale lines are the same as the value of the previously
+        saved variable.
+        """
 
         # ARRANGE
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -1096,16 +967,10 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
         previous_folio_extra_service_sale_line = r_test.folio_id.sale_line_ids.filtered(
-            lambda x: x.service_id == extra_service
+            lambda x: x.service_id == self.extra_service
         )[0]
 
         # ACT
@@ -1116,27 +981,25 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             previous_folio_extra_service_sale_line,
             r_test.folio_id.sale_line_ids.filtered(
-                lambda x: x.service_id == extra_service
+                lambda x: x.service_id == self.extra_service
             ),
             "Previous records of reservation service sales lines should not be "
             "deleted if it is not necessary",
         )
 
     def test_comp_fsl_res_extra_services_decrease_stay(self):
-        # TEST CASE
-        # 2-night reservation decreases 1 night with the same price,
-        # discount & cancel_discount for all the reservation services
-        # Should keep the same reservation service sales line record.
-
+        """
+        Check when removing a night to a reservation after creating it and this services
+        has the same price, cancel and cancel discount values, the sales line that
+        were created with the reservation are maintained.
+        ---------
+        Create a reservation of 2 nights for a double room and add a service to this
+        reservation. The value of the sale lines of the services is stored
+        in a variable. Then one night is removed to the reservation and it is verified
+        that the reservation service sale lines are the same as the value of the previously
+        saved variable.
+        """
         # ARRANGE
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -1147,16 +1010,10 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
         previous_folio_extra_service_sale_line = r_test.folio_id.sale_line_ids.filtered(
-            lambda x: x.service_id == extra_service
+            lambda x: x.service_id == self.extra_service
         )[0]
 
         # ACT
@@ -1167,7 +1024,7 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             previous_folio_extra_service_sale_line,
             r_test.folio_id.sale_line_ids.filtered(
-                lambda x: x.service_id == extra_service
+                lambda x: x.service_id == self.extra_service
             ),
             "Previous records of reservation service sales lines should not be "
             "deleted if it is not necessary",
@@ -1179,16 +1036,20 @@ class TestPmsFolioSaleLine(TestPms):
         # But price, discount & cancel discount after the change is the same
         #   for all nights.
         # Should keep the same reservation service sales line record.
+        """
+        Check that when changing the price of all services in a
+        reservation, which before the change had the same price, discount
+        and cancel discount values, the same sale lines that existed before
+        the change are kept.
+        ------------------
+        Create a reservation of 2 nights for a double room and add a service to this
+        reservation. The value of the sale lines of the services is stored
+        in a variable. Then the value of the price of all the reservation services
+        is changed to 50 and it is verified that the reservation service sale lines
+        are equal to the value of the previously saved variable.
+        """
 
         # ARRANGE
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-                "per_day": True,
-                "consumed_on": "after",
-                # REVIEW 'before' -> create pms.service.line with price 0.0
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -1199,21 +1060,15 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
-        r_test.service_ids = [(4, extra_service.id)]
+        r_test.service_ids = [(4, self.extra_service.id)]
         r_test.service_ids.service_line_ids.flush()
         previous_folio_extra_service_sale_line = r_test.folio_id.sale_line_ids.filtered(
-            lambda x: x.service_id == extra_service
+            lambda x: x.service_id == self.extra_service
         )[0]
 
         # ACT
         r_test.service_ids.filtered(
-            lambda x: x.id == extra_service.id
+            lambda x: x.id == self.extra_service.id
         ).service_line_ids.price_unit = 50
         r_test.service_ids.service_line_ids.flush()
 
@@ -1221,7 +1076,7 @@ class TestPmsFolioSaleLine(TestPms):
         self.assertEqual(
             previous_folio_extra_service_sale_line,
             r_test.folio_id.sale_line_ids.filtered(
-                lambda x: x.service_id == extra_service
+                lambda x: x.service_id == self.extra_service
             ),
             "Previous records of reservation service sales lines should not be "
             "deleted if it is not necessary",
@@ -1232,14 +1087,17 @@ class TestPmsFolioSaleLine(TestPms):
         # TEST CASE
         # Folio with extra services
         # should generate 1 folio service sale line
-
+        """
+        Check that when adding a service that is not a board service to a
+        folio with the same price, cancel and cancel discount, the number
+        of sales lines is kept.
+        ------------------
+        Create a 2 night reservation. Then a service is added with
+        is_board_service = False and it is verified that the length of
+        the sale lines of the folio is 1.
+        """
         # ARRANGE
         expected_folio_service_sale_lines = 1
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
         r_test = self.env["pms.reservation"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -1250,15 +1108,9 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
 
         # ACT
-        r_test.folio_id.service_ids = [(4, extra_service.id)]
+        r_test.folio_id.service_ids = [(4, self.extra_service.id)]
         r_test.folio_id.service_ids.service_line_ids.flush()
 
         # ASSERT
@@ -1266,7 +1118,7 @@ class TestPmsFolioSaleLine(TestPms):
             expected_folio_service_sale_lines,
             len(
                 r_test.folio_id.sale_line_ids.filtered(
-                    lambda x: x.service_id == extra_service
+                    lambda x: x.service_id == self.extra_service
                 )
             ),
             "Folio should contain {} folio service sale lines".format(
@@ -1275,17 +1127,17 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     def test_comp_fsl_fol_extra_services_two(self):
-        # TEST CASE
-        # Folio with 2 extra services (but the same product)
-        # Should generate 2 folio service sale line
+        """
+        Check that when adding several services to a folio,
+        several sale lines should be generated on the folio.
+        -----------------
+        Create a 2 night reservation. Two services are added
+        to the reservation and it is verified that the length
+        of the folio sale lines is equal to 2.
+        """
 
         # ARRANGE
         expected_folio_service_sale_lines = 2
-        product_test1 = self.env["product.product"].create(
-            {
-                "name": "Test Product 1",
-            }
-        )
         product_test2 = self.env["product.product"].create(
             {
                 "name": "Test Product 1",
@@ -1302,12 +1154,6 @@ class TestPmsFolioSaleLine(TestPms):
                 "partner_id": self.env.ref("base.res_partner_12").id,
             }
         )
-        extra_service1 = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_test1.id,
-            }
-        )
 
         extra_service2 = self.env["pms.service"].create(
             {
@@ -1317,7 +1163,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
         # ACT
-        r_test.folio_id.service_ids = [(4, extra_service1.id)]
+        r_test.folio_id.service_ids = [(4, self.extra_service.id)]
         r_test.folio_id.service_ids = [(4, extra_service2.id)]
         r_test.folio_id.service_ids.service_line_ids.flush()
 
