@@ -405,6 +405,12 @@
                                 widget="monetary"
                                 options="{'currency_field': 'currency_id'}"
                             />
+                            <field
+                                name="services_discount"
+                                string="Discount Services"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
                             <field name="price_subtotal" invisible="1" />
                             <div
                                 class="oe_subtotal_footer_separator oe_inline o_td_label"
@@ -542,6 +548,7 @@
                                         <field name="tax_ids" widget="many2many_tags" />
                                         <field name="price_subtotal" />
                                         <field name="price_tax" />
+                                        <field name="discount" />
                                         <field name="price_total" />
                                         <field name="service_line_ids" invisible="1">
                                             <tree string="Days">

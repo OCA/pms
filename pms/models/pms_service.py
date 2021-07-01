@@ -168,7 +168,7 @@ class PmsService(models.Model):
     )
     price_total = fields.Monetary(
         string="Total",
-        help="Total price without taxes",
+        help="Total price with taxes",
         readonly=True,
         store=True,
         compute="_compute_amount_service",
@@ -179,6 +179,16 @@ class PmsService(models.Model):
         readonly=True,
         store=True,
         compute="_compute_amount_service",
+    )
+
+    discount = fields.Float(
+        string="Discount (€)",
+        help="Discount of total price",
+        readonly=False,
+        store=True,
+        digits=("Discount"),
+        compute="_compute_discount",
+        tracking=True,
     )
 
     # Compute and Search methods
@@ -380,7 +390,16 @@ class PmsService(models.Model):
             else:
                 service.service_line_ids = False
 
-        # Default methods
+    @api.depends("service_line_ids.cancel_discount")
+    def _compute_discount(self):
+        for record in self:
+            discount = 0
+            for line in record.service_line_ids:
+                first_discount = line.price_day_total * ((line.discount or 0.0) * 0.01)
+                price = line.price_day_total - first_discount
+                cancel_discount = price * ((line.cancel_discount or 0.0) * 0.01)
+                discount += first_discount + cancel_discount
+            record.discount = discount
 
     def name_get(self):
         result = []
