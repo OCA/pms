@@ -1212,20 +1212,20 @@ class PmsReservation(models.Model):
             else:
                 record.shared_folio = False
 
-    @api.depends("partner_id", "partner_id.name", "folio_id.partner_name")
+    @api.depends("partner_id", "partner_id.name")
     def _compute_partner_name(self):
         for record in self:
-            self.folio_id._apply_partner_name(record)
+            self.env["pms.folio"]._apply_partner_name(record)
 
     @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
         for record in self:
-            self.folio_id._apply_email(record)
+            self.env["pms.folio"]._apply_email(record)
 
     @api.depends("partner_id", "partner_id.mobile")
     def _compute_mobile(self):
         for record in self:
-            self.folio_id._apply_mobile(record)
+            self.env["pms.folio"]._apply_mobile(record)
 
     @api.depends(
         "partner_name",
