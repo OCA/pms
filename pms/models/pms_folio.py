@@ -639,10 +639,6 @@ class PmsFolio(models.Model):
         for folio in self:
             if folio.agency_id and folio.agency_id.invoice_to_agency:
                 folio.partner_id = folio.agency_id.id
-            elif folio.agency_id and not folio.partner_name:
-                # if the customer not is the agency but we dont know the customer's name,
-                # set the name provisional
-                folio.partner_name = _("Reservation from ") + folio.agency_id.name
             elif not folio.partner_id:
                 folio.partner_id = False
 
@@ -765,53 +761,20 @@ class PmsFolio(models.Model):
             else:
                 order.invoice_status = "no"
 
-    @api.depends("partner_id", "partner_id.name", "reservation_ids.partner_name")
+    @api.depends("partner_id", "partner_id.name")
     def _compute_partner_name(self):
         for record in self:
-            if record.partner_id and not record.partner_name:
-                record.partner_name = record.partner_id.name
-            # if there is only one customer name in the folio reservations
-            # we update the partner name of the folio when the partner name of
-            # the reservations is modified
-            elif (
-                len(record.reservation_ids.mapped("partner_name")) == 1
-                and not record.partner_name
-            ):
-                record.partner_name = record.reservation_ids[0].partner_name
-            elif not record.partner_name:
-                record.partner_name = False
+            self._apply_partner_name(record)
 
-    @api.depends("partner_id", "partner_id.email", "reservation_ids.partner_email")
+    @api.depends("partner_id", "partner_id.email")
     def _compute_email(self):
         for record in self:
-            if record.partner_id and not record.email:
-                record.email = record.partner_id.email
-            # if there is only one customer email in the folio reservations
-            # we update the partner email of the folio when the partner email of
-            # the reservations is modified
-            elif (
-                len(record.reservation_ids.mapped("partner_email")) == 1
-                and not record.email
-            ):
-                record.email = record.reservation_ids[0].partner_email
-            elif not record.email:
-                record.email = False
+            self._apply_email(record)
 
-    @api.depends("partner_id", "partner_id.mobile", "reservation_ids.partner_mobile")
+    @api.depends("partner_id", "partner_id.mobile")
     def _compute_mobile(self):
         for record in self:
-            if record.partner_id and not record.mobile:
-                record.mobile = record.partner_id.mobile
-            # if there is only one customer mobile in the folio reservations
-            # we update the partner mobile of the folio when the partner mobile of
-            # the reservations is modified
-            elif (
-                len(record.reservation_ids.mapped("partner_mobile")) == 1
-                and not record.mobile
-            ):
-                record.mobile = record.reservation_ids[0].partner_mobile
-            elif not record.mobile:
-                record.mobile = False
+            self._apply_mobile(record)
 
     @api.depends(
         "partner_name",
@@ -1706,3 +1669,32 @@ class PmsFolio(models.Model):
             discount_factor = discount_factor * ((100.0 - discount) / 100.0)
         final_discount = 100.0 - (discount_factor * 100.0)
         return final_discount
+
+    @api.model
+    def _apply_partner_name(self, record):
+        if record.partner_id and not record.partner_name:
+            record.partner_name = record.partner_id.name
+        elif (
+            record.agency_id
+            and not record.agency_id.invoice_to_agency
+            and not record.partner_name
+        ):
+            # if the customer not is the agency but we dont know the customer's name,
+            # set the name provisional
+            record.partner_name = _("Reservation from ") + record.agency_id.name
+        elif not record.partner_name:
+            record.partner_name = False
+
+    @api.model
+    def _apply_mobile(self, record):
+        if record.partner_id and not record.mobile:
+            record.mobile = record.partner_id.mobile
+        elif not record.mobile:
+            record.mobile = False
+
+    @api.model
+    def _apply_email(self, record):
+        if record.partner_id and not record.email:
+            record.email = record.partner_id.email
+        elif not record.email:
+            record.email = False
