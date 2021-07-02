@@ -2098,13 +2098,13 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__email
-#: model:ir.model.fields,help:pms.field_pms_reservation__partner_email
+#: model:ir.model.fields,help:pms.field_pms_reservation__email
 msgid "Customer E-mail"
 msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__mobile
-#: model:ir.model.fields,help:pms.field_pms_reservation__partner_mobile
+#: model:ir.model.fields,help:pms.field_pms_reservation__mobile
 msgid "Customer Mobile"
 msgstr ""
 
@@ -2676,7 +2676,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__email
 #: model:ir.model.fields,field_description:pms.field_pms_folio__email
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_email
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__email
 msgid "E-mail"
 msgstr ""
 
@@ -4644,7 +4644,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_folio__mobile
 #: model:ir.model.fields,field_description:pms.field_pms_property__mobile
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_mobile
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__mobile
 #: model:ir.model.fields,field_description:pms.field_res_partner__mobile
 #: model:ir.model.fields,field_description:pms.field_res_users__mobile
 msgid "Mobile"
