@@ -1,40 +1,27 @@
 import datetime
 
-from freezegun import freeze_time
-
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tests import common
+
+from .common import TestPms
 
 
-@freeze_time("1980-01-01")
-class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
-    def create_common_scenario(self):
-        self.test_pricelist2 = self.env["product.pricelist"].create(
-            {
-                "name": "test pricelist 2",
-            }
-        )
-        self.test_property1 = self.env["pms.property"].create(
-            {
-                "name": "Property 1",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist2.id,
-            }
-        )
-        self.test_property2 = self.env["pms.property"].create(
+class TestPmsRoomTypeAvailabilityRules(TestPms):
+    def setUp(self):
+        super().setUp()
+        self.pms_property2 = self.env["pms.property"].create(
             {
                 "name": "Property 2",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist2.id,
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
             }
         )
-        self.test_pricelist1 = self.env["product.pricelist"].create(
+        self.pricelist2 = self.env["product.pricelist"].create(
             {
                 "name": "test pricelist 1",
                 "pms_property_ids": [
-                    (4, self.test_property1.id),
-                    (4, self.test_property2.id),
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property2.id),
                 ],
             }
         )
@@ -43,43 +30,15 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         self.test_room_type_availability1 = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
-            }
-        )
-        # SEQUENCES
-        self.folio_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Folio",
-                "code": "pms.folio",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.reservation_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Reservation",
-                "code": "pms.reservation",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.checkin_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Checkin",
-                "code": "pms.checkin.partner",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
+                "pms_pricelist_ids": [(6, 0, [self.pricelist2.id])],
             }
         )
         # pms.property
-        self.test_property = self.env["pms.property"].create(
+        self.pms_property3 = self.env["pms.property"].create(
             {
                 "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist1.id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist2.id,
             }
         )
         # pms.room.type.class
@@ -90,7 +49,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         # pms.room.type
         self.test_room_type_single = self.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.test_property.id],
+                "pms_property_ids": [self.pms_property3.id],
                 "name": "Single Test",
                 "default_code": "SNG_Test",
                 "class_id": self.test_room_type_class.id,
@@ -100,7 +59,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         self.test_room_type_double = self.env["pms.room.type"].create(
             {
                 "pms_property_ids": [
-                    (4, self.test_property.id),
+                    (4, self.pms_property3.id),
                 ],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
@@ -110,7 +69,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         # pms.room
         self.test_room1_double = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
                 "name": "Double 201 test",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
@@ -119,34 +78,15 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         # pms.room
         self.test_room2_double = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
                 "name": "Double 202 test",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
             }
         )
-        # pms.room
-        # self.test_room3_double = self.env["pms.room"].create(
-        #     {
-        #         "pms_property_id": self.test_property.id,
-        #         "name": "Double 203 test",
-        #         "room_type_id": self.test_room_type_double.id,
-        #         "capacity": 2,
-        #     }
-        # )
-        # # pms.room
-        # self.test_room4_double = self.env["pms.room"].create(
-        #     {
-        #         "pms_property_id": self.test_property.id,
-        #         "name": "Double 204 test",
-        #         "room_type_id": self.test_room_type_double.id,
-        #         "capacity": 2,
-        #     }
-        # )
-        # pms.room
         self.test_room1_single = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
                 "name": "Single 101 test",
                 "room_type_id": self.test_room_type_single.id,
                 "capacity": 1,
@@ -155,7 +95,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         # pms.room
         self.test_room2_single = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
                 "name": "Single 102 test",
                 "room_type_id": self.test_room_type_single.id,
                 "capacity": 1,
@@ -165,41 +105,42 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         self.partner1 = self.env["res.partner"].create({"name": "Charles"})
 
     def create_scenario_multiproperty(self):
-        self.create_common_scenario()
-        self.test_property3 = self.env["pms.property"].create(
+        self.pms_property4 = self.env["pms.property"].create(
             {
                 "name": "Property 3",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist2.id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
+                "company_id": self.company1.id,
+                "default_pricelist_id": self.pricelist1.id,
             }
         )
         self.availability_multiproperty = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
+                "pms_pricelist_ids": [(6, 0, [self.pricelist2.id])],
                 "pms_property_ids": [
-                    (4, self.test_property1.id),
-                    (4, self.test_property2.id),
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property2.id),
                 ],
             }
         )
 
     def test_availability_rooms_all(self):
-        # TEST CASE
-        # get availability withouth rules
+        """
+        Check the availability of rooms in a property with an availability plan without
+        availability rules.
+        ---------------------
+        The checkin and checkout dates on which the availability will be checked are saved
+        in a variable and in another all the rooms of the property are also saved. Then the
+        rooms_available() method is launched which should return the number of available rooms
+        of the property and they are saved in another variable with which it is verified that
+        all the rooms have been returned because there are no availability rules for that plan.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
-
         checkin = fields.date.today()
         checkout = (fields.datetime.today() + datetime.timedelta(days=4)).date()
         test_rooms_double_rooms = self.env["pms.room"].search(
-            [("pms_property_id", "=", self.test_property.id)]
+            [("pms_property_id", "=", self.pms_property3.id)]
         )
-
         # ACT
         result = self.env["pms.availability.plan"].rooms_available(
             checkin=checkin,
@@ -214,20 +155,29 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         )
 
     def test_availability_rooms_all_lines(self):
-        # TEST CASE
-        # get availability withouth rules
-        # given reservation lines to not consider
+        """
+        Check the availability of rooms in a property with an availability plan without
+        availability rules and passing it the reservation lines of a reservation for that
+        property.
+        -----------------
+        The checkin and checkout dates on which the availability will be checked are saved
+        in a variable and in another all the rooms of the property are also saved. Then create
+        a reservation for this property and the rooms_available() method is launched with the
+        parameters checkin, checkout and the reservation lines of the reservation as a curent
+        lines, this method should return the number of available rooms of the property. Then the
+        result is saved in another variable with which it is verified that all the rooms have
+        been returned because there are no availability rules for that plan.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
         checkin = fields.date.today()
         checkout = (fields.datetime.today() + datetime.timedelta(days=4)).date()
         test_rooms_double_rooms = self.env["pms.room"].search(
-            [("pms_property_id", "=", self.test_property.id)]
+            [("pms_property_id", "=", self.pms_property3.id)]
         )
         test_reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
                 "checkin": checkin,
                 "checkout": checkout,
                 "partner_id": self.partner1.id,
@@ -249,19 +199,22 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         )
 
     def test_availability_rooms_room_type(self):
-        # TEST CASE
-        # get availability withouth rules
-        # given a room type
+        """
+        Check the availability of a room type for a property.
+        ----------------
+        Double rooms of a property are saved in a variable. The rooms_available() method
+        is launched giving as parameters checkin, checkout and the type of room (in this
+        case double). Then with the all () function we check that all rooms of this type
+        were returned.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
         test_rooms_double_rooms = self.env["pms.room"].search(
             [
-                ("pms_property_id", "=", self.test_property.id),
+                ("pms_property_id", "=", self.pms_property3.id),
                 ("room_type_id", "=", self.test_room_type_double.id),
             ]
         )
-
         # ACT
         result = self.env["pms.availability.plan"].rooms_available(
             checkin=fields.date.today(),
@@ -278,14 +231,18 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         )
 
     def test_availability_closed_no_room_type(self):
-        # TEST CASE:
-        # coverage for 2 points:
-        # 1. without room type, availability rules associated
-        #                      with the pricelist are applied
-        # 2. availability rule "closed" is taken into account
-
+        """
+        Check that rooms of a type with an availability rule with closed = True are
+        not available on the dates marked in the date field of the availability rule.
+        --------------------
+        Create an availability rule for double rooms with the field closed = true
+        and the date from today until tomorrow. Then the availability is saved in a
+        variable through the rooms_available() method, passing it the pricelist that
+        it contains the availability plan where the rule is included, and the checkin
+        and checkout dates are between the date of the rule. Then it is verified that
+        the double rooms are not available.
+        """
         # ARRANGE
-        self.create_common_scenario()
         self.test_room_type_availability_rule1 = self.env[
             "pms.availability.plan.rule"
         ].create(
@@ -294,7 +251,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,  # <- (1/2)
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
             }
         )
         # ACT
@@ -302,7 +259,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             # room_type_id=False, # <-  (2/2)
-            pricelist_id=self.test_pricelist1.id,
+            pricelist_id=self.pricelist2.id,
         )
         # ASSERT
         self.assertNotIn(
@@ -313,13 +270,25 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         )
 
     def test_availability_rules(self):
-        # TEST CASE
-        # the availability should take into acount availability rules:
-        # closed_arrival, closed_departure, min_stay, max_stay,
-        # min_stay_arrival, max_stay_arrival
+        """
+        Check through subtests that the availability rules are applied
+        for a specific room type.
+        ----------------
+        Test cases:
+        1. closed_arrival = True
+        2. closed_departure = True
+        3. min_stay = 5
+        4. max_stay = 2
+        5. min_stay_arrival = 5
+        6. max_stay_arrival = 3
+        7. quota = 0
+        8. max_avail = 0
+        For each test case, it is verified through the rooms_available() method,
+        that double rooms are not available since the rules are applied to this
+        room type.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
 
         self.test_room_type_availability_rule1 = self.env[
             "pms.availability.plan.rule"
@@ -327,8 +296,8 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
             {
                 "availability_plan_id": self.test_room_type_availability1.id,
                 "room_type_id": self.test_room_type_double.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=0)).date(),
-                "pms_property_id": self.test_property.id,
+                "date": fields.date.today(),
+                "pms_property_id": self.pms_property3.id,
             }
         )
 
@@ -444,7 +413,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                     checkin=checkin,
                     checkout=checkout,
                     room_type_id=self.test_room_type_double.id,
-                    pricelist_id=self.test_pricelist1.id,
+                    pricelist_id=self.pricelist2.id,
                 )
 
                 # ASSERT
@@ -455,14 +424,18 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                     "which its availability rules applies",
                 )
 
-    @freeze_time("1980-11-01")
     def test_rule_on_create_reservation(self):
-        # TEST CASE
-        # an availability rule should be applied that would prevent the
-        # creation of reservations
+        """
+        Check that a reservation is not created when an availability rule prevents it .
+        -------------------
+        Create an availability rule for double rooms with the
+        field closed = True and the date from today until tomorrow. Then try to create
+        a reservation for that type of room with a checkin date today and a checkout
+        date within 4 days. This should throw a ValidationError since the rule does
+        not allow creating reservations for those dates.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
         self.test_room_type_availability_rule1 = self.env[
             "pms.availability.plan.rule"
         ].create(
@@ -471,7 +444,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 "room_type_id": self.test_room_type_double.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
             }
         )
         checkin = datetime.datetime.now()
@@ -485,89 +458,24 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         ):
             self.env["pms.reservation"].create(
                 {
-                    "pms_property_id": self.test_property.id,
+                    "pms_property_id": self.pms_property3.id,
                     "checkin": checkin,
                     "checkout": checkout,
                     "adults": 2,
                     "room_type_id": self.test_room_type_double.id,
-                    "pricelist_id": self.test_pricelist1.id,
+                    "pricelist_id": self.pricelist2.id,
                     "partner_id": self.partner1.id,
                 }
             )
 
-    @freeze_time("1980-11-01")
-    def test_rules_on_create_splitted_reservation(self):
-        # TEST CASE
-        # an availability rule should be applied that would prevent the
-        # creation of reservations including splitted reservations.
-
-        # ARRANGE
-        self.create_common_scenario()
-        self.test_room_type_availability_rule1 = self.env[
-            "pms.availability.plan.rule"
-        ].create(
-            {
-                "availability_plan_id": self.test_room_type_availability1.id,
-                "room_type_id": self.test_room_type_double.id,
-                "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
-                "closed": True,
-                "pms_property_id": self.test_property.id,
-            }
-        )
-
-        checkin_test = datetime.datetime.now()
-        checkout_test = datetime.datetime.now() + datetime.timedelta(days=4)
-
-        self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.test_property.id,
-                "checkin": datetime.datetime.now(),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
-                "adults": 2,
-                "room_type_id": self.test_room_type_double.id,
-                "preferred_room_id": self.test_room1_double.id,
-                "partner_id": self.partner1.id,
-            }
-        )
-
-        self.env["pms.reservation"].create(
-            {
-                "pms_property_id": self.test_property.id,
-                "checkin": datetime.datetime.now() + datetime.timedelta(days=2),
-                "checkout": datetime.datetime.now() + datetime.timedelta(days=4),
-                "adults": 2,
-                "room_type_id": self.test_room_type_double.id,
-                "preferred_room_id": self.test_room2_double.id,
-                "partner_id": self.partner1.id,
-            }
-        )
-
-        # ACT & ASSERT
-        with self.assertRaises(
-            ValidationError,
-            msg="Availability rule should be applied that would"
-            " prevent the creation of splitted reservation.",
-        ):
-            self.env["pms.reservation"].create(
-                {
-                    "pms_property_id": self.test_property.id,
-                    "checkin": checkin_test,
-                    "checkout": checkout_test,
-                    "adults": 2,
-                    "room_type_id": self.test_room_type_double.id,
-                    "pricelist_id": self.test_pricelist1.id,
-                    "partner_id": self.partner1.id,
-                }
-            )
-
-    @freeze_time("1980-11-01")
     def test_rule_update_quota_on_create_reservation(self):
-        # TEST CASE
-        # quota rule is changed after creating a reservation
-        # with pricelist linked to a availability plan that applies
+        """
+        Check that the availability rule with quota = 1 for a room
+        type does not allow you to create more reservations than 1
+        for that room type.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
 
         self.test_room_type_availability_rule1 = self.env[
             "pms.availability.plan.rule"
@@ -577,22 +485,22 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": 1,
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
             }
         )
-        self.test_pricelist1.pms_property_ids = [
-            (4, self.test_property1.id),
-            (4, self.test_property2.id),
-            (4, self.test_property.id),
+        self.pricelist2.pms_property_ids = [
+            (4, self.pms_property1.id),
+            (4, self.pms_property2.id),
+            (4, self.pms_property3.id),
         ]
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
                 "checkin": datetime.date.today(),
                 "checkout": datetime.date.today() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
-                "pricelist_id": self.test_pricelist1.id,
+                "pricelist_id": self.pricelist2.id,
                 "partner_id": self.partner1.id,
             }
         )
@@ -603,36 +511,35 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         ):
             self.env["pms.reservation"].create(
                 {
-                    "pms_property_id": self.test_property.id,
+                    "pms_property_id": self.pms_property3.id,
                     "checkin": datetime.date.today(),
                     "checkout": datetime.date.today() + datetime.timedelta(days=1),
                     "adults": 2,
                     "room_type_id": self.test_room_type_double.id,
-                    "pricelist_id": self.test_pricelist1.id,
+                    "pricelist_id": self.pricelist2.id,
                     "partner_id": self.partner1.id,
                 }
             )
 
-    @freeze_time("1980-11-01")
     def test_rule_update_quota_on_update_reservation(self):
-        # TEST CASE
-        # quota rule is restored after creating a reservation
-        # with pricelist linked to a availability rule that applies
-        # and then modify the pricelist of the reservation and
-        # no rules applies
-
+        """
+        Checks that an availability rule is maintained if its pricelist is modified.
+        ---------------------
+        Quota rule is restored after creating a reservation with pricelist linked
+        to an availability rule that applies and then modify the pricelist of the
+        reservation and no rules applies
+        """
         # ARRANGE
-        self.create_common_scenario()
         test_quota = 2
         test_pricelist2 = self.env["product.pricelist"].create(
             {
                 "name": "test pricelist 2",
             }
         )
-        self.test_pricelist1.pms_property_ids = [
-            (4, self.test_property1.id),
-            (4, self.test_property2.id),
-            (4, self.test_property.id),
+        self.pricelist2.pms_property_ids = [
+            (4, self.pms_property1.id),
+            (4, self.pms_property2.id),
+            (4, self.pms_property3.id),
         ]
         rule = self.env["pms.availability.plan.rule"].create(
             {
@@ -640,17 +547,17 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 "room_type_id": self.test_room_type_double.id,
                 "date": datetime.date.today(),
                 "quota": test_quota,
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
             }
         )
         reservation = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property3.id,
                 "checkin": datetime.date.today(),
                 "checkout": datetime.date.today() + datetime.timedelta(days=1),
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
-                "pricelist_id": self.test_pricelist1.id,
+                "pricelist_id": self.pricelist2.id,
                 "partner_id": self.partner1.id,
             }
         )
@@ -665,19 +572,20 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         )
 
     def test_availability_closed_no_room_type_check_property(self):
-        # TEST CASE:
-        # check that availability rules are applied to the correct properties
-        # There are two properties:
-        # test_property   --> test_room_type_availability_rule1
-        # test_property2  --> test_room_type_availability_rule2
-
+        """
+        Check that availability rules are applied to the correct properties.
+        ----------
+        Check that for that date test_property1 doesnt have rooms available
+        (of that type:test_room_type_special),
+        instead, property2 has test_room_type_special available
+        """
         # ARRANGE
         self.create_scenario_multiproperty()
         self.test_room_type_special = self.env["pms.room.type"].create(
             {
                 "pms_property_ids": [
-                    (4, self.test_property1.id),
-                    (4, self.test_property2.id),
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property2.id),
                 ],
                 "name": "Special Room Test",
                 "default_code": "SP_Test",
@@ -686,7 +594,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         )
         self.test_room1 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property1.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 201 test",
                 "room_type_id": self.test_room_type_special.id,
                 "capacity": 2,
@@ -695,7 +603,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         # pms.room
         self.test_room2 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property2.id,
+                "pms_property_id": self.pms_property2.id,
                 "name": "Double 202 test",
                 "room_type_id": self.test_room_type_special.id,
                 "capacity": 2,
@@ -709,7 +617,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 "room_type_id": self.test_room_type_special.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
-                "pms_property_id": self.test_property1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         self.test_room_type_availability_rule2 = self.env[
@@ -719,16 +627,13 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 "availability_plan_id": self.availability_multiproperty.id,
                 "room_type_id": self.test_room_type_special.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
-                "pms_property_id": self.test_property2.id,
+                "pms_property_id": self.pms_property2.id,
             }
         )
 
-        # check that for that date test_property1 doesnt have rooms available
-        # (of that type:test_room_type_double),
-        # instead, property2 has test_room_type_double available
         properties = [
-            {"property": self.test_property1.id, "value": False},
-            {"property": self.test_property2.id, "value": True},
+            {"property": self.pms_property1.id, "value": False},
+            {"property": self.pms_property2.id, "value": True},
         ]
 
         for p in properties:
@@ -740,7 +645,7 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                         fields.datetime.today() + datetime.timedelta(days=2)
                     ).date(),
                     room_type_id=self.test_room_type_special.id,
-                    pricelist_id=self.test_pricelist1.id,
+                    pricelist_id=self.pricelist2.id,
                     pms_property_id=p["property"],
                 )
                 # ASSERT
@@ -749,17 +654,27 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 )
 
     def test_check_property_availability_room_type(self):
-        # TEST CASE:
-        # check integrity between availability properties and room_type properties
+        """
+        Check integrity between availability properties and room_type properties.
+        Test cases when creating a availability_rule:
+        Allowed properties:
+        Room Type(test_room_type_special)         --> pms_property1, pms_property_4
+        Availability Plan(availability_example)   --> pms_property1, pms_property2
 
+        Both cases throw an exception:
+        # 1:Rule for property2,
+        #    it is allowed in availability_plan but not in room_type
+        # 2:Rule for property4,
+        #    it is allowed in room_type, but not in availability_plan
+        """
         # ARRANGE
         self.create_scenario_multiproperty()
         # create new room_type
         self.test_room_type_special = self.env["pms.room.type"].create(
             {
                 "pms_property_ids": [
-                    (4, self.test_property1.id),
-                    (4, self.test_property3.id),
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property4.id),
                 ],
                 "name": "Special Room Test",
                 "default_code": "SP_Test",
@@ -770,10 +685,10 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
         self.availability_example = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.test_pricelist1.id])],
+                "pms_pricelist_ids": [(6, 0, [self.pricelist2.id])],
                 "pms_property_ids": [
-                    (4, self.test_property1.id),
-                    (4, self.test_property2.id),
+                    (4, self.pms_property1.id),
+                    (4, self.pms_property2.id),
                 ],
             }
         )
@@ -783,26 +698,16 @@ class TestPmsRoomTypeAvailabilityRules(common.SavepointCase):
                 "room_type_id": self.test_room_type_special.id,
                 "date": (fields.datetime.today() + datetime.timedelta(days=2)).date(),
                 "closed": True,
-                "pms_property_id": self.test_property1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        # Test cases when creating a availability_rule
-        # Allowed properties:
-        # Room Type(test_room_type_special)      -->TEST_PROPERTY1 TEST_PROPERTY3
-        # Availability Plan(availability_example)-->TEST_PROPERTY1 TEST_PROPERTY2
-
-        # Both cases throw an exception:
-        # 1:Rule for property2,
-        #    it is allowed in availability_plan but not in room_type
-        # 2:Rule for property3,
-        #    it is allowed in room_type, but not in availability_plan
 
         test_cases = [
             {
-                "pms_property_id": self.test_property2.id,
+                "pms_property_id": self.pms_property2.id,
             },
             {
-                "pms_property_id": self.test_property3.id,
+                "pms_property_id": self.pms_property4.id,
             },
         ]
         # ASSERT
