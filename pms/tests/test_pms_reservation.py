@@ -2569,3 +2569,425 @@ class TestPmsReservations(TestPms):
             "Reservation from " + agency.name,
             "Partner name doesn't match with to the expected",
         )
+
+    @freeze_time("2010-11-10")
+    def test_cancel_discount_board_service(self):
+        """
+        When a reservation is cancelled, service discount in case of board_services
+        must be equal to the discounts of each reservation_line.
+
+        """
+
+        # ARRANGE
+        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
+            {
+                "name": "Cancelation Rule Test",
+                "penalty_noshow": 50,
+                "apply_on_noshow": "all",
+            }
+        )
+
+        self.pricelist1.cancelation_rule_id = self.cancelation_rule.id
+
+        self.product = self.env["product.product"].create(
+            {
+                "name": "Product test",
+                "per_day": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service = self.env["pms.service"].create(
+            {
+                "is_board_service": True,
+                "product_id": self.product.id,
+            }
+        )
+
+        self.room_type_double.list_price = 25
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=-3),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "service_ids": [self.board_service.id],
+            }
+        )
+        # ACTION
+        reservation.action_cancel()
+        reservation.flush()
+
+        # ASSERT
+        self.assertEqual(
+            set(reservation.reservation_line_ids.mapped("cancel_discount")),
+            set(reservation.service_ids.service_line_ids.mapped("cancel_discount")),
+            "Cancel discount of reservation service lines must be the same "
+            "that reservation board services",
+        )
+
+    @freeze_time("2011-10-10")
+    def test_cancel_discount_reservation_line(self):
+        """
+        When a reservation is cancelled, cancellation discount is given
+        by the cancellation rule associated with the reservation pricelist.
+        Each reservation_line calculates depending on the cancellation
+        reason which is the correspondig discount. In this case the
+        cancellation reason is'noshow' and the rule specifies that 50% must
+        be reducted every day, that is, on each of reseravtion_lines
+        """
+        # ARRANGE
+        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
+            {
+                "name": "Cancelation Rule Test",
+                "penalty_noshow": 50,
+                "apply_on_noshow": "all",
+            }
+        )
+
+        self.pricelist1.cancelation_rule_id = self.cancelation_rule.id
+
+        self.room_type_double.list_price = 50
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=-3),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+            }
+        )
+
+        # ACTION
+        reservation.action_cancel()
+        reservation.flush()
+
+        # ASSERT
+        self.assertEqual(
+            set(reservation.reservation_line_ids.mapped("cancel_discount")),
+            {self.cancelation_rule.penalty_noshow},
+            "Cancel discount of reservation_lines must be equal than cancellation rule penalty",
+        )
+
+    @freeze_time("2011-11-11")
+    def test_cancel_discount_service(self):
+        """
+        When a reservation is cancelled, service discount in
+        services that are not board_services ALWAYS have to be 100%,
+        refardless of the cancellation rule associated with the pricelist
+        """
+        # ARRANGE
+        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
+            {
+                "name": "Cancelation Rule Test",
+                "penalty_noshow": 50,
+                "apply_on_noshow": "all",
+            }
+        )
+
+        self.pricelist1.cancelation_rule_id = self.cancelation_rule.id
+
+        self.product = self.env["product.product"].create(
+            {
+                "name": "Product test",
+                "per_day": True,
+                "consumed_on": "after",
+                "is_extra_bed": True,
+            }
+        )
+        self.service = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product.id,
+            }
+        )
+
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=-3),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "service_ids": [self.service.id],
+            }
+        )
+
+        expected_cancel_discount = 100
+
+        # ACTION
+        reservation.action_cancel()
+        reservation.flush()
+
+        # ASSERT
+        self.assertEqual(
+            {expected_cancel_discount},
+            set(reservation.service_ids.service_line_ids.mapped("cancel_discount")),
+            "Cancel discount of services must be 100%",
+        )
+
+    @freeze_time("2011-06-06")
+    def test_discount_in_service(self):
+        """
+        Discount in pms.service is calculated from the
+        discounts that each if its service lines has,
+        in this case when reservation is cancelled a
+        50% cancellation discount is applied and
+        there aren't other different discounts
+        """
+
+        # ARRANGE
+        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
+            {
+                "name": "Cancelation Rule Test",
+                "penalty_noshow": 50,
+                "apply_on_noshow": "all",
+            }
+        )
+
+        self.pricelist1.cancelation_rule_id = self.cancelation_rule.id
+
+        self.product = self.env["product.product"].create(
+            {
+                "name": "Product test",
+                "per_day": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service = self.env["pms.service"].create(
+            {
+                "is_board_service": True,
+                "product_id": self.product.id,
+            }
+        )
+
+        self.room_type_double.list_price = 25
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": fields.date.today() + datetime.timedelta(days=-3),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "service_ids": [self.board_service.id],
+            }
+        )
+
+        # ACTION
+        reservation.action_cancel()
+        reservation.flush()
+
+        expected_discount = sum(
+            sl.price_day_total * sl.cancel_discount / 100
+            for sl in self.board_service.service_line_ids
+        )
+        # ASSERT
+        self.assertEqual(
+            expected_discount,
+            self.board_service.discount,
+            "Service discount must be the sum of its services_lines discount",
+        )
+
+    @freeze_time("2011-11-11")
+    def test_services_discount_in_reservation(self):
+        """
+        Services discount in reservation is equal to the sum of the discounts of all
+        its services, whether they are board_services or not
+        """
+        # ARRANGE
+        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
+            {
+                "name": "Cancelation Rule Test",
+                "penalty_noshow": 50,
+                "apply_on_noshow": "all",
+            }
+        )
+
+        self.pricelist1.cancelation_rule_id = self.cancelation_rule.id
+
+        self.product1 = self.env["product.product"].create(
+            {
+                "name": "Product test1",
+                "per_day": True,
+                "consumed_on": "after",
+                "is_extra_bed": True,
+            }
+        )
+        self.service = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product1.id,
+            }
+        )
+        self.service.flush()
+        self.product2 = self.env["product.product"].create(
+            {
+                "name": "Product test 2",
+                "per_person": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service = self.env["pms.service"].create(
+            {
+                "is_board_service": True,
+                "product_id": self.product2.id,
+            }
+        )
+
+        self.room_type_double.list_price = 25
+        checkin = fields.date.today() + datetime.timedelta(days=-3)
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "service_ids": [self.service.id, self.board_service.id],
+            }
+        )
+
+        # ACTION
+        reservation.action_cancel()
+        reservation.flush()
+
+        expected_discount = sum(s.discount for s in reservation.service_ids)
+
+        # ASSERT
+        self.assertEqual(
+            expected_discount,
+            reservation.services_discount,
+            "Services discount isn't the expected",
+        )
+
+    @freeze_time("2011-12-12")
+    def test_price_services_in_reservation(self):
+        """
+        Service price total in a reservation corresponds to the sum of prices
+        of all its services less the total discount of that services
+        """
+        # ARRANGE
+        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
+            {
+                "name": "Cancelation Rule Test",
+                "penalty_noshow": 50,
+                "apply_on_noshow": "all",
+            }
+        )
+
+        self.pricelist1.cancelation_rule_id = self.cancelation_rule.id
+
+        self.product1 = self.env["product.product"].create(
+            {
+                "name": "Product test1",
+                "per_day": True,
+                "consumed_on": "after",
+                "is_extra_bed": True,
+            }
+        )
+        self.service = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product1.id,
+            }
+        )
+        self.service.flush()
+        self.product2 = self.env["product.product"].create(
+            {
+                "name": "Product test 2",
+                "per_person": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service = self.env["pms.service"].create(
+            {
+                "is_board_service": True,
+                "product_id": self.product2.id,
+            }
+        )
+
+        self.room_type_double.list_price = 25
+        checkin = fields.date.today() + datetime.timedelta(days=-3)
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "service_ids": [self.service.id, self.board_service.id],
+            }
+        )
+
+        # ACTION
+        reservation.action_cancel()
+        reservation.flush()
+        expected_price = (
+            self.service.price_total
+            + self.board_service.price_total * reservation.adults
+        ) - reservation.services_discount
+
+        # ASSERT
+        self.assertEqual(
+            expected_price,
+            reservation.price_services,
+            "Services price isn't the expected",
+        )
+
+    @freeze_time("2011-08-08")
+    def test_room_discount_in_reservation(self):
+        """
+        Discount in pms.reservation is calculated from the
+        discounts that each if its reservation lines has,
+        in this case when reservation is cancelled a 50%
+        cancellation discount is applied and
+        there aren't other different discounts
+        """
+        # ARRANGE
+        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
+            {
+                "name": "Cancelation Rule Test",
+                "penalty_noshow": 50,
+                "apply_on_noshow": "all",
+            }
+        )
+
+        self.pricelist1.cancelation_rule_id = self.cancelation_rule.id
+
+        self.room_type_double.list_price = 30
+        checkin = fields.date.today() + datetime.timedelta(days=-3)
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+            }
+        )
+
+        # ACTION
+        reservation.action_cancel()
+        reservation.flush()
+
+        expected_discount = sum(
+            rl.price * rl.cancel_discount / 100
+            for rl in reservation.reservation_line_ids
+        )
+
+        # ASSERT
+        self.assertEqual(
+            expected_discount,
+            reservation.discount,
+            "Room discount isn't the expected",
+        )
