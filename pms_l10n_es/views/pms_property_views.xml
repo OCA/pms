@@ -48,7 +48,6 @@
                     </div>
                     <div class="col-6">
                         <group>
-                            <field name="ine_rooms" />
                             <field name="ine_seats" />
                             <field name="ine_permanent_staff" />
                             <field name="ine_eventual_staff" />
