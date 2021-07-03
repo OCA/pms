@@ -188,7 +188,6 @@ class PmsService(models.Model):
         store=True,
         digits=("Discount"),
         compute="_compute_discount",
-        tracking=True,
     )
 
     # Compute and Search methods
