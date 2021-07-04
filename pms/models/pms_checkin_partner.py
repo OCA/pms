@@ -483,12 +483,18 @@ class PmsCheckinPartner(models.Model):
         """
         for record in self:
             if record.document_number and record.document_type:
+                id_number = self.env["res.partner.id_number"].new(
+                    {
+                        "name": record.document_number,
+                        "category_id": record.document_type,
+                    }
+                )
                 if (
                     self.env.context.get("id_no_validate")
                     or not record.document_type.validation_code
                 ):
                     return
-                eval_context = record._validation_eval_context(record.document_number)
+                eval_context = self._validation_eval_context(id_number)
                 try:
                     safe_eval(
                         record.document_type.validation_code,
