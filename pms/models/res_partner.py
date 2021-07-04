@@ -319,30 +319,6 @@ class ResPartner(models.Model):
                 ]
             )
 
-    @api.model
-    def name_search(self, name, args=None, operator="ilike", limit=100):
-        if not args:
-            args = []
-        domain = [
-            "|",
-            ("mobile", operator, name),
-        ]
-        partners = self.search(
-            domain + args,
-            limit=limit,
-        )
-        res = partners.name_get()
-        if limit:
-            limit_rest = limit - len(partners)
-        else:
-            limit_rest = limit
-        if limit_rest or not limit:
-            args += [("id", "not in", partners.ids)]
-            res += super(ResPartner, self).name_search(
-                name, args=args, operator=operator, limit=limit_rest
-            )
-        return res
-
     @api.constrains("is_agency", "sale_channel_id")
     def _check_is_agency(self):
         for record in self:

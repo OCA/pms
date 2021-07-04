@@ -6,7 +6,8 @@ import json
 import re
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 
 class PmsCheckinPartner(models.Model):
@@ -469,6 +470,45 @@ class PmsCheckinPartner(models.Model):
                     if record.document_type == number.category_id:
                         if record.document_number != number.name:
                             raise ValidationError(_("Document_type has already exists"))
+
+    def _validation_eval_context(self, id_number):
+        self.ensure_one()
+        return {"self": self, "id_number": id_number}
+
+    @api.constrains("document_number", "document_type")
+    def validate_id_number(self):
+        """Validate the given ID number
+        The method raises an odoo.exceptions.ValidationError if the eval of
+        python validation code fails
+        """
+        for record in self:
+            if record.document_number and record.document_type:
+                if (
+                    self.env.context.get("id_no_validate")
+                    or not record.document_type.validation_code
+                ):
+                    return
+                eval_context = record._validation_eval_context(record.document_number)
+                try:
+                    safe_eval(
+                        record.document_type.validation_code,
+                        eval_context,
+                        mode="exec",
+                        nocopy=True,
+                    )
+                except Exception as e:
+                    raise UserError(
+                        _(
+                            "Error when evaluating the id_category validation code:"
+                            ":\n %s \n(%s)"
+                        )
+                        % (self.name, e)
+                    )
+                if eval_context.get("failed", False):
+                    raise ValidationError(
+                        _("%s is not a valid %s identifier")
+                        % (record.document_number, record.document_type.name)
+                    )
 
     @api.model
     def create(self, vals):
