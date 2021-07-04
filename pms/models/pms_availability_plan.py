@@ -4,7 +4,7 @@ import datetime
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo.tools.misc import get_lang
 
 
 class PmsAvailabilityPlan(models.Model):
@@ -131,11 +131,11 @@ class PmsAvailabilityPlan(models.Model):
         Avail = self.env["pms.availability"]
         if isinstance(checkin, str):
             checkin = datetime.datetime.strptime(
-                checkin, DEFAULT_SERVER_DATE_FORMAT
+                checkin, get_lang(self.env).date_format
             ).date()
         if isinstance(checkout, str):
             checkout = datetime.datetime.strptime(
-                checkout, DEFAULT_SERVER_DATE_FORMAT
+                checkout, get_lang(self.env).date_format
             ).date()
         domain = [
             ("date", ">=", checkin),
@@ -218,11 +218,11 @@ class PmsAvailabilityPlan(models.Model):
         )
         if isinstance(checkin, str):
             checkin = datetime.datetime.strptime(
-                checkin, DEFAULT_SERVER_DATE_FORMAT
+                checkin, get_lang(self.env).date_format
             ).date()
         if isinstance(checkout, str):
             checkout = datetime.datetime.strptime(
-                checkout, DEFAULT_SERVER_DATE_FORMAT
+                checkout, get_lang(self.env).date_format
             ).date()
         for avail in Avail.search(
             [
@@ -248,11 +248,11 @@ class PmsAvailabilityPlan(models.Model):
     ):
         if isinstance(checkin, str):
             checkin = datetime.datetime.strptime(
-                checkin, DEFAULT_SERVER_DATE_FORMAT
+                checkin, get_lang(self.env).date_format
             ).date()
         if isinstance(checkout, str):
             checkout = datetime.datetime.strptime(
-                checkout, DEFAULT_SERVER_DATE_FORMAT
+                checkout, get_lang(self.env).date_format
             ).date()
         for date_iterator in [
             checkin + datetime.timedelta(days=x)
