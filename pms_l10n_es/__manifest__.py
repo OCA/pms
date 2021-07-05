@@ -22,6 +22,7 @@
     "external_dependencies": {
         "python": [
             "bs4",
+            "pycountry",
         ],
     },
     "data": [
