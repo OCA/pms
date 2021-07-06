@@ -175,7 +175,8 @@ class PmsReservationLine(models.Model):
                 free_room_select = True if reservation.preferred_room_id else False
 
                 # we get the rooms available for the entire stay
-                rooms_available = self.env["pms.availability.plan"].rooms_available(
+                pms_property = line.pms_property_id
+                pms_property = pms_property.with_context(
                     checkin=reservation.checkin,
                     checkout=reservation.checkout,
                     room_type_id=reservation.room_type_id.id
@@ -183,8 +184,9 @@ class PmsReservationLine(models.Model):
                     else False,
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
-                    pms_property_id=line.pms_property_id.id,
                 )
+                rooms_available = pms_property.free_room_ids
+
                 # Check if the room assigment is manual or automatic to set the
                 # to_assign value on reservation
                 manual_assigned = False
@@ -228,7 +230,7 @@ class PmsReservationLine(models.Model):
                     else:
                         line.room_id = rooms_available[0]
                 # check that the reservation cannot be allocated even by dividing it
-                elif not self.env["pms.availability.plan"].splitted_availability(
+                elif not self.env["pms.property"].splitted_availability(
                     checkin=reservation.checkin,
                     checkout=reservation.checkout,
                     room_type_id=reservation.room_type_id.id,

@@ -749,15 +749,16 @@ class PmsReservation(models.Model):
                         [("active", "=", True)]
                     )
                     return
-                rooms_available = self.env["pms.availability.plan"].rooms_available(
+                pms_property = reservation.pms_property_id
+                pms_property = pms_property.with_context(
                     checkin=reservation.checkin,
                     checkout=reservation.checkout,
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
-                    pms_property_id=reservation.pms_property_id.id,
                 )
-                reservation.allowed_room_ids = rooms_available
+                reservation.allowed_room_ids = pms_property.free_room_ids
+
             else:
                 reservation.allowed_room_ids = False
 
@@ -1527,13 +1528,15 @@ class PmsReservation(models.Model):
         return self.folio_id.action_pay()
 
     def open_reservation_wizard(self):
-        rooms_available = self.env["pms.availability.plan"].rooms_available(
+        pms_property = self.pms_property_id
+        pms_property = pms_property.with_context(
             checkin=self.checkin,
             checkout=self.checkout,
             current_lines=self.reservation_line_ids.ids,
             pricelist_id=self.pricelist_id.id,
-            pms_property_id=self.pms_property_id.id,
         )
+        rooms_available = pms_property.free_room_ids
+
         # REVIEW: check capacity room
         return {
             "view_type": "form",
@@ -1568,21 +1571,6 @@ class PmsReservation(models.Model):
             name = u"{} ({})".format(res.name, res.rooms if res.rooms else "No room")
             result.append((res.id, name))
         return result
-
-    # REVIEW: Is it necessary?
-    def copy_data(self, default=None):
-        rooms_available = self.env["pms.availability.plan"].rooms_available(
-            self.checkin,
-            self.checkout,
-            room_type_id=self.room_type_id.id,
-            pricelist_id=self.pricelist_id.id,
-            pms_property_id=self.pms_property_id.id,
-        )
-        if self.preferred_room_id.id in rooms_available.ids:
-            default["preferred_room_id"] = self.preferred_room_id.id
-        if self.room_type_id.id in rooms_available.mapped("room_type_id.id"):
-            default["room_type_id"] = self.room_type_id.id
-        return super(PmsReservation, self).copy_data(default)
 
     @api.model
     def create(self, vals):
