@@ -1,7 +1,10 @@
 # Copyright 2017  Alexandre Díaz
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import datetime
+
 from odoo import api, fields, models
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
 class PmsAvailabilityPlan(models.Model):
@@ -55,6 +58,14 @@ class PmsAvailabilityPlan(models.Model):
 
     @classmethod
     def any_rule_applies(cls, checkin, checkout, item):
+        if isinstance(checkin, str):
+            checkin = datetime.datetime.strptime(
+                checkin, DEFAULT_SERVER_DATE_FORMAT
+            ).date()
+        if isinstance(checkout, str):
+            checkout = datetime.datetime.strptime(
+                checkout, DEFAULT_SERVER_DATE_FORMAT
+            ).date()
         reservation_len = (checkout - checkin).days
         return any(
             [
