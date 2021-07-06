@@ -36,6 +36,7 @@ class TestPmsReservations(TestPms):
                 "name": "Double 101",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
+                "extra_beds_allowed": 1,
             }
         )
 
@@ -626,19 +627,20 @@ class TestPmsReservations(TestPms):
         # ACT & ASSERT
         with self.assertRaises(
             ValidationError,
-            msg="The number of people is lower than the capacity of the room",
+            msg="The number of people is greater than the capacity of the room",
         ):
-            self.env["pms.reservation"].create(
+            reservation = self.env["pms.reservation"].create(
                 {
                     "adults": 2,
                     "children_occupying": 1,
                     "checkin": datetime.datetime.now(),
                     "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
-                    "room_type_id": self.room_type_double.id,
+                    "preferred_room_id": self.room1.id,
                     "partner_id": self.partner1.id,
                     "pms_property_id": self.pms_property1.id,
                 }
             )
+            reservation.flush()
 
     def test_to_assign_priority_reservation(self):
         """
@@ -1930,16 +1932,17 @@ class TestPmsReservations(TestPms):
             }
         )
         with self.assertRaises(ValidationError):
-            self.env["pms.reservation"].create(
+            reservation = self.env["pms.reservation"].create(
                 {
                     "checkin": fields.date.today(),
                     "checkout": fields.date.today() + datetime.timedelta(days=3),
                     "pms_property_id": self.pms_property1.id,
                     "partner_id": self.host1.id,
-                    "room_type_id": self.room_type_double.id,
+                    "preferred_room_id": self.room1.id,
                     "adults": 4,
                 }
             )
+            reservation.flush()
 
     def test_check_format_arrival_hour(self):
         """
@@ -2616,7 +2619,7 @@ class TestPmsReservations(TestPms):
             {
                 "checkin": fields.date.today() + datetime.timedelta(days=-3),
                 "checkout": fields.date.today() + datetime.timedelta(days=3),
-                "room_type_id": self.room_type_double.id,
+                "preferred_room_id": self.room1.id,
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,

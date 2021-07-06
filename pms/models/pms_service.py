@@ -340,23 +340,24 @@ class PmsService(models.Model):
                         move_day = 0
                         if consumed_on == "after":
                             move_day = 1
-                        service.service_line_ids -= (
-                            service.service_line_ids.filtered_domain(
-                                [
-                                    "|",
-                                    (
-                                        "date",
-                                        "<",
-                                        reservation.checkin + timedelta(move_day),
-                                    ),
-                                    (
-                                        "date",
-                                        ">=",
-                                        reservation.checkout + timedelta(move_day),
-                                    ),
-                                ]
-                            )
-                        )
+                        for del_service_id in service.service_line_ids.filtered_domain(
+                            [
+                                "|",
+                                (
+                                    "date",
+                                    "<",
+                                    reservation.checkin + timedelta(move_day),
+                                ),
+                                (
+                                    "date",
+                                    ">=",
+                                    reservation.checkout + timedelta(move_day),
+                                ),
+                            ]
+                        ).ids:
+                            lines.append((2, del_service_id))
+                        # TODO: check intermediate states in check_adults restriction
+                        #   when lines are removed
                         service.service_line_ids = lines
                     else:
                         if not service.service_line_ids:
@@ -535,10 +536,11 @@ class PmsService(models.Model):
     # Businness Methods
     def _service_day_qty(self):
         self.ensure_one()
-        qty = self.product_qty if len(self.service_line_ids) == 1 else 0
+        qty = self.product_qty if len(self.service_line_ids) == 1 else 1
         if not self.reservation_id:
             return qty
         # TODO: Pass per_person to service line from product default_per_person
+        #   When the user modifies the quantity avoid overwriting
         if self.product_id.per_person:
             qty = self.reservation_id.adults
         return qty
