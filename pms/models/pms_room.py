@@ -70,6 +70,16 @@ class PmsRoom(models.Model):
         required=True,
         default="0",
     )
+    room_amenity_ids = fields.Many2many(
+        string="Room Amenities",
+        help="List of amenities included in room",
+        comodel_name="pms.amenity",
+        relation="pms_room_amenity_rel",
+        column1="room_id",
+        column2="amenity_id",
+        check_pms_properties=True,
+    )
+
     description_sale = fields.Text(
         string="Sale Description",
         help="A description of the Product that you want to communicate to "
