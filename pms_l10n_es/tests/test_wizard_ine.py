@@ -72,6 +72,7 @@ class TestWizardINE(TestPms):
             {
                 "name": "partner1",
                 "country_id": self.country_italy.id,
+                "nationality_id": self.country_italy.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -90,6 +91,7 @@ class TestWizardINE(TestPms):
             {
                 "name": "partner2",
                 "country_id": self.country_russia.id,
+                "nationality_id": self.country_russia.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -107,6 +109,7 @@ class TestWizardINE(TestPms):
             {
                 "name": "partner3",
                 "country_id": self.country_italy.id,
+                "nationality_id": self.country_italy.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -124,6 +127,7 @@ class TestWizardINE(TestPms):
             {
                 "name": "partner4",
                 "country_id": self.country_italy.id,
+                "nationality_id": self.country_italy.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -141,6 +145,7 @@ class TestWizardINE(TestPms):
             {
                 "name": "partner5",
                 "country_id": self.country_afghanistan.id,
+                "nationality_id": self.country_afghanistan.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -158,6 +163,7 @@ class TestWizardINE(TestPms):
             {
                 "name": "partner6",
                 "country_id": self.country_afghanistan.id,
+                "nationality_id": self.country_afghanistan.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -175,6 +181,7 @@ class TestWizardINE(TestPms):
             {
                 "name": "partner7",
                 "country_id": self.country_afghanistan.id,
+                "nationality_id": self.country_afghanistan.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -257,15 +264,14 @@ class TestWizardINE(TestPms):
             {
                 "name": "Product test",
                 "is_extra_bed": True,
+                "consumed_on": "before",
                 "per_day": True,
             }
         )
-        service_extra_bed = self.env["pms.service"].create(
-            {
-                "is_board_service": False,
-                "product_id": product_extra_bed.id,
-            }
-        )
+        vals_service_extra_bed = {
+            "is_board_service": False,
+            "product_id": product_extra_bed.id,
+        }
         # Create reservation 4
         self.reservation_4 = self.env["pms.reservation"].create(
             {
@@ -275,7 +281,7 @@ class TestWizardINE(TestPms):
                 "partner_id": self.partner_6.id,
                 "adults": 2,
                 "pms_property_id": self.pms_property1.id,
-                "service_ids": [(6, 0, [service_extra_bed.id])],
+                "service_ids": [(0, 0, vals_service_extra_bed)],
             }
         )
         self.checkin6 = self.env["pms.checkin.partner"].create(
@@ -395,7 +401,7 @@ class TestWizardINE(TestPms):
         end_date = datetime.date(2021, 2, 4)
 
         expected_result = {
-            self.country_afghanistan.id: {
+            self.country_afghanistan.code: {
                 second_date: {
                     "arrivals": 3,
                     "pernoctations": 3,
@@ -407,7 +413,7 @@ class TestWizardINE(TestPms):
                     "departures": 3,
                 },
             },
-            self.country_italy.id: {
+            self.country_italy.code: {
                 start_date: {
                     "arrivals": 1,
                     "pernoctations": 1,
@@ -421,7 +427,7 @@ class TestWizardINE(TestPms):
                     "departures": 2,
                 },
             },
-            self.country_russia.id: {
+            self.country_russia.code: {
                 start_date: {
                     "arrivals": 1,
                     "pernoctations": 1,

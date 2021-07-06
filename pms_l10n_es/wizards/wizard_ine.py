@@ -6,7 +6,8 @@ import xml.etree.cElementTree as ET
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-CODE_SPAIN = 68
+# TODO: Review code (code iso ?)
+CODE_SPAIN = "ES"
 
 
 class WizardIne(models.TransientModel):
@@ -197,21 +198,24 @@ class WizardIne(models.TransientModel):
             """
 
             for entry in read_group_result:
-                # get country_id from group set read_group results
-                country_id_key = entry["country_id"][0]
-
+                # get nationality_id from group set read_group results
+                nationality_id_code = (
+                    self.env["res.country"]
+                    .search([("id", "=", entry["nationality_id"][0])])
+                    .code
+                )
                 # all countries except Spain
-                if country_id_key != CODE_SPAIN:
+                if nationality_id_code != CODE_SPAIN:
 
                     # get count of each result
                     num = entry["__count"]
 
                     # update/create dicts for countries & dates and set num. arrivals
-                    if not nationalities.get(country_id_key):
-                        nationalities[country_id_key] = dict()
-                    if not nationalities[country_id_key].get(date):
-                        nationalities[country_id_key][date] = dict()
-                    nationalities[country_id_key][date][type_of_entry] = num
+                    if not nationalities.get(nationality_id_code):
+                        nationalities[nationality_id_code] = dict()
+                    if not nationalities[nationality_id_code].get(date):
+                        nationalities[nationality_id_code][date] = dict()
+                    nationalities[nationality_id_code][date][type_of_entry] = num
                 else:
                     # arrivals grouped by state_id (Spain "provincias")
                     read_by_arrivals_spain = self.env["res.partner"].read_group(
@@ -270,33 +274,33 @@ class WizardIne(models.TransientModel):
             # arrivals
             arrivals = hosts.filtered(lambda x: x.checkin == p_date)
 
-            # arrivals grouped by country_id
+            # arrivals grouped by nationality_id
             read_by_arrivals = self.env["res.partner"].read_group(
                 [("id", "in", arrivals.mapped("partner_id").ids)],
-                ["country_id"],
-                ["country_id"],
+                ["nationality_id"],
+                ["nationality_id"],
                 lazy=False,
             )
 
             # departures
             departures = hosts.filtered(lambda x: x.checkout == p_date)
 
-            # departures grouped by country_id
+            # departures grouped by nationality_id
             read_by_departures = self.env["res.partner"].read_group(
                 [("id", "in", departures.mapped("partner_id").ids)],
-                ["country_id"],
-                ["country_id"],
+                ["nationality_id"],
+                ["nationality_id"],
                 lazy=False,
             )
 
             # pernoctations
             pernoctations = hosts - departures
 
-            # pernoctations grouped by country_id
+            # pernoctations grouped by nationality_id
             read_by_pernoctations = self.env["res.partner"].read_group(
                 [("id", "in", pernoctations.mapped("partner_id").ids)],
-                ["country_id"],
-                ["country_id"],
+                ["nationality_id"],
+                ["nationality_id"],
                 lazy=False,
             )
 
@@ -457,7 +461,9 @@ class WizardIne(models.TransientModel):
             self.start_date, self.end_date, self.pms_property_id.id
         )
         for key_country, value_country in nationalities.items():
-            country = self.env["res.country"].browse(key_country)
+
+            country = self.env["res.country"].search([("code", "=", key_country)])
+
             if key_country != CODE_SPAIN:
                 residency_tag = ET.SubElement(accommodation_tag, "RESIDENCIA")
                 ET.SubElement(residency_tag, "ID_PAIS").text = country.code_alpha3

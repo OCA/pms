@@ -16,6 +16,7 @@
                     <field name="tax_ids" invisible="1" />
                     <field name="checkin_partner_count" invisible="1" />
                     <field name="to_assign" invisible="1" />
+                    <field name="check_adults" invisible="1" />
                     <button
                         name="confirm"
                         string="Confirm"
