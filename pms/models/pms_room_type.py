@@ -98,13 +98,16 @@ class PmsRoomType(models.Model):
         for room_type in self:
             name = room_type.name
             if self._context.get("checkin") and self._context.get("checkout"):
-                avail = self.env["pms.availability.plan"].get_count_rooms_available(
+                pms_property = self.env["pms.property"].browse(
+                    self._context.get("pms_property_id")
+                )
+                pms_property = pms_property.with_context(
                     checkin=self._context.get("checkin"),
                     checkout=self._context.get("checkout"),
                     room_type_id=room_type.id,
-                    pms_property_id=self._context.get("pms_property_id") or False,
                     pricelist_id=self._context.get("pricelist_id") or False,
                 )
+                avail = pms_property.availability
                 name += " (%s)" % avail
             result.append((room_type.id, name))
         return result

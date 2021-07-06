@@ -130,7 +130,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         ---------------------
         The checkin and checkout dates on which the availability will be checked are saved
         in a variable and in another all the rooms of the property are also saved. Then the
-        rooms_available() method is launched which should return the number of available rooms
+        free_room_ids compute field is called which should return the number of available rooms
         of the property and they are saved in another variable with which it is verified that
         all the rooms have been returned because there are no availability rules for that plan.
         """
@@ -142,10 +142,12 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             [("pms_property_id", "=", self.pms_property3.id)]
         )
         # ACT
-        result = self.env["pms.availability.plan"].rooms_available(
+        pms_property = self.pms_property3.with_context(
             checkin=checkin,
             checkout=checkout,
         )
+        result = pms_property.free_room_ids
+
         # ASSERT
         obtained = all(elem.id in result.ids for elem in test_rooms_double_rooms)
         self.assertTrue(
@@ -162,7 +164,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         -----------------
         The checkin and checkout dates on which the availability will be checked are saved
         in a variable and in another all the rooms of the property are also saved. Then create
-        a reservation for this property and the rooms_available() method is launched with the
+        a reservation for this property and the free_room_ids compute field is called with the
         parameters checkin, checkout and the reservation lines of the reservation as a curent
         lines, this method should return the number of available rooms of the property. Then the
         result is saved in another variable with which it is verified that all the rooms have
@@ -185,11 +187,13 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         )
 
         # ACT
-        result = self.env["pms.availability.plan"].rooms_available(
+        pms_property = self.pms_property3.with_context(
             checkin=checkin,
             checkout=checkout,
             current_lines=test_reservation.reservation_line_ids.ids,
         )
+        result = pms_property.free_room_ids
+
         # ASSERT
         obtained = all(elem.id in result.ids for elem in test_rooms_double_rooms)
         self.assertTrue(
@@ -202,8 +206,8 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         """
         Check the availability of a room type for a property.
         ----------------
-        Double rooms of a property are saved in a variable. The rooms_available() method
-        is launched giving as parameters checkin, checkout and the type of room (in this
+        Double rooms of a property are saved in a variable. The free_room_ids compute field
+        is called giving as parameters checkin, checkout and the type of room (in this
         case double). Then with the all () function we check that all rooms of this type
         were returned.
         """
@@ -216,11 +220,12 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             ]
         )
         # ACT
-        result = self.env["pms.availability.plan"].rooms_available(
+        pms_property = self.pms_property3.with_context(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             room_type_id=self.test_room_type_double.id,
         )
+        result = pms_property.free_room_ids
 
         # ASSERT
         obtained = all(elem.id in result.ids for elem in test_rooms_double_rooms)
@@ -237,7 +242,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         --------------------
         Create an availability rule for double rooms with the field closed = true
         and the date from today until tomorrow. Then the availability is saved in a
-        variable through the rooms_available() method, passing it the pricelist that
+        variable through the free_room_ids computed field, passing it the pricelist that
         it contains the availability plan where the rule is included, and the checkin
         and checkout dates are between the date of the rule. Then it is verified that
         the double rooms are not available.
@@ -255,12 +260,14 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             }
         )
         # ACT
-        result = self.env["pms.availability.plan"].rooms_available(
+        pms_property = self.pms_property3.with_context(
             checkin=fields.date.today(),
             checkout=(fields.datetime.today() + datetime.timedelta(days=4)).date(),
             # room_type_id=False, # <-  (2/2)
             pricelist_id=self.pricelist2.id,
         )
+        result = pms_property.free_room_ids
+
         # ASSERT
         self.assertNotIn(
             self.test_room_type_double,
@@ -283,7 +290,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         6. max_stay_arrival = 3
         7. quota = 0
         8. max_avail = 0
-        For each test case, it is verified through the rooms_available() method,
+        For each test case, it is verified through the free_room_ids compute field,
         that double rooms are not available since the rules are applied to this
         room type.
         """
@@ -409,12 +416,13 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 # ACT
                 self.test_room_type_availability_rule1.write(test_case)
 
-                result = self.env["pms.availability.plan"].rooms_available(
+                pms_property = self.pms_property3.with_context(
                     checkin=checkin,
                     checkout=checkout,
                     room_type_id=self.test_room_type_double.id,
                     pricelist_id=self.pricelist2.id,
                 )
+                result = pms_property.free_room_ids
 
                 # ASSERT
                 self.assertNotIn(
@@ -639,15 +647,17 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         for p in properties:
             with self.subTest(k=p):
                 # ACT
-                rooms_avail = self.env["pms.availability.plan"].rooms_available(
+                pms_property = self.env["pms.property"].browse(p["property"])
+                pms_property = pms_property.with_context(
                     checkin=fields.date.today(),
                     checkout=(
                         fields.datetime.today() + datetime.timedelta(days=2)
                     ).date(),
                     room_type_id=self.test_room_type_special.id,
                     pricelist_id=self.pricelist2.id,
-                    pms_property_id=p["property"],
                 )
+                rooms_avail = pms_property.free_room_ids
+
                 # ASSERT
                 self.assertEqual(
                     len(rooms_avail) > 0, p["value"], "Availability is not correct"
