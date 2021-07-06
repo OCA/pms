@@ -605,6 +605,29 @@ class PmsReservation(models.Model):
         readonly=False,
     )
 
+    check_adults = fields.Boolean(
+        help="Internal field to force room capacity validations",
+        compute="_compute_check_adults",
+        readonly=False,
+        store=True,
+    )
+
+    def _compute_date_order(self):
+        for record in self:
+            record.date_order = datetime.datetime.today()
+
+    @api.depends(
+        "service_ids",
+        "service_ids.service_line_ids",
+        "service_ids.service_line_ids.product_id",
+        "service_ids.service_line_ids.day_qty",
+        "reservation_line_ids",
+        "reservation_line_ids.room_id",
+    )
+    def _compute_check_adults(self):
+        for record in self:
+            record.check_adults = True
+
     @api.depends(
         "checkin",
         "checkout",
@@ -1423,23 +1446,6 @@ class PmsReservation(models.Model):
     #                 _("The room already is completed (%s)", record.name)
     #             )
 
-    @api.constrains("adults")
-    def _check_adults(self):
-        for record in self:
-            for line in record.reservation_line_ids:
-                extra_beds = record.service_ids.service_line_ids.filtered(
-                    lambda x: x.date == line.date and x.product_id.is_extra_bed is True
-                )
-                if (
-                    record.adults + record.children_occupying
-                ) > line.room_id.get_capacity(len(extra_beds)):
-                    raise ValidationError(
-                        _(
-                            "Persons can't be higher than room capacity (%s)",
-                            record.name,
-                        )
-                    )
-
     @api.constrains("state")
     def _check_onboard_reservation(self):
         for record in self:
@@ -1483,6 +1489,13 @@ class PmsReservation(models.Model):
         for record in self:
             if record.agency_id and not record.agency_id.is_agency:
                 raise ValidationError(_("booking agency with wrong configuration: "))
+
+    @api.constrains("check_adults")
+    def _check_capacity(self):
+        for record in self:
+            self.env["pms.room"]._check_adults(
+                record, record.service_ids.service_line_ids
+            )
 
     # Action methods
     def open_partner(self):
