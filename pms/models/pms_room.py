@@ -118,6 +118,26 @@ class PmsRoom(models.Model):
                     )
                 )
 
+    @api.model
+    def _check_adults(self, reservation, service_line_ids=False):
+        for line in reservation.reservation_line_ids:
+            num_extra_beds = 0
+            if service_line_ids:
+                extra_beds = service_line_ids.filtered(
+                    lambda x: x.date == line.date and x.product_id.is_extra_bed is True
+                )
+                num_extra_beds = sum(extra_beds.mapped("day_qty")) if extra_beds else 0
+            if line.room_id:
+                if (
+                    reservation.adults + reservation.children_occupying
+                ) > line.room_id.get_capacity(num_extra_beds):
+                    raise ValidationError(
+                        _(
+                            "Persons can't be higher than room capacity (%s)",
+                            reservation.name,
+                        )
+                    )
+
     # Business methods
 
     def get_capacity(self, extra_bed=0):
