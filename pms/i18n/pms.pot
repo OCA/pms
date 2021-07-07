@@ -46,6 +46,12 @@ msgid "% Penalty No Show"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_checkin_partner.py:0
+#, python-format
+msgid "%s is not a valid %s identifier"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_service_line.py:0
 #, python-format
 msgid "%s limit exceeded for %s"
@@ -2732,6 +2738,15 @@ msgid "Entry date"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_checkin_partner.py:0
+#, python-format
+msgid ""
+"Error when evaluating the id_category validation code::\n"
+" %s \n"
+"(%s)"
+msgstr ""
+
+#. module: pms
 #: model:res.partner.id_category,name:pms.document_type_european_residence
 msgid "European Residence permit"
 msgstr ""
@@ -4411,6 +4426,11 @@ msgid "List of adults there in guest list"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room__room_amenity_ids
+msgid "List of amenities included in room"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__room_amenity_ids
 msgid "List of amenities included in room type"
 msgstr ""
@@ -4994,6 +5014,11 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_res_partner__reservations_count
 #: model:ir.model.fields,help:pms.field_res_users__reservations_count
 msgid "Number of reservations of the partner"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__availability
+msgid "Number of rooms available"
 msgstr ""
 
 #. module: pms
@@ -5695,12 +5720,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__num_pricelist_items_to_overwrite
 msgid "Pricelist items to overwrite on massive changes"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/pms_availability_plan.py:0
-#, python-format
-msgid "Pricelist not found"
 msgstr ""
 
 #. module: pms
@@ -6535,6 +6554,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_pms_room_amenity_view_form
+#: model:ir.model.fields,field_description:pms.field_pms_room__room_amenity_ids
 #: model_terms:ir.ui.view,arch_db:pms.pms_amenity_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_amenity_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_amenity_view_list
@@ -6757,6 +6777,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_bottom_tree
 msgid "Rooms"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__free_room_ids
+msgid "Rooms available"
 msgstr ""
 
 #. module: pms
@@ -8850,6 +8875,22 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__zip
 msgid "Zip"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__free_room_ids
+msgid ""
+"allows you to send different parameters in the context (checkin(required), "
+"checkout(required), room_type_id, ubication_id, capacity, amenity_ids and / "
+"or pricelist_id) and return rooms available"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_property__availability
+msgid ""
+"allows you to send different parameters in the context (checkin(required), "
+"checkout(required), room_type_id, ubication_id, capacity,amenity_ids and / "
+"or pricelist_id) check the availability for the hotel"
 msgstr ""
 
 #. module: pms
