@@ -1,88 +1,44 @@
 import datetime
 
 from odoo.exceptions import UserError
-from odoo.tests import common
+
+from .common import TestPms
 
 
-class TestPmsWizardMassiveChanges(common.SavepointCase):
-    def create_common_scenario(self):
-        # product.pricelist
-        self.test_pricelist = self.env["product.pricelist"].create(
-            {
-                "name": "test pricelist 1",
-            }
-        )
+class TestPmsWizardSplitJoinSwapReservation(TestPms):
+    def setUp(self):
+        super().setUp()
         # pms.availability.plan
         self.test_availability_plan = self.env["pms.availability.plan"].create(
             {
                 "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.test_pricelist.id])],
+                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
             }
-        )
-        # sequences
-        self.folio_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Folio",
-                "code": "pms.folio",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.reservation_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Reservation",
-                "code": "pms.reservation",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.checkin_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Checkin",
-                "code": "pms.checkin.partner",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        # pms.property
-        self.test_property = self.env["pms.property"].create(
-            {
-                "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist.id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-        # pms.room.type.class
-        self.test_room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "default_code": "ROOM"}
         )
 
         # pms.room.type
         self.test_room_type_single = self.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.test_property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "name": "Single Test",
                 "default_code": "SNG_Test",
-                "class_id": self.test_room_type_class.id,
+                "class_id": self.room_type_class1.id,
             }
         )
         # pms.room.type
         self.test_room_type_double = self.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.test_property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.test_room_type_class.id,
+                "class_id": self.room_type_class1.id,
             }
         )
 
         # create rooms
         self.room1 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 101",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
@@ -91,42 +47,42 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
         self.room2 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 102",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
             }
         )
 
-        # self.room3 = self.env["pms.room"].create(
-        #     {
-        #         "pms_property_id": self.test_property.id,
-        #         "name": "Double 103",
-        #         "room_type_id": self.test_room_type_double.id,
-        #         "capacity": 2,
-        #     }
-        # )
+        self.partner1 = self.env["res.partner"].create({"name": "Antón"})
 
     # UNIFY TESTS # review
     def test_unify_reservation_avail_should(self):
-        # TEST CASE
-        # Unify reservation in one room with avail for that room
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |      |  r1  |    |    |    |
-        # | Double 102 |      |  r1  |      |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        """
+        Check that, if there is availability, a reservation with several
+        rooms on different days can be unified into a one room reservation.
+        ------------
+        Create a reservation with room1.Then, in the first reservation line,
+        the room is changed to room2.The reservation_join() method of the wizard
+        is launched, passing the reservation and room2 as parameters and it is
+        verified that room2 is found in all the reservation lines.
+
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |      |  r1  |    |    |    |
+        | Double 102 |      |  r1  |      |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -143,46 +99,46 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_unify_reservation_avail_not(self):
-        # TEST CASE
-        # Unify reservation in one room and
-        # there's not availability for that room
-
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |  r1  |  r2  |    |    |    |
-        # | Double 102 |  r0  |  r0  |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        """
+        Check that you cannot unify a reservation with two different rooms
+        because there is no availability in the required room.
+        ----------
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |  r1  |  r2  |    |    |    |
+        | Double 102 |  r0  |  r0  |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
         self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=2),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.test_room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2.flush()
@@ -193,30 +149,31 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             )
 
     def test_unify_reservation_avail_not_room_exist(self):
-        # TEST CASE
-        # Unify reservation in one room and
-        # the room indicated doesn't exist: pms.room()
+        """
+        Check that you cannot unify a reservation with two different rooms
+        because there the required room does not exists.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
+
         self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2.flush()
@@ -228,43 +185,46 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     # SWAP TESTS
     def test_swap_reservation_rooms_01(self):
         # TEST CASE
+        """
+        Check that the rooms of two different reservations was swapped correctly
+        by applying the reservations_swap() method of the wizard.
+        ------------
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |  r1  |  r1  |    |    |    |
+        | Double 102 |  r2  |  r2  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |  r1  |  r1  |    |    |    |
-        # | Double 102 |  r2  |  r2  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r2  |  r2  |  r2  |    |    |    |
-        # | Double 102 |  r1  |  r1  |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r2  |  r2  |  r2  |    |    |    |
+        | Double 102 |  r1  |  r1  |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -283,44 +243,47 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_swap_reservation_rooms_02(self):
-        # TEST CASE
+        """
+        Check that two rooms from two different reservations are swapped
+        correctly.
+        -------------------
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |      |  r1  |  r1  |    |    |    |
-        # | Double 102 |  r2  |  r2  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |      |  r1  |  r1  |    |    |    |
+        | Double 102 |  r2  |  r2  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |      |  r2  |  r2  |    |    |    |
-        # | Double 102 |  r2  |  r1  |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |      |  r2  |  r2  |    |    |    |
+        | Double 102 |  r2  |  r1  |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -339,44 +302,46 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_swap_reservation_rooms_03(self):
-        # TEST CASE
+        """
+        Check that two rooms from two different reservations are swapped
+        correctly.
+        -------------------
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |      |  r1  |  r1  |    |    |    |
+        | Double 102 |  r2  |  r2  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |      |  r1  |  r1  |    |    |    |
-        # | Double 102 |  r2  |  r2  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r2  |  r2  |  r2  |    |    |    |
-        # | Double 102 |      |  r1  |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r2  |  r2  |  r2  |    |    |    |
+        | Double 102 |      |  r1  |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=1),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -396,43 +361,47 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
     def test_swap_reservation_rooms_04(self):
         # TEST CASE
+        """
+        Check that two rooms from two different reservations are swapped
+        correctly.
+        --------
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |  r1  |      |    |    |    |
-        # | Double 102 |  r2  |  r2  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |  r1  |      |    |    |    |
+        | Double 102 |  r2  |  r2  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r2  |  r2  |      |    |    |    |
-        # | Double 102 |  r1  |  r1  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r2  |  r2  |      |    |    |    |
+        | Double 102 |  r1  |  r1  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -451,44 +420,48 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_swap_reservation_rooms_05(self):
-        # TEST CASE
+        """
+        Check that two rooms from two different reservations are swapped
+        correctly.
+        ---------------
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |  r1  |      |    |    |    |
-        # | Double 102 |  r2  |  r2  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |  r1  |      |    |    |    |
+        | Double 102 |  r2  |  r2  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r2  |  r2  |  r2  |    |    |    |
-        # | Double 102 |  r1  |  r1  |      |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r2  |  r2  |  r2  |    |    |    |
+        | Double 102 |  r1  |  r1  |      |    |    |    |
+        +------------+------+------+------+----+----+----+
 
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=2),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -507,37 +480,37 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_swap_reservation_rooms_06(self):
-        # TEST CASE
-        # Swap room1 with room2 should raise an error
-        # because room1 has no reservation between
-        # checkin & checkout provided
+        """
+        Check that the room is exchanged correctly for every day because there
+        is no reservation for another room in those days.
+        ---------------------------
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |      |      |      |    |    |    |
-        # | Double 102 |  r1  |  r1  |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |      |      |      |    |    |    |
+        | Double 102 |  r1  |  r1  |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |  r1  |  r1  |    |    |    |
-        # | Double 102 |      |      |      |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |  r1  |  r1  |    |    |    |
+        | Double 102 |      |      |      |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -552,55 +525,59 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         self.assertTrue(r1.reservation_line_ids.room_id == self.room1)
 
     def test_swap_reservation_rooms_gap_01(self):
-        # TEST CASE
+        """
+        Check that three rooms from three different reservations are swapped
+        correctly.
+        -----------
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r0  |      |  r1  |    |    |    |
-        # | Double 102 |  r2  |  r2  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r0  |      |  r1  |    |    |    |
+        | Double 102 |  r2  |  r2  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r2  |      |  r2  |    |    |    |
-        # | Double 102 |  r0  |  r2  |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r2  |      |  r2  |    |    |    |
+        | Double 102 |  r0  |  r2  |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
 
         # ARRANGE
-        self.create_common_scenario()
+
         r0 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
 
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=2),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -623,54 +600,58 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
     def test_swap_reservation_rooms_gap_02(self):
         # TEST CASE
+        """
+        Check that three rooms from three different reservations are swapped
+        correctly.
+        -----------
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r0  |      |  r1  |    |    |    |
-        # | Double 102 |  r2  |  r2  |  r2  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r0  |      |  r1  |    |    |    |
+        | Double 102 |  r2  |  r2  |  r2  |    |    |    |
+        +------------+------+------+------+----+----+----+
 
-        # State after swap
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r2  |  r2  |  r2  |    |    |    |
-        # | Double 102 |  r0  |      |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
+        State after swap
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r2  |  r2  |  r2  |    |    |    |
+        | Double 102 |  r0  |      |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r0 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
 
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now() + datetime.timedelta(days=2),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r2 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -691,29 +672,31 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
     # NOT VALID TEST CASES
     def test_swap_reservation_not_valid_01(self):
-        # TEST CASE
-        # Swap room1 with room2 should raise an error
-        # because room1 has no reservation between
-        # checkin & checkout provided
+        """
+        Check that an error is thrown if you try to pass a room that is
+        not reserved for those days to the reservations_swap() method.
+        ---------------------------
+        Swap room1 with room2 should raise an error because room1 has
+        no reservation between checkin & checkout provided.
 
-        # Initial state
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |      |      |      |    |    |    |
-        # | Double 102 |  r1  |  r1  |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
-
+        Initial state
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |      |      |      |    |    |    |
+        | Double 102 |  r1  |  r1  |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
 
@@ -728,27 +711,29 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
     # SPLIT TESTS
     def test_split_reservation_check_room_splitted_valid_01(self):
-        # TEST CASE
-        # A reservation is created with preferred room
-        # The room for 1st night is switched to another room
-        # Expected result:
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |      |  r1  |  r1  |    |    |    |
-        # | Double 102 |  r1  |      |      |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        """
+        A reservation is created with preferred room. The room for 1st night
+        is switched to another room.
+        -------------------
 
+        Expected result:
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |      |  r1  |  r1  |    |    |    |
+        | Double 102 |  r1  |      |      |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -763,27 +748,29 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_split_reservation_check_room_splitted_valid_02(self):
-        # TEST CASE
-        # A reservation is created with preferred room
-        # The room for 1st night is switched to another room
-        # Expected result:
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |  r1  |      |    |    |    |
-        # | Double 102 |      |      |  r1  |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        """
+        A reservation is created with preferred room. The room for 1st
+        night is switched to another room
+        --------------
 
+        Expected result:
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |  r1  |      |    |    |    |
+        | Double 102 |      |      |  r1  |    |    |    |
+        +------------+------+------+------+----+----+----+
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -807,27 +794,29 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_split_reservation_check_room_splitted_valid_03(self):
-        # TEST CASE
-        # A reservation is created with preferred room
-        # The room for 1st night is switched to another room
-        # Expected result:
-        # +------------+------+------+------+----+----+----+
-        # | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
-        # +------------+------+------+------+----+----+----+
-        # | Double 101 |  r1  |      |  r1  |    |    |    |
-        # | Double 102 |      |  r1  |      |    |    |    |
-        # +------------+------+------+------+----+----+----+
+        """
+        A reservation is created with preferred room. The room for 1st
+        night is switched to another room.
+        -----------
+
+        Expected result:
+        +------------+------+------+------+----+----+----+
+        | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
+        +------------+------+------+------+----+----+----+
+        | Double 101 |  r1  |      |  r1  |    |    |    |
+        | Double 102 |      |  r1  |      |    |    |    |
+        +------------+------+------+------+----+----+----+"""
 
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -852,26 +841,30 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         )
 
     def test_split_reservation_check_room_splitted_not_valid_01(self):
-        # TEST CASE
-        # Try to split the reservation for one night
-        # and set with a non valid room
+        """
+        Try to split the reservation for one night and set with a non valid room.
+        ----------
+        Create a reservation for room1. Then create a room and it is deleted. The
+        reservation_split method is launched but an error should appear because
+        the room does not exist.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
         room_not_exist = self.room3 = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 103",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
@@ -886,43 +879,55 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
     def test_split_reservation_check_room_splitted_not_valid_02(self):
         # TEST CASE
-        # Try to split the reservation for one night
-        # and that night doesn't belong to reservation
-
+        """
+        Try to split the reservation for one night and that night
+        doesn't belongto reservation.
+        ---------------
+        A reservation is created with a date interval of 3 days.
+        After the reservation_split() method is launched, passing
+        that reservation but with a date interval of 100 days,
+        this should throw an error.
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
         # ACT & ASSERT
         with self.assertRaises(UserError):
             self.env["pms.reservation.split.join.swap.wizard"].reservation_split(
-                r1, datetime.datetime.now() + datetime.timedelta(days=100), self.room2
+                r1, datetime.datetime.now() + datetime.timedelta(days=100), self.room1
             )
 
     def test_split_reservation_check_room_splitted_not_valid_03(self):
-        # TEST CASE
-        # Try to split the reservation for one night
-        # and the reservation not exists
+
+        """
+        Try to split the reservation for one night and the reservation
+        not exists.
+        -------------
+        A reservation is created, but it is not the reservation that is
+        passed to the reservation_split() method, one that does not exist
+        is passed to it, this should throw an error.
+        """
 
         # ARRANGE
-        self.create_common_scenario()
+
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
@@ -933,30 +938,35 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             )
 
     def test_split_reservation_check_room_splitted_not_valid_04(self):
-        # TEST CASE
-        # Try to split the reservation to one room
-        # and the room is not available
-
+        """
+        Try to split the reservation to one room and the room is not available.
+        ---------------
+        A reservation is created with room2 as favorite_room. Another reservation
+        is created for the same days with room1. An attempt is made to separate
+        the room from the second reservation using the reservations_split() method,
+         passing it the same days as the reservations and room2, but this should
+         throw an error because room2 is not available for those days.
+        """
         # ARRANGE
-        self.create_common_scenario()
+
         self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room2.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1 = self.env["pms.reservation"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "checkin": datetime.datetime.now(),
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "preferred_room_id": self.room1.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner1.id,
             }
         )
         r1.flush()
