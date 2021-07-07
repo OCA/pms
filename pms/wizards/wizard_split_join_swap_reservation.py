@@ -172,14 +172,16 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
             record.allowed_rooms_target = False
             record.room_target = False
             if record.checkin and record.checkout:
-                rooms_available = self.env["pms.availability.plan"].rooms_available(
+                pms_property = record.reservation_id.pms_property_id
+                pms_property = pms_property.with_context(
                     checkin=record.checkin,
                     checkout=record.checkout,
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=record.reservation_id.reservation_line_ids.ids,
                     pricelist_id=record.reservation_id.pricelist_id.id,
-                    pms_property_id=record.reservation_id.pms_property_id.id,
                 )
+                rooms_available = pms_property.free_room_ids
+
                 domain = [("capacity", ">=", record.reservation_id.adults)]
                 if record.room_source:
                     domain.append(("id", "!=", record.room_source.id))
@@ -214,7 +216,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
 
         if not self.browse(room.id):
             raise UserError(_("The room does not exist"))
-        rooms_available = self.env["pms.availability.plan"].rooms_available(
+        pms_property = reservation.pms_property_id.with_context(
             checkin=date,
             checkout=(
                 datetime.datetime(year=date.year, month=date.month, day=date.day)
@@ -222,8 +224,9 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
             ).date(),
             current_lines=reservation.reservation_line_ids.ids,
             pricelist_id=reservation.pricelist_id.id,
-            pms_property_id=reservation.pms_property_id.id,
         )
+        rooms_available = pms_property.free_room_ids
+
         if room not in rooms_available:
             raise UserError(_("The room is not available"))
 
@@ -233,13 +236,15 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
 
     @api.model
     def reservation_join(self, reservation, room):
-        rooms_available = self.env["pms.availability.plan"].rooms_available(
+        pms_property = reservation.pms_property_id
+        pms_property = pms_property.with_context(
             checkin=reservation.checkin,
             checkout=reservation.checkout,
             current_lines=reservation.reservation_line_ids.ids,
             pricelist_id=reservation.pricelist_id.id,
-            pms_property_id=reservation.pms_property_id.id,
         )
+        rooms_available = pms_property.free_room_ids
+
         if room in rooms_available:
             for line in (
                 self.env["pms.reservation"]
@@ -347,13 +352,14 @@ class ReservationLinesToSplit(models.TransientModel):
                         [("active", "=", True)]
                     )
                     return
-                rooms_available = self.env["pms.availability.plan"].rooms_available(
+                pms_property = reservation.pms_property_id
+                pms_property = pms_property.with_context(
                     checkin=line.date,
                     checkout=line.date + datetime.timedelta(days=1),
                     room_type_id=False,  # Allows to choose any available room
                     pricelist_id=reservation.pricelist_id.id,
-                    pms_property_id=reservation.pms_property_id.id,
                 )
+                rooms_available = pms_property.free_room_ids
                 rooms_available += line.room_id
                 line.allowed_room_ids = rooms_available
             else:

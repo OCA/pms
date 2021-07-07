@@ -703,7 +703,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_id": self.test_property.id,
             }
         )
-
         # create folio wizard with partner id => pricelist & start-end dates
         booking_engine = self.env["pms.booking.engine"].create(
             {
@@ -715,7 +714,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             }
         )
         booking_engine.flush()
-
         room_type_plan_avail = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         ).num_rooms_available

@@ -177,15 +177,15 @@ class BookingEngine(models.TransientModel):
                         ("pms_property_ids", "in", record.pms_property_id.id),
                     ]
                 ):
-                    num_rooms_available = self.env[
-                        "pms.availability.plan"
-                    ].get_count_rooms_available(
+                    pms_property = record.pms_property_id
+                    pms_property = pms_property.with_context(
                         checkin=record.start_date,
                         checkout=record.end_date,
                         room_type_id=room_type_iterator.id,
                         pricelist_id=record.pricelist_id.id,
-                        pms_property_id=record.pms_property_id.id,
                     )
+                    num_rooms_available = pms_property.availability
+
                     cmds.append(
                         (
                             0,
@@ -338,15 +338,14 @@ class AvailabilityWizard(models.TransientModel):
     @api.depends("room_type_id", "checkin", "checkout")
     def _compute_num_rooms_available(self):
         for record in self:
-            record.num_rooms_available = self.env[
-                "pms.availability.plan"
-            ].get_count_rooms_available(
-                record.checkin,
-                record.checkout,
+            pms_property = record.booking_engine_id.pms_property_id
+            pms_property = pms_property.with_context(
+                checkin=record.checkin,
+                checkout=record.checkout,
                 room_type_id=record.room_type_id.id,
                 pricelist_id=record.booking_engine_id.pricelist_id.id,
-                pms_property_id=record.booking_engine_id.pms_property_id.id,
             )
+            record.num_rooms_available = pms_property.availability
 
     @api.depends("num_rooms_available")
     def _compute_num_rooms_selected(self):
