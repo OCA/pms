@@ -389,7 +389,7 @@ class AvailabilityWizard(models.TransientModel):
     @api.depends("num_rooms_selected")
     def _compute_value_num_rooms_selected(self):
         for record in self:
-            if record.num_rooms_selected and record.num_rooms_selected.value:
+            if record.num_rooms_selected:
                 record.value_num_rooms_selected = record.num_rooms_selected.value
             elif not record.value_num_rooms_selected:
                 record.value_num_rooms_selected = 0
