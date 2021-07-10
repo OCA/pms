@@ -1,6 +1,8 @@
 # Copyright 2017-2018  Alexandre Díaz
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -71,7 +73,7 @@ class PmsServiceLine(models.Model):
     )
     price_day_total = fields.Monetary(
         string="Total",
-        help="Total price without taxes",
+        help="Total price with taxes",
         readonly=True,
         store=True,
         compute="_compute_day_amount_service",
@@ -169,60 +171,35 @@ class PmsServiceLine(models.Model):
                 record.discount = 0
 
     # TODO: Refact method and allowed cancelled single days
-    @api.depends("service_id.reservation_id.cancelled_reason")
+    @api.depends("service_id.reservation_id.reservation_line_ids.cancel_discount")
     def _compute_cancel_discount(self):
         for line in self:
             line.cancel_discount = 0
-            # TODO: Review cancel logic
-            # reservation = line.reservation_id.reservation_id
-            # pricelist = reservation.pricelist_id
-            # if reservation.state == "cancel":
-            #     if (
-            #         reservation.cancel_reason
-            #         and pricelist
-            #         and pricelist.cancelation_rule_id
-            #     ):
-            #         date_start_dt = fields.Date.from_string(
-            #             reservation.checkin
-            #         )
-            #         date_end_dt = fields.Date.from_string(
-            #             reservation.checkout
-            #         )
-            #         days = abs((date_end_dt - date_start_dt).days)
-            #         rule = pricelist.cancelation_rule_id
-            #         if reservation.cancelled_reason == "late":
-            #             discount = 100 - rule.penalty_late
-            #             if rule.apply_on_late == "first":
-            #                 days = 1
-            #             elif rule.apply_on_late == "days":
-            #                 days = rule.days_late
-            #         elif reservation.cancelled_reason == "noshow":
-            #             discount = 100 - rule.penalty_noshow
-            #             if rule.apply_on_noshow == "first":
-            #                 days = 1
-            #             elif rule.apply_on_noshow == "days":
-            #                 days = rule.days_late - 1
-            #         elif reservation.cancelled_reason == "intime":
-            #             discount = 100
-
-            #         checkin = reservation.checkin
-            #         dates = []
-            #         for i in range(0, days):
-            #             dates.append(
-            #                 (
-            #                     fields.Date.from_string(checkin) + timedelta(days=i)
-            #                 ).strftime(DEFAULT_SERVER_DATE_FORMAT)
-            #             )
-            #         reservation.reservation_line_ids.filtered(
-            #             lambda r: r.date in dates
-            #         ).update({"cancel_discount": discount})
-            #         reservation.reservation_line_ids.filtered(
-            #             lambda r: r.date not in dates
-            #         ).update({"cancel_discount": 100})
-            #     else:
-            #         reservation.reservation_line_ids.update({"cancel_discount": 0})
-            # else:
-            #     reservation.reservation_line_ids.update({"cancel_discount": 0})
+            reservation = line.reservation_id
+            if reservation.state == "cancel":
+                if (
+                    reservation.cancelled_reason
+                    and reservation.pricelist_id
+                    and reservation.pricelist_id.cancelation_rule_id
+                    and reservation.reservation_line_ids.mapped("cancel_discount")
+                ):
+                    if line.is_board_service:
+                        consumed_date = (
+                            line.date
+                            if line.product_id.consumed_on == "before"
+                            else line.date + datetime.timedelta(days=-1)
+                        )
+                        line.cancel_discount = (
+                            reservation.reservation_line_ids.filtered(
+                                lambda l: l.date == consumed_date
+                            ).cancel_discount
+                        )
+                    else:
+                        line.cancel_discount = 100
+                else:
+                    line.cancel_discount = 0
+            else:
+                line.cancel_discount = 0
 
     @api.depends("day_qty")
     def _compute_auto_qty(self):
