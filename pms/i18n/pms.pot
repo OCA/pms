@@ -2460,6 +2460,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__discount
+#: model:ir.model.fields,field_description:pms.field_pms_service__discount
 msgid "Discount (€)"
 msgstr ""
 
@@ -2469,8 +2470,18 @@ msgid "Discount Room"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+msgid "Discount Services"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service_line__discount
 msgid "Discount in the price of the service."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_service__discount
+msgid "Discount of total price"
 msgstr ""
 
 #. module: pms
@@ -7233,6 +7244,16 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__services_discount
+msgid "Services discount"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__services_discount
+msgid "Services discount (€)"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_account_bank_statement_line__service_ids
 msgid "Services in which the Account Bank Statement Lines are included"
 msgstr ""
@@ -8431,13 +8452,9 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__price_total
 #: model:ir.model.fields,help:pms.field_pms_reservation__price_total
-msgid "Total price with taxes"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_service__price_total
 #: model:ir.model.fields,help:pms.field_pms_service_line__price_day_total
-msgid "Total price without taxes"
+msgid "Total price with taxes"
 msgstr ""
 
 #. module: pms
