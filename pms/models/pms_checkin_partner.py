@@ -125,12 +125,24 @@ class PmsCheckinPartner(models.Model):
         selection=[("male", "Male"), ("female", "Female"), ("other", "Other")],
     )
     nationality_id = fields.Many2one(
-        string="Nationality ID",
+        string="Nationality",
         help="host nationality",
         readonly=False,
         store=True,
-        compute="_compute_nationality",
+        compute="_compute_nationality_id",
         comodel_name="res.country",
+    )
+    # TODO: Use new partner contact "other or "private" with
+    # personal contact address complete??
+    # to avoid user country_id on companies contacts.
+    # View to res.partner state_id inherit
+    state_id = fields.Many2one(
+        string="State",
+        help="host state",
+        readonly=False,
+        store=True,
+        compute="_compute_state_id",
+        comodel_name="res.country.state",
     )
     firstname = fields.Char(
         string="First Name",
@@ -273,12 +285,20 @@ class PmsCheckinPartner(models.Model):
                 record.gender = False
 
     @api.depends("partner_id")
-    def _compute_nationality(self):
+    def _compute_nationality_id(self):
         for record in self:
             if not record.nationality_id and record.partner_id.nationality_id:
                 record.nationality_id = record.partner_id.nationality_id
             elif not record.nationality_id:
                 record.nationality_id = False
+
+    @api.depends("partner_id")
+    def _compute_state_id(self):
+        for record in self:
+            if not record.state_id and record.partner_id.state_id:
+                record.state_id = record.partner_id.state_id
+            elif not record.state_id:
+                record.state_id = False
 
     @api.depends("reservation_id", "reservation_id.folio_id")
     def _compute_folio_id(self):
