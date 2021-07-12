@@ -199,7 +199,9 @@ class PmsReservationLine(models.Model):
                     manual_assigned = True
                 # if there is availability for the entire stay
                 if rooms_available:
-
+                    # Avoid that reservation._compute_splitted set the
+                    # reservation like splitted in intermediate calculations
+                    reservation = reservation.with_context(not_split=True)
                     # if the reservation has a preferred room
                     if reservation.preferred_room_id:
 
