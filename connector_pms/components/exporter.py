@@ -30,7 +30,7 @@ class ChannelBatchExporter(AbstractComponent):
         """ Run the batch synchronization """
         if not domain:
             domain = []
-        relation_model = self.binder_for(self.model._name).unwrap_model()
+        relation_model = self.binder_for().unwrap_model()
         for relation in self.env[relation_model].search(domain):
             self._export_record(relation)
 
