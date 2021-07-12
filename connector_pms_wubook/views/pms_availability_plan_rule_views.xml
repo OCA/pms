@@ -42,8 +42,11 @@
                 <group string="Wubook">
                     <field name="channel_wubook_bind_ids" nolabel="1">
                         <tree editable="bottom">
-                            <field name="backend_id" />
-                            <field name="odoo_id" />
+                            <field
+                                name="backend_id"
+                                attrs="{'readonly': [('id', '!=', False)]}"
+                            />
+                            <field name="external_id" />
                             <field name="no_ota" />
                         </tree>
                     </field>
