@@ -36,5 +36,4 @@ class ChannelWubookPmsAvailabilityAdapter(Component):
                 "rooms",
             ],
         )
-        # DISABLEDONDEV
-        # self._exec("update_avail", *params)
+        self._exec("update_avail", *params)
