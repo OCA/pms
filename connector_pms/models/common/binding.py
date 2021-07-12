@@ -82,14 +82,13 @@ class ChannelBinding(models.AbstractModel):
     # existing binding synchronization
     def resync_import(self):
         for record in self:
-            # import
             with record.backend_id.work_on(record._name) as work:
                 binder = work.component(usage="binder")
-                external_id = binder.to_external(self)
+                external_id = binder.to_external(record)
 
             func = record.import_record
             if record.env.context.get("connector_delay"):
-                func = func.delay
+                func = func.with_delay
 
             func(record.backend_id, external_id)
 
@@ -99,11 +98,11 @@ class ChannelBinding(models.AbstractModel):
         for record in self:
             with record.backend_id.work_on(record._name) as work:
                 binder = work.component(usage="binder")
-                relation = binder.unwrap_binding(self)
+                relation = binder.unwrap_binding(record)
 
             func = record.export_record
             if record.env.context.get("connector_delay"):
-                func = func.delay
+                func = func.with_delay
 
             func(record.backend_id, relation)
 
