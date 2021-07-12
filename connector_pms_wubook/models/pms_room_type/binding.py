@@ -62,7 +62,7 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
         string="Default Availability",
         compute="_compute_default_availability",
         inverse="_inverse_default_availability",
-        required=True,
+        required=False,
         readonly=False,
         store=True,
         help="Default availability for OTAs. "
@@ -74,6 +74,7 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
     @api.depends("default_quota", "default_max_avail", "total_rooms_count")
     def _compute_default_availability(self):
         for rec in self:
+
             rec.default_availability = min(
                 filter(
                     lambda x: x != -1,
