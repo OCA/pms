@@ -290,15 +290,7 @@ class GenericExporterCustom(AbstractComponent):
         """ Create the External record """
         # special check on data before export
         self._validate_create_data(data)
-        # DISABLEDONDEV
-        print(">>>>>>>>>>>>>>CREATE", data)
-        if self.model._name in (
-            "channel.wubook.pms.availability",
-            # "channel.wubook.pms.availability.plan",
-        ):
-            return self.backend_adapter.create(data)
-        # raise Exception("Unexpected Create!!")
-        # return self.backend_adapter.create(data)
+        return self.backend_adapter.create(data)
 
     def _update_data(self, map_record, fields=None, **kwargs):
         """ Get the data to pass to :py:meth:`_update` """
@@ -309,9 +301,4 @@ class GenericExporterCustom(AbstractComponent):
         assert self.external_id
         # special check on data before export
         self._validate_update_data(data)
-        # DISABLEDONDEV
-        print(">>>>>>>>>>>>>>WRITE", data)
-        # if self.model._name in ("channel.wubook.pms.availability.plan",):
-        #     self.backend_adapter.write(self.external_id, data)
-        # raise Exception("Unexpected Write!!")
-        # self.backend_adapter.write(self.external_id, data)
+        self.backend_adapter.write(self.external_id, data)
