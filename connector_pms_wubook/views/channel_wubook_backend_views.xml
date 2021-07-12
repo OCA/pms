@@ -140,6 +140,12 @@
                                         placeholder="Room types"
                                         widget="many2many_tags"
                                     />
+                                    <field
+                                        name="plan_ids"
+                                        nolabel="1"
+                                        placeholder="Availability Plans"
+                                        widget="many2many_tags"
+                                    />
                                     <button
                                         name="import_availability_plans"
                                         type="object"
