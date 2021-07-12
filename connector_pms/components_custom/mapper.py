@@ -95,6 +95,26 @@ class Mapper(AbstractComponent):
 
         return list(set(result.values()))
 
+class ChannelChildMapperImport(AbstractComponent):
+    _inherit = "base.map.child"
+
+    def get_all_items(self, mapper, items, parent, to_attr, options):
+        mapped = []
+        for item in items:
+            map_record = mapper.map_record(item, parent=parent)
+            if self.skip_item(map_record):
+                continue
+            item_values = self.get_item_values(map_record, to_attr, options)
+            if item_values:
+                mapped.append(item_values)
+        return mapped
+
+    def get_items(self, items, parent, to_attr, options):
+        mapper = self._child_mapper()
+        mapped = self.get_all_items(mapper, items, parent, to_attr, options)
+        return self.format_items(mapped)
+
+
 
 # TODO: create a fix on OCA repo and remove this class
 class ExportMapper(AbstractComponent):
