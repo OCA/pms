@@ -122,9 +122,6 @@ class GenericImporterCustom(AbstractComponent):
         """
         return
 
-    # def _force_binding(self, external_id, external_data=None):
-    #     return
-
     def _after_import(self, binding):
         return
 
@@ -197,10 +194,6 @@ class GenericImporterCustom(AbstractComponent):
         # if binding not exists, try to link existing internal object
         if not binding:
             binding = binder.to_binding_from_external_key(internal_data)
-
-        # # force binding
-        # if not binding:
-        #     binding = self._force_binding(external_id, external_data=external_data)
 
         # skip binding
         skip = self._must_skip(binding)
