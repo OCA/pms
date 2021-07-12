@@ -41,7 +41,9 @@ class ChannelWubookAdapter(AbstractComponent):
             args = (self.property_code, *args)
         func = getattr(s, funcname)
         try:
-            _logger.info(f"Request to Wubook: {funcname}({', '.join(map(str, args))})")
+            _logger.info(
+                f"Request to Wubook: {self.model._name}.{funcname}({', '.join(map(repr, args))})"
+            )
             try:
                 data = func(token, *args)
                 if funcname == "get_channels_info":
