@@ -81,7 +81,7 @@ class ChannelWubookPmsAvailabilityPlanAdapter(Component):
         all_plans.append(
             {
                 "id": ID_WUBOOK_PLAN,
-                "name": "Wubook availability plan",
+                "name": "Wubook Restrictions",
             }
         )
 
@@ -158,6 +158,8 @@ class ChannelWubookPmsAvailabilityPlanAdapter(Component):
                                 }
                             )
                     plan["items"] = self._filter(plan["items"], room_domain)
+
+        self._format_data(base_plans)
         return base_plans
 
     def search(self, domain):
@@ -208,11 +210,19 @@ class ChannelWubookPmsAvailabilityPlanAdapter(Component):
                 raise ValidationError(_("The rooms exists twice with the same date"))
             items_by_room[room["id_room"]][room["date"]] = room
 
-        rules_by_room, avail_by_room = {}, {}
+        all_rules_by_room, rules_by_room, avail_by_room = {}, {}, {}
+        rules_by_room = {}
         for id_room, room_by_date in items_by_room.items():
             for i in range((dto - dfrom).days + 1):
                 date = dfrom + datetime.timedelta(days=i)
                 room = room_by_date.get(date, {})
+                all_rules_by_room.setdefault(id_room, []).append(
+                    {
+                        x: room[x]
+                        for x in room
+                        if x in RESTRICTION_FIELDS_EXPORT + AVAILABILITY_FIELDS
+                    }
+                )
                 rules_by_room.setdefault(str(id_room), []).append(
                     {x: room[x] for x in room if x in RESTRICTION_FIELDS_EXPORT}
                 )
@@ -220,30 +230,36 @@ class ChannelWubookPmsAvailabilityPlanAdapter(Component):
                     {x: room[x] for x in room if x in AVAILABILITY_FIELDS}
                 )
 
-        if rules_by_room:
-            if _id == ID_WUBOOK_PLAN:
-                # update_avail(token, lcode, dfrom, rooms)
-                params = self._prepare_parameters(
-                    {
-                        "dfrom": dfrom.strftime(self._date_format),
-                        "rooms": rules_by_room,
-                    },
-                    ["dfrom", "rooms"],
-                )
-                self._exec("update_avail", *params)
-            else:
-                # rplan_update_rplan_values(token, lcode, pid, dfrom, values)
-                params = self._prepare_parameters(
-                    {
-                        "pid": _id,
-                        "dfrom": dfrom.strftime(self._date_format),
-                        "values": rules_by_room,
-                    },
-                    ["pid", "dfrom", "values"],
-                )
-                self._exec("rplan_update_rplan_values", *params)
+        # if rules_by_room:
+        if _id == ID_WUBOOK_PLAN:
+            # update_avail(token, lcode, dfrom, rooms)
+            params = self._prepare_parameters(
+                {
+                    "dfrom": dfrom.strftime(self._date_format),
+                    "rooms": [
+                        {
+                            "id": _id,
+                            "days": list(days),
+                        }
+                        for _id, days in all_rules_by_room.items()
+                    ],
+                },
+                ["dfrom", "rooms"],
+            )
+            self._exec("update_avail", *params)
+        else:
+            # rplan_update_rplan_values(token, lcode, pid, dfrom, values)
+            params = self._prepare_parameters(
+                {
+                    "pid": _id,
+                    "dfrom": dfrom.strftime(self._date_format),
+                    "values": rules_by_room,
+                },
+                ["pid", "dfrom", "values"],
+            )
+            self._exec("rplan_update_rplan_values", *params)
 
-        if avail_by_room:
+            # update_avail(token, lcode, dfrom, rooms)
             params = self._prepare_parameters(
                 {
                     "dfrom": dfrom.strftime(self._date_format),
@@ -258,3 +274,9 @@ class ChannelWubookPmsAvailabilityPlanAdapter(Component):
                 ["dfrom", "rooms"],
             )
             self._exec("update_avail", *params)
+
+    def _format_data(self, values):
+        conv_mapper = {
+            "/items/closed_departure": lambda x: int(x),
+        }
+        self._convert_format(values, conv_mapper)
