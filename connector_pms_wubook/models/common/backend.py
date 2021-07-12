@@ -148,6 +148,12 @@ class ChannelWubookBackend(models.Model):
         column1="backend_id",
         column2="room_type_id",
     )
+    plan_ids = fields.Many2many(
+        comodel_name="pms.availability.plan",
+        relation="wubook_backend_plan_availability_plan_rel",
+        column1="backend_id",
+        column2="availability_plan_id",
+    )
 
     def import_availability_plans(self):
         if self.user_id:

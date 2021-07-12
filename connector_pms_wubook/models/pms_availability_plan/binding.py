@@ -30,7 +30,8 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
         backend_id,
         date_from,
         date_to,
-        room_type_ids,
+        room_type_ids=None,
+        plan_ids=None,
         delayed=True,
     ):
         """ Prepare the batch import of Availability Plans from Channel """
@@ -57,6 +58,22 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
                     )
                 external_ids.append(binding.external_id)
             domain.append(("id_room", "in", external_ids))
+        if plan_ids:
+            with backend_id.work_on("channel.wubook.pms.availability.plan") as work:
+                binder = work.component(usage="binder")
+            external_ids = []
+            for plan in plan_ids:
+                binding = binder.wrap_record(plan)
+                if not binding or not binding.external_id:
+                    raise NotImplementedError(
+                        _(
+                            "The Availability Plan %s has no binding. Import of Odoo records "
+                            "without binding is not supported yet"
+                        )
+                        % plan.name
+                    )
+                external_ids.append(binding.external_id)
+            domain.append(("id", "in", external_ids))
         return self.import_batch(
             backend_record=backend_id, domain=domain, delayed=delayed
         )
@@ -87,6 +104,7 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
                     self.backend_id,
                     date_from,
                     date_to,
-                    room_types,
+                    room_type_ids=room_types,
+                    plan_ids=record.odoo_id,
                     delayed=False,
                 )
