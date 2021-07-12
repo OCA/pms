@@ -13,6 +13,5 @@ class ChannelWubookBinding(models.AbstractModel):
         comodel_name="channel.wubook.backend",
         string="Wubook Backend",
         required=True,
-        readonly=True,
         ondelete="restrict",
     )
