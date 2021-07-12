@@ -41,7 +41,3 @@ class ChannelWubookProductPricelistImporter(Component):
             )
         else:
             raise ValidationError(_("Pricelist type %s not valid") % pricelist_type)
-
-    # def _force_binding(self, external_id, external_data=None):
-    #     binder = self.binder_for(self.model)
-    #     return binder.wrap_record(self.backend_record.pricelist_id, force=True)
