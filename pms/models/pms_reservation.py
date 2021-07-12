@@ -1123,7 +1123,7 @@ class PmsReservation(models.Model):
         # REVIEW: Updating preferred_room_id here avoids cyclical dependency
         for reservation in self:
             room_ids = reservation.reservation_line_ids.mapped("room_id.id")
-            if len(room_ids) > 1:
+            if len(room_ids) > 1 and not self._context.get("not_split"):
                 reservation.splitted = True
                 reservation.preferred_room_id = False
             else:
