@@ -34,8 +34,8 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
     def _compute_sale_avail(self):
         for record in self:
             rules = record.avail_rule_ids.filtered(
-                lambda r: record.backend_id
-                in r.availability_plan_id.channel_wubook_bind_ids.mapped("backend_id")
+                lambda x: record.backend_id
+                in x.availability_plan_id.channel_wubook_bind_ids.backend_id
             )
             if not rules:
                 with self.backend_id.work_on("channel.wubook.pms.room.type") as work:
@@ -45,11 +45,7 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
                     binder.wrap_record(record.room_type_id).default_availability,
                 )
                 if record.sale_avail != min_avail:
-                    # Odoo Poltergeist: This should be 'record.sale_avail ='
-                    # but doing so the write method of record is never
-                    # executed and the listener never triggered.
-                    # Misteriously the data is actually saved to the database
-                    record.write({"sale_avail": min_avail})
+                    record.sale_avail = min_avail
             else:
                 for field in ["quota", "max_avail"]:
                     inconsistence = len(set(rules.mapped(field))) > 1
@@ -72,8 +68,7 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
                                 )
                             )
                     if record.sale_avail != sale_avail:
-                        # Odoo Poltergeist: same as before
-                        record.write({"sale_avail": sale_avail})
+                        record.sale_avail = sale_avail
 
     def _inverse_sale_avail(self):
         for record in self:
