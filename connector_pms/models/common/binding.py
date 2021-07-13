@@ -11,11 +11,40 @@ class ChannelBinding(models.AbstractModel):
     _inherit = "external.binding"
     _description = "Channel PMS Binding (abstract)"
 
+    external_id = fields.Integer(string="External ID", required=False)
+
     # by default we consider sync_date as the import one
     sync_date = fields.Datetime(readonly=True, string="Last Sync (import)")
     sync_date_export = fields.Datetime(readonly=True, string="Last Sync (export)")
 
-    external_id = fields.Integer(string="External ID", required=False)
+    # TODO: move next 2 fields to external.binding in order to
+    #   add this functionality to connector
+    actual_write_date = fields.Datetime(
+        string="Last Updated on (actual)",
+        help="Max write date between binding and actual record",
+        compute="_compute_actual_write_date",
+        readonly=True,
+    )
+
+    @api.depends("write_date", "odoo_id.write_date")
+    def _compute_actual_write_date(self):
+        for rec in self:
+            rec.actual_write_date = max(rec.write_date, rec.odoo_id.write_date).replace(
+                microsecond=0
+            )
+
+    # We don't need synced attribute for import since we'd need to know the
+    # remote modification date not the local one
+    synced_export = fields.Boolean(
+        string="Synced (export)", compute="_compute_synced_export", readonly=True
+    )
+
+    @api.depends("sync_date_export", "actual_write_date")
+    def _compute_synced_export(self):
+        for rec in self:
+            rec.synced_export = (
+                rec.sync_date_export and rec.sync_date_export >= rec.actual_write_date
+            )
 
     _sql_constraints = [
         (
