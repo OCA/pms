@@ -57,7 +57,7 @@ class BinderCustom(AbstractComponent):
 
         if not binding:
             if force:
-                binding = self.model.create(
+                binding = self.model.with_context(connector_no_export=True).create(
                     {
                         self._odoo_field: relation.id,
                         self._backend_field: self.backend_record.id,
