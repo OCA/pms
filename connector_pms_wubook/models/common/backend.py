@@ -200,6 +200,15 @@ class ChannelWubookBackend(models.Model):
                 rec.avail_room_type_ids,
             )
 
+    # property availability
+    def export_property_availability(self):
+        if self.user_id:
+            self = self.with_user(self.user_id)
+        for rec in self:
+            rec.env["channel.wubook.pms.property.availability"].export_record(
+                rec, self.pms_property_id
+            )
+
     # folio
     folio_date_arrival_from = fields.Date(string="Arrival Date From")
     folio_date_arrival_to = fields.Date(string="Arrival Date To")
