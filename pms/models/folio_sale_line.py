@@ -785,7 +785,9 @@ class FolioSaleLine(models.Model):
                     name += ", " + date.strftime("%d")
 
             return "{} ({}).".format(
-                product_id.name
+                False
+                if not product_id.name
+                else product_id.name
                 + (
                     " - "
                     + reservation_id.board_service_room_id.pms_board_service_id.name
