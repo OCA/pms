@@ -12,3 +12,8 @@ class ChannelMapperExport(AbstractComponent):
 class ChannelChildMapperExport(AbstractComponent):
     _name = "channel.child.mapper.export"
     _inherit = "base.map.child.export"
+
+
+class ChannelChildBinderMapperExport(AbstractComponent):
+    _name = "channel.child.binder.mapper.export"
+    _inherit = "base.map.child.binder.export"
