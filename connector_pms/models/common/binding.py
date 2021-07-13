@@ -11,7 +11,9 @@ class ChannelBinding(models.AbstractModel):
     _inherit = "external.binding"
     _description = "Channel PMS Binding (abstract)"
 
-    sync_date = fields.Datetime(readonly=True)
+    # by default we consider sync_date as the import one
+    sync_date = fields.Datetime(readonly=True, string="Last Sync (import)")
+    sync_date_export = fields.Datetime(readonly=True, string="Last Sync (export)")
 
     external_id = fields.Integer(string="External ID", required=False)
 
