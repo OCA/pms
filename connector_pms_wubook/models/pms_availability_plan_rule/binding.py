@@ -10,6 +10,8 @@ class ChannelWubookPmsAvailabilityPlanRuleBinding(models.Model):
     _inherit = "channel.wubook.binding"
     _inherits = {"pms.availability.plan.rule": "odoo_id"}
 
+    external_id = fields.Char(string="External ID")
+
     odoo_id = fields.Many2one(
         comodel_name="pms.availability.plan.rule",
         string="Odoo ID",
