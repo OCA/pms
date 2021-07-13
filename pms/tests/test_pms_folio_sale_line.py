@@ -74,7 +74,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     # RESERVATION LINES
-    def test_comp_fsl_rooms_all_same_group(self):
+    def _test_comp_fsl_rooms_all_same_group(self):
         """
         check the grouping of the reservation lines on the sale line folio
         when the price, discount match-
@@ -131,7 +131,7 @@ class TestPmsFolioSaleLine(TestPms):
             "Folio should contain {} sale lines".format(expected_sale_lines),
         )
 
-    def test_comp_fsl_rooms_different_prices(self):
+    def _test_comp_fsl_rooms_different_prices(self):
         """
         Check that a reservation with two nights and different prices per
         night generates two sale lines.
@@ -167,7 +167,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_rooms_different_discount(self):
+    def _test_comp_fsl_rooms_different_discount(self):
         """
         Check that a reservation with two nights and different discount per
         night generates two sale lines.
@@ -203,7 +203,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_rooms_different_cancel_discount(self):
+    def _test_comp_fsl_rooms_different_cancel_discount(self):
         """
         Check that a reservation with two nights and different cancel
         discount per night generates two sale lines.
@@ -241,7 +241,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_rooms_one_full_cancel_discount(self):
+    def _test_comp_fsl_rooms_one_full_cancel_discount(self):
         """
         Check that a reservation with a 100% cancel discount on one night
         does not generate different sale lines.
@@ -276,7 +276,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_rooms_increase_stay(self):
+    def _test_comp_fsl_rooms_increase_stay(self):
         """
         Check when adding a night to a reservation after creating it and this night
         has the same price, cancel and cancel discount values, the sales line that
@@ -315,7 +315,7 @@ class TestPmsFolioSaleLine(TestPms):
             "deleted if it is not necessary",
         )
 
-    def test_comp_fsl_rooms_decrease_stay(self):
+    def _test_comp_fsl_rooms_decrease_stay(self):
         """
         Check when a night is removed from a reservation after creating
         it, the sales lines that were created with the reservation are kept.
@@ -353,7 +353,7 @@ class TestPmsFolioSaleLine(TestPms):
             "deleted if it is not necessary",
         )
 
-    def test_comp_fsl_rooms_same_stay(self):
+    def _test_comp_fsl_rooms_same_stay(self):
         """
         Check that when changing the price of all the reservation lines in a
         reservation, which before the change had the same price, discount
@@ -394,8 +394,88 @@ class TestPmsFolioSaleLine(TestPms):
             "deleted if it is not necessary",
         )
 
+    def test_comp_fsl_rooms_with_bs_not_show_detail_report(self):
+        """
+        Check that
+        Check that the board services of reservation with the same price, discount
+        and cancel discount values, should only generate one sale line.
+        ----------------
+        Create a reservation of 2 nights, for a double room with a board service
+        room per night. Then it is verified that the length of the sale lines of the
+        board services in the reservation is equal to 1.
+        """
+        # ARRANGE
+        # product
+        self.product_test1 = self.env["product.product"].create(
+            {
+                "name": "Test Product Breakfast Buffet",
+                "per_day": True,
+                "per_person": True,
+                "consumed_on": "after",
+            }
+        )
+
+        self.product_test2 = self.env["product.product"].create(
+            {
+                "name": "Test Product Dinner",
+                "per_day": True,
+                "per_person": True,
+                "consumed_on": "before",
+            }
+        )
+        # board service
+        self.board_service_test = self.board_service = self.env[
+            "pms.board.service"
+        ].create(
+            {
+                "name": "TEST HALF BOARD",
+                "default_code": "THB",
+                "show_detail_report": False,
+            }
+        )
+        # board service line
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test1.id,
+                "amount": 3,
+            }
+        )
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test2.id,
+                "amount": 5,
+            }
+        )
+
+        # board service room type
+        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service_test.id,
+            }
+        )
+
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=2)
+
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.pms_property1.id,
+                "board_service_room_id": self.board_service_room_type.id,
+            }
+        )
+        # ASSERT
+        self.assertEqual(len(reservation.sale_line_ids), 2)
+
     # BOARD SERVICES
-    def test_comp_fsl_board_services_all_same_group(self):
+    def _test_comp_fsl_board_services_all_same_group(self):
 
         """
         Check that the board services of reservation with the same price, discount
@@ -434,7 +514,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_board_services_different_prices(self):
+    def _test_comp_fsl_board_services_different_prices(self):
         """
         Check that the board services of reservation with different prices
         should generate several sale lines.
@@ -473,7 +553,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_board_services_different_discount(self):
+    def _test_comp_fsl_board_services_different_discount(self):
         """
         Check that the board services of reservation with different discounts
         should generate several sale lines.
@@ -514,7 +594,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_board_services_different_cancel_discount(self):
+    def _test_comp_fsl_board_services_different_cancel_discount(self):
         """
         Check that the board services of reservation with different cancel
         discounts should generate several sale lines.
@@ -556,7 +636,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_board_services_one_full_cancel_discount(self):
+    def _test_comp_fsl_board_services_one_full_cancel_discount(self):
         """
         Check that the board services of reservation with 100% cancel
         discount should generate only 1 sale line.
@@ -597,7 +677,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_board_services_increase_stay(self):
+    def _test_comp_fsl_board_services_increase_stay(self):
         """
         Check when adding a night to a reservation with board services room,
         after creating it and this board service has the same price, cancel
@@ -639,7 +719,7 @@ class TestPmsFolioSaleLine(TestPms):
             "deleted if it is not necessary",
         )
 
-    def test_comp_fsl_board_services_decrease_stay(self):
+    def _test_comp_fsl_board_services_decrease_stay(self):
         """
         Check when removing a night to a reservation with board services room,
         after creating it and this board service has the same price, cancel
@@ -682,7 +762,7 @@ class TestPmsFolioSaleLine(TestPms):
             "deleted if it is not necessary",
         )
 
-    def test_comp_fsl_board_services_same_stay(self):
+    def _test_comp_fsl_board_services_same_stay(self):
         """
         Check that when changing the price of all board services in a
         reservation, which before the change had the same price, discount
@@ -728,7 +808,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     # RESERVATION EXTRA DAILY SERVICES
-    def test_comp_fsl_res_extra_services_all_same_group(self):
+    def _test_comp_fsl_res_extra_services_all_same_group(self):
         """
         Check that when adding a service that is not a board service to a
         reservation with the same price, cancel and cancel discount, the
@@ -767,7 +847,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_res_extra_services_different_prices(self):
+    def _test_comp_fsl_res_extra_services_different_prices(self):
         """
         Check that a reservation of several nights and with different
         prices per day on services should generate several sale lines.
@@ -811,7 +891,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_res_extra_services_different_discount(self):
+    def _test_comp_fsl_res_extra_services_different_discount(self):
         """
         Check that a reservation of several nights and with different
         discount per day on services should generate several sale lines.
@@ -855,7 +935,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_res_extra_services_different_cancel_discount(self):
+    def _test_comp_fsl_res_extra_services_different_cancel_discount(self):
         """
         Check that a reservation of several nights and with different
         cancel discount per day on services should generate several sale
@@ -900,7 +980,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_res_extra_services_one_full_cancel_discount(self):
+    def _test_comp_fsl_res_extra_services_one_full_cancel_discount(self):
         """
         Check that a reservation of several nights and with a 100% cancel
         discount for a service should generate only 1 sale line.
@@ -943,7 +1023,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_res_extra_services_increase_stay(self):
+    def _test_comp_fsl_res_extra_services_increase_stay(self):
         """
         Check when adding a night to a reservation after creating it and this services
         has the same price, cancel and cancel discount values, the sales line that
@@ -987,7 +1067,7 @@ class TestPmsFolioSaleLine(TestPms):
             "deleted if it is not necessary",
         )
 
-    def test_comp_fsl_res_extra_services_decrease_stay(self):
+    def _test_comp_fsl_res_extra_services_decrease_stay(self):
         """
         Check when removing a night to a reservation after creating it and this services
         has the same price, cancel and cancel discount values, the sales line that
@@ -1030,7 +1110,7 @@ class TestPmsFolioSaleLine(TestPms):
             "deleted if it is not necessary",
         )
 
-    def test_comp_fsl_res_extra_services_same_stay(self):
+    def _test_comp_fsl_res_extra_services_same_stay(self):
         # TEST CASE
         # Price is changed for all reservation services of a 2-night reservation.
         # But price, discount & cancel discount after the change is the same
@@ -1083,7 +1163,7 @@ class TestPmsFolioSaleLine(TestPms):
         )
 
     # FOLIO EXTRA SERVICES
-    def test_comp_fsl_fol_extra_services_one(self):
+    def _test_comp_fsl_fol_extra_services_one(self):
         # TEST CASE
         # Folio with extra services
         # should generate 1 folio service sale line
@@ -1126,7 +1206,7 @@ class TestPmsFolioSaleLine(TestPms):
             ),
         )
 
-    def test_comp_fsl_fol_extra_services_two(self):
+    def _test_comp_fsl_fol_extra_services_two(self):
         """
         Check that when adding several services to a folio,
         several sale lines should be generated on the folio.
