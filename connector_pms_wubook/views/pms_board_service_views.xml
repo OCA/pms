@@ -16,19 +16,20 @@
                                 attrs="{'readonly': [('id', '!=', False)]}"
                             />
                             <field name="external_id" />
-                            <field name="sync_date" />
                             <button
                                 type="object"
                                 title="Resynchronize (import)"
                                 name="resync_import"
                                 class="fa fa-download"
                             />
+                            <field name="sync_date" />
                             <button
                                 type="object"
                                 title="Resynchronize (export)"
                                 name="resync_export"
                                 class="fa fa-upload"
                             />
+                            <field name="sync_date_export" />
                         </tree>
                     </field>
                 </group>
