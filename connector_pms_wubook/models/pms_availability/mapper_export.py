@@ -14,22 +14,11 @@ class ChannelWubookPmsAvailabilityMapperExport(Component):
 
     _apply_on = "channel.wubook.pms.availability"
 
-    # direct = [
-    #     ("sale_avail", "avail"),
-    #     ("date", "date"),
-    # ]
+    direct = [
+        ("sale_avail", "avail"),
+        ("date", "date"),
+    ]
 
-    # @changed_by('sale_avail')
-    @mapping
-    def avail(self, record):
-        return {"avail": record.sale_avail}
-
-    # @changed_by('date')
-    @mapping
-    def date(self, record):
-        return {"date": record.date}
-
-    # @changed_by('room_type_id')
     @mapping
     def id_room(self, record):
         room_type = record.room_type_id
