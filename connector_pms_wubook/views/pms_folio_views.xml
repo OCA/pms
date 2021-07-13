@@ -29,6 +29,7 @@
                                 name="resync_export"
                                 class="fa fa-upload"
                             />
+                            <field name="synced_export" />
                             <field name="sync_date_export" />
                         </tree>
                     </field>
