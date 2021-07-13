@@ -5,6 +5,7 @@
 from odoo.addons.component.core import AbstractComponent
 from odoo.addons.component_event.components.event import skip_if
 
+
 class ChannelWubookListener(AbstractComponent):
     _name = "channel.wubook.listener"
     _inherit = "base.connector.listener"

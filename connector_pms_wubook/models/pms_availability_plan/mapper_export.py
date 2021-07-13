@@ -32,5 +32,5 @@ class ChannelWubookPmsAvailabilityPlanChildMapperExport(Component):
     def skip_item(self, map_record):
         return map_record.source.pms_property_id != self.backend_record.pms_property_id
         # or \
-        # (map_record.parent.source.sync_date and
-        #  map_record.parent.source.sync_date >= map_record.source.write_date)
+        # (map_record.parent.source.sync_date_export and
+        #  map_record.parent.source.sync_date_export >= map_record.source.write_date)
