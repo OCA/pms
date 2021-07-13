@@ -23,6 +23,7 @@
         "views/pms_room_type_views.xml",
         "views/pms_room_type_class_views.xml",
         "views/pms_board_service_views.xml",
+        "views/pms_property_views.xml",
         "views/pms_folio_views.xml",
         "views/product_pricelist_views.xml",
         "views/pms_availability_plan_views.xml",
