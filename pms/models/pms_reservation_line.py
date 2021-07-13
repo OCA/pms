@@ -408,22 +408,6 @@ class PmsReservationLine(models.Model):
                 if not show_detail_report:
                     price_board_services += bs.day_qty * bs.price_unit
 
-            room_type_id = record.reservation_id.room_type_id.id
-            product = self.env["pms.room.type"].browse(room_type_id).product_id
-            partner = self.env["res.partner"].browse(
-                record.reservation_id.partner_id.id
-            )
-
-            product = product.with_context(
-                lang=partner.lang,
-                partner=partner.id,
-                quantity=1,
-                date=record.reservation_id.date_order,
-                consumption_date=record.date,
-                pricelist=record.reservation_id.pricelist_id.id,
-                uom=product.uom_id.id,
-                property=record.reservation_id.pms_property_id.id,
-            )
             record.price_with_bs = price_board_services + record.price
 
     @api.depends("reservation_id.state", "reservation_id.overbooking")
