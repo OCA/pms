@@ -1906,6 +1906,11 @@ msgid "Country"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__state_id
+msgid "Country State"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 msgid "Create Folio"
 msgstr ""
@@ -4749,15 +4754,11 @@ msgid "Name of who made the reservation"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__nationality_id
 #: model:ir.model.fields,field_description:pms.field_res_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_res_users__nationality_id
 msgid "Nationality"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__nationality_id
-msgid "Nationality ID"
 msgstr ""
 
 #. module: pms
@@ -7466,11 +7467,12 @@ msgid "Start date to apply daily pricelist items"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__state
 #: model:ir.model.fields,field_description:pms.field_pms_property__state_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__state
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__state
 #: model:ir.model.fields,field_description:pms.field_pms_service__state
+#: model:ir.model.fields,field_description:pms.field_res_partner__state_id
+#: model:ir.model.fields,field_description:pms.field_res_users__state_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "State"
@@ -7489,6 +7491,7 @@ msgid "State of the reservation line."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__state
 #: model:ir.model.fields,field_description:pms.field_pms_folio__state
 msgid "Status"
 msgstr ""
@@ -8962,6 +8965,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__lastname2
 msgid "host second lastname"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_checkin_partner__state_id
+msgid "host state"
 msgstr ""
 
 #. module: pms
