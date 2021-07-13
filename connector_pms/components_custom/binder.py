@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import _, models
+from odoo import _, fields, models, tools
 from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import AbstractComponent
@@ -15,8 +15,39 @@ class BinderCustom(AbstractComponent):
     _name = "base.binder.custom"
     _inherit = "base.binder"
 
+    _sync_date_export_field = "sync_date_export"
+
     _internal_alt_id_field = "_internal_alt_id"
     _external_alt_id_field = "_external_alt_id"
+
+    def bind(self, external_id, binding, export=False):
+        """Create the link between an external ID and an Odoo ID
+
+        :param external_id: external id to bind
+        :param binding: Odoo record to bind
+        :type binding: int
+        """
+        # Prevent False, None, or "", but not 0
+        assert (
+            external_id or external_id == 0
+        ) and binding, "external_id or binding missing, " "got: %s, %s" % (
+            external_id,
+            binding,
+        )
+        # avoid to trigger the export when we modify the `external_id`
+        now_fmt = fields.Datetime.now()
+        if isinstance(binding, models.BaseModel):
+            binding.ensure_one()
+        else:
+            binding = self.model.browse(binding)
+        binding.with_context(connector_no_export=True).write(
+            {
+                self._external_field: tools.ustr(external_id),
+                export
+                and self._sync_date_export_field
+                or self._sync_date_field: now_fmt,
+            }
+        )
 
     def wrap_record(self, relation, force=False):
         """Give the real record
@@ -193,7 +224,7 @@ class BinderCustom(AbstractComponent):
             if binding:
                 current_external_id = self.to_external(binding)
                 if not current_external_id:
-                    self.bind(external_id, binding)
+                    self.bind(external_id, binding, export=True)
                 else:
                     if current_external_id != external_id:
                         raise InvalidDataError(
