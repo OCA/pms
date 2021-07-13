@@ -292,7 +292,11 @@
                                         t-options='{"widget": "monetary", "display_currency": folio.pricelist_id.currency_id}'
                                     />
                                 </td>
-                                <td t-if="display_discount" name="td_discount" class="text-right" >
+                                <td
+                                    t-if="display_discount"
+                                    name="td_discount"
+                                    class="text-right"
+                                >
                                      <span t-field="sale_line.discount" />
                                 </td>
                                 <td name="td_taxes" class="text-right">

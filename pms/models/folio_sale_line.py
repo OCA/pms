@@ -790,7 +790,9 @@ class FolioSaleLine(models.Model):
                     " - "
                     + reservation_id.board_service_room_id.pms_board_service_id.name
                     if reservation_id.board_service_room_id
-                    and not reservation_id.board_service_room_id.pms_board_service_id.show_detail_report
+                    and not (
+                        reservation_id.board_service_room_id.pms_board_service_id
+                    ).show_detail_report
                     else ""
                 ),
                 name,
