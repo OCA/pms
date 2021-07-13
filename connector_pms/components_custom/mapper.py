@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import collections
 import logging
+import uuid
 
 from odoo import _
 from odoo.exceptions import ValidationError
@@ -80,6 +81,7 @@ class Mapper(AbstractComponent):
                     result[to_attr] = from_attr
 
         # TODO: create a new decorator to write the field mapping manually
+        #   I think this is not necessary, just use changed_by is precisely for that
         # for meth, definition in self.map_methods:
         #     for mcb in definition.mapping:
         #         if mcb in fields:
@@ -107,6 +109,7 @@ class ChannelChildMapperImport(AbstractComponent):
                 continue
             item_values = self.get_item_values(map_record, to_attr, options)
             if item_values:
+                self._child_bind(map_record, item_values)
                 mapped.append(item_values)
         return mapped
 
@@ -114,6 +117,41 @@ class ChannelChildMapperImport(AbstractComponent):
         mapper = self._child_mapper()
         mapped = self.get_all_items(mapper, items, parent, to_attr, options)
         return self.format_items(mapped)
+
+
+class ImportMapChild(AbstractComponent):
+    _inherit = "base.map.child.import"
+
+    def _child_bind(self, map_record, item_values):
+        return
+
+
+class ImportMapChildBinder(AbstractComponent):
+    _name = "base.map.child.binder.import"
+    _inherit = "base.map.child.import"
+
+    def _child_bind(self, map_record, item_values):
+        binder = self.binder_for()
+        if binder._external_field not in item_values:
+            item_values[binder._external_field] = uuid.uuid4().hex
+        item_values[binder._sync_date_field] = fields.Datetime.now()
+
+
+class ExportMapChild(AbstractComponent):
+    _inherit = "base.map.child.export"
+
+    def _child_bind(self, map_record, item_values):
+        return
+
+
+class ExportMapChildBinder(AbstractComponent):
+    _name = "base.map.child.binder.export"
+    _inherit = "base.map.child.export"
+
+    def _child_bind(self, map_record, item_values):
+        binder = self.binder_for()
+        external_id = map_record.source.external_id or uuid.uuid4().hex
+        binder.bind(external_id, map_record.source, export=True)
 
 
 # TODO: create a fix on OCA repo and remove this class
@@ -145,3 +183,6 @@ class ExportMapper(AbstractComponent):
             mapping_func = m2o_to_external(from_attr)
             value = mapping_func(self, record, to_attr)
         return value
+
+
+# TODO: move uuid to generic binder
