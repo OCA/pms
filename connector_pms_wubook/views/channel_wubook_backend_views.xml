@@ -170,6 +170,20 @@
                             </group>
                             <group>
                                 <label
+                                    for="export_property_availability"
+                                    string="Export Property Availability"
+                                />
+                                <div>
+                                    <button
+                                        name="export_property_availability"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Export in Background"
+                                    />
+                                </div>
+                            </group>
+                            <group>
+                                <label
                                     for="avail_date_from"
                                     string="Export Availability"
                                 />
@@ -242,7 +256,7 @@
                                             class="oe_inline"
                                         />
                                     </div>
-                                     <div>
+                                    <div>
                                         <label
                                             for="folio_reservation_code"
                                             string="Reservation Code"
