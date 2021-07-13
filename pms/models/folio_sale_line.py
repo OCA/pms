@@ -784,7 +784,17 @@ class FolioSaleLine(models.Model):
                 else:
                     name += ", " + date.strftime("%d")
 
-            return "{} ({}).".format(product_id.name, name)
+            return "{} ({}).".format(
+                product_id.name
+                + (
+                    " - "
+                    + reservation_id.board_service_room_id.pms_board_service_id.name
+                    if reservation_id.board_service_room_id
+                    and not reservation_id.board_service_room_id.pms_board_service_id.show_detail_report
+                    else ""
+                ),
+                name,
+            )
         elif service_line_ids:
             month = False
             name = False

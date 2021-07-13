@@ -1473,8 +1473,8 @@ class PmsFolio(models.Model):
                 ("reservation_id", "=", reservation.id),
                 ("cancel_discount", "<", 100),
             ],
-            ["price", "discount", "cancel_discount"],
-            ["price", "discount", "cancel_discount"],
+            ["price_with_bs", "discount", "cancel_discount"],
+            ["price_with_bs", "discount", "cancel_discount"],
             lazy=False,
         )
         current_sale_line_ids = reservation.sale_line_ids.filtered(
@@ -1490,13 +1490,13 @@ class PmsFolio(models.Model):
             )
 
             if current_sale_line_ids and index <= (len(current_sale_line_ids) - 1):
-                current_sale_line_ids[index].price_unit = item["price"]
+                current_sale_line_ids[index].price_unit = item["price_with_bs"]
                 current_sale_line_ids[index].discount = final_discount
                 current_sale_line_ids[index].reservation_line_ids = lines_to.ids
             else:
                 new = {
                     "reservation_id": reservation.id,
-                    "price_unit": item["price"],
+                    "price_unit": item["price_with_bs"],
                     "discount": final_discount,
                     "folio_id": folio.id,
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
@@ -1549,12 +1549,27 @@ class PmsFolio(models.Model):
 
     @api.model
     def generate_reservation_services_sale_lines(self, folio, reservation):
+        show_detail_report = "service_id.reservation_id.board_service_room_id."
+        show_detail_report = (
+            show_detail_report + "pms_board_service_id.show_detail_report"
+        )
         for service in reservation.service_ids:
+            services_to_ignore = self.env["pms.service.line"].search(
+                [
+                    ("is_board_service", "=", True),
+                    (
+                        show_detail_report,
+                        "=",
+                        False,
+                    ),
+                ]
+            )
             expected_reservation_services = self.env["pms.service.line"].read_group(
                 [
                     ("reservation_id", "=", reservation.id),
                     ("service_id", "=", service.id),
                     ("cancel_discount", "<", 100),
+                    ("id", "not in", services_to_ignore.ids),
                 ],
                 ["price_unit", "discount", "cancel_discount"],
                 ["price_unit", "discount", "cancel_discount"],

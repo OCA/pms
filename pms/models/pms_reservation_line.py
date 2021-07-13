@@ -74,6 +74,15 @@ class PmsReservationLine(models.Model):
         digits=("Product Price"),
         compute="_compute_price",
     )
+
+    price_with_bs = fields.Float(
+        string="Price with bs included in line",
+        help="Price that includes table services set to not show.",
+        store=True,
+        readonly=True,
+        compute="_compute_price_with_bs",
+    )
+
     cancel_discount = fields.Float(
         string="Cancelation Discount (%)",
         help="",
@@ -376,6 +385,46 @@ class PmsReservationLine(models.Model):
                     reservation.company_id,
                 )
                 # TODO: Out of service 0 amount
+
+    @api.depends(
+        "price",
+    )
+    def _compute_price_with_bs(self):
+        for record in self:
+            price_board_services = 0
+            for bs in record.reservation_id.service_ids.service_line_ids.filtered(
+                lambda x: (
+                    (x.product_id.consumed_on == "before" and x.date == record.date)
+                    or (
+                        x.product_id.consumed_on == "after"
+                        and x.date == record.date + datetime.timedelta(days=+1)
+                    )
+                    and x.is_board_service
+                )
+            ):
+                bs_room_id = bs.reservation_id.board_service_room_id
+                show_detail_report = bs_room_id.pms_board_service_id.show_detail_report
+
+                if not show_detail_report:
+                    price_board_services += bs.day_qty * bs.price_unit
+
+            room_type_id = record.reservation_id.room_type_id.id
+            product = self.env["pms.room.type"].browse(room_type_id).product_id
+            partner = self.env["res.partner"].browse(
+                record.reservation_id.partner_id.id
+            )
+
+            product = product.with_context(
+                lang=partner.lang,
+                partner=partner.id,
+                quantity=1,
+                date=record.reservation_id.date_order,
+                consumption_date=record.date,
+                pricelist=record.reservation_id.pricelist_id.id,
+                uom=product.uom_id.id,
+                property=record.reservation_id.pms_property_id.id,
+            )
+            record.price_with_bs = price_board_services + record.price
 
     @api.depends("reservation_id.state", "reservation_id.overbooking")
     def _compute_occupies_availability(self):
