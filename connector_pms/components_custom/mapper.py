@@ -95,6 +95,7 @@ class Mapper(AbstractComponent):
 
         return list(set(result.values()))
 
+
 class ChannelChildMapperImport(AbstractComponent):
     _inherit = "base.map.child"
 
@@ -113,7 +114,6 @@ class ChannelChildMapperImport(AbstractComponent):
         mapper = self._child_mapper()
         mapped = self.get_all_items(mapper, items, parent, to_attr, options)
         return self.format_items(mapped)
-
 
 
 # TODO: create a fix on OCA repo and remove this class
