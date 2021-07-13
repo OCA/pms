@@ -20,6 +20,7 @@
         "views/channel_menus.xml",
         "views/channel_backend_views.xml",
         "views/channel_backend_type_views.xml",
+        "views/pms_property_views.xml",
         "views/pms_room_type_views.xml",
         "views/pms_room_type_class_views.xml",
         "views/pms_board_service_views.xml",
