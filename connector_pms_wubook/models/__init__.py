@@ -9,6 +9,7 @@ from . import pms_room_type_board_service
 from . import product_pricelist
 from . import product_pricelist_item
 
+from . import pms_property_availability
 from . import pms_availability
 from . import pms_availability_plan
 from . import pms_availability_plan_rule

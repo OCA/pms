@@ -10,11 +10,18 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
     _inherit = "channel.wubook.binding"
     _inherits = {"pms.availability": "odoo_id"}
 
-    external_id = fields.Char()
+    external_id = fields.Char(string="External ID")
 
     odoo_id = fields.Many2one(
         comodel_name="pms.availability",
         string="Odoo ID",
+        required=True,
+        ondelete="cascade",
+    )
+
+    channel_wubook_property_availability_id = fields.Many2one(
+        comodel_name="channel.wubook.pms.property.availability",
+        string="Wubook Property",
         required=True,
         ondelete="cascade",
     )
@@ -116,3 +123,37 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
         if room_type_ids:
             domain += [("room_type_id", "in", room_type_ids.ids)]
         return self.export_batch(backend_record=backend_id, domain=domain)
+
+    @api.model
+    def create(self, vals):
+        backend = self.backend_id.browse(vals["backend_id"])
+        with backend.work_on(
+            self.channel_wubook_property_availability_id._name
+        ) as work:
+            binder = work.component(usage="binder")
+        binding = binder.wrap_record(
+            self.odoo_id.browse(vals["odoo_id"]).pms_property_id
+        )
+        vals["channel_wubook_property_availability_id"] = binding.id
+        binding = super().create(vals)
+        # channel_wubook_availability_id = vals.get(
+        #     "channel_wubook_availability_id"
+        # )
+        # if channel_wubook_availability_id:
+        #     binding = self.channel_wubook_availability_id.browse(
+        #         channel_wubook_availability_id
+        #     )
+        #     vals["availability_id"] = binding.odoo_id.id
+        # else:
+        #     # TODO: put this code on mapper???? Is it possible??
+        #     backend = self.backend_id.browse(vals["backend_id"])
+        #     with backend.work_on(
+        #         self.channel_wubook_availability_id._name
+        #     ) as work:
+        #         binder = work.component(usage="binder")
+        #     binding = binder.wrap_record(
+        #         self.odoo_id.browse(vals["odoo_id"]).availability_plan_id
+        #     )
+        #     vals["channel_wubook_availability_id"] = binding.id
+        #     binding = super().create(vals)
+        return binding
