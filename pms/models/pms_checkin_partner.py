@@ -102,7 +102,7 @@ class PmsCheckinPartner(models.Model):
         string="Exit", help="Checkin partner departure date and time"
     )
     state = fields.Selection(
-        string="State",
+        string="Status",
         help="Status of the checkin partner regarding the reservation",
         readonly=True,
         store=True,
@@ -137,7 +137,7 @@ class PmsCheckinPartner(models.Model):
     # to avoid user country_id on companies contacts.
     # View to res.partner state_id inherit
     state_id = fields.Many2one(
-        string="State",
+        string="Country State",
         help="host state",
         readonly=False,
         store=True,
