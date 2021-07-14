@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 
+from odoo.exceptions import ValidationError
+
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping, only_create
 
@@ -39,16 +41,16 @@ class ChannelWubookPmsAvailabilityPlanMapperImport(Component):
             }
 
 
-class ChannelWubookPmsAvailabilityPlanChildMapperImport(Component):
-    _name = "channel.wubook.pms.availability.plan.child.mapper.import"
-    _inherit = "channel.wubook.child.mapper.import"
+class ChannelWubookPmsAvailabilityPlanChildBinderMapperImport(Component):
+    _name = "channel.wubook.pms.availability.plan.child.binder.mapper.import"
+    _inherit = "channel.wubook.child.binder.mapper.import"
     _apply_on = "channel.wubook.pms.availability.plan.rule"
 
     def get_item_values(self, map_record, to_attr, options):
         values = super().get_item_values(map_record, to_attr, options)
         binding = options.get("binding")
         if binding:
-            item_id = binding.channel_wubook_rule_ids.filtered(
+            item_ids = binding.rule_ids.filtered(
                 lambda x: all(
                     [
                         x.date == values["date"],
@@ -57,8 +59,21 @@ class ChannelWubookPmsAvailabilityPlanChildMapperImport(Component):
                     ]
                 )
             )
-            if item_id:
-                values["id"] = item_id.id
+            if item_ids:
+                if len(item_ids) > 1:
+                    raise ValidationError(
+                        _(
+                            "Found two Plan Rules with same data %s. "
+                            "Please remove one of them"
+                        )
+                        % values
+                    )
+                item_binding = self.binder_for().wrap_record(item_ids)
+                if item_binding:
+                    values["id"] = item_binding.id
+                else:
+                    values["odoo_id"] = item_ids.id
+
         return values
 
     def format_items(self, items_values):
