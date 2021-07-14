@@ -84,8 +84,6 @@ class ChannelWubookProductPriceBinding(models.Model):
         return self.export_batch(
             backend_record=backend_record,
             domain=[
-                # ("name", "=", "virt1"),
-                "|",
                 ("pms_property_ids", "=", False),
                 ("pms_property_ids", "in", backend_record.pms_property_id.ids),
             ],
