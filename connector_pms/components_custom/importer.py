@@ -209,11 +209,6 @@ class GenericImporterCustom(AbstractComponent):
                 # if exists, we update it
                 values = internal_data.values(fields=external_fields, **opts)
                 self._update(binding, values)
-                # binding.with_context(
-                #     connector_no_export=True,
-                #     mail_create_nosubscribe=True,
-                #     force_overbooking=True,
-                # ).write(values)
                 _logger.debug("%d updated from Backend %s", binding, external_id)
             else:
                 # or we create it
@@ -222,12 +217,8 @@ class GenericImporterCustom(AbstractComponent):
                 )
                 with self._retry_unique_violation():
                     binding = self._create(self.model, values)
-                # binding = self.model.with_context(
-                #     connector_no_export=True,
-                #     mail_create_nosubscribe=True,
-                #     force_overbooking=True,
-                # ).create(values)
                 _logger.debug("%d created from Backend %s", binding, external_id)
+
         # finally, we bind both, so the next time we import
         # the record, we'll update the same record instead of
         # creating a new one
