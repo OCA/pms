@@ -5,7 +5,7 @@ import uuid
 
 from werkzeug import urls
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.connector_pms_wubook.controllers.main import WUBOOK_PUSH_BASE_URLS
@@ -205,9 +205,9 @@ class ChannelWubookBackend(models.Model):
         if self.user_id:
             self = self.with_user(self.user_id)
         for rec in self:
-            rec.env["channel.wubook.pms.property.availability"].export_record(
-                rec, self.pms_property_id
-            )
+            rec.env[
+                "channel.wubook.pms.property.availability"
+            ].with_delay().export_data(backend_record=rec)
 
     # folio
     folio_date_arrival_from = fields.Date(string="Arrival Date From")
@@ -232,3 +232,14 @@ class ChannelWubookBackend(models.Model):
                     rec.folio_date_arrival_to,
                     rec.folio_mark,
                 )
+
+    # scheduler
+    @api.model
+    def _scheduler_export(self):
+        for backend in self.env["channel.wubook.backend"].search([]):
+            if backend.user_id:
+                backend = self.with_user(self.user_id)
+
+            backend.export_property_availability()
+            backend.export_availability_plans()
+            backend.export_pricelists()
