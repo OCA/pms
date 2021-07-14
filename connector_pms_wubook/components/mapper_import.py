@@ -19,3 +19,8 @@ class ChannelWubookMapperImport(AbstractComponent):
 class ChannelWubookChildMapperImport(AbstractComponent):
     _name = "channel.wubook.child.mapper.import"
     _inherit = ["channel.child.mapper.import", "base.channel.wubook.connector"]
+
+
+class ChannelWubookChildBinderMapperImport(AbstractComponent):
+    _name = "channel.wubook.child.binder.mapper.import"
+    _inherit = ["channel.child.binder.mapper.import", "base.channel.wubook.connector"]
