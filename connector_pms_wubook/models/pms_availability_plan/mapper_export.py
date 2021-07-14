@@ -27,6 +27,7 @@ class ChannelWubookPmsAvailabilityPlanMapperExport(Component):
 class ChannelWubookPmsAvailabilityPlanChildBinderMapperExport(Component):
     _name = "channel.wubook.pms.availability.plan.child.binder.mapper.export"
     _inherit = "channel.wubook.child.binder.mapper.export"
+
     _apply_on = "channel.wubook.pms.availability.plan.rule"
 
     def skip_item(self, map_record):
