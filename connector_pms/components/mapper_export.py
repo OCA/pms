@@ -6,7 +6,7 @@ from odoo.addons.component.core import AbstractComponent
 
 class ChannelMapperExport(AbstractComponent):
     _name = "channel.mapper.export"
-    _inherit = ["base.export.mapper"]
+    _inherit = "base.export.mapper"
 
 
 class ChannelChildMapperExport(AbstractComponent):
