@@ -17,6 +17,13 @@ class ChannelWubookProductPriceBinding(models.Model):
         ondelete="cascade",
     )
 
+    channel_wubook_item_ids = fields.One2many(
+        string="Wubook Pricelist Items",
+        help="Items in Pricelist",
+        comodel_name="channel.wubook.product.pricelist.item",
+        inverse_name="channel_wubook_pricelist_id",
+    )
+
     @api.model
     def import_data(
         self,
@@ -108,14 +115,14 @@ class ChannelWubookProductPriceBinding(models.Model):
                     delayed=False,
                 )
 
-    def write(self, values):
-        # workaround to surpass an Odoo bug in a delegation inheritance
-        # of product.pricelist that does not let to write 'name' field
-        # if 'items_ids' is written as well on the same write call.
-        # With other fields like 'sequence' it does not crash but it does not
-        # save the value entered. For other fields it works but it's unstable.
-        item_ids = values.pop("item_ids", None)
-        if item_ids:
-            super(ChannelWubookProductPriceBinding, self).write({"item_ids": item_ids})
-        if values:
-            return super(ChannelWubookProductPriceBinding, self).write(values)
+    # def write(self, values):
+    #     # workaround to surpass an Odoo bug in a delegation inheritance
+    #     # of product.pricelist that does not let to write 'name' field
+    #     # if 'items_ids' is written as well on the same write call.
+    #     # With other fields like 'sequence' it does not crash but it does not
+    #     # save the value entered. For other fields it works but it's unstable.
+    #     item_ids = values.pop("item_ids", None)
+    #     if item_ids:
+    #         super(ChannelWubookProductPriceBinding, self).write({"item_ids": item_ids})
+    #     if values:
+    #         return super(ChannelWubookProductPriceBinding, self).write(values)
