@@ -13,7 +13,9 @@ class ChannelWubookProductPricelistMapperImport(Component):
 
     _apply_on = "channel.wubook.product.pricelist"
 
-    children = [("items", "item_ids", "channel.wubook.product.pricelist.item")]
+    children = [
+        ("items", "channel_wubook_item_ids", "channel.wubook.product.pricelist.item")
+    ]
 
     @only_create
     @mapping
@@ -47,9 +49,9 @@ class ChannelWubookProductPricelistMapperImport(Component):
             }
 
 
-class ChannelWubookProductPricelistChildMapperImport(Component):
-    _name = "channel.wubook.product.pricelist.child.mapper.import"
-    _inherit = "channel.wubook.child.mapper.import"
+class ChannelWubookProductPricelistChildBinderMapperImport(Component):
+    _name = "channel.wubook.product.pricelist.child.binder.mapper.import"
+    _inherit = "channel.wubook.child.binder.mapper.import"
     _apply_on = "channel.wubook.product.pricelist.item"
 
     def get_item_values(self, map_record, to_attr, options):
@@ -95,7 +97,11 @@ class ChannelWubookProductPricelistChildMapperImport(Component):
                         )
                         % values
                     )
-                values["id"] = item_ids.id
+                item_binding = self.binder_for().wrap_record(item_ids)
+                if item_binding:
+                    values["id"] = item_binding.id
+                else:
+                    values["odoo_id"] = item_ids.id
 
         return values
 
