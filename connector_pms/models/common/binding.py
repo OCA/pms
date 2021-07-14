@@ -39,12 +39,14 @@ class ChannelBinding(models.AbstractModel):
         string="Synced (export)", compute="_compute_synced_export", readonly=True
     )
 
+    def _is_synced_export(self):
+        self.ensure_one()
+        return self.sync_date_export and self.sync_date_export >= self.actual_write_date
+
     @api.depends("sync_date_export", "actual_write_date")
     def _compute_synced_export(self):
         for rec in self:
-            rec.synced_export = (
-                rec.sync_date_export and rec.sync_date_export >= rec.actual_write_date
-            )
+            rec.synced_export = rec._is_synced_export()
 
     _sql_constraints = [
         (
