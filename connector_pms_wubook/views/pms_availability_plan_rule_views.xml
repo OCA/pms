@@ -48,6 +48,9 @@
                             />
                             <field name="external_id" />
                             <field name="no_ota" />
+                            <field name="sync_date" />
+                            <field name="synced_export" />
+                            <field name="sync_date_export" />
                         </tree>
                     </field>
                 </group>
