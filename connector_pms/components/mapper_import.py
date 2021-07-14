@@ -12,3 +12,8 @@ class ChannelMapperImport(AbstractComponent):
 class ChannelChildMapperImport(AbstractComponent):
     _name = "channel.child.mapper.import"
     _inherit = "base.map.child.import"
+
+
+class ChannelChildBinderMapperImport(AbstractComponent):
+    _name = "channel.child.binder.mapper.import"
+    _inherit = "base.map.child.binder.import"
