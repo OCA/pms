@@ -16,6 +16,10 @@ class ChannelWubookProductPricelistItemMapperImport(Component):
     _apply_on = "channel.wubook.product.pricelist.item"
 
     @mapping
+    def backend_id(self, record):
+        return {"backend_id": self.backend_record.id}
+
+    @mapping
     def property_ids(self, record):
         return {"pms_property_ids": [(6, 0, self.backend_record.pms_property_id.ids)]}
 

@@ -7,6 +7,12 @@ from odoo import api, fields, models
 class ProductPricelistItem(models.Model):
     _inherit = "product.pricelist.item"
 
+    channel_wubook_bind_ids = fields.One2many(
+        comodel_name="channel.wubook.product.pricelist.item",
+        inverse_name="odoo_id",
+        string="Channel Wubook PMS Bindings",
+    )
+
     wubook_item_type = fields.Selection(
         selection=[("virtual", "Virtual"), ("standard", "Standard")],
         readonly=True,
