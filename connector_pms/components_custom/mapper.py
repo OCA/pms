@@ -4,7 +4,7 @@ import collections
 import logging
 import uuid
 
-from odoo import _
+from odoo import _, fields
 from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import AbstractComponent
