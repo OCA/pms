@@ -14,6 +14,7 @@
         "connector_pms",
     ],
     "data": [
+        "data/cron.xml",
         "data/queue_data.xml",
         "data/queue_job_function_data.xml",
         "data/pms_data.xml",
