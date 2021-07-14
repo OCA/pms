@@ -27,6 +27,7 @@
         "views/pms_folio_views.xml",
         "views/pms_reservation_views.xml",
         "views/product_pricelist_views.xml",
+        "views/product_pricelist_item_views.xml",
         "views/pms_availability_plan_views.xml",
         "views/pms_availability_plan_rule_views.xml",
     ],
