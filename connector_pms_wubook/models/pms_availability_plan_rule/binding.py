@@ -66,12 +66,24 @@ class ChannelWubookPmsAvailabilityPlanRuleBinding(models.Model):
 
     @api.model
     def create(self, vals):
-        channel_wubook_availability_plan_id = vals[
+        channel_wubook_availability_plan_id = vals.get(
             "channel_wubook_availability_plan_id"
-        ]
-        binding = self.env["channel.wubook.pms.availability.plan"].browse(
-            channel_wubook_availability_plan_id
         )
-        vals["availability_plan_id"] = binding.odoo_id.id
+        if channel_wubook_availability_plan_id:
+            binding = self.channel_wubook_availability_plan_id.browse(
+                channel_wubook_availability_plan_id
+            )
+            vals["availability_plan_id"] = binding.odoo_id.id
+        else:
+            # TODO: put this code on mapper???? Is it possible??
+            backend = self.backend_id.browse(vals["backend_id"])
+            with backend.work_on(
+                self.channel_wubook_availability_plan_id._name
+            ) as work:
+                binder = work.component(usage="binder")
+            plan_binding = binder.wrap_record(
+                self.odoo_id.browse(vals["odoo_id"]).availability_plan_id
+            )
+            vals["channel_wubook_availability_plan_id"] = plan_binding.id
         binding = super().create(vals)
         return binding
