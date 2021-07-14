@@ -248,8 +248,10 @@ class ChannelWubookProductPricelistAdapter(Component):
             for item in items:
                 cur = item["date"]
                 if ant is not None:
-                    if cur == ant or cur < ant:
-                        raise Exception("Input not sorted!")
+                    if cur == ant:
+                        raise ValidationError(_("Duplicated lines!!"))
+                    if cur < ant:
+                        raise ValidationError(_("Input not sorted!"))
                     if cur != ant + datetime.timedelta(days=1):
                         gr += 1
                 res.setdefault(gr, []).append(item)
