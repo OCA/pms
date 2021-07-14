@@ -24,6 +24,10 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
         inverse_name="channel_wubook_availability_plan_id",
     )
 
+    def _is_synced_export(self):
+        synced = super()._is_synced_export()
+        return synced and all(self.channel_wubook_rule_ids.mapped("synced_export"))
+
     @api.model
     def import_data(
         self,
