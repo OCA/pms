@@ -5,7 +5,7 @@ from odoo import _
 from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import Component
-from odoo.addons.connector.components.mapper import mapping, only_create
+from odoo.addons.connector.components.mapper import mapping
 
 
 class ChannelWubookPmsAvailabilityPlanRuleMapperImport(Component):
@@ -26,7 +26,6 @@ class ChannelWubookPmsAvailabilityPlanRuleMapperImport(Component):
         ("closed_arrival", "closed_arrival"),
     ]
 
-    @only_create
     @mapping
     def backend_id(self, record):
         return {"backend_id": self.backend_record.id}
