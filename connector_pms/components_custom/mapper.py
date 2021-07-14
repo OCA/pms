@@ -118,10 +118,6 @@ class ChannelChildMapperImport(AbstractComponent):
         mapped = self.get_all_items(mapper, items, parent, to_attr, options)
         return self.format_items(mapped)
 
-
-class ImportMapChild(AbstractComponent):
-    _inherit = "base.map.child.import"
-
     def _child_bind(self, map_record, item_values):
         return
 
@@ -135,13 +131,6 @@ class ImportMapChildBinder(AbstractComponent):
         if binder._external_field not in item_values:
             item_values[binder._external_field] = uuid.uuid4().hex
         item_values[binder._sync_date_field] = fields.Datetime.now()
-
-
-class ExportMapChild(AbstractComponent):
-    _inherit = "base.map.child.export"
-
-    def _child_bind(self, map_record, item_values):
-        return
 
 
 class ExportMapChildBinder(AbstractComponent):
