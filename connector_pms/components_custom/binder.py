@@ -73,8 +73,8 @@ class BinderCustom(AbstractComponent):
         if self.model._name == relation._name:
             raise Exception(
                 _(
-                    "The object '%s' is not wrapped, it's already a normal Odoo object. "
-                    "You can only unwrap binding objects"
+                    "The object '%s' is already wrapped, it's already a binding object. "
+                    "You can only wrap Odoo objects"
                 )
                 % (relation)
             )
