@@ -42,11 +42,12 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
 
     def skip_item(self, map_record):
         if (
-            map_record.source.date_start_consumption
+            map_record.source.wubook_item_type == "standard"
+            and map_record.source.date_start_consumption
             != map_record.source.date_end_consumption
         ):
             raise ValidationError(
-                _("Consumption dates must be the same on daily pricelists")
+                _("Consumption dates must be the same on daily standard pricelists")
             )
         return any(
             [
@@ -57,7 +58,10 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
                 and self.backend_record.pms_property_id
                 not in map_record.source.pms_property_ids,
                 map_record.source.synced_export,
-                (fields.Date.today() - map_record.source.date_start_consumption).days
+                map_record.source.wubook_item_type == "standard"
+                and (
+                    fields.Date.today() - map_record.source.date_start_consumption
+                ).days
                 > 2,
             ]
         )
