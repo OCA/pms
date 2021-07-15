@@ -141,7 +141,7 @@ class PmsAvailabilityPlanRule(models.Model):
 
     @api.depends("quota", "max_avail", "real_avail")
     def _compute_plan_avail(self):
-        for record in self.filtered("real_avail"):
+        for record in self:
             real_avail = record.real_avail
             plan_avail = min(
                 [
