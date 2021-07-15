@@ -1,7 +1,7 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _
+from odoo import _, fields
 from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import Component
@@ -41,18 +41,25 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
     _apply_on = "channel.wubook.product.pricelist.item"
 
     def skip_item(self, map_record):
-        return (
-            (
+        if (
+            map_record.source.date_start_consumption
+            != map_record.source.date_end_consumption
+        ):
+            raise ValidationError(
+                _("Consumption dates must be the same on daily pricelists")
+            )
+        return any(
+            [
                 not map_record.source.wubook_item_type
                 or map_record.parent.source.wubook_plan_type
-                != map_record.source.wubook_item_type
-            )
-            or (
+                != map_record.source.wubook_item_type,
                 map_record.source.pms_property_ids
                 and self.backend_record.pms_property_id
-                not in map_record.source.pms_property_ids
-            )
-            or map_record.source.synced_export
+                not in map_record.source.pms_property_ids,
+                map_record.source.synced_export,
+                (fields.Date.today() - map_record.source.date_start_consumption).days
+                > 2,
+            ]
         )
 
     def get_all_items(self, mapper, items, parent, to_attr, options):
