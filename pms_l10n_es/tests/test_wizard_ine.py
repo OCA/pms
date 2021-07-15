@@ -444,7 +444,132 @@ class TestWizardINE(TestPms):
         # ASSERT
         self.assertDictEqual(nationalities, expected_result)
 
-    def test_calculate_monthly_adr(self):
+    def test_spain_arrivals_departures_pernoctations_by_date(self):
+        """
+        +==========================+============+============+=========+========+
+        |                          |     01     |     02     |   03    |   04   |
+        +==========================+============+============+=========+========+
+        | r1  2 adults             | Ourense    | Ourense    |         |        |
+        |                          | Pontevedra | Pontevedra |         |        |
+        +--------------------------+------------+------------+---------+--------+
+        | r2  2 adults             |            | Ourense    | Ourense |        |
+        |                          |            | Ourense    | Ourense |        |
+        +--------------------------+------------+------------+---------+--------+
+        | r3  1 adult              |            | Madrid     | Madrid  | Madrid |
+        +--------------------------+------------+------------+---------+--------+
+        | r4  2 adults             |            | Madrid     | Madrid  | Madrid |
+        |                          |            | Madrid     | Madrid  | Madrid |
+        +==========================+============+============+=========+========+
+        | arrivals  Madrid         |            | 3          |         |        |
+        | arrivals  Ourense        | 1          | 2          |         |        |
+        | arrivals  Pontevedra     | 1          |            |         |        |
+        +==========================+============+============+=========+========+
+        | pernoctations Madrid     |            | 3          | 3       |        |
+        | pernoctations Ourense    | 1          | 2          |         |        |
+        | pernoctations Pontevedra | 1          |            |         |        |
+        0+=========================+============+============+=========+========+
+        | departures Madrid        |            |            |         | 3      |
+        | departures Ourense       |            | 1          | 2       |        |
+        | departures Pontevedra    |            | 1          |         |        |
+        +==========================+============+============+=========+========+
+        """
+        # ARRANGE
+        start_date = datetime.date(2021, 2, 1)
+        second_date = datetime.date(2021, 2, 2)
+        third_date = datetime.date(2021, 2, 3)
+        end_date = datetime.date(2021, 2, 4)
+
+        country_spain = self.env["res.country"].search([("code", "=", "ES")])
+        state_madrid = self.env["res.country.state"].search([("name", "=", "Madrid")])
+        state_ourense = self.env["res.country.state"].search(
+            [("name", "=", "Ourense (Orense)")]
+        )
+        state_pontevedra = self.env["res.country.state"].search(
+            [("name", "=", "Pontevedra")]
+        )
+
+        self.checkin1.nationality_id = country_spain
+        self.partner_1.nationality_id = country_spain
+        self.checkin1.state_id = state_ourense
+        self.partner_1.state_id = state_ourense
+
+        self.checkin2.nationality_id = country_spain
+        self.partner_2.nationality_id = country_spain
+        self.checkin2.state_id = state_pontevedra
+        self.partner_2.state_id = state_pontevedra
+
+        self.checkin3.nationality_id = country_spain
+        self.partner_3.nationality_id = country_spain
+        self.checkin3.state_id = state_ourense
+        self.partner_3.state_id = state_ourense
+
+        self.checkin4.nationality_id = country_spain
+        self.partner_4.nationality_id = country_spain
+        self.checkin4.state_id = state_ourense
+        self.partner_4.state_id = state_ourense
+
+        self.checkin5.nationality_id = country_spain
+        self.partner_5.nationality_id = country_spain
+        self.checkin5.state_id = state_madrid
+        self.partner_5.state_id = state_madrid
+
+        self.checkin6.nationality_id = country_spain
+        self.partner_6.nationality_id = country_spain
+        self.checkin6.state_id = state_madrid
+        self.partner_6.state_id = state_madrid
+
+        self.checkin7.nationality_id = country_spain
+        self.partner_7.nationality_id = country_spain
+        self.checkin7.state_id = state_madrid
+        self.partner_7.state_id = state_madrid
+
+        expected_result = {
+            country_spain.code: {
+                state_madrid.ine_code: {
+                    second_date: {
+                        "arrivals": 3,
+                        "pernoctations": 3,
+                    },
+                    third_date: {
+                        "pernoctations": 3,
+                    },
+                    end_date: {
+                        "departures": 3,
+                    },
+                },
+                state_ourense.ine_code: {
+                    start_date: {
+                        "arrivals": 1,
+                        "pernoctations": 1,
+                    },
+                    second_date: {
+                        "arrivals": 2,
+                        "pernoctations": 2,
+                        "departures": 1,
+                    },
+                    third_date: {
+                        "departures": 2,
+                    },
+                },
+                state_pontevedra.ine_code: {
+                    start_date: {
+                        "arrivals": 1,
+                        "pernoctations": 1,
+                    },
+                    second_date: {
+                        "departures": 1,
+                    },
+                },
+            }
+        }
+        # ACT
+        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+            start_date, end_date, self.pms_property1.id
+        )
+        # ASSERT
+        self.assertDictEqual(nationalities, expected_result)
+
+    def _test_calculate_monthly_adr(self):
         """
         +-------------+-------+-------+-------+
         |             |  01   |  02   |  03   |
