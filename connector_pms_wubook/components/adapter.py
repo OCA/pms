@@ -74,18 +74,39 @@ class ChannelWubookAdapter(AbstractComponent):
                     )
                 raise
             if res:
-                if funcname == "fetch_rooms_values":
+                # TODO: rethink this and maybie put it to the UX
+                # or better or both as a constant and reuse it on skip_item methods
+                # or maybe it's not necessary to have this here although
+                # it makes a confusing wubbok message clear with the actual
+                # reason of the error
+                # TODO: with many cases, try to infer a rule by export/import
+                #  instead of function
+                func_restrictions = {
+                    # IMPORTS
                     # fetch_rooms_values(token, lcode, dfrom, dto[, rooms])
+                    "fetch_rooms_values": (1, 1),
+                    # EXPORTS
+                    # update_avail(token, lcode, dfrom, rooms)
+                    "update_avail": (1, 2),
+                    # rplan_update_rplan_values(token, lcode, pid, dfrom, values)
+                    "rplan_update_rplan_values": (2, 2),
+                    # update_plan_prices(token, lcode, pid, dfrom, prices)
+                    "update_plan_prices": (2, 2),
+                }
+                if funcname in func_restrictions:
+                    arg_pos, max_past_date = func_restrictions[funcname]
                     dfrom = datetime.datetime.strptime(
-                        args[1], self._date_format
+                        args[arg_pos], self._date_format
                     ).date()
-                    if (datetime.date.today() - dfrom).days > 1:
+
+                    diff_days = (datetime.date.today() - dfrom).days
+                    if diff_days > max_past_date:
                         raise ChannelAdapterError(
                             _(
                                 "Error executing function %s with params %s. %s. "
-                                "Wubook not allows a 'dfrom' beyond yesterday on this function"
+                                "Wubook does not allow a 'dfrom' %i days older"
                             )
-                            % (funcname, args, data)
+                            % (funcname, args, data, max_past_date)
                         )
                 raise ChannelAdapterError(
                     _("Error executing function %s with params %s. %s")
