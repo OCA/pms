@@ -52,7 +52,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
         readonly=False,
         store=True,
         comodel_name="pms.reservation",
-        compute="_compute_reservations",
+        compute="_compute_reservation_ids",
     )
     room_source = fields.Many2one(
         string="Room Source",
@@ -290,8 +290,10 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
                 line_room_target._compute_occupies_availability()
                 line_room_source._compute_occupies_availability()
 
-            else:
+            elif line_room_source:
                 line_room_source.room_id = target
+            elif line_room_target:
+                line_room_target.room_id = source
 
     def action_split(self):
         for record in self:
