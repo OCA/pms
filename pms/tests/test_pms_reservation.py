@@ -1731,7 +1731,7 @@ class TestPmsReservations(TestPms):
                 with self.assertRaises(UserError):
                     self.reservation_test.write(test_case)
 
-    def _test_check_date_order(self):
+    def test_check_date_order(self):
         """
         Check that the date order of a reservation is correct.
         ---------------
@@ -1753,7 +1753,7 @@ class TestPmsReservations(TestPms):
             "Date Order isn't correct",
         )
 
-    def _test_check_checkin_datetime(self):
+    def test_check_checkin_datetime(self):
         """
         Check that the checkin datetime of a reservation is correct.
         ------------------
@@ -1770,7 +1770,7 @@ class TestPmsReservations(TestPms):
         )
         r = reservation.checkin
         checkin_expected = datetime.datetime(r.year, r.month, r.day, 14, 00)
-        # checkin_expected = checkin_expected.astimezone(self.property.tz.value)
+        checkin_expected = self.pms_property1.date_property_timezone(checkin_expected)
 
         self.assertEqual(
             str(reservation.checkin_datetime),
@@ -2305,14 +2305,14 @@ class TestPmsReservations(TestPms):
             reservation.cancelled_reason, "intime", "Cancelled reason must be 'intime'"
         )
 
-    def _test_cancelation_reason_late(self):
+    def test_cancelation_reason_late(self):
         """
         Check that if a reservation is canceled outside the cancellation
         period, the canceled_reason field of the reservation must be "late" .
         ---------
-        Create a cancellation rule with the days_late = 3 field.
-        A reservation is created with a check-in date for tomorrow and the
-        action_cancel method is launched. As the reservation was canceled
+        Create a cancellation rule with the field days_intime = 3.
+        A reservation is created with a checkin date for tomorrow and the
+        action_cancel() method is launched. As the reservation was canceled
         after the deadline, the canceled_reason field must be late
         """
         Pricelist = self.env["product.pricelist"]
@@ -2320,7 +2320,7 @@ class TestPmsReservations(TestPms):
             {
                 "name": "Cancelation Rule Test",
                 "pms_property_ids": [self.pms_property1.id],
-                "days_late": 3,
+                "days_intime": 3,
             }
         )
 
