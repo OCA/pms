@@ -156,6 +156,104 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             "because there's no availability rules for them.",
         )
 
+    def test_plan_avail_update_to_one(self):
+        """
+        Check that the plan avail on a room is updated when the real avail is changed
+        --------------------------------------------------------------
+        Room type with 2 rooms, new reservation with this room type, the plan avail
+        must to be updated to 1. You must know that the pricelist2 is linked
+        with the plan test_room_type_availability1
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = (fields.datetime.today() + datetime.timedelta(days=4)).date()
+        room_type = self.test_room_type_double
+
+        self.test_room_type_availability_rule1 = self.env[
+            "pms.availability.plan.rule"
+        ].create(
+            {
+                "availability_plan_id": self.test_room_type_availability1.id,
+                "room_type_id": self.test_room_type_double.id,
+                "date": fields.datetime.today(),
+                "pms_property_id": self.pms_property3.id,
+            }
+        )
+        # ACT
+        self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property3.id,
+                "checkin": checkin,
+                "checkout": checkout,
+                "partner_id": self.partner1.id,
+                "room_type_id": room_type.id,
+            }
+        )
+        result = self.test_room_type_availability_rule1.plan_avail
+
+        # ASSERT
+        self.assertEqual(
+            result,
+            1,
+            "There should be only one room in the result of the availability plan"
+            "because the real avail is 1 and the availability plan"
+            "is updated.",
+        )
+
+    def test_plan_avail_update_to_zero(self):
+        """
+        Check that the plan avail on a room is updated when the real avail is changed
+        with real avail 0
+        --------------------------------------------------------------
+        Room type with 2 rooms, two new reservations with this room type, the plan avail
+        must to be updated to 0. You must know that the pricelist2 is linked
+        with the plan test_room_type_availability1
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = (fields.datetime.today() + datetime.timedelta(days=4)).date()
+        room_type = self.test_room_type_double
+
+        self.test_room_type_availability_rule1 = self.env[
+            "pms.availability.plan.rule"
+        ].create(
+            {
+                "availability_plan_id": self.test_room_type_availability1.id,
+                "room_type_id": self.test_room_type_double.id,
+                "date": fields.datetime.today(),
+                "pms_property_id": self.pms_property3.id,
+            }
+        )
+        # ACT
+        self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property3.id,
+                "checkin": checkin,
+                "checkout": checkout,
+                "partner_id": self.partner1.id,
+                "room_type_id": room_type.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.pms_property3.id,
+                "checkin": checkin,
+                "checkout": checkout,
+                "partner_id": self.partner1.id,
+                "room_type_id": room_type.id,
+            }
+        )
+        result = self.test_room_type_availability_rule1.plan_avail
+
+        # ASSERT
+        self.assertEqual(
+            result,
+            0,
+            "There should be zero in the result of the availability plan"
+            "because the real avail is 0 and the availability plan"
+            "is updated.",
+        )
+
     def test_availability_rooms_all_lines(self):
         """
         Check the availability of rooms in a property with an availability plan without
@@ -187,6 +285,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
         )
 
         # ACT
+        # REVIEW: reservation without room and wihout room type?
         pms_property = self.pms_property3.with_context(
             checkin=checkin,
             checkout=checkout,
