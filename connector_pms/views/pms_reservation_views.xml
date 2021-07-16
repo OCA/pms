@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="pms_reservation_view_form" model="ir.ui.view">
+        <field name="name">pms.reservation.conenctor.pms.form</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms.pms_reservation_view_form" />
+        <field name="arch" type="xml">
+            <field name="channel_type_id" position="after">
+                <field
+                    name="ota_reservation_code"
+                    attrs="{'invisible': [('ota_reservation_code', '=', False)]}"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>
