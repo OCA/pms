@@ -260,8 +260,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
         +------------+------+------+------+----+----+----+
         | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
         +------------+------+------+------+----+----+----+
-        | Double 101 |      |  r2  |  r2  |    |    |    |
-        | Double 102 |  r2  |  r1  |  r1  |    |    |    |
+        | Double 101 |  r2  |  r2  |  r2  |    |    |    |
+        | Double 102 |      |  r1  |  r1  |    |    |    |
         +------------+------+------+------+----+----+----+
         """
         # ARRANGE
@@ -298,7 +298,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
         # ASSERT
         self.assertTrue(
             r1.reservation_line_ids.room_id == self.room2
-            and r2.reservation_line_ids[1:].room_id == self.room1
+            and r2.reservation_line_ids.room_id == self.room1
         )
 
     def test_swap_reservation_rooms_03(self):
@@ -364,6 +364,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
         """
         Check that two rooms from two different reservations are swapped
         correctly.
+        source: r1
+        target: r2
         --------
 
         Initial state
@@ -416,13 +418,15 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
         # ASSERT
         self.assertTrue(
             r1.reservation_line_ids.room_id == self.room2
-            and r2.reservation_line_ids[:1].room_id == self.room1
+            and r2.reservation_line_ids.room_id == self.room1
         )
 
     def test_swap_reservation_rooms_05(self):
         """
         Check that two rooms from two different reservations are swapped
         correctly.
+        source: r2
+        target: r1
         ---------------
 
         Initial state
@@ -542,8 +546,8 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
         +------------+------+------+------+----+----+----+
         | room/date  |  01  |  02  |  03  | 04 | 05 | 06 |
         +------------+------+------+------+----+----+----+
-        | Double 101 |  r2  |      |  r2  |    |    |    |
-        | Double 102 |  r0  |  r2  |  r1  |    |    |    |
+        | Double 101 |  r2  |  r2  |  r2  |    |    |    |
+        | Double 102 |  r0  |      |  r1  |    |    |    |
         +------------+------+------+------+----+----+----+
         """
 
@@ -593,9 +597,7 @@ class TestPmsWizardSplitJoinSwapReservation(TestPms):
         self.assertTrue(
             r0.reservation_line_ids.room_id == self.room2
             and r1.reservation_line_ids.room_id == self.room2
-            and r2.reservation_line_ids[0].room_id == self.room1
-            and r2.reservation_line_ids[2].room_id == self.room1
-            and r2.reservation_line_ids[1].room_id == self.room2
+            and r2.reservation_line_ids.room_id == self.room1
         )
 
     def test_swap_reservation_rooms_gap_02(self):
