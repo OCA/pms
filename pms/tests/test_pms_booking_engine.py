@@ -1,164 +1,63 @@
 import datetime
 
-from freezegun import freeze_time
-
 from odoo import fields
-from odoo.tests import common
+
+from .common import TestPms
 
 
-@freeze_time("1980-12-01")
-class TestPmsWizardMassiveChanges(common.SavepointCase):
-    def create_common_scenario(self):
-        # PRICELIST CREATION
-        self.test_pricelist = self.env["product.pricelist"].create(
-            {
-                "name": "test pricelist 1",
-            }
-        )
-        self.test_pricelist.flush()
-
-        # AVAILABILITY PLAN CREATION
-        self.test_availability_plan = self.env["pms.availability.plan"].create(
-            {
-                "name": "Availability plan for TEST",
-                "pms_pricelist_ids": [(6, 0, [self.test_pricelist.id])],
-            }
-        )
-        self.test_availability_plan.flush()
-
-        # SEQUENCES
-        self.folio_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Folio",
-                "code": "pms.folio",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.reservation_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Reservation",
-                "code": "pms.reservation",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.checkin_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Checkin",
-                "code": "pms.checkin.partner",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        # PROPERTY CREATION (WITH DEFAULT PRICELIST AND AVAILABILITY PLAN
-        self.test_property = self.env["pms.property"].create(
-            {
-                "name": "MY PMS TEST",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.test_pricelist.id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
-            }
-        )
-        self.test_property.flush()
-
-        # CREATION OF ROOM TYPE CLASS
-        self.test_room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "default_code": "ROOM"}
-        )
-        self.test_room_type_class.flush()
-
-        # CREATION OF ROOM TYPE (WITH ROOM TYPE CLASS)
-        self.test_room_type_single = self.env["pms.room.type"].create(
-            {
-                "pms_property_ids": [self.test_property.id],
-                "name": "Single Test",
-                "default_code": "SNG_Test",
-                "class_id": self.test_room_type_class.id,
-                "list_price": 25.0,
-            }
-        )
-        self.test_room_type_single.flush()
-
+class TestPmsBookingEngine(TestPms):
+    def setUp(self):
+        super().setUp()
         # CREATION OF ROOM TYPE (WITH ROOM TYPE CLASS)
         self.test_room_type_double = self.env["pms.room.type"].create(
             {
-                "pms_property_ids": [self.test_property.id],
+                "pms_property_ids": [self.pms_property1.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.test_room_type_class.id,
+                "class_id": self.room_type_class1.id,
                 "list_price": 40.0,
             }
         )
-        self.test_room_type_double.flush()
 
         # pms.room
         self.test_room1_double = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 201 test",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
             }
         )
-        self.test_room1_double.flush()
 
         # pms.room
         self.test_room2_double = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 202 test",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
             }
         )
-        self.test_room2_double.flush()
 
         # pms.room
         self.test_room3_double = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 203 test",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
             }
         )
-        self.test_room3_double.flush()
 
         # pms.room
         self.test_room4_double = self.env["pms.room"].create(
             {
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
                 "name": "Double 204 test",
                 "room_type_id": self.test_room_type_double.id,
                 "capacity": 2,
             }
         )
-        self.test_room4_double.flush()
-
-        # pms.room
-        self.test_room1_single = self.env["pms.room"].create(
-            {
-                "pms_property_id": self.test_property.id,
-                "name": "Single 101 test",
-                "room_type_id": self.test_room_type_single.id,
-                "capacity": 1,
-            }
-        )
-        self.test_room1_single.flush()
-
-        # pms.room
-        self.test_room2_single = self.env["pms.room"].create(
-            {
-                "pms_property_id": self.test_property.id,
-                "name": "Single 102 test",
-                "room_type_id": self.test_room_type_single.id,
-                "capacity": 1,
-            }
-        )
-        self.test_room2_single.flush()
 
         # res.partner
         self.partner_id = self.env["res.partner"].create(
@@ -168,17 +67,23 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "email": "miguel@example.com",
             }
         )
-        self.partner_id.flush()
 
     def test_price_wizard_correct(self):
         # TEST CASE
-        # Set values for the wizard and the total price is correct
-        # Also check the discount is correctly applied to get
-        #                               the total folio price
+        """
+        Check by subtests if the total_price field is applied correctly
+        with and without discount.
+        ------------
+        Create two test cases: one with the discount at 0 and with the
+        expected total price, which is the difference in days between
+        checkin and checkout, multiplied by the room price and multiplied
+        by the number of rooms, and another with the discount at 0.5 and with
+        total price the same as the first. Then the wizard is created and it
+        is verified that the wizard's total_price_folio is the same as the
+        expected price.
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
@@ -207,25 +112,24 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pms_property_id": self.test_property.id,
-                "pricelist_id": self.test_pricelist.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
             }
         )
 
         # force pricelist load
-        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
             [
-                ("room_type_id.pms_property_ids", "in", self.test_property.id),
+                ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
 
         # set value for room type double
         value = self.env["pms.num.rooms.selection"].search(
             [
-                ("room_type_id", "=", str(self.test_room_type_double.id)),
+                ("room_type_id", "=", self.test_room_type_double.id),
                 ("value", "=", num_double_rooms),
             ]
         )
@@ -244,14 +148,17 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 )
 
     def test_price_wizard_correct_pricelist_applied(self):
-        # TEST CASE
-        # Set values for the wizard and the total price is correct
-        # (pricelist applied)
+        """
+        Check that the total_price field is applied correctly in
+        the wizard(pricelist applied).
+        ------------------
+        Create a pricelist item for pricelist1 and a wizard is also
+        created with pricelist1. Then it is verified that the value
+        of the total price of the wizard corresponds to the value of
+        the price of the pricelist item.
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
-
         # checkin & checkout
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
@@ -268,9 +175,9 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
 
         # set pricelist item for current day
         product_tmpl = self.test_room_type_double.product_id.product_tmpl_id
-        pricelist_item = self.env["product.pricelist.item"].create(
+        self.env["product.pricelist.item"].create(
             {
-                "pricelist_id": self.test_pricelist.id,
+                "pricelist_id": self.pricelist1.id,
                 "date_start_consumption": checkin,
                 "date_end_consumption": checkin,
                 "compute_price": "fixed",
@@ -281,7 +188,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "pms_property_ids": product_tmpl.pms_property_ids.ids,
             }
         )
-        pricelist_item.flush()
 
         # create folio wizard with partner id => pricelist & start-end dates
         booking_engine = self.env["pms.booking.engine"].create(
@@ -289,23 +195,22 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
-                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
             [
-                ("room_type_id.pms_property_ids", "in", self.test_property.id),
+                ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
 
         # set value for room type double
         value = self.env["pms.num.rooms.selection"].search(
             [
-                ("room_type_id", "=", str(self.test_room_type_double.id)),
+                ("room_type_id", "=", self.test_room_type_double.id),
                 ("value", "=", num_double_rooms),
             ]
         )
@@ -352,7 +257,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #             "min_quantity": 4,
     #         }
     #     )
-    #     pricelist_item.flush()
 
     #     # create folio wizard with partner id => pricelist & start-end dates
     #     booking_engine = self.env["pms.booking.engine"].create(
@@ -363,7 +267,6 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #             "pricelist_id": self.test_pricelist.id,
     #         }
     #     )
-    #     booking_engine.flush()
 
     #     # availability items belonging to test property
     #     lines_availability_test = self.env["pms.folio.availability.wizard"].search(
@@ -386,7 +289,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #             # set value for room type double
     #             value = self.env["pms.num.rooms.selection"].search(
     #                 [
-    #                     ("room_type_id", "=", str(self.test_room_type_double.id)),
+    #                     ("room_type_id", "=", self.test_room_type_double.id),
     #                     ("value", "=", tc["num_rooms"]),
     #                 ]
     #             )
@@ -401,12 +304,17 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
     #             )
 
     def test_check_create_folio(self):
-        # TEST CASE
-        # Set values for the wizard check that folio is created
+        """
+        Test that a folio is created correctly from the booking engine wizard.
+        ------------
+        The wizard is created with a partner_id, a pricelist, and start and end
+        dates for property1. The availability items are searched for that property
+        and in the first one a double room is set. The create_folio() method of the
+        wizard is launched. The folios of the partner_id entered in the wizard are
+        searched and it is verified that the folio exists.
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
@@ -418,22 +326,21 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
-                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
             [
-                ("room_type_id.pms_property_ids", "in", self.test_property.id),
+                ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
         # set one room type double
         value = self.env["pms.num.rooms.selection"].search(
             [
-                ("room_type_id", "=", str(self.test_room_type_double.id)),
+                ("room_type_id", "=", self.test_room_type_double.id),
                 ("value", "=", 1),
             ]
         )
@@ -443,19 +350,23 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         booking_engine.create_folio()
 
         # ASSERT
-        folio = self.env["pms.folio"].search_count(
-            [("partner_id", "=", self.partner_id.id)]
-        )
+        folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
 
         self.assertTrue(folio, "Folio not created.")
 
     def test_check_create_reservations(self):
-        # TEST CASE
-        # Set values for the wizard check that reservations are created
+        """
+        Check that reservations are created correctly from the booking engine wizard.
+        ------------
+        The wizard is created with a partner_id, a pricelist, and start and end
+        dates for property1. The availability items are searched for that property
+        and in the first one, two double rooms are set, which create two reservations
+        too. The create_folio() method of the wizard is launched. The folios of the
+        partner_id entered in the wizard are searched and it is verified that the two
+        reservations of the folio was created.
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
@@ -467,46 +378,50 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
-                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
             [
-                ("room_type_id.pms_property_ids", "in", self.test_property.id),
+                ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
         # set one room type double
         value = self.env["pms.num.rooms.selection"].search(
             [
-                ("room_type_id", "=", str(self.test_room_type_double.id)),
+                ("room_type_id", "=", self.test_room_type_double.id),
                 ("value", "=", 2),
             ]
         )
         lines_availability_test[0].num_rooms_selected = value
         lines_availability_test[0].value_num_rooms_selected = 2
-        lines_availability_test.flush()
-        booking_engine.flush()
 
         # ACT
         booking_engine.create_folio()
 
         folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
-        folio.flush()
 
         # ASSERT
         self.assertEqual(len(folio.reservation_ids), 2, "Reservations  not created.")
 
     def test_values_folio_created(self):
-        # TEST CASE
-        # Set values for the wizard and values of folio are correct
+        """
+        Check that the partner_id and pricelist_id values of the folio correspond
+        to the partner_id and pricelist_id of the booking engine wizard that created
+        the folio.
+        -----------
+        The wizard is created with a partner_id, a pricelist, and start and end
+        dates for property1. The availability items are searched for that property
+        and in the first one a double room are set. The create_folio() method of the
+        wizard is launched. Then it is checked that the partner_id and the pricelist_id
+        of the created folio are the same as the partner_id and the pricelist_id of the
+        booking engine wizard.
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
@@ -518,22 +433,20 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
-                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
-
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
             [
-                ("room_type_id.pms_property_ids", "in", self.test_property.id),
+                ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
         # set one room type double
         value = self.env["pms.num.rooms.selection"].search(
             [
-                ("room_type_id", "=", str(self.test_room_type_double.id)),
+                ("room_type_id", "=", self.test_room_type_double.id),
                 ("value", "=", 1),
             ]
         )
@@ -544,7 +457,7 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         booking_engine.create_folio()
         vals = {
             "partner_id": self.partner_id.id,
-            "pricelist_id": self.test_pricelist.id,
+            "pricelist_id": self.pricelist1.id,
         }
         folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
 
@@ -558,12 +471,20 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 )
 
     def test_values_reservation_created(self):
-        # TEST CASE
-        # Set values for the wizard and values of reservations are correct
+        """
+        Check with subtests that the values of the fields of a reservation created through
+        a booking engine wizard are correct.
+        --------------
+        The wizard is created with a partner_id, a pricelist, and start and end
+        dates for property1. The availability items are searched for that property
+        and in the first one a double room are set. The create_folio() method of the
+        wizard is launched. A vals dictionary is created with folio_id, checkin and
+        checkout, room_type_id, partner_id, pricelist_id, and pms_property_id. Then
+        the keys of this dictionary are crossed and it is verified that the values
+        correspond with the values of the reservation created from the wizard .
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
@@ -575,22 +496,21 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
-                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
 
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
             [
-                ("room_type_id.pms_property_ids", "in", self.test_property.id),
+                ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
         # set one room type double
         value = self.env["pms.num.rooms.selection"].search(
             [
-                ("room_type_id", "=", str(self.test_room_type_double.id)),
+                ("room_type_id", "=", self.test_room_type_double.id),
                 ("value", "=", 1),
             ]
         )
@@ -606,10 +526,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
             "folio_id": folio.id,
             "checkin": checkin,
             "checkout": checkout,
-            "room_type_id": self.test_room_type_double,
+            "room_type_id": self.test_room_type_double.id,
             "partner_id": self.partner_id.id,
             "pricelist_id": folio.pricelist_id.id,
-            "pms_property_id": self.test_property.id,
+            "pms_property_id": self.pms_property1.id,
         }
 
         # ASSERT
@@ -619,19 +539,31 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                     self.assertEqual(
                         reservation[key].id
                         if key
-                        in ["folio_id", "partner_id", "pricelist_id", "pms_property_id"]
+                        in [
+                            "folio_id",
+                            "partner_id",
+                            "pricelist_id",
+                            "pms_property_id",
+                            "room_type_id",
+                        ]
                         else reservation[key],
                         vals[key],
                         "The value of " + key + " is not correctly established",
                     )
 
     def test_reservation_line_discounts(self):
-        # TEST CASE
-        # set a discount and its applied to the reservation line
+        """
+        Check that a discount applied to a reservation from a booking engine wizard
+        is applied correctly in the reservation line.
+        -----------------
+        The wizard is created with a partner_id, a pricelist, a discount of 0.5 and
+        start and end dates for property1. The availability items are searched for
+        that property and in the first one a double room are set. The create_folio()
+        method of the wizard is launched.Then it is verified that the discount of the
+        reservation line is equal to the discount applied in the wizard.
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
@@ -644,23 +576,21 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
+                "pricelist_id": self.pricelist1.id,
                 "discount": discount,
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
-
         # availability items belonging to test property
         lines_availability_test = self.env["pms.folio.availability.wizard"].search(
             [
-                ("room_type_id.pms_property_ids", "in", self.test_property.id),
+                ("room_type_id.pms_property_ids", "in", self.pms_property1.id),
             ]
         )
         # set one room type double
         value = self.env["pms.num.rooms.selection"].search(
             [
-                ("room_type_id", "=", str(self.test_room_type_double.id)),
+                ("room_type_id", "=", self.test_room_type_double.id),
                 ("value", "=", 1),
             ]
         )
@@ -673,34 +603,46 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
 
         # ASSERT
-        for reservation in folio.reservation_ids:
-            for line in reservation.reservation_line_ids:
-                with self.subTest(k=line):
-                    self.assertEqual(
-                        line.discount,
-                        discount * 100,
-                        "The discount is not correctly established",
-                    )
+        for line in folio.reservation_ids.reservation_line_ids:
+            with self.subTest(k=line):
+                self.assertEqual(
+                    line.discount,
+                    discount * 100,
+                    "The discount is not correctly established",
+                )
 
     def test_check_quota_avail(self):
-        # TEST CASE
-        # Check avail on room type with quota
+        """
+        Check that the availability for a room type in the booking engine
+        wizard is correct by creating an availability_plan_rule with quota.
+        -----------------
+        An availability_plan_rule with quota = 1 is created for the double
+        room type. A booking engine wizard is created with the checkin same
+        date as the availability_plan_rule and with pricelist1, which also has
+        the availability_plan set that contains the availability_plan_rule
+        created before. Then the availability is searched for the type of
+        double room which must be 1 because the availavility_plan_rule quota
+        for that room is 1.
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
-
+        self.availability_plan1 = self.env["pms.availability.plan"].create(
+            {
+                "name": "Availability plan for TEST",
+                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
+            }
+        )
         self.env["pms.availability.plan.rule"].create(
             {
                 "quota": 1,
                 "room_type_id": self.test_room_type_double.id,
-                "availability_plan_id": self.test_availability_plan.id,
+                "availability_plan_id": self.availability_plan1.id,
                 "date": fields.date.today(),
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
         # create folio wizard with partner id => pricelist & start-end dates
@@ -709,11 +651,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
-                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
         room_type_plan_avail = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         ).num_rooms_available
@@ -723,24 +664,37 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
         self.assertEqual(room_type_plan_avail, 1, "Quota not applied in Wizard Folio")
 
     def test_check_min_stay_avail(self):
-        # TEST CASE
-        # Check avail on room type with quota
+        """
+        Check that the availability for a room type in the booking engine
+        wizard is correct by creating an availability_plan_rule with min_stay.
+        -----------------
+        An availability_plan_rule with min_stay = 3 is created for the double
+        room type. A booking engine wizard is created with start_date = today
+        and end_date = tomorrow. Then the availability is searched for the type of
+        double room which must be 0 because the availability_plan_rule establishes
+        that the min_stay is 3 days and the difference of days in the booking engine
+        wizard is 1 .
+        """
 
         # ARRANGE
-        # common scenario
-        self.create_common_scenario()
 
         # checkin & checkout
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=1)
-
+        # AVAILABILITY PLAN CREATION
+        self.availability_plan1 = self.env["pms.availability.plan"].create(
+            {
+                "name": "Availability plan for TEST",
+                "pms_pricelist_ids": [(6, 0, [self.pricelist1.id])],
+            }
+        )
         self.env["pms.availability.plan.rule"].create(
             {
                 "min_stay": 3,
                 "room_type_id": self.test_room_type_double.id,
-                "availability_plan_id": self.test_availability_plan.id,
+                "availability_plan_id": self.availability_plan1.id,
                 "date": fields.date.today(),
-                "pms_property_id": self.test_property.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
 
@@ -750,12 +704,10 @@ class TestPmsWizardMassiveChanges(common.SavepointCase):
                 "start_date": checkin,
                 "end_date": checkout,
                 "partner_id": self.partner_id.id,
-                "pricelist_id": self.test_pricelist.id,
-                "pms_property_id": self.test_property.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
             }
         )
-        booking_engine.flush()
-
         room_type_plan_avail = booking_engine.availability_results.filtered(
             lambda r: r.room_type_id.id == self.test_room_type_double.id
         ).num_rooms_available
