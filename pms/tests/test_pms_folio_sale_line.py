@@ -51,6 +51,7 @@ class TestPmsFolioSaleLine(TestPms):
             {
                 "name": "Test Board Service",
                 "default_code": "TPS",
+                "show_detail_report": True,
             }
         )
         self.env["pms.board.service.line"].create(
@@ -725,6 +726,191 @@ class TestPmsFolioSaleLine(TestPms):
             )[0],
             "Previous records of board service sales lines should not be "
             "deleted if it is not necessary",
+        )
+
+    def test_comp_fsl_rooms_with_bs_show_detail_report(self):
+        """
+        test_case 1. If a board service is set as not show_detail_report shouldn't
+        generate folio sale lines from board services lines.
+
+        test_case 2. If a board service is set as show_detail_report should
+        generate folio sale lines from board services lines and from reservation lines.
+        """
+        # ARRANGE
+        # product
+        self.product_test1 = self.env["product.product"].create(
+            {
+                "name": "Test Product Breakfast Buffet",
+                "per_day": True,
+                "per_person": True,
+                "consumed_on": "after",
+            }
+        )
+        self.product_test2 = self.env["product.product"].create(
+            {
+                "name": "Test Product Dinner",
+                "per_day": True,
+                "per_person": True,
+                "consumed_on": "before",
+            }
+        )
+        # board service
+        self.board_service_test = self.board_service = self.env[
+            "pms.board.service"
+        ].create(
+            {
+                "name": "TEST HALF BOARD",
+                "default_code": "THB",
+                "show_detail_report": False,
+            }
+        )
+        # board service line
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test1.id,
+                "amount": 3,
+            }
+        )
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test2.id,
+                "amount": 5,
+            }
+        )
+
+        # board service room type
+        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service_test.id,
+            }
+        )
+
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=2)
+
+        test_cases = [
+            {
+                "show_detail_report": False,
+                "message_assert": "Folio should contain 1 sale line with just the sale"
+                " data of the stay (including board services)",
+                "expected_sale_lines_with_no_display_type": 1,
+            },
+            {
+                "show_detail_report": True,
+                "message_assert": "Folio should contain 3 sale lines: 1 for reservation line "
+                "and 2 for each board service",
+                "expected_sale_lines_with_no_display_type": 3,
+            },
+        ]
+
+        for test_case in test_cases:
+            with self.subTest(k=test_case):
+                # ACT
+                self.board_service_room_type.pms_board_service_id.show_detail_report = (
+                    test_case["show_detail_report"]
+                )
+                reservation = self.env["pms.reservation"].create(
+                    {
+                        "checkin": checkin,
+                        "checkout": checkout,
+                        "room_type_id": self.room_type_double.id,
+                        "partner_id": self.env.ref("base.res_partner_12").id,
+                        "pms_property_id": self.pms_property1.id,
+                        "board_service_room_id": self.board_service_room_type.id,
+                    }
+                )
+                # ASSERT
+                self.assertEqual(
+                    len(
+                        reservation.sale_line_ids.filtered(lambda x: not x.display_type)
+                    ),
+                    test_case["expected_sale_lines_with_no_display_type"],
+                    test_case["message_assert"],
+                )
+                reservation.unlink()
+
+    def test_comp_price_fsl_rooms_with_bs_no_show_detail_report(self):
+        """
+        Board service is set as not show_detail_report should generate only 1
+        folio_sale_line with the sum of the reservation line prices
+        and the board services line prices.
+        """
+        # ARRANGE
+        # product
+        self.product_test1 = self.env["product.product"].create(
+            {
+                "name": "Test Product Breakfast Buffet",
+                "per_day": True,
+                "per_person": True,
+                "consumed_on": "after",
+            }
+        )
+        self.product_test2 = self.env["product.product"].create(
+            {
+                "name": "Test Product Dinner",
+                "per_day": True,
+                "per_person": True,
+                "consumed_on": "before",
+            }
+        )
+        # board service
+        self.board_service_test = self.board_service = self.env[
+            "pms.board.service"
+        ].create(
+            {
+                "name": "TEST HALF BOARD",
+                "default_code": "THB",
+                "show_detail_report": False,
+            }
+        )
+        # board service line
+        bsl_1 = self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test1.id,
+                "amount": 5,
+            }
+        )
+        bsl_2 = self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test2.id,
+                "amount": 5,
+            }
+        )
+
+        # board service room type
+        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service_test.id,
+            }
+        )
+
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=2)
+
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.env.ref("base.res_partner_12").id,
+                "pms_property_id": self.pms_property1.id,
+                "board_service_room_id": self.board_service_room_type.id,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation.sale_line_ids.filtered(
+                lambda x: not x.display_type
+            ).price_subtotal,
+            (bsl_1.amount * (checkout - checkin).days * reservation.adults)
+            + (bsl_2.amount * (checkout - checkin).days * reservation.adults)
+            + (self.room_type_double.price * (checkout - checkin).days),
         )
 
     # RESERVATION EXTRA DAILY SERVICES
