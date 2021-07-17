@@ -595,17 +595,13 @@ class PmsReservation(models.Model):
         compute="_compute_services_discount",
         tracking=True,
     )
-    date_order = fields.Date(
+    date_order = fields.Datetime(
         string="Date Order",
         help="Order date of reservation",
-        compute="_compute_date_order",
+        default=fields.Datetime.now,
         store=True,
         readonly=False,
     )
-
-    def _compute_date_order(self):
-        for record in self:
-            record.date_order = datetime.datetime.today()
 
     @api.depends(
         "checkin",
