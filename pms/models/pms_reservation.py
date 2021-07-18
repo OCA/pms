@@ -762,7 +762,9 @@ class PmsReservation(models.Model):
     def _compute_partner_id(self):
         for reservation in self:
             if not reservation.partner_id:
-                if reservation.folio_id and reservation.folio_id.partner_id:
+                if reservation.reservation_type == "out":
+                    reservation.partner_id = False
+                elif reservation.folio_id and reservation.folio_id.partner_id:
                     reservation.partner_id = reservation.folio_id.partner_id
                 elif reservation.agency_id and reservation.agency_id.invoice_to_agency:
                     reservation.partner_id = reservation.agency_id
@@ -839,6 +841,8 @@ class PmsReservation(models.Model):
     @api.depends("partner_id", "agency_id")
     def _compute_pricelist_id(self):
         for reservation in self:
+            if reservation.reservation_type in ("out", "staff"):
+                reservation.pricelist_id = False
             if reservation.agency_id and reservation.agency_id.apply_pricelist:
                 reservation.pricelist_id = (
                     reservation.agency_id.property_product_pricelist

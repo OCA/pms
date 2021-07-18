@@ -8,6 +8,7 @@
                 <div class="row">
                     <div class="col-5 ">
                         <group>
+                            <field name="reservation_type" />
                             <field
                                 name="start_date"
                                 widget="daterange"
@@ -19,8 +20,15 @@
                                 options="{'related_start_date': 'start_date'}"
                             />
                             <field name="folio_id" invisible="1" />
-                            <field name="agency_id" />
-                            <field name="segmentation_ids" widget="many2many_tags" />
+                            <field
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
+                            <field
+                                name="segmentation_ids"
+                                widget="many2many_tags"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
                         </group>
                     </div>
                     <div class="col-5">
@@ -28,22 +36,37 @@
                             <field
                                 name="partner_id"
                                 string="Partner"
-                                required="1"
                                 options="{'no_create': True,'no_open': True}"
+                                attrs="{'invisible': [('reservation_type','=','out')]}"
+                            />
+                            <field
+                                name="partner_name"
+                                string="Partner"
+                                required="1"
+                                attrs="{'invisible': [('reservation_type','=','out')]}"
+                            />
+                            <field
+                                name="partner_name"
+                                string="Reason"
+                                required="1"
+                                attrs="{'invisible': [('reservation_type','!=','out')]}"
                             />
                             <field
                                 name="pms_property_id"
                                 required="1"
-                                attrs="{'invisible':[('folio_id','!=',0)]}"
+                                attrs="{'readonly':[('folio_id','!=',0)]}"
                             />
                             <field
                                 default_focus="1"
                                 name="pricelist_id"
                                 string="Pricelist"
-                                required="1"
                                 options="{'no_create': True,'no_open': True}"
+                                attrs="{'required': [('reservation_type','=','normal')], 'invisible': [('reservation_type','!=','normal')]}"
                             />
-                            <field name="channel_type_id" />
+                            <field
+                                name="channel_type_id"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
                         </group>
                     </div>
                 </div>
@@ -83,16 +106,21 @@
                                         attrs="{'readonly':[('num_rooms_available','&lt;',1)]}"
                                         force_save="1"
                                     />
-                                    <field name="board_service_room_id" />
+                                    <field
+                                        name="board_service_room_id"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                    />
                                     <field
                                         name="price_per_room"
                                         readonly="1"
                                         force_save="1"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                     />
                                     <field
                                         name="price_total"
                                         readonly="1"
                                         force_save="1"
+                                        attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
                                     />
 
                                  </tree>
@@ -103,11 +131,19 @@
                 <div class="row float-right border mr-2 mb-5">
                     <div class="col-3 ">
                         <group>
-                            <field name="discount" widget="percentage" />
+                            <field
+                                name="discount"
+                                widget="percentage"
+                                attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                            />
                         </group>
                         <div class="col-3 px-0">
                             <group>
-                                <field name="total_price_folio" widget="monetary" />
+                                <field
+                                    name="total_price_folio"
+                                    widget="monetary"
+                                    attrs="{'invisible': [('reservation_type','!=','normal')]}"
+                                />
                             </group>
                         </div>
                     </div>
