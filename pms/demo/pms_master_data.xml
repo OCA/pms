@@ -53,7 +53,7 @@
             <field name="reservation_sequence_id" ref="pms.seq_pms_reservation" />
         </record>
         <record id="demo_pms_property2" model="pms.property">
-            <field name="name">Agalia</field>
+            <field name="name">Algalia</field>
             <field name="company_id" ref="base.main_company" />
             <field name="default_pricelist_id" ref="product.list0" />
             <field name="folio_sequence_id" ref="pms.seq_pms_folio" />

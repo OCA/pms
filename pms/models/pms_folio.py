@@ -625,7 +625,9 @@ class PmsFolio(models.Model):
     )
     def _compute_pricelist_id(self):
         for folio in self:
-            if len(folio.reservation_ids.pricelist_id) == 1:
+            if folio.reservation_type in ("out", "staff"):
+                folio.pricelist_id = False
+            elif len(folio.reservation_ids.pricelist_id) == 1:
                 folio.pricelist_id = folio.reservation_ids.pricelist_id
             elif folio.agency_id and folio.agency_id.apply_pricelist:
                 folio.pricelist_id = folio.agency_id.property_product_pricelist
@@ -634,10 +636,12 @@ class PmsFolio(models.Model):
             elif not folio.pricelist_id:
                 folio.pricelist_id = folio.pms_property_id.default_pricelist_id
 
-    @api.depends("agency_id")
+    @api.depends("agency_id", "reservation_type")
     def _compute_partner_id(self):
         for folio in self:
-            if folio.agency_id and folio.agency_id.invoice_to_agency:
+            if folio.reservation_type == "out":
+                folio.partner_id = False
+            elif folio.agency_id and folio.agency_id.invoice_to_agency:
                 folio.partner_id = folio.agency_id.id
             elif not folio.partner_id:
                 folio.partner_id = False
