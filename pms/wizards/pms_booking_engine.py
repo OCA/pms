@@ -51,6 +51,9 @@ class BookingEngine(models.TransientModel):
         string="Partner",
         help="Partner who made the reservation",
         comodel_name="res.partner",
+        compute="_compute_partner_id",
+        readonly=False,
+        store=True,
         check_pms_properties=True,
     )
     folio_id = fields.Many2one(
@@ -68,6 +71,13 @@ class BookingEngine(models.TransientModel):
         inverse_name="booking_engine_id",
         compute="_compute_availability_results",
         check_pms_properties=True,
+    )
+    reservation_type = fields.Selection(
+        string="Type",
+        help="The type of the reservation. "
+        "Can be 'Normal', 'Staff' or 'Out of Service'",
+        default=lambda *a: "normal",
+        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
     )
     agency_id = fields.Many2one(
         string="Agency",
@@ -141,7 +151,7 @@ class BookingEngine(models.TransientModel):
             elif not record.partner_id:
                 record.partner_id = False
 
-    @api.depends("partner_id")
+    @api.depends("partner_id", "agency_id")
     def _compute_partner_name(self):
         for record in self:
             if record.partner_id:
@@ -164,7 +174,7 @@ class BookingEngine(models.TransientModel):
         for record in self:
             record.availability_results = False
 
-            if record.start_date and record.end_date and record.pricelist_id:
+            if record.start_date and record.end_date:
                 if record.end_date == record.start_date:
                     record.end_date = record.end_date + datetime.timedelta(days=1)
 
@@ -215,6 +225,7 @@ class BookingEngine(models.TransientModel):
             if not record.folio_id:
                 folio = self.env["pms.folio"].create(
                     {
+                        "reservation_type": record.reservation_type,
                         "pricelist_id": record.pricelist_id.id,
                         "partner_id": record.partner_id.id
                         if record.partner_id
