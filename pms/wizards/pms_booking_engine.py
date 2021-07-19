@@ -405,7 +405,9 @@ class AvailabilityWizard(models.TransientModel):
             if record.board_service_room_id:
                 nights = (record.checkout - record.checkin).days
                 room_type_total_price_per_room += (
-                    record.board_service_room_id.amount * nights
+                    record.board_service_room_id.amount
+                    * nights
+                    * record.room_type_id.get_capacity()
                 )
 
             record.price_per_room = room_type_total_price_per_room
