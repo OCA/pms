@@ -109,6 +109,10 @@ class BookingEngine(models.TransientModel):
     can_create_folio = fields.Boolean(
         string="Can create folio", compute="_compute_can_create_folio"
     )
+    internal_comment = fields.Text(
+        string="Internal Folio Notes",
+        help="Internal Folio notes for Staff",
+    )
 
     def _default_pms_property_id(self):
         if self._context.get("default_folio_id"):
@@ -235,6 +239,7 @@ class BookingEngine(models.TransientModel):
                         "agency_id": record.agency_id.id,
                         "channel_type_id": record.channel_type_id.id,
                         "segmentation_ids": [(6, 0, record.segmentation_ids.ids)],
+                        "internal_comment": record.internal_comment,
                     }
                 )
             else:
