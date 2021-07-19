@@ -1746,10 +1746,20 @@ class TestPmsReservations(TestPms):
             }
         )
 
+        date_order = reservation.date_order
+        date_order_expected = datetime.datetime(
+            date_order.year,
+            date_order.month,
+            date_order.day,
+            date_order.hour,
+            date_order.minute,
+            date_order.second,
+        )
+
         reservation.flush()
         self.assertEqual(
-            str(reservation.date_order),
-            str(fields.date.today()),
+            date_order,
+            date_order_expected,
             "Date Order isn't correct",
         )
 
