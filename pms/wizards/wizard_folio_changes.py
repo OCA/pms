@@ -34,6 +34,10 @@ class WizardFolioChanges(models.TransientModel):
     new_discount = fields.Float(
         string="New Discount %",
     )
+    new_board_service_id = fields.Many2one(
+        string="New Board Service",
+        comodel_name="pms.board.service",
+    )
     apply_on_monday = fields.Boolean(
         string="Apply Availability Rule on mondays",
         default=False,
@@ -98,24 +102,47 @@ class WizardFolioChanges(models.TransientModel):
             reservation_lines = reservation_lines.filtered(
                 lambda x: week_days_to_apply[x.date.timetuple()[6]]
             )
-        if self.new_price:
-            vals["price"] = self.new_price
-        if self.new_discount:
-            vals["discount"] = self.new_discount
+        if self.new_price or self.new_discount:
+            if self.new_price:
+                vals["price"] = self.new_price
+            if self.new_discount:
+                vals["discount"] = self.new_discount
 
-        reservation_lines.write(vals)
+            reservation_lines.write(vals)
 
-        self.folio_id.message_post(
-            body=_(
-                "Prices/Discounts have been changed from folio",
-            )
-        )
-        reservations = self.env["pms.reservation"].browse(
-            reservation_lines.mapped("reservation_id.id")
-        )
-        for reservation in reservations:
-            reservation.message_post(
+            self.folio_id.message_post(
                 body=_(
                     "Prices/Discounts have been changed from folio",
                 )
             )
+            reservations = self.env["pms.reservation"].browse(
+                reservation_lines.mapped("reservation_id.id")
+            )
+            for reservation in reservations:
+                reservation.message_post(
+                    body=_(
+                        "Prices/Discounts have been changed from folio",
+                    )
+                )
+        if self.new_board_service_id:
+            for reservation in self.reservation_ids:
+                if (
+                    self.new_board_service_id.id
+                    in reservation.room_type_id.board_service_room_type_ids.ids
+                ):
+                    reservation.board_service_room_id = (
+                        reservation.room_type_id.board_service_room_type_ids.filtered(
+                            lambda x: x.pms_board_service_id.id
+                            == self.new_board_service_id.id
+                            and (
+                                self.folio_id.pms_property_id.id
+                                in x.pms_property_ids.ids
+                                or not x.pms_property_ids
+                            )
+                        )
+                    )
+                    reservation.message_post(
+                        body=_(
+                            "Board service has been changed from folio",
+                        )
+                    )

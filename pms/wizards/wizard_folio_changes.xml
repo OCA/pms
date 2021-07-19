@@ -99,6 +99,7 @@
                         <group>
                             <field name="new_price" />
                             <field name="new_discount" />
+                            <field name="new_board_service_id" />
                         </group>
                     </div>
                 </div>
