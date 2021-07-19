@@ -1,5 +1,7 @@
 import datetime
 
+from freezegun import freeze_time
+
 from odoo import fields
 
 from .common import TestPms
@@ -715,3 +717,164 @@ class TestPmsBookingEngine(TestPms):
         # ASSERT
 
         self.assertEqual(room_type_plan_avail, 0, "Quota not applied in Wizard Folio")
+
+    @freeze_time("2015-05-05")
+    def _test_price_total_with_board_service(self):
+        """
+        In booking engine when in availability results choose a room or several
+        and also choose a board service, the total price is calculated from price of the room,
+        number of nights, board service included price and number of guests
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=1)
+
+        self.product_test1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+                "per_day": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service_test = self.env["pms.board.service"].create(
+            {
+                "name": "Test Board Service",
+                "default_code": "TPS",
+            }
+        )
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test1.id,
+                "amount": 8,
+            }
+        )
+        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.test_room_type_double.id,
+                "pms_board_service_id": self.board_service_test.id,
+            }
+        )
+        # self.board_service_room_type.flush()
+        # ACT
+        booking_engine = self.env["pms.booking.engine"].create(
+            {
+                "start_date": checkin,
+                "end_date": checkout,
+                "partner_id": self.partner_id.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+
+        lines_availability_test = booking_engine.availability_results.filtered(
+            lambda r: r.room_type_id.id == self.test_room_type_double.id
+        )
+
+        value = self.env["pms.num.rooms.selection"].search(
+            [
+                ("room_type_id", "=", self.test_room_type_double.id),
+                ("value", "=", 1),
+            ]
+        )
+        lines_availability_test[0].num_rooms_selected = value
+        lines_availability_test[0].value_num_rooms_selected = 1
+        lines_availability_test[
+            0
+        ].board_service_room_id = self.board_service_room_type.id
+
+        self.test_room_type_double.list_price = 25
+
+        room_price = self.test_room_type_double.list_price
+        days = (checkout - checkin).days
+        board_service_price = self.board_service_test.amount
+        room_capacity = self.test_room_type_double.get_capacity()
+        expected_price = room_price * days + (
+            board_service_price * room_capacity * days
+        )
+
+        # ASSERT
+        self.assertEqual(
+            lines_availability_test[0].price_per_room,
+            expected_price,
+            "The total price calculation is wrong",
+        )
+
+    @freeze_time("2014-05-05")
+    def test_board_service_discount(self):
+        """
+        In booking engine when a discount is indicated it must be
+        applied correctly on both reservation lines and board services,
+        whether consumed after or before night
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=1)
+
+        self.product_test1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+                "per_day": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service_test = self.env["pms.board.service"].create(
+            {
+                "name": "Test Board Service",
+                "default_code": "TPS",
+            }
+        )
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test1.id,
+                "amount": 8,
+            }
+        )
+        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.test_room_type_double.id,
+                "pms_board_service_id": self.board_service_test.id,
+            }
+        )
+        discount = 15
+
+        booking_engine = self.env["pms.booking.engine"].create(
+            {
+                "start_date": checkin,
+                "end_date": checkout,
+                "partner_id": self.partner_id.id,
+                "pricelist_id": self.pricelist1.id,
+                "discount": discount,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+
+        lines_availability_test = booking_engine.availability_results.filtered(
+            lambda r: r.room_type_id.id == self.test_room_type_double.id
+        )
+        value = self.env["pms.num.rooms.selection"].search(
+            [
+                ("room_type_id", "=", self.test_room_type_double.id),
+                ("value", "=", 1),
+            ]
+        )
+        lines_availability_test[0].num_rooms_selected = value
+        lines_availability_test[0].value_num_rooms_selected = 1
+        lines_availability_test[
+            0
+        ].board_service_room_id = self.board_service_room_type.id
+
+        # ACT
+        booking_engine.create_folio()
+
+        folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id.id)])
+
+        # ASSERT
+        for line in folio.service_ids.service_line_ids:
+            if line.is_board_service:
+                self.assertEqual(
+                    line.discount,
+                    discount * 100,
+                    "The discount is not correctly established",
+                )
