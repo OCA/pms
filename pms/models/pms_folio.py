@@ -765,17 +765,17 @@ class PmsFolio(models.Model):
             else:
                 order.invoice_status = "no"
 
-    @api.depends("partner_id", "partner_id.name")
+    @api.depends("partner_id", "partner_id.name", "agency_id")
     def _compute_partner_name(self):
         for record in self:
             self._apply_partner_name(record)
 
-    @api.depends("partner_id", "partner_id.email")
+    @api.depends("partner_id", "partner_id.email", "agency_id")
     def _compute_email(self):
         for record in self:
             self._apply_email(record)
 
-    @api.depends("partner_id", "partner_id.mobile")
+    @api.depends("partner_id", "partner_id.mobile", "agency_id")
     def _compute_mobile(self):
         for record in self:
             self._apply_mobile(record)
