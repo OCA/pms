@@ -31,12 +31,9 @@ from . import test_pms_board_service
 from . import test_pms_wizard_massive_changes
 from . import test_pms_booking_engine
 from . import test_pms_res_users
-from . import test_pms_amenity
 from . import test_pms_room
-from . import test_pms_board_service_line
-from . import test_pms_board_service_room_type
-from . import test_pms_board_service_room_type_line
 from . import test_pms_folio_invoice
 from . import test_pms_folio_sale_line
 from . import test_pms_wizard_split_join_swap_reservation
 from . import test_product_template
+from . import test_pms_multiproperty

@@ -3,7 +3,6 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
-from odoo.exceptions import UserError
 
 from .common import TestPms
 
@@ -45,26 +44,6 @@ class TestPmsFolio(TestPms):
                 "name": "Double 102",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
-            }
-        )
-
-    def create_multiproperty_scenario(self):
-        """
-        Just 2 properties to majors
-        """
-        self.pms_property2 = self.env["pms.property"].create(
-            {
-                "name": "Property_2",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-            }
-        )
-
-        self.pms_property3 = self.env["pms.property"].create(
-            {
-                "name": "Property_3",
-                "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
             }
         )
 
@@ -354,39 +333,3 @@ class TestPmsFolio(TestPms):
             "The pending amount on a partially paid folio it \
             does not correspond to the amount that it should",
         )
-
-    # TestCases: Property Consistencies
-
-    def test_folio_closure_reason_consistency_properties(self):
-        """
-        Check the multioproperty consistencia between
-        clousure reasons and folios
-        -------
-        create multiproperty scenario (3 properties in total) and
-        a new clousure reason in pms_property1 and pms_property2, then, create
-        a new folio in property3 and try to set the clousure_reason
-        waiting a error property consistency.
-        """
-        # ARRANGE
-        self.create_multiproperty_scenario()
-        cl_reason = self.env["room.closure.reason"].create(
-            {
-                "name": "closure_reason_test",
-                "pms_property_ids": [
-                    (4, self.pms_property1.id),
-                    (4, self.pms_property2.id),
-                ],
-            }
-        )
-
-        # ACTION & ASSERT
-        with self.assertRaises(
-            UserError,
-            msg="Folio created with clousure_reason_id with properties inconsistence",
-        ):
-            self.env["pms.folio"].create(
-                {
-                    "pms_property_id": self.pms_property3.id,
-                    "closure_reason_id": cl_reason.id,
-                }
-            )
