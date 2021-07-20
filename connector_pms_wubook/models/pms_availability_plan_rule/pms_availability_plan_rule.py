@@ -32,7 +32,6 @@ class PmsRoomTypeAvailabilityRule(models.Model):
             if rec.channel_wubook_bind_ids:
                 inconsistent_rules = self.search(
                     [
-                        ("id", "not in", rec.ids),
                         ("room_type_id", "=", rec.room_type_id.id),
                         ("date", "=", rec.date),
                         (
@@ -52,8 +51,14 @@ class PmsRoomTypeAvailabilityRule(models.Model):
                     lambda x: x.max_avail != rec.max_avail
                 ).max_avail = rec.max_avail
                 rec.inconsistent_rules = inconsistent_rules
-                rec.inconsistent_rule_count = len(inconsistent_rules) + len(
-                    rec.channel_wubook_bind_ids.mapped("inconsistent_binding_rules")
+                other_inconsistent_rules = inconsistent_rules.filtered(
+                    lambda x: x.id not in rec.ids
+                )
+                inconsistent_binding_rules = rec.channel_wubook_bind_ids.mapped(
+                    "inconsistent_binding_rules"
+                )
+                rec.inconsistent_rule_count = len(other_inconsistent_rules) + len(
+                    inconsistent_binding_rules
                 )
             else:
                 rec.inconsistent_rules = False
