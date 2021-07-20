@@ -878,3 +878,87 @@ class TestPmsBookingEngine(TestPms):
                     discount * 100,
                     "The discount is not correctly established",
                 )
+
+    def test_check_folio_when_change_selection(self):
+        """
+        Check, when creating a folio from booking engine,
+        if a room type is chosen and then deleted that selection
+        isn`t registered on the folio and is properly unselected
+        """
+        # ARRANGE
+        # CREATION OF ROOM TYPE (WITH ROOM TYPE CLASS)
+        self.partner_id2 = self.env["res.partner"].create(
+            {
+                "name": "Brais",
+                "mobile": "654665553",
+                "email": "braistest@example.com",
+            }
+        )
+        self.test_room_type_triple = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [self.pms_property1.id],
+                "name": "Triple Test",
+                "default_code": "TRP_Test",
+                "class_id": self.room_type_class1.id,
+                "list_price": 60.0,
+            }
+        )
+
+        # pms.room
+        self.test_room1_triple = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Triple 301 test",
+                "room_type_id": self.test_room_type_triple.id,
+                "capacity": 3,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=1)
+
+        booking_engine = self.env["pms.booking.engine"].create(
+            {
+                "start_date": checkin,
+                "end_date": checkout,
+                "partner_id": self.partner_id2.id,
+                "pricelist_id": self.pricelist1.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+
+        lines_availability_test_double = booking_engine.availability_results.filtered(
+            lambda r: r.room_type_id.id == self.test_room_type_double.id
+        )
+        value = self.env["pms.num.rooms.selection"].search(
+            [
+                ("room_type_id", "=", self.test_room_type_double.id),
+                ("value", "=", 1),
+            ]
+        )
+        lines_availability_test_double[0].num_rooms_selected = value
+        lines_availability_test_double[0].value_num_rooms_selected = 1
+
+        lines_availability_test_double[0].value_num_rooms_selected = 0
+
+        lines_availability_test_triple = booking_engine.availability_results.filtered(
+            lambda r: r.room_type_id.id == self.test_room_type_triple.id
+        )
+        value_triple = self.env["pms.num.rooms.selection"].search(
+            [
+                ("room_type_id", "=", self.test_room_type_triple.id),
+                ("value", "=", 1),
+            ]
+        )
+        lines_availability_test_triple[0].num_rooms_selected = value_triple
+        lines_availability_test_triple[0].value_num_rooms_selected = 1
+
+        # ACT
+        booking_engine.create_folio()
+
+        folio = self.env["pms.folio"].search([("partner_id", "=", self.partner_id2.id)])
+        # ASSERT
+        self.assertEqual(
+            len(folio.reservation_ids),
+            1,
+            "Reservations of folio are incorrect",
+        )
