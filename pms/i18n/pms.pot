@@ -1215,6 +1215,12 @@ msgid "Board service"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/wizards/wizard_folio_changes.py:0
+#, python-format
+msgid "Board service has been changed from folio"
+msgstr ""
+
+#. module: pms
 #. openerp-web
 #: code:addons/pms/static/src/xml/reservation_group_button_views.xml:0
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__booking_engine_id
@@ -3827,12 +3833,14 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_engine__internal_comment
 #: model:ir.model.fields,field_description:pms.field_pms_folio__internal_comment
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__folio_internal_comment
 msgid "Internal Folio Notes"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_engine__internal_comment
 #: model:ir.model.fields,help:pms.field_pms_folio__internal_comment
 msgid "Internal Folio notes for Staff"
 msgstr ""
@@ -3846,6 +3854,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__default_code
 msgid "Internal Reference"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_engine
+msgid "Internal comment Folio"
 msgstr ""
 
 #. module: pms
@@ -4774,6 +4787,11 @@ msgid "New"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_board_service_id
+msgid "New Board Service"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_discount
 msgid "New Discount %"
 msgstr ""
@@ -4853,6 +4871,7 @@ msgid "NoShow first days"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__normal
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__normal
 msgid "Normal"
 msgstr ""
@@ -5227,6 +5246,7 @@ msgid "Out"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__out
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__out
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Out of Service"
@@ -6244,6 +6264,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__real_avail
 msgid "Real availability"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.booking_engine
+msgid "Reason"
 msgstr ""
 
 #. module: pms
@@ -7440,6 +7465,7 @@ msgid "Splitted"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__staff
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__staff
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Staff"
@@ -8087,6 +8113,7 @@ msgid "The total price in the folio"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_booking_engine__reservation_type
 #: model:ir.model.fields,help:pms.field_pms_folio__reservation_type
 msgid ""
 "The type of the reservation. Can be 'Normal', 'Staff' or 'Out of Service'"
@@ -8503,6 +8530,7 @@ msgid "Tuesday"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_booking_engine__reservation_type
 #: model:ir.model.fields,field_description:pms.field_pms_folio__reservation_type
 #: model_terms:ir.ui.view,arch_db:pms.report_viajero
 msgid "Type"
