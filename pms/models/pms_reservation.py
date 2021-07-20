@@ -344,6 +344,8 @@ class PmsReservation(models.Model):
         help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
         default=lambda *a: "normal",
         related="folio_id.reservation_type",
+        store=True,
+        readonly=False,
     )
     splitted = fields.Boolean(
         string="Splitted",
