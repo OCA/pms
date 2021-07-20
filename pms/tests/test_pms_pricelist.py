@@ -3,7 +3,7 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 
 from .common import TestPms
@@ -82,72 +82,6 @@ class TestPmsPricelist(TestPms):
         )
 
         self.partner1 = self.env["res.partner"].create({"name": "Carles"})
-
-    def test_inconsistency_property_pricelist_item(self):
-        """
-        Check a pricelist item and its pricelist are inconsistent with the property.
-        Create a pricelist item that belongs to a property and check if
-        a pricelist that belongs to a diferent one, cannot be created.
-        """
-        # ARRANGE
-        # ACT & ASSERT
-        with self.assertRaises(UserError):
-            self.item1 = self.env["product.pricelist.item"].create(
-                {
-                    "name": "item_1",
-                    "applied_on": "0_product_variant",
-                    "product_id": self.room_type1.product_id.id,
-                    "date_start": datetime.datetime.today(),
-                    "date_end": datetime.datetime.today() + datetime.timedelta(days=1),
-                    "fixed_price": 40.0,
-                    "pricelist_id": self.pricelist2.id,
-                    "pms_property_ids": [self.pms_property3.id],
-                }
-            )
-
-    def test_inconsistency_cancelation_rule_property(self):
-        """
-        Check a cancelation rule and its pricelist are inconsistent with the property.
-        Create a cancelation rule that belongs to a two properties and check if
-        a pricelist that belongs to a diferent properties, cannot be created.
-        """
-        # ARRANGE
-
-        Pricelist = self.env["product.pricelist"]
-        # ACT
-        self.cancelation_rule = self.env["pms.cancelation.rule"].create(
-            {
-                "name": "Cancelation Rule Test",
-                "pms_property_ids": [self.pms_property1.id, self.pms_property3.id],
-            }
-        )
-        # ASSERT
-        with self.assertRaises(UserError):
-            Pricelist.create(
-                {
-                    "name": "Pricelist Test",
-                    "pms_property_ids": [self.pms_property1.id, self.pms_property2.id],
-                    "cancelation_rule_id": self.cancelation_rule.id,
-                }
-            )
-
-    def test_inconsistency_availability_plan_property(self):
-        """
-        Check a availability plan and its pricelist are inconsistent with the property.
-        Create a availability plan that belongs to a two properties and check if
-        a pricelist that belongs to a diferent properties, cannot be created.
-        """
-        self.availability_plan = self.env["pms.availability.plan"].create(
-            {"name": "Availability Plan", "pms_property_ids": [self.pms_property1.id]}
-        )
-        with self.assertRaises(UserError):
-            self.env["product.pricelist"].create(
-                {
-                    "name": "Pricelist",
-                    "pms_property_ids": [self.pms_property2.id],
-                    "availability_plan_id": self.availability_plan.id,
-                }
-            )
 
     @freeze_time("2000-01-01")
     def test_board_service_pricelist_item_apply_sale_dates(self):
