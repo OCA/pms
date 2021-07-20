@@ -16,7 +16,7 @@
         <record id="pms_reservation_1" model="pms.reservation">
             <field name="partner_id" ref="main_pms_property" />
             <field name="user_id" ref="base.user_demo" />
-            <field name="reservation_type">"out"</field>
+            <field name="reservation_type">out</field>
             <field name="room_type_id" ref="pms_room_type_0" />
             <field name="checkin" eval="DateTime.today() + timedelta(-3)" />
             <field name="checkout" eval="DateTime.today() + timedelta(-1)" />
