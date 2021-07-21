@@ -1,3 +1,6 @@
 # generated from manifests external_dependencies
 bs4
+jwt
+marshmallow
+simplejson
 xlrd

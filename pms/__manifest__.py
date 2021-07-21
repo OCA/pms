@@ -25,8 +25,15 @@
         "partner_contact_gender",
         "partner_contact_birthdate",
         "partner_contact_nationality",
+        "base_rest",
+        "base_rest_datamodel",
         # "partner_identification_unique_by_category",
+        "web",
+        "auth_signup",
     ],
+    "external_dependencies": {
+        "python": ["jwt", "simplejson", "marshmallow"],
+    },
     "data": [
         "security/pms_security.xml",
         "security/ir.model.access.csv",
