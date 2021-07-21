@@ -2998,6 +2998,6 @@ class TestPmsReservations(TestPms):
         # ASSERT
         self.assertEqual(
             expected_discount,
-            reservation.discount,
+            reservation.discount_room,
             "Room discount isn't the expected",
         )

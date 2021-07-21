@@ -578,13 +578,14 @@ class PmsReservation(models.Model):
         store=True,
         compute="_compute_price_room_services_set",
     )
-    discount = fields.Float(
+    discount_room = fields.Float(
         string="Discount (€)",
-        help="Discount of total price in reservation",
+        help="Discount on reservation lines, "
+             "which means discount only on price of the room",
         readonly=False,
         store=True,
         digits=("Discount"),
-        compute="_compute_discount",
+        compute="_compute_discount_room",
         tracking=True,
     )
 
@@ -1177,7 +1178,7 @@ class PmsReservation(models.Model):
         "reservation_line_ids.discount",
         "reservation_line_ids.cancel_discount",
     )
-    def _compute_discount(self):
+    def _compute_discount_room(self):
         for record in self:
             discount = 0
             for line in record.reservation_line_ids:
@@ -1186,7 +1187,7 @@ class PmsReservation(models.Model):
                 cancel_discount = price * ((line.cancel_discount or 0.0) * 0.01)
                 discount += first_discount + cancel_discount
 
-            record.discount = discount
+            record.discount_room = discount
 
     @api.depends("service_ids.discount")
     def _compute_services_discount(self):
@@ -1196,7 +1197,7 @@ class PmsReservation(models.Model):
                 services_discount += service.discount
             record.services_discount = services_discount
 
-    @api.depends("reservation_line_ids.price", "discount", "tax_ids")
+    @api.depends("reservation_line_ids.price", "discount_room", "tax_ids")
     def _compute_amount_reservation(self):
         """
         Compute the amounts of the reservation.
@@ -1205,7 +1206,7 @@ class PmsReservation(models.Model):
             amount_room = sum(record.reservation_line_ids.mapped("price"))
             if amount_room > 0:
                 product = record.room_type_id.product_id
-                price = amount_room - record.discount
+                price = amount_room - record.discount_room
                 taxes = record.tax_ids.compute_all(
                     price, record.currency_id, 1, product=product
                 )

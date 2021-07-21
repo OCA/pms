@@ -154,7 +154,7 @@ class PmsServiceLine(models.Model):
                     }
                 )
 
-    @api.depends("service_id.reservation_id", "service_id.reservation_id.discount")
+    @api.depends("service_id.reservation_id", "service_id.reservation_id.discount_room")
     def _compute_discount(self):
         """
         On board service the line discount is always

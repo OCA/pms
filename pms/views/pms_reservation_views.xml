@@ -400,7 +400,7 @@
                                 options="{'currency_field': 'currency_id'}"
                             />
                             <field
-                                name="discount"
+                                name="discount_room"
                                 string="Discount Room"
                                 widget="monetary"
                                 options="{'currency_field': 'currency_id'}"
