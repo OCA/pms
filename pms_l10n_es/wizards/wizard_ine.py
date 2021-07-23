@@ -335,6 +335,8 @@ class WizardIne(models.TransientModel):
             ["price:avg"],
             ["date:day"],
         )
+        if not len(group_adr):
+            return 0
         adr = 0
         for day_adr in group_adr:
             adr += day_adr["price"]
@@ -381,6 +383,8 @@ class WizardIne(models.TransientModel):
                 ("id", "not in", rooms_not_allowed),
             ]
         )
+        if not sum_group_price[0]["price"]:
+            return 0
         revpar = round(
             sum_group_price[0]["price"] / (available_rooms * last_day.day), 2
         )
@@ -399,6 +403,13 @@ class WizardIne(models.TransientModel):
             )
             .mapped("capacity")
         )
+
+    @api.model
+    def ine_get_nif_cif(self, cif_nif):
+        country_codes = self.env["res.country"].search([]).mapped("code")
+        if cif_nif[:2] in country_codes:
+            return cif_nif[2:].strip()
+        return cif_nif.strip()
 
     def ine_generate_xml(self):
         if self.start_date.month != self.end_date.month:
@@ -423,9 +434,10 @@ class WizardIne(models.TransientModel):
         ET.SubElement(
             header_tag, "NOMBRE_ESTABLECIMIENTO"
         ).text = self.pms_property_id.name
-        ET.SubElement(header_tag, "CIF_NIF").text = self.pms_property_id.company_id.vat[
-            2:
-        ].strip()
+
+        ET.SubElement(header_tag, "CIF_NIF").text = self.ine_get_nif_cif(
+            self.pms_property_id.company_id.vat
+        )
         ET.SubElement(
             header_tag, "NUMERO_REGISTRO"
         ).text = self.pms_property_id.ine_tourism
@@ -441,10 +453,10 @@ class WizardIne(models.TransientModel):
         ).text = self.pms_property_id.phone.replace(" ", "")[0:12]
         ET.SubElement(
             header_tag, "TIPO"
-        ).text = self.pms_property_id.ine_category_id.category_type
+        ).text = self.pms_property_id.ine_category_id.type
         ET.SubElement(
             header_tag, "CATEGORIA"
-        ).text = self.pms_property_id.ine_category_id.name
+        ).text = self.pms_property_id.ine_category_id.category
         ET.SubElement(header_tag, "HABITACIONES").text = str(
             self.env["pms.room"].search_count([("in_ine", "=", True)])
         )
@@ -539,6 +551,13 @@ class WizardIne(models.TransientModel):
             )
         prices_tag = ET.SubElement(survey_tag, "PRECIOS")
 
+        ET.SubElement(prices_tag, "REVPAR_MENSUAL").text = str(
+            self.ine_calculate_monthly_revpar(
+                self.start_date,
+                self.pms_property_id.id,
+            )
+        )
+
         ET.SubElement(prices_tag, "ADR_MENSUAL").text = str(
             self.ine_calculate_monthly_adr(
                 self.start_date,
@@ -546,12 +565,6 @@ class WizardIne(models.TransientModel):
             )
         )
 
-        ET.SubElement(prices_tag, "REVPAR_MENSUAL").text = str(
-            self.ine_calculate_monthly_revpar(
-                self.start_date,
-                self.pms_property_id.id,
-            )
-        )
         # TODO:
         #  Evaluate how to get occupation & ADR for:
         #       -traditional/online tour-operator
