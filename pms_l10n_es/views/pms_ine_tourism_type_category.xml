@@ -2,13 +2,13 @@
 <odoo>
     <record model="ir.ui.view" id="pms_ine_tourism_category_view_form">
         <field name="name">pms.ine.tourism.category.form</field>
-        <field name="model">pms.ine.tourism.category</field>
+        <field name="model">pms.ine.tourism.type.category</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
                     <group>
-                        <field name="name" />
-                        <field name="category_type" />
+                        <field name="type" />
+                        <field name="category" />
                     </group>
                 </sheet>
             </form>
@@ -16,17 +16,17 @@
     </record>
     <record model="ir.ui.view" id="pms_ine_tourism_category_view_tree">
         <field name="name">pms.ine.tourism.category.tree</field>
-        <field name="model">pms.ine.tourism.category</field>
+        <field name="model">pms.ine.tourism.type.category</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name" />
-                <field name="category_type" />
+                <field name="type" />
+                <field name="category" />
             </tree>
         </field>
     </record>
     <record model="ir.actions.act_window" id="open_pms_ine_tourism_category">
         <field name="name">INE Categories</field>
-        <field name="res_model">pms.ine.tourism.category</field>
+        <field name="res_model">pms.ine.tourism.type.category</field>
         <field name="view_mode">tree,form</field>
     </record>
     <menuitem
