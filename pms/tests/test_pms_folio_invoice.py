@@ -1,36 +1,12 @@
 import datetime
 
-from odoo.tests import common
+from .common import TestPms
 
 
-class TestPmsFolioInvoice(common.SavepointCase):
+class TestPmsFolioInvoice(TestPms):
     def setUp(self):
-        super(TestPmsFolioInvoice, self).setUp()
-        # create a room type availability and sequences
-        self.folio_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Folio",
-                "code": "pms.folio",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.reservation_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Reservation",
-                "code": "pms.reservation",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
-        self.checkin_sequence = self.env["ir.sequence"].create(
-            {
-                "name": "PMS Checkin",
-                "code": "pms.checkin.partner",
-                "padding": 4,
-                "company_id": self.env.ref("base.main_company").id,
-            }
-        )
+        super().setUp()
+        # create a room type availability
         self.room_type_availability = self.env["pms.availability.plan"].create(
             {"name": "Availability plan for TEST"}
         )
@@ -39,15 +15,8 @@ class TestPmsFolioInvoice(common.SavepointCase):
             {
                 "name": "MY PMS TEST",
                 "company_id": self.env.ref("base.main_company").id,
-                "default_pricelist_id": self.env.ref("product.list0").id,
-                "folio_sequence_id": self.folio_sequence.id,
-                "reservation_sequence_id": self.reservation_sequence.id,
-                "checkin_sequence_id": self.checkin_sequence.id,
+                "default_pricelist_id": self.pricelist1.id,
             }
-        )
-        # create room type class
-        self.room_type_class = self.env["pms.room.type.class"].create(
-            {"name": "Room", "default_code": "ROOM"}
         )
 
         # create room type
@@ -56,7 +25,7 @@ class TestPmsFolioInvoice(common.SavepointCase):
                 "pms_property_ids": [self.property.id],
                 "name": "Double Test",
                 "default_code": "DBL_Test",
-                "class_id": self.room_type_class.id,
+                "class_id": self.room_type_class1.id,
                 "price": 25,
             }
         )
@@ -88,9 +57,23 @@ class TestPmsFolioInvoice(common.SavepointCase):
                 "capacity": 2,
             }
         )
-        self.demo_user = self.env.ref("base.user_admin")
+
+        # res.partner
+        self.partner_id = self.env["res.partner"].create(
+            {
+                "name": "Miguel",
+            }
+        )
 
     def test_invoice_full_folio(self):
+        """
+        Check that when launching the create_invoices() method for a full folio,
+        the invoice_status field is set to "invoiced".
+        ----------------
+        A reservation is created. The create_invoices() method of the folio of
+        that reservation is launched. It is verified that the invoice_status field
+        of the folio is equal to "invoiced".
+        """
         # ARRANGE
         r1 = self.env["pms.reservation"].create(
             {
@@ -99,12 +82,9 @@ class TestPmsFolioInvoice(common.SavepointCase):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner_id.id,
             }
         )
-        r1.flush()
-        r1.folio_id.flush()
-        r1.folio_id.sale_line_ids.flush()
         state_expected = "invoiced"
         # ACT
         r1.folio_id._create_invoices()
@@ -116,6 +96,14 @@ class TestPmsFolioInvoice(common.SavepointCase):
         )
 
     def test_invoice_partial_folio_by_steps(self):
+        """
+        Check that when launching the create_invoices() method for a partial folio,
+        the invoice_status field is set to "invoiced".
+        ----------------
+        A reservation is created. The create_invoices() method of the folio of
+        that reservation is launched with the first sale line. It is verified
+        that the invoice_status field of the folio is equal to "invoiced".
+        """
         # ARRANGE
         r1 = self.env["pms.reservation"].create(
             {
@@ -124,29 +112,14 @@ class TestPmsFolioInvoice(common.SavepointCase):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner_id.id,
             }
         )
         dict_lines = dict()
-        # qty to 1 to 1st folio sale line
+
         dict_lines[
             r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
-        ] = 1
-        r1.folio_id._create_invoices(lines_to_invoice=dict_lines)
-
-        # test does not work without invalidating cache
-        self.env["account.move"].invalidate_cache()
-
-        self.assertNotEqual(
-            "invoiced",
-            r1.folio_id.invoice_status,
-            "The status after a partial invoicing is not correct",
-        )
-
-        # qty to 2 to 1st folio sale line
-        dict_lines[
-            r1.folio_id.sale_line_ids.filtered(lambda l: not l.display_type)[0].id
-        ] = 2
+        ] = 3
         r1.folio_id._create_invoices(lines_to_invoice=dict_lines)
 
         self.assertEqual(
@@ -164,7 +137,7 @@ class TestPmsFolioInvoice(common.SavepointCase):
                 "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
                 "adults": 2,
                 "room_type_id": self.room_type_double.id,
-                "partner_id": self.env.ref("base.res_partner_12").id,
+                "partner_id": self.partner_id.id,
             }
         )
         dict_lines = dict()
@@ -201,6 +174,13 @@ class TestPmsFolioInvoice(common.SavepointCase):
         )
 
     def test_invoice_partial_folio_wrong_qtys(self):
+        """
+        Check that an invoice of a folio with wrong amounts cannot be created.
+        ------------
+        A reservation is created. Then the create_invoices method of the folio
+        is launched with the lines to be invoiced with wrong amounts and through
+        subtest it is verified that the invoices cannot be created.
+        """
         # ARRANGE
         r1 = self.env["pms.reservation"].create(
             {
@@ -228,22 +208,376 @@ class TestPmsFolioInvoice(common.SavepointCase):
                     # test does not work without invalidating cache
                     self.env["account.move"].invalidate_cache()
 
-    # TODO: complete tests
-    def _test_invoice_folio(self):
-        """Test create and invoice from the Folio, and check qty invoice/to invoice,
-        and the related amounts"""
+    def test_amount_invoice_folio(self):
+        """
+        Test create and invoice from the Folio, and check amount of the reservation.
+        -------------
+        A reservation is created. The create_invoices() method is launched and it is
+        verified that the total amount of the reservation folio is equal to the total
+        of the created invoice.
+        """
+        r1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+            }
+        )
 
-    def _test_invoice_by_days_folio(self):
-        """Test create and invoice from the Folio, and check qty invoice/to invoice,
-        and the related amounts in a specific segment of days (reservation lines)"""
+        total_amount_expected = r1.folio_id.amount_total
+        r1.folio_id._create_invoices()
+        self.assertEqual(
+            r1.folio_id.move_ids.amount_total,
+            total_amount_expected,
+            "Total amount of the invoice and total amount of folio don't match",
+        )
 
-    def _test_invoice_by_services_folio(self):
-        """Test create and invoice from the Folio, and check qty invoice/to invoice,
-        and the related amounts in a specific segment of services (qtys)"""
+    def test_qty_to_invoice_folio(self):
+        """
+        Test create and invoice from the Folio, and check qty to invoice.
+        ----------------------
+        A reservation is created.Then it is verified that the total quantity
+        to be invoice from the sale lines of the reservation folio corresponds
+        to expected.
+        """
+        r1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+            }
+        )
+        qty_to_invoice_expected = sum(
+            r1.folio_id.sale_line_ids.mapped("qty_to_invoice")
+        )
+        self.assertEqual(
+            qty_to_invoice_expected,
+            3.0,
+            "The quantity to be invoice on the folio does not correspond",
+        )
 
-    def _test_invoice_board_service(self):
-        """Test create and invoice from the Folio, and check qty invoice/to invoice,
-        and the related amounts with board service linked"""
+    def test_qty_invoiced_folio(self):
+        """
+        Test create and invoice from the Folio, and check qty invoiced.
+        ---------------
+        A reservation is created.The create_invoices() method is launched and it is
+        verified that the total quantity invoiced of the reservation folio is equal
+        to the total quantity of the created invoice.
+        """
+        r1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+            }
+        )
+        r1.folio_id._create_invoices()
+        qty_invoiced_expected = sum(r1.folio_id.sale_line_ids.mapped("qty_invoiced"))
+        self.assertEqual(
+            qty_invoiced_expected,
+            3.0,
+            "The quantity invoiced on the folio does not correspond",
+        )
+
+    def test_price_invoice_by_services_folio(self):
+        """
+        Test create and invoice from the Folio, and check amount in a
+        specific segment of services.
+        """
+
+        self.product1 = self.env["product.product"].create(
+            {"name": "Test Product 1", "per_day": True, "list_price": 10}
+        )
+
+        self.service1 = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product1.id,
+            }
+        )
+
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "service_ids": [(6, 0, [self.service1.id])],
+            }
+        )
+        dict_lines = dict()
+        dict_lines[
+            self.reservation1.folio_id.sale_line_ids.filtered("service_id")[0].id
+        ] = 1
+        self.reservation1.folio_id._create_invoices(lines_to_invoice=dict_lines)
+        self.assertEqual(
+            self.reservation1.folio_id.sale_line_ids.filtered("service_id")[
+                0
+            ].price_total,
+            self.reservation1.folio_id.move_ids.amount_total,
+            "The service price don't match between folio and invoice",
+        )
+
+    def test_qty_invoiced_by_services_folio(self):
+        """
+        Test create and invoice from the Folio, and check qty invoiced
+        in a specific segment of services
+        """
+
+        self.product1 = self.env["product.product"].create(
+            {"name": "Test Product 1", "per_day": True, "list_price": 10}
+        )
+
+        self.service1 = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product1.id,
+            }
+        )
+
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "service_ids": [(6, 0, [self.service1.id])],
+            }
+        )
+        dict_lines = dict()
+        service_lines = self.reservation1.folio_id.sale_line_ids.filtered("service_id")
+        for line in service_lines:
+            dict_lines[line.id] = 1
+            self.reservation1.folio_id._create_invoices(lines_to_invoice=dict_lines)
+        expected_qty_invoiced = sum(
+            self.reservation1.folio_id.move_ids.invoice_line_ids.mapped("quantity")
+        )
+        self.assertEqual(
+            expected_qty_invoiced,
+            sum(self.reservation1.folio_id.sale_line_ids.mapped("qty_invoiced")),
+            "The quantity of invoiced services don't match between folio and invoice",
+        )
+
+    def test_qty_to_invoice_by_services_folio(self):
+        """
+        Test create an invoice from the Folio, and check qty to invoice
+        in a specific segment of services
+        """
+
+        self.product1 = self.env["product.product"].create(
+            {"name": "Test Product 1", "per_day": True, "list_price": 10}
+        )
+
+        self.service1 = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product1.id,
+            }
+        )
+
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "service_ids": [(6, 0, [self.service1.id])],
+            }
+        )
+        expected_qty_to_invoice = sum(
+            self.reservation1.folio_id.sale_line_ids.filtered("service_id").mapped(
+                "qty_to_invoice"
+            )
+        )
+        self.assertEqual(
+            expected_qty_to_invoice,
+            3.0,
+            "The quantity of services to be invoice is wrong",
+        )
+
+    def test_price_invoice_board_service(self):
+        """
+        Test create and invoice from the Folio, and check the related
+        amounts with board service linked
+        """
+        self.product1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+            }
+        )
+
+        self.board_service1 = self.env["pms.board.service"].create(
+            {
+                "name": "Test Board Service 1",
+                "default_code": "CB1",
+            }
+        )
+        self.board_service_line1 = self.env["pms.board.service.line"].create(
+            {
+                "product_id": self.product1.id,
+                "pms_board_service_id": self.board_service1.id,
+                "amount": 10,
+            }
+        )
+
+        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service1.id,
+            }
+        )
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "board_service_room_id": self.board_service_room_type1.id,
+            }
+        )
+        dict_lines = dict()
+        dict_lines[
+            self.reservation1.folio_id.sale_line_ids.filtered("service_id")[0].id
+        ] = 1
+        self.reservation1.folio_id._create_invoices(lines_to_invoice=dict_lines)
+        self.assertEqual(
+            self.reservation1.folio_id.sale_line_ids.filtered("service_id")[
+                0
+            ].price_total,
+            self.reservation1.folio_id.move_ids.amount_total,
+            "The board service price don't match between folio and invoice",
+        )
+
+    def test_qty_invoiced_board_service(self):
+        """
+        Test create and invoice from the Folio, and check qty invoiced
+        with board service linked.
+        """
+        self.product1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+            }
+        )
+
+        self.board_service1 = self.env["pms.board.service"].create(
+            {
+                "name": "Test Board Service 1",
+                "default_code": "CB1",
+            }
+        )
+        self.board_service_line1 = self.env["pms.board.service.line"].create(
+            {
+                "product_id": self.product1.id,
+                "pms_board_service_id": self.board_service1.id,
+                "amount": 10,
+            }
+        )
+
+        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service1.id,
+            }
+        )
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "board_service_room_id": self.board_service_room_type1.id,
+            }
+        )
+        dict_lines = dict()
+        service_lines = self.reservation1.folio_id.sale_line_ids.filtered("service_id")
+        for line in service_lines:
+            dict_lines[line.id] = 1
+            self.reservation1.folio_id._create_invoices(lines_to_invoice=dict_lines)
+        expected_qty_invoiced = sum(
+            self.reservation1.folio_id.move_ids.invoice_line_ids.mapped("quantity")
+        )
+        self.assertEqual(
+            expected_qty_invoiced,
+            sum(self.reservation1.folio_id.sale_line_ids.mapped("qty_invoiced")),
+            "The quantity of invoiced board services don't match between folio and invoice",
+        )
+
+    def test_qty_to_invoice_board_service(self):
+        """
+        Test create and invoice from the Folio, and check qty to invoice
+        with board service linked
+        """
+        self.product1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+            }
+        )
+
+        self.board_service1 = self.env["pms.board.service"].create(
+            {
+                "name": "Test Board Service 1",
+                "default_code": "CB1",
+            }
+        )
+        self.board_service_line1 = self.env["pms.board.service.line"].create(
+            {
+                "product_id": self.product1.id,
+                "pms_board_service_id": self.board_service1.id,
+                "amount": 10,
+            }
+        )
+
+        self.board_service_room_type1 = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service1.id,
+            }
+        )
+        self.reservation1 = self.env["pms.reservation"].create(
+            {
+                "pms_property_id": self.property.id,
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=3),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner_id.id,
+                "board_service_room_id": self.board_service_room_type1.id,
+            }
+        )
+        dict_lines = dict()
+        service_lines = self.reservation1.folio_id.sale_line_ids.filtered("service_id")
+        for line in service_lines:
+            dict_lines[line.id] = 1
+            self.reservation1.folio_id._create_invoices(lines_to_invoice=dict_lines)
+        expected_qty_to_invoice = sum(
+            self.reservation1.folio_id.sale_line_ids.filtered("service_id").mapped(
+                "qty_to_invoice"
+            )
+        )
+        self.assertEqual(
+            expected_qty_to_invoice,
+            0,
+            "The quantity of board services to be invoice is wrong",
+        )
 
     def _test_invoice_line_group_by_room_type_sections(self):
         """Test create and invoice from the Folio, and check qty invoice/to invoice,
