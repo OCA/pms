@@ -2,15 +2,15 @@ from odoo import fields, models
 
 
 class PmsIneTourismCategory(models.Model):
-    _name = "pms.ine.tourism.category"
+    _name = "pms.ine.tourism.type.category"
     _description = "Hotel category in the Ministry of Tourism. Used for INE statistics."
 
-    name = fields.Char("Category", required=True)
-    category_type = fields.Char("Category type", required=True)
+    type = fields.Char("Type", required=True)
+    category = fields.Char("Category", required=True)
 
     def name_get(self):
         data = []
         for record in self:
-            display_value = record.category_type + " (" + record.name + ") "
+            display_value = record.category + " (" + record.type + ") "
             data.append((record.id, display_value))
         return data

@@ -47,7 +47,7 @@ class PmsProperty(models.Model):
         "Eventual Staff", default=0, help="Used for INE statistics."
     )
     ine_category_id = fields.Many2one(
-        "pms.ine.tourism.category",
+        "pms.ine.tourism.type.category",
         help="Hotel category in the Ministry of Tourism. Used for INE statistics.",
     )
 
