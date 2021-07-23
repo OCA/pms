@@ -27,6 +27,7 @@
     },
     "data": [
         "data/res.country.state.csv",
+        "data/pms.ine.tourism.type.category.csv",
         "data/cron_jobs.xml",
         "data/pms_data.xml",
         "data/queue_data.xml",
@@ -35,7 +36,7 @@
         "views/pms_property_views.xml",
         "views/pms_room_views.xml",
         "views/pms_log_institution_traveller_report_views.xml",
-        "views/pms_ine_tourism_category.xml",
+        "views/pms_ine_tourism_type_category.xml",
         "wizards/traveller_report.xml",
         "wizards/wizard_ine.xml",
     ],
