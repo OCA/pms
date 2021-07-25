@@ -6,7 +6,7 @@
             <field name="active" eval="False" />
             <field name="interval_number">1</field>
             <field name="user_id" ref="base.user_root" />
-            <field name="interval_type">days</field>
+            <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field name="doall" eval="False" />
             <field name="state">code</field>
@@ -15,7 +15,7 @@
                 name="nextcall"
                 eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"
             />
-            <field name="code">model._scheduler_export()</field>
+            <field name="code">model._scheduler_export(interval=1, count=10)</field>
         </record>
     </data>
 </odoo>
