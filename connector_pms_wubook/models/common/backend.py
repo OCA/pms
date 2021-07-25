@@ -130,13 +130,13 @@ class ChannelWubookBackend(models.Model):
                 rec.pricelist_room_type_ids,
             )
 
-    def export_pricelists(self):
+    def export_pricelists(self, *args, **kwargs):
         if self.user_id:
             self = self.with_user(self.user_id)
         for rec in self:
-            rec.env["channel.wubook.product.pricelist"].with_delay().export_data(
-                backend_record=rec
-            )
+            rec.env["channel.wubook.product.pricelist"].with_delay(
+                *args, **kwargs
+            ).export_data(backend_record=rec)
 
     # availability plan
     plan_date_from = fields.Date("Availability Plan Date From")
@@ -168,13 +168,13 @@ class ChannelWubookBackend(models.Model):
                 rec.plan_room_type_ids,
             )
 
-    def export_availability_plans(self):
+    def export_availability_plans(self, *args, **kwargs):
         if self.user_id:
             self = self.with_user(self.user_id)
         for rec in self:
-            rec.env["channel.wubook.pms.availability.plan"].with_delay().export_data(
-                backend_record=rec
-            )
+            rec.env["channel.wubook.pms.availability.plan"].with_delay(
+                *args, **kwargs
+            ).export_data(backend_record=rec)
 
     # availability
     avail_date_from = fields.Date("Availability Date From")
@@ -201,13 +201,13 @@ class ChannelWubookBackend(models.Model):
             )
 
     # property availability
-    def export_property_availability(self):
+    def export_property_availability(self, *args, **kwargs):
         if self.user_id:
             self = self.with_user(self.user_id)
         for rec in self:
-            rec.env[
-                "channel.wubook.pms.property.availability"
-            ].with_delay().export_data(backend_record=rec)
+            rec.env["channel.wubook.pms.property.availability"].with_delay(
+                *args, **kwargs
+            ).export_data(backend_record=rec)
 
     # folio
     folio_date_arrival_from = fields.Date(string="Arrival Date From")
@@ -235,11 +235,24 @@ class ChannelWubookBackend(models.Model):
 
     # scheduler
     @api.model
-    def _scheduler_export(self):
+    def _scheduler_export(self, interval=1, count=1):
+        """
+        :param interval: minutes
+        :param count: number of executions for every interval
+
+        Examples: interval=1 and num=12 -> execute 12 times every minute
+                  interval=60 and num=6 -> execute 6 times every hour
+
+        IF this is called using Odoo Cron job, the interval must be
+        the same as the interval execution defined in job
+        """
+        interval_sec = interval * 60
+        now = fields.Datetime.now()
         for backend in self.env["channel.wubook.backend"].search([]):
             if backend.user_id:
                 backend = self.with_user(self.user_id)
-
-            backend.export_property_availability()
+            for i in range(0, interval_sec, int(interval_sec / count)):
+                eta = fields.Datetime.add(now, seconds=i)
+                backend.export_property_availability(eta=eta)
             backend.export_availability_plans()
             backend.export_pricelists()
