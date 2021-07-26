@@ -3,7 +3,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessDenied, ValidationError
 
-from ..lib.validator import validator
+from ..lib_jwt.validator import validator
 
 _logger = logging.getLogger(__name__)
 
