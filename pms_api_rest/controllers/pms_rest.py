@@ -1,7 +1,7 @@
 from odoo.addons.base_rest.controllers import main
 
-from ..lib.jwt_http import jwt_http
-from ..lib.validator import validator
+from ..lib_jwt.jwt_http import jwt_http
+from ..lib_jwt.validator import validator
 
 
 class BaseRestDemoPublicApiController(main.RestController):

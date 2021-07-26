@@ -7,8 +7,8 @@ from odoo.http import request
 
 from odoo.addons.auth_signup.models.res_users import SignupError
 
-from ..lib.jwt_http import jwt_http
-from ..lib.validator import validator
+from ..lib_jwt.jwt_http import jwt_http
+from ..lib_jwt.validator import validator
 
 _logger = logging.getLogger(__name__)
 
