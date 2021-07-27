@@ -569,7 +569,7 @@ class TestWizardINE(TestPms):
         # ASSERT
         self.assertDictEqual(nationalities, expected_result)
 
-    def _test_calculate_monthly_adr(self):
+    def test_calculate_monthly_adr(self):
         """
         +-------------+-------+-------+-------+
         |             |  01   |  02   |  03   |
