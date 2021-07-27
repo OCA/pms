@@ -342,7 +342,6 @@ class PmsReservation(models.Model):
     reservation_type = fields.Selection(
         string="Reservation Type",
         help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
-        default=lambda *a: "normal",
         related="folio_id.reservation_type",
         store=True,
         readonly=False,
@@ -1636,6 +1635,12 @@ class PmsReservation(models.Model):
             )
             pms_property = self.env["pms.property"].browse(pms_property_id)
             vals["name"] = pms_property.reservation_sequence_id._next_do()
+
+        if not vals.get("reservation_type"):
+            vals["reservation_type"] = (
+                folio.reservation_type if folio.reservation_type else "normal"
+            )
+
         record = super(PmsReservation, self).create(vals)
         if record.preconfirm:
             record.confirm()
