@@ -47,6 +47,14 @@
                                     />
                                 </div>
                             </group>
+                            <group>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="phone" />
+                                        <field name="phone" />
+                                    </div>
+                                </div>
+                            </group>
                         </page>
                         <page string="Settings" name="property_settings">
                             <group
