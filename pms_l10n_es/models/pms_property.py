@@ -38,7 +38,9 @@ class PmsProperty(models.Model):
         help="Registration number in the Ministry of Tourism. Used for INE statistics.",
     )
     ine_seats = fields.Integer(
-        "Beds available", default=0, help="Used for INE statistics."
+        "Beds available excluding extra beds",
+        default=0,
+        help="Used for INE statistics.",
     )
     ine_permanent_staff = fields.Integer(
         "Permanent Staff", default=0, help="Used for INE statistics."

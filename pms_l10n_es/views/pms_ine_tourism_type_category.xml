@@ -29,11 +29,11 @@
         <field name="res_model">pms.ine.tourism.type.category</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem
-        name="INE Tourism Categories"
-        id="menu_open_pms_ine_tourism_category_form_tree"
-        action="open_pms_ine_tourism_category"
-        parent="pms.menu_reservations"
-        sequence="30"
-    />
+    <!--    <menuitem-->
+    <!--        name="INE Tourism Categories"-->
+    <!--        id="menu_open_pms_ine_tourism_category_form_tree"-->
+    <!--        action="open_pms_ine_tourism_category"-->
+    <!--        parent="pms.menu_reservations"-->
+    <!--        sequence="30"-->
+    <!--    />-->
 </odoo>
