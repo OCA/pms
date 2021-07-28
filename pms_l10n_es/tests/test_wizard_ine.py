@@ -9,6 +9,9 @@ from .common import TestPms
 class TestWizardINE(TestPms):
     def setUp(self):
         super().setUp()
+        # number of seats established in the property
+        self.pms_property1.ine_seats = 50
+
         # create room types
         self.room_type = self.env["pms.room.type"].create(
             {
@@ -362,7 +365,7 @@ class TestWizardINE(TestPms):
 
         # ACT
         rooms = self.env["pms.ine.wizard"].ine_rooms(
-            start_date, end_date, self.pms_property1.id
+            start_date, end_date, self.pms_property1
         )
         # ASSERT
         self.assertDictEqual(rooms, expected_result)

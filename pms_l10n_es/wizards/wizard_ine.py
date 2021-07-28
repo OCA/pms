@@ -68,7 +68,7 @@ class WizardIne(models.TransientModel):
                 self.env["pms.reservation.line"]
                 .search(
                     [
-                        ("pms_property_id", "=", pms_property_id),
+                        ("pms_property_id", "=", pms_property_id.id),
                         ("occupies_availability", "=", True),
                         ("reservation_id.reservation_type", "=", "normal"),
                         ("room_id.in_ine", "=", True),
@@ -85,7 +85,7 @@ class WizardIne(models.TransientModel):
                 self.env["pms.reservation.line"]
                 .search(
                     [
-                        ("pms_property_id", "=", pms_property_id),
+                        ("pms_property_id", "=", pms_property_id.id),
                         ("occupies_availability", "=", True),
                         ("reservation_id.reservation_type", "=", "normal"),
                         ("room_id.in_ine", "=", True),
@@ -100,7 +100,7 @@ class WizardIne(models.TransientModel):
             # service lines with extra beds
             extra_bed_service_lines = self.env["pms.service.line"].search(
                 [
-                    ("pms_property_id", "=", pms_property_id),
+                    ("pms_property_id", "=", pms_property_id.id),
                     ("product_id.is_extra_bed", "=", True),
                     ("reservation_id.reservation_type", "=", "normal"),
                     ("date", "=", p_date),
@@ -132,7 +132,7 @@ class WizardIne(models.TransientModel):
                         ("occupies_availability", "=", True),
                         ("reservation_id.reservation_type", "=", "normal"),
                         ("room_id.in_ine", "=", True),
-                        ("pms_property_id", "=", pms_property_id),
+                        ("pms_property_id", "=", pms_property_id.id),
                     ]
                 )
                 .mapped("room_id")
@@ -142,6 +142,21 @@ class WizardIne(models.TransientModel):
             other_rooms = (
                 all_rooms - double_rooms_double_use
             ) - double_rooms_single_use
+
+            seats_excluding_extra_beds = (
+                sum(other_rooms.mapped("capacity"))
+                + sum(double_rooms_double_use.mapped("capacity"))
+                + sum(double_rooms_single_use.mapped("capacity"))
+            )
+            if seats_excluding_extra_beds > pms_property_id.ine_seats:
+                raise ValidationError(
+                    _(
+                        "The number of seats, excluding extra beds (%s)"
+                        % str(seats_excluding_extra_beds)
+                        + " exceeds the number of seats established in the property (%s)"
+                        % str(pms_property_id.ine_seats)
+                    )
+                )
 
             # no room movements -> no dict entrys
             if not (
@@ -392,19 +407,6 @@ class WizardIne(models.TransientModel):
         return revpar
 
     @api.model
-    def ine_calculate_capacity(self):
-        # TODO: Review if calculate like below or get the info from property.ine_seats
-        return sum(
-            self.env["pms.room"]
-            .search(
-                [
-                    ("in_ine", "=", True),
-                ]
-            )
-            .mapped("capacity")
-        )
-
-    @api.model
     def ine_get_nif_cif(self, cif_nif):
         country_codes = self.env["res.country"].search([]).mapped("code")
         if cif_nif[:2] in country_codes:
@@ -416,6 +418,8 @@ class WizardIne(models.TransientModel):
             raise ValidationError(_("The date range must belong to the same month."))
         if not self.pms_property_id.company_id.vat:
             raise ValidationError(_("The VAT is not established."))
+        if not self.pms_property_id.phone:
+            raise ValidationError(_("The phone is not established."))
 
         # INE XML
         survey_tag = ET.Element("ENCUESTA")
@@ -462,7 +466,7 @@ class WizardIne(models.TransientModel):
         )
 
         ET.SubElement(header_tag, "PLAZAS_DISPONIBLES_SIN_SUPLETORIAS").text = str(
-            self.ine_calculate_capacity()
+            self.pms_property_id.ine_seats
         )
         ET.SubElement(header_tag, "URL").text = self.pms_property_id.website
 
@@ -531,7 +535,7 @@ class WizardIne(models.TransientModel):
                         )
 
         rooms_tag = ET.SubElement(survey_tag, "HABITACIONES")
-        rooms = self.ine_rooms(self.start_date, self.end_date, self.pms_property_id.id)
+        rooms = self.ine_rooms(self.start_date, self.end_date, self.pms_property_id)
         # INE XML -> ROOMS
         for key_date, value_rooms in rooms.items():
 
