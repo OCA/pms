@@ -53,12 +53,32 @@
                         </group>
                     </div>
                 </div>
-                    <button
-                    name="ine_generate_xml"
-                    class="btn btn-primary btn-sm"
-                    type="object"
-                    string="Generate INE XML"
-                />
+
+                <div class="row">
+                    <div class="col-6">
+                        <button
+                            name="ine_generate_xml"
+                            class="btn btn-primary btn-sm"
+                            type="object"
+                            string="Generate INE XML"
+                        />
+                    </div>
+
+                    <div
+                        class="col-6"
+                        attrs="{'invisible': [('txt_filename','=', False)]}"
+                    >
+                        <b>
+                            <a
+                                href="https://arce.ine.es/ARCE/jsp/encuestaXml.jsp"
+                                target="_blank"
+                            >
+                                Send survey to Spanish National Institute of Statistics (INE)
+                                <i class="fa fa-signal" />
+                            </a>
+                        </b>
+                    </div>
+                </div>
                 <footer />
             </form>
         </field>
