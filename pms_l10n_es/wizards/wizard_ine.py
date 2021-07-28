@@ -143,21 +143,6 @@ class WizardIne(models.TransientModel):
                 all_rooms - double_rooms_double_use
             ) - double_rooms_single_use
 
-            seats_excluding_extra_beds = (
-                sum(other_rooms.mapped("capacity"))
-                + sum(double_rooms_double_use.mapped("capacity"))
-                + sum(double_rooms_single_use.mapped("capacity"))
-            )
-            if seats_excluding_extra_beds > pms_property_id.ine_seats:
-                raise ValidationError(
-                    _(
-                        "The number of seats, excluding extra beds (%s)"
-                        % str(seats_excluding_extra_beds)
-                        + " exceeds the number of seats established in the property (%s)"
-                        % str(pms_property_id.ine_seats)
-                    )
-                )
-
             # no room movements -> no dict entrys
             if not (
                 extra_beds == 0
@@ -413,13 +398,71 @@ class WizardIne(models.TransientModel):
             return cif_nif[2:].strip()
         return cif_nif.strip()
 
+    @api.model
+    def check_ine_mandatory_fields(self, pms_property_id):
+        if not pms_property_id.name:
+            raise ValidationError(_("The property name is not established."))
+
+        if not pms_property_id.company_id.vat:
+            raise ValidationError(_("The company VAT is not established."))
+
+        if not pms_property_id.company_id.name:
+            raise ValidationError(_("The company name is not established."))
+
+        if not pms_property_id.name:
+            raise ValidationError(_("The property name is not established."))
+
+        if not pms_property_id.ine_tourism_number:
+            raise ValidationError(_("The property tourism number is not established."))
+
+        if not pms_property_id.ine_tourism_number:
+            raise ValidationError(_("The property tourism number is not established."))
+
+        if not pms_property_id.street:
+            raise ValidationError(_("The property street is not established."))
+
+        if not pms_property_id.zip:
+            raise ValidationError(_("The property zip is not established."))
+
+        if not pms_property_id.city:
+            raise ValidationError(_("The property city is not established."))
+
+        if not pms_property_id.partner_id.state_id:
+            raise ValidationError(_("The property state is not established."))
+
+        if not pms_property_id.phone:
+            raise ValidationError(_("The property phone is not established."))
+
+        if not pms_property_id.ine_category_id:
+            raise ValidationError(_("The property category is not established."))
+
     def ine_generate_xml(self):
+
+        self.check_ine_mandatory_fields(self.pms_property_id)
+
         if self.start_date.month != self.end_date.month:
             raise ValidationError(_("The date range must belong to the same month."))
-        if not self.pms_property_id.company_id.vat:
-            raise ValidationError(_("The VAT is not established."))
-        if not self.pms_property_id.phone:
-            raise ValidationError(_("The phone is not established."))
+
+        number_of_rooms = sum(
+            self.env["pms.room"]
+            .search(
+                [
+                    ("in_ine", "=", True),
+                    ("pms_property_id", "=", self.pms_property_id.id),
+                ]
+            )
+            .mapped("capacity")
+        )
+
+        if number_of_rooms > self.pms_property_id.ine_seats:
+            raise ValidationError(
+                _(
+                    "The number of seats, excluding extra beds (%s)"
+                    % str(number_of_rooms)
+                    + " exceeds the number of seats established in the property (%s)"
+                    % str(self.pms_property_id.ine_seats)
+                )
+            )
 
         # INE XML
         survey_tag = ET.Element("ENCUESTA")
@@ -444,7 +487,7 @@ class WizardIne(models.TransientModel):
         )
         ET.SubElement(
             header_tag, "NUMERO_REGISTRO"
-        ).text = self.pms_property_id.ine_tourism
+        ).text = self.pms_property_id.ine_tourism_number
         ET.SubElement(header_tag, "DIRECCION").text = self.pms_property_id.street
         ET.SubElement(header_tag, "CODIGO_POSTAL").text = self.pms_property_id.zip
         ET.SubElement(header_tag, "LOCALIDAD").text = self.pms_property_id.city
@@ -603,7 +646,9 @@ class WizardIne(models.TransientModel):
         ET.SubElement(prices_tag, "PCTN_HABITACIONES_OCUPADAS_OTROS").text = "0"
 
         staff_tag = ET.SubElement(survey_tag, "PERSONAL_OCUPADO")
-        ET.SubElement(staff_tag, "PERSONAL_NO_REMUNERADO").text = "0"
+        ET.SubElement(staff_tag, "PERSONAL_NO_REMUNERADO").text = str(
+            self.pms_property_id.ine_unpaid_staff
+        )
         ET.SubElement(staff_tag, "PERSONAL_REMUNERADO_FIJO").text = str(
             self.pms_property_id.ine_permanent_staff
         )

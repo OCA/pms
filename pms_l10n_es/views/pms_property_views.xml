@@ -42,7 +42,7 @@
                     </div>
                     <div class="col-6">
                         <group>
-                            <field name="ine_tourism" />
+                            <field name="ine_tourism_number" />
                             <field name="ine_category_id" />
                         </group>
                     </div>
@@ -51,6 +51,7 @@
                             <field name="ine_seats" />
                             <field name="ine_permanent_staff" />
                             <field name="ine_eventual_staff" />
+                            <field name="ine_unpaid_staff" />
                         </group>
                     </div>
                 </div>
