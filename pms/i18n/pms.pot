@@ -1418,6 +1418,11 @@ msgid "Channels"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__check_adults
+msgid "Check Adults"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__checkin
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_split_join_swap_wizard__checkin
 msgid "Check In"
@@ -1627,6 +1632,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__city
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "City"
 msgstr ""
 
@@ -1908,6 +1914,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__country_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 msgid "Country"
 msgstr ""
 
@@ -3867,6 +3874,11 @@ msgid "Internal comment for folio"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__check_adults
+msgid "Internal field to force room capacity validations"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__partner_internal_comment
 #: model:ir.model.fields,help:pms.field_pms_reservation__partner_internal_comment
 msgid "Internal notes of the partner"
@@ -5550,13 +5562,7 @@ msgid "Persons"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/pms_reservation_line.py:0
-#, python-format
-msgid "Persons can't be higher than room capacity"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/pms_reservation.py:0
+#: code:addons/pms/models/pms_room.py:0
 #, python-format
 msgid "Persons can't be higher than room capacity (%s)"
 msgstr ""
@@ -7500,6 +7506,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__state_id
 #: model:ir.model.fields,field_description:pms.field_res_users__state_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "State"
 msgstr ""
@@ -7547,6 +7554,16 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__street
 msgid "Street"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Street 2..."
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Street..."
 msgstr ""
 
 #. module: pms
@@ -8918,6 +8935,11 @@ msgstr ""
 #: code:addons/pms/models/pms_folio.py:0
 #, python-format
 msgid "You must assign a customer name"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "ZIP"
 msgstr ""
 
 #. module: pms
