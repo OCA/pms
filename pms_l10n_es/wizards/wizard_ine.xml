@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="pms_ine_wizard" model="ir.ui.view">
+        <field name="name">INE</field>
+        <field name="model">pms.ine.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div class="row">
+                    <div class="col-6">
+                       <group>
+                           <field name="pms_property_id" />
+                       </group>
+                   </div>
+                    <div class="col-6">
+                        <group>
+                            <field
+                                name="start_date"
+                                widget="daterange"
+                                options="{'related_end_date': 'end_date'}"
+                            />
+                            <field
+                                name="end_date"
+                                widget="daterange"
+                                options="{'related_start_date': 'start_date'}"
+                            />
+                        </group>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <group>
+                            <field name="txt_filename" invisible="1" />
+                            <field
+                                name="txt_binary"
+                                filename="txt_filename"
+                                readonly="1"
+                                attrs="{'invisible': [('txt_filename','=', False)]}"
+                            />
+                        </group>
+                    </div>
+                    <div class="col-6">
+                        <group>
+                            <field
+                                name="adr"
+                                attrs="{'invisible': [('txt_filename','=', False)]}"
+                                readonly="1"
+                            />
+                            <field
+                                name="revpar"
+                                attrs="{'invisible': [('txt_filename','=', False)]}"
+                                readonly="1"
+                            />
+                        </group>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <button
+                            name="ine_generate_xml"
+                            class="btn btn-primary btn-sm"
+                            type="object"
+                            string="Generate INE XML"
+                        />
+                    </div>
+
+                    <div
+                        class="col-6"
+                        attrs="{'invisible': [('txt_filename','=', False)]}"
+                    >
+                        <b>
+                            <a
+                                href="https://arce.ine.es/ARCE/jsp/encuestaXml.jsp"
+                                target="_blank"
+                            >
+                                Send survey to Spanish National Institute of Statistics (INE)
+                                <i class="fa fa-signal" />
+                            </a>
+                        </b>
+                    </div>
+                </div>
+                <footer />
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ine_report" model="ir.actions.act_window">
+        <field name="name">Generate INE file</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pms.ine.wizard</field>
+        <field name="view_id" ref="pms_ine_wizard" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        id="menu_ine"
+        name="Generate INE file"
+        sequence="31"
+        parent="pms.menu_reservations"
+        action="action_ine_report"
+    />
+</odoo>
