@@ -110,7 +110,7 @@ msgstr ""
 "'Order - %s' % (object.name)"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid ", at"
 msgstr ""
 
@@ -282,7 +282,7 @@ msgid "<strong>Checkout:</strong>"
 msgstr "<strong>Total</strong>"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "<strong>Copy for the host</strong>"
 msgstr ""
 
@@ -1176,7 +1176,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__birthdate_date
 #: model:ir.model.fields,field_description:pms.field_res_partner__birthdate_date
 #: model:ir.model.fields,field_description:pms.field_res_users__birthdate_date
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Birthdate"
 msgstr ""
 
@@ -1356,7 +1356,7 @@ msgid "By Week"
 msgstr "Por Semana"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "CIF:"
 msgstr ""
 
@@ -2700,12 +2700,12 @@ msgid "Document Type"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Document number"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Document number:"
 msgstr ""
 
@@ -2873,7 +2873,7 @@ msgid "Enter"
 msgstr "Entrada"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Entry date"
 msgstr ""
 
@@ -2898,7 +2898,7 @@ msgid "Exit"
 msgstr "Salida"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Exit date"
 msgstr ""
 
@@ -2908,7 +2908,7 @@ msgid "Expedition Date"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Expedition date"
 msgstr ""
 
@@ -3373,7 +3373,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__gender
 #: model:ir.model.fields,field_description:pms.field_pms_property__gender
 #: model:ir.model.fields,field_description:pms.field_res_partner__gender
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Gender"
 msgstr ""
 
@@ -4595,7 +4595,7 @@ msgstr ""
 "crédito no conciliado o si hace click en el botón \"Listo\"."
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Lastnames"
 msgstr ""
 
@@ -4941,7 +4941,7 @@ msgstr "Mis reservas"
 #: model_terms:ir.ui.view,arch_db:pms.availability_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_shared_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Name"
 msgstr "Nombre"
 
@@ -5501,7 +5501,7 @@ msgid "Overbookings"
 msgstr "Overbookings"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "PART OF TRAVELERS ENTRY"
 msgstr ""
 
@@ -7907,7 +7907,7 @@ msgid "System Parameter"
 msgstr "Parámetro del sistema"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "TRAVELER'S DOCUMENT"
 msgstr ""
 
@@ -8784,7 +8784,7 @@ msgid "Total amount"
 msgstr "Cantidad total"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Total amount (Reservation Card):"
 msgstr ""
 
@@ -8872,7 +8872,7 @@ msgid "Transactions"
 msgstr "Transacciones"
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Traveler's signature"
 msgstr ""
 
@@ -8900,7 +8900,7 @@ msgstr "Martes"
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__reservation_type
-#: model_terms:ir.ui.view,arch_db:pms.report_viajero
+#: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Type"
 msgstr "TIpo"
 
