@@ -604,16 +604,20 @@ class PmsFolio(models.Model):
     )
     def _compute_sale_line_ids(self):
         for folio in self:
-            for reservation in folio.reservation_ids:
-                # RESERVATION LINES
-                # res = self.env['pms.reservation'].browse(reservation.id)
-                self.generate_reservation_lines_sale_lines(folio, reservation)
+            if folio.reservation_type == "normal":
+                for reservation in folio.reservation_ids:
+                    # RESERVATION LINES
+                    # res = self.env['pms.reservation'].browse(reservation.id)
+                    self.generate_reservation_lines_sale_lines(folio, reservation)
 
-                # RESERVATION SERVICES
-                self.generate_reservation_services_sale_lines(folio, reservation)
+                    # RESERVATION SERVICES
+                    self.generate_reservation_services_sale_lines(folio, reservation)
 
-            # FOLIO SERVICES
-            self.generate_folio_services_sale_lines(folio)
+                # FOLIO SERVICES
+                self.generate_folio_services_sale_lines(folio)
+            else:
+                for reservation in folio.reservation_ids:
+                    reservation.sale_line_ids = False
 
     @api.depends("pms_property_id")
     def _compute_company_id(self):
@@ -765,7 +769,7 @@ class PmsFolio(models.Model):
             else:
                 order.invoice_status = "no"
 
-    @api.depends("partner_id", "partner_id.name", "agency_id")
+    @api.depends("partner_id", "partner_id.name", "agency_id", "reservation_type")
     def _compute_partner_name(self):
         for record in self:
             self._apply_partner_name(record)
@@ -841,22 +845,24 @@ class PmsFolio(models.Model):
     @api.depends("checkin_partner_ids", "checkin_partner_ids.state")
     def _compute_pending_checkin_data(self):
         for folio in self:
-            folio.pending_checkin_data = len(
-                folio.checkin_partner_ids.filtered(lambda c: c.state == "draft")
-            )
+            if folio.reservation_type != "out":
+                folio.pending_checkin_data = len(
+                    folio.checkin_partner_ids.filtered(lambda c: c.state == "draft")
+                )
 
     @api.depends("pending_checkin_data")
     def _compute_ratio_checkin_data(self):
         self.ratio_checkin_data = 0
         for folio in self.filtered("reservation_ids"):
-            folio.ratio_checkin_data = (
-                (
-                    sum(folio.reservation_ids.mapped("adults"))
-                    - folio.pending_checkin_data
+            if folio.reservation_type != "out":
+                folio.ratio_checkin_data = (
+                    (
+                        sum(folio.reservation_ids.mapped("adults"))
+                        - folio.pending_checkin_data
+                    )
+                    * 100
+                    / sum(folio.reservation_ids.mapped("adults"))
                 )
-                * 100
-                / sum(folio.reservation_ids.mapped("adults"))
-            )
 
     # TODO: Add return_ids to depends
     @api.depends(
@@ -871,7 +877,9 @@ class PmsFolio(models.Model):
     def _compute_amount(self):
         for record in self:
             if record.reservation_type in ("staff", "out"):
+                record.amount_total = 0
                 vals = {
+                    "payment_state": False,
                     "pending_amount": 0,
                     "invoices_paid": 0,
                 }

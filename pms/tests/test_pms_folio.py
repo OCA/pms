@@ -3,6 +3,7 @@ import datetime
 from freezegun import freeze_time
 
 from odoo import fields
+from odoo.exceptions import ValidationError
 
 from .common import TestPms
 
@@ -333,3 +334,325 @@ class TestPmsFolio(TestPms):
             "The pending amount on a partially paid folio it \
             does not correspond to the amount that it should",
         )
+
+    def test_reservation_type_folio(self):
+        """
+        Check that the reservation_type of a folio with
+        a reservation with the default reservation_type is equal
+        to 'normal'.
+        ---------------
+        A folio is created. A reservation is created to which the
+        value of the folio_id is the id of the previously created
+        folio. Then it is verified that the value of the reservation_type
+        field of the folio is 'normal'.
+        """
+        # ARRANGE AND ACT
+        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "folio_id": folio1.id,
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            folio1.reservation_type,
+            "normal",
+            "The default reservation type of the folio should be 'normal'",
+        )
+
+    def test_staff_reservation_type_folio(self):
+        """
+        Check that the reservation type field of a folio is equal
+        to 'staff', if your reservations also have this field
+        as 'staff'.
+        ---------------
+        A folio is created. A reservation is created to which the
+        value of the folio_id is the id of the previously created
+        folio and the field reservation_type equal to 'staff'. A
+        second reservation with the same folio_id and reservation_type
+        is created. Then it is verified that the value of the reservation_type
+        field of the folio is 'staff'.
+        """
+        # ARRANGE AND ACT
+        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "folio_id": folio1.id,
+                "reservation_type": "staff",
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "folio_id": folio1.id,
+                "reservation_type": "staff",
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            folio1.reservation_type,
+            "staff",
+            "The reservation type of the folio should be 'staff'",
+        )
+
+    def test_out_reservation_type_folio(self):
+        """
+        Check that the reservation type field of a folio is equal
+        to 'out', if your reservations also have this field
+        as 'out'.
+        ---------------
+        A folio is created. A reservation is created to which the
+        value of the folio_id is the id of the previously created
+        folio and the field reservation_type equal to 'out'. A
+        second reservation with the same folio_id and reservation_type
+        is created. Then it is verified that the value of the reservation_type
+        field of the folio is 'out'.
+        """
+        # ARRANGE AND ACT
+        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "folio_id": folio1.id,
+                "reservation_type": "out",
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "folio_id": folio1.id,
+                "reservation_type": "out",
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            folio1.reservation_type,
+            "out",
+            "The reservation type of the folio should be 'out'",
+        )
+
+    def test_invoice_status_staff_reservation(self):
+        """
+        Check that the value of the invoice_status field is 'no'
+        on a page with reservation_type equal to 'staff'.
+        ------------
+        A reservation is created with the reservation_type field
+        equal to 'staff'. Then it is verified that the value of
+        the invoice_status field of the folio created with the
+        reservation is equal to 'no'.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        self.partner1 = self.env["res.partner"].create({"name": "Pedro"})
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "reservation_type": "staff",
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation.folio_id.invoice_status,
+            "no",
+            "The invoice status of the folio in a staff reservation should be 'no' ",
+        )
+
+    def test_invoice_status_out_reservation(self):
+        """
+        Check that the value of the invoice_status field is 'no'
+        on a page with reservation_type equal to 'out'.
+        ------------
+        A reservation is created with the reservation_type field
+        equal to 'out'. Then it is verified that the value of
+        the invoice_status field of the folio created with the
+        reservation is equal to 'no'.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        self.partner1 = self.env["res.partner"].create({"name": "Pedro"})
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "reservation_type": "out",
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation.folio_id.invoice_status,
+            "no",
+            "The invoice status of the folio in a out reservation should be 'no' ",
+        )
+
+    def test_amount_total_staff_reservation(self):
+        """
+        Check that the amount_total field of the folio whose
+        reservation has the reservation_type field as staff
+        is not calculated.
+        -------------------------
+        A folio is created. A reservation is created to which the
+        value of the folio_id is the id of the previously created
+        folio and the field reservation_type equal to 'staff'. Then
+        it is verified that the value of the amount_total field of
+        the folio is 0.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        self.partner1 = self.env["res.partner"].create({"name": "Pedro"})
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": checkin,
+                "checkout": checkout,
+                "folio_id": folio1.id,
+                "reservation_type": "staff",
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            folio1.amount_total,
+            0.0,
+            "The amount total of the folio in a staff reservation should be 0",
+        )
+
+    def test_amount_total_out_reservation(self):
+        """
+        Check that the amount_total field of the folio whose
+        reservation has the reservation_type field as out
+        is not calculated.
+        -------------------------
+        A folio is created. A reservation is created to which the
+        value of the folio_id is the id of the previously created
+        folio and the field reservation_type equal to 'out'. Then
+        it is verified that the value of the amount_total field of
+        the folio is 0.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        self.partner1 = self.env["res.partner"].create({"name": "Pedro"})
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+            }
+        )
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": checkin,
+                "checkout": checkout,
+                "folio_id": folio1.id,
+                "reservation_type": "out",
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            folio1.amount_total,
+            0.0,
+            "The amount total of the folio in a out of service reservation should be 0",
+        )
+
+    def test_reservation_type_incongruence(self):
+        """
+        Check that a reservation cannot be created
+        with the reservation_type field different from the
+        reservation_type of its folio.
+        -------------
+        A folio is created. A reservation is created to which the
+        value of the folio_id is the id of the previously created
+        folio and the field reservation_type by default('normal').
+        Then it is tried to create another reservation with its
+        reservation_type equal to 'staff'. But it should throw an
+        error because the value of the reservation_type of the
+        folio is equal to 'normal'.
+        """
+        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=3),
+                "folio_id": folio1.id,
+            }
+        )
+        with self.assertRaises(
+            ValidationError,
+            msg="You cannot create reservations with different reservation_type for a folio",
+        ):
+            self.env["pms.reservation"].create(
+                {
+                    "room_type_id": self.room_type_double.id,
+                    "checkin": fields.date.today(),
+                    "checkout": fields.date.today() + datetime.timedelta(days=3),
+                    "folio_id": folio1.id,
+                    "reservation_type": "staff",
+                }
+            )
