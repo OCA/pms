@@ -31,6 +31,14 @@ class TestPmsFolioSaleLine(TestPms):
                 "capacity": 2,
             }
         )
+        self.room2 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Double 102",
+                "room_type_id": self.room_type_double.id,
+                "capacity": 2,
+            }
+        )
 
         self.product_test1 = self.env["product.product"].create(
             {
@@ -1178,4 +1186,68 @@ class TestPmsFolioSaleLine(TestPms):
             "Folio should contain {} folio service sale lines".format(
                 expected_folio_service_sale_lines
             ),
+        )
+
+    def test_no_sale_lines_staff_reservation(self):
+        """
+        Check that the sale_line_ids of a folio whose reservation
+        is of type 'staff' are not created.
+        -----
+        A reservation is created with the reservation_type field
+        with value 'staff'. Then it is verified that the
+        sale_line_ids of the folio created with the creation of
+        the reservation are equal to False.
+        """
+        # ARRANGE
+        self.partner1 = self.env["res.partner"].create({"name": "Alberto"})
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "reservation_type": "staff",
+            }
+        )
+        # ASSERT
+        self.assertFalse(
+            reservation.folio_id.sale_line_ids,
+            "Folio sale lines should not be generated for a staff type reservation ",
+        )
+
+    def test_no_sale_lines_out_reservation(self):
+        """
+        Check that the sale_line_ids of a folio whose reservation
+        is of type 'out' are not created.
+        -----
+        A reservation is created with the reservation_type field
+        with value 'out'. Then it is verified that the
+        sale_line_ids of the folio created with the creation of
+        the reservation are equal to False.
+        """
+        # ARRANGE
+        self.partner1 = self.env["res.partner"].create({"name": "Alberto"})
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "pricelist_id": self.pricelist1.id,
+                "reservation_type": "out",
+            }
+        )
+        # ASSERT
+        self.assertFalse(
+            reservation.folio_id.sale_line_ids,
+            "Folio sale lines should not be generated for a out of service type reservation ",
         )
