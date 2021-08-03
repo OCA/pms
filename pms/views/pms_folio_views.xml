@@ -123,6 +123,7 @@
                             type="object"
                             class="oe_stat_button"
                             name="action_checks"
+                            attrs="{'invisible': [('reservation_type', 'in', 'out')]}"
                         >
                             <field
                                 name="ratio_checkin_data"
@@ -148,6 +149,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-magic"
+                            attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
                         >
                             <span class="o_stat_text">Change in Group</span>
                         </button>
@@ -159,6 +161,18 @@
                             context="{'default_folio_id': id, 'default_partner_id': partner_id, 'default_pricelist_id': pricelist_id}"
                         >
                             <span class="o_stat_text">New Booking Group</span>
+                        </button>
+                        <button
+                            name="preview_folio"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-globe icon"
+                            attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Customer</span>
+                                <span class="o_stat_text">Preview</span>
+                            </div>
                         </button>
                     </div>
                     <widget
@@ -228,7 +242,10 @@
                             name="sale_details"
                         >
                             <field name="pms_property_id" invisible="0" />
-                            <field name="pricelist_id" />
+                            <field
+                                name="pricelist_id"
+                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                            />
                             <field
                                 name="company_id"
                                 options="{'no_create': True}"
@@ -238,10 +255,13 @@
                                 name="reservation_type"
                                 attrs="{'readonly':[('state','not in',('draft'))]}"
                             />
-                            <field name="agency_id" />
+                            <field
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                            />
                             <field
                                 name="channel_type_id"
-                                attrs="{'readonly':[('agency_id','!=', False)]}"
+                                attrs="{'readonly':[('agency_id','!=', False)], 'invisible':[('reservation_type', 'not in', 'normal')]}"
                             />
                             <field name="internal_comment" />
                         </group>
@@ -249,6 +269,7 @@
                             class="oe_subtotal_footer oe_right"
                             colspan="2"
                             name="folio_total"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
                         >
                             <field
                                 name="amount_untaxed"
@@ -291,7 +312,10 @@
                         <field name="invoices_paid" invisible="1" />
                     </group>
                     <notebook colspan="4" col="1">
-                        <page string="Sale Lines">
+                        <page
+                            string="Sale Lines"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                        >
                             <field
                                 name="sale_line_ids"
                                 widget="section_and_note_one2many"
@@ -454,7 +478,11 @@
                                     }"
                             />
                         </page>
-                        <page name="invoicing" string="Invoicing">
+                        <page
+                            name="invoicing"
+                            string="Invoicing"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                        >
                             <div
                                 class="alert alert-info"
                                 role="alert"

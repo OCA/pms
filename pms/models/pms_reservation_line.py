@@ -353,6 +353,7 @@ class PmsReservationLine(models.Model):
                 not reservation.room_type_id
                 or not reservation.pricelist_id
                 or not reservation.pms_property_id
+                or reservation.reservation_type != "normal"
             ):
                 line.price = 0
             elif not line.price or self._context.get("force_recompute"):
