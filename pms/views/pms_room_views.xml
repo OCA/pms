@@ -85,6 +85,9 @@
                                 <!-- <field name="description" colspan="2" string="Description Sales"/> -->
                             </group>
                         </page>
+                        <page string="Amenities">
+                            <field name="room_amenity_ids" />
+                        </page>
                     </notebook>
                     <group>
                         <field

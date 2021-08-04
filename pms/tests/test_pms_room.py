@@ -93,3 +93,128 @@ class TestPmsRoom(TestPms):
                 "The room should be created even if its name is equal "
                 "to another room, but that room not belongs to the same property."
             )
+
+    def test_display_name_room(self):
+        """
+        Check that the display_name field of a room is as expected.
+        ------------
+        A room is created and then it is checked that the display name
+        field of this is composed of:
+        room.name [room_type.default_code]
+        """
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+            }
+        )
+        expected_display_name = "%s [%s]" % (
+            self.room1.name,
+            self.room_type1.default_code,
+        )
+        self.assertEqual(
+            self.room1.display_name,
+            expected_display_name,
+            "The display name of the room is not as expected",
+        )
+
+    def test_display_name_room_with_amenity(self):
+        """
+        Check that the display_name field of a room with one amenity
+        is as expected.
+        ------------
+        A amenity is created with default code and with is_add_code_room_name
+        field as True. A room is created in which the amenity created before
+        is added in the room_amenity_ids field and then it is verified that
+        the display name field of this is composed of:
+        room.name [room_type.default_code] amenity.default_code
+        """
+        self.amenity_type1 = self.env["pms.amenity.type"].create(
+            {
+                "name": "Amenity Type 1",
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+            }
+        )
+        self.amenity1 = self.env["pms.amenity"].create(
+            {
+                "name": "Amenity 1",
+                "pms_amenity_type_id": self.amenity_type1.id,
+                "default_code": "A1",
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+                "is_add_code_room_name": True,
+            }
+        )
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+                "room_amenity_ids": [(6, 0, [self.amenity1.id])],
+            }
+        )
+        expected_display_name = "%s [%s] %s" % (
+            self.room1.name,
+            self.room_type1.default_code,
+            self.amenity1.default_code,
+        )
+        self.assertEqual(
+            self.room1.display_name,
+            expected_display_name,
+            "The display name of the room is not as expected",
+        )
+
+    def test_display_name_room_with_several_amenities(self):
+        """
+        Check that the display_name field of a room with several amenities
+        is as expected.
+        ------------
+        Two amenities are created with diferent default code and with is_add_code_room_name
+        field as True. A room is created in which the amenities created before are added in
+        the room_amenity_ids field and then it is verified that the display name field of this
+        is composed of:
+        room.name [room_type.default_code] amenity1.default_code amenity2.default_code
+        """
+        self.amenity_type1 = self.env["pms.amenity.type"].create(
+            {
+                "name": "Amenity Type 1",
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+            }
+        )
+        self.amenity1 = self.env["pms.amenity"].create(
+            {
+                "name": "Amenity 1",
+                "pms_amenity_type_id": self.amenity_type1.id,
+                "default_code": "A1",
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+                "is_add_code_room_name": True,
+            }
+        )
+        self.amenity2 = self.env["pms.amenity"].create(
+            {
+                "name": "Amenity 2",
+                "pms_amenity_type_id": self.amenity_type1.id,
+                "default_code": "B1",
+                "pms_property_ids": [(6, 0, [self.pms_property1.id])],
+                "is_add_code_room_name": True,
+            }
+        )
+        self.room1 = self.env["pms.room"].create(
+            {
+                "name": "Room 101",
+                "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type1.id,
+                "room_amenity_ids": [(6, 0, [self.amenity1.id, self.amenity2.id])],
+            }
+        )
+        expected_display_name = "%s [%s] %s %s" % (
+            self.room1.name,
+            self.room_type1.default_code,
+            self.amenity1.default_code,
+            self.amenity2.default_code,
+        )
+        self.assertEqual(
+            self.room1.display_name,
+            expected_display_name,
+            "The display name of the room is not as expected",
+        )

@@ -103,6 +103,10 @@ class PmsRoom(models.Model):
             name = room.name
             if room.room_type_id:
                 name += " [%s]" % room.room_type_id.default_code
+            if room.room_amenity_ids:
+                for amenity in room.room_amenity_ids:
+                    if amenity.is_add_code_room_name:
+                        name += " %s" % amenity.default_code
             result.append((room.id, name))
         return result
 
