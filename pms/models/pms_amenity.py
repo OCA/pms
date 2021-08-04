@@ -40,3 +40,7 @@ class PmsRoomAmenity(models.Model):
     default_code = fields.Char(
         string="Internal Reference", help="Internal unique identifier of the amenity"
     )
+    is_add_code_room_name = fields.Boolean(
+        string="Add in room name",
+        help="True if the Internal Reference should appear in the display name of the rooms",
+    )

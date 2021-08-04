@@ -27,6 +27,7 @@
                                     string="Amenity Type"
                                     domain="['|', ('pms_property_ids', '=', False), ('pms_property_ids', 'in', pms_property_ids)]"
                                 />
+                                <field name="is_add_code_room_name" />
                                 <!-- <field name="categ_id" select="1"
                                     domain="[('isamenitytype','=',True)]" /> -->
                             </group>
@@ -92,6 +93,8 @@
             <tree string="Room Amenities">
                 <field name="name" />
                 <field name="pms_amenity_type_id" select="1" />
+                <field name="default_code" />
+                <field name="is_add_code_room_name" />
                 <!-- <field name="list_price" string="Ty rate" invisible="1" /> -->
             </tree>
         </field>
