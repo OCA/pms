@@ -1,3 +1,5 @@
+import datetime
+
 import simplejson as json
 
 from odoo import http
@@ -61,10 +63,7 @@ class JwtHttp:
             :param data=None data to return
             :param code=200 http status code
         """
-        print('response')
-        print('response')
-        print('response')
-        print('response')
+
         payload = json.dumps(
             {
                 "success": success,
@@ -108,9 +107,12 @@ class JwtHttp:
 
         # login success, generate token
         user = request.env.user.read(return_fields)[0]
-        token = validator.create_token(user)
+        exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=3)
+        token = validator.create_token(user, exp)
 
-        return self.response(data={"user": user, "token": token})
+        return self.response(
+            data={"user": user, "exp": json.dumps(exp.isoformat()), "token": token}
+        )
 
     def do_logout(self, token):
         request.session.logout()
