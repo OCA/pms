@@ -1,7 +1,7 @@
 import logging
 
-from odoo import _, api, fields, models
-from odoo.exceptions import AccessDenied, ValidationError
+from odoo import api, fields, models
+from odoo.exceptions import AccessDenied
 
 from ..lib_jwt.validator import validator
 
