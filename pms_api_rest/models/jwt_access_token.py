@@ -7,10 +7,7 @@ class JwtAccessToken(models.Model):
     _name = "jwt_provider.access_token"
     _description = "Store user access token for one-time-login"
 
-    token = fields.Char(
-        "Access Token",
-        required=True
-    )
+    token = fields.Char("Access Token", required=True)
     user_id = fields.Many2one(
         comodel_name="res.users",
         string="User",
