@@ -26,9 +26,8 @@ class Validator:
         #                                                   (in form company?)
         return "CHANGE THIS KEY"
 
-    def create_token(self, user):
+    def create_token(self, user, exp):
         try:
-            exp = datetime.datetime.utcnow() + datetime.timedelta(days=30)
             payload = {
                 "exp": exp,
                 "iat": datetime.datetime.utcnow(),

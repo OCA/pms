@@ -1,3 +1,5 @@
+import json
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
@@ -15,7 +17,7 @@ class PmsReservationService(Component):
                 [
                     "/",
                 ],
-                "GET"
+                "GET",
             )
         ],
         input_param=Datamodel("pms.reservation.search.param"),
@@ -30,8 +32,12 @@ class PmsReservationService(Component):
             domain.append(("id", "=", reservation_search_param.id))
         res = []
         PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
-        for reservation in self.env["pms.reservation"].sudo().search(
-            domain,
+        for reservation in (
+            self.env["pms.reservation"]
+            .sudo()
+            .search(
+                domain,
+            )
         ):
             res.append(
                 PmsReservationShortInfo(
@@ -39,13 +45,19 @@ class PmsReservationService(Component):
                     partner=reservation.partner_id.name,
                     checkin=str(reservation.checkin),
                     checkout=str(reservation.checkout),
-                    preferred_room_id=reservation.preferred_room_id.name
+                    preferredRoomId=reservation.preferred_room_id.name
                     if reservation.preferred_room_id
                     else "",
-                    room_type_id=reservation.room_type_id.name
+                    roomTypeId=reservation.room_type_id.name
                     if reservation.room_type_id
                     else "",
                     name=reservation.name,
+                    partnerRequests=reservation.partner_requests
+                    if reservation.partner_requests
+                    else "",
+                    pwaActionButtons=json.loads(reservation.pwa_action_buttons)
+                    if reservation.pwa_action_buttons
+                    else {},
                 )
             )
         return res
