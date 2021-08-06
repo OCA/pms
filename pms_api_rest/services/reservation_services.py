@@ -55,9 +55,41 @@ class PmsReservationService(Component):
                     partnerRequests=reservation.partner_requests
                     if reservation.partner_requests
                     else "",
+                    state=dict(reservation.fields_get(["state"])["state"]["selection"])[
+                        reservation.state
+                    ],
+                    priceTotal=reservation.price_total,
+                    adults=reservation.adults,
+                    channelTypeId=reservation.channel_type_id
+                    if reservation.channel_type_id
+                    else "",
+                    agencyId=reservation.agency_id if reservation.agency_id else "",
+                    boardServiceId=reservation.board_service_room_id.pms_board_service_id.name
+                    if reservation.board_service_room_id
+                    else "",
+                    checkinsRatio=reservation.checkins_ratio,
+                    outstanding=reservation.folio_id.pending_amount,
                     pwaActionButtons=json.loads(reservation.pwa_action_buttons)
                     if reservation.pwa_action_buttons
                     else {},
                 )
             )
         return res
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:id>/cancellation",
+                ],
+                "POST",
+            )
+        ],
+        auth="public",
+    )
+    def cancel_reservation(self, reservation_id):
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        if not reservation:
+            pass
+        else:
+            reservation.action_cancel()
