@@ -88,8 +88,65 @@ class PmsReservationService(Component):
         auth="public",
     )
     def cancel_reservation(self, reservation_id):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+        reservation = (
+            self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
+        )
         if not reservation:
             pass
         else:
-            reservation.action_cancel()
+            reservation.sudo().action_cancel()
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:id>",
+                ],
+                "GET",
+            )
+        ],
+        auth="public",
+    )
+    def get_reservation(self, reservation_id):
+        reservation = (
+            self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
+        )
+        res = []
+        if not reservation:
+            pass
+        else:
+            PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
+            res = PmsReservationShortInfo(
+                id=reservation.id,
+                partner=reservation.partner_id.name,
+                checkin=str(reservation.checkin),
+                checkout=str(reservation.checkout),
+                preferredRoomId=reservation.preferred_room_id.name
+                if reservation.preferred_room_id
+                else "",
+                roomTypeId=reservation.room_type_id.name
+                if reservation.room_type_id
+                else "",
+                name=reservation.name,
+                partnerRequests=reservation.partner_requests
+                if reservation.partner_requests
+                else "",
+                state=dict(reservation.fields_get(["state"])["state"]["selection"])[
+                    reservation.state
+                ],
+                priceTotal=reservation.price_total,
+                adults=reservation.adults,
+                channelTypeId=reservation.channel_type_id
+                if reservation.channel_type_id
+                else "",
+                agencyId=reservation.agency_id if reservation.agency_id else "",
+                boardServiceId=reservation.board_service_room_id.pms_board_service_id.name
+                if reservation.board_service_room_id
+                else "",
+                checkinsRatio=reservation.checkins_ratio,
+                outstanding=reservation.folio_id.pending_amount,
+                pwaActionButtons=json.loads(reservation.pwa_action_buttons)
+                if reservation.pwa_action_buttons
+                else {},
+            )
+        return res
