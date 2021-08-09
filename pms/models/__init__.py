@@ -13,7 +13,6 @@ from . import pms_ubication
 from . import pms_folio
 from . import pms_reservation
 from . import pms_room
-from . import pms_shared_room
 from . import pms_amenity
 from . import pms_amenity_type
 from . import pms_room_type

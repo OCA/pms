@@ -24,15 +24,7 @@
                     <div class="oe_title">
                         <label for="name" string="Name" />
                         <h1>
-                            <field
-                                name="name"
-                                attrs="{'readonly':[('shared_room_id','!=', False)]}"
-                            />
-                            <field
-                                name="shared_room_id"
-                                string="Ubication"
-                                invisible='True'
-                            />
+                            <field name="name" />
                         </h1>
                     </div>
                     <notebook>
@@ -43,25 +35,11 @@
                                     invisible="0"
                                     force_save="1"
                                 />
-                                <field
-                                    name="ubication_id"
-                                    string="Ubication"
-                                    attrs="{'readonly':[('shared_room_id','!=', False)]}"
-                                />
+                                <field name="ubication_id" string="Ubication" />
                                 <!-- <field name="categ_id" select="1" domain="[('isroomtype','=',True)]" string="Room Type" /> -->
-                                <field
-                                    name="room_type_id"
-                                    string="Room Type"
-                                    attrs="{'readonly':[('shared_room_id','!=', False)]}"
-                                />
-                                <field
-                                    name="capacity"
-                                    attrs="{'readonly':[('shared_room_id','!=', False)]}"
-                                />
-                                <field
-                                    name="extra_beds_allowed"
-                                    attrs="{'invisible':[('shared_room_id','!=', False)]}"
-                                />
+                                <field name="room_type_id" string="Room Type" />
+                                <field name="capacity" />
+                                <field name="extra_beds_allowed" />
                                 <!-- <field name="uom_id" invisible="1" /> -->
                             </group>
                             <group>
@@ -90,10 +68,7 @@
                         </page>
                     </notebook>
                     <group>
-                        <field
-                            name="sequence"
-                            attrs="{'readonly':[('shared_room_id','!=', False)]}"
-                        />
+                        <field name="sequence" />
                     </group>
                 </sheet>
             </form>

@@ -48,12 +48,20 @@ class PmsRoom(models.Model):
         ondelete="restrict",
         check_pms_properties=True,
     )
-    # TODO: design shared rooms
-    shared_room_id = fields.Many2one(
-        string="Shared Room",
-        help="The room can be sold by beds",
-        default=False,
-        comodel_name="pms.shared.room",
+    parent_id = fields.Many2one(
+        string="Parent Room",
+        help="Indicates that this room is a child of another room",
+        comodel_name="pms.room",
+        ondelete="restrict",
+        check_pms_properties=True,
+    )
+    child_ids = fields.One2many(
+        string="Child Rooms",
+        help="Child rooms of the room",
+        comodel_name="pms.room",
+        inverse_name="parent_id",
+        ondelete="restrict",
+        check_pms_properties=True,
     )
     ubication_id = fields.Many2one(
         string="Ubication",
@@ -146,10 +154,8 @@ class PmsRoom(models.Model):
 
     def get_capacity(self, extra_bed=0):
         for record in self:
-            if not record.shared_room_id:
-                if extra_bed > record.extra_beds_allowed:
-                    raise ValidationError(
-                        _("Extra beds can't be greater than allowed beds for this room")
-                    )
-                return record.capacity + extra_bed
-            return record.capacity
+            if extra_bed > record.extra_beds_allowed:
+                raise ValidationError(
+                    _("Extra beds can't be greater than allowed beds for this room")
+                )
+            return record.capacity + extra_bed

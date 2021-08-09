@@ -37,3 +37,4 @@ from . import test_pms_folio_sale_line
 from . import test_pms_wizard_split_join_swap_reservation
 from . import test_product_template
 from . import test_pms_multiproperty
+from . import test_shared_room

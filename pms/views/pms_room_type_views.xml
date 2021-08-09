@@ -37,7 +37,6 @@
                     </group>
                     <group colspan="2">
                         <group name="room_ids_group">
-                            <field name="is_shared_room" />
                             <field name="room_ids" widget="many2many_tags" />
                             <field name="total_rooms_count" />
                         </group>

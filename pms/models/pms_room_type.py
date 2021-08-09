@@ -67,12 +67,6 @@ class PmsRoomType(models.Model):
         help="Identification code for a room type",
         required=True,
     )
-    # TODO: Session review to define shared room and "sales rooms packs"
-    is_shared_room = fields.Boolean(
-        string="Shared Room",
-        help="This room type is reservation by beds",
-        default=False,
-    )
     total_rooms_count = fields.Integer(
         string="Total Rooms Count",
         help="The number of rooms in a room type",
