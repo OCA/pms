@@ -547,35 +547,38 @@ class PmsService(models.Model):
 
     def _get_price_unit_line(self, date=False):
         self.ensure_one()
-        folio = self.folio_id
-        reservation = self.reservation_id
-        origin = reservation if reservation else folio
-        if origin:
-            partner = origin.partner_id
-            pricelist = origin.pricelist_id
-            board_room_type = False
-            product_context = dict(
-                self.env.context,
-                lang=partner.lang,
-                partner=partner.id,
-                quantity=self.product_qty,
-                date=folio.date_order if folio else fields.Date.today(),
-                pricelist=pricelist.id,
-                board_service=board_room_type.id if board_room_type else False,
-                uom=self.product_id.uom_id.id,
-                fiscal_position=False,
-                property=self.reservation_id.pms_property_id.id,
-            )
-            if date:
-                product_context["consumption_date"] = date
-            if reservation and self.is_board_service:
-                product_context["board_service"] = reservation.board_service_room_id.id
-            product = self.product_id.with_context(product_context)
-            return self.env["account.tax"]._fix_tax_included_price_company(
-                self._get_display_price(product),
-                product.taxes_id,
-                self.tax_ids,
-                origin.company_id,
-            )
-        else:
-            return 0
+        if self.reservation_id.reservation_type == "normal":
+            folio = self.folio_id
+            reservation = self.reservation_id
+            origin = reservation if reservation else folio
+            if origin:
+                partner = origin.partner_id
+                pricelist = origin.pricelist_id
+                board_room_type = False
+                product_context = dict(
+                    self.env.context,
+                    lang=partner.lang,
+                    partner=partner.id,
+                    quantity=self.product_qty,
+                    date=folio.date_order if folio else fields.Date.today(),
+                    pricelist=pricelist.id,
+                    board_service=board_room_type.id if board_room_type else False,
+                    uom=self.product_id.uom_id.id,
+                    fiscal_position=False,
+                    property=self.reservation_id.pms_property_id.id,
+                )
+                if date:
+                    product_context["consumption_date"] = date
+                if reservation and self.is_board_service:
+                    product_context[
+                        "board_service"
+                    ] = reservation.board_service_room_id.id
+                product = self.product_id.with_context(product_context)
+                return self.env["account.tax"]._fix_tax_included_price_company(
+                    self._get_display_price(product),
+                    product.taxes_id,
+                    self.tax_ids,
+                    origin.company_id,
+                )
+            else:
+                return 0

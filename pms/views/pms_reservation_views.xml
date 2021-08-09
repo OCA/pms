@@ -224,6 +224,19 @@
                         bg_color="bg-warning"
                         attrs="{'invisible': [('folio_payment_state', '!=', 'partial')]}"
                     />
+                     <widget
+                        name="web_ribbon"
+                        title="Staff"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'staff')]}"
+                    />
+
+                    <widget
+                        name="web_ribbon"
+                        title="Out of Service"
+                        bg_color="bg-dark"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
+                    />
                     <div
                         class="card bg-danger mb8"
                         attrs="{'invisible': [('state', 'not in', ('cancel'))]}"
@@ -496,7 +509,7 @@
                             <group
                                 string="Services"
                                 name="reservation_services"
-                                attrs="{'invisible':[('reservation_type', 'not in', ('normal'))]}"
+                                attrs="{'invisible':[('reservation_type', 'in', ('out'))]}"
                             >
                                 <field
                                     name="service_ids"
@@ -681,8 +694,14 @@
                 decoration-bf="splitted"
                 js_class="pms_booking_engine_request_tree"
             >
+                <field name="reservation_type" invisible="1" />
                 <field name="folio_id" optional="show" decoration-bf="1" />
-                <field name="name" optional="show" />
+                <field
+                    name="name"
+                    optional="show"
+                    decoration-info="reservation_type == 'staff'"
+                    decoration-bf="reservation_type == 'out'"
+                />
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
