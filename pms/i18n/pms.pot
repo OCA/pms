@@ -461,6 +461,11 @@ msgid "Add a section"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_amenity__is_add_code_room_name
+msgid "Add in room name"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 msgid "Add to Folio"
 msgstr ""
@@ -627,6 +632,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.ui.menu,name:pms.menu_action_pms_room_amenity_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
 msgid "Amenities"
 msgstr ""
 
@@ -8533,6 +8539,13 @@ msgstr ""
 #: model:pms.room.type,name:pms.pms_room_type_3
 #: model:product.product,name:pms.pms_room_type_3_product_product
 msgid "Triple"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_amenity__is_add_code_room_name
+msgid ""
+"True if the Internal Reference should appear in the display name of the "
+"rooms"
 msgstr ""
 
 #. module: pms
