@@ -342,9 +342,10 @@ class PmsReservation(models.Model):
     reservation_type = fields.Selection(
         string="Reservation Type",
         help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
-        related="folio_id.reservation_type",
         store=True,
         readonly=False,
+        compute="_compute_reservation_type",
+        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
     )
     splitted = fields.Boolean(
         string="Splitted",
@@ -1352,6 +1353,14 @@ class PmsReservation(models.Model):
             else:
                 reservation.rooms = reservation.preferred_room_id.name
 
+    @api.depends("folio_id", "folio_id.reservation_type")
+    def _compute_reservation_type(self):
+        for record in self:
+            if record.folio_id:
+                record.reservation_type = record.folio_id.reservation_type
+            else:
+                record.reservation_type = "normal"
+
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
             raise UserError(
@@ -1644,6 +1653,8 @@ class PmsReservation(models.Model):
                 raise ValidationError(_("Partner contact name is required"))
             # Create the folio in case of need
             # (To allow to create reservations direct)
+            if vals.get("reservation_type"):
+                folio_vals["reservation_type"] = vals.get("reservation_type")
             folio = self.env["pms.folio"].create(folio_vals)
             vals.update(
                 {
