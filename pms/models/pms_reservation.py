@@ -581,7 +581,7 @@ class PmsReservation(models.Model):
     discount_room = fields.Float(
         string="Discount (€)",
         help="Discount on reservation lines, "
-             "which means discount only on price of the room",
+        "which means discount only on price of the room",
         readonly=False,
         store=True,
         digits=("Discount"),
