@@ -2915,6 +2915,13 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
+        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+            }
+        )
         # ACT
         self.room_type_double.write({"list_price": 30})
         reservation = self.env["pms.reservation"].create(
@@ -2925,6 +2932,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
+                "folio_id": folio1.id,
             }
         )
         # ASSERT
@@ -3081,5 +3089,73 @@ class TestPmsReservations(TestPms):
 
         self.assertFalse(
             reservation.pricelist_id,
-            "The pricelist of a staff reservation should be False",
+            "The pricelist of a out of service reservation should be False",
+        )
+
+    def test_reservation_type_by_folio(self):
+        """
+        Check that the reservation type field in a reservation is the
+        same as the reservation type on the folio that contains
+        that reservation.
+        --------------------------
+        A folio is created with the field reservation_type as 'staff'.
+        A reservation is created to which the
+        value of the folio_id is the id of the previously created
+        folio. Then it is verified that the value of the reservation_type
+        field of the reservation is the same that reservation_type in the folio:
+        'staff'.
+        """
+        # ARRANGE AND ACT
+        self.partner1 = self.env["res.partner"].create({"name": "Ana"})
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_id": self.partner1.id,
+                "reservation_type": "staff",
+            }
+        )
+
+        reservation1 = self.env["pms.reservation"].create(
+            {
+                "room_type_id": self.room_type_double.id,
+                "checkin": fields.date.today(),
+                "checkout": fields.date.today() + datetime.timedelta(days=1),
+                "folio_id": folio1.id,
+            }
+        )
+
+        # ASSERT
+        self.assertEqual(
+            reservation1.reservation_type,
+            "staff",
+            "The reservation type of the folio should be 'staff'",
+        )
+
+    def test_no_partner_id_out_reservation(self):
+        """
+        Check that a reservation of type out of service does not
+        have a partner_id.
+        ------------------
+        A reservation is created without a partner_id and with the
+        value of the field reservation_type as '' out. Then it is
+        checked that the partner_id field of the reservation is False
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "reservation_type": "out",
+                "partner_name": "Install furniture",
+            }
+        )
+
+        self.assertFalse(
+            reservation.partner_id,
+            "The partner of an out of service reservation should be False",
         )
