@@ -1,5 +1,7 @@
 # Copyright 2021  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -55,6 +57,24 @@ class PmsAvailability(models.Model):
         readonly=True,
         compute="_compute_real_avail",
     )
+    parent_avail_id = fields.Many2one(
+        string="Parent Avail",
+        help="Parent availability for this availability",
+        comodel_name="pms.availability",
+        ondelete="restrict",
+        compute="_compute_parent_avail_id",
+        store=True,
+        check_pms_properties=True,
+    )
+    child_avail_ids = fields.One2many(
+        string="Child Avails",
+        help="Child availabilities for this availability",
+        comodel_name="pms.availability",
+        inverse_name="parent_avail_id",
+        compute="_compute_child_avail_ids",
+        store=True,
+        check_pms_properties=True,
+    )
 
     _sql_constraints = [
         (
@@ -69,11 +89,16 @@ class PmsAvailability(models.Model):
         "reservation_line_ids",
         "reservation_line_ids.occupies_availability",
         "room_type_id.total_rooms_count",
+        "parent_avail_id",
+        "parent_avail_id.reservation_line_ids",
+        "parent_avail_id.reservation_line_ids.occupies_availability",
+        "child_avail_ids",
+        "child_avail_ids.reservation_line_ids",
+        "child_avail_ids.reservation_line_ids.occupies_availability",
     )
     def _compute_real_avail(self):
         for record in self:
             Rooms = self.env["pms.room"]
-            RoomLines = self.env["pms.reservation.line"]
             total_rooms = Rooms.search_count(
                 [
                     ("room_type_id", "=", record.room_type_id.id),
@@ -81,16 +106,159 @@ class PmsAvailability(models.Model):
                 ]
             )
             room_ids = record.room_type_id.mapped("room_ids.id")
-            rooms_not_avail = RoomLines.search_count(
+            count_rooms_not_avail = len(
+                record.get_rooms_not_avail(
+                    checkin=record.date,
+                    checkout=record.date + datetime.timedelta(1),
+                    room_ids=room_ids,
+                    pms_property_id=record.pms_property_id.id,
+                )
+            )
+            record.real_avail = total_rooms - count_rooms_not_avail
+
+    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
+    def _compute_parent_avail_id(self):
+        for record in self:
+            parent_rooms = record.room_type_id.mapped("room_ids.parent_id.id")
+            if parent_rooms:
+                for room_id in parent_rooms:
+                    room = self.env["pms.room"].browse(room_id)
+                    parent_avail = self.env["pms.availability"].search(
+                        [
+                            ("date", "=", record.date),
+                            ("room_type_id", "=", room.room_type_id.id),
+                            ("pms_property_id", "=", record.pms_property_id.id),
+                        ]
+                    )
+                    if parent_avail:
+                        record.parent_avail_id = parent_avail
+                    else:
+                        record.parent_avail_id = self.env["pms.availability"].create(
+                            {
+                                "date": record.date,
+                                "room_type_id": room.room_type_id.id,
+                                "pms_property_id": record.pms_property_id.id,
+                            }
+                        )
+            else:
+                record.parent_avail_id = False
+
+    @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
+    def _compute_child_avail_ids(self):
+        for record in self:
+            child_rooms = record.room_type_id.mapped("room_ids.child_ids.id")
+            if child_rooms:
+                for room_id in child_rooms:
+                    room = self.env["pms.room"].browse(room_id)
+                    child_avail = self.env["pms.availability"].search(
+                        [
+                            ("date", "=", record.date),
+                            ("room_type_id", "=", room.room_type_id.id),
+                            ("pms_property_id", "=", record.pms_property_id.id),
+                        ]
+                    )
+                    if child_avail:
+                        record.child_avail_ids = [(4, child_avail.id)]
+                    else:
+                        record.child_avail_ids = [
+                            (
+                                0,
+                                0,
+                                {
+                                    "date": record.date,
+                                    "room_type_id": room.room_type_id.id,
+                                    "pms_property_id": record.pms_property_id.id,
+                                },
+                            )
+                        ]
+            else:
+                record.parent_avail_id = False
+
+    @api.model
+    def get_rooms_not_avail(
+        self, checkin, checkout, room_ids, pms_property_id, current_lines=False
+    ):
+        RoomLines = self.env["pms.reservation.line"]
+        rooms = self.env["pms.room"].browse(room_ids)
+        occupied_room_ids = []
+        for room in rooms.filtered("parent_id"):
+            if self.get_occupied_parent_rooms(
+                room=room.parent_id,
+                checkin=checkin,
+                checkout=checkout,
+                pms_property_id=room.pms_property_id.id,
+            ):
+                occupied_room_ids.append(room.id)
+        for room in rooms.filtered("child_ids"):
+            if self.get_occupied_child_rooms(
+                rooms=room.child_ids,
+                checkin=checkin,
+                checkout=checkout,
+                pms_property_id=room.pms_property_id.id,
+            ):
+                occupied_room_ids.append(room.id)
+        occupied_room_ids.extend(
+            RoomLines.search(
                 [
-                    ("date", "=", record.date),
+                    ("date", ">=", checkin),
+                    ("date", "<=", checkout - datetime.timedelta(1)),
                     ("room_id", "in", room_ids),
-                    ("pms_property_id", "=", record.pms_property_id.id),
+                    ("pms_property_id", "=", pms_property_id),
                     ("occupies_availability", "=", True),
-                    # ("id", "not in", current_lines if current_lines else []),
+                    ("id", "not in", current_lines if current_lines else []),
+                ]
+            ).mapped("room_id.id")
+        )
+        return occupied_room_ids
+
+    @api.model
+    def get_occupied_parent_rooms(self, room, checkin, checkout, pms_property_id):
+        RoomLines = self.env["pms.reservation.line"]
+        if (
+            RoomLines.search_count(
+                [
+                    ("date", ">=", checkin),
+                    ("date", "<=", checkout - datetime.timedelta(1)),
+                    ("room_id", "=", room.id),
+                    ("pms_property_id", "=", pms_property_id),
+                    ("occupies_availability", "=", True),
                 ]
             )
-            record.real_avail = total_rooms - rooms_not_avail
+            > 0
+        ):
+            return True
+        if room.parent_id:
+            return self.get_occupied_parent_rooms(
+                room=room.parent_room_id,
+                checkin=checkin,
+                checkout=checkout,
+            )
+        return False
+
+    @api.model
+    def get_occupied_child_rooms(self, rooms, checkin, checkout, pms_property_id):
+        RoomLines = self.env["pms.reservation.line"]
+        if (
+            RoomLines.search_count(
+                [
+                    ("date", ">=", checkin),
+                    ("date", "<=", checkout - datetime.timedelta(1)),
+                    ("room_id", "in", rooms.ids),
+                    ("pms_property_id", "=", pms_property_id),
+                    ("occupies_availability", "=", True),
+                ]
+            )
+            > 0
+        ):
+            return True
+        for room in rooms.filtered("child_ids"):
+            if self.get_occupied_child_rooms(
+                rooms=room.child_ids,
+                checkin=checkin,
+                checkout=checkout,
+            ):
+                return True
+        return False
 
     @api.constrains(
         "room_type_id",
