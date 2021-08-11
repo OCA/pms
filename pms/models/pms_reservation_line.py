@@ -471,3 +471,34 @@ class PmsReservationLine(models.Model):
             )
             if duplicated:
                 raise ValidationError(_("Duplicated reservation line date"))
+
+    @api.constrains("room_id", "date")
+    def constrains_parent_room_avail(self):
+        for record in self:
+            if record.room_id and record.room_id.parent_id and record.date:
+                if self.env["pms.availability"].get_occupied_parent_rooms(
+                    room=record.room_id.parent_id,
+                    checkin=record.date,
+                    checkout=record.date + datetime.timedelta(1),
+                    pms_property_id=record.room_id.pms_property_id.id,
+                ):
+                    raise ValidationError(
+                        _("Room %s is occupied in this date by the parent room %s")
+                        % record.room_id.display_name,
+                        record.room_id.parent_id.display_name,
+                    )
+
+    @api.constrains("room_id", "date")
+    def constrains_childs_room_avail(self):
+        for record in self:
+            if record.room_id and record.room_id.child_ids and record.date:
+                if self.env["pms.availability"].get_occupied_child_rooms(
+                    rooms=record.room_id.child_ids,
+                    checkin=record.date,
+                    checkout=record.date + datetime.timedelta(1),
+                    pms_property_id=record.room_id.pms_property_id.id,
+                ):
+                    raise ValidationError(
+                        _("Room %s is occupied in this date by the child rooms")
+                        % record.room_id.display_name
+                    )
