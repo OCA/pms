@@ -38,6 +38,11 @@
                                 <field name="ubication_id" string="Ubication" />
                                 <!-- <field name="categ_id" select="1" domain="[('isroomtype','=',True)]" string="Room Type" /> -->
                                 <field name="room_type_id" string="Room Type" />
+                                <field name="is_shared_room" />
+                                <field
+                                    name="parent_id"
+                                    attrs="{'invisible':[('parent_id', '=', False)]}"
+                                />
                                 <field name="capacity" />
                                 <field name="extra_beds_allowed" />
                                 <!-- <field name="uom_id" invisible="1" /> -->
@@ -65,6 +70,27 @@
                         </page>
                         <page string="Amenities">
                             <field name="room_amenity_ids" />
+                        </page>
+                        <page
+                            string="Shared Room"
+                            attrs="{'invisible':[('is_shared_room', '=', False)]}"
+                        >
+                            <group>
+                                <field
+                                    name="child_ids"
+                                    context="{'default_parent_id': active_id}"
+                                    nolabel="1"
+                                >
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                        <field name="room_type_id" />
+                                        <field name="capacity" />
+                                        <field name="parent_id" invisible="1" />
+                                        <field name="pms_property_id" invisible="1" />
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
                     </notebook>
                     <group>
