@@ -142,7 +142,6 @@ class PmsProperty(models.Model):
 
         pricelist_id = self.env.context.get("pricelist_id", False)
         room_type_id = self.env.context.get("room_type_id", False)
-
         for pms_property in self:
             free_rooms = pms_property.get_real_free_rooms(
                 checkin, checkout, current_lines
@@ -191,7 +190,6 @@ class PmsProperty(models.Model):
             target_rooms = target_rooms.filtered(
                 lambda r: r.room_type_id.id == room_type_id
             )
-
         capacity = self.env.context.get("capacity", False)
         if capacity:
             target_rooms = target_rooms.filtered(lambda r: r.capacity >= capacity)
@@ -210,27 +208,20 @@ class PmsProperty(models.Model):
                 lambda r: len(set(amenity_ids) - set(r.room_amenity_ids.ids)) == 0
             )
 
-        domain_avail = [
-            ("date", ">=", checkin),
-            ("date", "<=", checkout - datetime.timedelta(1)),
-            ("pms_property_id", "=", self.id),
-        ]
-
         if not current_lines:
             current_lines = []
 
-        rooms_not_avail = (
-            Avail.search(domain_avail)
-            .reservation_line_ids.filtered(
-                lambda l: l.occupies_availability and l.id and l.id not in current_lines
-            )
-            .room_id.ids
+        rooms_not_avail_ids = Avail.get_rooms_not_avail(
+            checkin=checkin,
+            checkout=checkout,
+            room_ids=target_rooms.ids,
+            pms_property_id=self.id,
+            current_lines=current_lines,
         )
-
         domain_rooms = [("id", "in", target_rooms.ids)]
-        if rooms_not_avail:
+        if rooms_not_avail_ids:
             domain_rooms.append(
-                ("id", "not in", rooms_not_avail),
+                ("id", "not in", rooms_not_avail_ids),
             )
         return self.env["pms.room"].search(domain_rooms)
 
@@ -258,7 +249,7 @@ class PmsProperty(models.Model):
             ).date()
         room_type_id = self.env.context.get("room_type_id", False)
         pricelist_id = self.env.context.get("pricelist_id", False)
-        current_lines = self.env.context.get("current_lines", False)
+        current_lines = self.env.context.get("current_lines", [])
         pms_property = self.with_context(
             checkin=checkin,
             checkout=checkout,
@@ -267,7 +258,6 @@ class PmsProperty(models.Model):
             pricelist_id=pricelist_id,
         )
         count_free_rooms = len(pms_property.free_room_ids)
-
         if current_lines and not isinstance(current_lines, list):
             current_lines = [current_lines]
 
