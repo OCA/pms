@@ -123,6 +123,7 @@
                             type="object"
                             class="oe_stat_button"
                             name="action_checks"
+                            attrs="{'invisible': [('reservation_type', 'in', 'out')]}"
                         >
                             <field
                                 name="ratio_checkin_data"
@@ -148,6 +149,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-magic"
+                            attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
                         >
                             <span class="o_stat_text">Change in Group</span>
                         </button>
@@ -165,6 +167,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-globe icon"
+                            attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
                         >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Customer</span>
@@ -182,6 +185,19 @@
                         title="Partial"
                         bg_color="bg-warning"
                         attrs="{'invisible': [('payment_state', '!=', 'partial')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Staff"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'staff')]}"
+                    />
+
+                    <widget
+                        name="web_ribbon"
+                        title="Out of Service"
+                        bg_color="bg-dark"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
                     />
                     <h2>
                         <field name="name" />
@@ -239,7 +255,10 @@
                             name="sale_details"
                         >
                             <field name="pms_property_id" invisible="0" />
-                            <field name="pricelist_id" />
+                            <field
+                                name="pricelist_id"
+                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                            />
                             <field
                                 name="company_id"
                                 options="{'no_create': True}"
@@ -249,10 +268,13 @@
                                 name="reservation_type"
                                 attrs="{'readonly':[('state','not in',('draft'))]}"
                             />
-                            <field name="agency_id" />
+                            <field
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
+                            />
                             <field
                                 name="channel_type_id"
-                                attrs="{'readonly':[('agency_id','!=', False)]}"
+                                attrs="{'readonly':[('agency_id','!=', False)], 'invisible':[('reservation_type', 'not in', 'normal')]}"
                             />
                             <field name="internal_comment" />
                         </group>
@@ -260,6 +282,7 @@
                             class="oe_subtotal_footer oe_right"
                             colspan="2"
                             name="folio_total"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
                         >
                             <field
                                 name="amount_untaxed"
@@ -302,7 +325,10 @@
                         <field name="invoices_paid" invisible="1" />
                     </group>
                     <notebook colspan="4" col="1">
-                        <page string="Sale Lines">
+                        <page
+                            string="Sale Lines"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                        >
                             <field
                                 name="sale_line_ids"
                                 widget="section_and_note_one2many"
@@ -465,7 +491,11 @@
                                     }"
                             />
                         </page>
-                        <page name="invoicing" string="Invoicing">
+                        <page
+                            name="invoicing"
+                            string="Invoicing"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                        >
                             <div
                                 class="alert alert-info"
                                 role="alert"
@@ -525,12 +555,17 @@
                 decoration-muted="state == 'cancel'"
                 default_order="create_date desc"
             >
-                <field name="name" />
+                <field
+                    name="name"
+                    decoration-info="reservation_type == 'staff'"
+                    decoration-bf="reservation_type == 'out'"
+                />
                 <field name="partner_id" invisible="1" />
                 <field name="partner_name" select="1" />
                 <field name="date_order" select="1" />
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />
                 <field name="reservation_ids" widget="many2many_tags" optional="show" />
+                <field name="reservation_type" invisible="1" />
                 <field
                     name="amount_total"
                     sum="Total amount"

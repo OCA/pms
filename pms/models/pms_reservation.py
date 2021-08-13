@@ -342,9 +342,10 @@ class PmsReservation(models.Model):
     reservation_type = fields.Selection(
         string="Reservation Type",
         help="Type of reservations. It can be 'normal', 'staff' or 'out of service",
-        related="folio_id.reservation_type",
         store=True,
         readonly=False,
+        compute="_compute_reservation_type",
+        selection=[("normal", "Normal"), ("staff", "Staff"), ("out", "Out of Service")],
     )
     splitted = fields.Boolean(
         string="Splitted",
@@ -867,7 +868,7 @@ class PmsReservation(models.Model):
         for reservation in self:
             if reservation.reservation_type in ("out", "staff"):
                 reservation.pricelist_id = False
-            if reservation.agency_id and reservation.agency_id.apply_pricelist:
+            elif reservation.agency_id and reservation.agency_id.apply_pricelist:
                 reservation.pricelist_id = (
                     reservation.agency_id.property_product_pricelist
                 )
@@ -986,7 +987,8 @@ class PmsReservation(models.Model):
             record.allowed_checkin = (
                 True
                 if (
-                    record.state in ["draft", "confirm", "arrival_delayed"]
+                    record.reservation_type != "out"
+                    and record.state in ["draft", "confirm", "arrival_delayed"]
                     and record.checkin <= fields.Date.today()
                 )
                 else False
@@ -1133,13 +1135,13 @@ class PmsReservation(models.Model):
                 reservation.commission_amount = 0
 
     # REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
-    @api.depends("preferred_room_id")
+    @api.depends("preferred_room_id", "reservation_type")
     def _compute_adults(self):
         for reservation in self:
-            if reservation.preferred_room_id:
+            if reservation.preferred_room_id and reservation.reservation_type != "out":
                 if reservation.adults == 0:
                     reservation.adults = reservation.preferred_room_id.capacity
-            elif not reservation.adults:
+            elif not reservation.adults or reservation.reservation_type == "out":
                 reservation.adults = 0
 
     @api.depends("reservation_line_ids", "reservation_line_ids.room_id")
@@ -1176,6 +1178,8 @@ class PmsReservation(models.Model):
                 else:
                     line.invoice_status = "no"
             else:
+                line.invoice_status = "no"
+            if line.reservation_type != "normal":
                 line.invoice_status = "no"
 
     @api.depends("reservation_line_ids")
@@ -1262,10 +1266,19 @@ class PmsReservation(models.Model):
             else:
                 record.shared_folio = False
 
-    @api.depends("partner_id", "partner_id.name", "agency_id")
+    @api.depends(
+        "partner_id",
+        "partner_id.name",
+        "agency_id",
+        "reservation_type",
+        "out_service_description",
+    )
     def _compute_partner_name(self):
         for record in self:
-            self.env["pms.folio"]._apply_partner_name(record)
+            if record.reservation_type != "out":
+                self.env["pms.folio"]._apply_partner_name(record)
+            else:
+                record.partner_name = record.out_service_description
 
     @api.depends("partner_id", "partner_id.email", "agency_id")
     def _compute_email(self):
@@ -1339,6 +1352,14 @@ class PmsReservation(models.Model):
                 )
             else:
                 reservation.rooms = reservation.preferred_room_id.name
+
+    @api.depends("folio_id", "folio_id.reservation_type")
+    def _compute_reservation_type(self):
+        for record in self:
+            if record.folio_id:
+                record.reservation_type = record.folio_id.reservation_type
+            else:
+                record.reservation_type = "normal"
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
@@ -1451,6 +1472,7 @@ class PmsReservation(models.Model):
             if (
                 not record.checkin_partner_ids.filtered(lambda c: c.state == "onboard")
                 and record.state == "onboard"
+                and record.reservation_type != "out"
             ):
                 raise ValidationError(
                     _("No person from reserve %s has arrived", record.name)
@@ -1495,6 +1517,19 @@ class PmsReservation(models.Model):
             self.env["pms.room"]._check_adults(
                 record, record.service_ids.service_line_ids
             )
+
+    @api.constrains("reservation_type")
+    def _check_same_reservation_type(self):
+        for record in self:
+            if len(record.folio_id.reservation_ids) > 1:
+                for reservation in record.folio_id.reservation_ids:
+                    if reservation.reservation_type != record.reservation_type:
+                        raise ValidationError(
+                            _(
+                                "The reservation type must be the "
+                                "same for all reservations in folio"
+                            )
+                        )
 
     # Action methods
     def open_partner(self):
@@ -1618,6 +1653,8 @@ class PmsReservation(models.Model):
                 raise ValidationError(_("Partner contact name is required"))
             # Create the folio in case of need
             # (To allow to create reservations direct)
+            if vals.get("reservation_type"):
+                folio_vals["reservation_type"] = vals.get("reservation_type")
             folio = self.env["pms.folio"].create(folio_vals)
             vals.update(
                 {

@@ -130,8 +130,9 @@
                             string="Print All Checkins"
                             type="object"
                             icon="fa-print"
-                            attrs="{'invisible':[
-                                ('checkin_partner_ids','=', [])
+                            attrs="{'invisible':['|',
+                                ('checkin_partner_ids','=', []),
+                                ('reservation_type', 'in', ('out'))
                             ]}"
                         />
                         <button
@@ -139,6 +140,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-globe icon"
+                            attrs="{'invisible':[('reservation_type','not in',('normal'))]}"
                         >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Customer</span>
@@ -200,8 +202,8 @@
                             type="object"
                             class="oe_stat_button"
                             name="action_checkin_partner_view"
-                            attrs="{'invisible': [
-                                ('allowed_checkin', '!=', True),
+                            attrs="{'invisible': ['|',
+                                ('allowed_checkin', '!=', True), ('reservation_type','in',('out'))
                             ]}"
                         >
                             <field
@@ -221,6 +223,19 @@
                         title="Partial"
                         bg_color="bg-warning"
                         attrs="{'invisible': [('folio_payment_state', '!=', 'partial')]}"
+                    />
+                     <widget
+                        name="web_ribbon"
+                        title="Staff"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'staff')]}"
+                    />
+
+                    <widget
+                        name="web_ribbon"
+                        title="Out of Service"
+                        bg_color="bg-dark"
+                        attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
                     />
                     <div
                         class="card bg-danger mb8"
@@ -286,11 +301,6 @@
                             attrs="{'invisible': [('splitted','=',True)]}"
                         />
                     </h3>
-                    <field
-                        name="out_service_description"
-                        placeholder="Out service description"
-                        attrs="{'invisible':[('reservation_type','not in',('out'))]}"
-                    />
                     <group col="8">
                         <group
                             colspan="2"
@@ -298,11 +308,19 @@
                             string="General Info"
                             name="contact_details"
                         >
-                            <field name="partner_id" invisible="0" />
+                            <field
+                                name="partner_id"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
                             <field
                                 name="partner_name"
                                 placeholder="Guest"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="out_service_description"
+                                placeholder="Out service description"
+                                attrs="{'invisible':[('reservation_type','not in',('out'))]}"
                             />
                             <field
                                 name="email"
@@ -340,6 +358,7 @@
                             <field
                                 name="pricelist_id"
                                 options="{'no_open':True,'no_create': True}"
+                                attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
                             />
                             <!--<field
                                 name="agency_id"
@@ -376,10 +395,13 @@
                                 nolabel="1"
                                 placeholder="Reservation Notes"
                             />
-                            <field name="agency_id" />
+                            <field
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
+                            />
                             <field
                                 name="channel_type_id"
-                                attrs="{'readonly':[('agency_id','!=', False)]}"
+                                attrs="{'readonly':[('agency_id','!=', False)], 'invisible': [('reservation_type', '!=', 'normal')]}"
                             />
                         </group>
                         <group
@@ -387,6 +409,7 @@
                             class="oe_subtotal_footer oe_right"
                             name="reservation_total"
                             string="Amounts"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
                         >
                             <field
                                 name="price_services"
@@ -483,7 +506,11 @@
                                     <field name="pms_property_id" invisible="1" />
                                 </tree>
                             </field>
-                            <group string="Services" name="reservation_services">
+                            <group
+                                string="Services"
+                                name="reservation_services"
+                                attrs="{'invisible':[('reservation_type', 'in', ('out'))]}"
+                            >
                                 <field
                                     name="service_ids"
                                     context="{'default_reservation_id': active_id, 'default_folio_id': folio_id, 'form_view_ref':'pms.pms_service_view_form'}"
@@ -596,7 +623,7 @@
                         <page
                             name="invoicing"
                             string="Invoicing"
-                            attrs="{'invisible': [('reservation_type','in',('out'))]}"
+                            attrs="{'invisible': [('reservation_type','in',('out','staff'))]}"
                         >
                         </page>
                         <page name="others" string="Others">
@@ -667,8 +694,14 @@
                 decoration-bf="splitted"
                 js_class="pms_booking_engine_request_tree"
             >
+                <field name="reservation_type" invisible="1" />
                 <field name="folio_id" optional="show" decoration-bf="1" />
-                <field name="name" optional="show" />
+                <field
+                    name="name"
+                    optional="show"
+                    decoration-info="reservation_type == 'staff'"
+                    decoration-bf="reservation_type == 'out'"
+                />
                 <field name="splitted" invisible="1" />
                 <field name="pricelist_id" invisible="1" />
                 <field name="rooms" />
