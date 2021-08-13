@@ -4891,6 +4891,7 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__normal
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__normal
+#: model:ir.model.fields.selection,name:pms.selection__pms_reservation__reservation_type__normal
 msgid "Normal"
 msgstr ""
 
@@ -5266,6 +5267,9 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__out
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__out
+#: model:ir.model.fields.selection,name:pms.selection__pms_reservation__reservation_type__out
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Out of Service"
 msgstr ""
@@ -7479,6 +7483,9 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_booking_engine__reservation_type__staff
 #: model:ir.model.fields.selection,name:pms.selection__pms_folio__reservation_type__staff
+#: model:ir.model.fields.selection,name:pms.selection__pms_reservation__reservation_type__staff
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Staff"
 msgstr ""
@@ -8052,6 +8059,12 @@ msgid ""
 "The quantity to invoice. If the invoice policy is order, the quantity to "
 "invoice is calculated from the ordered quantity. Otherwise, the quantity "
 "delivered is used."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_reservation.py:0
+#, python-format
+msgid "The reservation type must be the same for all reservations in folio"
 msgstr ""
 
 #. module: pms
