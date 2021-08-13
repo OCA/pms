@@ -48,12 +48,19 @@ class PmsRoom(models.Model):
         ondelete="restrict",
         check_pms_properties=True,
     )
-    # TODO: design shared rooms
-    shared_room_id = fields.Many2one(
-        string="Shared Room",
-        help="The room can be sold by beds",
-        default=False,
-        comodel_name="pms.shared.room",
+    parent_id = fields.Many2one(
+        string="Parent Room",
+        help="Indicates that this room is a child of another room",
+        comodel_name="pms.room",
+        ondelete="restrict",
+        check_pms_properties=True,
+    )
+    child_ids = fields.One2many(
+        string="Child Rooms",
+        help="Child rooms of the room",
+        comodel_name="pms.room",
+        inverse_name="parent_id",
+        check_pms_properties=True,
     )
     ubication_id = fields.Many2one(
         string="Ubication",
@@ -79,7 +86,13 @@ class PmsRoom(models.Model):
         column2="amenity_id",
         check_pms_properties=True,
     )
-
+    is_shared_room = fields.Boolean(
+        string="Is a Shared Room",
+        help="allows you to reserve units " " smaller than the room itself (eg beds)",
+        compute="_compute_is_shared_room",
+        readonly=False,
+        store=True,
+    )
     description_sale = fields.Text(
         string="Sale Description",
         help="A description of the Product that you want to communicate to "
@@ -96,6 +109,14 @@ class PmsRoom(models.Model):
             "with the same name in the same property",
         )
     ]
+
+    @api.depends("child_ids")
+    def _compute_is_shared_room(self):
+        for record in self:
+            if record.child_ids:
+                record.is_shared_room = True
+            elif not record.is_shared_room:
+                record.is_shared_room = False
 
     def name_get(self):
         result = []
@@ -119,6 +140,17 @@ class PmsRoom(models.Model):
                     _(
                         "The capacity of the \
                         room must be greater than 0."
+                    )
+                )
+
+    @api.constrains("is_shared_room")
+    def _check_shared_room(self):
+        for record in self:
+            if record.is_shared_room and not record.child_ids:
+                raise ValidationError(
+                    _(
+                        "The reservation units are required \
+                        on shared rooms."
                     )
                 )
 
@@ -146,10 +178,8 @@ class PmsRoom(models.Model):
 
     def get_capacity(self, extra_bed=0):
         for record in self:
-            if not record.shared_room_id:
-                if extra_bed > record.extra_beds_allowed:
-                    raise ValidationError(
-                        _("Extra beds can't be greater than allowed beds for this room")
-                    )
-                return record.capacity + extra_bed
-            return record.capacity
+            if extra_bed > record.extra_beds_allowed:
+                raise ValidationError(
+                    _("Extra beds can't be greater than allowed beds for this room")
+                )
+            return record.capacity + extra_bed
