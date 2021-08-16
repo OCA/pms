@@ -116,6 +116,19 @@
 
                     </bold>
                 </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('is_possible_existing_customer','=',False)]}"
+                >
+                    There is a customer with this email or mobile, do you want to add it to the reservation?
+                    <field name="is_possible_existing_customer" invisible="1" />
+                    <field
+                        name="add_possible_customer"
+                        attrs="{'invisible': [('is_possible_existing_customer','=',False)]}"
+                    />
+                </div>
                 <sheet>
                     <field name="shared_folio" invisible="1" />
                     <field name="allowed_checkin" invisible="1" />
@@ -308,8 +321,13 @@
                             string="General Info"
                             name="contact_details"
                         >
+                            <field name="partner_id" invisible="1" />
                             <field
-                                name="partner_id"
+                                name="document_type"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
+                            <field
+                                name="document_number"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
                             />
                             <field
