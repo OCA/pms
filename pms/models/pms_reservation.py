@@ -828,7 +828,18 @@ class PmsReservation(models.Model):
     def _compute_partner_id(self):
         for reservation in self:
             if not reservation.partner_id:
-                if reservation.reservation_type == "out":
+                if reservation.add_possible_customer:
+                    partner = False
+                    if reservation.email:
+                        partner = self.env["res.partner"].search(
+                            [("email", "=", reservation.email)]
+                        )
+                    elif reservation.mobile:
+                        partner = self.env["res.partner"].search(
+                            [("mobile", "=", reservation.mobile)]
+                        )
+                    reservation.partner_id = partner.id
+                elif reservation.reservation_type == "out":
                     reservation.partner_id = False
                 elif reservation.folio_id and reservation.folio_id.partner_id:
                     reservation.partner_id = reservation.folio_id.partner_id
@@ -865,17 +876,6 @@ class PmsReservation(models.Model):
                             }
                             self.env["res.partner.id_number"].create(number_values)
                         reservation.partner_id = partner
-                elif reservation.add_possible_customer:
-                    partner = False
-                    if reservation.email:
-                        partner = self.env["res.partner"].search(
-                            [("email", "=", reservation.email)]
-                        )
-                    elif reservation.mobile:
-                        partner = self.env["res.partner"].search(
-                            [("mobile", "=", reservation.mobile)]
-                        )
-                    reservation.partner_id = partner.id
                 else:
                     reservation.partner_id = False
 
@@ -1447,68 +1447,22 @@ class PmsReservation(models.Model):
     @api.depends("partner_id")
     def _compute_document_number(self):
         for record in self:
-            if record.partner_id and record.partner_id.id_numbers:
-                if not record.document_number:
-                    if record.partner_id.id_numbers:
-                        record.document_number = record.partner_id.id_numbers[0].name
+            self.env["pms.folio"]._apply_document_number(record)
 
     @api.depends("partner_id")
     def _compute_document_type(self):
         for record in self:
-            if record.partner_id and record.partner_id.id_numbers:
-                if not record.document_type:
-                    if record.partner_id.id_numbers:
-                        record.document_type = record.partner_id.id_numbers[
-                            0
-                        ].category_id
+            self.env["pms.folio"]._apply_document_type(record)
 
     @api.depends("partner_id")
     def _compute_document_id(self):
         for record in self:
-            if record.partner_id:
-                if (
-                    not record.document_id
-                    and record.document_number
-                    and record.document_type
-                ):
-                    id_number_id = self.env["res.partner.id_number"].search(
-                        [
-                            ("partner_id", "=", record.partner_id.id),
-                            ("name", "=", record.document_number),
-                            ("category_id", "=", record.document_type.id),
-                        ]
-                    )
-                    if not id_number_id:
-                        id_number_id = self.env["res.partner.id_number"].create(
-                            {
-                                "partner_id": record.partner_id.id,
-                                "name": record.document_number,
-                                "category_id": record.document_type.id,
-                                "valid_from": record.document_expedition_date,
-                            }
-                        )
-
-                    record.document_id = id_number_id
-            else:
-                record.document_id = False
+            self.env["pms.folio"]._apply_document_id(record)
 
     @api.depends("email", "mobile")
     def _compute_is_possible_existing_customer(self):
         for record in self:
-            partner_email = False
-            partner_mobile = False
-            if record.email and not record.partner_id:
-                partner_email = self.env["res.partner"].search(
-                    [("email", "=", record.email)]
-                )
-            elif record.mobile and not record.partner_id:
-                partner_mobile = self.env["res.partner"].search(
-                    [("mobile", "=", record.mobile)]
-                )
-            if partner_email or partner_mobile:
-                record.is_possible_existing_customer = True
-            else:
-                record.is_possible_existing_customer = False
+            self.env["pms.folio"]._apply_is_possible_existing_customer(record)
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):

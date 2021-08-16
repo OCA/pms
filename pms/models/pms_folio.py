@@ -446,6 +446,35 @@ class PmsFolio(models.Model):
         help="The payment communication of this sale order.",
         copy=False,
     )
+    document_number = fields.Char(
+        string="Document Number",
+        readonly=False,
+        store=True,
+        compute="_compute_document_number",
+    )
+    document_type = fields.Many2one(
+        string="Document Type",
+        readonly=False,
+        store=True,
+        comodel_name="res.partner.id_category",
+        compute="_compute_document_type",
+    )
+
+    document_id = fields.Many2one(
+        string="Document",
+        readonly=False,
+        store=True,
+        comodel_name="res.partner.id_number",
+        compute="_compute_document_id",
+        ondelete="restrict",
+    )
+
+    is_possible_existing_customer = fields.Boolean(
+        string="Possible existing customer",
+        compute="_compute_is_possible_existing_customer",
+    )
+
+    add_possible_customer = fields.Boolean(string="Add possible Customer")
 
     def name_get(self):
         result = []
@@ -640,14 +669,65 @@ class PmsFolio(models.Model):
             elif not folio.pricelist_id:
                 folio.pricelist_id = folio.pms_property_id.default_pricelist_id
 
-    @api.depends("agency_id", "reservation_type")
+    @api.depends(
+        "agency_id",
+        "reservation_type",
+        "document_number",
+        "document_type",
+        "add_possible_customer",
+        "partner_name",
+        "email",
+        "mobile",
+    )
     def _compute_partner_id(self):
         for folio in self:
-            if folio.reservation_type == "out":
+            if folio.add_possible_customer:
+                partner = False
+                if folio.email:
+                    partner = self.env["res.partner"].search(
+                        [("email", "=", folio.email)]
+                    )
+                elif folio.mobile:
+                    partner = self.env["res.partner"].search(
+                        [("mobile", "=", folio.mobile)]
+                    )
+                folio.partner_id = partner.id
+            elif folio.reservation_type == "out":
                 folio.partner_id = False
             elif folio.agency_id and folio.agency_id.invoice_to_agency:
                 folio.partner_id = folio.agency_id.id
-            elif not folio.partner_id:
+            elif folio.document_number and folio.document_type:
+                number = self.env["res.partner.id_number"].search(
+                    [
+                        ("name", "=", folio.document_number),
+                        ("category_id", "=", folio.document_type.id),
+                    ]
+                )
+                partner = self.env["res.partner"].search(
+                    [("id", "=", number.partner_id.id)]
+                )
+                if partner:
+                    folio.partner_id = partner.id
+                else:
+                    if (
+                        folio.partner_name
+                        and folio.document_number
+                        and folio.document_type
+                    ):
+                        partner_values = {
+                            "name": folio.partner_name,
+                            "email": folio.email,
+                            "mobile": folio.mobile,
+                        }
+                        partner = self.env["res.partner"].create(partner_values)
+                        number_values = {
+                            "partner_id": partner.id,
+                            "name": folio.document_number,
+                            "category_id": folio.document_type.id,
+                        }
+                        self.env["res.partner.id_number"].create(number_values)
+                    folio.partner_id = partner
+            else:
                 folio.partner_id = False
 
     @api.depends("partner_id")
@@ -951,6 +1031,26 @@ class PmsFolio(models.Model):
                     lambda x: (x.adults + x.children) - len(x.checkin_partner_ids)
                 )
                 record.checkin_partner_pending_count = sum(mapped_checkin_partner_count)
+
+    @api.depends("partner_id")
+    def _compute_document_number(self):
+        for record in self:
+            self._apply_document_number(record)
+
+    @api.depends("partner_id")
+    def _compute_document_type(self):
+        for record in self:
+            self._apply_document_type(record)
+
+    @api.depends("partner_id")
+    def _compute_document_id(self):
+        for record in self:
+            self._apply_document_id(record)
+
+    @api.depends("email", "mobile")
+    def _compute_is_possible_existing_customer(self):
+        for record in self:
+            self._apply_is_possible_existing_customer(record)
 
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
@@ -1710,3 +1810,58 @@ class PmsFolio(models.Model):
             record.email = record.partner_id.email
         elif not record.email:
             record.email = False
+
+    @api.model
+    def _apply_is_possible_existing_customer(self, record):
+        partner = False
+        if record.email and not record.partner_id:
+            partner = self.env["res.partner"].search([("email", "=", record.email)])
+        elif record.mobile and not record.partner_id:
+            partner = self.env["res.partner"].search([("mobile", "=", record.mobile)])
+        if partner:
+            record.is_possible_existing_customer = True
+        else:
+            record.is_possible_existing_customer = False
+
+    @api.model
+    def _apply_document_id(self, record):
+        if record.partner_id:
+            if (
+                not record.document_id
+                and record.document_number
+                and record.document_type
+            ):
+                id_number_id = self.env["res.partner.id_number"].search(
+                    [
+                        ("partner_id", "=", record.partner_id.id),
+                        ("name", "=", record.document_number),
+                        ("category_id", "=", record.document_type.id),
+                    ]
+                )
+                if not id_number_id:
+                    id_number_id = self.env["res.partner.id_number"].create(
+                        {
+                            "partner_id": record.partner_id.id,
+                            "name": record.document_number,
+                            "category_id": record.document_type.id,
+                            "valid_from": record.document_expedition_date,
+                        }
+                    )
+
+                record.document_id = id_number_id
+        else:
+            record.document_id = False
+
+    @api.model
+    def _apply_document_number(self, record):
+        if record.partner_id and record.partner_id.id_numbers:
+            if not record.document_number:
+                if record.partner_id.id_numbers:
+                    record.document_number = record.partner_id.id_numbers[0].name
+
+    @api.model
+    def _apply_document_type(self, record):
+        if record.partner_id and record.partner_id.id_numbers:
+            if not record.document_type:
+                if record.partner_id.id_numbers:
+                    record.document_type = record.partner_id.id_numbers[0].category_id
