@@ -727,7 +727,7 @@ class PmsFolio(models.Model):
                         }
                         self.env["res.partner.id_number"].create(number_values)
                     folio.partner_id = partner
-            else:
+            elif not folio.partner_id:
                 folio.partner_id = False
 
     @api.depends("partner_id")
