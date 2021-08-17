@@ -115,7 +115,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "85564627G",
                 "valid_from": datetime.date.today(),
                 "partner_id": host2.id,
             }
@@ -232,7 +232,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "95876871Z",
                 "valid_from": datetime.date.today(),
                 "partner_id": host2.id,
             }
@@ -249,7 +249,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "58261664L",
                 "valid_from": datetime.date.today(),
                 "partner_id": host3.id,
             }
@@ -266,7 +266,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "61645604S",
                 "valid_from": datetime.date.today(),
                 "partner_id": host4.id,
             }
@@ -322,7 +322,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "63073204M",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host2.id,
             }
@@ -339,7 +339,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "70699468K",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host3.id,
             }
@@ -397,7 +397,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "12650631X",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host2.id,
             }
@@ -450,7 +450,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "61369791H",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host2.id,
             }
@@ -467,7 +467,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "53563260D",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host3.id,
             }
@@ -484,7 +484,7 @@ class TestPmsCheckinPartner(TestPms):
         self.env["res.partner.id_number"].create(
             {
                 "category_id": self.id_category.id,
-                "name": "30065089H",
+                "name": "63742138F",
                 "valid_from": datetime.date.today(),
                 "partner_id": self.host4.id,
             }
