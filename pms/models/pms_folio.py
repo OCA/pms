@@ -469,9 +469,11 @@ class PmsFolio(models.Model):
         ondelete="restrict",
     )
 
-    is_possible_existing_customer = fields.Boolean(
+    is_possible_existing_customer_id = fields.Many2one(
         string="Possible existing customer",
-        compute="_compute_is_possible_existing_customer",
+        readonly=False,
+        store=True,
+        compute="_compute_is_possible_existing_customer_id",
     )
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
@@ -682,16 +684,7 @@ class PmsFolio(models.Model):
     def _compute_partner_id(self):
         for folio in self:
             if folio.add_possible_customer:
-                partner = False
-                if folio.email:
-                    partner = self.env["res.partner"].search(
-                        [("email", "=", folio.email)]
-                    )
-                elif folio.mobile:
-                    partner = self.env["res.partner"].search(
-                        [("mobile", "=", folio.mobile)]
-                    )
-                folio.partner_id = partner.id
+                folio.partner_id = folio.is_possible_existing_customer_id.id
             elif folio.reservation_type == "out":
                 folio.partner_id = False
             elif folio.agency_id and folio.agency_id.invoice_to_agency:
@@ -1048,9 +1041,9 @@ class PmsFolio(models.Model):
             self._apply_document_id(record)
 
     @api.depends("email", "mobile")
-    def _compute_is_possible_existing_customer(self):
+    def _compute_is_possible_existing_customer_id(self):
         for record in self:
-            self._apply_is_possible_existing_customer(record)
+            self._apply_is_possible_existing_customer_id(record)
 
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
@@ -1812,16 +1805,17 @@ class PmsFolio(models.Model):
             record.email = False
 
     @api.model
-    def _apply_is_possible_existing_customer(self, record):
-        partner = False
+    def _apply_is_possible_existing_customer_id(self, record):
         if record.email and not record.partner_id:
-            partner = self.env["res.partner"].search([("email", "=", record.email)])
+            record.is_possible_existing_customer_id = (
+                self.env["res.partner"].search([("email", "=", record.email)]).id
+            )
         elif record.mobile and not record.partner_id:
-            partner = self.env["res.partner"].search([("mobile", "=", record.mobile)])
-        if partner:
-            record.is_possible_existing_customer = True
+            record.is_possible_existing_customer_id = (
+                self.env["res.partner"].search([("mobile", "=", record.mobile)]).id
+            )
         else:
-            record.is_possible_existing_customer = False
+            record.is_possible_existing_customer_id = False
 
     @api.model
     def _apply_document_id(self, record):
