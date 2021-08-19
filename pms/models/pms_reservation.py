@@ -635,9 +635,11 @@ class PmsReservation(models.Model):
         ondelete="restrict",
     )
 
-    is_possible_existing_customer = fields.Boolean(
+    is_possible_existing_customer_id = fields.Many2one(
         string="Possible existing customer",
-        compute="_compute_is_possible_existing_customer",
+        readonly=False,
+        store=True,
+        compute="_compute_is_possible_existing_customer_id",
     )
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
@@ -829,16 +831,9 @@ class PmsReservation(models.Model):
         for reservation in self:
             if not reservation.partner_id:
                 if reservation.add_possible_customer:
-                    partner = False
-                    if reservation.email:
-                        partner = self.env["res.partner"].search(
-                            [("email", "=", reservation.email)]
-                        )
-                    elif reservation.mobile:
-                        partner = self.env["res.partner"].search(
-                            [("mobile", "=", reservation.mobile)]
-                        )
-                    reservation.partner_id = partner.id
+                    reservation.partner_id = (
+                        reservation.is_possible_existing_customer_id.id
+                    )
                 elif reservation.reservation_type == "out":
                     reservation.partner_id = False
                 elif reservation.folio_id and reservation.folio_id.partner_id:
@@ -876,7 +871,7 @@ class PmsReservation(models.Model):
                             }
                             self.env["res.partner.id_number"].create(number_values)
                         reservation.partner_id = partner
-                else:
+                elif not reservation.partner_id:
                     reservation.partner_id = False
 
     @api.depends("checkin", "checkout")
@@ -1363,7 +1358,7 @@ class PmsReservation(models.Model):
             else:
                 record.partner_name = record.out_service_description
 
-    @api.depends("partner_id", "partner_id.email", "agency_id")
+    @api.depends("partner_id", "partner_id.email", "agency_id", "add_possible_customer")
     def _compute_email(self):
         for record in self:
             self.env["pms.folio"]._apply_email(record)
@@ -1460,9 +1455,9 @@ class PmsReservation(models.Model):
             self.env["pms.folio"]._apply_document_id(record)
 
     @api.depends("email", "mobile")
-    def _compute_is_possible_existing_customer(self):
+    def _compute_is_possible_existing_customer_id(self):
         for record in self:
-            self.env["pms.folio"]._apply_is_possible_existing_customer(record)
+            self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
