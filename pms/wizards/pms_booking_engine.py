@@ -397,38 +397,55 @@ class AvailabilityWizard(models.TransientModel):
     @api.depends("room_type_id", "board_service_room_id", "checkin", "checkout")
     def _compute_price_per_room(self):
         for record in self:
-            room_type_total_price_per_room = 0
-
-            for date_iterator in [
-                record.checkin + datetime.timedelta(days=x)
-                for x in range(0, (record.checkout - record.checkin).days)
-            ]:
-
-                partner = record.booking_engine_id.partner_id
-                product = record.room_type_id.product_id
-                product = product.with_context(
-                    lang=partner.lang,
-                    partner=partner.id,
-                    quantity=1,
-                    date=fields.Date.today(),
-                    consumption_date=date_iterator,
-                    pricelist=record.booking_engine_id.pricelist_id.id,
-                    uom=product.uom_id.id,
-                    property=record.booking_engine_id.pms_property_id.id,
-                )
-                room_type_total_price_per_room += product.price
-
-            if record.board_service_room_id:
-                nights = (record.checkout - record.checkin).days
-                room_type_total_price_per_room += (
-                    record.board_service_room_id.amount
-                    * nights
-                    * record.room_type_id.get_capacity()
-                )
-
-            record.price_per_room = room_type_total_price_per_room
+            record.price_per_room = self._get_price_by_room_type(
+                room_type_id=record.room_type_id.id,
+                board_service_room_id=record.board_service_room_id.id,
+                checkin=record.checkin,
+                checkout=record.checkout,
+                pricelist_id=record.booking_engine_id.pricelist_id.id,
+                pms_property_id=record.booking_engine_id.pms_property_id.id,
+            )
 
     @api.depends("price_per_room", "value_num_rooms_selected")
     def _compute_price_total(self):
         for record in self:
             record.price_total = record.price_per_room * record.value_num_rooms_selected
+
+    @api.model
+    def _get_price_by_room_type(
+        self,
+        room_type_id,
+        checkin,
+        checkout,
+        board_service_room_id,
+        pricelist_id,
+        pms_property_id,
+    ):
+        room_type_total_price_per_room = 0
+        room_type = self.env["pms.room.type"].browse(room_type_id)
+        for date_iterator in [
+            checkin + datetime.timedelta(days=x)
+            for x in range(0, (checkout - checkin).days)
+        ]:
+
+            product = room_type.product_id
+            product = product.with_context(
+                quantity=1,
+                date=fields.Date.today(),
+                consumption_date=date_iterator,
+                pricelist=pricelist_id,
+                uom=product.uom_id.id,
+                property=pms_property_id,
+            )
+            room_type_total_price_per_room += product.price
+
+        if board_service_room_id:
+            board_service_room = self.env["pms.board.service.room.type"].browse(
+                board_service_room_id
+            )
+            nights = (checkout - checkin).days
+            room_type_total_price_per_room += (
+                board_service_room.amount * nights * room_type.get_capacity()
+            )
+
+        return room_type_total_price_per_room
