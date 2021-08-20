@@ -3159,3 +3159,207 @@ class TestPmsReservations(TestPms):
             reservation.partner_id,
             "The partner of an out of service reservation should be False",
         )
+
+    def test_create_partner_in_reservation(self):
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Elis",
+                "email": "elis@mail.com",
+                "mobile": "61568547",
+                "document_type": self.id_category.id,
+                "document_number": "31640132K",
+            }
+        )
+        self.env["res.partner"].search(
+            [
+                ("name", "=", reservation.partner_name),
+            ]
+        )
+        # ASSERT
+        self.assertTrue(reservation.partner_id.id, "The partner has not been created")
+
+    def test_auto_complete_partner_mobile(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Enrique",
+                "mobile": "654667733",
+                "email": "enrique@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "61645604S",
+                "partner_id": partner.id,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation.mobile,
+            partner.mobile,
+            "The partner mobile has not autocomplete in reservation",
+        )
+
+    def test_auto_complete_partner_email(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "74247377L",
+                "partner_id": partner.id,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation.email,
+            partner.email,
+            "The partner mobile has not autocomplete in reservation",
+        )
+
+    def test_is_possible_customer_by_email(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Courtney Campbell",
+                "email": "courtney@example.com",
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            reservation.is_possible_existing_customer_id,
+            "No customer found with this email",
+        )
+
+    def test_is_possible_customer_by_mobile(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Ledicia Sandoval",
+                "mobile": "615369231",
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "mobile": partner.mobile,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            reservation.is_possible_existing_customer_id,
+            "No customer found with this mobile",
+        )
+
+    def test_add_possible_customer(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "84223588A",
+                "partner_id": partner.id,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+
+        reservation.add_possible_customer = True
+        # ASSERT
+        self.assertEqual(
+            reservation.partner_id.id,
+            partner.id,
+            "The partner was not added to the reservation ",
+        )
