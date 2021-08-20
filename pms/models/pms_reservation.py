@@ -830,47 +830,16 @@ class PmsReservation(models.Model):
     def _compute_partner_id(self):
         for reservation in self:
             if not reservation.partner_id:
-                if reservation.add_possible_customer:
-                    reservation.partner_id = (
-                        reservation.is_possible_existing_customer_id.id
-                    )
-                elif reservation.reservation_type == "out":
+                if reservation.reservation_type == "out":
                     reservation.partner_id = False
                 elif reservation.folio_id and reservation.folio_id.partner_id:
                     reservation.partner_id = reservation.folio_id.partner_id
                 elif reservation.agency_id and reservation.agency_id.invoice_to_agency:
                     reservation.partner_id = reservation.agency_id
                 elif reservation.document_number and reservation.document_type:
-                    number = self.env["res.partner.id_number"].search(
-                        [
-                            ("name", "=", reservation.document_number),
-                            ("category_id", "=", reservation.document_type.id),
-                        ]
-                    )
-                    partner = self.env["res.partner"].search(
-                        [("id", "=", number.partner_id.id)]
-                    )
-                    if partner:
-                        reservation.partner_id = partner.id
-                    else:
-                        if (
-                            reservation.partner_name
-                            and reservation.document_number
-                            and reservation.document_type
-                        ):
-                            partner_values = {
-                                "name": reservation.partner_name,
-                                "email": reservation.email,
-                                "mobile": reservation.mobile,
-                            }
-                            partner = self.env["res.partner"].create(partner_values)
-                            number_values = {
-                                "partner_id": partner.id,
-                                "name": reservation.document_number,
-                                "category_id": reservation.document_type.id,
-                            }
-                            self.env["res.partner.id_number"].create(number_values)
-                        reservation.partner_id = partner
+                    self.env["pms.folio"]._create_partner(reservation)
+                elif reservation.add_possible_customer:
+                    self.env["pms.folio"]._add_customer(reservation)
                 elif not reservation.partner_id:
                     reservation.partner_id = False
 
