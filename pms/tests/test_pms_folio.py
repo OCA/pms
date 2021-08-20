@@ -558,3 +558,173 @@ class TestPmsFolio(TestPms):
                     "reservation_type": "staff",
                 }
             )
+
+    def test_create_partner_in_folio(self):
+        # ARRANGE
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Savannah Byles",
+                "document_type": self.id_category.id,
+                "document_number": "32861114W",
+            }
+        )
+        self.env["res.partner"].search(
+            [
+                ("name", "=", folio1.partner_name),
+            ]
+        )
+        # ASSERT
+        self.assertTrue(folio1.partner_id.id, "The partner has not been created")
+
+    def test_auto_complete_partner_mobile(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Enrique",
+                "mobile": "654667733",
+                "email": "enrique@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "61645604S",
+                "partner_id": partner.id,
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            folio1.mobile,
+            partner.mobile,
+            "The partner mobile has not autocomplete in folio",
+        )
+
+    def test_auto_complete_partner_email(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "74247377L",
+                "partner_id": partner.id,
+            }
+        )
+
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            folio1.email,
+            partner.email,
+            "The partner mobile has not autocomplete in folio",
+        )
+
+    def test_is_possible_customer_by_email(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Courtney Campbell",
+                "email": "courtney@example.com",
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            folio1.is_possible_existing_customer_id, "No customer found with this email"
+        )
+
+    def test_is_possible_customer_by_mobile(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Ledicia Sandoval",
+                "mobile": "615369231",
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "mobile": partner.mobile,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            folio1.is_possible_existing_customer_id,
+            "No customer found with this mobile",
+        )
+
+    def test_add_possible_customer(self):
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "84223588A",
+                "partner_id": partner.id,
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+
+        folio1.add_possible_customer = True
+        # ASSERT
+        self.assertEqual(
+            folio1.partner_id.id, partner.id, "The partner was not added to the folio "
+        )
