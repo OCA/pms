@@ -213,6 +213,15 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_partner_incongruences",
     )
 
+    is_possible_existing_customer_id = fields.Many2one(
+        string="Possible existing customer",
+        readonly=False,
+        store=True,
+        compute="_compute_is_possible_existing_customer_id",
+    )
+
+    add_possible_customer = fields.Boolean(string="Add possible Customer")
+
     @api.depends("partner_id")
     def _compute_document_number(self):
         for record in self:
@@ -375,7 +384,12 @@ class PmsCheckinPartner(models.Model):
                 record.document_id = False
 
     @api.depends(
-        "document_number", "document_type", "firstname", "lastname", "lastname2"
+        "document_number",
+        "document_type",
+        "firstname",
+        "lastname",
+        "lastname2",
+        "add_possible_customer",
     )
     def _compute_partner_id(self):
         for record in self:
@@ -402,6 +416,13 @@ class PmsCheckinPartner(models.Model):
                             }
                             partner = self.env["res.partner"].create(partner_values)
                     record.partner_id = partner
+                elif record.add_possible_customer:
+                    self.env["pms.folio"]._add_customer(record)
+
+    @api.depends("email", "mobile")
+    def _compute_is_possible_existing_customer_id(self):
+        for record in self:
+            self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
 
     @api.depends(
         "firstname",
