@@ -683,43 +683,14 @@ class PmsFolio(models.Model):
     )
     def _compute_partner_id(self):
         for folio in self:
-            if folio.add_possible_customer:
-                folio.partner_id = folio.is_possible_existing_customer_id.id
-            elif folio.reservation_type == "out":
+            if folio.reservation_type == "out":
                 folio.partner_id = False
             elif folio.agency_id and folio.agency_id.invoice_to_agency:
                 folio.partner_id = folio.agency_id.id
             elif folio.document_number and folio.document_type:
-                number = self.env["res.partner.id_number"].search(
-                    [
-                        ("name", "=", folio.document_number),
-                        ("category_id", "=", folio.document_type.id),
-                    ]
-                )
-                partner = self.env["res.partner"].search(
-                    [("id", "=", number.partner_id.id)]
-                )
-                if partner:
-                    folio.partner_id = partner.id
-                else:
-                    if (
-                        folio.partner_name
-                        and folio.document_number
-                        and folio.document_type
-                    ):
-                        partner_values = {
-                            "name": folio.partner_name,
-                            "email": folio.email,
-                            "mobile": folio.mobile,
-                        }
-                        partner = self.env["res.partner"].create(partner_values)
-                        number_values = {
-                            "partner_id": partner.id,
-                            "name": folio.document_number,
-                            "category_id": folio.document_type.id,
-                        }
-                        self.env["res.partner.id_number"].create(number_values)
-                    folio.partner_id = partner
+                self._create_partner(folio)
+            elif folio.add_possible_customer:
+                self._add_customer(folio)
             elif not folio.partner_id:
                 folio.partner_id = False
 
@@ -1859,3 +1830,38 @@ class PmsFolio(models.Model):
             if not record.document_type:
                 if record.partner_id.id_numbers:
                     record.document_type = record.partner_id.id_numbers[0].category_id
+
+    @api.model
+    def _create_partner(self, record):
+        number = self.env["res.partner.id_number"].search(
+            [
+                ("name", "=", record.document_number),
+                ("category_id", "=", record.document_type.id),
+            ]
+        )
+        partner = self.env["res.partner"].search([("id", "=", number.partner_id.id)])
+        if not partner:
+            if record.partner_name and record.document_number and record.document_type:
+                partner_values = {
+                    "name": record.partner_name,
+                    "email": record.email,
+                    "mobile": record.mobile,
+                }
+                partner = self.env["res.partner"].create(partner_values)
+                number_values = {
+                    "partner_id": partner.id,
+                    "name": record.document_number,
+                    "category_id": record.document_type.id,
+                }
+                self.env["res.partner.id_number"].create(number_values)
+        record.partner_id = partner
+
+    # REVIEW: we should not force the email and mobile computes,
+    # but if we do not do so,the cache sets the partner_id to False
+    # and therefore also the document_number, email or mobile
+    @api.model
+    def _add_customer(self, record):
+        record.partner_id = record.is_possible_existing_customer_id.id
+        record._compute_document_number()
+        record._compute_email()
+        record._compute_mobile()
