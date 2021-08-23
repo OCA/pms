@@ -612,6 +612,38 @@ class PmsReservation(models.Model):
         store=True,
     )
 
+    document_number = fields.Char(
+        string="Document Number",
+        readonly=False,
+        store=True,
+        compute="_compute_document_number",
+    )
+    document_type = fields.Many2one(
+        string="Document Type",
+        readonly=False,
+        store=True,
+        comodel_name="res.partner.id_category",
+        compute="_compute_document_type",
+    )
+
+    document_id = fields.Many2one(
+        string="Document",
+        readonly=False,
+        store=True,
+        comodel_name="res.partner.id_number",
+        compute="_compute_document_id",
+        ondelete="restrict",
+    )
+
+    is_possible_existing_customer_id = fields.Many2one(
+        string="Possible existing customer",
+        readonly=False,
+        store=True,
+        compute="_compute_is_possible_existing_customer_id",
+    )
+
+    add_possible_customer = fields.Boolean(string="Add possible Customer")
+
     def _compute_date_order(self):
         for record in self:
             record.date_order = datetime.datetime.today()
@@ -783,7 +815,18 @@ class PmsReservation(models.Model):
             else:
                 reservation.allowed_room_ids = False
 
-    @api.depends("reservation_type", "agency_id", "folio_id", "folio_id.agency_id")
+    @api.depends(
+        "reservation_type",
+        "agency_id",
+        "folio_id",
+        "folio_id.agency_id",
+        "document_number",
+        "document_type",
+        "partner_name",
+        "email",
+        "mobile",
+        "add_possible_customer",
+    )
     def _compute_partner_id(self):
         for reservation in self:
             if not reservation.partner_id:
@@ -793,7 +836,11 @@ class PmsReservation(models.Model):
                     reservation.partner_id = reservation.folio_id.partner_id
                 elif reservation.agency_id and reservation.agency_id.invoice_to_agency:
                     reservation.partner_id = reservation.agency_id
-                elif not reservation.folio_id and not reservation.agency_id:
+                elif reservation.document_number and reservation.document_type:
+                    self.env["pms.folio"]._create_partner(reservation)
+                elif reservation.add_possible_customer:
+                    self.env["pms.folio"]._add_customer(reservation)
+                elif not reservation.partner_id:
                     reservation.partner_id = False
 
     @api.depends("checkin", "checkout")
@@ -1280,7 +1327,7 @@ class PmsReservation(models.Model):
             else:
                 record.partner_name = record.out_service_description
 
-    @api.depends("partner_id", "partner_id.email", "agency_id")
+    @api.depends("partner_id", "partner_id.email", "agency_id", "add_possible_customer")
     def _compute_email(self):
         for record in self:
             self.env["pms.folio"]._apply_email(record)
@@ -1360,6 +1407,26 @@ class PmsReservation(models.Model):
                 record.reservation_type = record.folio_id.reservation_type
             else:
                 record.reservation_type = "normal"
+
+    @api.depends("partner_id")
+    def _compute_document_number(self):
+        for record in self:
+            self.env["pms.folio"]._apply_document_number(record)
+
+    @api.depends("partner_id")
+    def _compute_document_type(self):
+        for record in self:
+            self.env["pms.folio"]._apply_document_type(record)
+
+    @api.depends("partner_id")
+    def _compute_document_id(self):
+        for record in self:
+            self.env["pms.folio"]._apply_document_id(record)
+
+    @api.depends("email", "mobile")
+    def _compute_is_possible_existing_customer_id(self):
+        for record in self:
+            self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):

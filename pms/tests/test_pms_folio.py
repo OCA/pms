@@ -558,3 +558,234 @@ class TestPmsFolio(TestPms):
                     "reservation_type": "staff",
                 }
             )
+
+    def test_create_partner_in_folio(self):
+        """
+        Check that a res_partner is created from a folio.
+        ------------
+        A folio is created by adding the document_type and
+        document_number fields, with these two fields a res.partner
+        should be created, which is what is checked after creating
+        the folio.
+        """
+        # ARRANGE
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Savannah Byles",
+                "document_type": self.id_category.id,
+                "document_number": "32861114W",
+            }
+        )
+        # ASSERT
+        self.assertTrue(folio1.partner_id.id, "The partner has not been created")
+
+    def test_auto_complete_partner_mobile(self):
+        """
+        It is checked that the mobile field of the folio
+        is correctly added to it when the document_number and
+        document_type fields of a res.partner that exists in
+        the DB are put in the folio.
+        --------------------
+        A res.partner is created with the name, mobile and email fields.
+        The document_id is added to the res.partner. The folio is
+        created and the category_id of the document_id associated with
+        the res.partner is added as document_type and as document_number
+        the name of the document_id associated with the res.partner as well.
+        Then it is checked that the mobile of the res.partner and that of
+        the folio are the same.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Enrique",
+                "mobile": "654667733",
+                "email": "enrique@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "61645604S",
+                "partner_id": partner.id,
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            folio1.mobile,
+            partner.mobile,
+            "The partner mobile has not autocomplete in folio",
+        )
+
+    def test_auto_complete_partner_email(self):
+        """
+        It is checked that the email field of the folio
+        is correctly added to it when the document_number and
+        document_type fields of a res.partner that exists in
+        the DB are put in the folio.
+        --------------------
+        A res.partner is created with the name, mobile and email fields.
+        The document_id is added to the res.partner. The folio is
+        created and the category_id of the document_id associated with
+        the res.partner is added as document_type and as document_number
+        the name of the document_id associated with the res.partner as well.
+        Then it is checked that the email of the res.partner and that of
+        the folio are the same.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "74247377L",
+                "partner_id": partner.id,
+            }
+        )
+
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            folio1.email,
+            partner.email,
+            "The partner mobile has not autocomplete in folio",
+        )
+
+    def test_is_possible_customer_by_email(self):
+        """
+        It is checked that the field is_possible_existing_customer_id
+        exists in a folio with an email from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A folio
+        is created by adding the same email as the res.partner. Then it is
+        checked that the field is_possible_existing_customer_id is equal to True.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Courtney Campbell",
+                "email": "courtney@example.com",
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            folio1.is_possible_existing_customer_id, "No customer found with this email"
+        )
+
+    def test_is_possible_customer_by_mobile(self):
+        """
+        It is checked that the field is_possible_existing_customer_id
+        exists in a folio with a mobile from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A folio
+        is created by adding the same mobile as the res.partner. Then it is
+        checked that the field is_possible_existing_customer_id is equal to True.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Ledicia Sandoval",
+                "mobile": "615369231",
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "mobile": partner.mobile,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            folio1.is_possible_existing_customer_id,
+            "No customer found with this mobile",
+        )
+
+    def test_add_possible_customer(self):
+        """
+        It is checked that after setting the add_possible_customer
+        field of a folio to True, the partner_id that has the
+        email that was placed in the folio is added.
+        ---------------
+        A res.partner is created with name, email and mobile. The document_id
+        is added to the res.partner. A folio is created with the email
+        field equal to that of the res.partner created before. The value of
+        the add_possible_customer field is changed to True. Then it is checked
+        that the id of the partner_id of the folio is equal to the id of
+        the res.partner created previously.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "84223588A",
+                "partner_id": partner.id,
+            }
+        )
+        # ACT
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+
+        folio1.add_possible_customer = True
+        # ASSERT
+        self.assertEqual(
+            folio1.partner_id.id, partner.id, "The partner was not added to the folio "
+        )

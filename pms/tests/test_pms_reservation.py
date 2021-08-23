@@ -3159,3 +3159,268 @@ class TestPmsReservations(TestPms):
             reservation.partner_id,
             "The partner of an out of service reservation should be False",
         )
+
+    def test_create_partner_in_reservation(self):
+        """
+        Check that a res_partner is created from a reservation.
+        ------------
+        A reservation is created by adding the document_type and
+        document_number fields, with these two fields a res.partner
+        should be created, which is what is checked after creating
+        the reservation.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Elis",
+                "email": "elis@mail.com",
+                "mobile": "61568547",
+                "document_type": self.id_category.id,
+                "document_number": "31640132K",
+            }
+        )
+        # ASSERT
+        self.assertTrue(reservation.partner_id, "The partner has not been created")
+
+    def test_auto_complete_partner_mobile(self):
+        """
+        It is checked that the mobile field of the reservation
+        is correctly added to it when the document_number and
+        document_type fields of a res.partner that exists in
+        the DB are put in the reservation.
+        --------------------
+        A res.partner is created with the name, mobile and email fields.
+        The document_id is added to the res.partner. The reservation is
+        created and the category_id of the document_id associated with
+        the res.partner is added as document_type and as document_number
+        the name of the document_id associated with the res.partner as well.
+        Then it is verified that the mobile of the res.partner and that of
+        the reservation are the same.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Enrique",
+                "mobile": "654667733",
+                "email": "enrique@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "61645604S",
+                "partner_id": partner.id,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation.mobile,
+            partner.mobile,
+            "The partner mobile has not autocomplete in reservation",
+        )
+
+    def test_auto_complete_partner_email(self):
+        """
+        It is checked that the email field of the reservation
+        is correctly added to it when the document_number and
+        document_type fields of a res.partner that exists in
+        the DB are put in the reservation.
+        --------------------
+        A res.partner is created with the name, mobile and email fields.
+        The document_id is added to the res.partner. The reservation is
+        created and the category_id of the document_id associated with
+        the res.partner is added as document_type and as document_number
+        the name of the document_id associated with the res.partner as well.
+        Then it is verified that the email of the res.partner and that of
+        the reservation are the same.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "74247377L",
+                "partner_id": partner.id,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "document_type": self.document_id.category_id.id,
+                "document_number": self.document_id.name,
+            }
+        )
+        # ASSERT
+        self.assertEqual(
+            reservation.email,
+            partner.email,
+            "The partner mobile has not autocomplete in reservation",
+        )
+
+    def test_is_possible_customer_by_email(self):
+        """
+        It is checked that the field is_possible_existing_customer_id
+        exists in a reservation with an email from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A reservation
+        is created by adding the same email as the res.partner. Then it is
+        checked that the field is_possible_existing_customer_id is equal to True.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Courtney Campbell",
+                "email": "courtney@example.com",
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            reservation.is_possible_existing_customer_id,
+            "No customer found with this email",
+        )
+
+    def test_is_possible_customer_by_mobile(self):
+        """
+        It is checked that the field is_possible_existing_customer_id
+        exists in a reservation with a mobile from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A reservation
+        is created by adding the same mobile as the res.partner. Then it is
+        checked that the field is_possible_existing_customer_id is equal to True.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Ledicia Sandoval",
+                "mobile": "615369231",
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "mobile": partner.mobile,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            reservation.is_possible_existing_customer_id,
+            "No customer found with this mobile",
+        )
+
+    def test_add_possible_customer(self):
+        """
+        It is checked that after setting the add_possible_customer
+        field of a reservation to True, the partner_id that has the
+        email that was placed in the reservation is added.
+        ---------------
+        A res.partner is created with name, email and mobile. The document_id
+        is added to the res.partner. A reservation is created with the email
+        field equal to that of the res.partner created before. The value of
+        the add_possible_customer field is changed to True. Then it is verified
+        that the id of the partner_id of the reservation is equal to the id of
+        the res.partner created previously.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        self.id_category = self.env["res.partner.id_category"].create(
+            {"name": "DNI", "code": "D"}
+        )
+        self.document_id = self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category.id,
+                "name": "84223588A",
+                "partner_id": partner.id,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        # ACT
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+
+        reservation.add_possible_customer = True
+        # ASSERT
+        self.assertEqual(
+            reservation.partner_id.id,
+            partner.id,
+            "The partner was not added to the reservation ",
+        )
