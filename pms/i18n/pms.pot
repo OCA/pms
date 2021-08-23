@@ -464,6 +464,13 @@ msgid "Add in room name"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__add_possible_customer
+#: model:ir.model.fields,field_description:pms.field_pms_folio__add_possible_customer
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__add_possible_customer
+msgid "Add possible Customer"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.booking_engine
 msgid "Add to Folio"
 msgstr ""
@@ -2582,16 +2589,22 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_id
+#: model:ir.model.fields,field_description:pms.field_pms_folio__document_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__document_id
 msgid "Document"
 msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_number
+#: model:ir.model.fields,field_description:pms.field_pms_folio__document_number
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__document_number
 msgid "Document Number"
 msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__document_type
+#: model:ir.model.fields,field_description:pms.field_pms_folio__document_type
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__document_type
 msgid "Document Type"
 msgstr ""
 
@@ -5596,6 +5609,13 @@ msgid "Portal Access URL"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__is_possible_existing_customer_id
+#: model:ir.model.fields,field_description:pms.field_pms_folio__is_possible_existing_customer_id
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__is_possible_existing_customer_id
+msgid "Possible existing customer"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_reservation__state__draft
 msgid "Pre-reservation"
 msgstr ""
@@ -8137,6 +8157,15 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "There are no checkins to print"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+msgid ""
+"There is a customer with this email or mobile, do you want to add it to the "
+"reservation?"
 msgstr ""
 
 #. module: pms
