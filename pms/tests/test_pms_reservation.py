@@ -3161,6 +3161,14 @@ class TestPmsReservations(TestPms):
         )
 
     def test_create_partner_in_reservation(self):
+        """
+        Check that a res_partner is created from a reservation.
+        ------------
+        A reservation is created by adding the document_type and
+        document_number fields, with these two fields a res.partner
+        should be created, which is what is checked after creating
+        the reservation.
+        """
         # ARRANGE
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
@@ -3181,15 +3189,24 @@ class TestPmsReservations(TestPms):
                 "document_number": "31640132K",
             }
         )
-        self.env["res.partner"].search(
-            [
-                ("name", "=", reservation.partner_name),
-            ]
-        )
         # ASSERT
-        self.assertTrue(reservation.partner_id.id, "The partner has not been created")
+        self.assertTrue(reservation.partner_id, "The partner has not been created")
 
     def test_auto_complete_partner_mobile(self):
+        """
+        It is checked that the mobile field of the reservation
+        is correctly added to it when the document_number and
+        document_type fields of a res.partner that exists in
+        the DB are put in the reservation.
+        --------------------
+        A res.partner is created with the name, mobile and email fields.
+        The document_id is added to the res.partner. The reservation is
+        created and the category_id of the document_id associated with
+        the res.partner is added as document_type and as document_number
+        the name of the document_id associated with the res.partner as well.
+        Then it is verified that the mobile of the res.partner and that of
+        the reservation are the same.
+        """
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
@@ -3230,6 +3247,20 @@ class TestPmsReservations(TestPms):
         )
 
     def test_auto_complete_partner_email(self):
+        """
+        It is checked that the email field of the reservation
+        is correctly added to it when the document_number and
+        document_type fields of a res.partner that exists in
+        the DB are put in the reservation.
+        --------------------
+        A res.partner is created with the name, mobile and email fields.
+        The document_id is added to the res.partner. The reservation is
+        created and the category_id of the document_id associated with
+        the res.partner is added as document_type and as document_number
+        the name of the document_id associated with the res.partner as well.
+        Then it is verified that the email of the res.partner and that of
+        the reservation are the same.
+        """
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
@@ -3270,6 +3301,15 @@ class TestPmsReservations(TestPms):
         )
 
     def test_is_possible_customer_by_email(self):
+        """
+        It is checked that the field is_possible_existing_customer_id
+        exists in a reservation with an email from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A reservation
+        is created by adding the same email as the res.partner. Then it is
+        checked that the field is_possible_existing_customer_id is equal to True.
+        """
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
@@ -3297,6 +3337,15 @@ class TestPmsReservations(TestPms):
         )
 
     def test_is_possible_customer_by_mobile(self):
+        """
+        It is checked that the field is_possible_existing_customer_id
+        exists in a reservation with a mobile from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A reservation
+        is created by adding the same mobile as the res.partner. Then it is
+        checked that the field is_possible_existing_customer_id is equal to True.
+        """
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
@@ -3324,6 +3373,18 @@ class TestPmsReservations(TestPms):
         )
 
     def test_add_possible_customer(self):
+        """
+        It is checked that after setting the add_possible_customer
+        field of a reservation to True, the partner_id that has the
+        email that was placed in the reservation is added.
+        ---------------
+        A res.partner is created with name, email and mobile. The document_id
+        is added to the res.partner. A reservation is created with the email
+        field equal to that of the res.partner created before. The value of
+        the add_possible_customer field is changed to True. Then it is verified
+        that the id of the partner_id of the reservation is equal to the id of
+        the res.partner created previously.
+        """
         # ARRANGE
         partner = self.env["res.partner"].create(
             {
