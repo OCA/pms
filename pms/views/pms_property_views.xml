@@ -85,6 +85,12 @@
                                 <field name="room_ids" />
                             </group>
                         </page>
+                        <page string="Email Configuration">
+                            <group>
+                                <field name="mail_information"/>
+                                <field name = "privacy_policy"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
