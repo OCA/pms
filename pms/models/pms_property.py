@@ -115,6 +115,14 @@ class PmsProperty(models.Model):
         compute="_compute_availability",
     )
 
+    mail_information = fields.Char(
+        string="Mail Information",
+    )
+
+    privacy_policy = fields.Char(
+        string="Privacy Policy"
+    )
+
     @api.depends_context(
         "checkin",
         "checkout",
