@@ -224,18 +224,18 @@ class FolioSaleLine(models.Model):
         compute_sudo=True,
     )
 
-    untaxed_amount_invoiced = fields.Monetary(
+    amount_invoiced = fields.Monetary(
         string="Untaxed Invoiced Amount",
         help="The amount to invoice without taxes in the line of folio",
         store=True,
-        compute="_compute_untaxed_amount_invoiced",
+        compute="_compute_amount_invoiced",
         compute_sudo=True,
     )
-    untaxed_amount_to_invoice = fields.Monetary(
+    amount_to_invoice = fields.Monetary(
         string="Untaxed Amount To Invoice",
         help="The invoiced amount without taxes in the line of the folio",
         store=True,
-        compute="_compute_untaxed_amount_to_invoice",
+        compute="_compute_amount_to_invoice",
         compute_sudo=True,
     )
 
@@ -378,7 +378,7 @@ class FolioSaleLine(models.Model):
         "invoice_lines.move_id.state",
         "invoice_lines.move_id.move_type",
     )
-    def _compute_untaxed_amount_invoiced(self):
+    def _compute_amount_invoiced(self):
         """Compute the untaxed amount already invoiced from
         the sale order line, taking the refund attached
         the so line into account. This amount is computed as
@@ -396,28 +396,28 @@ class FolioSaleLine(models.Model):
                     )
                     if invoice_line.move_id.move_type == "out_invoice":
                         amount_invoiced += invoice_line.currency_id._convert(
-                            invoice_line.price_subtotal,
+                            invoice_line.price_total,
                             line.currency_id,
                             line.company_id,
                             invoice_date,
                         )
                     elif invoice_line.move_id.move_type == "out_refund":
                         amount_invoiced -= invoice_line.currency_id._convert(
-                            invoice_line.price_subtotal,
+                            invoice_line.price_total,
                             line.currency_id,
                             line.company_id,
                             invoice_date,
                         )
-            line.untaxed_amount_invoiced = amount_invoiced
+            line.amount_invoiced = amount_invoiced
 
     @api.depends(
         "state",
         "price_reduce",
         "product_id",
-        "untaxed_amount_invoiced",
+        "amount_invoiced",
         "product_uom_qty",
     )
-    def _compute_untaxed_amount_to_invoice(self):
+    def _compute_amount_to_invoice(self):
         """Total of remaining amount to invoice on the sale order line (taxes excl.) as
             total_sol - amount already invoiced
         where Total_sol depends on the invoice policy of the product.
@@ -437,22 +437,8 @@ class FolioSaleLine(models.Model):
                 # Since we compute untaxed amount, we can use directly the price
                 # reduce (to include discount) without using `compute_all()`
                 # method on taxes.
-                price_subtotal = 0.0
-                price_subtotal = line.price_reduce * line.product_uom_qty
-                if len(line.tax_ids.filtered(lambda tax: tax.price_include)) > 0:
-                    # As included taxes are not excluded from the computed subtotal,
-                    # `compute_all()` method has to be called to retrieve
-                    # the subtotal without them.
-                    # `price_reduce_taxexcl` cannot be used as it is computed from
-                    # `price_subtotal` field. (see upper Note)
-                    price_subtotal = line.tax_ids.compute_all(
-                        price_subtotal,
-                        currency=line.folio_id.currency_id,
-                        quantity=line.product_uom_qty,
-                        product=line.product_id,
-                        partner=line.folio_id.partner_id,
-                    )["total_excluded"]
-
+                price_total = 0.0
+                price_total = line.price_reduce * line.product_uom_qty
                 if any(
                     line.invoice_lines.mapped(lambda l: l.discount != line.discount)
                 ):
@@ -476,7 +462,7 @@ class FolioSaleLine(models.Model):
                                     round=False,
                                 )
                                 * inv_line.quantity
-                            )["total_excluded"]
+                            )["total_included"]
                         else:
                             amount += (
                                 inv_line.currency_id._convert(
@@ -489,11 +475,11 @@ class FolioSaleLine(models.Model):
                                 * inv_line.quantity
                             )
 
-                    amount_to_invoice = max(price_subtotal - amount, 0)
+                    amount_to_invoice = max(price_total - amount, 0)
                 else:
-                    amount_to_invoice = price_subtotal - line.untaxed_amount_invoiced
+                    amount_to_invoice = price_total - line.amount_invoiced
 
-            line.untaxed_amount_to_invoice = amount_to_invoice
+            line.amount_to_invoice = amount_to_invoice
 
     @api.depends("state", "product_uom_qty", "qty_to_invoice", "qty_invoiced")
     def _compute_invoice_status(self):
@@ -510,7 +496,10 @@ class FolioSaleLine(models.Model):
             # REVIEW: if qty_to_invoice < 0 (invoice qty > sale qty),
             # why status to_invoice?? this behavior is copied from sale order
             # https://github.com/OCA/OCB/blob/14.0/addons/sale/models/sale.py#L1160
-            elif not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+            elif (
+                not float_is_zero(line.qty_to_invoice, precision_digits=precision)
+                or line.amount_to_invoice > 0
+            ):
                 line.invoice_status = "to_invoice"
             elif (
                 float_compare(
@@ -629,7 +618,7 @@ class FolioSaleLine(models.Model):
     @api.depends(
         "invoice_lines.move_id.state",
         "invoice_lines.quantity",
-        "untaxed_amount_to_invoice",
+        "amount_to_invoice",
     )
     def _compute_get_invoice_qty(self):
         """
@@ -651,10 +640,7 @@ class FolioSaleLine(models.Model):
                             invoice_line.quantity, line.product_uom
                         )
                     elif invoice_line.move_id.move_type == "out_refund":
-                        if (
-                            not line.is_downpayment
-                            or line.untaxed_amount_to_invoice == 0
-                        ):
+                        if not line.is_downpayment or line.amount_to_invoice == 0:
                             qty_invoiced -= (
                                 invoice_line.product_uom_id._compute_quantity(
                                     invoice_line.quantity, line.product_uom
