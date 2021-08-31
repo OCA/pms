@@ -1,4 +1,5 @@
 from odoo.addons.base_rest.controllers import main
+
 from ..lib_jwt.jwt_http import jwt_http
 from ..lib_jwt.validator import validator
 
