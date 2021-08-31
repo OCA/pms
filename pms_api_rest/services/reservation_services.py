@@ -11,6 +11,7 @@ class PmsReservationService(Component):
     _usage = "reservations"
     _collection = "pms.reservation.service"
 
+    # TODO: REMOVE
     @restapi.method(
         [
             (
@@ -24,7 +25,7 @@ class PmsReservationService(Component):
         output_param=Datamodel("pms.reservation.short.info", is_list=True),
         auth="public",
     )
-    def search(self, reservation_search_param):
+    def get_reservations(self, reservation_search_param):
         domain = []
         if reservation_search_param.name:
             domain.append(("name", "like", reservation_search_param.name))
@@ -77,6 +78,7 @@ class PmsReservationService(Component):
                 )
             )
         return res
+    # END TODO: REMOVE
 
     @restapi.method(
         [
@@ -154,64 +156,3 @@ class PmsReservationService(Component):
             )
         return res
 
-    @restapi.method(
-        [
-            (
-                [
-                    "/folio/<int:id>",
-                ],
-                "GET",
-            )
-        ],
-        output_param=Datamodel("pms.reservation.short.info", is_list=True),
-        auth="public",
-    )
-    def get_reservations(self, folio_id):
-        folio = (
-            self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
-        )
-        res = []
-        if not folio.reservation_ids:
-            pass
-        else:
-            PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
-
-            for reservation in folio.reservation_ids:
-                res.append(
-                    PmsReservationShortInfo(
-                        id=reservation.id,
-                        partner=reservation.partner_id.name,
-                        checkin=str(reservation.checkin),
-                        checkout=str(reservation.checkout),
-                        preferredRoomId=reservation.preferred_room_id.name
-                        if reservation.preferred_room_id
-                        else "",
-                        roomTypeId=reservation.room_type_id.name
-                        if reservation.room_type_id
-                        else "",
-                        name=reservation.name,
-                        partnerRequests=reservation.partner_requests
-                        if reservation.partner_requests
-                        else "",
-                        state=dict(reservation.fields_get(["state"])["state"]["selection"])[
-                            reservation.state
-                        ],
-                        priceTotal=reservation.price_total,
-                        adults=reservation.adults,
-                        channelTypeId=reservation.channel_type_id
-                        if reservation.channel_type_id
-                        else "",
-                        agencyId=reservation.agency_id if reservation.agency_id else "",
-                        boardServiceId=reservation.board_service_room_id.pms_board_service_id.name
-                        if reservation.board_service_room_id
-                        else "",
-                        checkinsRatio=reservation.checkins_ratio,
-                        outstanding=reservation.folio_id.pending_amount,
-                        pricelist=reservation.pricelist_id.name,
-                        folioId=reservation.folio_id.id,
-                        pwaActionButtons=json.loads(reservation.pwa_action_buttons)
-                        if reservation.pwa_action_buttons
-                        else {},
-                    )
-                )
-        return res
