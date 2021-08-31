@@ -172,7 +172,7 @@ class PmsAvailability(models.Model):
                             )
                         ]
             else:
-                record.parent_avail_id = False
+                record.child_avail_ids = False
 
     @api.model
     def get_rooms_not_avail(
