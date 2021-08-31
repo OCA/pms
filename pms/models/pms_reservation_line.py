@@ -108,9 +108,9 @@ class PmsReservationLine(models.Model):
     impacts_quota = fields.Integer(
         string="Impacts quota",
         help="This line has been taken into account in the avail quota",
-        readonly=False,
+        readonly=True,
         store=True,
-        compute="_compute_impact_quota",
+        compute="_compute_impacts_quota",
     )
 
     _sql_constraints = [
@@ -330,14 +330,18 @@ class PmsReservationLine(models.Model):
                             line.room_id = list(bests.keys())[0]
 
     @api.depends("reservation_id.room_type_id", "reservation_id.pricelist_id")
-    def _compute_impact_quota(self):
+    def _compute_impacts_quota(self):
         for line in self:
             reservation = line.reservation_id
+            if isinstance(line.id, int):
+                impacts_quota = False
+            else:
+                impacts_quota = line.impacts_quota
             line.impacts_quota = self.env["pms.availability.plan"].update_quota(
                 pricelist_id=reservation.pricelist_id,
                 room_type_id=reservation.room_type_id,
                 date=line.date,
-                line=line,
+                impacts_quota_id=impacts_quota,
             )
 
     @api.depends(
