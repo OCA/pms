@@ -107,7 +107,7 @@ class JwtHttp:
 
         # login success, generate token
         user = request.env.user.read(return_fields)[0]
-        exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=3)
+        exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=30000)
         token = validator.create_token(user, exp)
 
         return self.response(
