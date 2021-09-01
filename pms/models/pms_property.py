@@ -116,14 +116,10 @@ class PmsProperty(models.Model):
     )
 
     mail_information = fields.Html(
-        string="Mail Information",
-        help="Additional information of the mail"
+        string="Mail Information", help="Additional information of the mail"
     )
 
-    privacy_policy = fields.Html(
-        string="Privacy Policy",
-        help="Mail privacy policy "
-    )
+    privacy_policy = fields.Html(string="Privacy Policy", help="Mail privacy policy ")
 
     property_confirmed_template = fields.Many2one(
         string="Confirmation Template",
