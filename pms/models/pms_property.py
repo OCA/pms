@@ -115,12 +115,41 @@ class PmsProperty(models.Model):
         compute="_compute_availability",
     )
 
-    mail_information = fields.Char(
+    mail_information = fields.Html(
         string="Mail Information",
+        help="Additional information of the mail"
     )
 
-    privacy_policy = fields.Char(
-        string="Privacy Policy"
+    privacy_policy = fields.Html(
+        string="Privacy Policy",
+        help="Mail privacy policy "
+    )
+
+    property_confirmed_template = fields.Many2one(
+        string="Confirmation Template",
+        help="Confirmation email template",
+        comodel_name="mail.template",
+        default=lambda self: self.env["mail.template"]
+        .search([("name", "=", "Confirmed Reservation")])
+        .id,
+    )
+
+    property_modified_template = fields.Many2one(
+        string="Modification Template",
+        help="Modification email template",
+        comodel_name="mail.template",
+        default=lambda self: self.env["mail.template"]
+        .search([("name", "=", "Modified Reservation")])
+        .id,
+    )
+
+    property_canceled_template = fields.Many2one(
+        string="Cancellation Template",
+        help="Cancellation email template",
+        comodel_name="mail.template",
+        default=lambda self: self.env["mail.template"]
+        .search([("name", "=", "Cancelled Reservation")])
+        .id,
     )
 
     @api.depends_context(
