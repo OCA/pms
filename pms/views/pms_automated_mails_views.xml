@@ -51,6 +51,9 @@
                     <field name="name" />
                     <field name="action" />
                     <field name="template_id" />
+                    <field name="moment" />
+                    <field name="time" />
+                    <field name="time_type" />
                 </tree>
             </field>
         </record>
