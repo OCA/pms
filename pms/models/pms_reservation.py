@@ -635,11 +635,13 @@ class PmsReservation(models.Model):
         ondelete="restrict",
     )
 
-    is_possible_existing_customer_id = fields.Many2one(
+    possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
         readonly=False,
         store=True,
-        compute="_compute_is_possible_existing_customer_id",
+        compute="_compute_possible_existing_customer_ids",
+        comodel_name="res.partner",
+        inverse_name="reservation_possible_customer_id",
     )
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
@@ -1437,9 +1439,9 @@ class PmsReservation(models.Model):
             self.env["pms.folio"]._apply_document_id(record)
 
     @api.depends("email", "mobile")
-    def _compute_is_possible_existing_customer_id(self):
+    def _compute_possible_existing_customer_ids(self):
         for record in self:
-            self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
+            self.env["pms.folio"]._apply_possible_existing_customer_ids(record)
 
     @api.depends("checkin", "checkout")
     def _compute_is_modified_reservation(self):
