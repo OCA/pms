@@ -3424,3 +3424,45 @@ class TestPmsReservations(TestPms):
             partner.id,
             "The partner was not added to the reservation ",
         )
+
+    def test_is_modified_reservation(self):
+        """
+        Checked that the is_modified_reservation field is correctly set
+        to True when the checkin or checkout fields are modified in a
+        reservation.
+        ----------------------
+        A reservation is created. The checkin and checkout fields of
+        the reservation are modified. The state of the boolean
+        is_mail_send is changed to True so that the compute of
+        the is_modified_reservation field is activated correctly
+        and it is verified that the state of this field is True.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=2)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+        }
+
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        # ACT
+        writed_checkin = fields.date.today() + datetime.timedelta(days=4)
+        writed_checkout = fields.date.today() + datetime.timedelta(days=6)
+        reservation.is_mail_send = True
+        reservation.update(
+            {
+                "checkin": writed_checkin,
+                "checkout": writed_checkout,
+            }
+        )
+
+        # ASSERT
+        self.assertTrue(
+           reservation.is_modified_reservation,
+            "is_modified_reservation field should be True "
+        )
