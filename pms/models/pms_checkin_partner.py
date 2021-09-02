@@ -213,11 +213,11 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_partner_incongruences",
     )
 
-    is_possible_existing_customer_id = fields.Many2one(
+    possible_existing_customer_ids = fields.Many2one(
         string="Possible existing customer",
         readonly=False,
         store=True,
-        compute="_compute_is_possible_existing_customer_id",
+        compute="_compute_possible_existing_customer_ids",
     )
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
@@ -420,9 +420,9 @@ class PmsCheckinPartner(models.Model):
                     self.env["pms.folio"]._add_customer(record)
 
     @api.depends("email", "mobile")
-    def _compute_is_possible_existing_customer_id(self):
+    def _compute_possible_existing_customer_ids(self):
         for record in self:
-            self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
+            self.env["pms.folio"]._apply_possible_existing_customer_ids(record)
 
     @api.depends(
         "firstname",

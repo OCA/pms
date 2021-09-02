@@ -3463,6 +3463,6 @@ class TestPmsReservations(TestPms):
 
         # ASSERT
         self.assertTrue(
-           reservation.is_modified_reservation,
-            "is_modified_reservation field should be True "
+            reservation.is_modified_reservation,
+            "is_modified_reservation field should be True ",
         )
