@@ -1071,6 +1071,10 @@
         <field name="target">new</field>
         <field name="binding_model_id" ref="pms.model_pms_reservation" />
         <field name="binding_view_types">form</field>
+        <field
+            name="context"
+            eval="{'template_id': ref('pms.confirmed_reservation_email')}"
+        />
     </record>
 
     <record id="action_resend_modification_email" model="ir.actions.act_window">
@@ -1081,6 +1085,10 @@
         <field name="target">new</field>
         <field name="binding_model_id" ref="pms.model_pms_reservation" />
         <field name="binding_view_types">form</field>
+        <field
+            name="context"
+            eval="{'template_id': ref('pms.modified_reservation_email')}"
+        />
     </record>
 
     <record id="action_resend_cancellation_email" model="ir.actions.act_window">
@@ -1091,5 +1099,9 @@
         <field name="target">new</field>
         <field name="binding_model_id" ref="pms.model_pms_reservation" />
         <field name="binding_view_types">form</field>
+        <field
+            name="context"
+            eval="{'template_id': ref('pms.cancelled_reservation_email')}"
+        />
     </record>
 </odoo>
