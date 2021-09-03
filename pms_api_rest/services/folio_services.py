@@ -1,6 +1,7 @@
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
+from datetime import datetime
 
 
 class PmsFolioService(Component):
@@ -32,8 +33,8 @@ class PmsFolioService(Component):
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in (
             self.env["pms.folio"]
-            .sudo()
-            .search(
+                .sudo()
+                .search(
                 domain,
             )
         ):
@@ -42,8 +43,8 @@ class PmsFolioService(Component):
                 reservations.append(
                     {
                         "id": reservation.id,
-                        "checkin": str(reservation.checkin),
-                        "checkout": str(reservation.checkout),
+                        "checkin": datetime.combine(reservation.checkin, datetime.min.time()).isoformat(),
+                        "checkout": datetime.combine(reservation.checkout, datetime.min.time()).isoformat(),
                         "preferredRoomId": reservation.preferred_room_id.name
                         if reservation.preferred_room_id
                         else "",
@@ -53,6 +54,9 @@ class PmsFolioService(Component):
                         "priceTotal": reservation.price_total,
                         "adults": reservation.adults,
                         "pricelist": reservation.pricelist_id.name,
+                        "boardService": reservation.board_service_room_id.pms_board_service_id.name
+                        if reservation.board_service_room_id
+                        else "",
                     }
                 )
 
