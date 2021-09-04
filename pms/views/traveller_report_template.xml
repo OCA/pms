@@ -86,14 +86,14 @@
                         Entry date</td>
                     <td>
                         <strong>
-                            <span t-field="docs.arrival" /></strong>
+                            <span t-field="docs.checkin" /></strong>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         Exit date</td>
                     <td>
-                        <strong><span t-field="docs.departure" /></strong>
+                        <strong><span t-field="docs.checkout" /></strong>
                     </td>
                 </tr>
             </table>
@@ -194,14 +194,14 @@
                         Entry date</td>
                     <td>
                         <strong>
-                            <span t-field="docs.arrival" /></strong>
+                            <span t-field="docs.checkin" /></strong>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         Exit date</td>
                     <td>
-                        <strong><span t-field="docs.departure" /></strong>
+                        <strong><span t-field="docs.checkout" /></strong>
                     </td>
                 </tr>
             </table>
