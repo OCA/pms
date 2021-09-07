@@ -462,7 +462,7 @@
             />
         </record>
         <function model="pms.reservation" name="action_cancel">
-            <value eval="[ref('pms_reservation_32')]"/>
+            <value eval="[ref('pms_reservation_32')]" />
         </function>
     </data>
 </odoo>

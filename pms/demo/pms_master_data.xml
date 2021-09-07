@@ -455,27 +455,35 @@
         <!-- Agencies -->
         <record id="demo_agency_0" model="res.partner">
             <field name="is_agency">True</field>
-            <field name="sale_channel_id" ref="pms.main_pms_sale_channel_3"/>
+            <field name="sale_channel_id" ref="pms.main_pms_sale_channel_3" />
             <field name="name">Agency 000</field>
             <field name="street">1st St</field>
             <field name="city">Fremont</field>
             <field name="phone">(870)-333-0515</field>
-            <field name="country_id" ref="base.us"/>
+            <field name="country_id" ref="base.us" />
             <field name="email">agency000@example.com</field>
             <field name="website">http://www.agency000travel.com</field>
-            <field name="image_1920" type="base64" file="pms/static/description/agency_logo.png"/>
+            <field
+                name="image_1920"
+                type="base64"
+                file="pms/static/description/agency_logo.png"
+            />
         </record>
         <record id="demo_agency_1" model="res.partner">
             <field name="is_agency">True</field>
-            <field name="sale_channel_id" ref="pms.main_pms_sale_channel_3"/>
+            <field name="sale_channel_id" ref="pms.main_pms_sale_channel_3" />
             <field name="name">Agency 111</field>
             <field name="street">2st St</field>
             <field name="city">Stockton</field>
             <field name="phone">(872)-941-0441</field>
-            <field name="country_id" ref="base.us"/>
+            <field name="country_id" ref="base.us" />
             <field name="email">agency111@example.com</field>
             <field name="website">http://www.agency1travel.com</field>
-            <field name="image_1920" type="base64" file="pms/static/description/agency_logo1.png"/>
+            <field
+                name="image_1920"
+                type="base64"
+                file="pms/static/description/agency_logo1.png"
+            />
         </record>
     </data>
 </odoo>
