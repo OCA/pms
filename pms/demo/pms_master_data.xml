@@ -390,6 +390,34 @@
             <field name="pms_board_service_id" ref="pms_board_service_2" />
             <field name="pms_room_type_id" ref="pms_room_type_3" />
         </record>
+       <!-- Room 2 Double -->
+        <record id="pms_board_service_room_5" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_0" />
+            <field name="pms_room_type_id" ref="pms_room_type_2" />
+        </record>
+        <record id="pms_board_service_room_6" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_1" />
+            <field name="pms_room_type_id" ref="pms_room_type_2" />
+        </record>
+        <record id="pms_board_service_room_7" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_2" />
+            <field name="pms_room_type_id" ref="pms_room_type_2" />
+        </record>
+        <!-- Room 2 Single -->
+        <record id="pms_board_service_room_8" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_0" />
+            <field name="pms_room_type_id" ref="pms_room_type_1" />
+        </record>
+        <record id="pms_board_service_room_9" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_1" />
+            <field name="pms_room_type_id" ref="pms_room_type_1" />
+        </record>
+        <record id="pms_board_service_room_10" model="pms.board.service.room.type">
+            <field name="pms_board_service_id" ref="pms_board_service_2" />
+            <field name="pms_room_type_id" ref="pms_room_type_1" />
+        </record>
+
+
         <!-- room.closure.reason -->
         <record id="pms_room_closure_reason_0" model="room.closure.reason">
             <field name="name">Maintenance</field>
@@ -423,6 +451,31 @@
                 name="room_amenity_ids"
                 eval="[(4, ref('pms_amenity_0')), (4, ref('pms_amenity_4'))]"
             />
+        </record>
+        <!-- Agencies -->
+        <record id="demo_agency_0" model="res.partner">
+            <field name="is_agency">True</field>
+            <field name="sale_channel_id" ref="pms.main_pms_sale_channel_3"/>
+            <field name="name">Agency 000</field>
+            <field name="street">1st St</field>
+            <field name="city">Fremont</field>
+            <field name="phone">(870)-333-0515</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="email">agency000@example.com</field>
+            <field name="website">http://www.agency000travel.com</field>
+            <field name="image_1920" type="base64" file="pms/static/description/agency_logo.png"/>
+        </record>
+        <record id="demo_agency_1" model="res.partner">
+            <field name="is_agency">True</field>
+            <field name="sale_channel_id" ref="pms.main_pms_sale_channel_3"/>
+            <field name="name">Agency 111</field>
+            <field name="street">2st St</field>
+            <field name="city">Stockton</field>
+            <field name="phone">(872)-941-0441</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="email">agency111@example.com</field>
+            <field name="website">http://www.agency1travel.com</field>
+            <field name="image_1920" type="base64" file="pms/static/description/agency_logo1.png"/>
         </record>
     </data>
 </odoo>
