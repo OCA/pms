@@ -59,7 +59,6 @@ class PmsFolioService(Component):
                         else "",
                     }
                 )
-
             result_folios.append(
                 PmsFolioShortInfo(
                     id=folio.id,
@@ -67,13 +66,14 @@ class PmsFolioService(Component):
                     partnerName=folio.partner_name if folio.partner_name else "",
                     partnerPhone=folio.mobile if folio.mobile else "",
                     partnerEmail=folio.email if folio.email else "",
-                    channelType=folio.channel_type_id if folio.channel_type_id else "",
-                    agency=folio.agency_id if folio.agency_id else "",
+                    saleChannel=folio.channel_type_id.name if folio.channel_type_id else "",
+                    agency=folio.agency_id.name if folio.agency_id else "",
                     state=dict(folio.fields_get(["state"])["state"]["selection"])[
                         folio.state
                     ],
                     pendingAmount=folio.pending_amount,
                     reservations=[] if not reservations else reservations,
+                    salesPerson=folio.user_id.name if folio.user_id else "",
                 )
             )
         return result_folios
@@ -122,10 +122,10 @@ class PmsFolioService(Component):
                         ],
                         priceTotal=reservation.price_total,
                         adults=reservation.adults,
-                        channelTypeId=reservation.channel_type_id
+                        channelTypeId=reservation.channel_type_id.name
                         if reservation.channel_type_id
                         else "",
-                        agencyId=reservation.agency_id if reservation.agency_id else "",
+                        agencyId=reservation.agency_id.name if reservation.agency_id else "",
                         boardServiceId=reservation.board_service_room_id.pms_board_service_id.name
                         if reservation.board_service_room_id
                         else "",
