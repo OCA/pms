@@ -3302,13 +3302,13 @@ class TestPmsReservations(TestPms):
 
     def test_is_possible_customer_by_email(self):
         """
-        It is checked that the field is_possible_existing_customer_id
+        It is checked that the field possible_existing_customer_ids
         exists in a reservation with an email from a res.partner saved
         in the DB.
         ----------------
         A res.partner is created with the name and email fields. A reservation
         is created by adding the same email as the res.partner. Then it is
-        checked that the field is_possible_existing_customer_id is equal to True.
+        checked that some possible_existing_customer_ids exists.
         """
         # ARRANGE
         partner = self.env["res.partner"].create(
@@ -3332,19 +3332,19 @@ class TestPmsReservations(TestPms):
         )
         # ASSERT
         self.assertTrue(
-            reservation.is_possible_existing_customer_id,
+            reservation.possible_existing_customer_ids,
             "No customer found with this email",
         )
 
     def test_is_possible_customer_by_mobile(self):
         """
-        It is checked that the field is_possible_existing_customer_id
+        It is checked that the field possible_existing_customer_ids
         exists in a reservation with a mobile from a res.partner saved
         in the DB.
         ----------------
         A res.partner is created with the name and email fields. A reservation
         is created by adding the same mobile as the res.partner. Then it is
-        checked that the field is_possible_existing_customer_id is equal to True.
+        checked that some possible_existing_customer_ids exists.
         """
         # ARRANGE
         partner = self.env["res.partner"].create(
@@ -3368,22 +3368,21 @@ class TestPmsReservations(TestPms):
         )
         # ASSERT
         self.assertTrue(
-            reservation.is_possible_existing_customer_id,
+            reservation.possible_existing_customer_ids,
             "No customer found with this mobile",
         )
 
     def test_add_possible_customer(self):
         """
-        It is checked that after setting the add_possible_customer
-        field of a reservation to True, the partner_id that has the
-        email that was placed in the reservation is added.
+        Check that a partner was correctly added to the reservation
+        after launching the add_partner() method of the several partners wizard
         ---------------
-        A res.partner is created with name, email and mobile. The document_id
-        is added to the res.partner. A reservation is created with the email
-        field equal to that of the res.partner created before. The value of
-        the add_possible_customer field is changed to True. Then it is verified
-        that the id of the partner_id of the reservation is equal to the id of
-        the res.partner created previously.
+        A res.partner is created with name, email and mobile. A reservation is
+        created with the email field equal to that of the res.partner created before.
+        The wizard is created with the reservation id and the partner added to the
+        possible_existing_customer_ids field. The add_partner method of the wizard
+        is launched and it is checked that the partner was correctly added to the
+        reservation.
         """
         # ARRANGE
         partner = self.env["res.partner"].create(
@@ -3391,16 +3390,6 @@ class TestPmsReservations(TestPms):
                 "name": "Serafín Rivas",
                 "email": "serafin@example.com",
                 "mobile": "60595595",
-            }
-        )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
-        self.document_id = self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "84223588A",
-                "partner_id": partner.id,
             }
         )
         checkin = fields.date.today()
@@ -3417,7 +3406,14 @@ class TestPmsReservations(TestPms):
             }
         )
 
-        reservation.add_possible_customer = True
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "reservation_id": reservation.id,
+                "possible_existing_customer_ids": [(6, 0, [partner.id])],
+            }
+        )
+
+        several_partners_wizard.add_partner()
         # ASSERT
         self.assertEqual(
             reservation.partner_id.id,
@@ -3498,3 +3494,96 @@ class TestPmsReservations(TestPms):
             reservation.is_modified_reservation,
             "is_modified_reservation field should be False ",
         )
+
+    def test_not_add_several_possibles_customers(self):
+        """
+        Check that multiple partners cannot be added to a reservation
+        from the several partners wizard.
+        ---------------
+        Two res.partner are created with name, email and mobile. A reservation is
+        created with the email field equal to that of the partner1 created before.
+        The wizard is created with the reservation id and the two partners added to the
+        possible_existing_customer_ids field. The add_partner method of the wizard
+        is launched and it is verified that a Validation_Error was raised.
+        """
+        # ARRANGE
+        partner1 = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        partner2 = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "email": partner1.email,
+            }
+        )
+
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "reservation_id": reservation.id,
+                "possible_existing_customer_ids": [(6, 0, [partner1.id, partner2.id])],
+            }
+        )
+
+        # ACT AND ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Two partners cannot be added to the reservation",
+        ):
+            several_partners_wizard.add_partner()
+
+    def test_not_add_any_possibles_customers(self):
+        """
+        Check that the possible_existing_customer_ids field of the several
+        partners wizard can be left empty and then launch the add_partner()
+        method of this wizard to add a partner in reservation.
+        ---------------
+        A reservation is created. The wizard is created without the
+        possible_existing_customer_ids field. The add_partner method of
+        the wizard is launched and it is verified that a Validation_Error
+        was raised.
+        """
+
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Rosa Costa",
+            }
+        )
+
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "reservation_id": reservation.id,
+            }
+        )
+
+        # ACT AND ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="A partner must be added to the reservation",
+        ):
+            several_partners_wizard.add_partner()
+

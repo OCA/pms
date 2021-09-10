@@ -710,7 +710,7 @@ class TestPmsFolio(TestPms):
         )
         # ASSERT
         self.assertTrue(
-            folio1.is_possible_existing_customer_id, "No customer found with this email"
+            folio1.possible_existing_customer_ids, "No customer found with this email"
         )
 
     def test_is_possible_customer_by_mobile(self):
@@ -740,22 +740,20 @@ class TestPmsFolio(TestPms):
         )
         # ASSERT
         self.assertTrue(
-            folio1.is_possible_existing_customer_id,
+            folio1.possible_existing_customer_ids,
             "No customer found with this mobile",
         )
 
     def test_add_possible_customer(self):
         """
-        It is checked that after setting the add_possible_customer
-        field of a folio to True, the partner_id that has the
-        email that was placed in the folio is added.
+        Check that a partner was correctly added to the folio
+        after launching the add_partner() method of the several partners wizard
         ---------------
-        A res.partner is created with name, email and mobile. The document_id
-        is added to the res.partner. A folio is created with the email
-        field equal to that of the res.partner created before. The value of
-        the add_possible_customer field is changed to True. Then it is checked
-        that the id of the partner_id of the folio is equal to the id of
-        the res.partner created previously.
+        A res.partner is created with name, email and mobile. A folio is created.
+        The wizard is created with the folio id and the partner added to the
+        possible_existing_customer_ids field. The add_partner method of the wizard
+        is launched and it is checked that the partner was correctly added to the
+        folio.
         """
         # ARRANGE
         partner = self.env["res.partner"].create(
@@ -765,17 +763,7 @@ class TestPmsFolio(TestPms):
                 "mobile": "60595595",
             }
         )
-        self.id_category = self.env["res.partner.id_category"].create(
-            {"name": "DNI", "code": "D"}
-        )
-        self.document_id = self.env["res.partner.id_number"].create(
-            {
-                "category_id": self.id_category.id,
-                "name": "84223588A",
-                "partner_id": partner.id,
-            }
-        )
-        # ACT
+
         folio1 = self.env["pms.folio"].create(
             {
                 "pms_property_id": self.pms_property1.id,
@@ -784,8 +772,98 @@ class TestPmsFolio(TestPms):
             }
         )
 
-        folio1.add_possible_customer = True
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "folio_id": folio1.id,
+                "possible_existing_customer_ids": [(6, 0, [partner.id])],
+            }
+        )
+        # ACT
+        several_partners_wizard.add_partner()
         # ASSERT
         self.assertEqual(
-            folio1.partner_id.id, partner.id, "The partner was not added to the folio "
+            folio1.partner_id.id,
+            partner.id,
+            "The partner was not added to the folio ",
         )
+
+    def test_not_add_several_possibles_customers(self):
+        """
+        Check that multiple partners cannot be added to a folio
+        from the several partners wizard.
+        ---------------
+        Two res.partner are created with name, email and mobile. A folio is created.
+        The wizard is created with the folio id and the two partners added to the
+        possible_existing_customer_ids field. The add_partner method of the wizard
+        is launched and it is verified that a Validation_Error was raised.
+        """
+        # ARRANGE
+        partner1 = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        partner2 = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "email": partner1.email,
+            }
+        )
+
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "folio_id": folio1.id,
+                "possible_existing_customer_ids": [(6, 0, [partner1.id, partner2.id])],
+            }
+        )
+
+        # ACT AND ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Two partners cannot be added to the folio",
+        ):
+            several_partners_wizard.add_partner()
+
+    def test_not_add_any_possibles_customers(self):
+        """
+        Check that the possible_existing_customer_ids field of the several
+        partners wizard can be left empty and then launch the add_partner()
+        method of this wizard to add a partner in folio.
+        ---------------
+        A folio is created. The wizard is created without the
+        possible_existing_customer_ids field. The add_partner method of
+        the wizard is launched and it is verified that a Validation_Error
+        was raised.
+        """
+
+        # ARRANGE
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Rosa Costa",
+            }
+        )
+
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "folio_id": folio1.id,
+            }
+        )
+
+        # ACT AND ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="A partner can be added to the folio",
+        ):
+            several_partners_wizard.add_partner()
