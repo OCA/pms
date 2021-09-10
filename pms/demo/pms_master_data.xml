@@ -485,5 +485,27 @@
                 file="pms/static/description/agency_logo1.png"
             />
         </record>
+        <!-- Add partner mobile -->
+        <record id="base.res_partner_12" model="res.partner">
+            <field name="mobile">645773288</field>
+        </record>
+        <record id="base.res_partner_address_15" model="res.partner">
+            <field name="mobile">666777888</field>
+        </record>
+        <record id="base.res_partner_address_28" model="res.partner">
+            <field name="mobile">611567888</field>
+        </record>
+        <record id="base.res_partner_address_16" model="res.partner">
+            <field name="mobile">610067000</field>
+        </record>
+        <record id="base.res_partner_address_10" model="res.partner">
+            <field name="mobile">689017000</field>
+        </record>
+        <record id="base.res_partner_4" model="res.partner">
+            <field name="mobile">633773338</field>
+        </record>
+        <record id="base.res_partner_address_27" model="res.partner">
+            <field name="mobile">678112438</field>
+        </record>
     </data>
 </odoo>
