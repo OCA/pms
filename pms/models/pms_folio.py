@@ -469,11 +469,13 @@ class PmsFolio(models.Model):
         ondelete="restrict",
     )
 
-    is_possible_existing_customer_id = fields.Many2one(
+    possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
         readonly=False,
         store=True,
-        compute="_compute_is_possible_existing_customer_id",
+        compute="_compute_possible_existing_customer_ids",
+        comodel_name="res.partner",
+        inverse_name="folio_possible_customer_id",
     )
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
@@ -1011,10 +1013,17 @@ class PmsFolio(models.Model):
         for record in self:
             self._apply_document_id(record)
 
-    @api.depends("email", "mobile")
-    def _compute_is_possible_existing_customer_id(self):
+    @api.depends("email", "mobile", "partner_name")
+    def _compute_possible_existing_customer_ids(self):
         for record in self:
-            self._apply_is_possible_existing_customer_id(record)
+            if record.partner_name:
+                possible_customer = self._apply_possible_existing_customer_ids(
+                    record.email, record.mobile, record.partner_id
+                )
+                if possible_customer:
+                    record.possible_existing_customer_ids = possible_customer
+                else:
+                    record.possible_existing_customer_ids = False
 
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
@@ -1473,6 +1482,21 @@ class PmsFolio(models.Model):
         )
         self.env["account.bank.statement.line"].sudo().create(line)
 
+    def open_wizard_several_partners(self):
+        ctx = dict(
+            folio_id=self.id,
+            possible_existing_customer_ids=self.possible_existing_customer_ids.ids,
+        )
+        return {
+            "view_type": "form",
+            "view_mode": "form",
+            "name": "Several Customers",
+            "res_model": "pms.several.partners.wizard",
+            "target": "new",
+            "type": "ir.actions.act_window",
+            "context": ctx,
+        }
+
     @api.model
     def _get_statement_line_vals(
         self,
@@ -1776,17 +1800,17 @@ class PmsFolio(models.Model):
             record.email = False
 
     @api.model
-    def _apply_is_possible_existing_customer_id(self, record):
-        if record.email and not record.partner_id:
-            record.is_possible_existing_customer_id = (
-                self.env["res.partner"].search([("email", "=", record.email)]).id
+    def _apply_possible_existing_customer_ids(
+        self, email=False, mobile=False, partner=False
+    ):
+        possible_customer = False
+        if email and not partner:
+            possible_customer = self.env["res.partner"].search([("email", "=", email)])
+        if mobile and not partner:
+            possible_customer = self.env["res.partner"].search(
+                [("mobile", "=", mobile)]
             )
-        elif record.mobile and not record.partner_id:
-            record.is_possible_existing_customer_id = (
-                self.env["res.partner"].search([("mobile", "=", record.mobile)]).id
-            )
-        else:
-            record.is_possible_existing_customer_id = False
+        return possible_customer
 
     @api.model
     def _apply_document_id(self, record):
@@ -1861,7 +1885,7 @@ class PmsFolio(models.Model):
     # and therefore also the document_number, email or mobile
     @api.model
     def _add_customer(self, record):
-        record.partner_id = record.is_possible_existing_customer_id.id
+        record.partner_id = record.possible_existing_customer_ids.id
         record._compute_document_number()
         record._compute_email()
         record._compute_mobile()
