@@ -213,14 +213,14 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_partner_incongruences",
     )
 
-    is_possible_existing_customer_id = fields.Many2one(
+    possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
         readonly=False,
         store=True,
-        compute="_compute_is_possible_existing_customer_id",
+        compute="_compute_possible_existing_customer_ids",
+        comodel_name="res.partner",
+        inverse_name="checkin_partner_possible_customer_id",
     )
-
-    add_possible_customer = fields.Boolean(string="Add possible Customer")
 
     @api.depends("partner_id")
     def _compute_document_number(self):
@@ -389,7 +389,7 @@ class PmsCheckinPartner(models.Model):
         "firstname",
         "lastname",
         "lastname2",
-        "add_possible_customer",
+        # "add_possible_customer",
     )
     def _compute_partner_id(self):
         for record in self:
@@ -416,13 +416,17 @@ class PmsCheckinPartner(models.Model):
                             }
                             partner = self.env["res.partner"].create(partner_values)
                     record.partner_id = partner
-                elif record.add_possible_customer:
-                    self.env["pms.folio"]._add_customer(record)
 
     @api.depends("email", "mobile")
-    def _compute_is_possible_existing_customer_id(self):
+    def _compute_possible_existing_customer_ids(self):
         for record in self:
-            self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
+            possible_customer = self.env[
+                "pms.folio"
+            ]._apply_possible_existing_customer_ids(record.email, record.mobile)
+            if possible_customer:
+                record.possible_existing_customer_ids = possible_customer
+            else:
+                record.possible_existing_customer_ids = False
 
     @api.depends(
         "firstname",
@@ -685,4 +689,19 @@ class PmsCheckinPartner(models.Model):
             "res_id": self.partner_id.id,
             "target": "new",
             "flags": {"form": {"action_buttons": True}},
+        }
+
+    def open_wizard_several_partners(self):
+        ctx = dict(
+            checkin_partner_id=self.id,
+            possible_existing_customer_ids=self.possible_existing_customer_ids.ids,
+        )
+        return {
+            "view_type": "form",
+            "view_mode": "form",
+            "name": "Several Customers",
+            "res_model": "pms.several.partners.wizard",
+            "target": "new",
+            "type": "ir.actions.act_window",
+            "context": ctx,
         }
