@@ -126,6 +126,16 @@ class ResPartner(models.Model):
     comment = fields.Text(
         tracking=True,
     )
+    reservation_possible_customer_id = fields.Many2one(
+        string="Possible Customer In Reservation", comodel_name="pms.reservation"
+    )
+    folio_possible_customer_id = fields.Many2one(
+        string="Possible Customer In Folio", comodel_name="pms.folio"
+    )
+    checkin_partner_possible_customer_id = fields.Many2one(
+        string="Possible Customer In Checkin Partner",
+        comodel_name="pms.checkin.partner",
+    )
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
