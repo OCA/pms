@@ -921,3 +921,244 @@ class TestPmsCheckinPartner(TestPms):
             host.id,
             "Checkin partner_id must be the same as the one who has that document",
         )
+
+    def test_is_possible_customer_by_email(self):
+        """
+        It is checked that the field possible_existing_customer_ids
+        exists in a checkin partner with an email from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A checkin partner
+        is created by adding the same email as the res.partner. Then it is
+        checked that some possible_existing_customer_ids exists.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Courtney Campbell",
+                "email": "courtney@example.com",
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type1.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+                "email": partner.email,
+            }
+        )
+        # ACT
+        checkin = self.env["pms.checkin.partner"].create(
+            {
+                "name": partner.name,
+                "email": partner.email,
+                "reservation_id": reservation.id,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            checkin.possible_existing_customer_ids,
+            "No customer found with this email",
+        )
+
+    def test_is_possible_customer_by_mobile(self):
+        """
+        It is checked that the field possible_existing_customer_ids
+        exists in a checkin partner with a mobile from a res.partner saved
+        in the DB.
+        ----------------
+        A res.partner is created with the name and email fields. A checkin partner
+        is created by adding the same mobile as the res.partner. Then it is
+        checked that some possible_existing_customer_ids exists.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Ledicia Sandoval",
+                "mobile": "615369231",
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type1.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+            }
+        )
+        # ACT
+        checkin = self.env["pms.checkin.partner"].create(
+            {
+                "name": partner.name,
+                "mobile": partner.mobile,
+                "reservation_id": reservation.id,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            checkin.possible_existing_customer_ids,
+            "No customer found with this mobile",
+        )
+
+    def test_add_possible_customer(self):
+        """
+        Check that a partner was correctly added to the checkin partner
+        after launching the add_partner() method of the several partners wizard
+        ---------------
+        A res.partner is created with name, email and mobile. A checkin partner is
+        created with the email field equal to that of the res.partner created before.
+        The wizard is created with the checkin partner id and the partner added to the
+        possible_existing_customer_ids field. The add_partner method of the wizard
+        is launched and it is checked that the partner was correctly added to the
+        checkin partner.
+        """
+        # ARRANGE
+        partner = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type1.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner.name,
+            }
+        )
+        checkin = self.env["pms.checkin.partner"].create(
+            {
+                "name": partner.name,
+                "email": partner.email,
+                "reservation_id": reservation.id,
+            }
+        )
+
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "checkin_partner_id": checkin.id,
+                "possible_existing_customer_ids": [(6, 0, [partner.id])],
+            }
+        )
+        # ACT
+        several_partners_wizard.add_partner()
+        # ASSERT
+        self.assertEqual(
+            checkin.partner_id.id,
+            partner.id,
+            "The partner was not added to the checkin partner ",
+        )
+
+    def test_not_add_several_possibles_customers(self):
+        """
+        Check that multiple partners cannot be added to a checkin partner
+        from the several partners wizard.
+        ---------------
+        Two res.partner are created with name, email and mobile. A checkin partner is
+        created with the email field equal to that of the partner1 created before.
+        The wizard is created with the checkin partner id and the two partners added to the
+        possible_existing_customer_ids field. The add_partner method of the wizard
+        is launched and it is verified that a Validation_Error was raised.
+        """
+        # ARRANGE
+        partner1 = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        partner2 = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type1.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+            }
+        )
+
+        checkin = self.env["pms.checkin.partner"].create(
+            {
+                "name": partner1.name,
+                "email": partner1.email,
+                "reservation_id": reservation.id,
+            }
+        )
+
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "checkin_partner_id": checkin.id,
+                "possible_existing_customer_ids": [(6, 0, [partner1.id, partner2.id])],
+            }
+        )
+
+        # ACT AND ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Two partners cannot be added to the checkin partner",
+        ):
+            several_partners_wizard.add_partner()
+
+    def test_not_add_any_possibles_customers(self):
+        """
+        Check that the possible_existing_customer_ids field of the several
+        partners wizard can be left empty and then launch the add_partner()
+        method of this wizard to add a partner in checkin_partner.
+        ---------------
+        A checkin_partner is created. The wizard is created without the
+        possible_existing_customer_ids field. The add_partner method of
+        the wizard is launched and it is verified that a Validation_Error
+        was raised.
+        """
+
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=3)
+        reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type1.id,
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": "Rosa Costa",
+            }
+        )
+        checkin = self.env["pms.checkin.partner"].create(
+            {"name": "Rosa Costa", "reservation_id": reservation.id}
+        )
+
+        several_partners_wizard = self.env["pms.several.partners.wizard"].create(
+            {
+                "checkin_partner_id": checkin.id,
+            }
+        )
+
+        # ACT AND ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="A partner can be added to the checkin partner",
+        ):
+            several_partners_wizard.add_partner()
