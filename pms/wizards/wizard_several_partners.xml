@@ -7,7 +7,7 @@
             <form string="Possibles customers" colspan="4">
                     <h6> Choose a customer if you want to add it to the reservation</h6>
                     <group>
-                        <field name="possible_existing_customer_ids"/>
+                        <field name="possible_existing_customer_ids" />
                     </group>
                 <footer>
                     <button
@@ -25,7 +25,7 @@
         <field name="name">Open Several Partners</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">pms.several.partners.wizard</field>
-        <field name="view_id" ref="several_partners_wizard"/>
+        <field name="view_id" ref="several_partners_wizard" />
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
