@@ -837,27 +837,5 @@
         <function model="pms.folio" name="action_cancel">
             <value eval="[ref('pms_folio_31')]" />
         </function>
-        <!-- Done folio-->
-        <record id="pms_folio_33" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_1" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
-                    'preferred_room_id': ref('pms_room_6'),
-                    'checkin': (DateTime.today() + timedelta(days=-5)),
-                    'checkout': (DateTime.today() + timedelta(days=-3)),
-                    'adults': 1,
-                    'children':1,
-                    })]"
-            />
-        </record>
-        <function model="pms.folio" name="action_done">
-            <value eval="[ref('pms_folio_31')]" />
-        </function>
     </data>
 </odoo>
