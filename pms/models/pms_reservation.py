@@ -635,11 +635,13 @@ class PmsReservation(models.Model):
         ondelete="restrict",
     )
 
-    is_possible_existing_customer_id = fields.Many2one(
+    possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
         readonly=False,
         store=True,
-        compute="_compute_is_possible_existing_customer_id",
+        compute="_compute_possible_existing_customer_ids",
+        comodel_name="res.partner",
+        inverse_name="reservation_possible_customer_id",
     )
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
@@ -838,7 +840,6 @@ class PmsReservation(models.Model):
         "partner_name",
         "email",
         "mobile",
-        "add_possible_customer",
     )
     def _compute_partner_id(self):
         for reservation in self:
@@ -851,8 +852,6 @@ class PmsReservation(models.Model):
                     reservation.partner_id = reservation.agency_id
                 elif reservation.document_number and reservation.document_type:
                     self.env["pms.folio"]._create_partner(reservation)
-                elif reservation.add_possible_customer:
-                    self.env["pms.folio"]._add_customer(reservation)
                 elif not reservation.partner_id:
                     reservation.partner_id = False
 
@@ -1340,7 +1339,7 @@ class PmsReservation(models.Model):
             else:
                 record.partner_name = record.out_service_description
 
-    @api.depends("partner_id", "partner_id.email", "agency_id", "add_possible_customer")
+    @api.depends("partner_id", "partner_id.email", "agency_id")
     def _compute_email(self):
         for record in self:
             self.env["pms.folio"]._apply_email(record)
@@ -1436,10 +1435,21 @@ class PmsReservation(models.Model):
         for record in self:
             self.env["pms.folio"]._apply_document_id(record)
 
-    @api.depends("email", "mobile")
-    def _compute_is_possible_existing_customer_id(self):
+    @api.depends("email", "mobile", "partner_name")
+    def _compute_possible_existing_customer_ids(self):
         for record in self:
-            self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
+            if record.partner_name:
+                possible_customer = self.env[
+                    "pms.folio"
+                ]._apply_possible_existing_customer_ids(
+                    record.email, record.mobile, record.partner_id
+                )
+                if possible_customer:
+                    record.possible_existing_customer_ids = possible_customer
+                else:
+                    record.possible_existing_customer_ids = False
+            else:
+                record.possible_existing_customer_ids = False
 
     @api.depends("checkin", "checkout")
     def _compute_is_modified_reservation(self):
@@ -1743,6 +1753,21 @@ class PmsReservation(models.Model):
             "views": [(compose_form.id, "form")],
             "view_id": compose_form.id,
             "target": "new",
+            "context": ctx,
+        }
+
+    def open_wizard_several_partners(self):
+        ctx = dict(
+            reservation_id=self.id,
+            possible_existing_customer_ids=self.possible_existing_customer_ids.ids,
+        )
+        return {
+            "view_type": "form",
+            "view_mode": "form",
+            "name": "Several Customers",
+            "res_model": "pms.several.partners.wizard",
+            "target": "new",
+            "type": "ir.actions.act_window",
             "context": ctx,
         }
 
