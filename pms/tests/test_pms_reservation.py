@@ -3466,3 +3466,35 @@ class TestPmsReservations(TestPms):
             reservation.is_modified_reservation,
             "is_modified_reservation field should be True ",
         )
+
+    def test_is_not_modified_reservation(self):
+        """
+        Checked that the is_modified_reservation field is correctly set
+        to False when the reservation is modified but not the checkin
+        or checkout fields.
+        ----------------------
+        A reservation is created. The adults, arrival_hour and departure_hours
+        fields of the reservation are modified.The it is verified that the state
+        of this field is False.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=2)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+        }
+
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+        reservation.update(
+            {"adults": 1, "arrival_hour": "18:00", "departure_hour": "08:00"}
+        )
+
+        # ASSERT
+        self.assertFalse(
+            reservation.is_modified_reservation,
+            "is_modified_reservation field should be False ",
+        )

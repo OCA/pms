@@ -140,13 +140,13 @@
                     class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
-                    attrs="{'invisible': [('possible_existing_customer_ids','=',[])]}"
+                    attrs="{'invisible': [('is_possible_existing_customer_id','=',[])]}"
                 >
                     There is a customer with this email or mobile, do you want to add it to the reservation?
-                    <field name="possible_existing_customer_ids" invisible="1" />
+                    <field name="is_possible_existing_customer_id" invisible="1" />
                     <field
                         name="add_possible_customer"
-                        attrs="{'invisible': [('possible_existing_customer_ids','=',False)]}"
+                        attrs="{'invisible': [('is_possible_existing_customer_id','=',False)]}"
                     />
                 </div>
                 <sheet>
