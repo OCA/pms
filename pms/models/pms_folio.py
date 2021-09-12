@@ -469,13 +469,11 @@ class PmsFolio(models.Model):
         ondelete="restrict",
     )
 
-    possible_existing_customer_ids = fields.One2many(
+    is_possible_existing_customer_id = fields.Many2one(
         string="Possible existing customer",
         readonly=False,
         store=True,
-        compute="_compute_possible_existing_customer_ids",
-        comodel_name="res.partner",
-        inverse_name="folio_possible_customer_id",
+        compute="_compute_is_possible_existing_customer_id",
     )
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
@@ -1014,9 +1012,9 @@ class PmsFolio(models.Model):
             self._apply_document_id(record)
 
     @api.depends("email", "mobile")
-    def _compute_possible_existing_customer_ids(self):
+    def _compute_is_possible_existing_customer_id(self):
         for record in self:
-            self._apply_possible_existing_customer_ids(record)
+            self._apply_is_possible_existing_customer_id(record)
 
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
@@ -1778,17 +1776,17 @@ class PmsFolio(models.Model):
             record.email = False
 
     @api.model
-    def _apply_possible_existing_customer_ids(self, record):
+    def _apply_is_possible_existing_customer_id(self, record):
         if record.email and not record.partner_id:
-            record.possible_existing_customer_ids = self.env["res.partner"].search(
-                [("email", "=", record.email)]
+            record.is_possible_existing_customer_id = (
+                self.env["res.partner"].search([("email", "=", record.email)]).id
             )
         elif record.mobile and not record.partner_id:
-            record.possible_existing_customer_ids = self.env["res.partner"].search(
-                [("mobile", "=", record.mobile)]
+            record.is_possible_existing_customer_id = (
+                self.env["res.partner"].search([("mobile", "=", record.mobile)]).id
             )
         else:
-            record.possible_existing_customer_ids = False
+            record.is_possible_existing_customer_id = False
 
     @api.model
     def _apply_document_id(self, record):
@@ -1863,7 +1861,7 @@ class PmsFolio(models.Model):
     # and therefore also the document_number, email or mobile
     @api.model
     def _add_customer(self, record):
-        record.partner_id = record.possible_existing_customer_ids.id
+        record.partner_id = record.is_possible_existing_customer_id.id
         record._compute_document_number()
         record._compute_email()
         record._compute_mobile()

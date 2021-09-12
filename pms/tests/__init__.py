@@ -19,23 +19,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# from . import test_pms_reservation
-# from . import test_pms_pricelist
-# from . import test_pms_checkin_partner
-# from . import test_pms_sale_channel
-# from . import test_pms_folio
-# from . import test_pms_availability_plan_rules
-# from . import test_pms_room_type
-# from . import test_pms_room_type_class
-# from . import test_pms_board_service
-# from . import test_pms_wizard_massive_changes
-# from . import test_pms_booking_engine
-# from . import test_pms_res_users
-# from . import test_pms_room
-# from . import test_pms_folio_invoice
-# from . import test_pms_folio_sale_line
-# from . import test_pms_wizard_split_join_swap_reservation
-# from . import test_product_template
-# from . import test_pms_multiproperty
-# from . import test_shared_room
+from . import test_pms_reservation
+from . import test_pms_pricelist
+from . import test_pms_checkin_partner
+from . import test_pms_sale_channel
+from . import test_pms_folio
+from . import test_pms_availability_plan_rules
+from . import test_pms_room_type
+from . import test_pms_room_type_class
+from . import test_pms_board_service
+from . import test_pms_wizard_massive_changes
+from . import test_pms_booking_engine
+from . import test_pms_res_users
+from . import test_pms_room
+from . import test_pms_folio_invoice
+from . import test_pms_folio_sale_line
+from . import test_pms_wizard_split_join_swap_reservation
+from . import test_product_template
+from . import test_pms_multiproperty
+from . import test_shared_room
 from . import test_automated_mails
