@@ -538,7 +538,7 @@ class PmsCheckinPartner(models.Model):
                     or not record.document_type.validation_code
                 ):
                     return
-                eval_context = self._validation_eval_context(id_number)
+                eval_context = record._validation_eval_context(id_number)
                 try:
                     safe_eval(
                         record.document_type.validation_code,
