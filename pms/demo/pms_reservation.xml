@@ -464,5 +464,28 @@
         <function model="pms.reservation" name="action_cancel">
             <value eval="[ref('pms_reservation_32')]" />
         </function>
+        <record id="pms_reservation_33" model="pms.reservation">
+            <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="pricelist_id" ref="product.list0" />
+            <field name="room_type_id" ref="pms_room_type_2" />
+            <field name="checkin" eval="DateTime.today() + timedelta(-20)" />
+            <field name="checkout" eval="DateTime.today() + timedelta(-12)" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field
+                name="checkin_partner_ids"
+                eval="[(5, 0),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_3'),
+                    }),
+                (0, 0, {
+                    'partner_id': ref('base.res_partner_4'),
+                    }),
+                ]"
+            />
+        </record>
+        <function model="pms.reservation" name="action_cancel">
+            <value eval="[ref('pms_reservation_32')]" />
+        </function>
     </data>
 </odoo>
