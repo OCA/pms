@@ -1767,7 +1767,7 @@ class PmsFolio(models.Model):
 
     @api.model
     def _apply_partner_name(self, record):
-        if record.partner_id and not record.partner_name:
+        if record.partner_id:
             record.partner_name = record.partner_id.name
         elif (
             record.agency_id
@@ -1874,4 +1874,3 @@ class PmsFolio(models.Model):
                 }
                 self.env["res.partner.id_number"].create(number_values)
         record.partner_id = partner
-
