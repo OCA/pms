@@ -644,6 +644,19 @@ class PmsReservation(models.Model):
 
     add_possible_customer = fields.Boolean(string="Add possible Customer")
 
+    is_mail_send = fields.Boolean(string="Mail Sent", default=False)
+
+    is_modified_reservation = fields.Boolean(
+        string="Is A Modified Reservation",
+        compute="_compute_is_modified_reservation",
+        readonly=False,
+        store=True,
+    )
+
+    lang = fields.Many2one(
+        string="Language", comodel_name="res.lang", compute="_compute_lang"
+    )
+
     def _compute_date_order(self):
         for record in self:
             record.date_order = datetime.datetime.today()
@@ -1428,6 +1441,25 @@ class PmsReservation(models.Model):
         for record in self:
             self.env["pms.folio"]._apply_is_possible_existing_customer_id(record)
 
+    @api.depends("checkin", "checkout")
+    def _compute_is_modified_reservation(self):
+        for record in self:
+            if record.state in "draft":
+                record.is_modified_reservation = False
+            elif record.state in ("confirm", "onboard") and record.is_mail_send:
+                record.is_modified_reservation = True
+                record.is_mail_send = False
+            else:
+                record.is_modified_reservation = False
+
+    @api.depends("partner_id")
+    def _compute_lang(self):
+        for record in self:
+            if record.partner_id:
+                record.lang = record.partner_id.lang
+            else:
+                record.lang = self.env["res.lang"].get_installed()
+
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
             raise UserError(
@@ -1666,6 +1698,54 @@ class PmsReservation(models.Model):
             },
         }
 
+    def action_open_mail_composer(self):
+        self.ensure_one()
+        template = False
+        if (
+            not self.is_mail_send
+            and not self.is_modified_reservation
+            and self.state not in "cancel"
+        ):
+            template = self.env.ref(
+                "pms.confirmed_reservation_email", raise_if_not_found=False
+            )
+        elif (
+            not self.is_mail_send
+            and self.is_modified_reservation
+            and self.state not in "cancel"
+        ):
+            template = self.env.ref(
+                "pms.modified_reservation_email", raise_if_not_found=False
+            )
+        elif not self.is_mail_send and self.state in "cancel":
+            template = self.env.ref(
+                "pms.cancelled_reservation_email", raise_if_not_found=False
+            )
+        compose_form = self.env.ref(
+            "mail.email_compose_message_wizard_form", raise_if_not_found=False
+        )
+        ctx = dict(
+            model="pms.reservation",
+            default_res_model="pms.reservation",
+            default_res_id=self.id,
+            template_id=template and template.id or False,
+            composition_mode="comment",
+            partner_ids=[self.partner_id.id],
+            force_email=True,
+            record_id=self.id,
+        )
+        return {
+            "name": _("Send Confirmed Reservation Mail "),
+            "type": "ir.actions.act_window",
+            "view_type": "form",
+            "view_mode": "form",
+            "res_model": "mail.compose.message",
+            "views": [(compose_form.id, "form")],
+            "view_id": compose_form.id,
+            "target": "new",
+            "context": ctx,
+        }
+
     @api.model
     def name_search(self, name="", args=None, operator="ilike", limit=100):
         if args is None:
@@ -1811,6 +1891,7 @@ class PmsReservation(models.Model):
             else:
                 record.state = "cancel"
                 record.folio_id._compute_amount()
+                record.is_mail_send = False
 
     def action_assign(self):
         for record in self:

@@ -85,6 +85,20 @@
                                 <field name="room_ids" />
                             </group>
                         </page>
+                        <page string="Email Configuration">
+                            <group string="Templates">
+                                <field name="property_confirmed_template" />
+                                <field name="property_modified_template" />
+                                <field name="property_canceled_template" />
+                            </group>
+                            <group string="Mail Information" colspan="4">
+                                <field
+                                    name="mail_information"
+                                    string="Aditional Mail Information"
+                                />
+                                <field name="privacy_policy" />
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>

@@ -31,7 +31,7 @@ from . import product_pricelist_item
 from . import res_partner
 from . import pms_sale_channel
 
-# from . import mail_compose_message
+from . import mail_compose_message
 from . import pms_room_type_class
 from . import pms_room_closure_reason
 from . import pms_service_line
@@ -46,3 +46,4 @@ from . import account_bank_statement
 from . import account_journal
 from . import pms_availability
 from . import res_partner_id_number
+from . import pms_automated_mails

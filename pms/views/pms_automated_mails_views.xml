@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="pms_automated_mails_view">
+        <field name="name">pms.automated_mails_view_form</field>
+        <field name="model">pms.automated.mails</field>
+        <field name="arch" type="xml">
+            <form string="Automated Mails" class="pt-1">
+                 <sheet>
+                    <div class="col-5">
+                        <label for="name" />
+                        <group>
+                            <h2><field name="name" /></h2>
+                        </group>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <group>
+                                <field name="active" widget="boolean_toggle" />
+                                <field name="template_id" />
+                                <field name="action" />
+                                <field
+                                    name="pms_property_ids"
+                                    widget="many2many_tags"
+                                    options="{'no_create': True,'no_open': True}"
+                                />
+                            </group>
+                        </div>
+                        <div class="col-5">
+                            <group>
+                                <field name="moment" />
+                                <field
+                                    name="time"
+                                    attrs="{'invisible':[('moment','=','in_act')]}"
+                                />
+                                <field
+                                    name="time_type"
+                                    attrs="{'invisible':[('moment','=','in_act')]}"
+                                />
+                            </group>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+     <record id="view_automated_mails_tree" model="ir.ui.view">
+            <field name="name">pms.automated.mails.tree</field>
+            <field name="model">pms.automated.mails</field>
+            <field name="arch" type="xml">
+                <tree string="Automated Mails">
+                    <field name="name" />
+                    <field name="action" />
+                    <field name="template_id" />
+                    <field name="moment" />
+                    <field name="time" />
+                    <field name="time_type" />
+                </tree>
+            </field>
+        </record>
+    <record model="ir.actions.act_window" id="open_pms_automated_mails_tree">
+        <field name="name">Automated Mails</field>
+        <field name="res_model">pms.automated.mails</field>
+        <field name="view_id" ref="view_automated_mails_tree" />
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        name="Automated Mails"
+        id="menu_pms_automated_mails"
+        action="open_pms_automated_mails_tree"
+        sequence="40"
+        parent="pms.pms_configuration_menu"
+    />
+</odoo>
