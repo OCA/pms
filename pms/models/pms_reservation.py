@@ -644,8 +644,6 @@ class PmsReservation(models.Model):
         inverse_name="reservation_possible_customer_id",
     )
 
-    add_possible_customer = fields.Boolean(string="Add possible Customer")
-
     is_mail_send = fields.Boolean(string="Mail Sent", default=False)
 
     is_modified_reservation = fields.Boolean(
