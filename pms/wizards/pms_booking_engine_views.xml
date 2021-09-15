@@ -5,6 +5,13 @@
         <field name="model">pms.booking.engine</field>
         <field name="arch" type="xml">
             <form class="pt-1">
+                <h2>
+                    <field
+                        name="pms_property_id"
+                        required="1"
+                        attrs="{'readonly':[('folio_id','!=',False)]}"
+                    />
+                </h2>
                 <div class="row">
                     <div class="col-5 ">
                         <group>
@@ -50,11 +57,6 @@
                                 string="Reason"
                                 required="1"
                                 attrs="{'invisible': [('reservation_type','!=','out')]}"
-                            />
-                            <field
-                                name="pms_property_id"
-                                required="1"
-                                attrs="{'readonly':[('folio_id','!=',0)]}"
                             />
                             <field
                                 default_focus="1"

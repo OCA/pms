@@ -458,6 +458,7 @@
                         enable_counters="1"
                         select="multi"
                     />
+                    <field name="pms_property_id" enable_counters="1" select="multi" />
                 </searchpanel>
             </search>
         </field>
