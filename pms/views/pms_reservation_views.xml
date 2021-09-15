@@ -3,7 +3,7 @@
     <record model="ir.actions.act_window" id="open_pms_reservation_form_tree_all">
         <field name="name">Reservation</field>
         <field name="res_model">pms.reservation</field>
-        <field name="view_mode">tree,form,calendar,graph,pivot</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
     </record>
     <record model="ir.ui.view" id="pms_reservation_view_form">
         <field name="name">pms.reservation.form</field>
@@ -184,23 +184,6 @@
                         <button
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-file"
-                            name="open_folio"
-                        >
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">
-                                    <field
-                                        name="folio_id"
-                                        readonly="1"
-                                        nolabel="1"
-                                        force_save="1"
-                                    />
-                                </span>
-                            </div>
-                        </button>
-                        <button
-                            type="object"
-                            class="oe_stat_button"
                             id="payment_smart_button"
                             icon="fa-money"
                             name="action_pay_folio"
@@ -226,11 +209,16 @@
                                 ('ready_for_checkin', '!=', True),
                             ]}"
                         >
-                            <field
-                                name="checkins_ratio"
-                                string="On Board"
-                                widget="percentpie"
-                            />
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field
+                                        name="checkins_ratio"
+                                        string="On Board"
+                                        widget="percentpie"
+                                    />
+                                </span>
+                                <span class="o_stat_text">Datos Checkin</span>
+                            </div>
                         </button>
                         <button
                             type="object"
@@ -245,6 +233,23 @@
                                 string="Checkin Data"
                                 widget="percentpie"
                             />
+                        </button>
+                        <button
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file"
+                            name="open_folio"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">
+                                    <field
+                                        name="folio_id"
+                                        readonly="1"
+                                        nolabel="1"
+                                        force_save="1"
+                                    />
+                                </span>
+                            </div>
                         </button>
                     </div>
                     <widget
@@ -287,9 +292,22 @@
                             <i class="fa fa-warning" /> OverBooking
                         </div>
                     </div>
-                    <h1>
-                        <field nolabel="1" name="name" />
-                    </h1>
+                    <h3 class="oe_right">
+                        <field nolabel="1" name="name" class="oe_inline" />
+                        <i
+                            class="fa fa-long-arrow-right mx-2"
+                            aria-label="Arrow icon"
+                            title="Arrow"
+                        />
+                        <field
+                            name="pms_property_id"
+                            options="{'no_create': True,'no_open': True}"
+                            attrs="{'readonly':[('name', '!=', False)]}"
+                            nolabel="1"
+                            class="oe_inline"
+                        />
+
+                    </h3>
                     <h3>
                         <field
                             name="checkin"
@@ -670,7 +688,6 @@
                                 <div class="col-6">
                                     <group>
                                         <field name="user_id" />
-                                        <field name="pms_property_id" />
                                         <field name="overbooking" />
                                     </group>
                                     <group>
@@ -700,7 +717,7 @@
     </record>
 
     <!-- Calendar -->
-    <record id="pms_reservation_view_calendar" model="ir.ui.view">
+    <!-- <record id="pms_reservation_view_calendar" model="ir.ui.view">
         <field name="name">pms.reservation.view.calendar</field>
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
@@ -719,7 +736,7 @@
                 <field name="rooms" />
             </calendar>
         </field>
-    </record>
+    </record> -->
     <record model="ir.ui.view" id="pms_reservation_view_tree">
         <field name="name">pms.reservation.tree</field>
         <field name="model">pms.reservation</field>
@@ -851,10 +868,15 @@
         <field name="model">pms.reservation</field>
         <field name="arch" type="xml">
             <search string="Reservation Detail">
-                <field name="name" />
+                <field
+                    name="name"
+                    string="Customer"
+                    filter_domain="['|', '|', '|', ('partner_name', 'ilike', self), ('document_number', 'ilike', self), ('partner_id.vat', 'ilike', self), ('mobile', 'ilike', self)]"
+                />
                 <field name="partner_id" />
                 <field name="folio_id" />
                 <field name="agency_id" />
+                <field name="pms_property_id" />
                 <filter
                     string="My Reservations"
                     name="my_reservations"
@@ -930,7 +952,7 @@
                 />-->
                 <separator />
                 <filter
-                    string="Still to be paid"
+                    string="To be paid"
                     name="still_to_be_paid"
                     domain="[('folio_id.pending_amount','&gt;',0)]"
                 />
@@ -953,7 +975,7 @@
                 <filter
                     string="Out of Service"
                     name="out_of_service"
-                    domain="[('reservation_type','in',['dontsell'])]"
+                    domain="[('reservation_type','in',['out'])]"
                 />
                 <group expand="0" string="Group By">
                     <!-- <filter string="Room Type" domain="[]"

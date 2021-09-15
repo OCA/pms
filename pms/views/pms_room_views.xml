@@ -142,15 +142,33 @@
         <field name="name">pms.room.search</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
-            <search string="Property Room">
+            <search string="Room">
                 <field name="name" />
                 <field name="room_type_id" />
                 <field name="capacity" />
+                <field name="room_amenity_ids" />
                 <newline />
-                <!--<filter name="available" string="Available"
-                    domain="[('status','=', 'available')]" help="Available Rooms" />-->
-                <!--<filter string="Reserved" domain="[('status','=', 'occupied')]"
-                    help="Reserved Rooms" />-->
+                <searchpanel>
+                    <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="room_type_id"
+                        string="Room Type"
+                        enable_counters="1"
+                        icon="fa-hotel"
+                        color="#784f73"
+                    />
+                    <field
+                        name="ubication_id"
+                        string="Ubication"
+                        enable_counters="1"
+                        color="#875A7B"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -158,12 +176,16 @@
         <field name="name">pms.room.tree</field>
         <field name="model">pms.room</field>
         <field name="arch" type="xml">
-            <tree string="Property Room">
+            <tree string="Property Room" editable="bottom" multi_edit="1" sample="1">
                 <field name="sequence" widget="handle" />
                 <field name="pms_property_id" />
                 <field name="name" />
                 <field name="room_type_id" />
+                <field name="ubication_id" />
                 <field name="capacity" />
+                <field name="extra_beds_allowed" />
+                <field name="room_amenity_ids" widget="many2many_tags" />
+
             </tree>
         </field>
     </record>

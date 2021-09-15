@@ -298,7 +298,6 @@
                                 name="channel_type_id"
                                 attrs="{'readonly':[('agency_id','!=', False)], 'invisible':[('reservation_type', 'not in', 'normal')]}"
                             />
-                            <field name="internal_comment" />
                         </group>
                         <group
                             class="oe_subtotal_footer oe_right"
@@ -720,6 +719,19 @@
             </search>
         </field>
     </record>
+
+    <record id="pms_folio_pivot" model="ir.ui.view">
+        <field name="name">pms.folio.pivot</field>
+        <field name="model">pms.folio</field>
+        <field name="arch" type="xml">
+            <pivot string="Folios">
+                <field name="pricelist_id" type="row" />
+                <field name="pms_property_id" type="col" />
+                <field name="amount_total" type="measure" />
+            </pivot>
+        </field>
+    </record>
+
     <record id="pms_folio_view_graph" model="ir.ui.view">
         <field name="name">view.pms.folio.graph</field>
         <field name="model">pms.folio</field>
@@ -750,7 +762,7 @@
     <record model="ir.actions.act_window" id="open_pms_folio1_form_tree_all">
         <field name="name">Folio</field>
         <field name="res_model">pms.folio</field>
-        <field name="view_mode">tree,form,graph</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
     </record>
     <menuitem
         name="Folios"
