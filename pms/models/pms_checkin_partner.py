@@ -389,7 +389,6 @@ class PmsCheckinPartner(models.Model):
         "firstname",
         "lastname",
         "lastname2",
-        # "add_possible_customer",
     )
     def _compute_partner_id(self):
         for record in self:
