@@ -478,8 +478,6 @@ class PmsFolio(models.Model):
         inverse_name="folio_possible_customer_id",
     )
 
-    add_possible_customer = fields.Boolean(string="Add possible Customer")
-
     def name_get(self):
         result = []
         for folio in self:
@@ -678,7 +676,6 @@ class PmsFolio(models.Model):
         "reservation_type",
         "document_number",
         "document_type",
-        "add_possible_customer",
         "partner_name",
         "email",
         "mobile",
@@ -691,8 +688,6 @@ class PmsFolio(models.Model):
                 folio.partner_id = folio.agency_id.id
             elif folio.document_number and folio.document_type:
                 self._create_partner(folio)
-            elif folio.add_possible_customer:
-                self._add_customer(folio)
             elif not folio.partner_id:
                 folio.partner_id = False
 
@@ -1880,12 +1875,3 @@ class PmsFolio(models.Model):
                 self.env["res.partner.id_number"].create(number_values)
         record.partner_id = partner
 
-    # REVIEW: we should not force the email and mobile computes,
-    # but if we do not do so,the cache sets the partner_id to False
-    # and therefore also the document_number, email or mobile
-    @api.model
-    def _add_customer(self, record):
-        record.partner_id = record.possible_existing_customer_ids.id
-        record._compute_document_number()
-        record._compute_email()
-        record._compute_mobile()
