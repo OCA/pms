@@ -3586,4 +3586,3 @@ class TestPmsReservations(TestPms):
             msg="A partner must be added to the reservation",
         ):
             several_partners_wizard.add_partner()
-
