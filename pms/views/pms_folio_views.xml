@@ -59,13 +59,14 @@
                     class="alert alert-warning"
                     role="alert"
                     style="margin-bottom:0px;"
-                    attrs="{'invisible': [('is_possible_existing_customer_id','=',False)]}"
+                    attrs="{'invisible': [('possible_existing_customer_ids','=',[])]}"
                 >
-                    There is a customer with this email or mobile, do you want to add it to the reservation?
-                    <field name="is_possible_existing_customer_id" invisible="1" />
-                    <field
-                        name="add_possible_customer"
-                        attrs="{'invisible': [('is_possible_existing_customer_id','=',False)]}"
+                    A customer/s has this email or mobile, do you want to add it?
+                    <field name="possible_existing_customer_ids" invisible="1" />
+                    <button
+                        name="open_wizard_several_partners"
+                        string="Add customer"
+                        type="object"
                     />
                 </div>
                 <sheet>

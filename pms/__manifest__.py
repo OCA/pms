@@ -47,6 +47,7 @@
         "wizards/folio_make_invoice_advance_views.xml",
         "wizards/pms_booking_engine_views.xml",
         "wizards/wizard_folio_changes.xml",
+        "wizards/wizard_several_partners.xml",
         "views/pms_amenity_views.xml",
         "views/pms_amenity_type_views.xml",
         "views/pms_board_service_views.xml",
