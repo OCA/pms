@@ -198,6 +198,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+msgid "<span class=\"o_stat_text\">Datos Checkin</span>"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "<span class=\"o_stat_text\">New Booking Group</span>"
 msgstr ""
@@ -2611,6 +2616,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__folio_partner_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 msgid "Customer"
 msgstr ""
 
@@ -3632,6 +3638,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_partner__pms_folio_ids
 #: model:ir.model.fields,field_description:pms.field_res_users__pms_folio_ids
 #: model:ir.ui.menu,name:pms.pms_folio_menu
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_pivot
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folios
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_home_menu_folio
@@ -6695,6 +6702,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_service__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__pms_property_id
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_service_line_view_search
 msgid "Property"
 msgstr ""
@@ -6722,7 +6730,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_pms_room
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_tree
 msgid "Property Room"
 msgstr ""
@@ -7183,7 +7190,6 @@ msgstr ""
 #: model:ir.ui.menu,name:pms.menu_reservations
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_graph
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_pivot
-#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_calendar
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_home_menu_reservation
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservations
@@ -7253,6 +7259,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_search
 #: model_terms:ir.ui.view,arch_db:pms.reservation_wizard
 msgid "Room"
 msgstr ""
@@ -7335,6 +7342,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_search
 msgid "Room Type"
 msgstr ""
 
@@ -8205,11 +8213,6 @@ msgid "Status of the checkin partner regarding the reservation"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
-msgid "Still to be paid"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__street
 msgid "Street"
 msgstr ""
@@ -9055,6 +9058,11 @@ msgid "To Invoice Quantity"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
+msgid "To be paid"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_folio_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
@@ -9292,6 +9300,7 @@ msgstr ""
 #: model:ir.model,name:pms.model_pms_ubication
 #: model:ir.model.fields,field_description:pms.field_pms_room__ubication_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
+#: model_terms:ir.ui.view,arch_db:pms.pms_room_view_search
 msgid "Ubication"
 msgstr ""
 
