@@ -570,6 +570,8 @@
         <field name="arch" type="xml">
             <tree
                 string="Folio"
+                multi_edit="1"
+                sample="1"
                 create="false"
                 class="o_sale_order"
                 decoration-info="state == 'draft'"
@@ -581,7 +583,7 @@
                     decoration-info="reservation_type == 'staff'"
                     decoration-bf="reservation_type == 'out'"
                 />
-                <field name="partner_id" invisible="1" />
+                <field name="partner_id" />
                 <field name="partner_name" select="1" />
                 <field name="date_order" select="1" />
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />

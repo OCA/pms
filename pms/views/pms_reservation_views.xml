@@ -360,7 +360,7 @@
                             string="General Info"
                             name="contact_details"
                         >
-                            <field name="partner_id" invisible="1" />
+                            <field name="partner_id" />
                             <field
                                 name="document_type"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
@@ -747,7 +747,6 @@
                 sample="1"
                 class="o_sale_order"
                 decoration-warning="splitted"
-                decoration-bf="splitted"
                 js_class="pms_booking_engine_request_tree"
             >
                 <field name="reservation_type" invisible="1" />
@@ -777,6 +776,8 @@
                 <field name="to_assign" invisible="1" />
                 <field name="checkin_partner_pending_count" invisible="1" />
                 <field name="tax_ids" invisible="1" />
+                <field name="agency_id" optional="show" />
+                <field name="channel_type_id" optional="show" />
                 <field name="price_subtotal" invisible="1" />
                 <field name="price_total" />
                 <field name="folio_pending_amount" string="Folio Pending Amount" />
