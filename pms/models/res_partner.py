@@ -140,7 +140,7 @@ class ResPartner(models.Model):
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
         if hasattr(super(), "_compute_gender"):
-            super()._compute_field()
+            super()._compute_gender()
         for record in self:
             if not record.gender and record.pms_checkin_partner_ids:
                 gender = list(
@@ -156,7 +156,7 @@ class ResPartner(models.Model):
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.birthdate_date")
     def _compute_birthdate_date(self):
         if hasattr(super(), "_compute_birthdate_date"):
-            super()._compute_field()
+            super()._compute_birthdate_date()
         for record in self:
             if not record.birthdate_date and record.pms_checkin_partner_ids:
                 birthdate = list(
@@ -175,7 +175,7 @@ class ResPartner(models.Model):
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.nationality_id")
     def _compute_nationality_id(self):
         if hasattr(super(), "_compute_nationality_id"):
-            super()._compute_field()
+            super()._compute_nationality_id()
         for record in self:
             if not record.nationality_id and record.pms_checkin_partner_ids:
                 nationality_id = list(
@@ -194,7 +194,7 @@ class ResPartner(models.Model):
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.state_id")
     def _compute_state_id(self):
         if hasattr(super(), "_compute_state_id"):
-            super()._compute_field()
+            super()._compute_state_id()
         for record in self:
             if not record.state_id and record.pms_checkin_partner_ids:
                 state_id = list(
@@ -220,7 +220,7 @@ class ResPartner(models.Model):
     )
     def _compute_email(self):
         if hasattr(super(), "_compute_email"):
-            super()._compute_field()
+            super()._compute_email()
         for record in self:
             if not record.email and (
                 record.pms_checkin_partner_ids
@@ -254,7 +254,7 @@ class ResPartner(models.Model):
     )
     def _compute_mobile(self):
         if hasattr(super(), "_compute_mobile"):
-            super()._compute_field()
+            super()._compute_mobile()
         for record in self:
             if not record.mobile and (
                 record.pms_checkin_partner_ids
@@ -281,7 +281,7 @@ class ResPartner(models.Model):
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.firstname")
     def _compute_firstname(self):
         if hasattr(super(), "_compute_firstname"):
-            super()._compute_field()
+            super()._compute_firstname()
         for record in self:
             if not record.firstname and record.pms_checkin_partner_ids:
                 firstname = list(
@@ -299,7 +299,7 @@ class ResPartner(models.Model):
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname")
     def _compute_lastname(self):
         if hasattr(super(), "_compute_lastname"):
-            super()._compute_field()
+            super()._compute_lastname()
         for record in self:
             if not record.lastname and record.pms_checkin_partner_ids:
                 lastname = list(
@@ -315,7 +315,7 @@ class ResPartner(models.Model):
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.lastname2")
     def _compute_lastname2(self):
         if hasattr(super(), "_compute_lastname2"):
-            super()._compute_field()
+            super()._compute_lastname2()
         for record in self:
             if not record.lastname2 and record.pms_checkin_partner_ids:
                 lastname2 = list(
