@@ -25,7 +25,7 @@ class ResPartnerIdNumber(models.Model):
     )
     def _compute_valid_from(self):
         if hasattr(super(), "_compute_valid_from"):
-            super()._compute_field()
+            super()._compute_valid_from()
         for record in self:
             if not record.valid_from and record.partner_id.pms_checkin_partner_ids:
                 document_expedition_date = list(
