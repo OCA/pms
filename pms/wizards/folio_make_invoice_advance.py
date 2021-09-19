@@ -127,7 +127,10 @@ class FolioAdvancePaymentInv(models.TransientModel):
             "active_id", False
         ):
             folio = self.env["pms.folio"].browse(self._context.get("active_id", []))
-            return folio.partner_invoice_ids[0]
+            if folio.partner_invoice_ids:
+                return folio.partner_invoice_ids[0]
+            else:
+                return False
 
     def _get_advance_details(self, order):
         context = {"lang": order.partner_id.lang}
