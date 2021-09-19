@@ -697,14 +697,29 @@ class PmsFolio(models.Model):
             if not folio.user_id:
                 folio.user_id = (folio.partner_id.user_id.id or self.env.uid,)
 
-    @api.depends("partner_id")
+    @api.depends(
+        "partner_id",
+        "reservation_ids",
+        "reservation_ids.partner_id",
+        "reservation_ids.checkin_partner_ids",
+        "reservation_ids.checkin_partner_ids.partner_id",
+    )
     def _compute_partner_invoice_ids(self):
-        for folio in self.filtered("partner_id"):
-            folio.partner_invoice_ids = False
-            addr = folio.partner_id.address_get(["invoice"])
-            if not addr["invoice"] in folio.partner_invoice_ids.ids:
-                folio.partner_invoice_ids = [(4, addr["invoice"])]
-        # Avoid CacheMissing
+        for folio in self:
+            if folio.partner_id:
+                addr = folio.partner_id.address_get(["invoice"])
+                if not addr["invoice"] in folio.partner_invoice_ids.ids:
+                    folio.partner_invoice_ids = [(4, addr["invoice"])]
+            for reservation in folio.reservation_ids:
+                if reservation.partner_id:
+                    addr = reservation.partner_id.address_get(["invoice"])
+                    if not addr["invoice"] in folio.partner_invoice_ids.ids:
+                        folio.partner_invoice_ids = [(4, addr["invoice"])]
+                for checkin in reservation.checkin_partner_ids:
+                    if checkin.partner_id:
+                        addr = checkin.partner_id.address_get(["invoice"])
+                        if not addr["invoice"] in folio.partner_invoice_ids.ids:
+                            folio.partner_invoice_ids = [(4, addr["invoice"])]
         self.filtered(lambda f: not f.partner_invoice_ids).partner_invoice_ids = False
 
     @api.depends("partner_id")
@@ -1428,6 +1443,11 @@ class PmsFolio(models.Model):
                 % (self.company_id.name, self.company_id.id)
             )
 
+        if not partner_invoice_id:
+            partner_invoice_id = (
+                self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
+            )
+
         invoice_vals = {
             "ref": self.client_order_ref or "",
             "move_type": "out_invoice",
@@ -1437,9 +1457,7 @@ class PmsFolio(models.Model):
             # 'medium_id': self.medium_id.id,
             # 'source_id': self.source_id.id,
             "invoice_user_id": self.user_id and self.user_id.id,
-            "partner_id": partner_invoice_id
-            if partner_invoice_id
-            else self.partner_invoice_ids[0],
+            "partner_id": partner_invoice_id,
             "partner_bank_id": self.company_id.partner_id.bank_ids[:1].id,
             "journal_id": journal.id,  # company comes from the journal
             "invoice_origin": self.name,
