@@ -867,3 +867,90 @@ class TestPmsFolio(TestPms):
             msg="A partner can be added to the folio",
         ):
             several_partners_wizard.add_partner()
+
+    def test_add_partner_invoice_contact(self):
+        """
+        Check that when adding a customer at check-in, reservation or folio,
+        it is added as a possible billing address
+        ---------------
+        Three res.partner are created with name, email and mobile. A folio is created.
+        We add the partners to the folio, reservation, and checkin, and check that the
+        three partners are on partner_invoice in folio.
+        """
+        # ARRANGE
+        partner1 = self.env["res.partner"].create(
+            {
+                "name": "Serafín Rivas",
+                "email": "serafin@example.com",
+                "mobile": "60595595",
+            }
+        )
+        partner2 = self.env["res.partner"].create(
+            {
+                "name": "Simon",
+                "mobile": "654667733",
+                "email": "simon@example.com",
+            }
+        )
+        partner3 = self.env["res.partner"].create(
+            {
+                "name": "Sofia",
+                "mobile": "688667733",
+                "email": "sofia@example.com",
+            }
+        )
+
+        # FIRST ACTION
+        folio1 = self.env["pms.folio"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "partner_name": partner1.name,
+                "email": partner1.email,
+            }
+        )
+        reservation1 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.datetime.now(),
+                "checkout": datetime.datetime.now() + datetime.timedelta(days=1),
+                "adults": 2,
+                "room_type_id": self.room_type_double.id,
+                "folio_id": folio1.id,
+            }
+        )
+
+        # FIRST ASSERT
+        self.assertEqual(
+            len(folio1.partner_invoice_ids),
+            0,
+            "A partner was added as a billing contact for no reason",
+        )
+
+        # SECOND ACTION
+        folio1.partner_id = partner1.id
+
+        # SECOND ASSERT
+        self.assertEqual(
+            folio1.partner_invoice_ids.ids,
+            [partner1.id],
+            "A folio partner was not added as a billing contact",
+        )
+
+        # SECOND ACTION
+        reservation1.partner_id = partner2.id
+
+        # SECOND ASSERT
+        self.assertIn(
+            partner2.id,
+            folio1.partner_invoice_ids.ids,
+            "A reservation partner was not added as a billing contact",
+        )
+
+        # THIRD ACTION
+        reservation1.checkin_partner_ids[0].partner_id = partner3.id
+
+        # THIRD ASSERT
+        self.assertIn(
+            partner3.id,
+            folio1.partner_invoice_ids.ids,
+            "A checkin partner was not added as a billing contact",
+        )
