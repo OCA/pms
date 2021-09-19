@@ -178,7 +178,9 @@
                 class="row pb-2 pt-3 #{'card-header bg-white' if report_type == 'html' else ''}"
             >
                     <div class="col-xs-6">
-                        <t t-if="folio.partner_invoice_ids[0] != folio.partner_id">
+                        <t
+                        t-if="folio.partner_invoice_ids and folio.partner_invoice_ids[0] != folio.partner_id"
+                    >
                             <div
                             t-field="folio.partner_invoice_ids"
                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'
@@ -186,15 +188,22 @@
                         </t>
                     </div>
                     <div class="col-xs-5 col-xs-offset-1">
-                        <div
-                        t-field="folio.partner_id"
-                        t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
-                    />
-                        <p t-if="folio.partner_id.vat">
-                            <t t-esc="folio.company_id.country_id.vat_label or 'TIN'" />
-                            :
-                            <span t-field="folio.partner_id.vat" />
-                        </p>
+                        <t t-if="folio.partner_id">
+                            <div
+                            t-field="folio.partner_id"
+                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
+                        />
+                            <p t-if="folio.partner_id.vat">
+                                <t
+                                t-esc="folio.company_id.country_id.vat_label or 'TIN'"
+                            />
+                                :
+                                <span t-field="folio.partner_id.vat" />
+                            </p>
+                        </t>
+                        <t t-else="">
+                            <div t-field="folio.partner_name" />
+                        </t>
                     </div>
             </div>
         </t>
@@ -230,10 +239,10 @@
                         t-options='{"widget": "date"}'
                     />
                 </div>
-                <div t-if="folio.user_id.name" class="mb-3 col-6">
+                <!-- <div t-if="folio.user_id.name" class="mb-3 col-6">
                     <strong>Salesperson:</strong>
                     <p class="m-0" t-field="folio.user_id" />
-                </div>
+                </div> -->
             </div>
 
             <!-- Is there a discount on at least one line? -->

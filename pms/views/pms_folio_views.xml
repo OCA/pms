@@ -268,7 +268,6 @@
                                 attrs="{'invisible':[('state','not in',('cancel'))]}"
                             />
                             <field name="internal_comment" />
-                            <field name="user_id" />
                         </group>
                         <group
                             colspan="2"
