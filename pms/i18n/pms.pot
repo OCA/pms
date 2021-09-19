@@ -312,7 +312,6 @@ msgid "<strong>Room:</strong>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong>Salesperson:</strong>"
 msgstr ""
