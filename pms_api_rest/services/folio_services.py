@@ -1,7 +1,8 @@
+from datetime import datetime
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
-from datetime import datetime
 
 
 class PmsFolioService(Component):
@@ -33,18 +34,32 @@ class PmsFolioService(Component):
         PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
         for folio in (
             self.env["pms.folio"]
-                .sudo()
-                .search(
+            .sudo()
+            .search(
                 domain,
             )
         ):
             reservations = []
             for reservation in folio.reservation_ids:
+                reservation_lines = []
+                for reservation_line in reservation.reservation_line_ids:
+                    reservation_lines.append(
+                        {
+                            "id": reservation_line.id,
+                            "date": reservation_line.date,
+                            "roomId": reservation_line.room_id.id,
+                        }
+                    )
+
                 reservations.append(
                     {
                         "id": reservation.id,
-                        "checkin": datetime.combine(reservation.checkin, datetime.min.time()).isoformat(),
-                        "checkout": datetime.combine(reservation.checkout, datetime.min.time()).isoformat(),
+                        "checkin": datetime.combine(
+                            reservation.checkin, datetime.min.time()
+                        ).isoformat(),
+                        "checkout": datetime.combine(
+                            reservation.checkout, datetime.min.time()
+                        ).isoformat(),
                         "preferredRoomId": reservation.preferred_room_id.name
                         if reservation.preferred_room_id
                         else "",
@@ -57,6 +72,7 @@ class PmsFolioService(Component):
                         "boardService": reservation.board_service_room_id.pms_board_service_id.name
                         if reservation.board_service_room_id
                         else "",
+                        "reservationLines": [] if not reservation_lines else reservation_lines
                     }
                 )
             result_folios.append(
@@ -66,7 +82,9 @@ class PmsFolioService(Component):
                     partnerName=folio.partner_name if folio.partner_name else "",
                     partnerPhone=folio.mobile if folio.mobile else "",
                     partnerEmail=folio.email if folio.email else "",
-                    saleChannel=folio.channel_type_id.name if folio.channel_type_id else "",
+                    saleChannel=folio.channel_type_id.name
+                    if folio.channel_type_id
+                    else "",
                     agency=folio.agency_id.name if folio.agency_id else "",
                     state=dict(folio.fields_get(["state"])["state"]["selection"])[
                         folio.state
@@ -91,9 +109,7 @@ class PmsFolioService(Component):
         auth="public",
     )
     def get_reservations(self, folio_id):
-        folio = (
-            self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
-        )
+        folio = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
         res = []
         if not folio.reservation_ids:
             pass
@@ -117,23 +133,22 @@ class PmsFolioService(Component):
                         partnerRequests=reservation.partner_requests
                         if reservation.partner_requests
                         else "",
-                        state=dict(reservation.fields_get(["state"])["state"]["selection"])[
-                            reservation.state
-                        ],
+                        state=dict(
+                            reservation.fields_get(["state"])["state"]["selection"]
+                        )[reservation.state],
                         priceTotal=reservation.price_total,
                         adults=reservation.adults,
                         channelTypeId=reservation.channel_type_id.name
                         if reservation.channel_type_id
                         else "",
-                        agencyId=reservation.agency_id.name if reservation.agency_id else "",
+                        agencyId=reservation.agency_id.name
+                        if reservation.agency_id
+                        else "",
                         boardServiceId=reservation.board_service_room_id.pms_board_service_id.name
                         if reservation.board_service_room_id
                         else "",
                         checkinsRatio=reservation.checkins_ratio,
                         outstanding=reservation.folio_id.pending_amount,
-                        pwaActionButtons=json.loads(reservation.pwa_action_buttons)
-                        if reservation.pwa_action_buttons
-                        else {},
                     )
                 )
         return res
