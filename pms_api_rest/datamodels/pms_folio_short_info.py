@@ -1,10 +1,6 @@
-from marshmallow import Schema, fields
+from marshmallow import fields
 
 from odoo.addons.datamodel.core import Datamodel
-
-
-class PmsReservationSchema(Schema):
-    id = fields.Integer(required=True, allow_none=False)
 
 
 class PmsFolioShortInfo(Datamodel):
