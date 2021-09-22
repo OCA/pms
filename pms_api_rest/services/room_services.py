@@ -1,11 +1,9 @@
-from datetime import datetime
-
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsFolioService(Component):
+class PmsRoomService(Component):
     _inherit = "base.rest.service"
     _name = "pms.room.service"
     _usage = "rooms"
@@ -20,8 +18,8 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.folio.search.param"),
-        output_param=Datamodel("pms.folio.short.info", is_list=True),
+        input_param=Datamodel("pms.room.search.param"),
+        output_param=Datamodel("pms.room.short.info", is_list=True),
         auth="public",
     )
     def get_rooms(self, room_search_param):
