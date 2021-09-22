@@ -24,3 +24,11 @@ class ChannelWubookPmsRoomTypeClassExporter(Component):
     _inherit = "channel.wubook.exporter"
 
     _apply_on = "channel.wubook.pms.room.type.class"
+
+    def _has_to_skip(self):
+        return any(
+            [
+                self.binding.default_code
+                in self.backend_record.backend_type_id.child_id.room_type_class_ids.get_nosync_shortnames(),
+            ]
+        )
