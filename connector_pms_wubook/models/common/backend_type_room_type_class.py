@@ -2,9 +2,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
+
+NOSYNC = "-1"
 
 
 class ChannelWubookBackendTypeRoomTypeClass(models.Model):
@@ -21,6 +24,7 @@ class ChannelWubookBackendTypeRoomTypeClass(models.Model):
         string="Wubook Room Type",
         required=True,
         selection=[
+            (NOSYNC, "--- Don't Sync ---"),
             ("1", "Room"),
             ("2", "Apartment"),
             ("3", "Bed"),
@@ -43,13 +47,27 @@ class ChannelWubookBackendTypeRoomTypeClass(models.Model):
             "Room Type and Shortname already used in another map line",
         ),
         (
-            "room_type_uniq",
-            "unique(backend_type_id,wubook_room_type)",
-            "Room Type already used in another map line",
-        ),
-        (
             "room_type_shortname_uniq",
             "unique(backend_type_id,room_type_shortname)",
             "Shortname already used in another map line",
         ),
     ]
+
+    def get_nosync_shortnames(self):
+        return self.filtered(lambda x: x.wubook_room_type == NOSYNC).mapped(
+            "room_type_shortname"
+        )
+
+    @api.constrains("backend_type_id", "wubook_room_type")
+    def check_room_type_class_mapping(self):
+        for rec in self:
+            other = self.search(
+                [
+                    ("id", "not in", rec.ids),
+                    ("wubook_room_type", "!=", NOSYNC),
+                    ("backend_type_id", "=", rec.backend_type_id.id),
+                    ("wubook_room_type", "=", rec.wubook_room_type),
+                ]
+            )
+            if other:
+                raise ValidationError(_("Room Type already used in another map line"))

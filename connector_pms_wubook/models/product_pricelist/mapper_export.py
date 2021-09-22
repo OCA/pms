@@ -51,6 +51,9 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
             )
         return any(
             [
+                map_record.source.wubook_item_type == "standard"
+                and map_record.source.product_id.room_type_id.class_id.default_code
+                in self.backend_record.backend_type_id.child_id.room_type_class_ids.get_nosync_shortnames(),
                 not map_record.source.wubook_item_type
                 or map_record.parent.source.wubook_plan_type
                 != map_record.source.wubook_item_type,
