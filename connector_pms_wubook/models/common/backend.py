@@ -250,7 +250,7 @@ class ChannelWubookBackend(models.Model):
         now = fields.Datetime.now()
         for backend in self.env["channel.wubook.backend"].search([]):
             if backend.user_id:
-                backend = self.with_user(self.user_id)
+                backend = backend.with_user(self.user_id)
             for i in range(0, interval_sec, int(interval_sec / count)):
                 eta = fields.Datetime.add(now, seconds=i)
                 backend.export_property_availability(eta=eta)
