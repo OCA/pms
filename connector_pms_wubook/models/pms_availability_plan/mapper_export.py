@@ -34,6 +34,8 @@ class ChannelWubookPmsAvailabilityPlanChildBinderMapperExport(Component):
     def skip_item(self, map_record):
         return any(
             [
+                map_record.source.room_type_id.class_id.default_code
+                in self.backend_record.backend_type_id.child_id.room_type_class_ids.get_nosync_shortnames(),
                 map_record.source.pms_property_id
                 != self.backend_record.pms_property_id,
                 map_record.source.synced_export,
