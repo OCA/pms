@@ -506,6 +506,7 @@ class PmsFolio(models.Model):
     def get_invoice_vals_list(
         self, final=False, lines_to_invoice=False, partner_invoice_id=False
     ):
+        print("###",lines_to_invoice)
         precision = self.env["decimal.precision"].precision_get(
             "Product Unit of Measure"
         )
@@ -1400,7 +1401,7 @@ class PmsFolio(models.Model):
                 "mail.message_origin_link",
                 values={
                     "self": move,
-                    "origin": move.line_ids.mapped("folio_line_ids.folio_id"),
+                    "origin": move.line_ids.mapped("folio_line_id.folio_id"),
                 },
                 subtype_id=self.env.ref("mail.mt_note").id,
             )

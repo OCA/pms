@@ -372,6 +372,7 @@
                                             context="{'default_display_type': 'line_note'}"
                                         />
                                     </control>
+                                    <field name="folio_sale_line_master_ids" />
                                     <field name="service_order" invisible="1" />
                                     <field name="date_order" invisible="1" />
                                     <field name="reservation_id" invisible="1" />

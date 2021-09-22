@@ -68,14 +68,12 @@ class FolioSaleLine(models.Model):
     )
     sequence = fields.Integer(string="Sequence", help="", default=10)
 
-    invoice_lines = fields.Many2many(
+    invoice_lines = fields.One2many(
         string="Invoice Lines",
         copy=False,
         help="Folio sale line invoice lines",
         comodel_name="account.move.line",
-        relation="folio_sale_line_invoice_rel",
-        column1="sale_line_id",
-        column2="invoice_line_id",
+        inverse_name="folio_line_id",
     )
     invoice_status = fields.Selection(
         string="Invoice Status",
@@ -318,6 +316,66 @@ class FolioSaleLine(models.Model):
         store=True,
         compute="_compute_date_order",
     )
+
+    folio_sale_line_master = fields.Many2one(
+        help="Other folio sale lines related to this",
+        readonly=False,
+        store=True,
+        comodel_name="folio.sale.line",
+    )
+
+    folio_sale_line_master_ids = fields.Many2many(
+        help="eference from other folio sale lines",
+        readonly=False,
+        store=True,
+        comodel_name="folio.sale.line",
+        compute="_compute_folio_sale_line_master_ids",
+        relation="folio_sale_line_folio_sale_line_rel",
+        column1="id",
+        column2="folio_sale_line_master",
+    )
+
+    @api.depends(
+        "reservation_id",
+        "service_id",
+        "reservation_line_ids",
+        "service_line_ids",
+        "is_board_service",
+        "product_uom_qty",
+    )
+    def _compute_folio_sale_line_master_ids(self):
+        for record in self:
+            record.folio_sale_line_master_ids = False
+            bs_room_id = record.reservation_id.board_service_room_id
+            if not bs_room_id.pms_board_service_id.show_detail_report:
+                if not record.display_type:
+                    if record.is_board_service:
+                        dates_to_search = list()
+                        for fssl in record.service_line_ids:
+                            if fssl.product_id.consumed_on == "before":
+                                dates_to_search.append(fssl.date)
+                            elif fssl.product_id.consumed_on == "after":
+                                dates_to_search.append(
+                                    fssl.date + datetime.timedelta(days=-1)
+                                )
+                        folio_sale_line_reservation_lines = self.env[
+                            "folio.sale.line"
+                        ].search(
+                            [
+                                ("folio_id", "=", record.folio_id.id),
+                                ("reservation_id", "=", record.reservation_id.id),
+                                ("reservation_line_ids", "!=", False),
+                            ]
+                        )
+                        result_ids = list()
+                        for fslrl in folio_sale_line_reservation_lines:
+                            for lin_fslrl in fslrl.reservation_line_ids:
+                                if lin_fslrl.date in dates_to_search:
+                                    result_ids.append(fslrl.id)
+                        result = self.env["folio.sale.line"].search(
+                            [("id", "in", result_ids)]
+                        )
+                        record.folio_sale_line_master_ids = result
 
     @api.depends("qty_to_invoice")
     def _compute_service_order(self):
@@ -907,7 +965,7 @@ class FolioSaleLine(models.Model):
             "tax_ids": [(6, 0, self.tax_ids.ids)],
             "analytic_account_id": self.folio_id.analytic_account_id.id,
             "analytic_tag_ids": [(6, 0, self.analytic_tag_ids.ids)],
-            "folio_line_ids": [(6, 0, [self.id])],
+            "folio_line_id": self.id,
         }
         if optional_values:
             res.update(optional_values)

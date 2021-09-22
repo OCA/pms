@@ -176,7 +176,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
                         "product_id": self.product_id.id,
                         "product_uom_id": line.product_uom.id,
                         "tax_ids": [(6, 0, line.tax_ids.ids)],
-                        "folio_line_ids": [(6, 0, [line.id])],
+                        "folio_line_id": line.id,
                         "analytic_tag_ids": [(6, 0, line.analytic_tag_ids.ids)],
                         "analytic_account_id": order.analytic_account_id.id or False,
                     },
