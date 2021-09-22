@@ -95,7 +95,7 @@ class GenericExporterCustom(AbstractComponent):
             internal_fields = None  # should be created with all the fields
 
         if self._has_to_skip():
-            return
+            return _("Record skipped without errors")
 
         # export the missing linked resources
         self._export_dependencies()
