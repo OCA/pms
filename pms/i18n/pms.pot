@@ -5306,6 +5306,12 @@ msgid "Months"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/product_product.py:0
+#, python-format
+msgid "More than one room found for the same product"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.res_users_view_form
 msgid "Multi Properties"
 msgstr ""
@@ -7338,6 +7344,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__room_type_ids
 #: model:ir.model.fields,field_description:pms.field_pms_num_rooms_selection__room_type_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__room_type_id
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__room_type_id
+#: model:ir.model.fields,field_description:pms.field_product_product__room_type_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
