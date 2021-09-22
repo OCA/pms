@@ -26,15 +26,9 @@ class ChannelWubookProductPricelistExporter(Component):
     _apply_on = "channel.wubook.product.pricelist"
 
     def _export_dependencies(self):
-        products = self.binding.item_ids.filtered(
+        for room_type in self.binding.item_ids.filtered(
             lambda x: x.wubook_item_type == "standard"
-        ).mapped("product_id")
-        room_types = self.env["pms.room.type"].search(
-            [
-                ("product_id", "in", products.ids),
-            ]
-        )
-        for room_type in room_types:
+        ).mapped("product_id.room_type_id"):
             self._export_dependency(room_type, "channel.wubook.pms.room.type")
 
         for pricelist in self.binding.item_ids.filtered(
