@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ProductProduct(models.Model):
@@ -9,6 +10,12 @@ class ProductProduct(models.Model):
         help="Get price on board service",
         digits="Product Price",
         compute="_compute_board_price",
+    )
+
+    room_type_id = fields.Many2one(
+        string="Room Type",
+        comodel_name="pms.room.type",
+        compute="_compute_room_type_id",
     )
 
     @api.depends_context("consumption_date")
@@ -34,6 +41,20 @@ class ProductProduct(models.Model):
                 )
             else:
                 record.board_price = False
+
+    def _compute_room_type_id(self):
+        for rec in self:
+            room_type = self.env["pms.room.type"].search(
+                [
+                    ("product_id", "=", rec.id),
+                ]
+            )
+            if room_type:
+                if len(room_type) > 1:
+                    raise ValidationError(
+                        _("More than one room found for the same product")
+                    )
+                rec.room_type_id = room_type
 
     def price_compute(self, price_type, uom=False, currency=False, company=None):
         if self._context.get("board_service"):
