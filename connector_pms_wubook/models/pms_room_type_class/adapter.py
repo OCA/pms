@@ -73,5 +73,5 @@ class ChannelWubookPmsRoomTypeClassAdapter(Component):
                 "name": names[x.wubook_room_type],
                 "shortname": x.room_type_shortname,
             }
-            for x in backend_type.room_type_class_ids
+            for x in backend_type.room_type_class_ids._filter_by_sync(True)
         ]

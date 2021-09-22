@@ -53,10 +53,16 @@ class ChannelWubookBackendTypeRoomTypeClass(models.Model):
         ),
     ]
 
-    def get_nosync_shortnames(self):
-        return self.filtered(lambda x: x.wubook_room_type == NOSYNC).mapped(
-            "room_type_shortname"
+    def _filter_by_sync(self, sync=None):
+        return self.filtered(
+            lambda x: sync is None
+            or not sync
+            and x.wubook_room_type == NOSYNC
+            or x.wubook_room_type != NOSYNC
         )
+
+    def get_nosync_shortnames(self):
+        return self._filter_by_sync(False).mapped("room_type_shortname")
 
     @api.constrains("backend_type_id", "wubook_room_type")
     def check_room_type_class_mapping(self):
