@@ -72,7 +72,9 @@ class PmsFolioService(Component):
                         "boardService": reservation.board_service_room_id.pms_board_service_id.name
                         if reservation.board_service_room_id
                         else "",
-                        "reservationLines": [] if not reservation_lines else reservation_lines
+                        "reservationLines": []
+                        if not reservation_lines
+                        else reservation_lines,
                     }
                 )
             result_folios.append(
@@ -105,7 +107,7 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.reservation.short.info", is_list=True),
+        output_param=Datamodel("pms.folio.short.info", is_list=True),
         auth="public",
     )
     def get_reservations(self, folio_id):
