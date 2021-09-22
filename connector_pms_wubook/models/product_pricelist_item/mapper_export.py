@@ -25,18 +25,18 @@ class ChannelWubookProductPricelistItemMapperExport(Component):
                         "'Discount' or 'Price' must be defined but not both."
                     )
                 )
-            if record.price_discount:
-                values.update(
-                    {
-                        "variation_type": record.price_discount < 0 and 1 or -1,
-                        "variation": abs(record.price_discount),
-                    }
-                )
             if record.price_surcharge:
                 values.update(
                     {
                         "variation_type": record.price_surcharge < 0 and -2 or 2,
                         "variation": abs(record.price_surcharge),
+                    }
+                )
+            if not values:
+                values.update(
+                    {
+                        "variation_type": record.price_discount < 0 and 1 or -1,
+                        "variation": abs(record.price_discount),
                     }
                 )
             pricelist = record.base_pricelist_id
