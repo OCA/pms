@@ -28,3 +28,10 @@ class ChannelWubookPmsAvailabilityPlanExporter(Component):
     def _export_dependencies(self):
         for room_type in self.binding.rule_ids.mapped("room_type_id"):
             self._export_dependency(room_type, "channel.wubook.pms.room.type")
+
+    def _has_to_skip(self):
+        return any(
+            [
+                self.binding.synced_export,
+            ]
+        )

@@ -33,3 +33,7 @@ class ProductPricelistItem(models.Model):
                 rec.wubook_item_type = "standard"
             else:
                 rec.wubook_item_type = False
+
+    def wubook_date_valid(self):
+        # Wubook does not allow to update records older than 2 days ago
+        return (fields.Date.today() - self.date_start_consumption).days <= 2

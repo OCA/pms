@@ -1,7 +1,7 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields
+from odoo import _
 from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import Component
@@ -62,10 +62,7 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
                 not in map_record.source.pms_property_ids,
                 map_record.source.synced_export,
                 map_record.source.wubook_item_type == "standard"
-                and (
-                    fields.Date.today() - map_record.source.date_start_consumption
-                ).days
-                > 2,
+                and not map_record.source.odoo_id.wubook_date_valid(),
             ]
         )
 
