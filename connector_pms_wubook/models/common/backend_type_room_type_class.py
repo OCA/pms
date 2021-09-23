@@ -56,9 +56,8 @@ class ChannelWubookBackendTypeRoomTypeClass(models.Model):
     def _filter_by_sync(self, sync=None):
         return self.filtered(
             lambda x: sync is None
-            or not sync
-            and x.wubook_room_type == NOSYNC
-            or x.wubook_room_type != NOSYNC
+            or (not sync and x.wubook_room_type == NOSYNC)
+            or (sync and x.wubook_room_type != NOSYNC)
         )
 
     def get_nosync_shortnames(self):
