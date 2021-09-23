@@ -29,11 +29,17 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
         if not synced:
             return False
         newrules = self.rule_ids.filtered(
-            lambda x: self.backend_id not in x.channel_wubook_bind_ids.backend_id
+            lambda x: x.wubook_date_valid()
+            and self.backend_id not in x.channel_wubook_bind_ids.backend_id
         )
         if newrules:
             return False
-        return all(self.channel_wubook_rule_ids.mapped("synced_export"))
+
+        return all(
+            self.channel_wubook_rule_ids.filtered(
+                lambda x: x.odoo_id.wubook_date_valid()
+            ).mapped("synced_export")
+        )
 
     @api.model
     def import_data(
