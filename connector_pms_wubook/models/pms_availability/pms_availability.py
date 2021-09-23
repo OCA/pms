@@ -12,3 +12,7 @@ class PmsAvailability(models.Model):
         inverse_name="odoo_id",
         string="Channel Wubook PMS Bindings",
     )
+
+    def wubook_date_valid(self):
+        # Wubook does not allow to update records older than 2 days ago
+        return (fields.Date.today() - self.date).days <= 2

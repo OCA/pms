@@ -35,3 +35,10 @@ class ChannelWubookProductPricelistExporter(Component):
             lambda x: x.wubook_item_type == "virtual"
         ).mapped("base_pricelist_id"):
             self._export_dependency(pricelist, "channel.wubook.product.pricelist")
+
+    def _has_to_skip(self):
+        return any(
+            [
+                self.binding.synced_export,
+            ]
+        )

@@ -1,7 +1,6 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields
 
 from odoo.addons.component.core import Component
 
@@ -39,8 +38,7 @@ class ChannelWubookPmsAvailabilityPlanChildBinderMapperExport(Component):
                 map_record.source.pms_property_id
                 != self.backend_record.pms_property_id,
                 map_record.source.synced_export,
-                # Wubook does not allow to update records older than 2 days ago
-                (fields.Date.today() - map_record.source.date).days > 2,
+                not map_record.source.odoo_id.wubook_date_valid(),
             ]
         )
 
