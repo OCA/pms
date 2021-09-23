@@ -58,10 +58,9 @@ class Mapper(AbstractComponent):
         for from_attr, to_attr, model_name in self.children:
             if not fields or from_attr in fields:
                 if from_attr in map_record.source:
-                    result[to_attr] = self._map_child(
-                        map_record, from_attr, to_attr, model_name
-                    )
-
+                    items = self._map_child(map_record, from_attr, to_attr, model_name)
+                    if items:
+                        result[to_attr] = items
         return self.finalize(map_record, result)
 
     def get_target_fields(self, map_record, fields):
