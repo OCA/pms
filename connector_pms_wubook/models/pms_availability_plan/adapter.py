@@ -24,7 +24,7 @@ RESTRICTION_FIELDS_EXPORT = RESTRICTION_FIELDS_IMPORT + [
     "max_stay_arrival",
 ]
 
-AVAILABILITY_FIELDS = ["no_ota"]
+AVAILABILITY_FIELDS = ["no_ota", "avail"]
 
 ID_WUBOOK_PLAN = -1
 

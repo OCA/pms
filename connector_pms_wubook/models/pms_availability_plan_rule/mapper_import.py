@@ -17,6 +17,7 @@ class ChannelWubookPmsAvailabilityPlanRuleMapperImport(Component):
     direct = [
         ("date", "date"),
         ("no_ota", "no_ota"),
+        ("avail", "quota"),
         ("min_stay", "min_stay"),
         ("max_stay", "max_stay"),
         ("min_stay_arrival", "min_stay_arrival"),
