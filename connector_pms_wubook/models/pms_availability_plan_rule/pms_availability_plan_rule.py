@@ -13,6 +13,10 @@ class PmsRoomTypeAvailabilityRule(models.Model):
         string="Channel Wubook PMS Bindings",
     )
 
+    def wubook_date_valid(self):
+        # Wubook does not allow to update records older than 2 days ago
+        return (fields.Date.today() - self.date).days <= 2
+
     inconsistent_rules = fields.Many2many(
         readonly=True,
         store=False,
