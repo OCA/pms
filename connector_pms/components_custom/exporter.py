@@ -95,7 +95,7 @@ class GenericExporterCustom(AbstractComponent):
             internal_fields = None  # should be created with all the fields
 
         if self._has_to_skip():
-            return _("Record skipped without errors")
+            return _("Nothing to export")
 
         # export the missing linked resources
         self._export_dependencies()
@@ -112,12 +112,12 @@ class GenericExporterCustom(AbstractComponent):
         if self.external_id:
             values = self._update_data(map_record, fields=internal_fields, **opts)
             if not values:
-                return _("Nothing to export.")
+                return _("Nothing to export")
             self._update(values)
         else:
             values = self._create_data(map_record, fields=internal_fields, **opts)
             if not values:
-                return _("Nothing to export.")
+                return _("Nothing to export")
             self.external_id = self._create(values)
 
         return _("Record exported with ID %s on Backend.") % self.external_id
