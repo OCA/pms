@@ -106,7 +106,6 @@ class ChannelWubookBackend(models.Model):
         relation="wubook_backend_pricelist_rel",
         column1="backend_id",
         column2="pricelist_id",
-        domain=[("pricelist_type", "=", "daily")],
     )
     # TODO: add logic to control this and filter the rooms by the current property
     pricelist_room_type_ids = fields.Many2many(
