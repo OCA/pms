@@ -134,6 +134,7 @@ class ChannelWubookPmsRoomTypeBinding(models.Model):
         return self.export_batch(
             backend_record=backend_record,
             domain=[
+                ("channel_wubook_bind_ids.backend_id", "in", backend_record.ids),
                 ("id", "in", room_types.ids),
                 # ("default_code", "=", "ECO")
             ],
