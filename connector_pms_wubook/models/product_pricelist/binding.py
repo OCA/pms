@@ -29,7 +29,8 @@ class ChannelWubookProductPriceBinding(models.Model):
         if not synced:
             return False
         newrules = self.item_ids.filtered(
-            lambda x: x.wubook_date_valid()
+            lambda x: x.wubook_item_type == "standard"
+            and x.wubook_date_valid()
             and self.backend_id not in x.channel_wubook_bind_ids.backend_id
         )
         if newrules:
@@ -37,7 +38,8 @@ class ChannelWubookProductPriceBinding(models.Model):
 
         return all(
             self.channel_wubook_item_ids.filtered(
-                lambda x: x.odoo_id.wubook_date_valid()
+                lambda x: x.wubook_item_type == "standard"
+                and x.odoo_id.wubook_date_valid()
             ).mapped("synced_export")
         )
 
