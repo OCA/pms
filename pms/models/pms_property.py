@@ -269,66 +269,66 @@ class PmsProperty(models.Model):
         "current_lines",
     )
     def _compute_availability(self):
-        self.ensure_one()
-        checkin = self._context["checkin"]
-        checkout = self._context["checkout"]
-        if isinstance(checkin, str):
-            checkin = datetime.datetime.strptime(
-                checkin, DEFAULT_SERVER_DATE_FORMAT
-            ).date()
-        if isinstance(checkout, str):
-            checkout = datetime.datetime.strptime(
-                checkout, DEFAULT_SERVER_DATE_FORMAT
-            ).date()
-        room_type_id = self.env.context.get("room_type_id", False)
-        pricelist_id = self.env.context.get("pricelist_id", False)
-        current_lines = self.env.context.get("current_lines", [])
-        pms_property = self.with_context(
-            checkin=checkin,
-            checkout=checkout,
-            room_type_id=room_type_id,
-            current_lines=current_lines,
-            pricelist_id=pricelist_id,
-        )
-        count_free_rooms = len(pms_property.free_room_ids)
-        if current_lines and not isinstance(current_lines, list):
-            current_lines = [current_lines]
-
-        domain_rules = [
-            ("date", ">=", checkin),
-            ("date", "<=", checkout),
-            ("pms_property_id", "=", pms_property.id),
-        ]
-        if room_type_id:
-            domain_rules.append(("room_type_id", "=", room_type_id))
-
-        pricelist = False
-        if pricelist_id:
-            pricelist = self.env["product.pricelist"].browse(pricelist_id)
-        if pricelist and pricelist.availability_plan_id:
-            domain_rules.append(
-                ("availability_plan_id", "=", pricelist.availability_plan_id.id)
+        for record in self:
+            checkin = self._context["checkin"]
+            checkout = self._context["checkout"]
+            if isinstance(checkin, str):
+                checkin = datetime.datetime.strptime(
+                    checkin, DEFAULT_SERVER_DATE_FORMAT
+                ).date()
+            if isinstance(checkout, str):
+                checkout = datetime.datetime.strptime(
+                    checkout, DEFAULT_SERVER_DATE_FORMAT
+                ).date()
+            room_type_id = self.env.context.get("room_type_id", False)
+            pricelist_id = self.env.context.get("pricelist_id", False)
+            current_lines = self.env.context.get("current_lines", [])
+            pms_property = record.with_context(
+                checkin=checkin,
+                checkout=checkout,
+                room_type_id=room_type_id,
+                current_lines=current_lines,
+                pricelist_id=pricelist_id,
             )
-            rule_groups = self.env["pms.availability.plan.rule"].read_group(
-                domain_rules,
-                ["plan_avail:sum"],
-                ["date:day"],
-                lazy=False,
-            )
-            if len(rule_groups) > 0:
-                # If in the group per day, some room type has the sale blocked,
-                # we must subtract from that day the availability of that room type
-                for group in rule_groups:
-                    items = self.env["pms.availability.plan.rule"].search(
-                        group["__domain"]
-                    )
-                    for item in items:
-                        if pricelist.availability_plan_id.any_rule_applies(
-                            checkin, checkout, item
-                        ):
-                            group["plan_avail"] -= item.plan_avail
-                count_free_rooms = min(i["plan_avail"] for i in rule_groups)
-        self.availability = count_free_rooms
+            count_free_rooms = len(pms_property.free_room_ids)
+            if current_lines and not isinstance(current_lines, list):
+                current_lines = [current_lines]
+
+            domain_rules = [
+                ("date", ">=", checkin),
+                ("date", "<=", checkout),
+                ("pms_property_id", "=", pms_property.id),
+            ]
+            if room_type_id:
+                domain_rules.append(("room_type_id", "=", room_type_id))
+
+            pricelist = False
+            if pricelist_id:
+                pricelist = self.env["product.pricelist"].browse(pricelist_id)
+            if pricelist and pricelist.availability_plan_id:
+                domain_rules.append(
+                    ("availability_plan_id", "=", pricelist.availability_plan_id.id)
+                )
+                rule_groups = self.env["pms.availability.plan.rule"].read_group(
+                    domain_rules,
+                    ["plan_avail:sum"],
+                    ["date:day"],
+                    lazy=False,
+                )
+                if len(rule_groups) > 0:
+                    # If in the group per day, some room type has the sale blocked,
+                    # we must subtract from that day the availability of that room type
+                    for group in rule_groups:
+                        items = self.env["pms.availability.plan.rule"].search(
+                            group["__domain"]
+                        )
+                        for item in items:
+                            if pricelist.availability_plan_id.any_rule_applies(
+                                checkin, checkout, item
+                            ):
+                                group["plan_avail"] -= item.plan_avail
+                    count_free_rooms = min(i["plan_avail"] for i in rule_groups)
+            record.availability = count_free_rooms
 
     @api.model
     def splitted_availability(
