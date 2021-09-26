@@ -34,6 +34,8 @@ class ChannelBackend(models.Model):
         ondelete="restrict",
     )
 
+    export_disabled = fields.Boolean(string="Export Disabled")
+
     @property
     def child_id(self):
         self.ensure_one()
