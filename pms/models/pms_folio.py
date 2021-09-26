@@ -1494,13 +1494,21 @@ class PmsFolio(models.Model):
             date=date,
         )
         self.env["account.bank.statement.line"].sudo().create(line)
-        self.message_post(
+        folio.message_post(
             body=_(
                 """Payment: <b>%s</b> by <b>%s</b>""",
                 amount,
                 journal.display_name,
             )
         )
+        for reservation in folio.reservation_ids:
+            reservation.message_post(
+                body=_(
+                    """Payment: <b>%s</b> by <b>%s</b>""",
+                    amount,
+                    journal.display_name,
+                )
+            )
         return True
 
     def open_wizard_several_partners(self):
