@@ -37,6 +37,9 @@
                     <group>
                         <field name="backend_type_id" class="oe_inline" />
                     </group>
+                    <group>
+                        <field name="export_disabled" groups="base.group_no_one" />
+                    </group>
                 </sheet>
             </form>
         </field>
