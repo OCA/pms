@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
     <record model="ir.cron" id="autosend_traveller_report">
         <field name="name">Automatic Send Traveller Report</field>
         <field name="active" eval="False" />
