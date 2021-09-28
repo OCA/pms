@@ -506,7 +506,7 @@ class PmsFolio(models.Model):
     def get_invoice_vals_list(
         self, final=False, lines_to_invoice=False, partner_invoice_id=False
     ):
-        print("###",lines_to_invoice)
+        print("###", lines_to_invoice)
         precision = self.env["decimal.precision"].precision_get(
             "Product Unit of Measure"
         )

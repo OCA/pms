@@ -10,7 +10,7 @@
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
                 <field name="name_changed_by_user" invisible="1" />
-                <field name="move_line_to_delete" invisible="1" />
+                <field name="move_line_to_delete" invisible="1" force_save="1" />
             </xpath>
         </field>
     </record>

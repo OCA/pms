@@ -2,7 +2,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError
 
 
 class AccountMoveLine(models.Model):
@@ -33,9 +33,8 @@ class AccountMoveLine(models.Model):
     move_line_to_delete = fields.Boolean(
         help="Indicates if the line should be automatically deleted to maintain"
         " consistency with the lines with which it is associated",
-        default=False,
+        store=True,
         readonly=True,
-        store=False,
         compute="_compute_delete_this_move_line",
     )
 
@@ -48,45 +47,81 @@ class AccountMoveLine(models.Model):
                 record.folio_line_id.service_line_ids
                 and record.folio_line_id.is_board_service
             ):
-                num_nights = len(
-                    record.folio_line_id.folio_sale_line_master_ids.reservation_line_ids
-                )
-                adults = record.folio_line_id.reservation_id.adults
-                max_allowed_qty = num_nights * adults
-                if record.quantity > max_allowed_qty:
-                    raise ValidationError(
-                        _(
-                            "Max qty for this line is: %s",
-                            max_allowed_qty,
-                        )
-                    )
-                elif record.quantity % adults:
-                    raise ValidationError(
-                        _(
-                            "Qty of board service lines should be consistent with its nights"
-                        )
-                    )
-                elif not (record.quantity % adults) and record.quantity != max_allowed_qty:
-                    raise ValidationError(
-                        _(
-                            "Inconsistent qty for related night/s."
-                        )
-                    )
+                pass
+                # print("reservation lines related", record.folio_line_id.folio_sale_line_master_ids)
+
+                # print(fsl_dependant.invoice_lines.mapped("quantity"))
+                # print(record.folio_line_id.reservation_line_ids)
+                # num_nights = len(
+                #     record.folio_line_id.folio_sale_line_master_ids.reservation_line_ids
+                # )
+                # adults = record.folio_line_id.reservation_id.adults
+                # allowed_qty = num_nights * adults
+                # if record.quantity != allowed_qty:
+                #     raise ValidationError(
+                #         _(
+                #             "Allowed qty for this line is: %s",
+                #             allowed_qty,
+                #         )
+                #     )
+
             elif record.folio_line_id.reservation_line_ids:
-                fsl_related = self.env['folio.sale.line'].search(
-                    [
-                        ("folio_sale_line_master_ids", "in", record.folio_line_id.id)
-                    ]
+                fsl_dependant = self.env["folio.sale.line"].search(
+                    [("folio_sale_line_master_ids", "in", record.folio_line_id.id)]
                 )
-                print(fsl_related.ids)
-                aml_related = self.env['account.move.line'].search(
-                    [
-                        ("folio_line_id", "in", fsl_related.ids)
-                    ]
+
+                qty_attempt_number_services = (
+                    record.quantity * record.folio_line_id.reservation_id.adults
                 )
-                nights = record.quantity
-                adults = record.folio_line_id.reservation_id.adults
-                aml_related.quantity = nights * adults
+
+                # recorremos los folio sale lines que dependen del folio sale line enganchado
+                # a esta linea de factura
+                for fsl_d in fsl_dependant:
+
+                    # si el folio sale line (master) de cada linea que recorremos
+                    # tiene solo un folio sale line enganchado
+                    if len(fsl_d.folio_sale_line_master_ids) == 1:
+                        # la cantidad a modificar es 1
+                        fsl_qty = fsl_d.product_uom_qty
+
+                    # en el caso de que el folio sale line (master) de cada linea
+                    # tenga más de un folio sale line enganchado
+                    else:
+                        # obtenemos los folio sale line filtrando por factura
+                        other_nights = fsl_d.folio_sale_line_master_ids.filtered(
+                            lambda x: x.move_id == record.move_id
+                        )
+                        # #.product_uom_qty
+                        # print(other_nights.mapped('name'))
+
+                        # other_nights = sum(
+                        #     fsl_d.folio_sale_line_master_ids.filtered(
+                        #         lambda s: s.record.folio_line_id.id
+                        #     ).product_uom_qty
+                        # )
+                        # print(other_nights)
+                    #
+                    #     fsl_qty = fsl_d.product_uom_qty - (other_nights * record.folio_line_id.reservation_id.adults)
+                    #
+                    # if fsl_qty > qty_attempt_number_services:
+                    #     raise UserError(
+                    #         _(
+                    #             "Cannot change nights related to board services. Need to create a new line."
+                    #         )
+                    #     )
+                    #
+                    # elif fsl_qty < qty_attempt_number_services:
+                    #     # ¿ delete / create / update ?
+                    #
+                    #     fsl_d.move_id.write(
+                    #         {
+                    #             1,
+                    #             fsl_d.id,
+                    #             {
+                    #                 "quantity": qty_attempt_number_services,
+                    #             },
+                    #         }
+                    #     )
 
     @api.depends("name")
     def _compute_name_changed_by_user(self):

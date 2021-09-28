@@ -1,6 +1,6 @@
 # Copyright 2020  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
+import datetime
 from math import ceil
 
 from odoo import _, api, fields, models
@@ -315,13 +315,6 @@ class FolioSaleLine(models.Model):
         readonly=True,
         store=True,
         compute="_compute_date_order",
-    )
-
-    folio_sale_line_master = fields.Many2one(
-        help="Other folio sale lines related to this",
-        readonly=False,
-        store=True,
-        comodel_name="folio.sale.line",
     )
 
     folio_sale_line_master_ids = fields.Many2many(
