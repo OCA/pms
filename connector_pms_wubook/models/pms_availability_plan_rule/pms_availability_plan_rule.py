@@ -27,6 +27,7 @@ class PmsRoomTypeAvailabilityRule(models.Model):
     inconsistent_rule_count = fields.Integer(
         readonly=True,
         store=False,
+        compute_sudo=True,
         compute="_compute_inconsistent_rules",
     )
 
