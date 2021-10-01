@@ -599,9 +599,6 @@ class PmsCheckinPartner(models.Model):
 
     @api.model
     def _checkin_mandatory_fields(self, depends=False):
-        # api.depends need "reservation_id.state" in the lambda function
-        if depends:
-            return ["reservation_id.state", "name"]
         mandatory_fields = [
             "name",
             "birthdate_date",
@@ -610,12 +607,14 @@ class PmsCheckinPartner(models.Model):
             "document_type",
             "document_expedition_date",
         ]
+        # api.depends need "reservation_id.state" in the lambda function
+        if depends:
+            mandatory_fields.extend(["reservation_id.state", "name"])
 
         return mandatory_fields
 
     @api.model
     def _checkin_partner_fields(self):
-        # api.depends need "reservation_id.state" in the lambda function
         checkin_fields = [
             "firstname",
             "lastname",
