@@ -6,6 +6,10 @@ class TestResPartner(TestPms):
         super().setUp()
 
     def test_ine_code_foreign_partner(self):
+        """
+        The ine code for foreigners partners should match the alpha code 3
+        """
+
         # ARRANGE & ACT
         # get record of russia
         self.country_russia = self.env["res.country"].search([("code", "=", "RU")])
@@ -23,10 +27,16 @@ class TestResPartner(TestPms):
         # ASSERT
         self.assertEqual(
             self.partner_1.ine_code,
-            self.partner_1.country_id.code_alpha3
+            self.partner_1.country_id.code_alpha3,
+            "The ine code for foreigners should match code_alpha3",
         )
 
     def test_ine_code_spanish_partner(self):
+        """
+        The ine code for Spanish partners must match the ine code
+        of the state to which they belong
+        """
+
         # ARRANGE & ACT
         # get record of russia
         country_spain = self.env["res.country"].search([("code", "=", "ES")])
@@ -46,5 +56,7 @@ class TestResPartner(TestPms):
         # ASSERT
         self.assertEqual(
             self.partner_1.ine_code,
-            self.partner_1.state_id.ine_code
+            self.partner_1.state_id.ine_code,
+            "The ine code for Spanish partners must match the ine"
+            " code of the state to which they belong",
         )
