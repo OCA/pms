@@ -12,7 +12,6 @@ class ResPartner(models.Model):
 
     ine_code = fields.Char(
         string="INE State Code",
-        required=True,
         compute="_compute_ine_code",
         store=True,
     )
