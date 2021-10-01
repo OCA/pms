@@ -53,6 +53,11 @@ msgid "Connection established succesfully"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model,name:pms_l10n_es.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
@@ -137,6 +142,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state__display_name
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__display_name
 msgid "Display Name"
 msgstr ""
@@ -218,6 +224,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state__id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__id
 msgid "ID"
 msgstr ""
@@ -233,7 +240,10 @@ msgid "INE Settings"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property__ine_code
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state__ine_code
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner__ine_code
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_users__ine_code
 msgid "INE State Code"
 msgstr ""
 
@@ -284,6 +294,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_property____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_room____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_res_country_state____last_update
+#: model:ir.model.fields,field_description:pms_l10n_es.field_res_partner____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard____last_update
 msgid "Last Modified on"
 msgstr ""
