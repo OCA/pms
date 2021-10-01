@@ -16,7 +16,7 @@ class ResPartner(models.Model):
         store=True,
     )
 
-    @api.depends("nationality_id")
+    @api.depends("nationality_id", "state_id")
     def _compute_ine_code(self):
         for record in self:
             if not record.nationality_id:
@@ -24,4 +24,6 @@ class ResPartner(models.Model):
             elif record.nationality_id.code != CODE_SPAIN:
                 record.ine_code = record.country_id.code_alpha3
             else:
+                if not record.state_id:
+                    record.ine_code = False
                 record.ine_code = record.state_id.ine_code
