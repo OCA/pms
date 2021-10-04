@@ -168,7 +168,7 @@ class TestPmsCheckinPartner(TestPms):
         )
 
     @freeze_time("2012-01-14")
-    def test_late_checkin(self):
+    def test_premature_checkin(self):
         """
         Check that cannot change checkin_partner state to onboard if
         it's not yet checkin day
@@ -184,8 +184,34 @@ class TestPmsCheckinPartner(TestPms):
         with self.assertRaises(ValidationError, msg="Cannot do checkin onboard"):
             self.checkin1.action_on_board()
 
+    @freeze_time("2012-01-14")
+    def test_late_checkin_on_checkout_day(self):
+        """
+        Check that allowed register checkin arrival the next day
+        even if it is the same day of checkout
+        """
+
+        # ARRANGE
+        self.reservation_1.write(
+            {
+                "checkin": datetime.date.today() + datetime.timedelta(days=-1),
+                "checkout": datetime.date.today(),
+            }
+        )
+
+        # ACT
+        self.checkin1.action_on_board()
+
+        # ASSERT
+        self.assertEqual(
+            self.checkin1.arrival,
+            fields.datetime.now(),
+            """The system did not allow to check in the next
+            day because it was the same day of checkout""",
+        )
+
     @freeze_time("2012-01-13")
-    def test_premature_checkin(self):
+    def test_late_checkin(self):
         """
         When host arrives late anad has already passed the checkin day,
         the arrival date is updated up to that time.
