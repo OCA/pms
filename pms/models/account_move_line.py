@@ -2,7 +2,7 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 
 class AccountMoveLine(models.Model):
@@ -30,89 +30,107 @@ class AccountMoveLine(models.Model):
         store=True,
         compute="_compute_name_changed_by_user",
     )
-    move_line_to_delete = fields.Boolean(
-        help="Indicates if the line should be automatically deleted to maintain"
+    # board_services_invoiced_related_ids = fields.One2many(
+    #     string="Related board services",
+    #     help="Related invoice lines with board services",
+    #     compute="_compute_board_services_invoiced_related",
+    # )
+    # board_service_related_quantity = fields.Float(
+    #     string="Quantity",
+    #     help="Board service has automativ quantity based on adults and room nights invoiced",
+    #     digits="Product Unit of Measure",
+    #     compute="_compute_board_service_quantity",
+    #     store="True",
+    # )
+    update_board_move_lines = fields.Boolean(
+        help="Indicates if the board related lines should be automatically updated to maintain"
         " consistency with the lines with which it is associated",
         store=True,
         readonly=True,
-        compute="_compute_delete_this_move_line",
+        compute="_compute_update_board_move_lines",
     )
 
-    @api.depends("quantity")
-    def _compute_delete_this_move_line(self):
-        for record in self:
-            record.move_line_to_delete = False
+    def _compute_board_services_invoiced_related_ids(self):
+        self.board_services_invoiced_related_ids = False
+        for record in self.filtered("folio_line_ids"):
+            fsl_dependants = self.env["folio.sale.line"].search(
+                [("folio_sale_line_master_ids", "in", record.folio_line_id.id)]
+            )
+            if fsl_dependants:
+                record.board_services_invoiced_related_ids = [
+                    (
+                        6,
+                        0,
+                        fsl_dependants.move_line_ids.filtered(
+                            lambda l: l.move_id == record.move_id
+                        ).ids,
+                    )
+                ]
 
+    @api.depends("quantity")
+    def _compute_update_board_move_lines(self):
+        self.update_board_move_lines = False
+        for record in self.filtered("folio_line_id"):
+            # Dont allowed modify directly cuantity in board services invoice lines related
             if (
                 record.folio_line_id.service_line_ids
                 and record.folio_line_id.is_board_service
             ):
-                pass
-                # print("reservation lines related", record.folio_line_id.folio_sale_line_master_ids)
-
-                # print(fsl_dependant.invoice_lines.mapped("quantity"))
-                # print(record.folio_line_id.reservation_line_ids)
-                # num_nights = len(
-                #     record.folio_line_id.folio_sale_line_master_ids.reservation_line_ids
-                # )
-                # adults = record.folio_line_id.reservation_id.adults
-                # allowed_qty = num_nights * adults
-                # if record.quantity != allowed_qty:
-                #     raise ValidationError(
-                #         _(
-                #             "Allowed qty for this line is: %s",
-                #             allowed_qty,
-                #         )
-                #     )
-
+                allowed_qty = sum(
+                    record.folio_line_id.folio_sale_line_master_ids.move_line_ids.filtered(
+                        lambda l: l.move_id == record.move_id
+                    ).quantity
+                )
+                if record.quantity != allowed_qty:
+                    raise ValidationError(
+                        _(
+                            """This line is a board service related with a room, please,
+                            update the room cuantity"""
+                        )
+                    )
             elif record.folio_line_id.reservation_line_ids:
                 fsl_dependant = self.env["folio.sale.line"].search(
                     [("folio_sale_line_master_ids", "in", record.folio_line_id.id)]
                 )
-
-                qty_attempt_number_services = (
-                    record.quantity * record.folio_line_id.reservation_id.adults
-                )
-
-                # recorremos los folio sale lines que dependen del folio sale line enganchado
-                # a esta linea de factura
+                # qty_attempt_number_services = (
+                #     record.quantity * record.folio_line_id.reservation_id.adults
+                # )
                 for fsl_d in fsl_dependant:
+                    current_invoice_lines_related = fsl_d.move_line_ids.filtered(
+                        lambda l: l.move_id == record.move_id
+                    )
+                    sum(current_invoice_lines_related.cuantity)
 
-                    # si el folio sale line (master) de cada linea que recorremos
-                    # tiene solo un folio sale line enganchado
-                    if len(fsl_d.folio_sale_line_master_ids) == 1:
-                        # la cantidad a modificar es 1
-                        fsl_qty = fsl_d.product_uom_qty
+                    # If board service is related with more than this invoice,
+                    # the related quantity...
+                    # else:
+                    #     other_nights = fsl_d.folio_sale_line_master_ids.filtered(
+                    #         lambda x: x.move_id != record.move_id
+                    #     )
+                    #     other_invoiced_nights = sum(
+                    #         fsl_d.folio_sale_line_master_ids.filtered(
+                    #             lambda s: s.record.folio_line_id.id
+                    #         ).qty_invoiced
+                    #     )
+                    #     fsl_qty = fsl_d.product_uom_qty - (
+                    #       other_invoiced_nights * record.folio_line_id.reservation_id.adults
+                    #     )
 
-                    # en el caso de que el folio sale line (master) de cada linea
-                    # tenga más de un folio sale line enganchado
-                    else:
-                        # obtenemos los folio sale line filtrando por factura
-                        other_nights = fsl_d.folio_sale_line_master_ids.filtered(
-                            lambda x: x.move_id == record.move_id
-                        )
-                        # #.product_uom_qty
-                        # print(other_nights.mapped('name'))
-
-                        # other_nights = sum(
-                        #     fsl_d.folio_sale_line_master_ids.filtered(
-                        #         lambda s: s.record.folio_line_id.id
-                        #     ).product_uom_qty
-                        # )
-                        # print(other_nights)
-                    #
-                    #     fsl_qty = fsl_d.product_uom_qty - (other_nights * record.folio_line_id.reservation_id.adults)
-                    #
                     # if fsl_qty > qty_attempt_number_services:
                     #     raise UserError(
                     #         _(
-                    #             "Cannot change nights related to board services. Need to create a new line."
+                    #             """Cannot increase nights related to board services.
+                    #              Need to create a new line."""
                     #         )
                     #     )
-                    #
                     # elif fsl_qty < qty_attempt_number_services:
                     #     # ¿ delete / create / update ?
-                    #
+                    #     # recover board services invoice lines related
+                    #     board_move_lines = fsl_d.invoice_lines.filtered(
+                    #       lambda l: l.move_id == record.move_id
+                    #     )
+                    #     if qty_attempt_number_services == 0
+
                     #     fsl_d.move_id.write(
                     #         {
                     #             1,
