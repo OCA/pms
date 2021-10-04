@@ -652,7 +652,7 @@ class PmsCheckinPartner(models.Model):
         for record in self:
             if record.reservation_id.checkin > fields.Date.today():
                 raise ValidationError(_("It is not yet checkin day!"))
-            if record.reservation_id.checkout <= fields.Date.today():
+            if record.reservation_id.checkout < fields.Date.today():
                 raise ValidationError(_("Its too late to checkin"))
 
             if any(
