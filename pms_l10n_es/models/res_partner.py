@@ -22,7 +22,7 @@ class ResPartner(models.Model):
             if not record.nationality_id:
                 record.ine_code = False
             elif record.nationality_id.code != CODE_SPAIN:
-                record.ine_code = record.country_id.code_alpha3
+                record.ine_code = record.nationality_id.code_alpha3
             else:
                 if not record.state_id:
                     record.ine_code = False
