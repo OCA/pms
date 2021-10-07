@@ -44,3 +44,8 @@ class ProductTemplate(models.Model):
         help="Indicates if that product is a extra bed, add +1 capacity in the room",
         default=False,
     )
+    is_crib = fields.Boolean(
+        string="Is a baby crib",
+        help="Indicates if that product is a crib",
+        default=False,
+    )
