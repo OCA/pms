@@ -15,6 +15,7 @@
                                 options="{'no_create': True,'no_open': True}"
                             />
                             <field name="is_extra_bed" />
+                            <field name="is_crib" />
                             <field name="daily_limit" />
                         </group>
                         <group>
