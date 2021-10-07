@@ -4,9 +4,9 @@
         <t t-call="portal.portal_layout">
             <t t-set="additional_title">Contact Details</t>
             <form action="/my/precheckin" method="post">
-                <div t-if="error_message" class="alert alert-danger" role="alert">
-                    <t t-foreach="error_message" t-as="err"><t t-esc="err" /><br /></t>
-                </div>
+                <!--                <div t-if="error_message" class="alert alert-danger" role="alert">-->
+                <!--                    <t t-foreach="error_message" t-as="err"><t t-esc="err" /><br /></t>-->
+                <!--                </div>-->
                 <div t-if="success" class="alert alert-success" role="alert">
                     <span>Data saved successfully!</span>
                 </div>
@@ -22,7 +22,7 @@
                     </div>
                     <div class="col-lg-12">
                         <div class="row">
-                            <div t-attf-class="form-group col-xl-6">
+                            <div t-attf-class="form-group col-xl-4 pb-xl-5 pt-xl-5">
                                 <label
                                     class="col-form-label"
                                     for="firstname"
@@ -33,8 +33,11 @@
                                     t-attf-class="form-control #{error.get('firstname') and 'is-invalid' or ''}"
                                     t-att-value="firstname or checkin_partner.firstname"
                                 />
+                                <t t-if="error_message">
+                                    <span class="text-danger" t-esc="error_message.get('firstname')"/>
+                                </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-6">
+                            <div t-attf-class="form-group col-xl-4 pt-xl-5">
                                 <label
                                     class="col-form-label"
                                     for="lastname"
@@ -46,7 +49,7 @@
                                     t-att-value="lastname or checkin_partner.lastname"
                                 />
                             </div>
-                            <div t-attf-class="form-group col-xl-6">
+                            <div t-attf-class="form-group col-xl-4 pt-xl-5">
                                 <label
                                     class="col-form-label"
                                     for="lastname2"
@@ -58,7 +61,63 @@
                                     t-att-value="lastname2 or checkin_partner.lastname2"
                                 />
                             </div>
-                            <div t-attf-class="form-group col-xl-6">
+                            <div t-attf-class="form-group col-xl-4 pb-xl-5">
+                                <label
+                                    class="col-form-label"
+                                    for="document_type"
+                                >Doc. Type</label>
+                                <select class="form-control #{error.get('document_type') and 'is-invalid' or ''}" name='document_type'>
+                                    <option value="">Select an option</option>
+                                    <t t-foreach="doc_type_ids" t-as='doc_type'>
+                                        <option
+                                            t-att-value="doc_type.name"
+                                            t-att-selected="doc_type.id == checkin_partner.document_type.id"
+                                        >
+                                            <t t-esc='doc_type.name'/>
+                                        </option>
+                                    </t>
+                                </select>
+                                <t t-if="error_message">
+                                    <span class="text-danger" t-esc="error_message.get('document_type')"/>
+                                </t>
+                            </div>
+                            <div t-attf-class="form-group col-xl-4">
+                                <label
+                                    class="col-form-label"
+                                    for="document_number"
+                                >Doc. Number</label>
+                                <input
+                                    type="text"
+                                    name="document_number"
+                                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
+                                    t-att-value="doc_number or checkin_partner.document_number"
+                                />
+                                <t t-if="error_message">
+                                    <span class="text-danger" t-esc="error_message.get('document_number')"/>
+                                </t>
+                            </div>
+                            <div t-attf-class="form-group col-xl-4">
+                                <label
+                                    class="col-form-label"
+                                    for="document_expedition_date"
+                                >Doc. Expedition Date/Doc. Validity Date</label>
+                                <span
+                                    class="fa fa-question-circle fa-lg"
+                                    data-toggle="tooltip"
+                                    title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."
+                                    style = "margin-left: 70px;"
+                                />
+                                <input
+                                    type="date"
+                                    name="document_expedition_date"
+                                    t-attf-class="form-control #{error.get('document_expedition_date') and 'is-invalid' or ''}"
+                                    t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
+                                />
+                                <t t-if="error_message">
+                                    <span class="text-danger" t-esc="error_message.get('document_expedition_date')"/>
+                                </t>
+                            </div>
+                            <div t-attf-class="form-group col-xl-4 pb-xl-5">
                                 <label
                                     class="col-form-label"
                                     for="birthdate_date"
@@ -69,74 +128,11 @@
                                     t-attf-class="form-control #{error.get('birthdate_date') and 'is-invalid' or ''}"
                                     t-att-value="birth_date or checkin_partner.birthdate_date"
                                 />
+                                <t t-if="error_message">
+                                    <span class="text-danger" t-esc="error_message.get('birthdate_date')"/>
+                                </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-6">
-                                <label
-                                    class="col-form-label"
-                                    for="gender"
-                                >Gender</label>
-                                <div class="d-none"><p id="genderId"><t
-                                            t-esc="checkin_partner.gender"
-                                        /></p></div>
-                                <select
-                                    class="form-control"
-                                    id="gender"
-                                    name="gender"
-                                    t-att-value="gender or checkin_partner.gender"
-                                >
-                                    <option value="">Select an option</option>
-                                    <option value="female">Female</option>
-                                    <option value="male">Male</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div t-attf-class="form-group col-xl-6">
-                                <label
-                                    class="col-form-label"
-                                    for="document_type"
-                                >Doc. type</label>
-                                <div class="d-none"><p id="docTypeId"><t
-                                            t-esc="checkin_partner.document_type"
-                                        /></p></div>
-                                <select
-                                    t-attf-class="form-control #{error.get('document_type') and 'is-invalid' or ''}"
-                                    id="doc_type_id"
-                                    name="document_type"
-                                    t-att-value="document_type or checkin_partner.document_type"
-                                >
-                                    <option value="">Select an option</option>
-                                    <option value="D">DNI</option>
-                                    <option value="C">Driving License</option>
-                                    <option value="I">Identification Document</option>
-                                    <option value="N">Spanish residence permit</option>
-                                    <option value="X">European residence permit</option>
-                                </select>
-                            </div>
-                            <div t-attf-class="form-group col-xl-6">
-                                <label
-                                    class="col-form-label"
-                                    for="document_number"
-                                >Doc. number</label>
-                                <input
-                                    type="text"
-                                    name="document_number"
-                                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
-                                    t-att-value="doc_number or checkin_partner.document_number"
-                                />
-                            </div>
-                            <div t-attf-class="form-group col-xl-6">
-                                <label
-                                    class="col-form-label"
-                                    for="document_expedition_date"
-                                >Doc. expedition date</label>
-                                <input
-                                    type="date"
-                                    name="document_expedition_date"
-                                    t-attf-class="form-control #{error.get('document_expedition_date') and 'is-invalid' or ''}"
-                                    t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
-                                />
-                            </div>
-                            <div t-attf-class="form-group col-xl-6">
+                            <div t-attf-class="form-group col-xl-4">
                                 <label
                                     class="col-form-label"
                                     for="mobile"
@@ -147,8 +143,11 @@
                                     t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"
                                     t-att-value="mobile or checkin_partner.mobile"
                                 />
+                                <t t-if="error_message">
+                                    <span class="text-danger" t-esc="error_message.get('mobile')"/>
+                                </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-6">
+                            <div t-attf-class="form-group col-xl-4">
                                 <label class="col-form-label" for="email">Email</label>
                                 <input
                                     type="email"
@@ -156,11 +155,79 @@
                                     t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
                                     t-att-value="email or checkin_partner.email"
                                 />
+                                <t t-if="error_message">
+                                    <span class="text-danger" t-esc="error_message.get('email')"/>
+                                </t>
+                            </div>
+                            <div t-attf-class="form-group col-xl-4 pb-xl-5">
+                                <label
+                                    class="col-form-label"
+                                    for="gender"
+                                >Gender</label>
+                                <div class="d-none"><p id="genderId"><t
+                                    t-esc="checkin_partner.gender"
+                                /></p></div>
+                                <select
+                                    class="form-control"
+                                    name="gender"
+                                    t-att-value="checkin_partner.gender"
+                                >
+                                    <option value="">Select an option</option>
+                                    <option
+                                        value="female"
+                                        t-att-selected="'female' == checkin_partner.gender"
+                                    >
+                                        Female
+                                    </option>
+                                    <option
+                                        value="male"
+                                        t-att-selected="'male' == checkin_partner.gender"
+                                    >
+                                        Male
+                                    </option>
+                                    <option
+                                        value="other"
+                                        t-att-selected="'other' == checkin_partner.gender"
+                                    >
+                                        Other
+                                    </option>
+                                </select>
+                            </div>
+                            <div t-attf-class="form-group col-xl-4">
+                                <label
+                                    class="col-form-label"
+                                    for="nationality_id"
+                                >Nationality</label>
+                                <select class="form-control" id="country" name='nationality_id'>
+                                    <option value="">Select an option</option>
+                                    <t t-foreach="country_ids" t-as='country_id'>
+                                        <option
+                                            t-att-value="country_id.id"
+                                            t-att-selected="country_id.id == checkin_partner.nationality_id.id"
+                                        >
+                                            <t t-esc='country_id.name'/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="form-group col-xl-4">
+                                <label
+                                    class="col-form-label"
+                                    for="state"
+                                >Country State</label>
+                                <select class="form-control" id="state" name='state'>
+                                    <option value="">Select an option</option>
+                                    <t t-foreach="state_ids" t-as='state'>
+                                        <option t-att-value="state.id"  t-att-country_id="state.country_id.id" t-att-selected="state.id == checkin_partner.state_id.id">
+                                            <t t-esc="state.name" />
+                                        </option>
+                                    </t>
+                                </select>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="clearfix">
+                <div>
                     <button type="submit" class="btn btn-primary float-right mb32 ">
                         Confirm
                         <span class="fa fa-long-arrow-right" />
@@ -169,35 +236,55 @@
             </form>
         </t>
         <script>
+            $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
+        <script>
             var select_doc_type = document.getElementById("doc_type_id")
             var document_type_value = document.getElementById("docTypeId").textContent
             for (let i=0;i&lt;select_doc_type.length;i++){
-                if (select_doc_type[i].value == document_type_value){
-                    select_doc_type[i].setAttribute("selected","True")
-                }
+            if (select_doc_type[i].value == document_type_value){
+            select_doc_type[i].setAttribute("selected","True")
+            }
             }
 
             var select_gender = document.getElementById("gender")
             var gender_value = document.getElementById("genderId").textContent
             for (let i=0;i&lt;select_gender.length;i++){
-                if(select_gender[i].value==gender_value){
-                    select_gender[i].setAttribute("selected","True")
-                }
+            if(select_gender[i].value==gender_value){
+            select_gender[i].setAttribute("selected","True")
             }
+            }
+        </script>
+        <script>
+            let select_country = document.getElementById('country')
+
+            select_country.addEventListener("change", () => {
+            let country_value = select_country.value
+            Array.from(document.getElementById('state').options).forEach(element => {
+            if (element.getAttribute('country_id') == country_value ) {
+            element.style="";
+            } else {
+            element.style="display:none";
+            }
+            });
+            });
+
         </script>
     </template>
     <template id="portal_my_reservation_precheckin" name="Precheckin Reservation">
         <t t-call="portal.portal_layout">
             <t t-if="not reservation.checkin_partner_ids">
                 <p
-                >There are currently no precheckins in this reserva for your account.</p>
+                >There are currently no precheckins in this reservation for your account.</p>
             </t>
             <t t-if="reservation.checkin_partner_ids" t-call="portal.portal_table">
                 <thead>
                     <tr class="active">
                         <th>PreCheckin in Reservation <span
-                                t-field="reservation.name"
-                            /></th>
+                            t-field="reservation.name"
+                        /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -209,7 +296,7 @@
                             role="alert"
                         >
                             <t t-foreach="error_message" t-as="err"><t t-esc="err" /><br
-                                /></t>
+                            /></t>
                         </div>
                         <div t-if="success" class="alert alert-success" role="alert">
                             <span>Data saved successfully!</span>
@@ -241,165 +328,165 @@
                                     </a>
 
                                     <div class="row o_portal_details">
-                                            <div class="col-lg-8">
-                                                <div
+                                        <div class="col-lg-8">
+                                            <div
                                                 class="row collapse"
                                                 t-att-id="id1"
                                             >
-                                                    <div
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="firstname"
                                                     >Name</label>
-                                                        <input
+                                                    <input
                                                         type="text"
                                                         t-att-name="'firstname-' + str(count)"
                                                         t-attf-class="form-control #{error.get('firstname-'+str(count)) and 'is-invalid' or ''}"
                                                         t-att-value="firstname or (checkin_partner.firstname)"
                                                     />
-                                                    </div>
-                                                    <div
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="lastname"
                                                     >Lastname</label>
-                                                        <input
+                                                    <input
                                                         type="text"
                                                         t-att-name="'lastname-' + str(count)"
                                                         t-attf-class="form-control"
                                                         t-att-value="lastname or checkin_partner.lastname"
                                                     />
-                                                    </div>
-                                                    <div
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="lastname2"
                                                     > Second Lastname</label>
-                                                        <input
+                                                    <input
                                                         type="text"
                                                         t-att-name="'lastname2-' + str(count)"
                                                         t-attf-class="form-control"
                                                         t-att-value="lastname2 or checkin_partner.lastname2"
                                                     />
-                                                    </div>
-                                                    <div
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="birthdate_date"
                                                     > Birth Date</label>
-                                                        <input
+                                                    <input
                                                         type="date"
                                                         t-att-name="'birthdate_date-'+ str(count)"
                                                         t-attf-class="form-control #{error.get('birthdate_date-'+str(count)) and 'is-invalid' or ''}"
                                                         t-att-value="birthdate_date or checkin_partner.birthdate_date"
                                                     />
-                                                    </div>
-                                                    <div
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="gender"
                                                     >Gender</label>
                                                     <div class="d-none"><p
-                                                            class="gender_class"
-                                                            t-att-id="'genderId'+str(count)"
-                                                        ><t
-                                                                t-esc="checkin_partner.gender"
-                                                            /></p></div>
+                                                        class="gender_class"
+                                                        t-att-id="'genderId'+str(count)"
+                                                    ><t
+                                                        t-esc="checkin_partner.gender"
+                                                    /></p></div>
                                                     <select
                                                         class="form-control select_gender_class"
                                                         t-att-id="'gender-'+ str(count)"
                                                         t-att-name="'gender-'+ str(count)"
                                                         t-att-value="gender or checkin_partner.gender"
                                                     >
-                                                            <option
+                                                        <option
                                                             value=""
                                                         >Select an option</option>
-                                                            <option
+                                                        <option
                                                             value="female"
                                                         >Female</option>
-                                                            <option
+                                                        <option
                                                             value="male"
                                                         >Male</option>
-                                                            <option
+                                                        <option
                                                             value="other"
                                                         >Other</option>
-                                                        </select>
-                                                    </div>
-                                                    <div
+                                                    </select>
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="document_type"
                                                     >Doc. type</label>
 
                                                     <div class="d-none"><p
-                                                            class="doc_type_class"
-                                                            t-att-id="'docTypeId'+str(count)"
-                                                        ><t
-                                                                t-esc="checkin_partner.document_type"
-                                                            /></p></div>
+                                                        class="doc_type_class"
+                                                        t-att-id="'docTypeId'+str(count)"
+                                                    ><t
+                                                        t-esc="checkin_partner.document_type"
+                                                    /></p></div>
                                                     <select
                                                         t-attf-class="form-control select_doc_type_class #{error.get('document_type-'+ str(count)) and 'is-invalid' or ''}"
                                                         t-att-id="'doc_type_id'+str(count)"
                                                         t-att-name="'document_type-'+ str(count)"
                                                         t-att-value="document_type or checkin_partner.document_type"
                                                     >
-                                                            <option
+                                                        <option
                                                             value=""
                                                         >Select an option</option>
-                                                            <option
+                                                        <option
                                                             value="D"
                                                         >DNI</option>
-                                                            <option
+                                                        <option
                                                             value="P"
                                                         >Passport</option>
-                                                            <option
+                                                        <option
                                                             value="C"
                                                         >Driving License</option>
-                                                            <option
+                                                        <option
                                                             value="I"
                                                         >Identification Document</option>
-                                                            <option
+                                                        <option
                                                             value="N"
                                                         >Spanish residence permit</option>
-                                                            <option
+                                                        <option
                                                             value="X"
                                                         >European residence permit</option>
-                                                        </select>
-                                                    </div>
-                                                    <div
+                                                    </select>
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="document_number"
                                                     >Doc. number</label>
-                                                        <input
+                                                    <input
                                                         type="text"
                                                         t-att-name="'document_number-'+ str(count)"
                                                         t-attf-class="form-control #{error.get('document_number-'+str(count)) and 'is-invalid' or ''}"
                                                         t-att-value="document_number or checkin_partner.document_number"
                                                     />
-                                                    </div>
-                                                    <div
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="document_expedition_date"
                                                     >Doc. expedition date</label>
-                                                        <input
+                                                    <input
                                                         type="date"
                                                         t-att-name="'document_expedition_date-'+ str(count)"
                                                         t-attf-class="form-control #{error.get('document_expedition_date-'+str(count)) and 'is-invalid' or ''}"
@@ -411,40 +498,40 @@
                                                         class="col-form-label"
                                                         for="mobile"
                                                     >Mobile</label>
-                                                        <input
+                                                    <input
                                                         type="phone"
                                                         t-att-name="'mobile-'+ str(count)"
                                                         t-attf-class="form-control #{error.get('mobile-'+str(count)) and 'is-invalid' or ''}"
                                                         t-att-value="mobile or checkin_partner.mobile"
                                                     />
-                                                    </div>
-                                                    <div
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6"
                                                 >
-                                                        <label
+                                                    <label
                                                         class="col-form-label"
                                                         for="email"
                                                     >Email</label>
-                                                        <input
+                                                    <input
                                                         type="email"
                                                         t-att-name="'email-'+ str(count)"
                                                         t-attf-class="form-control #{error.get('email-'+str(count)) and 'is-invalid' or ''}"
                                                         t-att-value="email or checkin_partner.email"
                                                     />
-                                                    </div>
-                                                    <div
+                                                </div>
+                                                <div
                                                     t-attf-class="form-group col-xl-6 d-none"
                                                 >
-                                                        <input
+                                                    <input
                                                         type="text"
                                                         t-att-name="'id-'+ str(count)"
                                                         t-attf-class="form-control"
                                                         t-att-value="id or checkin_partner.id"
                                                     />
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
                                 </td>
                             </tr>
                         </t>
@@ -477,31 +564,31 @@
         <script>
             let listaElementos = document.getElementsByClassName("fa-sm");
             for(i=0; i&lt;listaElementos.length; i++){
-                let element =document.getElementById(i+1)
-                element.addEventListener('click', function(){
-                    element.classList.toggle("fa-chevron-down");
-                    element.classList.toggle("fa-chevron-up");
-                },false);
+            let element =document.getElementById(i+1)
+            element.addEventListener('click', function(){
+            element.classList.toggle("fa-chevron-down");
+            element.classList.toggle("fa-chevron-up");
+            }, false);
             }
             let selects_doc_type = document.getElementsByClassName("select_doc_type_class");
             let doc_type_values = document.getElementsByClassName("doc_type_class");
             for(i=0;i&lt;selects_doc_type.length;i++){
-                let doc_type_value = doc_type_values[i].textContent;
-                for(x=0;x&lt;selects_doc_type[i].length;x++){
-                    if(selects_doc_type[i][x].value == doc_type_value){
-                         selects_doc_type[i][x].setAttribute("selected","True")
-                    }
-                }
+            let doc_type_value = doc_type_values[i].textContent;
+            for(x=0;x&lt;selects_doc_type[i].length;x++){
+            if(selects_doc_type[i][x].value == doc_type_value){
+            selects_doc_type[i][x].setAttribute("selected","True")
+            }
+            }
             }
             let selects_gender = document.getElementsByClassName("select_gender_class");
             let gender_values = document.getElementsByClassName("gender_class");
             for(i=0;i&lt;selects_gender.length;i++){
-                let gender_value = gender_values[i].textContent;
-                for(x=0;x&lt;selects_gender[i].length;x++){
-                    if(selects_gender[i][x].value == gender_value){
-                         selects_gender[i][x].setAttribute("selected","True")
-                    }
-                }
+            let gender_value = gender_values[i].textContent;
+            for(x=0;x&lt;selects_gender[i].length;x++){
+            if(selects_gender[i][x].value == gender_value){
+            selects_gender[i][x].setAttribute("selected","True")
+            }
+            }
             }
         </script>
     </template>
@@ -519,6 +606,10 @@
                 </thead>
                 <tbody>
                     <t t-set="count" t-value="0" />
+
+                    <div t-if="success" class="alert alert-success" role="alert">
+                        <span>Data saved successfully!</span>
+                    </div>
                     <form action="/my/precheckin/folio_reservation" method="post">
                         <div
                             t-if="error_message"
@@ -526,17 +617,16 @@
                             role="alert"
                         >
                             <t t-foreach="error_message" t-as="err"><t t-esc="err" /><br
-                                /></t>
+                            /></t>
                         </div>
-                        <div t-if="success" class="alert alert-success" role="alert">
-                            <span>Data saved successfully!</span>
-                        </div>
+
                         <t t-foreach="folio.reservation_ids" t-as="reservation">
                             <t t-set="count_reservation" t-value="0" />
                             <tr class="bg-light">
-                                <td colspan="4"><em
-                                        class="font-weight-normal text-muted"
-                                    ><span />Reservation: </em>
+                                <td colspan="4">
+                                    <em class="font-weight-normal text-muted">
+                                        Reservation:
+                                    </em>
                                     <a
                                         t-att-href="reservation.get_portal_url(suffix='/precheckin')"
                                         t-att-title="reservation.name"
@@ -545,6 +635,7 @@
                                     </a>
                                 </td>
                             </tr>
+
                             <t
                                 t-foreach="reservation.checkin_partner_ids"
                                 t-as="checkin_partner"
@@ -561,21 +652,79 @@
 
                                 <tr>
                                     <td colspan="4">
-                                        <a
-                                            t-att-href="checkin_partner.get_portal_url()"
-                                        >
-                                            Checkin <t t-esc="count_reservation" />
-                                        </a>
-                                        <a
-                                            data-toggle="collapse"
-                                            t-att-data-target="id3"
-                                            class="text-primary"
-                                        >
-                                            <span
-                                                t-att-id="count"
-                                                class="fa fa-chevron-down fa-sm"
-                                            />
-                                        </a>
+                                        <t t-if = "not checkin_partner.firstname">
+                                            <a
+                                                t-att-href="checkin_partner.get_portal_url()"
+                                            >
+                                                Host <t t-esc="count_reservation" />
+                                            </a>
+                                            <a
+                                                data-toggle="collapse"
+                                                t-att-data-target="id3"
+                                                class="text-primary"
+                                            >
+                                                <span
+                                                    t-att-id="count"
+                                                    class="fa fa-chevron-down fa-sm"
+                                                />
+                                            </a>
+                                            <div class="row col-12">
+                                                <div
+                                                    t-attf-class="form-group col-lg-4"
+                                                >
+                                                    <label
+                                                        class="col-form-label"
+                                                        for="invitation_firstname"
+                                                    >
+                                                        Name
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        t-att-name="'invitation_firstname'"
+                                                        t-attf-class="form-control"
+                                                        t-att-value="firstname or (checkin_partner.firstname)"
+                                                    />
+                                                </div>
+                                                <div
+                                                    t-attf-class="form-group col-4"
+                                                >
+                                                    <label
+                                                        class="col-form-label"
+                                                        for="email"
+                                                    >
+                                                        Email
+                                                    </label>
+                                                    <input
+                                                        type="email"
+                                                        t-att-name="'invitation_email'"
+                                                        t-attf-class="form-control "
+                                                        t-att-value="invitation_email or checkin_partner.email"
+                                                    />
+                                                </div>
+                                                <div
+                                                    t-attf-class="form-group col-2"
+                                                >
+                                                    <input type="submit" value="Send Invitation" t-att-class="'o_send_invitation_js'" style="margin-top:35px"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <a
+                                                t-att-href="checkin_partner.get_portal_url()"
+                                            >
+                                                <t t-esc="checkin_partner.firstname" />
+                                            </a>
+                                            <a
+                                                data-toggle="collapse"
+                                                t-att-data-target="id3"
+                                                class="text-primary"
+                                            >
+                                                <span
+                                                    t-att-id="count"
+                                                    class="fa fa-chevron-down fa-sm"
+                                                />
+                                            </a>
+                                        </t>
                                         <div class="row o_portal_details">
                                             <div class="col-lg-8">
                                                 <div
@@ -646,11 +795,11 @@
                                                             for="gender"
                                                         >Gender</label>
                                                         <div class="d-none"><p
-                                                                class="gender_class"
-                                                                t-att-id="'genderId'+str(count)"
-                                                            ><t
-                                                                    t-esc="checkin_partner.gender"
-                                                                /></p></div>
+                                                            class="gender_class"
+                                                            t-att-id="'genderId'+str(count)"
+                                                        ><t
+                                                            t-esc="checkin_partner.gender"
+                                                        /></p></div>
                                                         <select
                                                             class="form-control select_gender_class"
                                                             id="gender"
@@ -674,44 +823,34 @@
                                                     <div
                                                         t-attf-class="form-group col-xl-6"
                                                     >
+
                                                         <label
                                                             class="col-form-label"
                                                             for="document_type"
                                                         >Doc. type</label>
                                                         <div class="d-none"><p
-                                                                class="doc_type_class"
-                                                                t-att-id="'docTypeId'+str(count)"
-                                                            ><t
-                                                                    t-esc="checkin_partner.document_type"
-                                                                /></p></div>
-                                                        <select
-                                                            t-attf-class="form-control select_doc_type_class #{error.get('document_type-'+ str(count)) and 'is-invalid' or ''}"
-                                                            t-att-id="'doc_type_id'+str(count)"
-                                                            t-att-name="'document_type-'+ str(count)"
-                                                            t-att-value="document_type or checkin_partner.document_type"
-                                                        >
-                                                            <option
-                                                                value=""
-                                                            >Select an option</option>
-                                                            <option
-                                                                value="D"
-                                                            >DNI</option>
-                                                            <option
-                                                                value="P"
-                                                            >Passport</option>
-                                                            <option
-                                                                value="C"
-                                                            >Driving License</option>
-                                                            <option
-                                                                value="I"
-                                                            >Identification Document</option>
-                                                            <option
-                                                                value="N"
-                                                            >Spanish residence permit</option>
-                                                            <option
-                                                                value="X"
-                                                            >European residence permit</option>
-                                                        </select>
+                                                            class="doc_type_class"
+                                                            t-att-id="'docTypeId'+str(count)"
+                                                        ><t
+                                                            t-esc="checkin_partner.document_type"
+                                                        /></p></div>
+<!--                                                        <select-->
+<!--                                                            t-attf-class="form-control select_doc_type_class #{error.get('document_type-'+ str(count)) and 'is-invalid' or ''}"-->
+<!--                                                            t-att-id="'doc_type_id'+str(count)"-->
+<!--                                                            t-att-name="'document_type-'+ str(count)"-->
+<!--                                                            t-att-value="document_type or checkin_partner.document_type"-->
+<!--                                                        >-->
+                                                            <select class="form-control select_doc_type_class #{error.get('document_type-'+ str(count)) and 'is-invalid' or ''}" name="'doc_type_id'+str(count)">
+                                                                <option value="">Select an option</option>
+                                                                <t t-foreach="doc_type_ids" t-as='doc_type'>
+                                                                    <option
+                                                                        t-att-value="doc_type.name"
+                                                                        t-att-selected="doc_type.id == checkin_partner.document_type.id"
+                                                                    >
+                                                                        <t t-esc='doc_type.name'/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
                                                     </div>
                                                     <div
                                                         t-attf-class="form-group col-xl-6"
@@ -769,6 +908,37 @@
                                                             t-att-value="email or checkin_partner.email"
                                                         />
                                                     </div>
+                                                    <div t-attf-class="form-group col-xl-6">
+                                                        <label
+                                                            class="col-form-label"
+                                                            for="nationality_id"
+                                                        >Nationality</label>
+                                                        <select class="form-control" id="country" name='nationality_id'>
+                                                            <option value="">Select an option</option>
+                                                            <t t-foreach="country_ids" t-as='country_id'>
+                                                                <option
+                                                                    t-att-value="country_id.id"
+                                                                    t-att-selected="country_id.id == checkin_partner.nationality_id.id"
+                                                                >
+                                                                    <t t-esc='country_id.name'/>
+                                                                </option>
+                                                            </t>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group col-xl-6">
+                                                        <label
+                                                            class="col-form-label"
+                                                            for="state"
+                                                        >Country State</label>
+                                                        <select class="form-control" id="state" name='state'>
+                                                            <option value="">Select an option</option>
+                                                            <t t-foreach="state_ids" t-as='state'>
+                                                                <option t-att-value="state.id"  t-att-country_id="state.country_id.id" t-att-selected="state.id == checkin_partner.state_id.id">
+                                                                    <t t-esc="state.name" />
+                                                                </option>
+                                                            </t>
+                                                        </select>
+                                                    </div>
                                                     <div
                                                         t-attf-class="form-group col-xl-6 d-none"
                                                     >
@@ -779,6 +949,7 @@
                                                             t-att-value="id or checkin_partner.id"
                                                         />
                                                     </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -814,31 +985,31 @@
         <script>
             let listaElementos = document.getElementsByClassName("fa-sm");
             for(i=0; i&lt;listaElementos.length; i++){
-                let element =document.getElementById(i+1)
-                element.addEventListener('click', function(){
-                    element.classList.toggle("fa-chevron-down")
-                    element.classList.toggle("fa-chevron-up")
-                },false);
+            let element =document.getElementById(i+1)
+            element.addEventListener('click', function(){
+            element.classList.toggle("fa-chevron-down")
+            element.classList.toggle("fa-chevron-up")
+            },false);
             }
             let selects_doc_type = document.getElementsByClassName("select_doc_type_class");
             let doc_type_values = document.getElementsByClassName("doc_type_class");
             for(i=0;i&lt;selects_doc_type.length;i++){
-                let doc_type_value = doc_type_values[i].textContent;
-                for(x=0;x&lt;selects_doc_type[i].length;x++){
-                    if(selects_doc_type[i][x].value == doc_type_value){
-                         selects_doc_type[i][x].setAttribute("selected","True")
-                    }
-                }
+            let doc_type_value = doc_type_values[i].textContent;
+            for(x=0;x&lt;selects_doc_type[i].length;x++){
+            if(selects_doc_type[i][x].value == doc_type_value){
+            selects_doc_type[i][x].setAttribute("selected","True")
+            }
+            }
             }
             let selects_gender = document.getElementsByClassName("select_gender_class");
             let gender_values = document.getElementsByClassName("gender_class");
             for(i=0;i&lt;selects_gender.length;i++){
-                let gender_value = gender_values[i].textContent;
-                for(x=0;x&lt;selects_gender[i].length;x++){
-                    if(selects_gender[i][x].value == gender_value){
-                         selects_gender[i][x].setAttribute("selected","True")
-                    }
-                }
+            let gender_value = gender_values[i].textContent;
+            for(x=0;x&lt;selects_gender[i].length;x++){
+            if(selects_gender[i][x].value == gender_value){
+            selects_gender[i][x].setAttribute("selected","True")
+            }
+            }
             }
         </script>
     </template>
