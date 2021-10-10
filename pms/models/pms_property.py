@@ -395,12 +395,13 @@ class PmsProperty(models.Model):
 
     def date_property_timezone(self, dt):
         self.ensure_one()
-        tz_property = self.tz
-        dt = pytz.timezone(tz_property).localize(dt)
-        dt = dt.replace(tzinfo=None)
-        dt = pytz.timezone(self.env.user.tz).localize(dt)
-        dt = dt.astimezone(pytz.utc)
-        dt = dt.replace(tzinfo=None)
+        if self.env.user:
+            tz_property = self.tz
+            dt = pytz.timezone(tz_property).localize(dt)
+            dt = dt.replace(tzinfo=None)
+            dt = pytz.timezone(self.env.user.tz).localize(dt)
+            dt = dt.astimezone(pytz.utc)
+            dt = dt.replace(tzinfo=None)
         return dt
 
     def _get_payment_methods(self):
