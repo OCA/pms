@@ -4233,6 +4233,13 @@ msgid "Indicates if service is sold by days"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_room_type__is_crib
+#: model:ir.model.fields,help:pms.field_product_product__is_crib
+#: model:ir.model.fields,help:pms.field_product_template__is_crib
+msgid "Indicates if that product is a crib"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__is_extra_bed
 #: model:ir.model.fields,help:pms.field_product_product__is_extra_bed
 #: model:ir.model.fields,help:pms.field_product_template__is_extra_bed
@@ -4601,6 +4608,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room__is_shared_room
 msgid "Is a Shared Room"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__is_crib
+#: model:ir.model.fields,field_description:pms.field_product_product__is_crib
+#: model:ir.model.fields,field_description:pms.field_product_template__is_crib
+msgid "Is a baby crib"
 msgstr ""
 
 #. module: pms
