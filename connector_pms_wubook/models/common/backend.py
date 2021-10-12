@@ -18,6 +18,7 @@ class ChannelWubookBackend(models.Model):
     _inherit = "connector.backend"
     _inherits = {"channel.backend": "parent_id"}
     _description = "Channel Wubook PMS Backend"
+    _check_pms_properties_auto = True
 
     parent_id = fields.Many2one(
         comodel_name="channel.backend",
@@ -47,6 +48,19 @@ class ChannelWubookBackend(models.Model):
     security_token = fields.Char(string="Security Token", required=False)
 
     pricelist_external_id = fields.Integer(string="Parity Pricelist ID", required=True)
+
+    backend_journal_ota_ids = fields.One2many(
+        string="Journals Online Payments",
+        comodel_name="wubook.backend.journal.ota",
+        inverse_name="backend_id",
+    )
+    wubook_journal_id = fields.Many2one(
+        string="Wubook Journal",
+        comodel_name="account.journal",
+        required=True,
+        domain="[('type', '=', 'bank')]",
+        check_pms_properties=True,
+    )
 
     # push
     def generate_security_key(self):

@@ -30,6 +30,11 @@ class ChannelWubookPmsFolioBinding(models.Model):
         string="Wubook Status",
     )
 
+    payment_gateway_fee = fields.Float(
+        string="Paid at source",
+        default=0,
+    )
+
     @api.model
     def import_data(self, backend_id, date_from, date_to, mark):
         """ Prepare the batch import of Folios from Channel """
