@@ -1502,16 +1502,16 @@ class PmsFolio(models.Model):
         services=False,
         partner=False,
         date=False,
-        type=False,
+        pay_type=False,
     ):
         """
         create folio payment
         type: set cash to use statement or bank to use account.payment,
         by default, use the journal type
         """
-        if not type:
-            type = journal.type
-        if type == "cash":
+        if not pay_type:
+            pay_type = journal.type
+        if pay_type == "cash":
             line = self._get_statement_line_vals(
                 journal=journal,
                 receivable_account=receivable_account,
