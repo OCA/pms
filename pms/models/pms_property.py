@@ -408,6 +408,7 @@ class PmsProperty(models.Model):
         self.ensure_one()
         payment_methods = self.env["account.journal"].search(
             [
+                ("allowed_pms_payments", "=", True),
                 "&",
                 ("type", "in", ["cash", "bank"]),
                 "|",
