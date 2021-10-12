@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="pms_property_ids" widget="many2many_tags" />
+                <field name="allowed_pms_payments" />
             </xpath>
         </field>
     </record>
