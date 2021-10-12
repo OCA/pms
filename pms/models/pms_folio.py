@@ -181,6 +181,7 @@ class PmsFolio(models.Model):
     )
     transaction_ids = fields.Many2many(
         string="Transactions",
+        help="Payments made through payment acquirer",
         readonly=True,
         copy=False,
         comodel_name="payment.transaction",
@@ -188,9 +189,29 @@ class PmsFolio(models.Model):
         column1="folio_id",
         column2="transaction_id",
     )
+    payment_ids = fields.Many2many(
+        string="Bank Payments",
+        help="Payments made by bank direct",
+        readonly=True,
+        copy=False,
+        comodel_name="account.payment",
+        relation="account_payment_folio_rel",
+        column1="folio_id",
+        column2="payment_id",
+    )
+    statement_line_ids = fields.Many2many(
+        string="Cash Payments",
+        help="Payments made by cash",
+        readonly=True,
+        copy=False,
+        comodel_name="account.bank.statement.line",
+        relation="account_bank_statement_folio_rel",
+        column1="folio_id",
+        column2="account_journal_id",
+    )
     payment_term_id = fields.Many2one(
         string="Payment Terms",
-        help="Pricelist for current folio.",
+        help="Payment terms for current folio.",
         readonly=False,
         store=True,
         comodel_name="account.payment.term",
@@ -1481,19 +1502,43 @@ class PmsFolio(models.Model):
         services=False,
         partner=False,
         date=False,
+        type=False,
     ):
-        line = self._get_statement_line_vals(
-            journal=journal,
-            receivable_account=receivable_account,
-            user=user,
-            amount=amount,
-            folios=folio,
-            reservations=reservations,
-            services=services,
-            partner=partner,
-            date=date,
-        )
-        self.env["account.bank.statement.line"].sudo().create(line)
+        """
+        create folio payment
+        type: set cash to use statement or bank to use account.payment,
+        by default, use the journal type
+        """
+        if not type:
+            type = journal.type
+        if type == "cash":
+            line = self._get_statement_line_vals(
+                journal=journal,
+                receivable_account=receivable_account,
+                user=user,
+                amount=amount,
+                folios=folio,
+                reservations=reservations,
+                services=services,
+                partner=partner,
+                date=date,
+            )
+            self.env["account.bank.statement.line"].sudo().create(line)
+        else:
+            vals = {
+                "journal_id": journal.id,
+                "partner_id": partner.id,
+                "amount": amount,
+                "date": fields.Date.today(),
+                "ref": folio.name,
+                "folio_ids": [(6, 0, [folio.id])],
+                "payment_type": "inbound",
+                "partner_type": "customer",
+                "state": "draft",
+            }
+            pay = self.env["account.payment"].create(vals)
+            pay.action_post()
+
         folio.message_post(
             body=_(
                 """Payment: <b>%s</b> by <b>%s</b>""",
