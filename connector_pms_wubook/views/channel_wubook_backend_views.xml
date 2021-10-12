@@ -299,6 +299,28 @@
                                 <field name="pricelist_external_id" class="oe_inline" />
                             </group>
                         </page>
+                        <page string="Payments">
+                            <group>
+                                <field name="wubook_journal_id" />
+                                <field
+                                    name="backend_journal_ota_ids"
+                                    colspan="4"
+                                    nolabel="1"
+                                    context="{'default_backend_id': active_id}"
+                                >
+                                    <tree editable="bottom">
+                                        <field name="agency_id" />
+                                        <field name="journal_id" />
+                                        <field name="backend_id" invisible="0" />
+                                        <field name="pms_property_id" invisible="0" />
+                                        <field
+                                            name="allowed_agency_ids"
+                                            invisible="1"
+                                        />
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>

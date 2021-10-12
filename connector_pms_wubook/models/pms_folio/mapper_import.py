@@ -43,13 +43,35 @@ class ChannelWubookPmsFolioMapperImport(Component):
             "wubook_status": record["was_modified"] and "7" or str(record["status"])
         }
 
+    @mapping
+    def payment_gateway_fee(self, record):
+        # Wubook payments gateway
+        if record["id_channel"] == 0 and record["payment_gateway_fee"]:
+            return {"payment_gateway_fee": record["payment_gateway_fee"]}
+
+        # Expedia payments gateway
+        if record["channel_data"].get("pay_model") == "merchant":
+            return {"payment_gateway_fee": record["amount"]}
+
+        # Booking payments gateway
+        if record["channel_data"].get("vcc_additional_info"):
+            if record["channel_data"]["vcc_additional_info"].get("vcc_balance"):
+                return {
+                    "payment_gateway_fee": record["channel_data"][
+                        "vcc_additional_info"
+                    ]["vcc_balance"]
+                }
+        # Not online pre payment
+        return {"payment_gateway_fee": 0}
+
     @only_create
     @mapping
     def channel_type_id(self, record):
         if record["id_channel"] == 0:
-            return {
-                "channel_type_id": self.backend_record.backend_type_id.child_id.direct_channel_type_id.id
-            }
+            type_id = (
+                self.backend_record.backend_type_id.child_id.direct_channel_type_id.id
+            )
+            return {"channel_type_id": type_id}
 
     @only_create
     @mapping
@@ -62,7 +84,8 @@ class ChannelWubookPmsFolioMapperImport(Component):
             if not agency:
                 raise ValidationError(
                     _(
-                        "Id Channel '%s' not found on mapping. Please check it on the Backend Type configuration"
+                        """Id Channel '%s' not found on mapping.
+                        Please check it on the Backend Type configuration"""
                     )
                     % (record["id_channel"],)
                 )
@@ -72,7 +95,7 @@ class ChannelWubookPmsFolioMapperImport(Component):
     def reservation_origin_code(self, record):
         modified_reservations = record["modified_reservations"]
         if len(modified_reservations) > 1:
-            raise NotImplemented(
+            raise NotImplementedError(
                 _("Multiple modified reservations is not supported yet %s")
                 % (modified_reservations,)
             )
