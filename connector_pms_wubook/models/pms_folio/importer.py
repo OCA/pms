@@ -1,6 +1,7 @@
 # Copyright 2021 Eric Antones <eantones@nuobit.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import _, fields
 
 from odoo.addons.component.core import Component
 
@@ -56,6 +57,40 @@ class ChannelWubookPmsFolioImporter(Component):
 
         # TODO: move get_all_items action_cancel here
         # binding.reservation_ids.filtered(lambda x: x['wubook_status'] == '5').action_cancel()
+
+        # Pre payment Folio
+        if binding.payment_gateway_fee > 0:
+            folio = binding.odoo_id
+            # REVIEW: avoid duplicate payment
+            if folio.payment_ids:
+                return
+            # Wubook Pre payment
+            if (
+                folio.channel_type_id
+                == binding.backend_id.backend_type_id.child_id.direct_channel_type_id
+            ):
+                journal = binding.backend_id.wubook_journal_id
+            # OTAs Pre payment
+            else:
+                journal = binding.backend_id.backend_journal_ota_ids.filtered(
+                    lambda x: x.agency_id.id == folio.agency_id.id
+                ).journal_id
+            if not journal:
+                raise NotImplementedError(
+                    _("Not configure journal payments to %s OTA")
+                    % (folio.agency_id.name,)
+                )
+            folio.do_payment(
+                journal,
+                journal.suspense_account_id,
+                self.env.user,
+                binding.payment_gateway_fee,
+                folio,
+                reservations=False,
+                services=False,
+                partner=folio.partner_id,
+                date=fields.Date.today(),
+            )
 
     def _create(self, model, values):
         """ Create the Internal record """
