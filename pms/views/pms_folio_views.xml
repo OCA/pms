@@ -533,6 +533,40 @@
                                 />
                             </group>
                         </page>
+                        <page string="Payments">
+                            <separator string="Cash" colspan="4" />
+                            <field name="statement_line_ids" nolabel="1">
+                                <tree>
+                                    <field name="journal_id" string="Payment Mode" />
+                                    <field name="date" />
+                                    <field name="amount" />
+                                    <field name="partner_id" invisible="1" />
+                                    <field name="state" invisible="1" />
+                                </tree>
+                            </field>
+                            <separator string="Bank" colspan="4" />
+                            <field name="payment_ids" nolabel="1">
+                                <tree>
+                                    <field name="journal_id" string="Payment Mode" />
+                                    <field name="date" />
+                                    <field name="amount" />
+                                    <field name="partner_id" invisible="1" />
+                                    <field name="state" invisible="1" />
+                                </tree>
+                            </field>
+                            <!-- REVIEW: transations has a payment related -->
+                            <!-- <field
+                                name="transaction_ids"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="journal_id" />
+                                    <field name="date" />
+                                    <field name="amount" />
+                                    <field name="partner_id" />
+                                </tree>
+                            </field> -->
+                        </page>
                         <page string="Other data">
                             <group>
                                 <field name="user_id" />
