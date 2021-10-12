@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="account.view_account_payment_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date']" position="after">
-                <field name="folio_id" />
+                <field name="folio_ids" />
             </xpath>
         </field>
     </record>
