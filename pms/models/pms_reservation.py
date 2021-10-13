@@ -1134,6 +1134,7 @@ class PmsReservation(models.Model):
                 record.checkout = False
             # date checking
             record.check_in_out_dates()
+
     def _compute_precheckin_url(self):
         super(PmsReservation, self)._compute_access_url()
         for reservation in self:
