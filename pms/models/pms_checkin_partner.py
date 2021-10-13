@@ -3,13 +3,14 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import json
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.safe_eval import safe_eval
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+from odoo.tools.safe_eval import safe_eval
 
 
 class PmsCheckinPartner(models.Model):
@@ -468,20 +469,6 @@ class PmsCheckinPartner(models.Model):
         for checkin in self:
             checkin.access_url = "/my/precheckin/%s" % (checkin.id)
 
-    @api.model
-    def _checkin_mandatory_fields(self, depends=False):
-        # api.depends need "reservation_id.state" in the lambda function
-        if depends:
-            return ["reservation_id.state", "name"]
-        return ["name"]
-
-    @api.model
-    def _checkin_partner_fields(self):
-        # api.depends need "reservation_id.state" in the lambda function
-        checkin_fields = self._checkin_mandatory_fields()
-        checkin_fields.extend(["mobile", "email"])
-        return checkin_fields
-
     # Constraints and onchanges
 
     @api.constrains("departure", "arrival")
@@ -674,21 +661,23 @@ class PmsCheckinPartner(models.Model):
             checkin.write(checkin_vals)
 
     @api.model
-    def calculate_doc_type_expedition_date_from_validity_date(self, doc_type, doc_date, birthdate):
+    def calculate_doc_type_expedition_date_from_validity_date(
+        self, doc_type, doc_date, birthdate
+    ):
         today = fields.datetime.today()
         datetime_doc_date = datetime.strptime(doc_date, DEFAULT_SERVER_DATE_FORMAT)
         if datetime_doc_date < today:
             return datetime_doc_date
         datetime_birthdate = datetime.strptime(birthdate, DEFAULT_SERVER_DATE_FORMAT)
         age = today.year - datetime_birthdate.year
-        document_type = self.env["res.partner.id_category"].search([("id", "=", doc_type)])
+        # document_type = self.env["res.partner.id_category"].search([("id", "=", doc_type)])
         document_expedition_date = False
-        if document_type.code == "D" or document_type.code == "P":
+        if doc_type.code == "D" or doc_type.code == "P":
             if age < 30:
                 document_expedition_date = datetime_doc_date - relativedelta(years=5)
             else:
                 document_expedition_date = datetime_doc_date - relativedelta(years=10)
-        if document_type.code == "C":
+        if doc_type.code == "C":
             if age < 70:
                 document_expedition_date = datetime_doc_date - relativedelta(years=10)
         return document_expedition_date
@@ -748,31 +737,56 @@ class PmsCheckinPartner(models.Model):
             "type": "ir.actions.act_window",
             "context": ctx,
         }
+
     def _save_data_from_portal(self, values):
         checkin_partner = self.env["pms.checkin.partner"].browse(int(values.get("id")))
         if values.get("nationality_id"):
-            nationality_id = self.env['res.country'].search([("id", "=", values.get("nationality_id"))])
+            nationality_id = self.env["res.country"].search(
+                [("id", "=", values.get("nationality_id"))]
+            )
             values.update({"nationality_id": nationality_id.id})
         else:
             values.update({"nationality_id": False})
         if not values.get("document_type"):
             values.update({"document_type": False})
-        # else:
-        #     doc_type_id = values.get("document_type")
-        #     document_type = self.env["res.partner.id_category"].search([("id", "=", doc_type_id)])
-        #     values.update({"document_type": document_type.id})
         if values.get("state"):
-            state_id = self.env["res.country.state"].search([("id", "=", values.get("state"))])
-            values.update(
-                {
-                    "state_id": state_id
-                }
+            state_id = self.env["res.country.state"].search(
+                [("id", "=", values.get("state"))]
             )
+            values.update({"state_id": state_id})
             values.pop("state")
         if values.get("document_expedition_date"):
             doc_type = values.get("document_type")
             doc_date = values.get("document_expedition_date")
             birthdate = values.get("birthdate_date")
-            document_expedition_date = self.calculate_doc_type_expedition_date_from_validity_date(doc_type, doc_date, birthdate)
+            document_expedition_date = (
+                self.calculate_doc_type_expedition_date_from_validity_date(
+                    doc_type, doc_date, birthdate
+                )
+            )
             values.update({"document_expedition_date": document_expedition_date})
         checkin_partner.sudo().write(values)
+
+    def send_portal_invitation_email(self, url, firstname=None, email=None):
+        subject = (
+            "Hi "
+            + firstname
+            + ", do your check-in now in "
+            + self.sudo().pms_property_id.name
+        )
+        template = self.sudo().env.ref(
+            "pms.precheckin_invitation_email", raise_if_not_found=False
+        )
+        invitation_mail = (
+            self.env["mail.mail"]
+            .sudo()
+            .create(
+                {
+                    "subject": subject,
+                    "body_html": template.body_html,
+                    "email_from": self.pms_property_id.partner_id.email,
+                    "email_to": email,
+                }
+            )
+        )
+        invitation_mail.send()
