@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class SeveralPartners(models.TransientModel):
     _name = "pms.several.partners.wizard"
+    _description = "Partner Operations"
 
     reservation_id = fields.Many2one(
         string="Reservation",
