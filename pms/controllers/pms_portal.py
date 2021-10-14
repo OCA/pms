@@ -619,7 +619,6 @@ class PortalPrecheckin(CustomerPortal):
         checkin_partner = request.env["pms.checkin.partner"].browse(
             int(kw["checkin_partner_id"])
         )
-        url = kw.get("url_access_token")
         firstname = kw["firstname"]
         email = kw["email"]
-        checkin_partner.send_portal_invitation_email(url, firstname, email)
+        checkin_partner.send_portal_invitation_email(firstname, email)

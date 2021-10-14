@@ -767,26 +767,30 @@ class PmsCheckinPartner(models.Model):
             values.update({"document_expedition_date": document_expedition_date})
         checkin_partner.sudo().write(values)
 
-    def send_portal_invitation_email(self, url, firstname=None, email=None):
+    def send_portal_invitation_email(self, invitation_firstname=None, email=None):
         subject = (
             "Hi "
-            + firstname
+            + invitation_firstname
             + ", do your check-in now in "
             + self.sudo().pms_property_id.name
         )
         template = self.sudo().env.ref(
             "pms.precheckin_invitation_email", raise_if_not_found=False
         )
+        body = template._render_field(
+            "body_html", [6, 0, self.id], compute_lang=True, post_process=True
+        )[self.id]
         invitation_mail = (
             self.env["mail.mail"]
             .sudo()
             .create(
                 {
                     "subject": subject,
-                    "body_html": template.body_html,
+                    "body_html": body,
                     "email_from": self.pms_property_id.partner_id.email,
                     "email_to": email,
                 }
             )
         )
+
         invitation_mail.send()
