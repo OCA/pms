@@ -670,14 +670,16 @@ class PmsCheckinPartner(models.Model):
             return datetime_doc_date
         datetime_birthdate = datetime.strptime(birthdate, DEFAULT_SERVER_DATE_FORMAT)
         age = today.year - datetime_birthdate.year
-        # document_type = self.env["res.partner.id_category"].search([("id", "=", doc_type)])
+        document_type = self.env["res.partner.id_category"].search(
+            [("id", "=", doc_type)]
+        )
         document_expedition_date = False
-        if doc_type.code == "D" or doc_type.code == "P":
+        if document_type.code == "D" or document_type.code == "P":
             if age < 30:
                 document_expedition_date = datetime_doc_date - relativedelta(years=5)
             else:
                 document_expedition_date = datetime_doc_date - relativedelta(years=10)
-        if doc_type.code == "C":
+        if document_type.code == "C":
             if age < 70:
                 document_expedition_date = datetime_doc_date - relativedelta(years=10)
         return document_expedition_date
