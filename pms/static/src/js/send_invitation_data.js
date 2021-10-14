@@ -27,19 +27,12 @@ odoo.define("pms.SendInvitationData", function (require) {
                 .parent()
                 .find("input[name=invitation_email]")
                 .val();
-            var urlAccessToken = $(ev.currentTarget)
-                .parent()
-                .parent()
-                .parent()
-                .find("a[name=url_acess_token]")
-                .attr("href");
             this._rpc({
                 route: "/my/precheckin/send_invitation",
                 params: {
                     checkin_partner_id: checkinPartnerId,
                     firstname: firstname,
                     email: email,
-                    url_access_token: urlAccessToken,
                 },
             });
         },
