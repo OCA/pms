@@ -1189,3 +1189,289 @@ class TestPmsCheckinPartner(TestPms):
             msg="A partner can be added to the checkin partner",
         ):
             several_partners_wizard.add_partner()
+
+    def test_calculate_dni_expedition_date_from_validity_date_age_lt_30(self):
+        """
+        Check that the calculate_doc_type_expedition_date_from_validity_date()
+        method calculates correctly the expedition_date of an id category DNI
+        when the age is less than 30.
+        -------------
+        We launch the method calculate_doc_type_expedition_date_from_validity_date
+        with the parameters doc_type_id DNI, birthdate calculated so that the age
+        is = 20 years old and document_date = today + 1 year. The expected
+        expedition date has to be doc_date - 5 years
+        """
+        doc_type_id = (
+            self.env["res.partner.id_category"].search([("code", "=", "D")]).id
+        )
+        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date_str = str(doc_date)
+
+        # age=20 years old
+        birthdate = fields.date.today() - datetime.timedelta(days=7305)
+        birthdate_str = str(birthdate)
+
+        # expected_expedition_date = doc_date - 5 years
+        expected_exp_date = doc_date - datetime.timedelta(days=1826.25)
+        expedition_date = (
+            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
+                doc_type_id, doc_date_str, birthdate_str
+            )
+        )
+        date_expedition_date = datetime.date(
+            year=expedition_date.year,
+            month=expedition_date.month,
+            day=expedition_date.day,
+        )
+        self.assertEqual(
+            date_expedition_date,
+            expected_exp_date,
+            "Expedition date doesn't correspond with expected expedition date",
+        )
+
+    def test_calculate_dni_expedition_date_from_validity_date_age_gt_30(self):
+        """
+        Check that the calculate_doc_type_expedition_date_from_validity_date()
+        method calculates correctly the expedition_date of an id category DNI
+        when the age is greater than 30.
+        -------------
+        We launch the method calculate_doc_type_expedition_date_from_validity_date
+        with the parameters doc_type_id DNI, birthdate calculated so that the age
+        is = 40 years old and document_date = today + 1 year. The expected
+        expedition date has to be doc_date - 10 years
+        """
+        doc_type_id = (
+            self.env["res.partner.id_category"].search([("code", "=", "D")]).id
+        )
+        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date_str = str(doc_date)
+
+        # age=40 years old
+        birthdate = fields.date.today() - datetime.timedelta(days=14610)
+        birthdate_str = str(birthdate)
+
+        # expected_expedition_date = doc_date - 10 years
+        expected_exp_date = doc_date - datetime.timedelta(days=3652.5)
+        expedition_date = (
+            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
+                doc_type_id, doc_date_str, birthdate_str
+            )
+        )
+        date_expedition_date = datetime.date(
+            year=expedition_date.year,
+            month=expedition_date.month,
+            day=expedition_date.day,
+        )
+        self.assertEqual(
+            date_expedition_date,
+            expected_exp_date,
+            "Expedition date doesn't correspond with expected expedition date",
+        )
+
+    def test_calculate_passport_expedition_date_from_validity_date_age_lt_30(self):
+        """
+        Check that the calculate_doc_type_expedition_date_from_validity_date()
+        method calculates correctly the expedition_date of an id category Passport
+        when the age is less than 30.
+        -------------
+        We launch the method calculate_doc_type_expedition_date_from_validity_date
+        with the parameters doc_type_id Passport, birthdate calculated so that the age
+        is = 20 years old and document_date = today + 1 year. The expected
+        expedition date has to be doc_date - 5 years
+        """
+        doc_type_id = (
+            self.env["res.partner.id_category"].search([("code", "=", "P")]).id
+        )
+        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date_str = str(doc_date)
+
+        # age=20 years old
+        birthdate = fields.date.today() - datetime.timedelta(days=7305)
+        birthdate_str = str(birthdate)
+
+        # expected_expedition_date = doc_date - 5 years
+        expected_exp_date = doc_date - datetime.timedelta(days=1826.25)
+        expedition_date = (
+            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
+                doc_type_id, doc_date_str, birthdate_str
+            )
+        )
+        date_expedition_date = datetime.date(
+            year=expedition_date.year,
+            month=expedition_date.month,
+            day=expedition_date.day,
+        )
+        self.assertEqual(
+            date_expedition_date,
+            expected_exp_date,
+            "Expedition date doesn't correspond with expected expedition date",
+        )
+
+    def test_calculate_passport_expedition_date_from_validity_date_age_gt_30(self):
+        """
+        Check that the calculate_doc_type_expedition_date_from_validity_date()
+        method calculates correctly the expedition_date of an id category Passport
+        when the age is greater than 30.
+        -------------
+        We launch the method calculate_doc_type_expedition_date_from_validity_date
+        with the parameters doc_type_id Passport, birthdate calculated so that the age
+        is = 40 years old and document_date = today + 1 year. The expected
+        expedition date has to be doc_date - 10 years
+        """
+        doc_type_id = (
+            self.env["res.partner.id_category"].search([("code", "=", "P")]).id
+        )
+        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date_str = str(doc_date)
+
+        # age=40 years old
+        birthdate = fields.date.today() - datetime.timedelta(days=14610)
+        birthdate_str = str(birthdate)
+
+        # expected_expedition_date = doc_date - 10 years
+        expected_exp_date = doc_date - datetime.timedelta(days=3652.5)
+        expedition_date = (
+            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
+                doc_type_id, doc_date_str, birthdate_str
+            )
+        )
+        date_expedition_date = datetime.date(
+            year=expedition_date.year,
+            month=expedition_date.month,
+            day=expedition_date.day,
+        )
+        self.assertEqual(
+            date_expedition_date,
+            expected_exp_date,
+            "Expedition date doesn't correspond with expected expedition date",
+        )
+
+    def test_calculate_drive_license_expedition_date_from_validity_date_age_lt_70(self):
+        """
+        Check that the calculate_doc_type_expedition_date_from_validity_date()
+        method calculates correctly the expedition_date of an id category Driving
+        License when the age is lesser than 70.
+        -------------
+        We launch the method calculate_doc_type_expedition_date_from_validity_date
+        with the parameters doc_type_id DNI, birthdate calculated so that the age
+        is = 40 years old and document_date = today + 1 year. The expected
+        expedition date has to be doc_date - 10 years
+        """
+        doc_type_id = (
+            self.env["res.partner.id_category"].search([("code", "=", "C")]).id
+        )
+        doc_date = fields.date.today() + datetime.timedelta(days=366)
+        doc_date_str = str(doc_date)
+
+        # age=40 years old
+        birthdate = fields.date.today() - datetime.timedelta(days=14610)
+        birthdate_str = str(birthdate)
+
+        # expected_expedition_date = doc_date - 10 years
+        expected_exp_date = doc_date - datetime.timedelta(days=3652.5)
+        expedition_date = (
+            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
+                doc_type_id, doc_date_str, birthdate_str
+            )
+        )
+        date_expedition_date = datetime.date(
+            year=expedition_date.year,
+            month=expedition_date.month,
+            day=expedition_date.day,
+        )
+        self.assertEqual(
+            date_expedition_date,
+            expected_exp_date,
+            "Expedition date doesn't correspond with expected expedition date",
+        )
+
+    def test_calculate_expedition_date(self):
+        """
+        Check that if the value of the doc_date is less than today,
+        the method calculate_doc_type_expedition_date_from_validity_date
+        returns the value of the doc_date as expedition_date.
+        -----------
+        We launch the method calculate_doc_type_expedition_date_from_validity_date
+        with the parameters doc_type_id DNI, birthdate calculated so that the age
+        is = 20 years old and document_date = today - 1 year. The expected
+        expedition date has to be the value of doc_date.
+        """
+        doc_type_id = (
+            self.env["res.partner.id_category"].search([("code", "=", "D")]).id
+        )
+        doc_date = fields.date.today() - datetime.timedelta(days=366)
+        doc_date_str = str(doc_date)
+        birthdate = fields.date.today() - datetime.timedelta(days=7305)
+        birthdate_str = str(birthdate)
+        expedition_date = (
+            self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
+                doc_type_id, doc_date_str, birthdate_str
+            )
+        )
+        date_expedition_date = datetime.date(
+            year=expedition_date.year,
+            month=expedition_date.month,
+            day=expedition_date.day,
+        )
+        self.assertEqual(
+            date_expedition_date,
+            doc_date,
+            "Expedition date doesn't correspond with expected expedition date",
+        )
+
+    def test_save_checkin_from_portal(self):
+        """
+        Check by subtesting that a checkin partner is saved correctly
+        with the _save_data_from_portal() method.
+        ---------
+        A reservation is created with an adult, and it will create a checkin partner.
+        A dictionary is created with the values to be saved and with the key 'id'
+        equal to the id of the checkin_partner created when the reservation was
+        created. We launch the _save_data_from_portal() method, passing the created
+        dictionary as a parameter. Then it is verified that the value of each key
+        in the dictionary corresponds to the fields of the saved checkin_partner.
+        """
+        self.reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date.today() + datetime.timedelta(days=10),
+                "checkout": datetime.date.today() + datetime.timedelta(days=13),
+                "room_type_id": self.room_type1.id,
+                "partner_id": self.host1.id,
+                "adults": 1,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        checkin_partner_id = self.reservation.checkin_partner_ids[0]
+        checkin_partner_vals = {
+            "id": checkin_partner_id.id,
+            "firstname": "Serafín",
+            "lastname": "Rivas",
+            "lastname2": "Gonzalez",
+            "document_type": self.id_category,
+            "document_number": "18038946T",
+            "document_expedition_date": "2015-10-07",
+            "birthdate_date": "1983-10-05",
+            "mobile": "60595595",
+            "email": "serafin@example.com",
+            "gender": "male",
+            "nationality_id": "1",
+            "state": "1",
+        }
+        checkin_partner_id._save_data_from_portal(checkin_partner_vals)
+        nationality_id = self.env["res.country"].browse(
+            checkin_partner_vals["nationality_id"]
+        )
+        checkin_partner_vals.update(
+            {
+                "birthdate_date": datetime.date(1983, 10, 5),
+                "document_expedition_date": datetime.date(2015, 10, 7),
+                "nationality_id": nationality_id,
+            }
+        )
+        for key in checkin_partner_vals:
+            with self.subTest(k=key):
+                self.assertEqual(
+                    self.reservation.checkin_partner_ids[0][key],
+                    checkin_partner_vals[key],
+                    "The value of " + key + " is not correctly established",
+                )
