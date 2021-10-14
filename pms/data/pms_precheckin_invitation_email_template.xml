@@ -6,7 +6,7 @@
             <field name="model_id" ref="pms.model_pms_checkin_partner" />
             <field
                 name="subject"
-            >${object.pms_property_id.company_id.name} has confirmed your reservation in ${object.pms_property_id.name}</field>
+            >Hi ${object.firstname}, do your check-in now in ${object.pms_property_id.name}</field>
             <field
                 name="email_from"
             >${object.pms_property_id.partner_id.email | safe}</field>
@@ -28,24 +28,22 @@
                                 <table border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td align="center">
-                                            <p>
-                                                <a
-                                                    href="${object.url}"
-                                                    target="_blank"
-                                                    style="text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px 20px 10px 20px;"
-                                                >
-                                                    <div
-                                                        style="padding: 0.5em; background-color: #45C2B1; border-color: #45C2B1; border-width: 2px;border-style:solid; border-bottom-style: solid;border-left-style: solid;border-right-style: solid;border-top-style: solid;-webkit-border-radius: 10; -moz-border-radius: 10; border-radius: 10px;font-size: 12px;"
-                                                    >Check-in
-                                                    </div>
-                                                    <center><img
-                                                            src="https://www.aldahotels.es/firma/email/llegada/check-in.png"
-                                                            alt="Hacer check-in"
-                                                            width="80px"
-                                                            height="80px"
-                                                            href="${object.url}"
-                                                        /></center></a>
-                                            </p>
+                                            <a
+                                                href="/my/precheckin/${object.id}?access_token=${object.access_token}"
+                                                target="_blank"
+                                                style="text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px 20px 10px 20px;"
+                                            >
+                                                <div
+                                                    style="padding: 0.5em; background-color: #45C2B1; border-color: #45C2B1; border-width: 2px;border-style:solid; border-bottom-style: solid;border-left-style: solid;border-right-style: solid;border-top-style: solid;-webkit-border-radius: 10; -moz-border-radius: 10; border-radius: 10px;font-size: 12px;"
+                                                >Check-in
+                                                </div>
+                                                <center><img
+                                                        src="https://www.aldahotels.es/firma/email/llegada/check-in.png"
+                                                        alt="Hacer check-in"
+                                                        width="80px"
+                                                        height="80px"
+                                                        href="${object.url}"
+                                                    /></center></a>
                                         </td>
                                     </tr>
                                 </table>
