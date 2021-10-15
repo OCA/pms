@@ -770,15 +770,12 @@ class PmsCheckinPartner(models.Model):
         checkin_partner.sudo().write(values)
 
     def send_portal_invitation_email(self, invitation_firstname=None, email=None):
-        subject = (
-            "Hi "
-            + invitation_firstname
-            + ", do your check-in now in "
-            + self.sudo().pms_property_id.name
-        )
         template = self.sudo().env.ref(
             "pms.precheckin_invitation_email", raise_if_not_found=False
         )
+        subject = template._render_field(
+            "subject", [6, 0, self.id], compute_lang=True, post_process=True
+        )[self.id]
         body = template._render_field(
             "body_html", [6, 0, self.id], compute_lang=True, post_process=True
         )[self.id]
