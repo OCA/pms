@@ -626,9 +626,14 @@ class PortalPrecheckin(CustomerPortal):
         csrf=False,
     )
     def portal_precheckin_folio_send_invitation(self, **kw):
+        if kw.get("folio_id"):
+            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            kw.update({"folio": folio})
         checkin_partner = request.env["pms.checkin.partner"].browse(
             int(kw["checkin_partner_id"])
         )
         firstname = kw["firstname"]
         email = kw["email"]
+        checkin_partner.write({"firstname": firstname, "email": email})
         checkin_partner.send_portal_invitation_email(firstname, email)
+        # request.portal_my_folio_precheckin(kw)
