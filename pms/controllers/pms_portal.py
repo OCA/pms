@@ -261,6 +261,16 @@ class PortalReservation(CustomerPortal):
             reservation_sudo, access_token, **kw
         )
         values.update({"no_breadcrumbs": True, "error": {}})
+        country_ids = request.env["res.country"].search([])
+        state_ids = request.env["res.country.state"].search([])
+        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        values.update(
+            {
+                "country_ids": country_ids,
+                "state_ids": state_ids,
+                "doc_type_ids": doc_type_ids,
+            }
+        )
         return request.render("pms.portal_my_reservation_precheckin", values)
 
 
@@ -345,7 +355,7 @@ class PortalPrecheckin(CustomerPortal):
                         )
                         values.update(
                             {
-                                "document_type": doc_type,
+                                "document_type": doc_type.id,
                             }
                         )
                     request.env["pms.checkin.partner"].sudo()._save_data_from_portal(
@@ -432,7 +442,7 @@ class PortalPrecheckin(CustomerPortal):
                 )
                 values.update(
                     {
-                        "document_type": doc_type,
+                        "document_type": doc_type.id,
                     }
                 )
             error, error_message = self.form_validate(kw, counter)
