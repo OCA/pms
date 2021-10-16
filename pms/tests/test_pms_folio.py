@@ -47,6 +47,13 @@ class TestPmsFolio(TestPms):
                 "capacity": 2,
             }
         )
+        # make current journals payable
+        journals = self.env["account.journal"].search(
+            [
+                ("type", "in", ["bank", "cash"]),
+            ]
+        )
+        journals.allowed_pms_payments = True
 
     def create_sale_channel_scenario(self):
         """
