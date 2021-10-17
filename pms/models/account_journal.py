@@ -19,3 +19,7 @@ class AccountJournal(models.Model):
         help="The company for Account Jouarnal",
         check_pms_properties=True,
     )
+    allowed_pms_payments = fields.Boolean(
+        string="For manual payments",
+        help="Use to pay for reservations",
+    )
