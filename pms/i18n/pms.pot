@@ -6126,6 +6126,11 @@ msgid "Partner ID Number"
 msgstr ""
 
 #. module: pms
+#: model:ir.model,name:pms.model_pms_several_partners_wizard
+msgid "Partner Operations"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__partner_requests
 msgid "Partner Requests"
 msgstr ""
@@ -10032,11 +10037,6 @@ msgstr ""
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_pms_room_form
 msgid "pms Room"
-msgstr ""
-
-#. module: pms
-#: model:ir.model,name:pms.model_pms_several_partners_wizard
-msgid "pms.several.partners.wizard"
 msgstr ""
 
 #. module: pms
