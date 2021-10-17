@@ -1168,12 +1168,6 @@ msgid "Amount corresponding to commission"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid "Amount from %s to %s %s \n"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__invoices_paid
 msgid "Amount of invoices paid"
 msgstr ""
@@ -1521,7 +1515,13 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__bank_account_count
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Bank"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__payment_ids
+msgid "Bank Payments"
 msgstr ""
 
 #. module: pms
@@ -1896,6 +1896,16 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.company_view_form
 msgid "Cardex Settings"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid "Cash"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__statement_line_ids
+msgid "Cash Payments"
 msgstr ""
 
 #. module: pms
@@ -2822,12 +2832,6 @@ msgid "Date for which availability rule applies"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid "Date from %s to %s \n"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__document_expedition_date
 msgid "Date on which document_type was issued"
 msgstr ""
@@ -2932,12 +2936,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__trust
 msgid "Degree of trust you have in this debtor"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid "Deleted payment: %s %s "
 msgstr ""
 
 #. module: pms
@@ -3647,7 +3645,6 @@ msgid "Folio Pending Amount"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_payment__folio_id
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__folio_id
 msgid "Folio Reference"
 msgstr ""
@@ -3680,11 +3677,6 @@ msgstr ""
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_booking_engine
 msgid "Folio creation"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_account_payment__folio_id
-msgid "Folio in account payment"
 msgstr ""
 
 #. module: pms
@@ -3761,7 +3753,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_account_move__folio_ids
-#: model:ir.model.fields,help:pms.field_account_payment__folio_ids
 msgid "Folios where the account move are included"
 msgstr ""
 
@@ -3800,6 +3791,11 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_reservation__activity_type_icon
 #: model:ir.model.fields,help:pms.field_pms_room_type__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_journal__allowed_pms_payments
+msgid "For manual payments"
 msgstr ""
 
 #. module: pms
@@ -4902,12 +4898,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__journal_item_count
 msgid "Journal Items"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid "Journal from %s to %s"
 msgstr ""
 
 #. module: pms
@@ -6194,25 +6184,9 @@ msgid "Payable Limit"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#: code:addons/pms/models/account_payment.py:0
-#: code:addons/pms/models/account_payment.py:0
 #: model:ir.model.fields.selection,name:pms.selection__pms_automated_mails__action__payment
 #: model_terms:ir.ui.view,arch_db:pms.wizard_payment_folio_view_form
-#, python-format
 msgid "Payment"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid "Payment %s modified: \n"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid "Payment Deleted"
 msgstr ""
 
 #. module: pms
@@ -6224,6 +6198,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_payment_method_id
 #: model:ir.model.fields,field_description:pms.field_wizard_payment_folio__payment_method_id
 msgid "Payment Method"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid "Payment Mode"
 msgstr ""
 
 #. module: pms
@@ -6258,11 +6237,8 @@ msgid "Payment Tokens"
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/account_payment.py:0
-#, python-format
-msgid ""
-"Payment of %s %s registered from %s                             using %s "
-"payment method"
+#: model:ir.model.fields,help:pms.field_pms_folio__payment_term_id
+msgid "Payment terms for current folio."
 msgstr ""
 
 #. module: pms
@@ -6276,8 +6252,24 @@ msgstr ""
 #: model:ir.model,name:pms.model_account_payment
 #: model:ir.model,name:pms.model_wizard_payment_folio
 #: model:ir.model.fields,field_description:pms.field_pms_folio__move_line_ids
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #, python-format
 msgid "Payments"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__payment_ids
+msgid "Payments made by bank direct"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__statement_line_ids
+msgid "Payments made by cash"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__transaction_ids
+msgid "Payments made through payment acquirer"
 msgstr ""
 
 #. module: pms
@@ -6575,7 +6567,6 @@ msgid "Pricelist applied in folio"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_folio__payment_term_id
 #: model:ir.model.fields,help:pms.field_pms_folio__pricelist_id
 msgid "Pricelist for current folio."
 msgstr ""
@@ -9687,6 +9678,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__barcode
 msgid "Use a barcode to identify this contact."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_account_journal__allowed_pms_payments
+msgid "Use to pay for reservations"
 msgstr ""
 
 #. module: pms
