@@ -1,4 +1,6 @@
-from odoo import _, http
+import re
+
+from odoo import _, fields, http, tools
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
@@ -109,6 +111,35 @@ class PortalFolio(CustomerPortal):
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
         return request.render("pms.folio_portal_template", values)
 
+    @http.route(
+        ["/my/folios/<int:folio_id>/precheckin"], type="http", auth="user", website=True
+    )
+    def portal_my_folio_precheckin(
+        self, folio_id, access_token=None, report_type=None, download=False, **kw
+    ):
+        values = self._prepare_portal_layout_values()
+        try:
+            folio_sudo = self._document_check_access(
+                "pms.folio",
+                folio_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        values.update(self._folio_get_page_view_values(folio_sudo, access_token, **kw))
+        values.update({"no_breadcrumbs": True, "error": {}})
+        country_ids = request.env["res.country"].search([])
+        state_ids = request.env["res.country.state"].search([])
+        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        values.update(
+            {
+                "country_ids": country_ids,
+                "state_ids": state_ids,
+                "doc_type_ids": doc_type_ids,
+            }
+        )
+        return request.render("pms.portal_my_folio_precheckin", values)
+
 
 class PortalReservation(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
@@ -144,9 +175,7 @@ class PortalReservation(CustomerPortal):
         auth="user",
         website=True,
     )
-    def portal_my_reservations(
-        self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw
-    ):
+    def portal_my_reservations(self, page=1, date_begin=None, date_end=None):
         partner = request.env.user.partner_id
         values = self._prepare_portal_layout_values()
         Reservation = request.env["pms.reservation"]
@@ -208,9 +237,403 @@ class PortalReservation(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
-        # for attachment in reservation_sudo.attachment_ids:
-        #     attachment.generate_access_token()
         values = self._reservation_get_page_view_values(
             reservation_sudo, access_token, **kw
         )
         return request.render("pms.portal_my_reservation_detail", values)
+
+    @http.route(
+        ["/my/reservations/<int:reservation_id>/precheckin"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_reservation_precheckin(self, reservation_id, access_token=None, **kw):
+        try:
+            reservation_sudo = self._document_check_access(
+                "pms.reservation",
+                reservation_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        values = self._reservation_get_page_view_values(
+            reservation_sudo, access_token, **kw
+        )
+        values.update({"no_breadcrumbs": True, "error": {}})
+        country_ids = request.env["res.country"].search([])
+        state_ids = request.env["res.country.state"].search([])
+        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        values.update(
+            {
+                "country_ids": country_ids,
+                "state_ids": state_ids,
+                "doc_type_ids": doc_type_ids,
+            }
+        )
+        return request.render("pms.portal_my_reservation_precheckin", values)
+
+
+class PortalPrecheckin(CustomerPortal):
+    def _precheckin_get_page_view_values(self, checkin_partner, access_token, **kwargs):
+        values = {"checkin_partner": checkin_partner, "token": access_token}
+        return self._get_page_view_values(
+            checkin_partner,
+            access_token,
+            values,
+            "my_precheckins_history",
+            False,
+            **kwargs
+        )
+
+    @http.route(
+        ["/my/precheckin/<int:checkin_partner_id>"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_precheckin_detail(self, checkin_partner_id, access_token=None, **kw):
+        try:
+            checkin_sudo = self._document_check_access(
+                "pms.checkin.partner",
+                checkin_partner_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        values = self._precheckin_get_page_view_values(checkin_sudo, access_token, **kw)
+        country_ids = request.env["res.country"].search([])
+        state_ids = request.env["res.country.state"].search([])
+        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        values.update(
+            {
+                "doc_type_ids": doc_type_ids,
+                "country_ids": country_ids,
+                "state_ids": state_ids,
+                "no_breadcrumbs": True,
+                "error": {},
+            }
+        )
+        return request.render("pms.portal_my_precheckin_detail", values)
+
+    @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
+    def portal_precheckin_submit(self, **kw):
+        values = dict()
+        checkin_partner = request.env["pms.checkin.partner"].browse(int(kw.get("id")))
+        values.update(
+            {
+                "checkin_partner": checkin_partner,
+                "error": {},
+                "error_message": {},
+            }
+        )
+        country_ids = request.env["res.country"].search([])
+        state_ids = request.env["res.country.state"].search([])
+        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        if kw:
+            error, error_message = self.form_validate(kw, None)
+            values.update(
+                {
+                    "no_breadcrumbs": True,
+                    "error": error,
+                    "error_message": error_message,
+                    "country_ids": country_ids,
+                    "state_ids": state_ids,
+                    "doc_type_ids": doc_type_ids,
+                }
+            )
+            if error:
+                return request.render("pms.portal_my_precheckin_detail", values)
+            else:
+                try:
+                    values = kw
+                    if values.get("document_type"):
+                        doc_type = (
+                            request.env["res.partner.id_category"]
+                            .sudo()
+                            .search([("name", "=", values.get("document_type"))])
+                        )
+                        values.update(
+                            {
+                                "document_type": doc_type.id,
+                            }
+                        )
+                    request.env["pms.checkin.partner"].sudo()._save_data_from_portal(
+                        values
+                    )
+                    doc_type_ids = (
+                        request.env["res.partner.id_category"].sudo().search([])
+                    )
+                    values.update(
+                        {
+                            "doc_type_ids": doc_type_ids,
+                        }
+                    )
+                    country_ids = request.env["res.country"].search([])
+                    state_ids = request.env["res.country.state"].search([])
+                    values.update(
+                        {
+                            "country_ids": country_ids,
+                            "state_ids": state_ids,
+                        }
+                    )
+                    values.update(
+                        {
+                            "success": True,
+                            "checkin_partner": checkin_partner,
+                            "no_breadcrumbs": True,
+                            "error": {},
+                        }
+                    )
+                    return request.render("pms.portal_my_precheckin_detail", values)
+                except (AccessError, MissingError):
+                    return request.redirect("/my")
+
+    @http.route(
+        ["/my/precheckin/folio_reservation"],
+        type="http",
+        auth="user",
+        website=True,
+        csrf=False,
+    )
+    def portal_precheckin_folio_submit(self, **kw):
+        errors = {}
+        e_messages = {}
+        counter = 1
+        has_error = False
+        checkin_partners = False
+        if kw.get("folio_id"):
+            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            checkin_partners = folio.checkin_partner_ids
+        elif kw.get("reservation_id"):
+            reservation = request.env["pms.reservation"].browse(
+                int(kw.get("reservation_id"))
+            )
+            checkin_partners = reservation.checkin_partner_ids
+        for checkin in checkin_partners:
+            values = {
+                "id": kw.get("id-" + str(counter)),
+                "firstname": kw.get("firstname-" + str(counter)),
+                "lastname": kw.get("lastname-" + str(counter)),
+                "lastname2": kw.get("lastname2-" + str(counter)),
+                "gender": kw.get("gender-" + str(counter)),
+                "birthdate_date": kw.get("birthdate_date-" + str(counter))
+                if kw.get("birthdate_date-" + str(counter))
+                else False,
+                "document_type": kw.get("document_type-" + str(counter)),
+                "document_number": kw.get("document_number-" + str(counter)),
+                "document_expedition_date": kw.get(
+                    "document_expedition_date-" + str(counter)
+                )
+                if kw.get("document_expedition_date-" + str(counter))
+                else False,
+                "mobile": kw.get("mobile-" + str(counter)),
+                "email": kw.get("email-" + str(counter)),
+                "nationality_id": kw.get("nationality_id-" + str(counter)),
+                "state": kw.get("state-" + str(counter)),
+            }
+
+            if values.get("document_type"):
+                doc_type_code = values.get("document_type")
+                doc_type = (
+                    request.env["res.partner.id_category"]
+                    .sudo()
+                    .search([("name", "=", doc_type_code)])
+                )
+                values.update(
+                    {
+                        "document_type": doc_type.id,
+                    }
+                )
+            error, error_message = self.form_validate(kw, counter)
+            errors.update(error)
+            e_messages.update(error_message)
+            if error_message:
+                has_error = True
+            else:
+                checkin.sudo()._save_data_from_portal(values)
+            counter = counter + 1
+        values = {"no_breadcrumbs": True}
+        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        country_ids = request.env["res.country"].search([])
+        state_ids = request.env["res.country.state"].search([])
+        values.update(
+            {
+                "doc_type_ids": doc_type_ids,
+                "country_ids": country_ids,
+                "state_ids": state_ids,
+            }
+        )
+        if has_error:
+            filtered_dict_error = {k: v for k, v in errors.items() if v}
+            filtered_dict_error_messages = {k: v for k, v in e_messages.items() if v}
+            values.update(
+                {
+                    "error": filtered_dict_error,
+                    "error_message": filtered_dict_error_messages,
+                }
+            )
+        else:
+            values.update({"success": True, "error": {}})
+        if kw.get("folio_id"):
+            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            values.update(
+                {
+                    "folio": folio,
+                }
+            )
+            return request.render("pms.portal_my_folio_precheckin", values)
+        elif kw.get("reservation_id"):
+            reservation = request.env["pms.reservation"].browse(
+                int(kw.get("reservation_id"))
+            )
+            values.update(
+                {
+                    "reservation": reservation,
+                }
+            )
+            return request.render("pms.portal_my_reservation_precheckin", values)
+
+    def form_validate(self, data, counter):
+        error, error_message = self.form_document_validate(data, counter)
+        keys = data.keys()
+        mobile = "mobile" if "mobile" in keys else "mobile-" + str(counter)
+        if data[mobile]:
+            if not re.match(
+                r"^(\d{3}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?\d{2}[\-\s]?|"
+                r"\d{3}[\-\s]?\d{3}[\-\s]?\d{3})$",
+                data[mobile],
+            ):
+                error[mobile] = "error"
+                error_message[mobile] = "Invalid phone"
+        birthdate_date = (
+            "birthdate_date"
+            if "birthdate_date" in keys
+            else "birthdate_date-" + str(counter)
+        )
+        if data[birthdate_date] and data[birthdate_date] > str(fields.Datetime.today()):
+            error[birthdate_date] = "error"
+            error_message[birthdate_date] = "Birthdate must be less than today"
+        email = "email" if "email" in keys else "email-" + str(counter)
+        if data[email] and not tools.single_email_re.match(data[email]):
+            error[email] = "error"
+            error_message[email] = "Email format is wrong"
+        firstname = "firstname" if "firstname" in keys else "firstname-" + str(counter)
+        lastname = "lastname" if "lastname" in keys else "lastname-" + str(counter)
+        lastname2 = "lastname2" if "lastname2" in keys else "lastname2-" + str(counter)
+        if not data[firstname] and not data[lastname] and not data[lastname2]:
+            error[firstname] = "error"
+            error_message[firstname] = "Firstname or any lastname are not included"
+        return error, error_message
+
+    def form_document_validate(self, data, counter):
+        error = dict()
+        error_message = {}
+        keys = data.keys()
+        document_number = (
+            "document_number"
+            if "document_number" in keys
+            else "document_number-" + str(counter)
+        )
+        document_type = (
+            "document_type"
+            if "document_type" in keys
+            else "document_type-" + str(counter)
+        )
+        document_expedition_date = (
+            "document_expedition_date"
+            if "document_expedition_date" in keys
+            else "document_expedition_date-" + str(counter)
+        )
+        if data[document_expedition_date] and not data[document_number]:
+            error[document_expedition_date] = "error"
+            error_message[
+                document_expedition_date
+            ] = "Document Number not entered and Document Type is not selected"
+        if data[document_number]:
+            if not data[document_type]:
+                error[document_type] = "error"
+                error_message[document_type] = "Document Type is not selected"
+            if data[document_type] == "D":
+                if len(data[document_number]) == 9 or len(data[document_number]) == 10:
+                    if not re.match(r"^\d{8}[ -]?[a-zA-Z]$", data[document_number]):
+                        error[document_number] = "error"
+                        error_message[document_number] = "The DNI format is wrong"
+                    letters = {
+                        0: "T",
+                        1: "R",
+                        2: "W",
+                        3: "A",
+                        4: "G",
+                        5: "M",
+                        6: "Y",
+                        7: "F",
+                        8: "P",
+                        9: "D",
+                        10: "X",
+                        11: "B",
+                        12: "N",
+                        13: "J",
+                        14: "Z",
+                        15: "S",
+                        16: "Q",
+                        17: "V",
+                        18: "H",
+                        19: "L",
+                        20: "C",
+                        21: "K",
+                        22: "E",
+                    }
+                    dni_number = data[document_number][0:8]
+                    dni_letter = data[document_number][
+                        len(data[document_number]) - 1 : len(data[document_number])
+                    ]
+                    if letters.get(int(dni_number) % 23) != dni_letter.upper():
+                        error[document_number] = "error"
+                        error_message[document_number] = "DNI format is invalid"
+                else:
+                    error[document_number] = "error"
+                    error_message[document_number] = "DNI is invalid"
+            if data[document_type] == "C" and not re.match(
+                r"^\d{8}[ -]?[a-zA-Z]$", data[document_number]
+            ):
+                error[document_number] = "error"
+                error_message[document_number] = "The Driving License format is wrong"
+            if data[document_type] == "N" and not re.match(
+                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data[document_number]
+            ):
+                error[document_number] = "error"
+                error_message[
+                    document_number
+                ] = "The Spanish Residence Permit format is wrong"
+            if data[document_type] == "X" and not re.match(
+                r"^[X|Y]{1}[ -]?\d{7,8}[ -]?[a-zA-Z]$", data[document_number]
+            ):
+                error[document_number] = "error"
+                error_message[
+                    document_number
+                ] = "The European Residence Permit format is wrong"
+        elif data[document_type]:
+            error[document_number] = "error"
+            error_message[document_number] = "Document Number not entered"
+        return error, error_message
+
+    @http.route(
+        ["/my/precheckin/send_invitation"],
+        auth="user",
+        type="json",
+        website=True,
+        csrf=False,
+    )
+    def portal_precheckin_folio_send_invitation(self, **kw):
+        if kw.get("folio_id"):
+            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            kw.update({"folio": folio})
+        checkin_partner = request.env["pms.checkin.partner"].browse(
+            int(kw["checkin_partner_id"])
+        )
+        firstname = kw["firstname"]
+        email = kw["email"]
+        checkin_partner.write({"firstname": firstname, "email": email})
+        checkin_partner.send_portal_invitation_email(firstname, email)
+        # request.portal_my_folio_precheckin(kw)

@@ -770,6 +770,8 @@ class PmsFolio(models.Model):
     #     else:
     #         raise UserError(_("Some reservations have different currency"))
 
+    # is_checkin = fields.Boolean()
+
     def _compute_access_url(self):
         super(PmsFolio, self)._compute_access_url()
         for folio in self:

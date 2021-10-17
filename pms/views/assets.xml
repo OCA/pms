@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+<template id="assets_frontend" inherit_id="portal.assets_frontend">
+    <xpath expr="//script[last()]" position="after">
+        <script
+                type="text/javascript"
+                src="/pms/static/src/js/send_invitation_data.js"
+            />
+    </xpath>
+</template>
+
+</odoo>
