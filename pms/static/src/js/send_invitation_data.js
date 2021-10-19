@@ -15,6 +15,7 @@ odoo.define("pms.SendInvitationData", function (require) {
             var checkinPartnerId = $(ev.currentTarget)
                 .parent()
                 .parent()
+                .parent()
                 .find("input[name=checkin_partner_id]")
                 .val();
             var firstname = $(ev.currentTarget)
