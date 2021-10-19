@@ -856,6 +856,7 @@
                                     <td colspan="4">
                                         <t t-if="not checkin_partner.firstname">
                                             <a
+                                                t-att-id="'host_name'+str(checkin_partner.id)"
                                                 name="url_acess_token"
                                                 t-att-href="checkin_partner.get_portal_url()"
                                             >
@@ -920,7 +921,7 @@
                                                             Name
                                                         </label>
                                                         <input
-                                                            id="invitation_firstname"
+                                                            t-att-id="'invitation_firstname'+str(checkin_partner.id)"
                                                             type="text"
                                                             t-att-name="'invitation_firstname'"
                                                             t-attf-class="form-control"
@@ -1374,12 +1375,21 @@
             var x = document.getElementById("snackbar");
             x.className = "show";
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+
+
+
             var checkin_partner_id = element.firstChild.nextSibling.innerText
+
+            var nameId = "invitation_firstname" + checkin_partner_id;
+            var hostId = "host_name" + checkin_partner_id;
+            var host = document.getElementById(hostId);
+            var name = document.getElementById(nameId).value;
+            host.innerHTML = name;
+
             var divId = "invitation_group" + checkin_partner_id;
             var btnId = "btnResendInvitation" + checkin_partner_id;
             var div_invitation = document.getElementById(divId);
             var btn_show_invitation = document.getElementById(btnId);
-            console.log(btn_show_invitation)
             div_invitation.classList.add("d-none");
             btn_show_invitation.classList.remove("d-none");
             }
