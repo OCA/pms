@@ -152,8 +152,8 @@
                                     for="gender"
                                 >Gender</label>
                                 <div class="d-none"><p id="genderId"><t
-                                    t-esc="checkin_partner.gender"
-                                /></p></div>
+                                            t-esc="checkin_partner.gender"
+                                        /></p></div>
                                 <select
                                     class="form-control"
                                     name="gender"
@@ -253,7 +253,10 @@
                                 </t>
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary float-right">
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary float-right"
+                                >
                                     Confirm
                                     <span class="fa fa-long-arrow-right" />
                                 </button>
@@ -311,8 +314,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin for <span
-                            t-field="reservation.sudo().room_type_id.name"
-                        /> Room</th>
+                                t-field="reservation.sudo().room_type_id.name"
+                            /> Room</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -633,10 +636,10 @@
                                                                 for="gender"
                                                             >Gender</label>
                                                             <div class="d-none"><p
-                                                                id="genderId"
-                                                            ><t
-                                                                t-esc="checkin_partner.gender"
-                                                            /></p></div>
+                                                                    id="genderId"
+                                                                ><t
+                                                                        t-esc="checkin_partner.gender"
+                                                                    /></p></div>
                                                             <select
                                                                 class="form-control"
                                                                 name="gender"
@@ -802,8 +805,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin in <span
-                            t-field="folio.pms_property_id.name"
-                        /></th>
+                                t-field="folio.pms_property_id.name"
+                            /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -878,21 +881,37 @@
                                                         t-att-value="id or (checkin_partner.id)"
                                                     />
                                                 </div>
-                                                <div t-attf-class="form-group col-6">
-                                                    <a t-att-id="'btn_show_invitation'+str(checkin_partner.id)" class="btn btn-secondary" style="color:#fff;" t-attf-onclick="show_invitation(this)">
-                                                        <span t-esc="checkin_partner.id" class="d-none"/>
+                                                 <div t-attf-class="form-group col-6">
+                                                    <a
+                                                        t-att-id="'btn_show_invitation'+str(checkin_partner.id)"
+                                                        class="btn btn-secondary"
+                                                        style="color:#fff;margin-top:20px;"
+                                                        t-attf-onclick="show_invitation(this)"
+                                                    >
+                                                        <span
+                                                            t-esc="checkin_partner.id"
+                                                            class="d-none"
+                                                        />
                                                         Send Invitation
                                                     </a>
                                                     <a
                                                         t-att-id="'btnResendInvitation' +str(checkin_partner.id)"
                                                         onclick="show_invitation(this)"
                                                         t-att-class="' btn btn-secondary d-none'"
-                                                        style="color:#fff;"
+                                                        style="color:#fff;margin-top:20px;"
                                                     >Resend Invitation
-                                                        <span t-esc="checkin_partner.id" class="d-none"/></a>
+                                                        <span
+                                                            t-esc="checkin_partner.id"
+                                                            class="d-none"
+                                                        /></a>
                                                 </div>
-                                                <div class="row col-12 d-none" t-att-id="'invitation_group'+str(checkin_partner.id)">
-                                                    <div t-attf-class="form-group col-lg-4">
+                                                <div
+                                                    class="row col-12 d-none"
+                                                    t-att-id="'invitation_group'+str(checkin_partner.id)"
+                                                >
+                                                    <div
+                                                        t-attf-class="form-group col-4 p-2"
+                                                    >
                                                         <label
                                                             id="label_firstname"
                                                             class="col-form-label"
@@ -908,7 +927,9 @@
                                                             t-att-value="firstname or (checkin_partner.firstname)"
                                                         />
                                                     </div>
-                                                    <div t-attf-class="form-group col-4">
+                                                    <div
+                                                        t-attf-class="form-group col-4 p-2"
+                                                    >
                                                         <label
                                                             id="label_email"
                                                             class="col-form-label"
@@ -925,15 +946,18 @@
                                                         />
                                                     </div>
                                                     <div
-                                                        t-attf-class="form-group col-2 m-4 p-3 align-self-center"
+                                                        t-attf-class="form-group col-4 p-3"
                                                     >
                                                         <a
                                                             id="btnInvitation"
                                                             onclick="launchSnackBar(this)"
-                                                            t-att-class="' btn btn-secondary o_send_invitation_js'"
-                                                            style="color:#fff;"
-                                                        >Send Invitation
-                                                            <span t-esc="checkin_partner.id" class="d-none"/></a>
+                                                            t-att-class="' btn btn-secondary o_send_invitation_js mt-4 p-2'"
+                                                            style="color:#fff; height:36px;"
+                                                        >
+                                                        Send Invitation<span
+                                                                t-esc="checkin_partner.id"
+                                                                class="d-none"
+                                                            /></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1172,10 +1196,10 @@
                                                                     for="gender"
                                                                 >Gender</label>
                                                                 <div class="d-none"><p
-                                                                    id="genderId"
-                                                                ><t
-                                                                    t-esc="checkin_partner.gender"
-                                                                /></p></div>
+                                                                        id="genderId"
+                                                                    ><t
+                                                                            t-esc="checkin_partner.gender"
+                                                                        /></p></div>
                                                                 <select
                                                                     class="form-control"
                                                                     t-att-name="'gender-'+str(count)"
@@ -1353,7 +1377,6 @@
             var checkin_partner_id = element.firstChild.nextSibling.innerText
             var divId = "invitation_group" + checkin_partner_id;
             var btnId = "btnResendInvitation" + checkin_partner_id;
-            console.log(btnId)
             var div_invitation = document.getElementById(divId);
             var btn_show_invitation = document.getElementById(btnId);
             console.log(btn_show_invitation)
@@ -1366,11 +1389,9 @@
             var divId = "invitation_group" + checkin_partner_id;
             var btnId = "btn_show_invitation" + checkin_partner_id;
             var btn2 = "btnResendInvitation"+checkin_partner_id;
-            console.log(btn2)
             var div_invitation = document.getElementById(divId);
             var btn_show_invitation = document.getElementById(btnId);
             var btn_resend = document.getElementById(btn2);
-            console.log(btn_resend)
             div_invitation.classList.remove("d-none");
             btn_show_invitation.classList.add("d-none");
             btn_resend.classList.add("d-none");
