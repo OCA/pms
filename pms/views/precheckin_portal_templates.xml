@@ -17,9 +17,9 @@
                         />
 
                     </div>
-                    <div class="col-lg-12">
-                        <div class="row">
-                            <div t-attf-class="form-group col-xl-4 pb-xl-5 pt-xl-5">
+                    <div class="row justify-content-center">
+                        <div class="col-7 col-md-10 row">
+                            <div t-attf-class="form-group col-12 pt-5">
                                 <label
                                     class="col-form-label"
                                     for="firstname"
@@ -37,7 +37,7 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-4 pt-xl-5">
+                            <div t-attf-class="form-group col-6 pb-5">
                                 <label
                                     class="col-form-label"
                                     for="lastname"
@@ -49,7 +49,7 @@
                                     t-att-value="lastname or checkin_partner.lastname"
                                 />
                             </div>
-                            <div t-attf-class="form-group col-xl-4 pt-xl-5">
+                            <div t-attf-class="form-group col-6 pb-5">
                                 <label
                                     class="col-form-label"
                                     for="lastname2"
@@ -61,7 +61,7 @@
                                     t-att-value="lastname2 or checkin_partner.lastname2"
                                 />
                             </div>
-                            <div t-attf-class="form-group col-xl-4 pb-xl-5">
+                            <div t-attf-class="form-group col-5">
                                 <label
                                     class="col-form-label"
                                     for="document_type"
@@ -87,7 +87,7 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-4">
+                            <div t-attf-class="col-7">
                                 <label
                                     class="col-form-label"
                                     for="document_number"
@@ -105,16 +105,15 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-4">
+                            <div t-attf-class="col-6">
                                 <label
                                     class="col-form-label"
                                     for="document_expedition_date"
                                 >Doc. Expedition Date/Doc. Validity Date</label>
                                 <span
-                                    class="fa fa-question-circle fa-lg"
+                                    class="fa fa-question-circle fa-lg ml-4"
                                     data-toggle="tooltip"
                                     title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."
-                                    style="margin-left: 70px;"
                                 />
                                 <input
                                     type="date"
@@ -129,7 +128,7 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-4 pb-xl-5">
+                            <div t-attf-class="form-group col-6">
                                 <label
                                     class="col-form-label"
                                     for="birthdate_date"
@@ -147,47 +146,14 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-xl-4">
-                                <label
-                                    class="col-form-label"
-                                    for="mobile"
-                                >Mobile</label>
-                                <input
-                                    type="phone"
-                                    name="mobile"
-                                    t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"
-                                    t-att-value="mobile or checkin_partner.mobile"
-                                />
-                                <t t-if="error_message">
-                                    <span
-                                        class="text-danger"
-                                        t-esc="error_message.get('mobile')"
-                                    />
-                                </t>
-                            </div>
-                            <div t-attf-class="form-group col-xl-4">
-                                <label class="col-form-label" for="email">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
-                                    t-att-value="email or checkin_partner.email"
-                                />
-                                <t t-if="error_message">
-                                    <span
-                                        class="text-danger"
-                                        t-esc="error_message.get('email')"
-                                    />
-                                </t>
-                            </div>
-                            <div t-attf-class="form-group col-xl-4 pb-xl-5">
+                            <div t-attf-class="col-4">
                                 <label
                                     class="col-form-label"
                                     for="gender"
                                 >Gender</label>
                                 <div class="d-none"><p id="genderId"><t
-                                            t-esc="checkin_partner.gender"
-                                        /></p></div>
+                                    t-esc="checkin_partner.gender"
+                                /></p></div>
                                 <select
                                     class="form-control"
                                     name="gender"
@@ -214,7 +180,7 @@
                                     </option>
                                 </select>
                             </div>
-                            <div t-attf-class="form-group col-xl-4">
+                            <div t-attf-class="col-4">
                                 <label
                                     class="col-form-label"
                                     for="nationality_id"
@@ -235,7 +201,7 @@
                                     </t>
                                 </select>
                             </div>
-                            <div class="form-group col-xl-4">
+                            <div class="form-group col-4">
                                 <label
                                     class="col-form-label"
                                     for="state"
@@ -253,14 +219,47 @@
                                     </t>
                                 </select>
                             </div>
+                            <div t-attf-class="form-group col-6 pt-5">
+                                <label
+                                    class="col-form-label"
+                                    for="mobile"
+                                >Mobile</label>
+                                <input
+                                    type="phone"
+                                    name="mobile"
+                                    t-attf-class="form-control #{error.get('mobile') and 'is-invalid' or ''}"
+                                    t-att-value="mobile or checkin_partner.mobile"
+                                />
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('mobile')"
+                                    />
+                                </t>
+                            </div>
+                            <div t-attf-class="form-group col-6 pt-5">
+                                <label class="col-form-label" for="email">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-att-value="email or checkin_partner.email"
+                                />
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('email')"
+                                    />
+                                </t>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary float-right">
+                                    Confirm
+                                    <span class="fa fa-long-arrow-right" />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary float-right mb32 ">
-                        Confirm
-                        <span class="fa fa-long-arrow-right" />
-                    </button>
                 </div>
             </form>
         </t>
@@ -312,8 +311,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin for <span
-                                t-field="reservation.sudo().room_type_id.name"
-                            /> Room</th>
+                            t-field="reservation.sudo().room_type_id.name"
+                        /> Room</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -327,38 +326,38 @@
                             t-as="checkin_partner"
                         >
                             <t t-set="id1" t-value="'counter'+ str(count)" />
-                                <t t-set="id2" t-value="'#'" />
-                                <t t-set="id3" t-value="id2+id1" />
-                                <t t-set="idcheckin" t-value="'checkin' + str(count)" />
-                                <t t-set="count" t-value="count+1" />
-                                <tr>
-                                    <td colspan="4">
-                                        <t t-if="not checkin_partner.firstname">
-                                            <a
+                            <t t-set="id2" t-value="'#'" />
+                            <t t-set="id3" t-value="id2+id1" />
+                            <t t-set="idcheckin" t-value="'checkin' + str(count)" />
+                            <t t-set="count" t-value="count+1" />
+                            <tr>
+                                <td colspan="4">
+                                    <t t-if="not checkin_partner.firstname">
+                                        <a
                                             name="url_acess_token"
                                             t-att-href="checkin_partner.get_portal_url()"
                                         >
-                                                Host <t t-esc="count" />
-                                            </a>
-                                            <a
+                                            Host <t t-esc="count" />
+                                        </a>
+                                        <a
                                             data-toggle="collapse"
                                             t-att-data-target="id3"
                                             class="text-primary"
                                         >
-                                                <span
+                                            <span
                                                 t-att-id="count"
                                                 class="fa fa-chevron-down fa-sm"
                                             />
-                                            </a>
-                                            <div class="row col-12">
-                                                <div t-attf-class="d-none">
-                                                    <label
+                                        </a>
+                                        <div class="row col-12">
+                                            <div t-attf-class="d-none">
+                                                <label
                                                     class="col-form-label"
                                                     for="checkin_partner_id"
                                                 >
-                                                        Name
-                                                    </label>
-                                                    <input
+                                                    Name
+                                                </label>
+                                                <input
                                                     type="text"
                                                     t-att-name="'checkin_partner_id'"
                                                     t-attf-class="form-control"
@@ -634,10 +633,10 @@
                                                                 for="gender"
                                                             >Gender</label>
                                                             <div class="d-none"><p
-                                                                    id="genderId"
-                                                                ><t
-                                                                        t-esc="checkin_partner.gender"
-                                                                    /></p></div>
+                                                                id="genderId"
+                                                            ><t
+                                                                t-esc="checkin_partner.gender"
+                                                            /></p></div>
                                                             <select
                                                                 class="form-control"
                                                                 name="gender"
@@ -803,8 +802,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin in <span
-                                t-field="folio.pms_property_id.name"
-                            /></th>
+                            t-field="folio.pms_property_id.name"
+                        /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -866,17 +865,12 @@
                                             >
                                                 <span
                                                     t-att-id="count"
+                                                    t-name="span_count"
                                                     class="fa fa-chevron-down fa-sm"
                                                 />
                                             </a>
                                             <div class="row col-12">
                                                 <div t-attf-class="d-none">
-                                                    <label
-                                                        class="col-form-label"
-                                                        for="checkin_partner_id"
-                                                    >
-                                                        Name
-                                                    </label>
                                                     <input
                                                         type="text"
                                                         t-att-name="'checkin_partner_id'"
@@ -884,47 +878,63 @@
                                                         t-att-value="id or (checkin_partner.id)"
                                                     />
                                                 </div>
-                                                <div t-attf-class="form-group col-lg-4">
-                                                    <label
-                                                        id="label_firstname"
-                                                        class="col-form-label"
-                                                        for="invitation_firstname"
-                                                    >
-                                                        Name
-                                                    </label>
-                                                    <input
-                                                        id="invitation_firstname"
-                                                        type="text"
-                                                        t-att-name="'invitation_firstname'"
-                                                        t-attf-class="form-control"
-                                                        t-att-value="firstname or (checkin_partner.firstname)"
-                                                    />
-                                                </div>
-                                                <div t-attf-class="form-group col-4">
-                                                    <label
-                                                        id="label_email"
-                                                        class="col-form-label"
-                                                        for="email"
-                                                    >
-                                                        Email
-                                                    </label>
-                                                    <input
-                                                        id="invitation_email"
-                                                        type="email"
-                                                        t-att-name="'invitation_email'"
-                                                        t-attf-class="form-control "
-                                                        t-att-value="invitation_email or checkin_partner.email"
-                                                    />
-                                                </div>
-                                                <div
-                                                    t-attf-class="form-group col-2 m-4 p-3 align-self-center"
-                                                >
+                                                <div t-attf-class="form-group col-6">
+                                                    <a t-att-id="'btn_show_invitation'+str(checkin_partner.id)" class="btn btn-secondary" style="color:#fff;" t-attf-onclick="show_invitation(this)">
+                                                        <span t-esc="checkin_partner.id" class="d-none"/>
+                                                        Send Invitation
+                                                    </a>
                                                     <a
-                                                        id="btnInvitation"
-                                                        onclick="launchSnackBar()"
-                                                        t-att-class="' btn btn-secondary o_send_invitation_js'"
+                                                        t-att-id="'btnResendInvitation' +str(checkin_partner.id)"
+                                                        onclick="show_invitation(this)"
+                                                        t-att-class="' btn btn-secondary d-none'"
                                                         style="color:#fff;"
-                                                    >Send Invitation</a>
+                                                    >Resend Invitation
+                                                        <span t-esc="checkin_partner.id" class="d-none"/></a>
+                                                </div>
+                                                <div class="row col-12 d-none" t-att-id="'invitation_group'+str(checkin_partner.id)">
+                                                    <div t-attf-class="form-group col-lg-4">
+                                                        <label
+                                                            id="label_firstname"
+                                                            class="col-form-label"
+                                                            for="invitation_firstname"
+                                                        >
+                                                            Name
+                                                        </label>
+                                                        <input
+                                                            id="invitation_firstname"
+                                                            type="text"
+                                                            t-att-name="'invitation_firstname'"
+                                                            t-attf-class="form-control"
+                                                            t-att-value="firstname or (checkin_partner.firstname)"
+                                                        />
+                                                    </div>
+                                                    <div t-attf-class="form-group col-4">
+                                                        <label
+                                                            id="label_email"
+                                                            class="col-form-label"
+                                                            for="email"
+                                                        >
+                                                            Email
+                                                        </label>
+                                                        <input
+                                                            id="invitation_email"
+                                                            type="email"
+                                                            t-att-name="'invitation_email'"
+                                                            t-attf-class="form-control "
+                                                            t-att-value="invitation_email or checkin_partner.email"
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-2 m-4 p-3 align-self-center"
+                                                    >
+                                                        <a
+                                                            id="btnInvitation"
+                                                            onclick="launchSnackBar(this)"
+                                                            t-att-class="' btn btn-secondary o_send_invitation_js'"
+                                                            style="color:#fff;"
+                                                        >Send Invitation
+                                                            <span t-esc="checkin_partner.id" class="d-none"/></a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </t>
@@ -1162,10 +1172,10 @@
                                                                     for="gender"
                                                                 >Gender</label>
                                                                 <div class="d-none"><p
-                                                                        id="genderId"
-                                                                    ><t
-                                                                            t-esc="checkin_partner.gender"
-                                                                        /></p></div>
+                                                                    id="genderId"
+                                                                ><t
+                                                                    t-esc="checkin_partner.gender"
+                                                                /></p></div>
                                                                 <select
                                                                     class="form-control"
                                                                     t-att-name="'gender-'+str(count)"
@@ -1336,10 +1346,34 @@
             }
         </style>
         <script>
-            function launchSnackBar() {
+            function launchSnackBar(element) {
             var x = document.getElementById("snackbar");
             x.className = "show";
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+            var checkin_partner_id = element.firstChild.nextSibling.innerText
+            var divId = "invitation_group" + checkin_partner_id;
+            var btnId = "btnResendInvitation" + checkin_partner_id;
+            console.log(btnId)
+            var div_invitation = document.getElementById(divId);
+            var btn_show_invitation = document.getElementById(btnId);
+            console.log(btn_show_invitation)
+            div_invitation.classList.add("d-none");
+            btn_show_invitation.classList.remove("d-none");
+            }
+
+            function show_invitation(element) {
+            var checkin_partner_id = element.firstChild.nextSibling.innerText
+            var divId = "invitation_group" + checkin_partner_id;
+            var btnId = "btn_show_invitation" + checkin_partner_id;
+            var btn2 = "btnResendInvitation"+checkin_partner_id;
+            console.log(btn2)
+            var div_invitation = document.getElementById(divId);
+            var btn_show_invitation = document.getElementById(btnId);
+            var btn_resend = document.getElementById(btn2);
+            console.log(btn_resend)
+            div_invitation.classList.remove("d-none");
+            btn_show_invitation.classList.add("d-none");
+            btn_resend.classList.add("d-none");
             }
         </script>
         <script>
@@ -1385,7 +1419,6 @@
             }
             });
             });
-
         </script>
     </template>
 </odoo>
