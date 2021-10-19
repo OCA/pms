@@ -63,10 +63,6 @@
                                 >
                                 <t t-esc="folio.name" />
                             </a>
-                            <a
-                                    t-att-href="folio.get_portal_url(suffix='/precheckin')"
-                                    t-att-title="Precheckin"
-                                >Precheckin</a>
                         </td>
                         <td><span t-field="folio.date_order" /></td>
                         <td class="text-right"><span
@@ -98,16 +94,16 @@
                         <ul
                             class="list-group list-group-flush flex-wrap flex-row flex-lg-column"
                         >
-                            <li class="list-group-item flex-grow-1">
+                            <li class="list-group-item">
                                 <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
-                                    <div class="btn-group flex-grow-1 mr-1 mb-1">
+                                    <div class="btn-group mr-1 mb-1">
                                         <a
                                             class="btn btn-secondary btn-block o_download_btn"
                                             t-att-href="folio.get_portal_url(report_type='pdf', download=True)"
                                             title="Download"
                                         ><i class="fa fa-download" /> Download</a>
                                     </div>
-                                    <div class="btn-group flex-grow-1 mb-1">
+                                    <div class="btn-group mb-1">
                                         <a
                                             class="btn btn-secondary btn-block o_print_btn o_portal_invoice_print"
                                             t-att-href="folio.get_portal_url(report_type='pdf')"
@@ -117,6 +113,15 @@
                                         ><i class="fa fa-print" /> Print</a>
                                     </div>
                                 </div>
+                                <div>
+                                        <a
+                                        class="btn btn-secondary btn-block "
+                                        t-att-href="folio.get_portal_url(suffix='/precheckin')"
+                                        t-att-title="Precheckin"
+                                    >
+                                            Precheckin
+                                        </a>
+                                    </div>
                             </li>
 
                             <li
