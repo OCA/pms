@@ -18,8 +18,8 @@
 
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-7 col-md-10 row">
-                            <div t-attf-class="form-group col-12 pt-5">
+                        <div class="col-11 col-md-8 row pt-5">
+                            <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                     class="col-form-label"
                                     for="firstname"
@@ -37,7 +37,7 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-6 pb-5">
+                            <div t-attf-class="col-12 col-md-6">
                                 <label
                                     class="col-form-label"
                                     for="lastname"
@@ -49,7 +49,7 @@
                                     t-att-value="lastname or checkin_partner.lastname"
                                 />
                             </div>
-                            <div t-attf-class="form-group col-6 pb-5">
+                            <div t-attf-class="form-group col-12 col-md-6 pb-md-5">
                                 <label
                                     class="col-form-label"
                                     for="lastname2"
@@ -61,92 +61,7 @@
                                     t-att-value="lastname2 or checkin_partner.lastname2"
                                 />
                             </div>
-                            <div t-attf-class="form-group col-5">
-                                <label
-                                    class="col-form-label"
-                                    for="document_type"
-                                >Doc. Type</label>
-                                <select
-                                    class="form-control #{error.get('document_type') and 'is-invalid' or ''}"
-                                    name='document_type'
-                                >
-                                    <option value="">Select an option</option>
-                                    <t t-foreach="doc_type_ids" t-as='doc_type'>
-                                        <option
-                                            t-att-value="doc_type.name"
-                                            t-att-selected="doc_type.id == checkin_partner.document_type.id"
-                                        >
-                                            <t t-esc='doc_type.name' />
-                                        </option>
-                                    </t>
-                                </select>
-                                <t t-if="error_message">
-                                    <span
-                                        class="text-danger"
-                                        t-esc="error_message.get('document_type')"
-                                    />
-                                </t>
-                            </div>
-                            <div t-attf-class="col-7">
-                                <label
-                                    class="col-form-label"
-                                    for="document_number"
-                                >Doc. Number</label>
-                                <input
-                                    type="text"
-                                    name="document_number"
-                                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
-                                    t-att-value="doc_number or checkin_partner.document_number"
-                                />
-                                <t t-if="error_message">
-                                    <span
-                                        class="text-danger"
-                                        t-esc="error_message.get('document_number')"
-                                    />
-                                </t>
-                            </div>
-                            <div t-attf-class="col-6">
-                                <label
-                                    class="col-form-label"
-                                    for="document_expedition_date"
-                                >Doc. Expedition Date/Doc. Validity Date</label>
-                                <span
-                                    class="fa fa-question-circle fa-lg ml-4"
-                                    data-toggle="tooltip"
-                                    title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."
-                                />
-                                <input
-                                    type="date"
-                                    name="document_expedition_date"
-                                    t-attf-class="form-control #{error.get('document_expedition_date') and 'is-invalid' or ''}"
-                                    t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
-                                />
-                                <t t-if="error_message">
-                                    <span
-                                        class="text-danger"
-                                        t-esc="error_message.get('document_expedition_date')"
-                                    />
-                                </t>
-                            </div>
-                            <div t-attf-class="form-group col-6">
-                                <label
-                                    class="col-form-label"
-                                    for="birthdate_date"
-                                > Birth Date</label>
-                                <input
-                                    type="date"
-                                    name="birthdate_date"
-                                    t-attf-class="form-control #{error.get('birthdate_date') and 'is-invalid' or ''}"
-                                    t-att-value="birth_date or checkin_partner.birthdate_date"
-                                />
-                                <t t-if="error_message">
-                                    <span
-                                        class="text-danger"
-                                        t-esc="error_message.get('birthdate_date')"
-                                    />
-                                </t>
-                            </div>
-                            <div t-attf-class="col-4">
+                            <div t-attf-class="col-12 col-md-6 pb-5">
                                 <label
                                     class="col-form-label"
                                     for="gender"
@@ -180,7 +95,92 @@
                                     </option>
                                 </select>
                             </div>
-                            <div t-attf-class="col-4">
+                            <div t-attf-class="form-group col-12 col-md-6">
+                                <label
+                                    class="col-form-label"
+                                    for="document_type"
+                                >Doc. Type</label>
+                                <select
+                                    class="form-control #{error.get('document_type') and 'is-invalid' or ''}"
+                                    name='document_type'
+                                >
+                                    <option value="">Select an option</option>
+                                    <t t-foreach="doc_type_ids" t-as='doc_type'>
+                                        <option
+                                            t-att-value="doc_type.name"
+                                            t-att-selected="doc_type.id == checkin_partner.document_type.id"
+                                        >
+                                            <t t-esc='doc_type.name' />
+                                        </option>
+                                    </t>
+                                </select>
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('document_type')"
+                                    />
+                                </t>
+                            </div>
+                            <div t-attf-class="col-12 col-md-6">
+                                <label
+                                    class="col-form-label"
+                                    for="document_number"
+                                >Doc. Number</label>
+                                <input
+                                    type="text"
+                                    name="document_number"
+                                    t-attf-class="form-control #{error.get('document_number') and 'is-invalid' or ''}"
+                                    t-att-value="doc_number or checkin_partner.document_number"
+                                />
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('document_number')"
+                                    />
+                                </t>
+                            </div>
+                            <div t-attf-class="col-12 col-md-6">
+                                <label
+                                    class="col-form-label"
+                                    for="document_expedition_date"
+                                >Doc. Expedition Date/Doc. Validity Date</label>
+                                <span
+                                    class="fa fa-question-circle fa-lg ml-4"
+                                    data-toggle="tooltip"
+                                    title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."
+                                />
+                                <input
+                                    type="date"
+                                    name="document_expedition_date"
+                                    t-attf-class="form-control #{error.get('document_expedition_date') and 'is-invalid' or ''}"
+                                    t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
+                                />
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('document_expedition_date')"
+                                    />
+                                </t>
+                            </div>
+                            <div t-attf-class="form-group col-12 col-md-6">
+                                <label
+                                    class="col-form-label"
+                                    for="birthdate_date"
+                                > Birth Date</label>
+                                <input
+                                    type="date"
+                                    name="birthdate_date"
+                                    t-attf-class="form-control #{error.get('birthdate_date') and 'is-invalid' or ''}"
+                                    t-att-value="birth_date or checkin_partner.birthdate_date"
+                                />
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('birthdate_date')"
+                                    />
+                                </t>
+                            </div>
+                            <div t-attf-class="col-12 col-md-6">
                                 <label
                                     class="col-form-label"
                                     for="nationality_id"
@@ -201,7 +201,7 @@
                                     </t>
                                 </select>
                             </div>
-                            <div class="form-group col-4">
+                            <div class="form-group col-12 col-md-6">
                                 <label
                                     class="col-form-label"
                                     for="state"
@@ -219,7 +219,7 @@
                                     </t>
                                 </select>
                             </div>
-                            <div t-attf-class="form-group col-6 pt-5">
+                            <div t-attf-class="form-group col-12 col-md-6 pt-5">
                                 <label
                                     class="col-form-label"
                                     for="mobile"
@@ -237,7 +237,7 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-6 pt-5">
+                            <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
                                 <label class="col-form-label" for="email">Email</label>
                                 <input
                                     type="email"
@@ -984,9 +984,7 @@
                                         <div class="row o_portal_details">
                                             <div class="row collapse" t-att-id="id1">
                                                 <div class="row o_portal_details">
-                                                    <div
-                                                        t-attf-class="form-group col-xl-6 d-none"
-                                                    >
+                                                    <div t-attf-class="d-none">
                                                         <input
                                                             type="text"
                                                             t-att-name="'id-'+ str(count)"
@@ -995,14 +993,10 @@
                                                         />
 
                                                     </div>
-                                                    <div
-                                                        class="col-xl-12 col-lg-8 mx-auto"
-                                                    >
-                                                        <div
-                                                            class="row col-xl-12 col-lg-8 mx-auto"
-                                                        >
+                                                    <div class="col">
+                                                        <div class="row mx-5 px-5">
                                                             <div
-                                                                t-attf-class="form-group col-xl-4 pb-xl-5 pt-xl-5"
+                                                                t-attf-class="form-group col-12 col-md-6"
                                                             >
                                                                 <label
                                                                     class="col-form-label"
@@ -1022,7 +1016,7 @@
                                                                 </t>
                                                             </div>
                                                             <div
-                                                                t-attf-class="form-group col-xl-4 pt-xl-5"
+                                                                t-attf-class="form-group col-12 col-md-6"
                                                             >
                                                                 <label
                                                                     class="col-form-label"
@@ -1036,7 +1030,7 @@
                                                                 />
                                                             </div>
                                                             <div
-                                                                t-attf-class="form-group col-xl-4 pt-xl-5"
+                                                                t-attf-class="form-group col-12 col-md-6 pb-md-5"
                                                             >
                                                                 <label
                                                                     class="col-form-label"
@@ -1050,147 +1044,7 @@
                                                                 />
                                                             </div>
                                                             <div
-                                                                t-attf-class="form-group col-xl-4 pb-xl-5"
-                                                            >
-                                                                <label
-                                                                    class="col-form-label"
-                                                                    for="document_type"
-                                                                >Doc. Type</label>
-                                                                <select
-                                                                    class="form-control #{error.get('document_type-'+str(count)) and 'is-invalid' or ''}"
-                                                                    t-att-name="'document_type-'+str(count)"
-                                                                >
-                                                                    <option
-                                                                        value=""
-                                                                    >Select an option</option>
-                                                                    <t
-                                                                        t-foreach="doc_type_ids"
-                                                                        t-as='doc_type'
-                                                                    >
-                                                                        <option
-                                                                            t-att-value="doc_type.name"
-                                                                            t-att-selected="doc_type.id == checkin_partner.document_type.id"
-                                                                        >
-                                                                            <t
-                                                                                t-esc='doc_type.name'
-                                                                            />
-                                                                        </option>
-                                                                    </t>
-                                                                </select>
-                                                                <t t-if="error_message">
-                                                                    <span
-                                                                        class="text-danger"
-                                                                        t-esc="error_message.get('document_type-'+str(count))"
-                                                                    />
-                                                                </t>
-                                                            </div>
-                                                            <div
-                                                                t-attf-class="form-group col-xl-4"
-                                                            >
-                                                                <label
-                                                                    class="col-form-label"
-                                                                    for="document_number"
-                                                                >Doc. Number</label>
-                                                                <input
-                                                                    type="text"
-                                                                    t-att-name="'document_number-'+str(count)"
-                                                                    t-attf-class="form-control #{error.get('document_number-'+str(count)) and 'is-invalid' or ''}"
-                                                                    t-att-value="doc_number or checkin_partner.document_number"
-                                                                />
-                                                                <t t-if="error_message">
-                                                                    <span
-                                                                        class="text-danger"
-                                                                        t-esc="error_message.get('document_number-'+str(count))"
-                                                                    />
-                                                                </t>
-                                                            </div>
-                                                            <div
-                                                                t-attf-class="form-group col-xl-4"
-                                                            >
-                                                                <label
-                                                                    class="col-form-label"
-                                                                    for="document_expedition_date"
-                                                                >Doc. Expedition Date/Doc. Validity Date</label>
-                                                                <span
-                                                                    class="fa fa-question-circle fa-lg"
-                                                                    data-toggle="tooltip"
-                                                                    title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."
-                                                                />
-                                                                <input
-                                                                    type="date"
-                                                                    t-att-name="'document_expedition_date-'+ str(count)"
-                                                                    t-attf-class="form-control #{error.get('document_expedition_date-'+ str(count)) and 'is-invalid' or ''}"
-                                                                    t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
-                                                                />
-                                                                <t t-if="error_message">
-                                                                    <span
-                                                                        class="text-danger"
-                                                                        t-esc="error_message.get('document_expedition_date-'+ str(count))"
-                                                                    />
-                                                                </t>
-                                                            </div>
-                                                            <div
-                                                                t-attf-class="form-group col-xl-4 pb-xl-5"
-                                                            >
-                                                                <label
-                                                                    class="col-form-label"
-                                                                    for="birthdate_date"
-                                                                > Birth Date</label>
-                                                                <input
-                                                                    type="date"
-                                                                    t-att-name="'birthdate_date-'+str(count)"
-                                                                    t-attf-class="form-control #{error.get('birthdate_date-'+str(count)) and 'is-invalid' or ''}"
-                                                                    t-att-value="birth_date or checkin_partner.birthdate_date"
-                                                                />
-                                                                <t t-if="error_message">
-                                                                    <span
-                                                                        class="text-danger"
-                                                                        t-esc="error_message.get('birthdate_date-'+str(count))"
-                                                                    />
-                                                                </t>
-                                                            </div>
-                                                            <div
-                                                                t-attf-class="form-group col-xl-4"
-                                                            >
-                                                                <label
-                                                                    class="col-form-label"
-                                                                    for="mobile"
-                                                                >Mobile</label>
-                                                                <input
-                                                                    type="phone"
-                                                                    t-att-name="'mobile-'+str(count)"
-                                                                    t-attf-class="form-control #{error.get('mobile-'+str(count)) and 'is-invalid' or ''}"
-                                                                    t-att-value="mobile or checkin_partner.mobile"
-                                                                />
-                                                                <t t-if="error_message">
-                                                                    <span
-                                                                        class="text-danger"
-                                                                        t-esc="error_message.get('mobile-'+str(count))"
-                                                                    />
-                                                                </t>
-                                                            </div>
-                                                            <div
-                                                                t-attf-class="form-group col-xl-4"
-                                                            >
-                                                                <label
-                                                                    class="col-form-label"
-                                                                    for="email"
-                                                                >Email</label>
-                                                                <input
-                                                                    type="email"
-                                                                    t-att-name="'email-'+str(count)"
-                                                                    t-attf-class="form-control #{error.get('email-'+str(count)) and 'is-invalid' or ''}"
-                                                                    t-att-value="email or checkin_partner.email"
-                                                                />
-                                                                <t t-if="error_message">
-                                                                    <span
-                                                                        class="text-danger"
-                                                                        t-esc="error_message.get('email-'+str(count))"
-                                                                    />
-                                                                </t>
-                                                            </div>
-                                                            <div
-                                                                t-attf-class="form-group col-xl-4 pb-xl-5"
+                                                                t-attf-class="form-group col-12 col-md-6 pb-5"
                                                             >
                                                                 <label
                                                                     class="col-form-label"
@@ -1230,7 +1084,148 @@
                                                                 </select>
                                                             </div>
                                                             <div
-                                                                t-attf-class="form-group col-xl-4"
+                                                                t-attf-class="form-group col-12 col-md-6"
+                                                            >
+                                                                <label
+                                                                    class="col-form-label"
+                                                                    for="document_type"
+                                                                >Doc. Type</label>
+                                                                <select
+                                                                    class="form-control #{error.get('document_type-'+str(count)) and 'is-invalid' or ''}"
+                                                                    t-att-name="'document_type-'+str(count)"
+                                                                >
+                                                                    <option
+                                                                        value=""
+                                                                    >Select an option</option>
+                                                                    <t
+                                                                        t-foreach="doc_type_ids"
+                                                                        t-as='doc_type'
+                                                                    >
+                                                                        <option
+                                                                            t-att-value="doc_type.name"
+                                                                            t-att-selected="doc_type.id == checkin_partner.document_type.id"
+                                                                        >
+                                                                            <t
+                                                                                t-esc='doc_type.name'
+                                                                            />
+                                                                        </option>
+                                                                    </t>
+                                                                </select>
+                                                                <t t-if="error_message">
+                                                                    <span
+                                                                        class="text-danger"
+                                                                        t-esc="error_message.get('document_type-'+str(count))"
+                                                                    />
+                                                                </t>
+                                                            </div>
+                                                            <div
+                                                                t-attf-class="form-group col-12 col-md-6"
+                                                            >
+                                                                <label
+                                                                    class="col-form-label"
+                                                                    for="document_number"
+                                                                >Doc. Number</label>
+                                                                <input
+                                                                    type="text"
+                                                                    t-att-name="'document_number-'+str(count)"
+                                                                    t-attf-class="form-control #{error.get('document_number-'+str(count)) and 'is-invalid' or ''}"
+                                                                    t-att-value="doc_number or checkin_partner.document_number"
+                                                                />
+                                                                <t t-if="error_message">
+                                                                    <span
+                                                                        class="text-danger"
+                                                                        t-esc="error_message.get('document_number-'+str(count))"
+                                                                    />
+                                                                </t>
+                                                            </div>
+                                                            <div
+                                                                t-attf-class="form-group col-12 col-md-6"
+                                                            >
+                                                                <label
+                                                                    class="col-form-label"
+                                                                    for="document_expedition_date"
+                                                                >Doc. Expedition Date/Doc. Validity Date</label>
+                                                                <span
+                                                                    class="fa fa-question-circle fa-lg"
+                                                                    data-toggle="tooltip"
+                                                                    title="If you enter the validity date of the document, the expedition date will be automatically calculated and entered depending on the document type."
+                                                                />
+                                                                <input
+                                                                    type="date"
+                                                                    t-att-name="'document_expedition_date-'+ str(count)"
+                                                                    t-attf-class="form-control #{error.get('document_expedition_date-'+ str(count)) and 'is-invalid' or ''}"
+                                                                    t-att-value="doc_exp_date or checkin_partner.document_expedition_date"
+                                                                />
+                                                                <t t-if="error_message">
+                                                                    <span
+                                                                        class="text-danger"
+                                                                        t-esc="error_message.get('document_expedition_date-'+ str(count))"
+                                                                    />
+                                                                </t>
+                                                            </div>
+                                                            <div
+                                                                t-attf-class="form-group col-12 col-md-6"
+                                                            >
+                                                                <label
+                                                                    class="col-form-label"
+                                                                    for="birthdate_date"
+                                                                > Birth Date</label>
+                                                                <input
+                                                                    type="date"
+                                                                    t-att-name="'birthdate_date-'+str(count)"
+                                                                    t-attf-class="form-control #{error.get('birthdate_date-'+str(count)) and 'is-invalid' or ''}"
+                                                                    t-att-value="birth_date or checkin_partner.birthdate_date"
+                                                                />
+                                                                <t t-if="error_message">
+                                                                    <span
+                                                                        class="text-danger"
+                                                                        t-esc="error_message.get('birthdate_date-'+str(count))"
+                                                                    />
+                                                                </t>
+                                                            </div>
+                                                            <div
+                                                                t-attf-class="form-group col-12 col-md-6 pt-5"
+                                                            >
+                                                                <label
+                                                                    class="col-form-label"
+                                                                    for="mobile"
+                                                                >Mobile</label>
+                                                                <input
+                                                                    type="phone"
+                                                                    t-att-name="'mobile-'+str(count)"
+                                                                    t-attf-class="form-control #{error.get('mobile-'+str(count)) and 'is-invalid' or ''}"
+                                                                    t-att-value="mobile or checkin_partner.mobile"
+                                                                />
+                                                                <t t-if="error_message">
+                                                                    <span
+                                                                        class="text-danger"
+                                                                        t-esc="error_message.get('mobile-'+str(count))"
+                                                                    />
+                                                                </t>
+                                                            </div>
+                                                            <div
+                                                                t-attf-class="form-group col-12 col-md-6 pt-md-5"
+                                                            >
+                                                                <label
+                                                                    class="col-form-label"
+                                                                    for="email"
+                                                                >Email</label>
+                                                                <input
+                                                                    type="email"
+                                                                    t-att-name="'email-'+str(count)"
+                                                                    t-attf-class="form-control #{error.get('email-'+str(count)) and 'is-invalid' or ''}"
+                                                                    t-att-value="email or checkin_partner.email"
+                                                                />
+                                                                <t t-if="error_message">
+                                                                    <span
+                                                                        class="text-danger"
+                                                                        t-esc="error_message.get('email-'+str(count))"
+                                                                    />
+                                                                </t>
+                                                            </div>
+
+                                                            <div
+                                                                t-attf-class="form-group col-12 col-md-6"
                                                             >
                                                                 <label
                                                                     class="col-form-label"
@@ -1260,7 +1255,7 @@
                                                                 </select>
                                                             </div>
                                                             <div
-                                                                class="form-group col-xl-4"
+                                                                class="form-group col-12 col-md-6"
                                                             >
                                                                 <label
                                                                     class="col-form-label"
@@ -1295,7 +1290,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </td>
                                 </tr>
                             </t>
@@ -1406,8 +1400,6 @@
             btn_show_invitation.classList.add("d-none");
             btn_resend.classList.add("d-none");
             }
-        </script>
-        <script>
             let listaElementos = document.getElementsByClassName("fa-sm");
             for(i=0; i&lt;listaElementos.length; i++){
             let element =document.getElementById(i+1)
@@ -1436,8 +1428,6 @@
             }
             }
             }
-        </script>
-        <script>
             let select_country = document.getElementById('country')
 
             select_country.addEventListener("change", () => {
