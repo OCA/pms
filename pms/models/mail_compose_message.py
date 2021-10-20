@@ -36,8 +36,10 @@ class MailComposeMessage(models.TransientModel):
         #             folio.reservation_ids = cmds
         res = super(MailComposeMessage, self).send_mail(auto_commit=auto_commit)
         if self._context.get("record_id"):
-            reservation = self.env["pms.reservation"].search(
+            folio = self.env["pms.folio"].search(
                 [("id", "=", self._context.get("record_id"))]
             )
-            reservation.is_mail_send = True
+            reservations = folio.reservation_ids
+            for reservation in reservations:
+                reservation.is_mail_send = True
         return res

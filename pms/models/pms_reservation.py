@@ -1727,38 +1727,36 @@ class PmsReservation(models.Model):
     def action_open_mail_composer(self):
         self.ensure_one()
         template = False
+        pms_property = self.pms_property_id
         if (
             not self.is_mail_send
             and not self.is_modified_reservation
             and self.state not in "cancel"
         ):
-            template = self.env.ref(
-                "pms.confirmed_reservation_email", raise_if_not_found=False
-            )
+            if pms_property.property_confirmed_template:
+                template = pms_property.property_confirmed_template
         elif (
             not self.is_mail_send
             and self.is_modified_reservation
             and self.state not in "cancel"
         ):
-            template = self.env.ref(
-                "pms.modified_reservation_email", raise_if_not_found=False
-            )
+            if pms_property.property_modified_template:
+                template = pms_property.property_modified_template
         elif not self.is_mail_send and self.state in "cancel":
-            template = self.env.ref(
-                "pms.cancelled_reservation_email", raise_if_not_found=False
-            )
+            if pms_property.property_canceled_template:
+                template = pms_property.property_canceled_template
         compose_form = self.env.ref(
             "mail.email_compose_message_wizard_form", raise_if_not_found=False
         )
         ctx = dict(
-            model="pms.reservation",
-            default_res_model="pms.reservation",
-            default_res_id=self.id,
+            model="pms.folio",
+            default_res_model="pms.folio",
+            default_res_id=self.folio_id.id,
             template_id=template and template.id or False,
             composition_mode="comment",
             partner_ids=[self.partner_id.id],
             force_email=True,
-            record_id=self.id,
+            record_id=self.folio_id.id,
         )
         return {
             "name": _("Send Confirmed Reservation Mail "),
