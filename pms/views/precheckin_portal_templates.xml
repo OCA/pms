@@ -927,6 +927,11 @@
                                                             t-attf-class="form-control"
                                                             t-att-value="firstname or (checkin_partner.firstname)"
                                                         />
+                                                        <span
+                                                            style="color:red"
+                                                            class="d-none"
+                                                            t-att-id="error_inv_firstname"
+                                                        >Mandatory Firstname</span>
                                                     </div>
                                                     <div
                                                         t-attf-class="form-group col-4 p-2"
@@ -939,12 +944,16 @@
                                                             Email
                                                         </label>
                                                         <input
-                                                            id="invitation_email"
+                                                            t-att-id="'invitation_email'+str(checkin_partner.id)"
                                                             type="email"
                                                             t-att-name="'invitation_email'"
                                                             t-attf-class="form-control "
                                                             t-att-value="invitation_email or checkin_partner.email"
                                                         />
+                                                        <span
+                                                            style="color:red"
+                                                            class="d-none error_inv_email"
+                                                        >Mandatory Email</span>
                                                     </div>
                                                     <div
                                                         t-attf-class="form-group col-4 p-3"
@@ -1366,19 +1375,19 @@
         </style>
         <script>
             function launchSnackBar(element) {
-            var x = document.getElementById("snackbar");
-            x.className = "show";
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-
-
-
             var checkin_partner_id = element.firstChild.nextSibling.innerText
 
+            var inputEmailId = "invitation_email" + checkin_partner_id;
+
+            var email = document.getElementById(inputEmailId).value;
             var nameId = "invitation_firstname" + checkin_partner_id;
             var hostId = "host_name" + checkin_partner_id;
             var host = document.getElementById(hostId);
             var name = document.getElementById(nameId).value;
-            host.innerHTML = name;
+            if(email){
+            if(name){
+            console.log("non ten email");
+                host.innerHTML = name;
 
             var divId = "invitation_group" + checkin_partner_id;
             var btnId = "btnResendInvitation" + checkin_partner_id;
@@ -1386,6 +1395,11 @@
             var btn_show_invitation = document.getElementById(btnId);
             div_invitation.classList.add("d-none");
             btn_show_invitation.classList.remove("d-none");
+            var x = document.getElementById("snackbar");
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+            }
+            }
             }
 
             function show_invitation(element) {
