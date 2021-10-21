@@ -28,14 +28,40 @@ odoo.define("pms.SendInvitationData", function (require) {
                 .parent()
                 .find("input[name=invitation_email]")
                 .val();
-            this._rpc({
-                route: "/my/precheckin/send_invitation",
-                params: {
-                    checkin_partner_id: checkinPartnerId,
-                    firstname: firstname,
-                    email: email,
-                },
-            });
+            var error_firstname = $(ev.currentTarget)
+                .parent()
+                .parent()
+                .find("span:first");
+            var error_email = $(ev.currentTarget)
+                .parent()
+                .parent()
+                .find("input[name=invitation_email]")
+                .siblings("span");
+            console.log(error_firstname);
+            console.log(error_email);
+            if (firstname === "" || email === "") {
+                if (firstname === "") {
+                    error_firstname.removeClass("d-none");
+                } else {
+                    error_firstname.addClass("d-none");
+                }
+                if (email === "") {
+                    error_email.removeClass("d-none");
+                } else {
+                    error_email.addClass("d-none");
+                }
+            } else {
+                error_firstname.addClass("d-none");
+                error_email.addClass("d-none");
+                this._rpc({
+                    route: "/my/precheckin/send_invitation",
+                    params: {
+                        checkin_partner_id: checkinPartnerId,
+                        firstname: firstname,
+                        email: email,
+                    },
+                });
+            }
         },
     });
     return publicWidget.registry.SendInvitationData;

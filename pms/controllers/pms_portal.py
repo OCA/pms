@@ -634,6 +634,6 @@ class PortalPrecheckin(CustomerPortal):
         )
         firstname = kw["firstname"]
         email = kw["email"]
-        checkin_partner.write({"firstname": firstname, "email": email})
-        checkin_partner.send_portal_invitation_email(firstname, email)
-        # request.portal_my_folio_precheckin(kw)
+        if firstname and email:
+            checkin_partner.write({"firstname": firstname, "email": email})
+            checkin_partner.send_portal_invitation_email(firstname, email)
