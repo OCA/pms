@@ -1955,3 +1955,78 @@ class PmsFolio(models.Model):
                 }
                 self.env["res.partner.id_number"].create(number_values)
         record.partner_id = partner
+
+    def _create_payment_transaction(self, vals):
+        # Ensure the currencies are the same.
+        currency = self[0].currency_id
+        if any(folio.currency_id != currency for folio in self):
+            raise ValidationError(
+                _(
+                    "A transaction can't be linked to folios having different currencies."
+                )
+            )
+
+        # Ensure the partner are the same.
+        partner = self[0].partner_id
+        if any(folio.partner_id != partner for folio in self):
+            raise ValidationError(
+                _("A transaction can't be linked to folios having different partners.")
+            )
+
+        # Try to retrieve the acquirer. However, fallback to the token's acquirer.
+        acquirer_id = vals.get("acquirer_id")
+        acquirer = None
+        payment_token_id = vals.get("payment_token_id")
+
+        if payment_token_id:
+            payment_token = self.env["payment.token"].sudo().browse(payment_token_id)
+
+            # Check payment_token/acquirer matching or take the acquirer from token
+            if acquirer_id:
+                acquirer = self.env["payment.acquirer"].browse(acquirer_id)
+                if payment_token and payment_token.acquirer_id != acquirer:
+                    raise ValidationError(
+                        _("Invalid token found! Token acquirer %s != %s")
+                        % (payment_token.acquirer_id.name, acquirer.name)
+                    )
+                if payment_token and payment_token.partner_id != partner:
+                    raise ValidationError(
+                        _("Invalid token found! Token partner %s != %s")
+                        % (payment_token.partner.name, partner.name)
+                    )
+            else:
+                acquirer = payment_token.acquirer_id
+
+        # Check an acquirer is there.
+        if not acquirer_id and not acquirer:
+            raise ValidationError(
+                _("A payment acquirer is required to create a transaction.")
+            )
+
+        if not acquirer:
+            acquirer = self.env["payment.acquirer"].browse(acquirer_id)
+
+        # Check a journal is set on acquirer.
+        if not acquirer.journal_id:
+            raise ValidationError(
+                _("A journal must be specified for the acquirer %s.", acquirer.name)
+            )
+
+        if not acquirer_id and acquirer:
+            vals["acquirer_id"] = acquirer.id
+
+        vals.update(
+            {
+                "amount": sum(self.mapped("amount_total")),
+                "currency_id": currency.id,
+                "partner_id": partner.id,
+                "folio_ids": [(6, 0, self.ids)],
+            }
+        )
+        transaction = self.env["payment.transaction"].create(vals)
+
+        # Process directly if payment_token
+        if transaction.payment_token_id:
+            transaction.s2s_do_transaction()
+
+        return transaction
