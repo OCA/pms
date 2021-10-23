@@ -57,6 +57,11 @@ class PmsRoomTypeClass(models.Model):
         help="Room type class identification code",
         required=True,
     )
+    overnight = fields.Boolean(
+        string="Use for overnight stays",
+        help="Set False if if these types of spaces are not used for overnight stays",
+        default=True,
+    )
 
     @api.model
     def get_unique_by_property_code(self, pms_property_id, default_code=None):

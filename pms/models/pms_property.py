@@ -151,16 +151,20 @@ class PmsProperty(models.Model):
     @api.depends_context(
         "checkin",
         "checkout",
+        "real_avail",
         "room_type_id",
         "ubication_id",
         "capacity",
         "amenity_ids",
         "pricelist_id",
+        "class_id",
+        "overnight_rooms",
         "current_lines",
     )
     def _compute_free_room_ids(self):
         checkin = self._context["checkin"]
         checkout = self._context["checkout"]
+
         if isinstance(checkin, str):
             checkin = datetime.datetime.strptime(
                 checkin, DEFAULT_SERVER_DATE_FORMAT
@@ -175,11 +179,14 @@ class PmsProperty(models.Model):
 
         pricelist_id = self.env.context.get("pricelist_id", False)
         room_type_id = self.env.context.get("room_type_id", False)
+        class_id = self._context.get("class_id", False)
+        real_avail = self._context.get("real_avail", False)
+        overnight_rooms = self._context.get("overnight_rooms", False)
         for pms_property in self:
             free_rooms = pms_property.get_real_free_rooms(
                 checkin, checkout, current_lines
             )
-            if pricelist_id:
+            if pricelist_id and not real_avail:
                 # TODO: only closed_departure take account checkout date!
                 domain_rules = [
                     ("date", ">=", checkin),
@@ -208,6 +215,14 @@ class PmsProperty(models.Model):
                         free_rooms = free_rooms.filtered(
                             lambda x: x.room_type_id.id not in room_types_to_remove
                         )
+            if class_id:
+                free_rooms = free_rooms.filtered(
+                    lambda x: x.room_type_id.class_id.id == class_id
+                )
+            if overnight_rooms:
+                free_rooms = free_rooms.filtered(
+                    lambda x: x.room_type_id.overnight_room
+                )
             if len(free_rooms) > 0:
                 pms_property.free_room_ids = free_rooms.ids
             else:
@@ -261,11 +276,14 @@ class PmsProperty(models.Model):
     @api.depends_context(
         "checkin",
         "checkout",
+        "real_avail",
         "room_type_id",
         "ubication_id",
         "capacity",
         "amenity_ids",
         "pricelist_id",
+        "class_id",
+        "overnight_rooms",
         "current_lines",
     )
     def _compute_availability(self):
@@ -283,12 +301,18 @@ class PmsProperty(models.Model):
             room_type_id = self.env.context.get("room_type_id", False)
             pricelist_id = self.env.context.get("pricelist_id", False)
             current_lines = self.env.context.get("current_lines", [])
+            class_id = self._context.get("class_id", False)
+            real_avail = self._context.get("real_avail", False)
+            overnight_rooms = self._context.get("overnight_rooms", False)
             pms_property = record.with_context(
                 checkin=checkin,
                 checkout=checkout,
                 room_type_id=room_type_id,
                 current_lines=current_lines,
                 pricelist_id=pricelist_id,
+                class_id=class_id,
+                real_avail=real_avail,
+                overnight_rooms=overnight_rooms,
             )
             count_free_rooms = len(pms_property.free_room_ids)
             if current_lines and not isinstance(current_lines, list):
@@ -305,7 +329,7 @@ class PmsProperty(models.Model):
             pricelist = False
             if pricelist_id:
                 pricelist = self.env["product.pricelist"].browse(pricelist_id)
-            if pricelist and pricelist.availability_plan_id:
+            if pricelist and pricelist.availability_plan_id and not real_avail:
                 domain_rules.append(
                     ("availability_plan_id", "=", pricelist.availability_plan_id.id)
                 )
