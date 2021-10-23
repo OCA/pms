@@ -39,6 +39,8 @@
                         <group name="room_ids_group">
                             <field name="room_ids" widget="many2many_tags" />
                             <field name="total_rooms_count" />
+                            <field name="default_max_avail" />
+                            <field name="default_quota" />
                         </group>
                         <group name="accounting_group">
                             <field
