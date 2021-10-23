@@ -643,7 +643,6 @@ class PmsReservation(models.Model):
         comodel_name="res.partner",
         inverse_name="reservation_possible_customer_id",
     )
-
     is_mail_send = fields.Boolean(string="Mail Sent", default=False)
 
     is_modified_reservation = fields.Boolean(
@@ -652,7 +651,10 @@ class PmsReservation(models.Model):
         readonly=False,
         store=True,
     )
-
+    overnight_room = fields.Boolean(
+        related="room_type_id.overnight_room",
+        store=True,
+    )
     lang = fields.Many2one(
         string="Language", comodel_name="res.lang", compute="_compute_lang"
     )
@@ -804,6 +806,7 @@ class PmsReservation(models.Model):
         "reservation_line_ids.room_id",
         "reservation_line_ids.occupies_availability",
         "preferred_room_id",
+        "room_type_id",
         "pricelist_id",
         "pms_property_id",
     )
@@ -812,7 +815,9 @@ class PmsReservation(models.Model):
             if reservation.checkin and reservation.checkout:
                 if reservation.overbooking or reservation.state in ("cancel"):
                     reservation.allowed_room_ids = self.env["pms.room"].search(
-                        [("active", "=", True)]
+                        [
+                            ("active", "=", True),
+                        ]
                     )
                     return
                 pms_property = reservation.pms_property_id
@@ -822,9 +827,12 @@ class PmsReservation(models.Model):
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
+                    class_id=reservation.room_type_id.class_id
+                    if reservation.room_type_id
+                    else False,
+                    real_avail=True,
                 )
                 reservation.allowed_room_ids = pms_property.free_room_ids
-
             else:
                 reservation.allowed_room_ids = False
 
@@ -1045,6 +1053,7 @@ class PmsReservation(models.Model):
                 True
                 if (
                     record.reservation_type != "out"
+                    and record.overnight_room
                     and record.state in ["draft", "confirm", "arrival_delayed"]
                     and record.checkin <= fields.Date.today()
                 )
@@ -1197,9 +1206,11 @@ class PmsReservation(models.Model):
                 reservation.commission_amount = 0
 
     # REVIEW: Dont run with set room_type_id -> room_id(compute)-> No set adults¿?
-    @api.depends("preferred_room_id", "reservation_type")
+    @api.depends("preferred_room_id", "reservation_type", "overnight_room")
     def _compute_adults(self):
         for reservation in self:
+            if not reservation.overnight_room:
+                reservation.adults = 0
             if reservation.preferred_room_id and reservation.reservation_type != "out":
                 if reservation.adults == 0:
                     reservation.adults = reservation.preferred_room_id.capacity
@@ -1384,7 +1395,7 @@ class PmsReservation(models.Model):
 
     def _compute_checkin_partner_count(self):
         for record in self:
-            if record.reservation_type != "out":
+            if record.reservation_type != "out" and record.overnight_room:
                 record.checkin_partner_count = len(record.checkin_partner_ids)
                 record.checkin_partner_pending_count = record.adults - len(
                     record.checkin_partner_ids
@@ -1488,6 +1499,7 @@ class PmsReservation(models.Model):
         return [
             ("state", "in", ("draft", "confirm", "arrival_delayed")),
             ("checkin", "<=", today),
+            ("adults", ">", 0),
         ]
 
     def _search_allowed_checkout(self, operator, value):
@@ -1505,6 +1517,7 @@ class PmsReservation(models.Model):
         return [
             ("state", "in", ("onboard", "departure_delayed")),
             ("checkout", ">=", today),
+            ("adults", ">", 0),
         ]
 
     def _search_allowed_cancel(self, operator, value):
@@ -2014,7 +2027,9 @@ class PmsReservation(models.Model):
                 ("checkin", "<", fields.Date.today()),
             ]
         )
-        arrival_delayed_reservations.state = "arrival_delayed"
+        for record in arrival_delayed_reservations:
+            if record.overnight_room:
+                record.state = "arrival_delayed"
 
     @api.model
     def auto_departure_delayed(self):
@@ -2026,8 +2041,11 @@ class PmsReservation(models.Model):
             ]
         )
         for reservation in reservations:
-            if reservation.checkout_datetime <= fields.Datetime.now():
-                reservations.state = "departure_delayed"
+            if reservation.overnight_room:
+                if reservation.checkout_datetime <= fields.Datetime.now():
+                    reservations.state = "departure_delayed"
+            else:
+                reservation.state = "done"
 
     def preview_reservation(self):
         self.ensure_one()

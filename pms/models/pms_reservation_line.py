@@ -112,7 +112,10 @@ class PmsReservationLine(models.Model):
         store=True,
         compute="_compute_impacts_quota",
     )
-
+    overnight_room = fields.Boolean(
+        related="reservation_id.overnight_room",
+        store=True,
+    )
     _sql_constraints = [
         (
             "rule_availability",
@@ -184,6 +187,7 @@ class PmsReservationLine(models.Model):
                     else False,
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
+                    real_avail=True,
                 )
                 rooms_available = pms_property.free_room_ids
 
