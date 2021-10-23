@@ -86,6 +86,10 @@ class PmsRoomType(models.Model):
         "Use `-1` for managing no quota.",
         default=-1,
     )
+    overnight_room = fields.Boolean(
+        related="class_id.overnight",
+        store=True,
+    )
 
     def name_get(self):
         result = []
