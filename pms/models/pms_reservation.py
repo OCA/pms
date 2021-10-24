@@ -827,7 +827,7 @@ class PmsReservation(models.Model):
                     room_type_id=False,  # Allows to choose any available room
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
-                    class_id=reservation.room_type_id.class_id
+                    class_id=reservation.room_type_id.class_id.id
                     if reservation.room_type_id
                     else False,
                     real_avail=True,

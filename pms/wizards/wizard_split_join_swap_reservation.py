@@ -226,7 +226,7 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
             current_lines=reservation.reservation_line_ids.ids,
             pricelist_id=reservation.pricelist_id.id,
             real_avail=True,
-            class_id=reservation.room_type_id.class_id,
+            class_id=reservation.room_type_id.class_id.id,
         )
         rooms_available = pms_property.free_room_ids
 
@@ -365,7 +365,7 @@ class ReservationLinesToSplit(models.TransientModel):
                     room_type_id=False,  # Allows to choose any available room
                     pricelist_id=reservation.pricelist_id.id,
                     real_avail=True,
-                    class_id=reservation.room_type_id.class_id,
+                    class_id=reservation.room_type_id.class_id.id,
                 )
                 rooms_available = pms_property.free_room_ids
                 rooms_available += line.room_id

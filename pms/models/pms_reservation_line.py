@@ -178,6 +178,8 @@ class PmsReservationLine(models.Model):
                 free_room_select = True if reservation.preferred_room_id else False
 
                 # we get the rooms available for the entire stay
+                # (real_avail if True if the reservation was created with
+                # specific room selected)
                 pms_property = line.pms_property_id
                 pms_property = pms_property.with_context(
                     checkin=reservation.checkin,
@@ -187,7 +189,7 @@ class PmsReservationLine(models.Model):
                     else False,
                     current_lines=reservation.reservation_line_ids.ids,
                     pricelist_id=reservation.pricelist_id.id,
-                    real_avail=True,
+                    real_avail=free_room_select,
                 )
                 rooms_available = pms_property.free_room_ids
 
