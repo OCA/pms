@@ -264,7 +264,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                     board = boards_d.get(room_id)
                 elif id_channel == 2:
                     # Board services can be included in the rate plan and detected by the WuBook API
-                    detected_board = room.get("ancillary", {}).get("Detected Board")
+                    detected_board = value.get("ancillary", {}).get("Detected Board")
                     board = detected_board != "nb" and detected_board or None
                 else:
                     raise ValidationError(
