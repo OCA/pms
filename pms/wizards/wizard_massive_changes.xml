@@ -474,8 +474,14 @@
                 </field>
                 <footer>
                     <button
-                        name="apply_massive_changes"
-                        string="Apply changes"
+                        name="save_and_close"
+                        string="Apply and close"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button
+                        name="continue_massive_changes"
+                        string="Apply and continue"
                         type="object"
                         class="btn-primary"
                     />
