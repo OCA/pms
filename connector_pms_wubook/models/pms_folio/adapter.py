@@ -38,7 +38,7 @@ class ChannelWubookPmsFolioAdapter(Component):
         }
         if ancillary:
             kw_params["ancillary"] = 1
-        params = self._prepare_parameters(kw_params, ["rcode"])
+        params = self._prepare_parameters(kw_params, ["rcode"], ["ancillary"])
         values = self._exec("fetch_booking", *params)
         self._format_folio_data(values)
         self._reorg_folio_data(values)
