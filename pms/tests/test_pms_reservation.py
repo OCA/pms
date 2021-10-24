@@ -29,6 +29,15 @@ class TestPmsReservations(TestPms):
             }
         )
 
+        self.room_type_triple = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [self.pms_property1.id],
+                "name": "Triple Test",
+                "default_code": "TRP_Test",
+                "class_id": self.room_type_class1.id,
+            }
+        )
+
         # create rooms
         self.room1 = self.env["pms.room"].create(
             {
@@ -56,6 +65,16 @@ class TestPmsReservations(TestPms):
                 "name": "Double 103",
                 "room_type_id": self.room_type_double.id,
                 "capacity": 2,
+                "extra_beds_allowed": 1,
+            }
+        )
+
+        self.room4 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Triple 104",
+                "room_type_id": self.room_type_triple.id,
+                "capacity": 3,
                 "extra_beds_allowed": 1,
             }
         )
@@ -1645,6 +1664,7 @@ class TestPmsReservations(TestPms):
                 "checkin": fields.date.today(),
                 "checkout": fields.date.today() + datetime.timedelta(days=3),
                 "partner_id": self.partner1.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
 
@@ -1678,6 +1698,7 @@ class TestPmsReservations(TestPms):
                 "checkin": fields.date.today() + datetime.timedelta(days=300),
                 "checkout": fields.date.today() + datetime.timedelta(days=305),
                 "partner_id": self.partner1.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
         r = reservation.checkin
@@ -1695,8 +1716,8 @@ class TestPmsReservations(TestPms):
         Check available rooms after creating a reservation.
         -----------
         Create an availability rule, create a reservation,
-        and then check that the allopwed_room_ids field of the
-        reservation and the room_type_id.room_ids field of the
+        and then check that the allowed_room_ids field filtered by room
+        type of the reservation and the room_type_id.room_ids field of the
         availability rule match.
         """
         availability_rule = self.env["pms.availability.plan.rule"].create(
@@ -1718,8 +1739,10 @@ class TestPmsReservations(TestPms):
             }
         )
         self.assertEqual(
-            reservation.allowed_room_ids,
-            availability_rule.room_type_id.room_ids,
+            reservation.allowed_room_ids.filtered(
+                lambda r: r.room_type_id.id == availability_rule.room_type_id.id
+            ).ids,
+            availability_rule.room_type_id.room_ids.ids,
             "Rooms allowed don't match",
         )
 
@@ -1750,6 +1773,7 @@ class TestPmsReservations(TestPms):
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
 
@@ -1794,6 +1818,7 @@ class TestPmsReservations(TestPms):
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
         self.assertEqual(
@@ -1815,6 +1840,7 @@ class TestPmsReservations(TestPms):
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "partner_id": self.partner1.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
 
@@ -1873,6 +1899,7 @@ class TestPmsReservations(TestPms):
                 "allowed_checkin": True,
                 "pms_property_id": self.pms_property1.id,
                 "adults": 3,
+                "room_type_id": self.room_type_triple.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -1916,6 +1943,7 @@ class TestPmsReservations(TestPms):
                     "checkout": fields.date.today(),
                     "pms_property_id": self.pms_property1.id,
                     "partner_id": self.host1.id,
+                    "room_type_id": self.room_type_double.id,
                 }
             )
 
@@ -2294,6 +2322,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.host1.id,
                 "pms_property_id": self.pms_property1.id,
                 "adults": 3,
+                "room_type_id": self.room_type_triple.id,
             }
         )
         self.checkin1 = self.env["pms.checkin.partner"].create(
@@ -2351,6 +2380,7 @@ class TestPmsReservations(TestPms):
                 "checkout": "2014-01-17",
                 "partner_id": self.host1.id,
                 "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type_triple.id,
                 "adults": 3,
             }
         )
@@ -2404,6 +2434,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": host.id,
                 "allowed_checkout": True,
                 "pms_property_id": self.pms_property1.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
 
@@ -2435,6 +2466,7 @@ class TestPmsReservations(TestPms):
                 "checkout": "2014-01-17",
                 "pms_property_id": self.pms_property1.id,
                 "folio_id": self.folio1.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
         # ACT AND ASSERT
@@ -2472,6 +2504,7 @@ class TestPmsReservations(TestPms):
                 "checkin": fields.date.today() + datetime.timedelta(days=150),
                 "checkout": fields.date.today() + datetime.timedelta(days=152),
                 "agency_id": agency.id,
+                "room_type_id": self.room_type_double.id,
             }
         )
 
