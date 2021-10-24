@@ -61,6 +61,7 @@ class ChannelWubookPmsFolioMapperImport(Component):
                     _(
                         "Id Channel '%s' not found on mapping. Please check it on the Backend Type configuration"
                     )
+                    % (record["id_channel"],)
                 )
             return {"agency_id": agency.id}
 
