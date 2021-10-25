@@ -91,7 +91,11 @@
                                 <field name="property_modified_template" />
                                 <field name="property_canceled_template" />
                             </group>
-                            <group string="Mail Information" colspan="4">
+                            <group
+                                string="Mail Information"
+                                name="mail_information"
+                                colspan="4"
+                            >
                                 <field
                                     name="mail_information"
                                     string="Aditional Mail Information"
