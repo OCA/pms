@@ -136,6 +136,7 @@ msgid "Detailed message"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__display_name
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__display_name
@@ -218,6 +219,7 @@ msgid "Hotel category in the Ministry of Tourism. Used for INE statistics."
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__id
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__id
@@ -288,6 +290,7 @@ msgid "Institution user"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_pms_checkin_partner____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_tourism_type_category____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard____last_update
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report____last_update
@@ -343,6 +346,11 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model.fields.selection,name:pms_l10n_es.selection__pms_property__institution__mossos
 msgid "Mossos_d'esquadra (soon)"
+msgstr ""
+
+#. module: pms_l10n_es
+#: model:ir.model,name:pms_l10n_es.model_pms_checkin_partner
+msgid "Partner Checkins"
 msgstr ""
 
 #. module: pms_l10n_es
