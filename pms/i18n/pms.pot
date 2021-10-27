@@ -1267,13 +1267,18 @@ msgid "Apply Pricelist"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__by_default
-msgid "Apply by Default"
+#: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
+msgid "Apply and close"
 msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
-msgid "Apply changes"
+msgid "Apply and continue"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__by_default
+msgid "Apply by Default"
 msgstr ""
 
 #. module: pms
@@ -2470,13 +2475,6 @@ msgid "Contacts"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_folio_sale_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__standard_price
 msgid "Cost"
 msgstr ""
@@ -2988,7 +2986,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__credit_card_details
-#: model:ir.model.fields,help:pms.field_pms_reservation__credit_card_details
 msgid "Details of partner credit card"
 msgstr ""
 
@@ -5236,6 +5233,12 @@ msgstr ""
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_wizard_massive_changes
 msgid "Massive changes on Pricelist & Availability Plans"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/wizards/wizard_massive_changes.py:0
+#, python-format
+msgid "Massive changes on Pricelist and Availability Plans"
 msgstr ""
 
 #. module: pms
@@ -8199,6 +8202,14 @@ msgid "Services on Board Service included in Room"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__overnight_room
+#: model:ir.model.fields,help:pms.field_pms_reservation_line__overnight_room
+#: model:ir.model.fields,help:pms.field_pms_room_type__overnight_room
+#: model:ir.model.fields,help:pms.field_pms_room_type_class__overnight
+msgid "Set False if if these types of spaces are not used for overnight stays"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Set to Done"
 msgstr ""
@@ -9683,6 +9694,14 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__barcode
 msgid "Use a barcode to identify this contact."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__overnight_room
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_line__overnight_room
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__overnight_room
+#: model:ir.model.fields,field_description:pms.field_pms_room_type_class__overnight
+msgid "Use for overnight stays"
 msgstr ""
 
 #. module: pms
