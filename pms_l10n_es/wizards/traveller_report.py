@@ -101,7 +101,7 @@ class TravellerReport(models.TransientModel):
             for line in lines:
                 content += "2"
                 # [P|N|..]
-                if line.document_type.name != "D":
+                if line.document_type.code != "D":
                     content += "||" + line.document_number.upper() + "|"
                 else:
                     content += "|" + line.document_number.upper() + "||"
