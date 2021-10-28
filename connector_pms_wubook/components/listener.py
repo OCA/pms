@@ -10,8 +10,8 @@ class ChannelWubookListener(AbstractComponent):
     _name = "channel.wubook.listener"
     _inherit = "base.connector.listener"
 
-    def _data(self, record):
-        return record
+    # def _data(self, record):
+    #     return record
 
     # Create listener on_record_create GENERIC on non-binding model
     # makes no sense because we don't have any bindings yet.
@@ -32,15 +32,15 @@ class ChannelWubookListener(AbstractComponent):
 
     @skip_if(lambda self, record, **kwargs: self.no_connector_export(record))
     def on_record_write(self, record, fields=None):
-        print(
-            "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL model listener write %s"
-            % (
-                self.env.context.get("saved_from_parent"),
-                record.env.context.get("saved_from_parent"),
-                record,
-            ),
-            self._data(record),
-        )
+        # print(
+        #     "-------------------------- (%s)(%s) LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL model listener write %s"
+        #     % (
+        #         self.env.context.get("saved_from_parent"),
+        #         record.env.context.get("saved_from_parent"),
+        #         record,
+        #     ),
+        #     self._data(record),
+        # )
         for binding in record.channel_wubook_bind_ids:
             binding.export_record(binding.backend_id, record)
 
