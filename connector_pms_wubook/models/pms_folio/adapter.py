@@ -236,6 +236,25 @@ class ChannelWubookPmsFolioAdapter(Component):
             customer_notes = value.pop("customer_notes")
             reservations = []
             for room in value.pop("booked_rooms"):
+                room_id = room["room_id"]
+
+                # TODO: move the following code to method and
+                #  remove boards_d
+                if id_channel == 0:
+                    board = boards_d.get(room_id)
+                elif id_channel == 2:
+                    # Board services can be included in the rate plan and detected by the WuBook API
+                    detected_board = value.get("ancillary", {}).get("Detected Board")
+                    board = detected_board != "nb" and detected_board or None
+                    # Guests can differ from the Wubook ones???
+                    guests = room.get("ancillary", {}).get("guests")
+                    if guests:
+                        occupancies_d[room_id] = min(occupancies_d[room_id], guests)
+                else:
+                    raise ValidationError(
+                        _("ID channel '%s' not supported yet") % id_channel
+                    )
+
                 lines = []
                 room_rate_id = None
                 for days in room["roomdays"]:
@@ -254,21 +273,10 @@ class ChannelWubookPmsFolioAdapter(Component):
                             "ancillary": days["ancillary"],
                             "price": days["price"],
                             "day": days["day"],
+                            "room_id": room_id,
+                            "board": board,
+                            "occupancy": occupancies_d[room_id],
                         }
-                    )
-                room_id = room["room_id"]
-
-                # TODO: move the following code to method and
-                #  remove boards_d
-                if id_channel == 0:
-                    board = boards_d.get(room_id)
-                elif id_channel == 2:
-                    # Board services can be included in the rate plan and detected by the WuBook API
-                    detected_board = value.get("ancillary", {}).get("Detected Board")
-                    board = detected_board != "nb" and detected_board or None
-                else:
-                    raise ValidationError(
-                        _("ID channel '%s' not supported yet") % id_channel
                     )
 
                 reservations.append(
