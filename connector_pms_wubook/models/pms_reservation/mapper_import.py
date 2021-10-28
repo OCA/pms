@@ -8,6 +8,40 @@ from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping, only_create
 
 
+def get_room_type(mapper, room_id):
+    rt_binder = mapper.binder_for("channel.wubook.pms.room.type")
+    room_type = rt_binder.to_internal(room_id, unwrap=True)
+    assert room_type, (
+        "room_id %s should have been imported in "
+        "PmsRoomTypeImporter._import_dependencies" % (room_id,)
+    )
+    return room_type
+
+
+def get_board_service_room_type(mapper, room_type, board):
+    bd_binder = mapper.binder_for("channel.wubook.pms.board.service")
+    board_service = bd_binder.to_internal(board, unwrap=True)
+    assert board_service, (
+        "board_service_id '%s' should've been imported in "
+        "PmsRoomTypeImporter._import_dependencies or "
+        "PmsFolioImporter._import_dependencies.\n" % (board,)
+    )
+    board_service_room_type_id = room_type.board_service_room_type_ids.filtered(
+        lambda x: x.pms_board_service_id == board_service
+    )
+    if not board_service_room_type_id:
+        raise ValidationError(
+            _("The Board Service '%s' is not available in Room Type '%s'")
+            % (board_service.default_code, room_type.default_code)
+        )
+    elif len(board_service_room_type_id) > 1:
+        raise ValidationError(
+            _("The Board Service '%s' is duplicated in Room Type '%s'")
+            % (board_service.default_code, room_type.default_code)
+        )
+    return board_service_room_type_id
+
+
 class ChannelWubookPmsReservationMapperImport(Component):
     _name = "channel.wubook.pms.reservation.mapper.import"
     _inherit = "channel.wubook.mapper.import"
@@ -18,15 +52,6 @@ class ChannelWubookPmsReservationMapperImport(Component):
         ("lines", "reservation_line_ids", "channel.wubook.pms.reservation.line"),
     ]
 
-    def _get_room_type(self, room_id):
-        rt_binder = self.binder_for("channel.wubook.pms.room.type")
-        room_type = rt_binder.to_internal(room_id, unwrap=True)
-        assert room_type, (
-            "room_id %s should have been imported in "
-            "PmsRoomTypeImporter._import_dependencies" % (room_id,)
-        )
-        return room_type
-
     @only_create
     @mapping
     def pms_property_id(self, record):
@@ -34,38 +59,17 @@ class ChannelWubookPmsReservationMapperImport(Component):
 
     @mapping
     def room_type_id(self, record):
-        return {"room_type_id": self._get_room_type(record["room_id"]).id}
+        return {"room_type_id": get_room_type(self, record["room_id"]).id}
 
     @mapping
     def room_type_board_service(self, record):
         if record["board"]:
-            room_type = self._get_room_type(record["room_id"])
-            bd_binder = self.binder_for("channel.wubook.pms.board.service")
-            board_service = bd_binder.to_internal(record["board"], unwrap=True)
-            assert board_service, (
-                "board_service_id '%s' should've been imported in "
-                "PmsRoomTypeImporter._import_dependencies or "
-                "PmsFolioImporter._import_dependencies.\n"
-                # "If not, probably the Board Service '%s' is not defined "
-                # "as a Board Service of Room Type '%s' and/or although the "
-                # "Board service exists in the PMS it has no Binding so it's "
-                # "not linked to the Backend."
-                % (record["board"], record["board"], room_type.default_code)
-            )
-            board_service_room_type_id = room_type.board_service_room_type_ids.filtered(
-                lambda x: x.pms_board_service_id == board_service
-            )
-            if not board_service_room_type_id:
-                raise ValidationError(
-                    _("The Board Service '%s' is not available in Room Type '%s'")
-                    % (board_service.default_code, room_type.default_code)
-                )
-            elif len(board_service_room_type_id) > 1:
-                raise ValidationError(
-                    _("The Board Service '%s' is duplicated in Room Type '%s'")
-                    % (board_service.default_code, room_type.default_code)
-                )
-            return {"board_service_room_id": board_service_room_type_id.id}
+            room_type = get_room_type(self, record["room_id"])
+            return {
+                "board_service_room_id": get_board_service_room_type(
+                    self, room_type, record["board"]
+                ).id
+            }
 
     @mapping
     def ota_reservation_code(self, record):
