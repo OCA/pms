@@ -26,7 +26,7 @@ class PmsCalendarService(Component):
     )
     def get_calendar(self, calendar_search_param):
         domain = list()
-        domain.append(("date", ">", datetime.fromisoformat(calendar_search_param.date_from)))
+        domain.append(("date", ">=", datetime.fromisoformat(calendar_search_param.date_from)))
         domain.append(("date", "<=", datetime.fromisoformat(calendar_search_param.date_to)))
         result_lines = []
         PmsCalendarShortInfo = self.env.datamodels["pms.calendar.short.info"]
