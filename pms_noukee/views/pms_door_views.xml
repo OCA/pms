@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="pms_door_view_form" model="ir.ui.view">
+        <field name="name">pms.door.form</field>
+        <field name="model">pms.door</field>
+        <field name="arch" type="xml">
+            <form string="Room Doors">
+                <sheet>
+
+                    <notebook>
+                        <page string="Door Information">
+                            <group colspan="4" col="4">
+                                <field name="name" />
+                                <field name="room_id" />
+                                 <field name="noukee_id" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_door_view_list">
+        <field name="name">pms.door_list</field>
+        <field name="model">pms.door</field>
+        <field name="arch" type="xml">
+            <tree string="Room Amenities">
+                <field name="name" />
+                <field name="room_id" />
+                <field name="noukee_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_pms_room_door_view_form">
+        <field name="name">Door name</field>
+        <field name="res_model">pms.door</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="pms_door_view_list" />
+    </record>
+    <menuitem
+        id="menu_pms_doors"
+        name="Doors"
+        parent="pms.pms_configuration_menu"
+        sequence="55"
+    />
+
+</odoo>

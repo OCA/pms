@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Hotel Settings -->
+    <record id="view_property_form_pms_l10n_es" model="ir.ui.view">
+        <field name="name">Property Form l10n_es</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms.pms_property_views_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='property_settings']" position="inside">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="o_horizontal_separator">
+                            Noukee information sending settings
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <group name="property_data">
+                            <field name="noukee_site_id" />
+                        </group>
+                    </div>
+                    <div class="col-6 px-0">
+                         <group name="property_data">
+                            <field name="noukee_user_id" />
+                            <field name="noukee_password" password="True" />
+                         </group>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="inherit_pms_reservation_view_form" model="ir.ui.view">
+        <field name="name">view.model.form</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms.pms_reservation_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='others']" position="after">
+                <page name="Noukee Invitations" string="Noukee Invitations">
+                    <field name="invitation_ids">
+                        <tree string="Invitation Ids">
+                            <field name="starts_at" />
+                            <field name="ends_at" />
+                            <field name="reservation_id" />
+                            <field name="door_id" />
+                            <field name="pin" />
+                            <field name="invitation_link" />
+                            <field name="noukee_invitation_id" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
