@@ -88,6 +88,7 @@
         "views/precheckin_portal_templates.xml",
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",
+        "views/payment_transaction_views.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",
