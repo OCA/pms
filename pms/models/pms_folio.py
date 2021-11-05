@@ -185,9 +185,9 @@ class PmsFolio(models.Model):
         readonly=True,
         copy=False,
         comodel_name="payment.transaction",
-        relation="folio_transaction_rel",
+        relation="payment_transaction_folio_rel",
         column1="folio_id",
-        column2="transaction_id",
+        column2="payment_transaction_id",
     )
     payment_ids = fields.Many2many(
         string="Bank Payments",
