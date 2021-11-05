@@ -89,8 +89,7 @@ class PortalFolio(CustomerPortal):
             transaction.ids
         )
         request.session["__payment_tx_ids__"] = list(tx_ids_list)
-
-        return transaction.render_invoice_button(
+        return transaction.render_folio_button(
             folio_sudo,
             submit_txt=_("Pay & Confirm"),
             render_values={
