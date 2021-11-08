@@ -4,7 +4,7 @@
         <field name="model">payment.transaction</field>
         <field name="inherit_id" ref="payment.transaction_form" />
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='Message']" position="before">
+            <xpath expr="//field[@name='date']" position="before">
                 <field name="folio_ids" />
             </xpath>
         </field>

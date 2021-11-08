@@ -964,7 +964,9 @@ class PmsFolio(models.Model):
                 }
                 record.update(vals)
             else:
-                journals = record.pms_property_id._get_payment_methods()
+                journals = record.pms_property_id._get_payment_methods(
+                    automatic_included=True
+                )
                 paid_out = 0
                 for journal in journals:
                     paid_out += sum(
