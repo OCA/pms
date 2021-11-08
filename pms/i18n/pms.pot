@@ -3101,6 +3101,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter__display_name
 #: model:ir.model.fields,field_description:pms.field_ir_http__display_name
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__display_name
+#: model:ir.model.fields,field_description:pms.field_payment_transaction__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__display_name
@@ -3731,6 +3732,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_account_move__folio_ids
 #: model:ir.model.fields,field_description:pms.field_account_move_line__folio_ids
 #: model:ir.model.fields,field_description:pms.field_account_payment__folio_ids
+#: model:ir.model.fields,field_description:pms.field_payment_transaction__folio_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__pms_folio_ids
 #: model:ir.model.fields,field_description:pms.field_res_partner__pms_folio_ids
 #: model:ir.model.fields,field_description:pms.field_res_users__pms_folio_ids
@@ -4068,6 +4070,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter__id
 #: model:ir.model.fields,field_description:pms.field_ir_http__id
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__id
+#: model:ir.model.fields,field_description:pms.field_payment_transaction__id
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__id
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__id
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__id
@@ -4939,6 +4942,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter____last_update
 #: model:ir.model.fields,field_description:pms.field_ir_http____last_update
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message____last_update
+#: model:ir.model.fields,field_description:pms.field_payment_transaction____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_amenity____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type____last_update
@@ -6242,6 +6246,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__payment_token_ids
 msgid "Payment Tokens"
+msgstr ""
+
+#. module: pms
+#: model:ir.model,name:pms.model_payment_transaction
+msgid "Payment Transaction"
 msgstr ""
 
 #. module: pms
