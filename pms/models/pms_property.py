@@ -428,12 +428,14 @@ class PmsProperty(models.Model):
             dt = dt.replace(tzinfo=None)
         return dt
 
-    def _get_payment_methods(self):
+    def _get_payment_methods(self, automatic_included=False):
+        # We use automatic_included to True to see absolutely
+        # all the journals with associated payments, if it is
+        # false, we will only see those journals that can be used
+        # to pay manually
         self.ensure_one()
         payment_methods = self.env["account.journal"].search(
             [
-                ("allowed_pms_payments", "=", True),
-                "&",
                 ("type", "in", ["cash", "bank"]),
                 "|",
                 ("pms_property_ids", "in", self.id),
@@ -446,6 +448,8 @@ class PmsProperty(models.Model):
                 ("company_id", "=", False),
             ]
         )
+        if not automatic_included:
+            payment_methods = payment_methods.filtered(lambda p: p.allowed_pms_payments)
         return payment_methods
 
     @api.model
