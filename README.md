@@ -23,7 +23,7 @@ addon | version | maintainers | summary
 [payment_acquirer_multi_pms_properties](payment_acquirer_multi_pms_properties/) | 14.0.1.0.1 |  | Payment Acquirer Multiproperty
 [pms](pms/) | 14.0.2.20.2 |  | A property management system
 [pms_housekeeping](pms_housekeeping/) | 14.0.1.0.1 |  | Housekeeping
-[pms_l10n_es](pms_l10n_es/) | 14.0.2.1.1 |  | PMS Spanish Adaptation
+[pms_l10n_es](pms_l10n_es/) | 14.0.2.2.0 |  | PMS Spanish Adaptation
 [pms_rooming_xls](pms_rooming_xls/) | 14.0.1.0.0 |  | Rooming xlsx Management
 
 [//]: # (end addons)
