@@ -2,14 +2,14 @@ from odoo import fields, models
 
 
 class PaymentTransaction(models.Model):
-    _name = "payment.transaction"
+    _inherit = "payment.transaction"
 
     folio_ids = fields.Many2many(
         string="Folios",
         comodel_name="pms.folio",
         ondelete="cascade",
-        relation="account_bank_statement_folio_rel",
-        column1="account_journal_id",
+        relation="payment_transaction_folio_rel",
+        column1="payment_transaction_id",
         column2="folio_id",
     )
 
