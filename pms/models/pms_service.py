@@ -299,6 +299,12 @@ class PmsService(models.Model):
                 day_qty = 1
                 if service.reservation_id and service.product_id:
                     reservation = service.reservation_id
+                    # REVIEW: review method dependencies, reservation_line_ids
+                    #         instead of checkin/checkout
+                    if not reservation.checkin or not reservation.checkout:
+                        if not service.service_line_ids:
+                            service.service_line_ids = False
+                        continue
                     product = service.product_id
                     consumed_on = product.consumed_on
                     if product.per_day:
