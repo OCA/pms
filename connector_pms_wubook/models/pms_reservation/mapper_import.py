@@ -48,6 +48,8 @@ class ChannelWubookPmsReservationMapperImport(Component):
 
     _apply_on = "channel.wubook.pms.reservation"
 
+    direct = [("occupancy", "adults")]
+
     children = [
         ("lines", "reservation_line_ids", "channel.wubook.pms.reservation.line"),
     ]
