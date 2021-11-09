@@ -170,6 +170,21 @@ msgid "<i class=\"fa fa-download\"/> Download"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_page_payment
+msgid "<i class=\"fa fa-fw fa-arrow-circle-right\"/> Pay Now"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_page_payment
+msgid "<i class=\"fa fa-fw fa-check-circle\"/> Paid"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_page_payment
+msgid "<i class=\"fa fa-fw fa-check-circle\"/> Pending"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid ""
 "<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
@@ -785,6 +800,18 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A journal must be specified for the acquirer %s."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A payment acquirer is required to create a transaction."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__advance_payment_method
 msgid ""
 "A standard invoice is issued with all the order                 lines ready "
@@ -798,6 +825,18 @@ msgid ""
 "A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
 "A consumable product is a product for which stock is not managed.\n"
 "A service is a non-material product you provide."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A transaction can't be linked to folios having different currencies."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A transaction can't be linked to folios having different partners."
 msgstr ""
 
 #. module: pms
@@ -1267,13 +1306,18 @@ msgid "Apply Pricelist"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__by_default
-msgid "Apply by Default"
+#: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
+msgid "Apply and close"
 msgstr ""
 
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
-msgid "Apply changes"
+msgid "Apply and continue"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_board_service_room_type__by_default
+msgid "Apply by Default"
 msgstr ""
 
 #. module: pms
@@ -2201,6 +2245,11 @@ msgid "Class to which the room type belongs"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_payment
+msgid "Close"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_availability_plan_rule__closed
 #: model:ir.model.fields,field_description:pms.field_pms_massive_changes_wizard__closed
 msgid "Closed"
@@ -2467,13 +2516,6 @@ msgstr ""
 #. module: pms
 #: model:ir.ui.menu,name:pms.pms_contacts_menu
 msgid "Contacts"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_folio_sale_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
 msgstr ""
 
 #. module: pms
@@ -2988,7 +3030,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__credit_card_details
-#: model:ir.model.fields,help:pms.field_pms_reservation__credit_card_details
 msgid "Details of partner credit card"
 msgstr ""
 
@@ -3104,6 +3145,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter__display_name
 #: model:ir.model.fields,field_description:pms.field_ir_http__display_name
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__display_name
+#: model:ir.model.fields,field_description:pms.field_payment_transaction__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__display_name
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__display_name
@@ -3734,6 +3776,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_account_move__folio_ids
 #: model:ir.model.fields,field_description:pms.field_account_move_line__folio_ids
 #: model:ir.model.fields,field_description:pms.field_account_payment__folio_ids
+#: model:ir.model.fields,field_description:pms.field_payment_transaction__folio_ids
 #: model:ir.model.fields,field_description:pms.field_pms_property__pms_folio_ids
 #: model:ir.model.fields,field_description:pms.field_res_partner__pms_folio_ids
 #: model:ir.model.fields,field_description:pms.field_res_users__pms_folio_ids
@@ -4071,6 +4114,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter__id
 #: model:ir.model.fields,field_description:pms.field_ir_http__id
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message__id
+#: model:ir.model.fields,field_description:pms.field_payment_transaction__id
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard__id
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__id
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type__id
@@ -4225,6 +4269,14 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type_class__active
 msgid "If unchecked, it will allow you to hide the room type"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/controllers/pms_portal.py:0
+#, python-format
+msgid ""
+"If we store your payment information on our server, subscription payments "
+"will be made automatically."
 msgstr ""
 
 #. module: pms
@@ -4592,6 +4644,18 @@ msgid "Invalid reservation"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "Invalid token found! Token acquirer %s != %s"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "Invalid token found! Token partner %s != %s"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 msgid "Invitation email sent"
 msgstr ""
@@ -4942,6 +5006,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_ir_config_parameter____last_update
 #: model:ir.model.fields,field_description:pms.field_ir_http____last_update
 #: model:ir.model.fields,field_description:pms.field_mail_compose_message____last_update
+#: model:ir.model.fields,field_description:pms.field_payment_transaction____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_advanced_filters_wizard____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_amenity____last_update
 #: model:ir.model.fields,field_description:pms.field_pms_amenity_type____last_update
@@ -5236,6 +5301,12 @@ msgstr ""
 #. module: pms
 #: model:ir.actions.act_window,name:pms.action_wizard_massive_changes
 msgid "Massive changes on Pricelist & Availability Plans"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/wizards/wizard_massive_changes.py:0
+#, python-format
+msgid "Massive changes on Pricelist and Availability Plans"
 msgstr ""
 
 #. module: pms
@@ -6184,6 +6255,24 @@ msgid "Pay"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/controllers/pms_portal.py:0
+#, python-format
+msgid "Pay & Confirm"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/payment_transaction.py:0
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_payment
+#, python-format
+msgid "Pay Now"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_payment
+msgid "Pay with"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__debit_limit
 msgid "Payable Limit"
 msgstr ""
@@ -6239,6 +6328,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__payment_token_ids
 msgid "Payment Tokens"
+msgstr ""
+
+#. module: pms
+#: model:ir.model,name:pms.model_payment_transaction
+msgid "Payment Transaction"
 msgstr ""
 
 #. module: pms
@@ -8199,6 +8293,14 @@ msgid "Services on Board Service included in Room"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_pms_reservation__overnight_room
+#: model:ir.model.fields,help:pms.field_pms_reservation_line__overnight_room
+#: model:ir.model.fields,help:pms.field_pms_room_type__overnight_room
+#: model:ir.model.fields,help:pms.field_pms_room_type_class__overnight
+msgid "Set False if if these types of spaces are not used for overnight stays"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Set to Done"
 msgstr ""
@@ -9683,6 +9785,14 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__barcode
 msgid "Use a barcode to identify this contact."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__overnight_room
+#: model:ir.model.fields,field_description:pms.field_pms_reservation_line__overnight_room
+#: model:ir.model.fields,field_description:pms.field_pms_room_type__overnight_room
+#: model:ir.model.fields,field_description:pms.field_pms_room_type_class__overnight
+msgid "Use for overnight stays"
 msgstr ""
 
 #. module: pms

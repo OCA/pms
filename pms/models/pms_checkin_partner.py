@@ -325,10 +325,12 @@ class PmsCheckinPartner(models.Model):
                 record.state = "draft"
             if record.reservation_id.state == "cancel":
                 record.state = "cancel"
-            elif record.state in ("draft", "cancel"):
+            elif record.state in ("draft", "precheckin", "cancel"):
                 if any(
                     not getattr(record, field)
-                    for field in record._checkin_mandatory_fields()
+                    for field in record._checkin_mandatory_fields(
+                        country=record.nationality_id
+                    )
                 ):
                     record.state = "draft"
                 else:
@@ -610,14 +612,9 @@ class PmsCheckinPartner(models.Model):
         return res
 
     @api.model
-    def _checkin_mandatory_fields(self, depends=False):
+    def _checkin_mandatory_fields(self, country=False, depends=False):
         mandatory_fields = [
             "name",
-            "birthdate_date",
-            "gender",
-            "document_number",
-            "document_type",
-            "document_expedition_date",
         ]
         # api.depends need "reservation_id.state" in the lambda function
         if depends:

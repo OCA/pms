@@ -101,11 +101,11 @@ class TravellerReport(models.TransientModel):
             for line in lines:
                 content += "2"
                 # [P|N|..]
-                if line.document_type.name != "D":
+                if line.document_type.code != "D":
                     content += "||" + line.document_number.upper() + "|"
                 else:
                     content += "|" + line.document_number.upper() + "||"
-                content += line.document_type.name + "|"
+                content += line.document_type.code + "|"
                 content += line.document_expedition_date.strftime("%Y%m%d") + "|"
                 content += line.lastname.upper() + "|"
                 if line.lastname2:

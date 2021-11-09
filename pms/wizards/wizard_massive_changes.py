@@ -1,6 +1,6 @@
 import datetime
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.osv import expression
 
 
@@ -872,145 +872,161 @@ class AvailabilityWizard(models.TransientModel):
 
         return new_items
 
+    def continue_massive_changes(self):
+        self.apply_massive_changes()
+        return {
+            "name": _("Massive changes on Pricelist and Availability Plans"),
+            "res_model": "pms.massive.changes.wizard",
+            "type": "ir.actions.act_window",
+            "view_id": self.env.ref("pms.massive_changes_wizard").id,
+            "target": "new",
+            "view_mode": "form",
+            "context": {
+                "default_massive_changes_on": self.massive_changes_on,
+                "default_start_date": self.start_date,
+                "default_end_date": self.end_date,
+                "default_pms_property_ids": [(6, 0, self.pms_property_ids.ids)],
+                "default_pricelist_ids": [(6, 0, self.pricelist_ids.ids)],
+                "default_availability_plan_ids": [
+                    (6, 0, self.availability_plan_ids.ids)
+                ],
+            },
+        }
+
+    def save_and_close(self):
+        items = self.apply_massive_changes()
+        if self.massive_changes_on == "pricelist" and not self.pricelist_readonly:
+            action = {
+                "view": self.env.ref("pms.product_pricelist_item_action2").read()[0]
+            }
+            action["view"]["domain"] = [("id", "in", items)]
+            return action["view"]
+
+        if self.massive_changes_on == "availability_plan" and not self.avail_readonly:
+            action = {
+                "view": self.env.ref(
+                    "pms.availability_plan_rule_view_tree_action"
+                ).read()[0]
+            }
+            action["view"]["domain"] = [("id", "in", items)]
+            return action["view"]
+
     def apply_massive_changes(self):
+        self.ensure_one()
+        self.pricelist_items_to_overwrite.unlink()
+        week_days_to_apply = (
+            self.apply_on_monday,
+            self.apply_on_tuesday,
+            self.apply_on_wednesday,
+            self.apply_on_thursday,
+            self.apply_on_friday,
+            self.apply_on_saturday,
+            self.apply_on_sunday,
+        )
 
-        for record in self:
-            record.pricelist_items_to_overwrite.unlink()
-            week_days_to_apply = (
-                record.apply_on_monday,
-                record.apply_on_tuesday,
-                record.apply_on_wednesday,
-                record.apply_on_thursday,
-                record.apply_on_friday,
-                record.apply_on_saturday,
-                record.apply_on_sunday,
-            )
+        # dates between start and end (both included)
+        items = []
+        for date in [
+            self.start_date + datetime.timedelta(days=x)
+            for x in range(0, (self.end_date - self.start_date).days + 1)
+        ]:
 
-            # dates between start and end (both included)
-            items = []
-            for date in [
-                record.start_date + datetime.timedelta(days=x)
-                for x in range(0, (record.end_date - record.start_date).days + 1)
-            ]:
+            if (
+                not self.apply_on_all_week
+                and not week_days_to_apply[date.timetuple()[6]]
+            ):
+                continue
 
+            if not self.room_type_ids:
+                room_types = self.env["pms.room.type"].search(
+                    [
+                        "|",
+                        ("pms_property_ids", "=", False),
+                        ("pms_property_ids", "in", self.pms_property_ids.ids),
+                    ]
+                )
+            else:
+                room_types = self.room_type_ids
+
+            for pms_property in self.pms_property_ids:
                 if (
-                    not record.apply_on_all_week
-                    and not week_days_to_apply[date.timetuple()[6]]
+                    self.massive_changes_on == "pricelist"
+                    and self.apply_pricelists_on == "room_types"
                 ):
-                    continue
-
-                if not record.room_type_ids:
-                    room_types = self.env["pms.room.type"].search(
-                        [
-                            "|",
-                            ("pms_property_ids", "=", False),
-                            ("pms_property_ids", "in", record.pms_property_ids.ids),
-                        ]
+                    new_items = self.create_pricelists_items_room_types(
+                        room_types,
+                        self.pricelist_ids,
+                        self.price,
+                        self.min_quantity,
+                        pms_property,
+                        date,
+                        self.date_types,
                     )
-                else:
-                    room_types = record.room_type_ids
+                    items = items + new_items if new_items else items
 
-                for pms_property in record.pms_property_ids:
-                    if (
-                        record.massive_changes_on == "pricelist"
-                        and record.apply_pricelists_on == "room_types"
-                    ):
-                        new_items = self.create_pricelists_items_room_types(
-                            room_types,
-                            record.pricelist_ids,
-                            record.price,
-                            record.min_quantity,
-                            pms_property,
-                            date,
-                            record.date_types,
-                        )
-                        items = items + new_items if new_items else items
+                elif (
+                    self.massive_changes_on == "pricelist"
+                    and self.apply_pricelists_on == "board_services"
+                ):
+                    new_items = self.create_pricelists_items_board_services(
+                        self.board_service_room_type_ids,
+                        self.pricelist_ids,
+                        self.board_service,
+                        self.price,
+                        self.min_quantity,
+                        pms_property,
+                        self.date_types,
+                        date,
+                    )
+                    items = items + new_items if new_items else items
 
-                    elif (
-                        record.massive_changes_on == "pricelist"
-                        and record.apply_pricelists_on == "board_services"
-                    ):
-                        new_items = self.create_pricelists_items_board_services(
-                            record.board_service_room_type_ids,
-                            record.pricelist_ids,
-                            record.board_service,
-                            record.price,
-                            record.min_quantity,
-                            pms_property,
-                            record.date_types,
-                            date,
-                        )
-                        items = items + new_items if new_items else items
+                elif (
+                    self.massive_changes_on == "pricelist"
+                    and self.apply_pricelists_on == "service"
+                ):
+                    for pricelist in self.pricelist_ids:
+                        if self.service:
+                            vals = {
+                                "pricelist_id": pricelist.id,
+                                "compute_price": "fixed",
+                                "applied_on": "0_product_variant",
+                                "product_id": self.service.id,
+                                "fixed_price": self.price,
+                                "min_quantity": self.min_quantity,
+                                "pms_property_ids": [pms_property.id],
+                            }
+                            vals = self.generate_dates_vals(self.date_types, vals, date)
 
-                    elif (
-                        record.massive_changes_on == "pricelist"
-                        and record.apply_pricelists_on == "service"
-                    ):
-                        for pricelist in record.pricelist_ids:
-                            if record.service:
-                                vals = {
-                                    "pricelist_id": pricelist.id,
-                                    "compute_price": "fixed",
-                                    "applied_on": "0_product_variant",
-                                    "product_id": record.service.id,
-                                    "fixed_price": record.price,
-                                    "min_quantity": record.min_quantity,
-                                    "pms_property_ids": [pms_property.id],
-                                }
-                                vals = self.generate_dates_vals(
-                                    record.date_types, vals, date
-                                )
+                            pricelist_item = self.env["product.pricelist.item"].create(
+                                vals
+                            )
+                            items.append(pricelist_item.id)
+                elif self.massive_changes_on == "availability_plan":
 
-                                pricelist_item = self.env[
-                                    "product.pricelist.item"
-                                ].create(vals)
-                                items.append(pricelist_item.id)
-                    elif record.massive_changes_on == "availability_plan":
-
-                        new_items = self.create_availability_plans_rules(
-                            room_types,
-                            record.availability_plan_ids,
-                            record.min_stay,
-                            record.apply_min_stay,
-                            record.min_stay_arrival,
-                            record.apply_min_stay_arrival,
-                            record.max_stay,
-                            record.apply_max_stay,
-                            record.max_stay_arrival,
-                            record.apply_max_stay_arrival,
-                            record.quota,
-                            record.apply_quota,
-                            record.max_avail,
-                            record.apply_max_avail,
-                            record.closed,
-                            record.apply_closed,
-                            record.closed_arrival,
-                            record.apply_closed_arrival,
-                            record.closed_departure,
-                            record.apply_closed_departure,
-                            date,
-                            record.rules_to_overwrite,
-                            pms_property,
-                        )
-                        items = items + new_items if new_items else items
-            if (
-                record.massive_changes_on == "pricelist"
-                and not record.pricelist_readonly
-            ):
-                action = {
-                    "view": self.env.ref("pms.product_pricelist_item_action2").read()[0]
-                }
-                action["view"]["domain"] = [("id", "in", items)]
-                return action["view"]
-
-            if (
-                record.massive_changes_on == "availability_plan"
-                and not record.avail_readonly
-            ):
-                action = {
-                    "view": self.env.ref(
-                        "pms.availability_plan_rule_view_tree_action"
-                    ).read()[0]
-                }
-                action["view"]["domain"] = [("id", "in", items)]
-                return action["view"]
+                    new_items = self.create_availability_plans_rules(
+                        room_types,
+                        self.availability_plan_ids,
+                        self.min_stay,
+                        self.apply_min_stay,
+                        self.min_stay_arrival,
+                        self.apply_min_stay_arrival,
+                        self.max_stay,
+                        self.apply_max_stay,
+                        self.max_stay_arrival,
+                        self.apply_max_stay_arrival,
+                        self.quota,
+                        self.apply_quota,
+                        self.max_avail,
+                        self.apply_max_avail,
+                        self.closed,
+                        self.apply_closed,
+                        self.closed_arrival,
+                        self.apply_closed_arrival,
+                        self.closed_departure,
+                        self.apply_closed_departure,
+                        date,
+                        self.rules_to_overwrite,
+                        pms_property,
+                    )
+                    items = items + new_items if new_items else items
+        return items
