@@ -170,6 +170,21 @@ msgid "<i class=\"fa fa-download\"/> Download"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_page_payment
+msgid "<i class=\"fa fa-fw fa-arrow-circle-right\"/> Pay Now"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_page_payment
+msgid "<i class=\"fa fa-fw fa-check-circle\"/> Paid"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_page_payment
+msgid "<i class=\"fa fa-fw fa-check-circle\"/> Pending"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid ""
 "<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
@@ -785,6 +800,18 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A journal must be specified for the acquirer %s."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A payment acquirer is required to create a transaction."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_advance_payment_inv__advance_payment_method
 msgid ""
 "A standard invoice is issued with all the order                 lines ready "
@@ -798,6 +825,18 @@ msgid ""
 "A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
 "A consumable product is a product for which stock is not managed.\n"
 "A service is a non-material product you provide."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A transaction can't be linked to folios having different currencies."
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "A transaction can't be linked to folios having different partners."
 msgstr ""
 
 #. module: pms
@@ -2203,6 +2242,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__class_id
 msgid "Class to which the room type belongs"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_payment
+msgid "Close"
 msgstr ""
 
 #. module: pms
@@ -4228,6 +4272,14 @@ msgid "If unchecked, it will allow you to hide the room type"
 msgstr ""
 
 #. module: pms
+#: code:addons/pms/controllers/pms_portal.py:0
+#, python-format
+msgid ""
+"If we store your payment information on our server, subscription payments "
+"will be made automatically."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__image_128
 #: model:ir.model.fields,field_description:pms.field_pms_property__image_1920
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__image_1920
@@ -4589,6 +4641,18 @@ msgstr ""
 #: code:addons/pms/wizards/wizard_split_join_swap_reservation.py:0
 #, python-format
 msgid "Invalid reservation"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "Invalid token found! Token acquirer %s != %s"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/pms_folio.py:0
+#, python-format
+msgid "Invalid token found! Token partner %s != %s"
 msgstr ""
 
 #. module: pms
@@ -6188,6 +6252,24 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.wizard_payment_folio_view_form
 msgid "Pay"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/controllers/pms_portal.py:0
+#, python-format
+msgid "Pay & Confirm"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/payment_transaction.py:0
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_payment
+#, python-format
+msgid "Pay Now"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_folio_payment
+msgid "Pay with"
 msgstr ""
 
 #. module: pms
