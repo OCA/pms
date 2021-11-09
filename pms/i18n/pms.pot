@@ -217,10 +217,10 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid ""
-"<span class=\"fa fa-question-circle fa-lg\" data-toggle=\"tooltip\" "
+"<span class=\"fa fa-question-circle fa-lg ml-4\" data-toggle=\"tooltip\" "
 "title=\"If you enter the validity date of the document, the expedition date "
 "will be automatically calculated and entered depending on the document "
-"type.\" style=\"margin-left: 70px;\"/>"
+"type.\"/>"
 msgstr ""
 
 #. module: pms
@@ -277,6 +277,13 @@ msgstr ""
 msgid ""
 "<span groups=\"account.group_show_line_subtotals_tax_excluded\">Amount</span>\n"
 "                            <span groups=\"account.group_show_line_subtotals_tax_included\">Total Price</span>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+msgid ""
+"<span style=\"color:red\" class=\"d-none error_inv_email\">Mandatory "
+"Email</span>"
 msgstr ""
 
 #. module: pms
@@ -630,6 +637,7 @@ msgid ""
 "                                                </tr>\n"
 "                                            </table>\n"
 "                                        </td></tr>\n"
+"\n"
 "                                        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
 "                                            <div>\n"
 "                                                % if object.pms_property_id.mail_information\n"
@@ -639,6 +647,27 @@ msgid ""
 "                                                % endif\n"
 "                                            </div>\n"
 "                                        </td></tr>\n"
+"                                        <tr>\n"
+"                                            <td align=\"center\" style=\"padding: 20px 0 0px 0; \">\n"
+"                                                <div>\n"
+"                                                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                                                    Do your check-in now and save time.\n"
+"                                                    <br/>\n"
+"                                                    Access our<strong> quick registration system</strong>. In a few steps you will be able to register your data in an agile, simple and secure way,<strong> avoiding queues at reception</strong>.\n"
+"                                                    If you register your data in our system, <strong> your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away.\n"
+"                                                    <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
+"                                                        <tr>\n"
+"                                                            <td align=\"center\">\n"
+"                                                                <a href=\"/my/folios/${object.folio_id.id}/precheckin?access_token=${object.folio_id.access_token}\" target=\"_blank\" style=\"text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px 20px 10px 20px;\">\n"
+"                                                                    <div style=\"padding: 0.5em; background-color: #45C2B1; border-color: #45C2B1; border-width: 2px;border-style:solid; border-bottom-style: solid;border-left-style: solid;border-right-style: solid;border-top-style: solid;-webkit-border-radius: 10; -moz-border-radius: 10; border-radius: 10px;font-size: 12px;\">Check-in\n"
+"                                                                    </div>\n"
+"                                                                    <center><img src=\"https://www.aldahotels.es/firma/email/llegada/check-in.png\" alt=\"Hacer check-in\" width=\"80px\" height=\"80px\" href=\"${object.url}\"/></center></a>\n"
+"                                                            </td>\n"
+"                                                        </tr>\n"
+"                                                    </table>\n"
+"                                                </div>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
 "                                        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
 "                                            <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
 "                                            <!-- CONTACT -->\n"
@@ -2440,7 +2469,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid ""
 "Confirm\n"
-"                        <span class=\"fa fa-long-arrow-right\"/>"
+"                                    <span class=\"fa fa-long-arrow-right\"/>"
 msgstr ""
 
 #. module: pms
@@ -5273,6 +5302,11 @@ msgid "Male"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+msgid "Mandatory Firstname"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__service_type
 msgid ""
 "Manually set quantities on order: Invoice based on the manually entered quantity, without creating an analytic account.\n"
@@ -6522,7 +6556,7 @@ msgid "PreCheckin in"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio
+#: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
 msgid "Precheckin"
 msgstr ""
 
@@ -7285,6 +7319,11 @@ msgstr ""
 #. module: pms
 #: model:ir.actions.report,name:pms.action_report_folio
 msgid "Report Folio"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+msgid "Resend Invitation"
 msgstr ""
 
 #. module: pms
