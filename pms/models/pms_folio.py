@@ -1251,14 +1251,29 @@ class PmsFolio(models.Model):
         if self.env.context.get("confirm_all_reservations"):
             self.reservation_ids.confirm()
 
-        # if self.env.context.get('send_email'):
-        # self.force_quotation_send()
-
-        # create an analytic account if at least an expense product
-        # if any([expense_policy != 'no' for expense_policy in
-        # self.sale_line_ids.mapped('product_id.expense_policy')]):
-        # if not self.analytic_account_id:
-        # self._create_analytic_account()
+        if self.pms_property_id.is_confirmed_auto_mail:
+            template = self.pms_property_id.property_confirmed_template
+            subject = template._render_field(
+                "subject", [6, 0, self.id], compute_lang=True, post_process=True
+            )[self.id]
+            body = template._render_field(
+                "body_html", [6, 0, self.id], compute_lang=True, post_process=True
+            )[self.id]
+            invitation_mail = (
+                self.env["mail.mail"]
+                .sudo()
+                .create(
+                    {
+                        "subject": subject,
+                        "body_html": body,
+                        "email_from": self.pms_property_id.partner_id.email,
+                        "email_to": self.email,
+                    }
+                )
+            )
+            invitation_mail.send()
+            for reservation in self.reservation_ids:
+                reservation.is_mail_send = True
         return True
 
     # CHECKIN/OUT PROCESS

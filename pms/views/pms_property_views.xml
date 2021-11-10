@@ -86,10 +86,32 @@
                             </group>
                         </page>
                         <page string="Email Configuration">
-                            <group string="Templates">
-                                <field name="property_confirmed_template" />
-                                <field name="property_modified_template" />
-                                <field name="property_canceled_template" />
+                            <group>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <group string="Email Templates">
+                                            <field name="property_confirmed_template" />
+                                            <field name="property_modified_template" />
+                                            <field name="property_canceled_template" />
+                                        </group>
+                                    </div>
+                                    <div class="col-6">
+                                        <group string="Auto Send Mail">
+                                            <field
+                                                name="is_confirmed_auto_mail"
+                                                string="Confirmation Mail"
+                                            />
+                                            <field
+                                                name="is_modified_auto_mail"
+                                                string="Modification Mail"
+                                            />
+                                            <field
+                                                name="is_canceled_auto_mail"
+                                                string="Cancellation Mail"
+                                            />
+                                        </group>
+                                    </div>
+                                </div>
                             </group>
                             <group
                                 string="Mail Information"
