@@ -8,6 +8,8 @@ from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping, only_create
 
 
+# REVIEW: move these two functions as a method of a mapper or binder
+#         or in a tools library
 def get_room_type(mapper, room_id):
     rt_binder = mapper.binder_for("channel.wubook.pms.room.type")
     room_type = rt_binder.to_internal(room_id, unwrap=True)

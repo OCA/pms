@@ -7,6 +7,9 @@ from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping, only_create
+from odoo.addons.connector_pms_wubook.models.pms_reservation.mapper_import import (
+    get_room_type,
+)
 
 
 class ChannelWubookPmsFolioMapperImport(Component):
@@ -131,7 +134,7 @@ class ChannelWubookPmsFolioChildMapperImport(Component):
                 continue
             item_values = self.get_item_values(map_record, to_attr, options)
             if item_values:
-                room_type = import_mapper._get_room_type(map_record.source["room_id"])
+                room_type = get_room_type(import_mapper, map_record.source["room_id"])
                 days = [x["day"] for x in map_record.source["lines"]]
                 checkin, checkout = min(days), max(days) + datetime.timedelta(days=1)
                 reservation = reservations.filtered(
