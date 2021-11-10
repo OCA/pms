@@ -148,6 +148,10 @@ class PmsProperty(models.Model):
         .id,
     )
 
+    is_confirmed_auto_mail = fields.Boolean(string="Auto send mail")
+    is_modified_auto_mail = fields.Boolean(string="Auto send mail")
+    is_canceled_auto_mail = fields.Boolean(string="Auto send mail")
+
     @api.depends_context(
         "checkin",
         "checkout",
