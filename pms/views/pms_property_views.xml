@@ -89,25 +89,37 @@
                             <group>
                                 <div class="row">
                                     <div class="col-6">
-                                        <group string="Email Templates">
-                                            <field name="property_confirmed_template" />
-                                            <field name="property_modified_template" />
-                                            <field name="property_canceled_template" />
+                                        <group
+                                            string="Email Templates"
+                                            name="email_templates"
+                                        >
+                                            <field
+                                                string="Confirmation Email"
+                                                name="property_confirmed_template"
+                                            />
+                                            <field
+                                                string="Modification Email"
+                                                name="property_modified_template"
+                                            />
+                                            <field
+                                                string="Cancellation Email"
+                                                name="property_canceled_template"
+                                            />
                                         </group>
                                     </div>
                                     <div class="col-6">
-                                        <group string="Auto Send Mail">
+                                        <group string="Auto Send Email">
                                             <field
                                                 name="is_confirmed_auto_mail"
-                                                string="Confirmation Mail"
+                                                string="Confirmation Email"
                                             />
                                             <field
                                                 name="is_modified_auto_mail"
-                                                string="Modification Mail"
+                                                string="Modification Email"
                                             />
                                             <field
                                                 name="is_canceled_auto_mail"
-                                                string="Cancellation Mail"
+                                                string="Cancellation Email"
                                             />
                                         </group>
                                     </div>

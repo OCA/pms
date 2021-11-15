@@ -122,35 +122,26 @@ class PmsProperty(models.Model):
     privacy_policy = fields.Html(string="Privacy Policy", help="Mail privacy policy ")
 
     property_confirmed_template = fields.Many2one(
-        string="Confirmation Template",
+        string="Confirmation Email",
         help="Confirmation email template",
         comodel_name="mail.template",
-        default=lambda self: self.env["mail.template"]
-        .search([("name", "=", "Confirmed Reservation")])
-        .id,
     )
 
     property_modified_template = fields.Many2one(
-        string="Modification Template",
+        string="Modification Email",
         help="Modification email template",
         comodel_name="mail.template",
-        default=lambda self: self.env["mail.template"]
-        .search([("name", "=", "Modified Reservation")])
-        .id,
     )
 
     property_canceled_template = fields.Many2one(
-        string="Cancellation Template",
+        string="Cancellation Email",
         help="Cancellation email template",
         comodel_name="mail.template",
-        default=lambda self: self.env["mail.template"]
-        .search([("name", "=", "Cancelled Reservation")])
-        .id,
     )
 
-    is_confirmed_auto_mail = fields.Boolean(string="Auto send mail")
-    is_modified_auto_mail = fields.Boolean(string="Auto send mail")
-    is_canceled_auto_mail = fields.Boolean(string="Auto send mail")
+    is_confirmed_auto_mail = fields.Boolean(string="Auto Send Confirmation Mail")
+    is_modified_auto_mail = fields.Boolean(string="Auto Send Modification Mail")
+    is_canceled_auto_mail = fields.Boolean(string="Auto Send Cancellation Mail")
 
     @api.depends_context(
         "checkin",
