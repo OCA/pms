@@ -1461,6 +1461,26 @@ msgid "Authorization by the user for themanage of their personal data"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__is_canceled_auto_mail
+msgid "Auto Send Cancellation Mail"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__is_confirmed_auto_mail
+msgid "Auto Send Confirmation Mail"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Auto Send Email"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_property__is_modified_auto_mail
+msgid "Auto Send Modification Mail"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__preconfirm
 msgid "Auto confirm to Save"
 msgstr ""
@@ -1932,7 +1952,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_canceled_template
-msgid "Cancellation Template"
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Cancellation Email"
 msgstr ""
 
 #. module: pms
@@ -2489,7 +2510,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_confirmed_template
-msgid "Confirmation Template"
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Confirmation Email"
 msgstr ""
 
 #. module: pms
@@ -3420,6 +3442,11 @@ msgid "Email Configuration"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Email Templates"
+msgstr ""
+
+#. module: pms
 #: model:ir.model,name:pms.model_mail_compose_message
 msgid "Email composition wizard"
 msgstr ""
@@ -3643,6 +3670,11 @@ msgstr ""
 #. module: pms
 #: model:pms.ubication,name:pms.pms_ubication_1
 msgid "First Floor"
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__first_checkin
+msgid "First Folio Checkin"
 msgstr ""
 
 #. module: pms
@@ -5024,6 +5056,11 @@ msgid "Language"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_pms_folio__last_checkout
+msgid "Last Folio Checkout"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement____last_update
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement_line____last_update
 #: model:ir.model.fields,field_description:pms.field_account_journal____last_update
@@ -5528,7 +5565,8 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__property_modified_template
-msgid "Modification Template"
+#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
+msgid "Modification Email"
 msgstr ""
 
 #. module: pms
@@ -8135,11 +8173,17 @@ msgid "Self"
 msgstr ""
 
 #. module: pms
+#: model:ir.actions.server,name:pms.send_cancelation_email_folio_ir_actions_server
+#: model:ir.cron,cron_name:pms.send_cancelation_email_folio
+#: model:ir.cron,name:pms.send_cancelation_email_folio
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Send Cancellation Email"
 msgstr ""
 
 #. module: pms
+#: model:ir.actions.server,name:pms.send_confirmation_email_folio_ir_actions_server
+#: model:ir.cron,cron_name:pms.send_confirmation_email_folio
+#: model:ir.cron,name:pms.send_confirmation_email_folio
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Send Confirmation Email"
 msgstr ""
@@ -8157,6 +8201,9 @@ msgid "Send Invitation"
 msgstr ""
 
 #. module: pms
+#: model:ir.actions.server,name:pms.send_modification_email_folio_ir_actions_server
+#: model:ir.cron,cron_name:pms.send_modification_email_folio
+#: model:ir.cron,name:pms.send_modification_email_folio
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Send Modification Email"
 msgstr ""
@@ -8776,11 +8823,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_automated_mails__template_id
 msgid "Template"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.pms_property_views_form
-msgid "Templates"
 msgstr ""
 
 #. module: pms
