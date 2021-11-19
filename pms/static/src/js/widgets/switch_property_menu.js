@@ -24,6 +24,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
             "keydown .dropdown-item[data-menu] div.pms_toggle_property":
                 "_onTogglePmsPropertyClick",
         },
+
         /**
          * @override
          */
@@ -33,7 +34,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
             this._onSwitchPmsPropertyClick = _.debounce(
                 this._onSwitchPmsPropertyClick,
                 1500,
-                true
+                true,
             );
         },
 
@@ -43,7 +44,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
         willStart: function () {
             var self = this;
             this.allowed_pms_property_ids = String(
-                session.user_context.allowed_pms_property_ids
+                session.user_context.allowed_pms_property_ids,
             )
                 .split(",")
                 .map(function (id) {
@@ -56,7 +57,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
                 session.user_pms_properties.allowed_pms_properties,
                 function (pms_property) {
                     return pms_property[0] === self.current_pms_property;
-                }
+                },
             )[1];
             return this._super.apply(this, arguments);
         },
@@ -143,7 +144,7 @@ odoo.define("web.SwitchPmsMenu", function (require) {
             } else {
                 allowed_pms_property_ids.splice(
                     allowed_pms_property_ids.indexOf(pms_propertyID),
-                    1
+                    1,
                 );
                 dropdownItem
                     .find(".fa-check-square")

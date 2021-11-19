@@ -4,7 +4,7 @@ odoo.define("booking.engine.tree", function (require) {
     var ListView = require("web.ListView");
     var viewRegistry = require("web.view_registry");
 
-    function renderBookingEngineButton() {
+    function renderBookingEngineButton () {
         if (this.$buttons) {
             var self = this;
             this.$buttons.on("click", ".o_button_booking_engine", function () {

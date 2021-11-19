@@ -16,7 +16,7 @@ odoo.define("pms.AbstractWebClient", function (require) {
                     : String(current_pms_property_id);
             }
             var statePmsPropertyIDS = _.map(state.pms_pids.split(","), function (
-                pms_pid
+                pms_pid,
             ) {
                 return parseInt(pms_pid, 10);
             });
@@ -24,7 +24,7 @@ odoo.define("pms.AbstractWebClient", function (require) {
                 session.user_pms_properties.allowed_pms_properties,
                 function (pms_property) {
                     return pms_property[0];
-                }
+                },
             );
             // Check that the user has access to all the companies
             if (!_.isEmpty(_.difference(statePmsPropertyIDS, userPmsPropertyIDS))) {
