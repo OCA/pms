@@ -1,0 +1,38 @@
+<odoo noupdate="0">
+
+    <!-- Group for pms user -->
+    <record id="group_pms_user" model="res.groups">
+        <field name="name">Property Management / User</field>
+    </record>
+
+    <!-- Group for pms manager -->
+    <record id="group_pms_manager" model="res.groups">
+        <field name="name">Property Management/ Manager</field>
+        <field name="implied_ids" eval="[(4, ref('pms_base.group_pms_user'))]" />
+        <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+    </record>
+
+    <!-- Group to show amenities -->
+    <record id="group_pms_show_amenity" model="res.groups">
+        <field name="name">Show Amenities</field>
+    </record>
+
+    <!-- Group to show rooms -->
+    <record id="group_pms_show_room" model="res.groups">
+        <field name="name">Show Rooms</field>
+    </record>
+
+    <!-- Group to show services -->
+    <record id="group_pms_show_service" model="res.groups">
+        <field name="name">Show Services</field>
+    </record>
+
+    <!-- Group to show teams -->
+    <record id="group_pms_show_team" model="res.groups">
+        <field name="name">Show Teams</field>
+    </record>
+
+</odoo>

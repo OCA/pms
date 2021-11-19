@@ -1,0 +1,55 @@
+<odoo>
+
+    <!-- Field Service Tag -->
+    <record id="view_pms_tag_tree" model="ir.ui.view">
+        <field name="name">Tags</field>
+        <field name="model">pms.tag</field>
+        <field name="arch" type="xml">
+            <tree string="Tags">
+                <field name="full_name" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_pms_tag_form" model="ir.ui.view">
+        <field name="name">Tag</field>
+        <field name="model">pms.tag</field>
+        <field name="arch" type="xml">
+            <form string="Tag">
+                <sheet>
+                    <label for="name" class="oe_edit_only" />
+                    <h1>
+                        <field name="name" />
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="parent_id" />
+                        </group>
+                        <group>
+                            <field name="color" groups="base.group_no_one" />
+                            <field
+                                name="company_id"
+                                options="{'no_create': True}"
+                                groups="base.group_multi_company"
+                            />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_pms_tag">
+        <field name="name">Tags</field>
+        <field name="res_model">pms.tag</field>
+        <field name="view_id" ref="view_pms_tag_tree" />
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a tag.
+            </p>
+        </field>
+    </record>
+
+</odoo>
