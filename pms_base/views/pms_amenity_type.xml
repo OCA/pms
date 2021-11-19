@@ -1,0 +1,44 @@
+<odoo>
+    <!--==== Amenities Type ==== -->
+    <!-- Form view of pms room amenities type -->
+    <record model="ir.ui.view" id="view_pms_room_amenity_type_form">
+        <field name="name">pms.amenity.type.form</field>
+        <field name="model">pms.amenity.type</field>
+        <field name="arch" type="xml">
+            <form string="Amenity Type">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box" />
+                    <label for="name" class="oe_edit_only" />
+                    <h1>
+                        <field name="name" required="True" />
+                    </h1>
+                    <group id="main">
+                        <group id="main-left" />
+                        <group id="main-right" />
+                    </group>
+                    <notebook />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view of pms room amenities type -->
+    <record model="ir.ui.view" id="view_pms_amenity_type_tree">
+        <field name="name">pms.amenity.type.tree</field>
+        <field name="model">pms.amenity.type</field>
+        <field name="arch" type="xml">
+            <tree string="Amenity Types">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for pms room amenities type -->
+    <record model="ir.actions.act_window" id="action_pms_amenity_type">
+        <field name="name">Amenity Types</field>
+        <field name="res_model">pms.amenity.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
