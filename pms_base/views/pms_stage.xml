@@ -1,0 +1,81 @@
+<odoo>
+
+    <record id="view_stage_form" model="ir.ui.view">
+        <field name="name">pms.stage.view.form</field>
+        <field name="model">pms.stage</field>
+        <field name="arch" type="xml">
+            <form string="Stage">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box" />
+                    <label for="name" class="oe_edit_only" />
+                    <h1>
+                        <field name="name" required="True" />
+                    </h1>
+                    <group id="main">
+                        <group id="main-left">
+                            <field name="stage_type" />
+                            <field
+                                name="team_ids"
+                                widget="many2many_tags"
+                                groups="pms_base.group_pms_show_team"
+                            />
+                        </group>
+                        <group id="main-right">
+                            <field name="sequence" />
+                            <field name="custom_color" />
+                            <field name="fold" />
+                            <field name="is_closed" />
+                            <field name="is_default" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                            <field name="active" />
+                        </group>
+                    </group>
+                    <notebook />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_stage_tree" model="ir.ui.view">
+        <field name="name">pms.stage.view.tree</field>
+        <field name="model">pms.stage</field>
+        <field name="arch" type="xml">
+            <tree string="Stages">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="stage_type" />
+                <field name="is_closed" />
+                <field name="custom_color" />
+                <field name="active" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_stage_search" model="ir.ui.view">
+        <field name="name">pms.stage.view.</field>
+        <field name="model">pms.stage</field>
+        <field name="arch" type="xml">
+            <search string="Search Stages">
+                <field name="name" />
+                <filter
+                    name="group_stage_type"
+                    string="Type"
+                    domain="[]"
+                    context="{'group_by':'stage_type'}"
+                />
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pms_stage" model="ir.actions.act_window">
+        <field name="name">PMS Stages</field>
+        <field name="res_model">pms.stage</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_group_stage_type': 1}</field>
+    </record>
+
+</odoo>

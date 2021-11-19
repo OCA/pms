@@ -1,0 +1,311 @@
+<odoo>
+
+    <record id="view_pms_property_form" model="ir.ui.view">
+        <field name="name">pms.property.form</field>
+        <field name="model">pms.property</field>
+        <field name="arch" type="xml">
+            <form string="Property">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_childs_property_list"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-users"
+                            attrs="{'invisible': [('childs_property_count', '=', 0)]}"
+                        >
+                            <field
+                                name="childs_property_count"
+                                widget="statinfo"
+                                string="Child Property"
+                            />
+                        </button>
+                    </div>
+                    <field
+                        name="image_1920"
+                        widget="image"
+                        class="oe_avatar"
+                        options="{'preview_image': 'image_128'}"
+                    />
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" />
+                        <h1>
+                            <field name="name" required="True" />
+                            <field name="id" invisible="True" />
+                        </h1>
+                        <field name="ref" placeholder="Reference" />
+                    </div>
+                    <group id="main">
+                        <group id="main-left">
+                            <label for="street" string="Address" />
+                            <div class="o_address_format">
+                                <field
+                                    name="street"
+                                    placeholder="Street..."
+                                    class="o_address_street"
+                                />
+                                <field
+                                    name="street2"
+                                    placeholder="Street 2..."
+                                    class="o_address_street"
+                                />
+                                <field
+                                    name="city"
+                                    placeholder="City"
+                                    class="o_address_city"
+                                />
+                                <field
+                                    name="state_id"
+                                    class="o_address_state"
+                                    placeholder="State"
+                                    options="{&quot;no_open&quot;: True}"
+                                    context="{'country_id': country_id, 'zip': zip}"
+                                />
+                                <field
+                                    name="zip"
+                                    placeholder="ZIP"
+                                    class="o_address_zip"
+                                />
+                                <field
+                                    name="country_id"
+                                    placeholder="Country"
+                                    class="o_address_country"
+                                    options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"
+                                />
+                            </div>
+                        </group>
+                        <group id="main-right">
+                            <field name="parent_id" domain="[('id', '!=', id)]" />
+                            <field name="tz" />
+                            <field
+                                name="owner_id"
+                                domain="[('is_property', '=', False)]"
+                            />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                            <field name="tag_ids" widget="many2many_tags" />
+                            <field name="team_id" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Information" name="info">
+                            <group id="info">
+                                <group id="info-left">
+                                    <field name="area" />
+                                    <field name="heating" />
+                                </group>
+                                <group id="info-right" />
+                                <field name="property_child_ids" invisible="1" />
+                            </group>
+                        </page>
+                        <page
+                            string="Rooms"
+                            name="rooms"
+                            groups="pms_base.group_pms_show_room"
+                        >
+                            <group name="floor_info" col="4">
+                                <field name="floors_num" />
+                                <field name="unit_floor" />
+                            </group>
+                            <group id="room">
+                                <group id="room-left" string="Quantities">
+                                    <field name="qty_bedroom" string="Bedroom(s)" />
+                                    <field
+                                        name="qty_half_bathroom"
+                                        string="Half Bathroom(s)"
+                                    />
+                                    <field
+                                        name="qty_living_room"
+                                        string="Living Rom(s)"
+                                    />
+                                    <field
+                                        name="qty_dining_room"
+                                        string="Dining Room(s)"
+                                    />
+                                    <field name="qty_kitchen" string="Kitchen(s)" />
+                                </group>
+                                <group id="room-right">
+                                    <field name="balcony" />
+                                    <field name="laundry_room" />
+                                    <field name="parking_lot" />
+                                    <field name="pets" />
+                                    <field name="terrace" />
+                                </group>
+                            </group>
+                            <field name="room_ids">
+                                <tree editable="bottom">
+                                    <field name="name" />
+                                    <field name="type_id" />
+                                    <field name="capacity" />
+                                    <field name="area" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page
+                            string="Amenities"
+                            name="amenities"
+                            groups="pms_base.group_pms_show_amenity"
+                        >
+                            <field name="amenity_ids">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="type_id" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page
+                            string="Services"
+                            name="services"
+                            groups="pms_base.group_pms_show_service"
+                        >
+                            <field name="service_ids">
+                                <tree editable="bottom">
+                                    <field name="name" />
+                                    <field name="vendor_id" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity" />
+                    <field
+                        name="message_ids"
+                        widget="mail_thread"
+                        options="{'post_refresh': 'recipients'}"
+                    />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pms_property_search">
+        <field name="name">pms.property.search</field>
+        <field name="model">pms.property</field>
+        <field name="arch" type="xml">
+            <search string="Property">
+                <field
+                    name="name"
+                    filter_domain="['|', ('ref', 'ilike', self), ('name', 'ilike', self)]"
+                />
+                <field name="team_id" />
+                <separator />
+                <filter
+                    string="Archived"
+                    name="active"
+                    domain="[('active', '=', False)]"
+                />
+                <separator />
+                <group expand="0" name="group_by" string="Group By">
+                    <filter
+                        name="group_building"
+                        string="Building"
+                        domain="[]"
+                        context="{'group_by' : 'parent_id'}"
+                    />
+                    <filter
+                        name="group_owner"
+                        string="Owner"
+                        context="{'group_by': 'owner_id'}"
+                    />
+                </group>
+                <separator />
+                <searchpanel>
+                    <field
+                        name="owner_id"
+                        string="Owners"
+                        enable_counters="1"
+                        icon="fa-user-o"
+                    />
+                    <field
+                        name="team_id"
+                        string="Teams"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_pms_property_tree" model="ir.ui.view">
+        <field name="name">pms.property.tree</field>
+        <field name="model">pms.property</field>
+        <field name="arch" type="xml">
+            <tree string="Properties">
+                <field name="active" invisible="1" />
+                <field name="ref" />
+                <field name="name" />
+                <field name="owner_id" />
+                <field name="tag_ids" widget="many2many_tags" />
+                <field name="team_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_pms_property_kanban" model="ir.ui.view">
+        <field name="name">pms.property.kanban</field>
+        <field name="model">pms.property</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id" />
+                <field name="activity_state" />
+                <field name="color" />
+                <progressbar
+                    field="activity_state"
+                    colors='{"planned": "success", "today": "warning", "overdue": "danger"}'
+                />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img
+                                    t-att-src="kanban_image('pms.property', 'image_1920', record.id.raw_value)"
+                                    alt="Property"
+                                    class="o_image_64_contain"
+                                />
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name" />
+                                </strong>
+                                <div>
+                                    <small t-if="record.street.value">
+                                        <field name="street" />
+                                    </small>
+                                </div>
+                                <div class="o_kanban_tags_section">
+                                    <field
+                                        name="tag_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- action -->
+    <record id="action_pms_property" model="ir.actions.act_window">
+        <field name="name">Properties</field>
+        <field name="res_model">pms.property</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <record id="property_action_from_dashboard" model="ir.actions.act_window">
+        <field name="name">Properties</field>
+        <field name="res_model">pms.property</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'default_team_id': active_id}</field>
+        <field name="domain">[('team_id', '=', active_id)]</field>
+    </record>
+
+</odoo>

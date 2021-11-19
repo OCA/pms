@@ -1,0 +1,13 @@
+<odoo>
+
+    <!-- Multi-Company Rule -->
+    <record id="pms_property_rule" model="ir.rule">
+        <field name="name">Multi-Company Property Rule</field>
+        <field name="model_id" ref="model_pms_property" />
+        <field name="global" eval="True" />
+        <field
+            name="domain_force"
+        >['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>
