@@ -1,0 +1,230 @@
+<odoo>
+    <record id="view_res_config_settings_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pms</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div
+                    class="app_settings_block"
+                    data-string="Property Management System"
+                    string="Properties"
+                    data-key="pms_base"
+                    groups="pms_base.group_pms_manager"
+                >
+                    <h2>Property Information</h2>
+                    <div class="row mt16 o_settings_container" id="characteristics">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane" />
+                            <div class="o_setting_right_pane">
+                                <label for="pms_uom" string="Area (UoM)" />
+                                <div class="text-muted">
+                                    Define your unit of measure when entering area
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field
+                                            name="pms_uom"
+                                            class="o_light_label"
+                                            widget="radio"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="group_pms_show_amenity" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="group_pms_show_amenity"
+                                    string="Show Amenities"
+                                />
+                                <div class="text-muted">
+                                    Manage amenities related to your properties
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="group_pms_show_room" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="group_pms_show_room" string="Show Rooms" />
+                                <div class="text-muted">
+                                    Manage rooms of your properties
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="group_pms_show_service" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="group_pms_show_service"
+                                    string="Show Services"
+                                />
+                                <div class="text-muted">
+                                    Manage services available at your properties
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="group_pms_show_team" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="group_pms_show_team" string="Show Teams" />
+                                <div class="text-muted">
+                                    Split your properties by Team
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Accounting</h2>
+                    <div class="row mt16 o_settings_container" id="account">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_pms_account" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="module_pms_account"
+                                    string="Manage Accounting"
+                                />
+                                <div class="text-muted">
+                                    Manage accounting related information
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_pms_account_asset" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="module_pms_account_asset"
+                                    string="Manage Depreciation and Amortization"
+                                />
+                                <div class="text-muted">
+                                    Manage assets related to your properties
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_pms_contract" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="module_pms_contract"
+                                    string="Manage Contracts"
+                                />
+                                <div class="text-muted">
+                                    Manage utility contracts and others recurring invoices/bills
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Reservations</h2>
+                    <div class="row mt16 o_settings_container" id="sale">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_pms_sale" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="module_pms_sale"
+                                    string="Manage Reservations"
+                                />
+                                <div class="text-muted">
+                                    Manage reservations
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_pms_crm" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="module_pms_crm" string="CRM" />
+                                <div class="text-muted">
+                                    Link your leads to a property
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_pms_website" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="module_pms_website" string="Website" />
+                                <div class="text-muted">
+                                    Publish your properties on your website
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_pms_website_sale" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="module_pms_website_sale"
+                                    string="Online reservation"
+                                />
+                                <div class="text-muted">
+                                    Allow customers to book reservations online
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Integrations</h2>
+                    <div class="row mt16 o_settings_container" id="connect">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_connector_guesty" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="module_connector_guesty"
+                                    string="Connect with Guesty"
+                                />
+                                <div class="text-muted">
+                                    Publish properties to https://guesty.com and get reservations
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_connector_wubook" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label
+                                    for="module_connector_wubook"
+                                    string="Connect with Wubook"
+                                />
+                                <div class="text-muted">
+                                    Publish properties to https://wubook.com and get reservations
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_pms_config" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'pms_base'}</field>
+    </record>
+
+</odoo>

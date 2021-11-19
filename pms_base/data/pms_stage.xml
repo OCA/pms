@@ -1,0 +1,23 @@
+<odoo>
+
+    <record id="pms_stage_new" model="pms.stage">
+        <field name="name">New</field>
+        <field name="sequence">10</field>
+        <field name="is_default">True</field>
+        <field name="stage_type">property</field>
+    </record>
+
+    <record id="pms_stage_available" model="pms.stage">
+        <field name="name">Available</field>
+        <field name="sequence">20</field>
+        <field name="stage_type">property</field>
+    </record>
+
+    <record id="pms_stage_cancelled" model="pms.stage">
+        <field name="name">Cancelled</field>
+        <field name="sequence">99</field>
+        <field name="is_closed">True</field>
+        <field name="stage_type">property</field>
+    </record>
+
+</odoo>
