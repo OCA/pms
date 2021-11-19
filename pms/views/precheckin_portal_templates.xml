@@ -882,7 +882,7 @@
                                                         t-att-value="id or (checkin_partner.id)"
                                                     />
                                                 </div>
-                                                 <div t-attf-class="form-group col-6">
+                                                <div t-attf-class="form-group col-6">
                                                     <a
                                                         t-att-id="'btn_show_invitation'+str(checkin_partner.id)"
                                                         class="btn btn-secondary"
@@ -964,7 +964,7 @@
                                                             t-att-class="' btn btn-secondary o_send_invitation_js mt-4 p-2'"
                                                             style="color:#fff; height:36px;"
                                                         >
-                                                        Send Invitation<span
+                                                            Send Invitation<span
                                                                 t-esc="checkin_partner.id"
                                                                 class="d-none"
                                                             /></a>
@@ -1314,7 +1314,7 @@
                         </div>
                         <tr>
                             <td>
-                                <div class="clearfix">
+                                <div class="clearfix" style="width:100%;">
                                     <button
                                         type="submit"
                                         class="btn btn-primary float-right mb32 "
@@ -1375,72 +1375,71 @@
         </style>
         <script>
             function launchSnackBar(element) {
-            var checkin_partner_id = element.firstChild.nextSibling.innerText
+                var checkin_partner_id = element.firstChild.nextSibling.innerText
 
-            var inputEmailId = "invitation_email" + checkin_partner_id;
+                var inputEmailId = "invitation_email" + checkin_partner_id;
 
-            var email = document.getElementById(inputEmailId).value;
-            var nameId = "invitation_firstname" + checkin_partner_id;
-            var hostId = "host_name" + checkin_partner_id;
-            var host = document.getElementById(hostId);
-            var name = document.getElementById(nameId).value;
-            if(email){
-            if(name){
-            console.log("non ten email");
-                host.innerHTML = name;
+                var email = document.getElementById(inputEmailId).value;
+                var nameId = "invitation_firstname" + checkin_partner_id;
+                var hostId = "host_name" + checkin_partner_id;
+                var host = document.getElementById(hostId);
+                var name = document.getElementById(nameId).value;
+                if(email){
+                    if(name){
+                        host.innerHTML = name;
 
-            var divId = "invitation_group" + checkin_partner_id;
-            var btnId = "btnResendInvitation" + checkin_partner_id;
-            var div_invitation = document.getElementById(divId);
-            var btn_show_invitation = document.getElementById(btnId);
-            div_invitation.classList.add("d-none");
-            btn_show_invitation.classList.remove("d-none");
-            var x = document.getElementById("snackbar");
-            x.className = "show";
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-            }
-            }
+                        var divId = "invitation_group" + checkin_partner_id;
+                        var btnId = "btnResendInvitation" + checkin_partner_id;
+                        var div_invitation = document.getElementById(divId);
+                        var btn_show_invitation = document.getElementById(btnId);
+                        div_invitation.classList.add("d-none");
+                        btn_show_invitation.classList.remove("d-none");
+                        var x = document.getElementById("snackbar");
+                        x.className = "show";
+                        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                    }
+                }
             }
 
             function show_invitation(element) {
-            var checkin_partner_id = element.firstChild.nextSibling.innerText
-            var divId = "invitation_group" + checkin_partner_id;
-            var btnId = "btn_show_invitation" + checkin_partner_id;
-            var btn2 = "btnResendInvitation"+checkin_partner_id;
-            var div_invitation = document.getElementById(divId);
-            var btn_show_invitation = document.getElementById(btnId);
-            var btn_resend = document.getElementById(btn2);
-            div_invitation.classList.remove("d-none");
-            btn_show_invitation.classList.add("d-none");
-            btn_resend.classList.add("d-none");
+                var checkin_partner_id = element.firstChild.nextSibling.innerText
+                var divId = "invitation_group" + checkin_partner_id;
+                var btnId = "btn_show_invitation" + checkin_partner_id;
+                var btn2 = "btnResendInvitation"+checkin_partner_id;
+                var div_invitation = document.getElementById(divId);
+                var btn_show_invitation = document.getElementById(btnId);
+                var btn_resend = document.getElementById(btn2);
+                div_invitation.classList.remove("d-none");
+                btn_show_invitation.classList.add("d-none");
+                btn_resend.classList.add("d-none");
             }
             let listaElementos = document.getElementsByClassName("fa-sm");
             for(i=0; i&lt;listaElementos.length; i++){
-            let element =document.getElementById(i+1)
-            element.addEventListener('click', function(){
-            element.classList.toggle("fa-chevron-down")
-            element.classList.toggle("fa-chevron-up")
-            },false);
+                let element =document.getElementById(i+1)
+                element.addEventListener('click', function(){
+                    element.classList.toggle("fa-chevron-down")
+                    element.classList.toggle("fa-chevron-up")
+                },false);
             }
             let selects_doc_type = document.getElementsByClassName("select_doc_type_class");
             let doc_type_values = document.getElementsByClassName("doc_type_class");
             for(i=0;i&lt;selects_doc_type.length;i++){
-            let doc_type_value = doc_type_values[i].textContent;
-            for(x=0;x&lt;selects_doc_type[i].length;x++){
-            if(selects_doc_type[i][x].value == doc_type_value){
-            selects_doc_type[i][x].setAttribute("selected","True")
-            }
-            }
+                let doc_type_value = doc_type_values[i].textContent;
+                for(x=0;x&lt;selects_doc_type[i].length;x++){
+                    if(selects_doc_type[i][x].value == doc_type_value){
+                        selects_doc_type[i][x].setAttribute("selected","True")
+                    }
+                }
             }
             let selects_gender = document.getElementsByClassName("select_gender_class");
             let gender_values = document.getElementsByClassName("gender_class");
             for(i=0;i&lt;selects_gender.length;i++){
-            let gender_value = gender_values[i].textContent;
-            for(x=0;x&lt;selects_gender[i].length;x++){
-            if(selects_gender[i][x].value == gender_value){
-            selects_gender[i][x].setAttribute("selected","True")
-            }
-            }
+                let gender_value = gender_values[i].textContent;
+                for(x=0;x&lt;selects_gender[i].length;x++){
+                        if(selects_gender[i][x].value == gender_value){
+                            selects_gender[i][x].setAttribute("selected","True")
+                        }
+                    }
             }
             let select_country = document.getElementById('country')
 
@@ -1455,5 +1454,395 @@
             });
             });
         </script>
+    </template>
+    <template id="portal_my_folio_checkin_rooming" name="Precheckin Folio">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="False" />
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Rooming</t>
+            </t>
+            <t t-if="not folio">
+                <p>There are currently no folios for your account.</p>
+            </t>
+            <t t-if="folio">
+                <form action="/my/precheckin/folio_reservation" method="post">
+                    <div t-attf-class="form-group col-xl-6 d-none">
+                        <input
+                            id="folio_id"
+                            type="text"
+                            t-att-name="'folio_id'"
+                            t-att-value="folio_id or folio.id"
+                        />
+                    </div>
+                    <div t-attf-class="form-group col-xl-6 d-none">
+                        <input
+                            id="rooming"
+                            type="text"
+                            t-att-name="'rooming'"
+                            t-att-value="'rooming'"
+                        />
+                    </div>
+                    <t t-set="count" t-value="0" />
+                    <t t-set="count_reservation" t-value="0" />
+                    <t t-foreach="folio.reservation_ids" t-as="reservation">
+                        <t t-set="count_reservation" t-value="count_reservation+1" />
+                        <div t-attf-class="form-group col-xl-6 d-none">
+                        <input
+                                id="reservation_id"
+                                type="text"
+                                t-att-name="'reservation_id-'+ str(count_reservation)"
+                                t-att-value="reservation_id or reservation.id"
+                            />
+                    </div>
+                        <table style="margin-top:20px">
+                            <thead>
+                                <tr>
+                                    <!--                                <th>Customer</th>-->
+                                    <th class="col-1">Name</th>
+                                    <th class="col-1">Lastname</th>
+                                    <th class="col-1">Second Lastname</th>
+                                    <th class="col-1">Gender</th>
+                                    <th class="col-1">Doc.Type</th>
+                                    <th class="col-1">Doc.Number</th>
+                                    <th class="col-1">Doc. Expedition Date</th>
+                                    <th class="col-1">Birthdate</th>
+                                    <th class="col-1">Mobile</th>
+                                    <th class="col-1">Email</th>
+                                    <th class="col-1">Nationality</th>
+                                    <th class="col-1">Country State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t
+                                    t-foreach="reservation.checkin_partner_ids"
+                                    t-as="checkin"
+                                >
+                                    <t t-set="count" t-value="count+1" />
+                                    <div t-attf-class="d-none">
+                                        <input
+                                            type="text"
+                                            t-att-name="'id-'+ str(count)"
+                                            t-attf-class="form-control"
+                                            t-att-value="id or checkin.id"
+                                        />
+                                    </div>
+                                    <tr>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                t-att-name="'firstname-' + str(count)"
+                                                t-attf-class="form-control #{error.get('firstname-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="firstname or (checkin.firstname)"
+                                            />
+                                            <t t-if="error_message">
+                                                <span
+                                                    class="text-danger"
+                                                    t-esc="'Mandatory field'"
+                                                />
+                                            </t>
+                                        </td>
+                                        <td class="py-2">
+                                            <input
+                                                type="text"
+                                                t-att-name="'lastname-' + str(count)"
+                                                t-attf-class="form-control #{error.get('lastname-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="lastname or (checkin.lastname)"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                t-att-name="'lastname2-' + str(count)"
+                                                t-attf-class="form-control #{error.get('lastname-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="lastname2 or (checkin.lastname2)"
+                                            />
+                                        </td>
+                                        <td>
+                                            <select
+                                                class="form-control"
+                                                t-att-name="'gender'"
+                                                t-att-value="checkin.gender"
+                                            >
+                                                <option
+                                                    value=""
+                                                >Select an option</option>
+                                                <option
+                                                    value="female"
+                                                    t-att-selected="'female' == checkin.gender"
+                                                >
+                                                    Female
+                                                </option>
+                                                <option
+                                                    value="male"
+                                                    t-att-selected="'male' == checkin.gender"
+                                                >
+                                                    Male
+                                                </option>
+                                                <option
+                                                    value="other"
+                                                    t-att-selected="'other' == checkin.gender"
+                                                >
+                                                    Other
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select
+                                                class="form-control #{error.get('document_type-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-name="'document_type-'+str(count)"
+                                            >
+                                                <option
+                                                    value=""
+                                                >Select an option</option>
+                                                <t
+                                                    t-foreach="doc_type_ids"
+                                                    t-as='doc_type'
+                                                >
+                                                    <option
+                                                        t-att-value="doc_type.name"
+                                                        t-att-selected="doc_type.id == checkin.document_type.id"
+                                                    >
+                                                        <t t-esc='doc_type.name' />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                t-att-name="'document_number-'+str(count)"
+                                                t-attf-class="form-control #{error.get('document_number-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="doc_number or checkin.document_number"
+                                            />
+                                            <t t-if="error_message">
+                                                <span
+                                                    class="text-danger"
+                                                    t-esc="error_message.get('document_number-'+str(count))"
+                                                />
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="date"
+                                                t-att-name="'document_expedition_date-'+ str(count)"
+                                                t-attf-class="form-control #{error.get('document_expedition_date-'+ str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="doc_exp_date or checkin.document_expedition_date"
+                                            />
+                                            <t t-if="error_message">
+                                                <span
+                                                    class="text-danger"
+                                                    t-esc="error_message.get('document_expedition_date-'+ str(count))"
+                                                />
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="date"
+                                                t-att-name="'birthdate_date-'+str(count)"
+                                                t-attf-class="form-control #{error.get('birthdate_date-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="birth_date or checkin.birthdate_date"
+                                            />
+                                            <t t-if="error_message">
+                                                <span
+                                                    class="text-danger"
+                                                    t-esc="error_message.get('birthdate_date-'+str(count))"
+                                                />
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="phone"
+                                                t-att-name="'mobile-'+str(count)"
+                                                t-attf-class="form-control #{error.get('mobile-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="mobile or checkin.mobile"
+                                            />
+                                            <t t-if="error_message">
+                                                <span
+                                                    class="text-danger"
+                                                    t-esc="error_message.get('mobile-'+str(count))"
+                                                />
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="email"
+                                                t-att-name="'email-'+str(count)"
+                                                t-attf-class="form-control #{error.get('email-'+str(count)) and 'is-invalid' or ''}"
+                                                t-att-value="email or checkin.email"
+                                            />
+                                            <t t-if="error_message">
+                                                <span
+                                                    class="text-danger"
+                                                    t-esc="error_message.get('email-'+str(count))"
+                                                />
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <select
+                                                class="form-control"
+                                                id="country"
+                                                t-att-name="'nationality_id-'+str(count)"
+                                            >
+                                                <option
+                                                    value=""
+                                                >Select an option</option>
+                                                <t
+                                                    t-foreach="country_ids"
+                                                    t-as='country_id'
+                                                >
+                                                    <option
+                                                        t-att-value="country_id.id"
+                                                        t-att-selected="country_id.id == checkin.nationality_id.id"
+                                                    >
+                                                        <t t-esc='country_id.name' />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select
+                                                class="form-control"
+                                                id="state"
+                                                t-att-name="'state-'+str(count)"
+                                            >
+                                                <option
+                                                    value=""
+                                                >Select an option</option>
+                                                <t t-foreach="state_ids" t-as='state'>
+                                                    <option
+                                                        t-att-value="state.id"
+                                                        t-att-country_id="state.country_id.id"
+                                                        t-att-selected="state.id == checkin.state_id.id"
+                                                    >
+                                                        <t t-esc="state.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <table style="width:100%; margin:20px 0px 50px 0">
+                                    <th class="col-2 float-right">
+                                        <span
+                                            t-field="reservation.sudo().room_type_id.name"
+                                        />
+                                    </th>
+                                    <tr>
+                                        <td class="col-2 float-right">
+                                            <select
+                                                class="form-control #{error.get('prefered_room-'+str(count)) and 'is-invalid' or ''}"
+                                                id="prefered_room"
+                                                t-att-name="'prefered_room-'+str(count_reservation)"
+                                            >
+                                                <option
+                                                    value=""
+                                                >Select an option</option>
+                                                <t
+                                                    t-foreach="reservation.sudo().pms_property_id.room_ids"
+                                                    t-as='prefered_room'
+                                                >
+                                                    <option
+                                                        t-att-value="prefered_room.id"
+                                                        t-att-selected="prefered_room.id == reservation.preferred_room_id.id"
+                                                    >
+                                                        <t t-esc="prefered_room.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+<!--                                            <t t-if="'room_capacity_error-'+str(count)">-->
+<!--                                                <span-->
+<!--                                                    class="text-danger"-->
+<!--                                                >Persons can't be higher than room capacity</span>-->
+<!--                                            </t>-->
+                                        </td>
+                                    </tr>
+                                </table>
+                                <hr />
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <tr>
+                        <td>
+                            <div class="clearfix">
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary float-right mb32 "
+                                >
+                                    Confirm
+                                    <span class="fa fa-long-arrow-right" />
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </form>
+            </t>
+        </t>
+        <!--        <style>-->
+        <!--            #snackbar {-->
+        <!--            visibility: hidden;-->
+        <!--            min-width: 250px;-->
+        <!--            margin-left: -125px;-->
+        <!--            background-color: #6c757d;-->
+        <!--            color: #fff;-->
+        <!--            text-align: center;-->
+        <!--            border-radius: 2px;-->
+        <!--            padding: 16px;-->
+        <!--            position: fixed;-->
+        <!--            z-index: 1;-->
+        <!--            left: 50%;-->
+        <!--            top: 100px;-->
+        <!--            font-size: 17px;-->
+        <!--            }-->
+
+        <!--            #snackbar.show {-->
+        <!--            visibility: visible;-->
+        <!--            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;-->
+        <!--            animation: fadein 0.5s, fadeout 0.5s 2.5s;-->
+        <!--            }-->
+
+        <!--            @-webkit-keyframes fadein {-->
+        <!--            from {top: 0; opacity: 0;}-->
+        <!--            to {top: 100px; opacity: 1;}-->
+        <!--            }-->
+
+        <!--            @keyframes fadein {-->
+        <!--            from {top: 0; opacity: 0;}-->
+        <!--            to {top: 100px; opacity: 1;}-->
+        <!--            }-->
+
+        <!--            @-webkit-keyframes fadeout {-->
+        <!--            from {top: 100px; opacity: 1;}-->
+        <!--            to {top: 0; opacity: 0;}-->
+        <!--            }-->
+
+        <!--            @keyframes fadeout {-->
+        <!--            from {top: 100px; opacity: 1;}-->
+        <!--            to {top: 0; opacity: 0;}-->
+        <!--            }-->
+        <!--        </style>-->
+        <style>
+            .container{
+            max-width: 1900px;
+            border: solid 1px;
+            border-color: #dacfcc;
+            }
+        </style>
+        <script>
+            let select_country = document.getElementById('country')
+
+            select_country.addEventListener("change", () => {
+                let country_value = select_country.value
+                Array.from(document.getElementById('state').options).forEach(element => {
+                    if (element.getAttribute('country_id') == country_value ) {
+                        element.style="";
+                    } else {
+                        element.style="display:none";
+                    }
+                });
+            });
+        </script>
+
     </template>
 </odoo>

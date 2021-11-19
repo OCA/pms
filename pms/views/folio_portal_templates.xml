@@ -235,6 +235,15 @@
                                             Precheckin
                                         </a>
                                     </div>
+                                <div>
+                                        <a
+                                        class="btn btn-secondary btn-block mt-1"
+                                        t-att-href="folio.get_portal_url(suffix='/checkin_rooming')"
+                                        t-att-title="Customers"
+                                    >
+                                            Rooming
+                                        </a>
+                                    </div>
                             </li>
 
                             <li

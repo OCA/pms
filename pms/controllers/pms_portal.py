@@ -214,6 +214,38 @@ class PortalFolio(CustomerPortal):
         )
         return request.render("pms.portal_my_folio_precheckin", values)
 
+    @http.route(
+        ["/my/folios/<int:folio_id>/checkin_rooming"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_my_folio_checkin_rooming(
+        self, folio_id, access_token=None, report_type=None, download=False, **kw
+    ):
+        values = self._prepare_portal_layout_values()
+        try:
+            folio_sudo = self._document_check_access(
+                "pms.folio",
+                folio_id,
+                access_token=access_token,
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my")
+        values.update(self._folio_get_page_view_values(folio_sudo, access_token, **kw))
+        values.update({"no_breadcrumbs": True, "error": {}})
+        country_ids = request.env["res.country"].search([])
+        state_ids = request.env["res.country.state"].search([])
+        doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        values.update(
+            {
+                "country_ids": country_ids,
+                "state_ids": state_ids,
+                "doc_type_ids": doc_type_ids,
+            }
+        )
+        return request.render("pms.portal_my_folio_checkin_rooming", values)
+
 
 class PortalReservation(CustomerPortal):
     def _prepare_home_portal_values(self, counters):
@@ -560,7 +592,32 @@ class PortalPrecheckin(CustomerPortal):
                     "folio": folio,
                 }
             )
-            return request.render("pms.portal_my_folio_precheckin", values)
+            if kw.get("rooming"):
+                count = 0
+                for _r in range(len(folio.reservation_ids)):
+                    count = count + 1
+                    reservation = (
+                        request.env["pms.reservation"]
+                        .sudo()
+                        .browse(int(kw.get("reservation_id-" + str(count))))
+                    )
+                    prefered_room = (
+                        request.env["pms.room"]
+                        .sudo()
+                        .browse(int(kw.get("prefered_room-" + str(count))))
+                    )
+                    if (
+                        reservation.adults + reservation.children_occupying
+                        > prefered_room.capacity
+                    ):
+                        values.update({"room_capacity_error-" + str(count): True})
+                    else:
+                        reservation.preferred_room_id = int(
+                            kw.get("prefered_room-" + str(count))
+                        )
+                return request.render("pms.portal_my_folio_checkin_rooming", values)
+            else:
+                return request.render("pms.portal_my_folio_precheckin", values)
         elif kw.get("reservation_id"):
             reservation = request.env["pms.reservation"].browse(
                 int(kw.get("reservation_id"))
