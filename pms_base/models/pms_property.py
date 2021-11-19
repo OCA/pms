@@ -1,0 +1,109 @@
+# Copyright 2019  Pablo Quesada
+# Copyright 2019  Dario Lodeiros
+# Copyright (c) 2021 Open Source Integrators
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from odoo import api, fields, models
+
+from odoo.addons.base.models.res_partner import _tz_get
+
+
+class PmsProperty(models.Model):
+    _name = "pms.property"
+    _description = "Property"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherits = {"res.partner": "partner_id"}
+
+    partner_id = fields.Many2one(
+        string="Property",
+        help="Current property",
+        comodel_name="res.partner",
+        required=True,
+        ondelete="cascade",
+    )
+    owner_id = fields.Many2one(
+        string="Owner",
+        help="The owner of the property.",
+        comodel_name="res.partner",
+        required=True,
+    )
+    parent_id = fields.Many2one(string="Parent Property", comodel_name="pms.property")
+    property_child_ids = fields.One2many(
+        "pms.property", "parent_id", string="Children Property"
+    )
+    company_id = fields.Many2one(string="Company", comodel_name="res.company")
+    team_id = fields.Many2one(string="Team", comodel_name="pms.team")
+    room_ids = fields.One2many(
+        string="Rooms",
+        help="List of rooms in the property.",
+        comodel_name="pms.room",
+        inverse_name="property_id",
+    )
+    room_count = fields.Integer(string="Number of rooms", compute="_compute_room_count")
+    amenity_ids = fields.Many2many(
+        string="Amenities",
+        help="Amenities available in this property",
+        comodel_name="pms.amenity",
+        ondelete="restrict",
+        relation="pms_property_amenity_rel",
+        column1="property_id",
+        column2="amenity_id",
+    )
+    service_ids = fields.One2many(
+        string="Services",
+        help="List of services available in the property.",
+        comodel_name="pms.service",
+        inverse_name="property_id",
+    )
+    tag_ids = fields.Many2many(
+        string="Tags",
+        comodel_name="pms.tag",
+        relation="pms_property_tag_rel",
+        column1="property_id",
+        column2="tag_id",
+    )
+    tz = fields.Selection(
+        string="Timezone",
+        help="This field is used to determine the timezone of the property.",
+        required=True,
+        default=lambda self: self.env.user.tz or "UTC",
+        selection=_tz_get,
+    )
+    area = fields.Float(string="Area")
+    area_uom_id = fields.Many2one(string="Area UOM", comodel_name="uom.uom")
+    heating = fields.Selection(
+        string="Heating",
+        selection=[
+            ("tankless_gas", "Gas (Tankless)"),
+            ("boiler_gas", "Gas Boiler"),
+            ("tankless_electric", "Electric (Tankless)"),
+            ("boiler_electric", "Electric Boiler"),
+            ("boiler_building", "Building Boiler"),
+        ],
+    )
+    childs_property_count = fields.Integer(
+        "Children Count", compute="_compute_childs_property"
+    )
+    team_id = fields.Many2one("pms.team", string="Team")
+    floors_num = fields.Integer(string="Floor")
+    unit_floor = fields.Integer(string="Unit Floor")
+
+    @api.depends("property_child_ids")
+    def _compute_childs_property(self):
+        for rec in self:
+            rec.childs_property_count = len(rec.property_child_ids)
+
+    @api.depends("room_ids")
+    def _compute_room_count(self):
+        self.room_count = len(self.room_ids)
+
+    def action_view_childs_property_list(self):
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "pms_base.action_pms_property"
+        )
+        action["domain"] = [("id", "in", self.property_child_ids.ids)]
+        return action
+
+    @api.model
+    def create(self, vals):
+        vals.update({"is_property": True})
+        return super(PmsProperty, self).create(vals)
