@@ -420,6 +420,7 @@ class AvailabilityWizard(models.TransientModel):
         board_service_room_id,
         pricelist_id,
         pms_property_id,
+        adults=False,
     ):
         room_type_total_price_per_room = 0
         room_type = self.env["pms.room.type"].browse(room_type_id)
@@ -444,8 +445,9 @@ class AvailabilityWizard(models.TransientModel):
                 board_service_room_id
             )
             nights = (checkout - checkin).days
+            adults = adults or room_type.get_capacity()
             room_type_total_price_per_room += (
-                board_service_room.amount * nights * room_type.get_capacity()
+                board_service_room.amount * nights * adults
             )
 
         return room_type_total_price_per_room
