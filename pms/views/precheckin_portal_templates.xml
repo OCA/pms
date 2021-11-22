@@ -1723,40 +1723,75 @@
                                     </tr>
                                 </t>
                                 <table style="width:100%; margin:20px 0px 50px 0">
-                                    <th class="col-2 float-right">
-                                        <span
-                                            t-field="reservation.sudo().room_type_id.name"
-                                        />
-                                    </th>
-                                    <tr>
-                                        <td class="col-2 float-right">
-                                            <select
-                                                class="form-control #{error.get('prefered_room-'+str(count)) and 'is-invalid' or ''}"
-                                                id="prefered_room"
-                                                t-att-name="'prefered_room-'+str(count_reservation)"
-                                            >
-                                                <option
-                                                    value=""
-                                                >Select an option</option>
-                                                <t
-                                                    t-foreach="reservation.sudo().pms_property_id.room_ids"
-                                                    t-as='prefered_room'
+                                    <t
+                                        t-if="request.env['res.users'].has_group('base.group_user')"
+                                    >
+                                        <th class="col-2 float-right">
+                                            <span
+                                                t-field="reservation.sudo().room_type_id.name"
+                                            />
+                                        </th>
+                                        <tr>
+                                            <td class="col-2 float-right">
+                                                <select
+                                                    class="form-control #{error.get('prefered_room-'+str(count)) and 'is-invalid' or ''}"
+                                                    id="prefered_room"
+                                                    t-att-name="'prefered_room-'+str(count_reservation)"
                                                 >
                                                     <option
-                                                        t-att-value="prefered_room.id"
-                                                        t-att-selected="prefered_room.id == reservation.preferred_room_id.id"
+                                                        value=""
+                                                    >Select an option</option>
+                                                    <t
+                                                        t-foreach="reservation.sudo().allowed_room_ids"
+                                                        t-as='prefered_room'
                                                     >
-                                                        <t t-esc="prefered_room.name" />
-                                                    </option>
-                                                </t>
-                                            </select>
-<!--                                            <t t-if="'room_capacity_error-'+str(count)">-->
-<!--                                                <span-->
-<!--                                                    class="text-danger"-->
-<!--                                                >Persons can't be higher than room capacity</span>-->
-<!--                                            </t>-->
-                                        </td>
-                                    </tr>
+                                                        <option
+                                                            t-att-value="prefered_room.id"
+                                                            t-att-selected="prefered_room.id == reservation.preferred_room_id.id"
+                                                        >
+                                                            <t
+                                                                t-esc="prefered_room.name"
+                                                            />
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                                <!--                                            <t t-if="'room_capacity_error-'+str(count)">-->
+                                                <!--                                                <span-->
+                                                <!--                                                    class="text-danger"-->
+                                                <!--                                                >Persons can't be higher than room capacity</span>-->
+                                                <!--                                            </t>-->
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-else="">
+                                        <th class="col-2 float-right">
+                                            Room
+                                        </th>
+                                        <tr>
+                                            <td class="col-2 float-right">
+                                                <select
+                                                    class="form-control #{error.get('prefered_room-'+str(count)) and 'is-invalid' or ''}"
+                                                    id="prefered_room"
+                                                    t-att-name="'prefered_room-'+str(count_reservation)"
+                                                >
+                                                    <option
+                                                        value=""
+                                                    >Select an option</option>
+                                                    <t
+                                                        t-foreach="reservation.sudo().allowed_room_ids.room_type_id"
+                                                        t-as='room_type'
+                                                    >
+                                                        <option
+                                                            t-att-value="room_type.id"
+                                                            t-att-selected="room_type.id == reservation.room_type_id.id"
+                                                        >
+                                                            <t t-esc="room_type.name" />
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </table>
                                 <hr />
                             </tbody>

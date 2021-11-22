@@ -220,9 +220,7 @@ class PortalFolio(CustomerPortal):
         auth="user",
         website=True,
     )
-    def portal_my_folio_checkin_rooming(
-        self, folio_id, access_token=None, report_type=None, download=False, **kw
-    ):
+    def portal_my_folio_checkin_rooming(self, folio_id, access_token=None, **kw):
         values = self._prepare_portal_layout_values()
         try:
             folio_sudo = self._document_check_access(
@@ -612,12 +610,16 @@ class PortalPrecheckin(CustomerPortal):
                     ):
                         values.update({"room_capacity_error-" + str(count): True})
                     else:
-                        reservation.preferred_room_id = int(
-                            kw.get("prefered_room-" + str(count))
-                        )
+                        if request.env["res.users"].has_group("base.group_user"):
+                            reservation.preferred_room_id = int(
+                                kw.get("prefered_room-" + str(count))
+                            )
+                        else:
+                            reservation.preferred_room_id = int(
+                                kw.get("prefered_room-" + str(count))
+                            )
                 return request.render("pms.portal_my_folio_checkin_rooming", values)
-            else:
-                return request.render("pms.portal_my_folio_precheckin", values)
+            return request.render("pms.portal_my_folio_precheckin", values)
         elif kw.get("reservation_id"):
             reservation = request.env["pms.reservation"].browse(
                 int(kw.get("reservation_id"))
