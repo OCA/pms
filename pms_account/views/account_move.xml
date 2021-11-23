@@ -1,0 +1,84 @@
+<odoo>
+
+    <record id="view_account_invoice_form" model="ir.ui.view">
+        <field name="name">pms.property.invoice.form.pms</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="groups_id" eval="[(4, ref('pms_base.group_pms_user'))]" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    name="action_view_pms_property"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-map"
+                    attrs="{'invisible': [('property_count', '=', 0)]}"
+                >
+                    <field
+                        name="property_count"
+                        widget="statinfo"
+                        string="Properties"
+                    />
+                </button>
+            </div>
+            <xpath
+                expr="//field[@name='invoice_line_ids']/form//field[@name='name']"
+                position="after"
+            >
+                <group>
+                    <field
+                        name="property_ids"
+                        widget="many2many_tags"
+                        groups="pms_base.group_pms_user"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vendor Bill List View -->
+    <record id="view_vendor_bill_tree" model="ir.ui.view">
+        <field name="name">vendor.bill.tree.pms</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree" />
+        <field name="groups_id" eval="[(4, ref('pms_base.group_pms_user'))]" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_origin']" position="after">
+                <field
+                    name="property_ids"
+                    widget="many2many_tags"
+                    groups="pms_base.group_pms_user"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vendor Bill Form View -->
+    <record id="view_vendor_bill_form" model="ir.ui.view">
+        <field name="name">vendor.bill.form.pms</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="groups_id" eval="[(4, ref('pms_base.group_pms_user'))]" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_info']" position="inside">
+                <group string="Properties">
+                    <field name="property_ids" nolabel="1" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Invoice Search View -->
+    <record id="view_invoice_search" model="ir.ui.view">
+        <field name="name">invoice.search.pms</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter" />
+        <field name="groups_id" eval="[(4, ref('pms_base.group_pms_user'))]" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="property_ids" string="Properties" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
