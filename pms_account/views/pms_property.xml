@@ -1,0 +1,44 @@
+<odoo>
+
+    <record id="view_pms_property_form" model="ir.ui.view">
+        <field name="name">pms.property.form</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_invoices"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o"
+                    groups="account.group_account_invoice"
+                >
+                    <field name="invoice_count" widget="statinfo" string="Invoices" />
+                </button>
+                <button
+                    name="action_view_bills"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o"
+                    groups="account.group_account_invoice"
+                >
+                    <field name="bill_count" widget="statinfo" string="Bills" />
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Accounting" groups="account.group_account_invoice">
+                    <group id="account-main">
+                        <group id="account-left">
+                            <field
+                                name="analytic_id"
+                                groups="analytic.group_analytic_accounting"
+                            />
+                        </group>
+                        <group id="account-right" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
