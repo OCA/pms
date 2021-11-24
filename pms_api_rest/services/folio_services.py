@@ -21,7 +21,7 @@ class PmsFolioService(Component):
             )
         ],
         input_param=Datamodel("pms.folio.search.param"),
-        output_param=Datamodel("pms.folio.short.info", is_list=True),
+        output_param=Datamodel("pms.folio.info", is_list=True),
         auth="public",
     )
     def get_folios(self, folio_search_param):
@@ -31,7 +31,7 @@ class PmsFolioService(Component):
         if folio_search_param.id:
             domain.append(("id", "=", folio_search_param.id))
         result_folios = []
-        PmsFolioShortInfo = self.env.datamodels["pms.folio.short.info"]
+        PmsFolioInfo = self.env.datamodels["pms.folio.info"]
         for folio in (
             self.env["pms.folio"]
             .sudo()
@@ -83,7 +83,7 @@ class PmsFolioService(Component):
                     }
                 )
             result_folios.append(
-                PmsFolioShortInfo(
+                PmsFolioInfo(
                     id=folio.id,
                     name=folio.name,
                     partnerName=folio.partner_name if folio.partner_name else "",
@@ -112,7 +112,7 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.reservation.short.info"),
+        output_param=Datamodel("pms.reservation.info"),
         auth="public",
     )
     def get_reservation(self, folio_id, reservation_id):
@@ -120,7 +120,7 @@ class PmsFolioService(Component):
             self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
         )
         res = []
-        PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
+        PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservation:
             pass
         else:
@@ -151,7 +151,7 @@ class PmsFolioService(Component):
                         "body": re.sub(text, "", message.body),
                     }
                 )
-            res = PmsReservationShortInfo(
+            res = PmsReservationInfo(
                 id=reservation.id,
                 partner=reservation.partner_id.name,
                 checkin=str(reservation.checkin),
@@ -185,7 +185,7 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.checkin.partner.short.info", is_list=True),
+        output_param=Datamodel("pms.checkin.partner.info", is_list=True),
         auth="public",
     )
     def get_checkin_partners(self, folio_id, reservation_id):
@@ -193,15 +193,13 @@ class PmsFolioService(Component):
             self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
         )
         checkin_partners = []
-        PmsCheckinPartnerShortInfo = self.env.datamodels[
-            "pms.checkin.partner.short.info"
-        ]
+        PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
         if not reservation:
             pass
         else:
             for checkin_partner in reservation.checkin_partner_ids:
                 checkin_partners.append(
-                    PmsCheckinPartnerShortInfo(
+                    PmsCheckinPartnerInfo(
                         id=checkin_partner.id,
                         reservationId=checkin_partner.reservation_id.id,
                         name=checkin_partner.name if checkin_partner.name else "",
