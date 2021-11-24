@@ -21,7 +21,7 @@ class PmsCalendarService(Component):
             )
         ],
         input_param=Datamodel("pms.calendar.search.param"),
-        output_param=Datamodel("pms.calendar.short.info", is_list=True),
+        output_param=Datamodel("pms.calendar.info", is_list=True),
         auth="public",
     )
     def get_calendar(self, calendar_search_param):
@@ -38,7 +38,7 @@ class PmsCalendarService(Component):
         )
 >>>>>>> d6e6a667... [IMP] pms_api_rest: add get_reservation and get_checkin_partners
         result_lines = []
-        PmsCalendarShortInfo = self.env.datamodels["pms.calendar.short.info"]
+        PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
         for line in (
             self.env["pms.reservation.line"]
             .sudo()
@@ -47,7 +47,7 @@ class PmsCalendarService(Component):
             )
         ):
             result_lines.append(
-                PmsCalendarShortInfo(
+                PmsCalendarInfo(
                     id=line.id,
                     roomId=line.room_id.id,
                     date=datetime.combine(line.date, datetime.min.time()).isoformat(),
