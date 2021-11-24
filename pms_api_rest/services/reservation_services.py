@@ -20,14 +20,14 @@ class PmsRoomService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.reservation.short.info", is_list=True),
+        output_param=Datamodel("pms.reservation.info", is_list=True),
         auth="public",
     )
     def get_reservations(self):
         domain = []
 
         result_reservations = []
-        PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
+        PmsReservationInfo = self.env.datamodels["pms.reservation..info"]
         for reservation in (
             self.env["pms.reservation"]
             .sudo()
@@ -36,8 +36,7 @@ class PmsRoomService(Component):
             )
         ):
             result_reservations.append(
-
-                PmsReservationShortInfo(
+                PmsReservationInfo(
                     id=reservation.id,
                     price=reservation.price_subtotal,
                     checkin=datetime.combine(reservation.checkin, datetime.min.time()).isoformat(),
