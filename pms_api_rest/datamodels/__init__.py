@@ -7,6 +7,6 @@ from . import pms_folio_short_info
 from . import pms_room_short_info
 from . import pms_room_search_param
 
-from . import pms_partner_short_info
 from . import pms_reservation_short_info
 
+from . import pms_checkin_partner_short_info
