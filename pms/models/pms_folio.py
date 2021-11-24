@@ -1146,6 +1146,7 @@ class PmsFolio(models.Model):
             pms_property = self.env["pms.property"].browse(pms_property_id)
             vals["name"] = pms_property.folio_sequence_id._next_do()
         result = super(PmsFolio, self).create(vals)
+        result.access_token = result._portal_ensure_token()
         return result
 
     def action_pay(self):
