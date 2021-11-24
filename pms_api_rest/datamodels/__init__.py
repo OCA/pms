@@ -10,3 +10,4 @@ from . import pms_room_search_param
 from . import pms_reservation_info
 
 from . import pms_checkin_partner_info
+from . import pms_partner_info
