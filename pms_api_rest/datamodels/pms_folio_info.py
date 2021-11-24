@@ -3,8 +3,8 @@ from marshmallow import fields
 from odoo.addons.datamodel.core import Datamodel
 
 
-class PmsFolioShortInfo(Datamodel):
-    _name = "pms.folio.short.info"
+class PmsFolioInfo(Datamodel):
+    _name = "pms.folio.info"
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     partnerName = fields.String(required=False, allow_none=True)
