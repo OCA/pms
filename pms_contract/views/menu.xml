@@ -1,0 +1,11 @@
+<odoo>
+
+    <menuitem
+        id="menu_vendor_contracts"
+        name="Vendor Contracts"
+        parent="pms_base.menu_operations"
+        sequence="20"
+        action="contract.action_supplier_contract"
+    />
+
+</odoo>

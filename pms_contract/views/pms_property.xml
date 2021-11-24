@@ -1,0 +1,27 @@
+<odoo>
+
+    <record id="view_pms_property_form" model="ir.ui.view">
+        <field name="name">pms.property.form</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_contracts"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o"
+                >
+                    <field name="contract_count" widget="statinfo" string="Contracts" />
+                </button>
+            </xpath>
+            <xpath
+                expr="//field[@name='service_ids']/tree/field[@name='vendor_id']"
+                position="after"
+            >
+                <field name="contract_id" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,29 @@
+<odoo>
+
+    <record id="view_contract_form" model="ir.ui.view">
+        <field name="name">contract.contract.property.form</field>
+        <field name="model">contract.contract</field>
+        <field name="inherit_id" ref="contract.contract_contract_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_properties"
+                    type="object"
+                    icon="fa-list"
+                    class="oe_stat_button"
+                    groups="pms_base.group_pms_user"
+                >
+                    <field
+                        string="Properties"
+                        name="property_count"
+                        widget="statinfo"
+                    />
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='product_id']" position="before">
+                <field name="property_id" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
