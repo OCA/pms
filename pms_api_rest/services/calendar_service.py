@@ -26,8 +26,17 @@ class PmsCalendarService(Component):
     )
     def get_calendar(self, calendar_search_param):
         domain = list()
+<<<<<<< HEAD
         domain.append(("date", ">=", datetime.fromisoformat(calendar_search_param.date_from)))
         domain.append(("date", "<=", datetime.fromisoformat(calendar_search_param.date_to)))
+=======
+        domain.append(
+            ("date", ">", datetime.fromisoformat(calendar_search_param.date_from))
+        )
+        domain.append(
+            ("date", "<=", datetime.fromisoformat(calendar_search_param.date_to))
+        )
+>>>>>>> d6e6a667... [IMP] pms_api_rest: add get_reservation and get_checkin_partners
         result_lines = []
         PmsCalendarShortInfo = self.env.datamodels["pms.calendar.short.info"]
         for line in (
