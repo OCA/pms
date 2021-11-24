@@ -285,6 +285,7 @@
     </template>
 
     <template id="folio_portal_content" name="Folio Portal Content">
+        <t t-call="web.external_layout" />
         <t t-set="address">
             <div
                 class="row pb-2 pt-3 #{'card-header bg-white' if report_type == 'html' else ''}"
