@@ -3,8 +3,8 @@ from marshmallow import fields
 from odoo.addons.datamodel.core import Datamodel
 
 
-class PmsReservationShortInfo(Datamodel):
-    _name = "pms.reservation.short.info"
+class PmsReservationInfo(Datamodel):
+    _name = "pms.reservation.info"
     id = fields.Integer(required=False, allow_none=True)
 <<<<<<< HEAD
     price = fields.Float(required=False, allow_none=True)

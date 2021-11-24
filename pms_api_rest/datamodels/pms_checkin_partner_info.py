@@ -3,8 +3,8 @@ from marshmallow import fields
 from odoo.addons.datamodel.core import Datamodel
 
 
-class PmsCheckinPartnerShortInfo(Datamodel):
-    _name = "pms.checkin.partner.short.info"
+class PmsCheckinPartnerInfo(Datamodel):
+    _name = "pms.checkin.partner.info"
     id = fields.Integer(required=False, allow_none=True)
     # partner = fields.String(required=False, allow_none=True)
     reservationId = fields.Integer(required=False, allow_none=True)
