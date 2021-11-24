@@ -19,7 +19,7 @@ class PmsRoomService(Component):
             )
         ],
         input_param=Datamodel("pms.room.search.param"),
-        output_param=Datamodel("pms.room.short.info", is_list=True),
+        output_param=Datamodel("pms.room.info", is_list=True),
         auth="public",
     )
     def get_rooms(self, room_search_param):
@@ -29,7 +29,7 @@ class PmsRoomService(Component):
         if room_search_param.id:
             domain.append(("id", "=", room_search_param.id))
         result_rooms = []
-        PmsRoomShortInfo = self.env.datamodels["pms.room.short.info"]
+        PmsRoomInfo = self.env.datamodels["pms.room.info"]
         for room in (
             self.env["pms.room"]
             .sudo()
@@ -39,7 +39,7 @@ class PmsRoomService(Component):
         ):
 
             result_rooms.append(
-                PmsRoomShortInfo(
+                PmsRoomInfo(
                     id=room.id,
                     name=room.name,
                 )
