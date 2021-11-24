@@ -101,57 +101,10 @@ class PortalFolio(CustomerPortal):
             },
         )
 
-    # @http.route(
-    #     '/invoice/pay/<int:invoice_id>/s2s_token_tx',
-    #     type='http',
-    #     auth='public',
-    #     website=True
-    # )
-    # def invoice_pay_token(self, invoice_id, pm_id=None, **kwargs):
-    #     """ Use a token to perform a s2s transaction """
-    #     error_url = kwargs.get('error_url', '/my')
-    #     access_token = kwargs.get('access_token')
-    #     params = {}
-    #     if access_token:
-    #         params['access_token'] = access_token
-    #
-    #     invoice_sudo = request.env['account.move'].sudo().browse(invoice_id).exists()
-    #     if not invoice_sudo:
-    #         params['error'] = 'pay_invoice_invalid_doc'
-    #         return request.redirect(_build_url_w_params(error_url, params))
-    #
-    #     success_url = kwargs.get(
-    #         'success_url',
-    #         "%s?%s" % (
-    #             invoice_sudo.access_url,
-    #             url_encode({'access_token': access_token}) if access_token else '')
-    #     )
-    #     try:
-    #         token = request.env['payment.token'].sudo().browse(int(pm_id))
-    #     except (ValueError, TypeError):
-    #         token = False
-    #     token_owner = invoice_sudo.partner_id if \
-    #         request.env.user._is_public() else request.env.user.partner_id
-    #     if not token or token.partner_id != token_owner:
-    #         params['error'] = 'pay_invoice_invalid_token'
-    #         return request.redirect(_build_url_w_params(error_url, params))
-    #
-    #     vals = {
-    #         'payment_token_id': token.id,
-    #         'type': 'server2server',
-    #         'return_url': _build_url_w_params(success_url, params),
-    #     }
-    #
-    #     tx = invoice_sudo._create_payment_transaction(vals)
-    #     PaymentProcessing.add_payment_transaction(tx)
-    #
-    #     params['success'] = 'pay_invoice'
-    #     return request.redirect('/payment/process')
-
     @http.route(
         ["/my/folios", "/my/folios/page/<int:page>"],
         type="http",
-        auth="user",
+        auth="public",
         website=True,
     )
     def portal_my_folios(
@@ -207,7 +160,7 @@ class PortalFolio(CustomerPortal):
         )
         return request.render("pms.portal_my_folio", values)
 
-    @http.route(["/my/folios/<int:folio_id>"], type="http", auth="user", website=True)
+    @http.route(["/my/folios/<int:folio_id>"], type="http", auth="public", website=True)
     def portal_my_folio_detail(
         self, folio_id, access_token=None, report_type=None, download=False, **kw
     ):
@@ -230,7 +183,10 @@ class PortalFolio(CustomerPortal):
         return request.render("pms.folio_portal_template", values)
 
     @http.route(
-        ["/my/folios/<int:folio_id>/precheckin"], type="http", auth="user", website=True
+        ["/my/folios/<int:folio_id>/precheckin"],
+        type="http",
+        auth="public",
+        website=True,
     )
     def portal_my_folio_precheckin(
         self, folio_id, access_token=None, report_type=None, download=False, **kw
@@ -290,7 +246,7 @@ class PortalReservation(CustomerPortal):
     @http.route(
         ["/my/reservations", "/my/reservations/page/<int:page>"],
         type="http",
-        auth="user",
+        auth="public",
         website=True,
     )
     def portal_my_reservations(self, page=1, date_begin=None, date_end=None):
@@ -343,7 +299,7 @@ class PortalReservation(CustomerPortal):
     @http.route(
         ["/my/reservations/<int:reservation_id>"],
         type="http",
-        auth="user",
+        auth="public",
         website=True,
     )
     def portal_my_reservation_detail(self, reservation_id, access_token=None, **kw):
@@ -363,7 +319,7 @@ class PortalReservation(CustomerPortal):
     @http.route(
         ["/my/reservations/<int:reservation_id>/precheckin"],
         type="http",
-        auth="user",
+        auth="public",
         website=True,
     )
     def portal_my_reservation_precheckin(self, reservation_id, access_token=None, **kw):
@@ -407,7 +363,7 @@ class PortalPrecheckin(CustomerPortal):
     @http.route(
         ["/my/precheckin/<int:checkin_partner_id>"],
         type="http",
-        auth="user",
+        auth="public",
         website=True,
     )
     def portal_my_precheckin_detail(self, checkin_partner_id, access_token=None, **kw):
@@ -434,7 +390,9 @@ class PortalPrecheckin(CustomerPortal):
         )
         return request.render("pms.portal_my_precheckin_detail", values)
 
-    @http.route(["/my/precheckin"], type="http", auth="user", website=True, csrf=False)
+    @http.route(
+        ["/my/precheckin"], type="http", auth="public", website=True, csrf=False
+    )
     def portal_precheckin_submit(self, **kw):
         values = dict()
         checkin_partner = request.env["pms.checkin.partner"].browse(int(kw.get("id")))
@@ -510,7 +468,7 @@ class PortalPrecheckin(CustomerPortal):
     @http.route(
         ["/my/precheckin/folio_reservation"],
         type="http",
-        auth="user",
+        auth="public",
         website=True,
         csrf=False,
     )
@@ -521,11 +479,13 @@ class PortalPrecheckin(CustomerPortal):
         has_error = False
         checkin_partners = False
         if kw.get("folio_id"):
-            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            folio = request.env["pms.folio"].sudo().browse(int(kw.get("folio_id")))
             checkin_partners = folio.checkin_partner_ids
         elif kw.get("reservation_id"):
-            reservation = request.env["pms.reservation"].browse(
-                int(kw.get("reservation_id"))
+            reservation = (
+                request.env["pms.reservation"]
+                .sudo()
+                .browse(int(kw.get("reservation_id")))
             )
             checkin_partners = reservation.checkin_partner_ids
         for checkin in checkin_partners:
@@ -594,7 +554,7 @@ class PortalPrecheckin(CustomerPortal):
         else:
             values.update({"success": True, "error": {}})
         if kw.get("folio_id"):
-            folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
+            folio = request.env["pms.folio"].sudo().browse(int(kw.get("folio_id")))
             values.update(
                 {
                     "folio": folio,
@@ -738,7 +698,7 @@ class PortalPrecheckin(CustomerPortal):
 
     @http.route(
         ["/my/precheckin/send_invitation"],
-        auth="user",
+        auth="public",
         type="json",
         website=True,
         csrf=False,
@@ -747,8 +707,10 @@ class PortalPrecheckin(CustomerPortal):
         if kw.get("folio_id"):
             folio = request.env["pms.folio"].browse(int(kw.get("folio_id")))
             kw.update({"folio": folio})
-        checkin_partner = request.env["pms.checkin.partner"].browse(
-            int(kw["checkin_partner_id"])
+        checkin_partner = (
+            request.env["pms.checkin.partner"]
+            .sudo()
+            .browse(int(kw["checkin_partner_id"]))
         )
         firstname = kw["firstname"]
         email = kw["email"]
