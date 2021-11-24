@@ -1,12 +1,12 @@
 from . import pms_calendar_search_param
-from . import pms_calendar_short_info
+from . import pms_calendar_info
 
 from . import pms_folio_search_param
-from . import pms_folio_short_info
+from . import pms_folio_info
 
-from . import pms_room_short_info
+from . import pms_room_info
 from . import pms_room_search_param
 
-from . import pms_reservation_short_info
+from . import pms_reservation_info
 
-from . import pms_checkin_partner_short_info
+from . import pms_checkin_partner_info
