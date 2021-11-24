@@ -35,7 +35,6 @@ class PmsRoomService(Component):
                 domain,
             )
         ):
-            print(type(reservation.checkin))
             result_reservations.append(
 
                 PmsReservationShortInfo(
