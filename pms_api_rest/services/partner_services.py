@@ -18,13 +18,13 @@ class PmsPartnerService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.partner.short.info", is_list=True),
+        output_param=Datamodel("pms.partner.info", is_list=True),
         auth="public",
     )
     def get_partners(self):
         domain = []
         result_partners = []
-        PmsPartnerShortInfo = self.env.datamodels["pms.partner.short.info"]
+        PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
         for partner in (
             self.env["res.partner"]
             .sudo()
@@ -34,7 +34,7 @@ class PmsPartnerService(Component):
         ):
 
             result_partners.append(
-                PmsPartnerShortInfo(
+                PmsPartnerInfo(
                     id=partner.id,
                     name=partner.name,
                 )
