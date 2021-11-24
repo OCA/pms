@@ -22,6 +22,7 @@ class PaymentTransaction(models.Model):
         return super(PaymentTransaction, self)._create_payment(add_payment_vals)
 
     def render_folio_button(self, folio, submit_txt=None, render_values=None):
+        self.reference = "Reservation payment - Folio " + str(folio.name)
         values = {
             "partner_id": folio.partner_id.id,
             "type": self.type,
