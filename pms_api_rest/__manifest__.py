@@ -15,5 +15,8 @@
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow"],
     },
+    "data": [
+        "security/ir.model.access.csv",
+    ],
     "installable": True,
 }

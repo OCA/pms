@@ -69,12 +69,17 @@ class PmsFolioService(Component):
                         "priceTotal": reservation.price_total,
                         "adults": reservation.adults,
                         "pricelist": reservation.pricelist_id.name,
-                        "boardService": reservation.board_service_room_id.pms_board_service_id.name
+                        "boardService": (
+                            reservation.board_service_room_id.pms_board_service_id.name
+                        )
                         if reservation.board_service_room_id
                         else "",
                         "reservationLines": []
                         if not reservation_lines
                         else reservation_lines,
+                        "folioId": reservation.folio_id.id
+                        if reservation.folio_id
+                        else "",
                     }
                 )
             result_folios.append(
@@ -102,55 +107,119 @@ class PmsFolioService(Component):
         [
             (
                 [
-                    "/<int:id>/reservations",
+                    "/<int:id>/reservations/<int:reservation_id>",
                 ],
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.folio.short.info", is_list=True),
+        output_param=Datamodel("pms.reservation.short.info"),
         auth="public",
     )
-    def get_reservations(self, folio_id):
-        folio = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
+    def get_reservation(self, folio_id, reservation_id):
+        reservation = (
+            self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
+        )
         res = []
-        if not folio.reservation_ids:
+        PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
+        if not reservation:
             pass
         else:
-            PmsReservationShortInfo = self.env.datamodels["pms.reservation.short.info"]
+            services = []
+            for service in reservation.service_ids:
+                if service.is_board_service:
+                    services.append(
+                        {
+                            "id": service.id,
+                            "name": service.name,
+                            "quantity": service.product_qty,
+                            "priceTotal": service.price_total,
+                            "priceSubtotal": service.price_subtotal,
+                            "priceTaxes": service.price_tax,
+                            "discount": service.discount,
+                        }
+                    )
+            messages = []
+            import re
 
-            for reservation in folio.reservation_ids:
-                res.append(
-                    PmsReservationShortInfo(
-                        id=reservation.id,
-                        partner=reservation.partner_id.name,
-                        checkin=str(reservation.checkin),
-                        checkout=str(reservation.checkout),
-                        preferredRoomId=reservation.preferred_room_id.name
-                        if reservation.preferred_room_id
+            text = re.compile("<.*?>")
+            for message in reservation.message_ids.sorted(key=lambda x: x.date):
+                messages.append(
+                    {
+                        "author": message.author_id.name,
+                        "date": str(message.date),
+                        # print(self.env["ir.fields.converter"].text_from_html(message.body))
+                        "body": re.sub(text, "", message.body),
+                    }
+                )
+            res = PmsReservationShortInfo(
+                id=reservation.id,
+                partner=reservation.partner_id.name,
+                checkin=str(reservation.checkin),
+                checkout=str(reservation.checkout),
+                preferredRoomId=reservation.preferred_room_id.name
+                if reservation.preferred_room_id
+                else "",
+                roomTypeId=reservation.room_type_id.name
+                if reservation.room_type_id
+                else "",
+                name=reservation.name,
+                priceTotal=reservation.price_room_services_set,
+                priceOnlyServices=reservation.price_services
+                if reservation.price_services
+                else 0.0,
+                priceOnlyRoom=reservation.price_total,
+                pricelist=reservation.pricelist_id.name
+                if reservation.pricelist_id
+                else "",
+                services=services if services else [],
+                messages=messages,
+            )
+        return res
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:id>/reservations/<int:reservation_id>/checkinpartners",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.checkin.partner.short.info", is_list=True),
+        auth="public",
+    )
+    def get_checkin_partners(self, folio_id, reservation_id):
+        reservation = (
+            self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
+        )
+        checkin_partners = []
+        PmsCheckinPartnerShortInfo = self.env.datamodels[
+            "pms.checkin.partner.short.info"
+        ]
+        if not reservation:
+            pass
+        else:
+            for checkin_partner in reservation.checkin_partner_ids:
+                checkin_partners.append(
+                    PmsCheckinPartnerShortInfo(
+                        id=checkin_partner.id,
+                        reservationId=checkin_partner.reservation_id.id,
+                        name=checkin_partner.name if checkin_partner.name else "",
+                        email=checkin_partner.email if checkin_partner.email else "",
+                        mobile=checkin_partner.mobile if checkin_partner.mobile else "",
+                        nationality=checkin_partner.nationality_id.name
+                        if checkin_partner.nationality_id
                         else "",
-                        roomTypeId=reservation.room_type_id.name
-                        if reservation.room_type_id
+                        documentType=checkin_partner.document_type.name
+                        if checkin_partner.document_type
                         else "",
-                        name=reservation.name,
-                        partnerRequests=reservation.partner_requests
-                        if reservation.partner_requests
+                        documentNumber=checkin_partner.document_number
+                        if checkin_partner.document_number
                         else "",
+                        gender=checkin_partner.gender if checkin_partner.gender else "",
                         state=dict(
-                            reservation.fields_get(["state"])["state"]["selection"]
-                        )[reservation.state],
-                        priceTotal=reservation.price_total,
-                        adults=reservation.adults,
-                        channelTypeId=reservation.channel_type_id.name
-                        if reservation.channel_type_id
-                        else "",
-                        agencyId=reservation.agency_id.name
-                        if reservation.agency_id
-                        else "",
-                        boardServiceId=reservation.board_service_room_id.pms_board_service_id.name
-                        if reservation.board_service_room_id
-                        else "",
-                        checkinsRatio=reservation.checkins_ratio,
-                        outstanding=reservation.folio_id.pending_amount,
+                            checkin_partner.fields_get(["state"])["state"]["selection"]
+                        )[checkin_partner.state],
                     )
                 )
-        return res
+        return checkin_partners
