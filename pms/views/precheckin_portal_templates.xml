@@ -67,8 +67,8 @@
                                     for="gender"
                                 >Gender</label>
                                 <div class="d-none"><p id="genderId"><t
-                                            t-esc="checkin_partner.gender"
-                                        /></p></div>
+                                    t-esc="checkin_partner.gender"
+                                /></p></div>
                                 <select
                                     class="form-control"
                                     name="gender"
@@ -314,8 +314,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin for <span
-                                t-field="reservation.sudo().room_type_id.name"
-                            /> Room</th>
+                            t-field="reservation.sudo().room_type_id.name"
+                        /> Room</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -636,10 +636,10 @@
                                                                 for="gender"
                                                             >Gender</label>
                                                             <div class="d-none"><p
-                                                                    id="genderId"
-                                                                ><t
-                                                                        t-esc="checkin_partner.gender"
-                                                                    /></p></div>
+                                                                id="genderId"
+                                                            ><t
+                                                                t-esc="checkin_partner.gender"
+                                                            /></p></div>
                                                             <select
                                                                 class="form-control"
                                                                 name="gender"
@@ -805,8 +805,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin in <span
-                                t-field="folio.pms_property_id.name"
-                            /></th>
+                            t-field="folio.pms_property_id.name"
+                        /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -965,9 +965,9 @@
                                                             style="color:#fff; height:36px;"
                                                         >
                                                             Send Invitation<span
-                                                                t-esc="checkin_partner.id"
-                                                                class="d-none"
-                                                            /></a>
+                                                            t-esc="checkin_partner.id"
+                                                            class="d-none"
+                                                        /></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1060,10 +1060,10 @@
                                                                     for="gender"
                                                                 >Gender</label>
                                                                 <div class="d-none"><p
-                                                                        id="genderId"
-                                                                    ><t
-                                                                            t-esc="checkin_partner.gender"
-                                                                        /></p></div>
+                                                                    id="genderId"
+                                                                ><t
+                                                                    t-esc="checkin_partner.gender"
+                                                                /></p></div>
                                                                 <select
                                                                     class="form-control"
                                                                     t-att-name="'gender-'+str(count)"
@@ -1375,71 +1375,71 @@
         </style>
         <script>
             function launchSnackBar(element) {
-                var checkin_partner_id = element.firstChild.nextSibling.innerText
+            var checkin_partner_id = element.firstChild.nextSibling.innerText
 
-                var inputEmailId = "invitation_email" + checkin_partner_id;
+            var inputEmailId = "invitation_email" + checkin_partner_id;
 
-                var email = document.getElementById(inputEmailId).value;
-                var nameId = "invitation_firstname" + checkin_partner_id;
-                var hostId = "host_name" + checkin_partner_id;
-                var host = document.getElementById(hostId);
-                var name = document.getElementById(nameId).value;
-                if(email){
-                    if(name){
-                        host.innerHTML = name;
+            var email = document.getElementById(inputEmailId).value;
+            var nameId = "invitation_firstname" + checkin_partner_id;
+            var hostId = "host_name" + checkin_partner_id;
+            var host = document.getElementById(hostId);
+            var name = document.getElementById(nameId).value;
+            if(email){
+            if(name){
+            host.innerHTML = name;
 
-                        var divId = "invitation_group" + checkin_partner_id;
-                        var btnId = "btnResendInvitation" + checkin_partner_id;
-                        var div_invitation = document.getElementById(divId);
-                        var btn_show_invitation = document.getElementById(btnId);
-                        div_invitation.classList.add("d-none");
-                        btn_show_invitation.classList.remove("d-none");
-                        var x = document.getElementById("snackbar");
-                        x.className = "show";
-                        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-                    }
-                }
+            var divId = "invitation_group" + checkin_partner_id;
+            var btnId = "btnResendInvitation" + checkin_partner_id;
+            var div_invitation = document.getElementById(divId);
+            var btn_show_invitation = document.getElementById(btnId);
+            div_invitation.classList.add("d-none");
+            btn_show_invitation.classList.remove("d-none");
+            var x = document.getElementById("snackbar");
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+            }
+            }
             }
 
             function show_invitation(element) {
-                var checkin_partner_id = element.firstChild.nextSibling.innerText
-                var divId = "invitation_group" + checkin_partner_id;
-                var btnId = "btn_show_invitation" + checkin_partner_id;
-                var btn2 = "btnResendInvitation"+checkin_partner_id;
-                var div_invitation = document.getElementById(divId);
-                var btn_show_invitation = document.getElementById(btnId);
-                var btn_resend = document.getElementById(btn2);
-                div_invitation.classList.remove("d-none");
-                btn_show_invitation.classList.add("d-none");
-                btn_resend.classList.add("d-none");
+            var checkin_partner_id = element.firstChild.nextSibling.innerText
+            var divId = "invitation_group" + checkin_partner_id;
+            var btnId = "btn_show_invitation" + checkin_partner_id;
+            var btn2 = "btnResendInvitation"+checkin_partner_id;
+            var div_invitation = document.getElementById(divId);
+            var btn_show_invitation = document.getElementById(btnId);
+            var btn_resend = document.getElementById(btn2);
+            div_invitation.classList.remove("d-none");
+            btn_show_invitation.classList.add("d-none");
+            btn_resend.classList.add("d-none");
             }
             let listaElementos = document.getElementsByClassName("fa-sm");
             for(i=0; i&lt;listaElementos.length; i++){
-                let element =document.getElementById(i+1)
-                element.addEventListener('click', function(){
-                    element.classList.toggle("fa-chevron-down")
-                    element.classList.toggle("fa-chevron-up")
-                },false);
+            let element =document.getElementById(i+1)
+            element.addEventListener('click', function(){
+            element.classList.toggle("fa-chevron-down")
+            element.classList.toggle("fa-chevron-up")
+            },false);
             }
             let selects_doc_type = document.getElementsByClassName("select_doc_type_class");
             let doc_type_values = document.getElementsByClassName("doc_type_class");
             for(i=0;i&lt;selects_doc_type.length;i++){
-                let doc_type_value = doc_type_values[i].textContent;
-                for(x=0;x&lt;selects_doc_type[i].length;x++){
-                    if(selects_doc_type[i][x].value == doc_type_value){
-                        selects_doc_type[i][x].setAttribute("selected","True")
-                    }
-                }
+            let doc_type_value = doc_type_values[i].textContent;
+            for(x=0;x&lt;selects_doc_type[i].length;x++){
+            if(selects_doc_type[i][x].value == doc_type_value){
+            selects_doc_type[i][x].setAttribute("selected","True")
+            }
+            }
             }
             let selects_gender = document.getElementsByClassName("select_gender_class");
             let gender_values = document.getElementsByClassName("gender_class");
             for(i=0;i&lt;selects_gender.length;i++){
-                let gender_value = gender_values[i].textContent;
-                for(x=0;x&lt;selects_gender[i].length;x++){
-                        if(selects_gender[i][x].value == gender_value){
-                            selects_gender[i][x].setAttribute("selected","True")
-                        }
-                    }
+            let gender_value = gender_values[i].textContent;
+            for(x=0;x&lt;selects_gender[i].length;x++){
+            if(selects_gender[i][x].value == gender_value){
+            selects_gender[i][x].setAttribute("selected","True")
+            }
+            }
             }
             let select_country = document.getElementById('country')
 
@@ -1460,13 +1460,26 @@
             <t t-set="breadcrumbs_searchbar" t-value="False" />
 
             <t t-call="portal.portal_searchbar">
-                <t t-set="title">Rooming</t>
+                <t-attf t-set="title">Rooming</t-attf>
+                <span t-field="folio.name" />
             </t>
             <t t-if="not folio">
                 <p>There are currently no folios for your account.</p>
             </t>
             <t t-if="folio">
                 <form action="/my/precheckin/folio_reservation" method="post">
+                    <div t-if="success" class="alert alert-success" role="alert">
+                        <span>Data saved successfully!</span>
+                    </div>
+                    <t t-set="reservation_count" t-value="len(folio.reservation_ids)" />
+                    <div t-attf-class="form-group col-xl-6 d-none">
+                        <input
+                            id="folio_reservations"
+                            type="text"
+                            t-att-name="folio_reservations"
+                            t-att-value="reservation_count"
+                        />
+                    </div>
                     <div t-attf-class="form-group col-xl-6 d-none">
                         <input
                             id="folio_id"
@@ -1485,27 +1498,42 @@
                     </div>
                     <t t-set="count" t-value="0" />
                     <t t-set="count_reservation" t-value="0" />
-                    <t t-foreach="folio.reservation_ids" t-as="reservation">
+                    <t t-foreach="reservation_ids" t-as="reservation">
                         <t t-set="count_reservation" t-value="count_reservation+1" />
                         <div t-attf-class="form-group col-xl-6 d-none">
-                        <input
+                            <input
                                 id="reservation_id"
                                 type="text"
                                 t-att-name="'reservation_id-'+ str(count_reservation)"
                                 t-att-value="reservation_id or reservation.id"
                             />
-                    </div>
+                            <input
+                                id="checkin"
+                                type="text"
+                                t-att-name="'checkin-'+ str(count_reservation)"
+                                t-att-value="checkin or reservation.checkin"
+                            />
+                            <input
+                                id="checkout"
+                                type="text"
+                                t-att-name="'checkout-'+ str(count_reservation)"
+                                t-att-value="checkout or reservation.checkout"
+                            />
+                        </div>
                         <table style="margin-top:20px">
                             <thead>
                                 <tr>
-                                    <!--                                <th>Customer</th>-->
                                     <th class="col-1">Name</th>
                                     <th class="col-1">Lastname</th>
                                     <th class="col-1">Second Lastname</th>
                                     <th class="col-1">Gender</th>
                                     <th class="col-1">Doc.Type</th>
                                     <th class="col-1">Doc.Number</th>
-                                    <th class="col-1">Doc. Expedition Date</th>
+                                    <th class="col-1"><span
+                                        class="fa fa-question-circle  float-right "
+                                        data-toggle="tooltip"
+                                        title="You can enter the validity date of the document. The expedition date will be automatically calculated and entered depending on the document type."
+                                    /><center>Doc. Expedition Date</center></th>
                                     <th class="col-1">Birthdate</th>
                                     <th class="col-1">Mobile</th>
                                     <th class="col-1">Email</th>
@@ -1535,12 +1563,6 @@
                                                 t-attf-class="form-control #{error.get('firstname-'+str(count)) and 'is-invalid' or ''}"
                                                 t-att-value="firstname or (checkin.firstname)"
                                             />
-                                            <t t-if="error_message">
-                                                <span
-                                                    class="text-danger"
-                                                    t-esc="'Mandatory field'"
-                                                />
-                                            </t>
                                         </td>
                                         <td class="py-2">
                                             <input
@@ -1615,12 +1637,6 @@
                                                 t-attf-class="form-control #{error.get('document_number-'+str(count)) and 'is-invalid' or ''}"
                                                 t-att-value="doc_number or checkin.document_number"
                                             />
-                                            <t t-if="error_message">
-                                                <span
-                                                    class="text-danger"
-                                                    t-esc="error_message.get('document_number-'+str(count))"
-                                                />
-                                            </t>
                                         </td>
                                         <td>
                                             <input
@@ -1629,12 +1645,6 @@
                                                 t-attf-class="form-control #{error.get('document_expedition_date-'+ str(count)) and 'is-invalid' or ''}"
                                                 t-att-value="doc_exp_date or checkin.document_expedition_date"
                                             />
-                                            <t t-if="error_message">
-                                                <span
-                                                    class="text-danger"
-                                                    t-esc="error_message.get('document_expedition_date-'+ str(count))"
-                                                />
-                                            </t>
                                         </td>
                                         <td>
                                             <input
@@ -1643,12 +1653,6 @@
                                                 t-attf-class="form-control #{error.get('birthdate_date-'+str(count)) and 'is-invalid' or ''}"
                                                 t-att-value="birth_date or checkin.birthdate_date"
                                             />
-                                            <t t-if="error_message">
-                                                <span
-                                                    class="text-danger"
-                                                    t-esc="error_message.get('birthdate_date-'+str(count))"
-                                                />
-                                            </t>
                                         </td>
                                         <td>
                                             <input
@@ -1657,26 +1661,14 @@
                                                 t-attf-class="form-control #{error.get('mobile-'+str(count)) and 'is-invalid' or ''}"
                                                 t-att-value="mobile or checkin.mobile"
                                             />
-                                            <t t-if="error_message">
-                                                <span
-                                                    class="text-danger"
-                                                    t-esc="error_message.get('mobile-'+str(count))"
-                                                />
-                                            </t>
                                         </td>
                                         <td>
                                             <input
-                                                type="email"
+                                                type="text"
                                                 t-att-name="'email-'+str(count)"
                                                 t-attf-class="form-control #{error.get('email-'+str(count)) and 'is-invalid' or ''}"
                                                 t-att-value="email or checkin.email"
                                             />
-                                            <t t-if="error_message">
-                                                <span
-                                                    class="text-danger"
-                                                    t-esc="error_message.get('email-'+str(count))"
-                                                />
-                                            </t>
                                         </td>
                                         <td>
                                             <select
@@ -1721,6 +1713,69 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <t t-if="error_message">
+                                        <tr>
+                                            <td>
+                                                <center>
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('firstname-'+str(count))"
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td />
+                                            <td />
+                                            <td />
+                                            <td>
+                                                <center>
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('document_type-'+str(count))"
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('document_number-'+str(count))"
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('document_expedition_date-'+ str(count))"
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('birthdate_date-'+str(count))"
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('mobile-'+str(count))"
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('email-'+str(count))"
+                                                    />
+                                                </center>
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </t>
                                 <table style="width:100%; margin:20px 0px 50px 0">
                                     <t
@@ -1734,15 +1789,15 @@
                                         <tr>
                                             <td class="col-2 float-right">
                                                 <select
-                                                    class="form-control #{error.get('prefered_room-'+str(count)) and 'is-invalid' or ''}"
-                                                    id="prefered_room"
+                                                    class="form-control #{error.get('prefered_room-'+str(count)) and 'is-invalid' or ''} select-room"
+                                                    t-att-id="'prefered_room-'+str(count_reservation)"
                                                     t-att-name="'prefered_room-'+str(count_reservation)"
                                                 >
                                                     <option
                                                         value=""
                                                     >Select an option</option>
                                                     <t
-                                                        t-foreach="reservation.sudo().allowed_room_ids"
+                                                        t-foreach="free_rooms.filtered(lambda r: reservation.adults + reservation.children_occupying &lt;= reservation.preferred_room_id.capacity)"
                                                         t-as='prefered_room'
                                                     >
                                                         <option
@@ -1755,11 +1810,12 @@
                                                         </option>
                                                     </t>
                                                 </select>
-                                                <!--                                            <t t-if="'room_capacity_error-'+str(count)">-->
-                                                <!--                                                <span-->
-                                                <!--                                                    class="text-danger"-->
-                                                <!--                                                >Persons can't be higher than room capacity</span>-->
-                                                <!--                                            </t>-->
+                                                <t t-if="error_message">
+                                                    <span
+                                                        class="text-danger"
+                                                        t-esc="error_message.get('room_capacity_error-'+str(count))"
+                                                    />
+                                                </t>
                                             </td>
                                         </tr>
                                     </t>
@@ -1768,27 +1824,13 @@
                                             Room
                                         </th>
                                         <tr>
-                                            <td class="col-2 float-right">
-                                                <select
-                                                    class="form-control #{error.get('prefered_room-'+str(count)) and 'is-invalid' or ''}"
-                                                    id="prefered_room"
-                                                    t-att-name="'prefered_room-'+str(count_reservation)"
-                                                >
-                                                    <option
-                                                        value=""
-                                                    >Select an option</option>
-                                                    <t
-                                                        t-foreach="reservation.sudo().allowed_room_ids.room_type_id"
-                                                        t-as='room_type'
-                                                    >
-                                                        <option
-                                                            t-att-value="room_type.id"
-                                                            t-att-selected="room_type.id == reservation.room_type_id.id"
-                                                        >
-                                                            <t t-esc="room_type.name" />
-                                                        </option>
-                                                    </t>
-                                                </select>
+                                            <td class="col-2 float-right mt-2">
+                                                <input
+                                                    type="text"
+                                                    t-attf-class="form-control"
+                                                    t-att-value="reservation.sudo().preferred_room_id.room_type_id.name"
+                                                    readonly="True"
+                                                />
                                             </td>
                                         </tr>
                                     </t>
@@ -1800,11 +1842,46 @@
 
                     <tr>
                         <td>
+                            <div class="modal fade" id="modalRoom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Room Change</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true"/>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Do you want to swap rooms?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" id="btnRoom" class="btn btn-primary ">Change Room</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true"/>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Do you want to save?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary ">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="clearfix">
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary float-right mb32 "
-                                >
+                                <button type="button" class="save_button btn btn-primary float-right mb32" data-toggle="modal" data-target="#exampleModal">
                                     Confirm
                                     <span class="fa fa-long-arrow-right" />
                                 </button>
@@ -1814,70 +1891,67 @@
                 </form>
             </t>
         </t>
-        <!--        <style>-->
-        <!--            #snackbar {-->
-        <!--            visibility: hidden;-->
-        <!--            min-width: 250px;-->
-        <!--            margin-left: -125px;-->
-        <!--            background-color: #6c757d;-->
-        <!--            color: #fff;-->
-        <!--            text-align: center;-->
-        <!--            border-radius: 2px;-->
-        <!--            padding: 16px;-->
-        <!--            position: fixed;-->
-        <!--            z-index: 1;-->
-        <!--            left: 50%;-->
-        <!--            top: 100px;-->
-        <!--            font-size: 17px;-->
-        <!--            }-->
-
-        <!--            #snackbar.show {-->
-        <!--            visibility: visible;-->
-        <!--            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;-->
-        <!--            animation: fadein 0.5s, fadeout 0.5s 2.5s;-->
-        <!--            }-->
-
-        <!--            @-webkit-keyframes fadein {-->
-        <!--            from {top: 0; opacity: 0;}-->
-        <!--            to {top: 100px; opacity: 1;}-->
-        <!--            }-->
-
-        <!--            @keyframes fadein {-->
-        <!--            from {top: 0; opacity: 0;}-->
-        <!--            to {top: 100px; opacity: 1;}-->
-        <!--            }-->
-
-        <!--            @-webkit-keyframes fadeout {-->
-        <!--            from {top: 100px; opacity: 1;}-->
-        <!--            to {top: 0; opacity: 0;}-->
-        <!--            }-->
-
-        <!--            @keyframes fadeout {-->
-        <!--            from {top: 100px; opacity: 1;}-->
-        <!--            to {top: 0; opacity: 0;}-->
-        <!--            }-->
-        <!--        </style>-->
         <style>
             .container{
             max-width: 1900px;
             border: solid 1px;
             border-color: #dacfcc;
             }
+
+            body { padding-right: 0!important }
         </style>
         <script>
             let select_country = document.getElementById('country')
 
             select_country.addEventListener("change", () => {
-                let country_value = select_country.value
-                Array.from(document.getElementById('state').options).forEach(element => {
-                    if (element.getAttribute('country_id') == country_value ) {
-                        element.style="";
-                    } else {
-                        element.style="display:none";
-                    }
+            let country_value = select_country.value
+            Array.from(document.getElementById('state').options).forEach(element => {
+            if (element.getAttribute('country_id') == country_value ) {
+            element.style="";
+            } else {
+            element.style="display:none";
+            }
+            });
+            });
+
+            var selectValueFocus;
+            var selectTextFocus;
+
+            Array.from(document.getElementsByClassName("select-room")).forEach(select => {
+                select.addEventListener("focus", () => {
+                    selectValueFocus = select.value;
+                    selectTextFocus = select[select.selectedIndex].text
+                    console.log("focus", selectValueFocus);
+                });
+                Array.from(select.children).forEach(option => {
+                    var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+                    option.addEventListener("click", () =>{
+                        console.log("option", option.value);
+                        Array.from(document.getElementsByClassName("select-room")).forEach(selectNested => {
+                            if (selectNested.value === select.value) {
+                                if (selectNested.id !== select.id) {
+                                    console.log("select", select.value);
+                                    $("#modalRoom").modal().show();
+
+                                }
+                            }
+                        });
+                    })
                 });
             });
+            $("#btnRoom").click(function (event) {
+                selectNested.value = selectValueFocus;
+                console.log("selectNested", selectNested.value)
+                select.blur()
+                $("#modalRoom").modal().hide();
+                $('body').removeClass('modal-open');
+            });
+            $("#btnClose").click(function (event) {
+                select.value = selectValueFocus;
+                select.blur()
+                $("#modalRoom").modal().hide();
+                $('body').removeClass('modal-open');
+            });
         </script>
-
     </template>
 </odoo>

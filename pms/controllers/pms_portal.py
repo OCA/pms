@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 from odoo import _, fields, http, tools
 from odoo.exceptions import AccessError, MissingError
@@ -235,13 +236,25 @@ class PortalFolio(CustomerPortal):
         country_ids = request.env["res.country"].search([])
         state_ids = request.env["res.country.state"].search([])
         doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
+        free_rooms = (
+            folio_sudo.reservation_ids.preferred_room_id
+            + folio_sudo.pms_property_id.with_context(
+                checkin=folio_sudo.first_checkin, checkout=folio_sudo.last_checkout
+            ).free_room_ids
+        )
+        reservation_ids = folio_sudo.reservation_ids.sorted(
+            key=lambda r: (r.adults, r.preferred_room_id.name), reverse=True
+        )
         values.update(
             {
                 "country_ids": country_ids,
                 "state_ids": state_ids,
                 "doc_type_ids": doc_type_ids,
+                "reservation_ids": reservation_ids,
+                "free_rooms": free_rooms,
             }
         )
+
         return request.render("pms.portal_my_folio_checkin_rooming", values)
 
 
@@ -582,7 +595,7 @@ class PortalPrecheckin(CustomerPortal):
                 }
             )
         else:
-            values.update({"success": True, "error": {}})
+            values.update({"success": True, "error": {}, "error_message": {}})
         if kw.get("folio_id"):
             folio = request.env["pms.folio"].sudo().browse(int(kw.get("folio_id")))
             values.update(
@@ -591,33 +604,11 @@ class PortalPrecheckin(CustomerPortal):
                 }
             )
             if kw.get("rooming"):
-                count = 0
-                for _r in range(len(folio.reservation_ids)):
-                    count = count + 1
-                    reservation = (
-                        request.env["pms.reservation"]
-                        .sudo()
-                        .browse(int(kw.get("reservation_id-" + str(count))))
-                    )
-                    prefered_room = (
-                        request.env["pms.room"]
-                        .sudo()
-                        .browse(int(kw.get("prefered_room-" + str(count))))
-                    )
-                    if (
-                        reservation.adults + reservation.children_occupying
-                        > prefered_room.capacity
-                    ):
-                        values.update({"room_capacity_error-" + str(count): True})
-                    else:
-                        if request.env["res.users"].has_group("base.group_user"):
-                            reservation.preferred_room_id = int(
-                                kw.get("prefered_room-" + str(count))
-                            )
-                        else:
-                            reservation.preferred_room_id = int(
-                                kw.get("prefered_room-" + str(count))
-                            )
+                reservation_ids = folio.reservation_ids.sorted(
+                    key=lambda r: (r.adults, r.preferred_room_id.name), reverse=True
+                )
+                self.save_preferred_room_rooming(folio, kw, values)
+                values.update({"reservation_ids": reservation_ids})
                 return request.render("pms.portal_my_folio_checkin_rooming", values)
             return request.render("pms.portal_my_folio_precheckin", values)
         elif kw.get("reservation_id"):
@@ -660,7 +651,7 @@ class PortalPrecheckin(CustomerPortal):
         lastname2 = "lastname2" if "lastname2" in keys else "lastname2-" + str(counter)
         if not data[firstname] and not data[lastname] and not data[lastname2]:
             error[firstname] = "error"
-            error_message[firstname] = "Firstname or any lastname are not included"
+            error_message[firstname] = "Firstname is mandatory"
         return error, error_message
 
     def form_document_validate(self, data, counter):
@@ -682,11 +673,28 @@ class PortalPrecheckin(CustomerPortal):
             if "document_expedition_date" in keys
             else "document_expedition_date-" + str(counter)
         )
+        birthdate_date = (
+            "birthdate_date"
+            if "birthdate_date" in keys
+            else "birthdate_date-" + str(counter)
+        )
         if data[document_expedition_date] and not data[document_number]:
             error[document_expedition_date] = "error"
-            error_message[
-                document_expedition_date
-            ] = "Document Number not entered and Document Type is not selected"
+            error_message[document_expedition_date] = "Document Number not entered"
+
+        if (
+            data[document_number]
+            and data[document_type]
+            and data[document_expedition_date]
+        ):
+            if (
+                datetime.strptime(data[document_expedition_date], "%Y-%m-%d")
+                > datetime.today()
+                and not data[birthdate_date]
+            ):
+                error[document_expedition_date] = "error"
+                error_message[document_expedition_date] = "You must enter a birthdate"
+
         if data[document_number]:
             if not data[document_type]:
                 error[document_type] = "error"
@@ -776,3 +784,60 @@ class PortalPrecheckin(CustomerPortal):
         if firstname and email:
             checkin_partner.write({"firstname": firstname, "email": email})
             checkin_partner.send_portal_invitation_email(firstname, email)
+
+    def save_preferred_room_rooming(self, folio, kw, values):
+        free_rooms = (
+            folio.reservation_ids.preferred_room_id
+            + folio.pms_property_id.with_context(
+                checkin=folio.first_checkin, checkout=folio.last_checkout
+            ).free_room_ids
+        )
+        values.update({"free_rooms": free_rooms})
+        if request.env["res.users"].has_group("base.group_user"):
+            count = 0
+            for _r in range(len(folio.reservation_ids)):
+                count = count + 1
+                reservation = (
+                    request.env["pms.reservation"]
+                    .sudo()
+                    .browse(int(kw.get("reservation_id-" + str(count))))
+                )
+                preferred_room = (
+                    request.env["pms.room"]
+                    .sudo()
+                    .browse(int(kw.get("prefered_room-" + str(count))))
+                )
+                for reservation_folio in folio.reservation_ids.filtered(
+                    lambda r: r.preferred_room_id != reservation.preferred_room_id
+                ):
+                    if reservation_folio.preferred_room_id == preferred_room:
+                        if (
+                            reservation.adults + reservation.children_occupying
+                            > preferred_room.capacity
+                            or reservation_folio.adults
+                            + reservation_folio.children_occupying
+                            > reservation.preferred_room_id.capacity
+                        ):
+
+                            values["success"] = False
+                            values["error"][
+                                "room_capacity_error-" + str(count)
+                            ] = "error"
+                            values["error_message"][
+                                "room_capacity_error-" + str(count)
+                            ] = "Persons can't be higher than room capacity"
+                            return request.render(
+                                "pms.portal_my_folio_checkin_rooming", values
+                            )
+                        request.env[
+                            "pms.reservation.split.join.swap.wizard"
+                        ].reservations_swap(
+                            folio.first_checkin,
+                            folio.last_checkout,
+                            reservation.preferred_room_id.id,
+                            reservation_folio.preferred_room_id.id,
+                        )
+                        return request.render(
+                            "pms.portal_my_folio_checkin_rooming", values
+                        )
+                reservation.preferred_room_id = preferred_room.id
