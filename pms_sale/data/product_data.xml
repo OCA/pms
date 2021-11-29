@@ -1,0 +1,15 @@
+<odoo noupdate="0">
+
+    <record id="product_category_reservation" model="product.category">
+        <field name="parent_id" ref="product.product_category_1" />
+        <field name="name">Reservations</field>
+    </record>
+
+    <record id="product_product_reservation" model="product.product">
+        <field name="name">Reservation</field>
+        <field name="type">service</field>
+        <field name="reservation_ok" eval="True" />
+        <field name="categ_id" ref="pms_sale.product_category_reservation" />
+    </record>
+
+</odoo>
