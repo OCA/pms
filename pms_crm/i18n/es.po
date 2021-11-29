@@ -1,0 +1,66 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_crm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-23 19:40+0000\n"
+"PO-Revision-Date: 2021-12-23 19:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pms_crm
+#: model:ir.model.fields,field_description:pms_crm.field_crm_lead__display_name
+#: model:ir.model.fields,field_description:pms_crm.field_pms_property__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pms_crm
+#: model:ir.model.fields,field_description:pms_crm.field_crm_lead__id
+#: model:ir.model.fields,field_description:pms_crm.field_pms_property__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_crm
+#: model:ir.model.fields,field_description:pms_crm.field_crm_lead____last_update
+#: model:ir.model.fields,field_description:pms_crm.field_pms_property____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_crm
+#: model:ir.model.fields,field_description:pms_crm.field_pms_property__lead_count
+msgid "Lead Count"
+msgstr "Numéro de pista"
+
+#. module: pms_crm
+#: model:ir.model,name:pms_crm.model_crm_lead
+msgid "Lead/Opportunity"
+msgstr "Pista/Oportunidad"
+
+#. module: pms_crm
+#: model:ir.model.fields,field_description:pms_crm.field_pms_property__lead_ids
+#: model_terms:ir.ui.view,arch_db:pms_crm.view_pms_property_form
+msgid "Leads"
+msgstr "Pistas"
+
+#. module: pms_crm
+#: model:ir.model.fields,field_description:pms_crm.field_crm_lead__property_ids
+#: model_terms:ir.ui.view,arch_db:pms_crm.view_crm_lead_form
+msgid "Properties"
+msgstr "Propiedades"
+
+#. module: pms_crm
+#: model:ir.model,name:pms_crm.model_pms_property
+msgid "Property"
+msgstr "Propiedad"
+
+#. module: pms_crm
+#: model:ir.model.fields,field_description:pms_crm.field_crm_lead__property_count
+msgid "Property Count"
+msgstr "Numéro de propiedad"
