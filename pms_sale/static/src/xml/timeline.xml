@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template>
+    <t t-name="TimelineReservationFilter">
+        <div class="btn-group btn-sm">
+            <select
+                class="btn btn-default btn-sm oe_timeline_select_city"
+                style="width:20%;border-bottom:1px solid;margin-right:10px;"
+            >
+                <option>Select City</option>
+            </select>
+            <input
+                class="btn btn-default btn-sm oe_timeline_text_datepicker"
+                placeholder="Date..."
+                style="border-bottom:1px solid;margin-right:10px;"
+            />
+            <input
+                class="btn btn-default btn-sm oe_timeline_text_bedrooms"
+                type="number"
+                placeholder="Bedrooms..."
+                style="width:20%;border-bottom:1px solid;margin-right:10px;"
+            />
+            <button class="btn btn-default oe_timeline_button_search">Search</button>
+        </div>
+    </t>
+</template>

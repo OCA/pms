@@ -1,0 +1,34 @@
+<odoo>
+
+    <record id="view_pms_property_form_inherit_pms_sale" model="ir.ui.view">
+        <field name="name">pms.property.form.inherit.pms.sale</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="reservation" string="Reservation">
+                    <group id="reservation">
+                        <group id="reservation-left">
+                            <field name="listing_type" />
+                        </group>
+                        <group id="reservation-right" />
+                        <group id="defaults" string="Defaults">
+                            <field name="checkin" widget="float_time" />
+                            <field name="checkout" widget="float_time" />
+                        </group>
+                        <group id="limits" string="Limits">
+                            <field name="no_of_guests" />
+                            <field name="min_nights" />
+                            <field name="max_nights" />
+                        </group>
+                    </group>
+                    <field name="reservation_ids" />
+                </page>
+                <page name="communication" string="Communication">
+                    <field name="pms_mail_ids" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

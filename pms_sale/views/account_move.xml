@@ -1,0 +1,35 @@
+<odoo>
+
+    <record id="view_move_form_inherit_pms_sale" model="ir.ui.view">
+        <field name="name">pms.property.invoice.form.pms</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="groups_id" eval="[(4, ref('pms_base.group_pms_user'))]" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    name="action_view_reservation_list"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-users"
+                    attrs="{'invisible': [('reservation_count', '=', 0)]}"
+                >
+                    <field
+                        name="reservation_count"
+                        widget="statinfo"
+                        string="Reservations"
+                    />
+                </button>
+            </div>
+            <xpath
+                expr="//field[@name='invoice_line_ids']/form//field[@name='name']"
+                position="after"
+            >
+                <group>
+                    <field name="pms_reservation_id" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
