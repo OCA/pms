@@ -42,6 +42,7 @@ class PmsRoomService(Component):
                 PmsRoomInfo(
                     id=room.id,
                     name=room.name,
+                    roomTypeId=room.room_type_id,
                 )
             )
         return result_rooms
