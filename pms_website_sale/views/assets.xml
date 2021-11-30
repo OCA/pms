@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template
+        id="assets_frontend"
+        inherit_id="website.assets_frontend"
+        name="Event Meet Assets"
+    >
+        <xpath expr="." position="inside">
+            <script
+                src="/pms_website_sale/static/src/js/pms_property.js"
+                type="text/javascript"
+            />
+        </xpath>
+    </template>
+
+</odoo>
