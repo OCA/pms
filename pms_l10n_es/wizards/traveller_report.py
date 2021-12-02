@@ -469,4 +469,5 @@ class TravellerReport(models.TransientModel):
     @api.model
     def send_file_institution_async(self):
         for prop in self.env["pms.property"].search([]):
-            self.with_delay().send_file_institution(prop)
+            if prop.institution:
+                self.with_delay().send_file_institution(prop)
