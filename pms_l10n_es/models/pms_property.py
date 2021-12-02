@@ -19,8 +19,8 @@ class PmsProperty(models.Model):
             ("mossos", "Mossos_d'esquadra (soon)"),
         ],
         string="Institution",
-        default="guardia_civil",
         help="Institution to send daily guest data.",
+        required=False,
     )
     institution_property_id = fields.Char(
         string="Institution property id",
