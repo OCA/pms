@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
+from datetime import datetime
 from itertools import groupby
 
 from odoo import _, api, fields, models
@@ -511,6 +512,13 @@ class PmsFolio(models.Model):
         readonly=False,
         store=True,
         compute="_compute_last_checkout",
+    )
+
+    date_creation = fields.Date(
+        string="Creation Date",
+        readonly=False,
+        store=True,
+        compute="_compute_date_creation",
     )
 
     def name_get(self):
@@ -1088,6 +1096,12 @@ class PmsFolio(models.Model):
                 checkouts = record.reservation_ids.mapped("checkout")
                 record.last_checkout = max(checkouts)
 
+    @api.depends("create_date")
+    def _compute_date_creation(self):
+        for record in self:
+            if record.create_date:
+                record.date_creation = datetime.strftime(record.create_date, "%Y-%m-%d")
+
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
             self.env.cr.execute(
@@ -1286,125 +1300,98 @@ class PmsFolio(models.Model):
 
     @api.model
     def send_confirmation_mail(self):
-        folios = self.env["pms.folio"].search([])
-        if folios and all(
-            is_confirmed_auto_mail
-            for is_confirmed_auto_mail in folios.pms_property_id.mapped(
-                "is_confirmed_auto_mail"
-            )
-        ):
-            for folio in folios:
-                create_date = folio.create_date.date()
-                if (
-                    folio.state in "confirm"
-                    and create_date == fields.Date.today()
-                    and all(
-                        not mail_send
-                        for mail_send in folio.reservation_ids.mapped("is_mail_send")
+        today = fields.Date.today()
+        folios = self.env["pms.folio"].search(
+            [
+                ("pms_property_id.is_confirmed_auto_mail", "=", True),
+                ("reservation_ids.is_mail_send", "=", False),
+                ("reservation_ids.is_modified_reservation", "=", False),
+                ("date_creation", "=", today),
+            ]
+        )
+        for folio in folios:
+            if folio.email:
+                template = folio.pms_property_id.property_confirmed_template
+                subject = template._render_field(
+                    "subject",
+                    [6, 0, folio.id],
+                    compute_lang=True,
+                )[folio.id]
+                body = template._render_field(
+                    "body_html",
+                    [6, 0, folio.id],
+                    compute_lang=True,
+                )[folio.id]
+                mail = (
+                    folio.env["mail.mail"]
+                    .sudo()
+                    .create(
+                        {
+                            "subject": subject,
+                            "body_html": body,
+                            "email_from": folio.pms_property_id.partner_id.email,
+                            "email_to": folio.email,
+                        }
                     )
-                    and all(
-                        not is_modified_reservation
-                        for is_modified_reservation in folio.reservation_ids.mapped(
-                            "is_modified_reservation"
-                        )
-                    )
-                ):
-                    template = folio.pms_property_id.property_confirmed_template
-                    subject = template._render_field(
-                        "subject",
-                        [6, 0, folio.id],
-                        compute_lang=True,
-                        post_process=True,
-                    )[folio.id]
-                    body = template._render_field(
-                        "body_html",
-                        [6, 0, folio.id],
-                        compute_lang=True,
-                        post_process=True,
-                    )[folio.id]
-                    invitation_mail = (
-                        folio.env["mail.mail"]
-                        .sudo()
-                        .create(
-                            {
-                                "subject": subject,
-                                "body_html": body,
-                                "email_from": folio.pms_property_id.partner_id.email,
-                                "email_to": folio.email,
-                            }
-                        )
-                    )
-                    invitation_mail.send()
-                    for reservation in folio.reservation_ids:
-                        reservation.is_mail_send = True
+                )
+                mail.send()
+                for reservation in folio.reservation_ids:
+                    reservation.is_mail_send = True
 
     @api.model
     def send_modification_mail(self):
-        folios = self.env["pms.folio"].search([])
-        if folios and all(
-            is_modified_auto_mail
-            for is_modified_auto_mail in folios.pms_property_id.mapped(
-                "is_modified_auto_mail"
-            )
-        ):
-            for folio in folios:
-                if (
-                    folio.state in ("confirm", "onboard")
-                    and any(
-                        not mail_send
-                        for mail_send in folio.reservation_ids.mapped("is_mail_send")
+        folios = self.env["pms.folio"].search(
+            [
+                ("pms_property_id.is_modified_auto_mail", "=", True),
+                ("reservation_ids.is_mail_send", "=", False),
+                ("reservation_ids.is_modified_reservation", "=", True),
+            ]
+        )
+        for folio in folios:
+            if folio.email:
+                template = folio.pms_property_id.property_modified_template
+                subject = template._render_field(
+                    "subject",
+                    [6, 0, folio.id],
+                    compute_lang=True,
+                    post_process=True,
+                )[folio.id]
+                body = template._render_field(
+                    "body_html",
+                    [6, 0, folio.id],
+                    compute_lang=True,
+                    post_process=True,
+                )[folio.id]
+                mail = (
+                    folio.env["mail.mail"]
+                    .sudo()
+                    .create(
+                        {
+                            "subject": subject,
+                            "body_html": body,
+                            "email_from": folio.pms_property_id.partner_id.email,
+                            "email_to": folio.email,
+                        }
                     )
-                    and any(
-                        is_modified_reservation
-                        for is_modified_reservation in folio.reservation_ids.mapped(
-                            "is_modified_reservation"
-                        )
-                    )
-                ):
-                    template = folio.pms_property_id.property_modified_template
-                    subject = template._render_field(
-                        "subject",
-                        [6, 0, folio.id],
-                        compute_lang=True,
-                        post_process=True,
-                    )[folio.id]
-                    body = template._render_field(
-                        "body_html",
-                        [6, 0, folio.id],
-                        compute_lang=True,
-                        post_process=True,
-                    )[folio.id]
-                    invitation_mail = (
-                        folio.env["mail.mail"]
-                        .sudo()
-                        .create(
-                            {
-                                "subject": subject,
-                                "body_html": body,
-                                "email_from": folio.pms_property_id.partner_id.email,
-                                "email_to": folio.email,
-                            }
-                        )
-                    )
-                    invitation_mail.send()
-                    for reservation in folio.reservation_ids:
-                        reservation.is_mail_send = True
+                )
+                mail.send()
+                for reservation in folio.reservation_ids:
+                    reservation.is_mail_send = True
 
     @api.model
     def send_cancelation_mail(self):
-        folios = self.env["pms.folio"].search([])
-        if folios and all(
-            is_canceled_auto_mail
-            for is_canceled_auto_mail in folios.pms_property_id.mapped(
-                "is_canceled_auto_mail"
-            )
-        ):
-            for folio in folios:
-                reservations = folio.reservation_ids.filtered(
-                    lambda r: r.state in "cancel"
-                )
-                for reservation in reservations:
-                    if not reservation.is_mail_send:
+        folios = self.env["pms.folio"].search(
+            [("pms_property_id.is_canceled_auto_mail", "=", True)]
+        )
+        for folio in folios:
+            reservations = folio.reservation_ids.filtered(lambda r: r.state in "cancel")
+            for reservation in reservations:
+                if folio.email:
+                    if (
+                        not reservation.is_mail_send
+                        and reservation.email
+                        and reservation.state not in "out"
+                    ):
                         template = (
                             reservation.pms_property_id.property_canceled_template
                         )
@@ -1420,7 +1407,7 @@ class PmsFolio(models.Model):
                             compute_lang=True,
                             post_process=True,
                         )[reservation.id]
-                        invitation_mail = (
+                        mail = (
                             folio.env["mail.mail"]
                             .sudo()
                             .create(
@@ -1428,13 +1415,12 @@ class PmsFolio(models.Model):
                                     "subject": subject,
                                     "body_html": body,
                                     "email_from": folio.pms_property_id.partner_id.email,
-                                    "email_to": folio.email,
+                                    "email_to": reservation.email,
                                 }
                             )
                         )
-                        invitation_mail.send()
-                        for reservation in folio.reservation_ids:
-                            reservation.is_mail_send = True
+                        mail.send()
+                        reservation.is_mail_send = True
 
     def action_view_invoice(self):
         invoices = self.mapped("move_ids")
