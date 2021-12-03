@@ -10,6 +10,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_is_zero
 
+from odoo.addons.base.models.ir_mail_server import MailDeliveryException
+
 _logger = logging.getLogger(__name__)
 
 
@@ -1303,6 +1305,7 @@ class PmsFolio(models.Model):
         today = fields.Date.today()
         folios = self.env["pms.folio"].search(
             [
+                ("reservation_type", "!=", "out"),
                 ("pms_property_id.is_confirmed_auto_mail", "=", True),
                 ("reservation_ids.is_mail_send", "=", False),
                 ("reservation_ids.is_modified_reservation", "=", False),
@@ -1334,7 +1337,20 @@ class PmsFolio(models.Model):
                         }
                     )
                 )
-                mail.send()
+                try:
+                    mail.send()
+                except MailDeliveryException:
+                    self.env["ir.logging"].create(
+                        {
+                            "name": "Failed to send confirmation email to "
+                            + folio.email,
+                            "type": "server",
+                            "path": "pms/pms/models/pms_folio.py",
+                            "line": "1339",
+                            "func": "send_confirmation_email",
+                            "message": "Confirmation Mail Delivery Failed",
+                        }
+                    )
                 for reservation in folio.reservation_ids:
                     reservation.is_mail_send = True
 
@@ -1342,6 +1358,7 @@ class PmsFolio(models.Model):
     def send_modification_mail(self):
         folios = self.env["pms.folio"].search(
             [
+                ("reservation_type", "!=", "out"),
                 ("pms_property_id.is_modified_auto_mail", "=", True),
                 ("reservation_ids.is_mail_send", "=", False),
                 ("reservation_ids.is_modified_reservation", "=", True),
@@ -1374,7 +1391,20 @@ class PmsFolio(models.Model):
                         }
                     )
                 )
-                mail.send()
+                try:
+                    mail.send()
+                except MailDeliveryException:
+                    self.env["ir.logging"].create(
+                        {
+                            "name": "Failed to send modification email to "
+                            + folio.email,
+                            "type": "server",
+                            "path": "pms/pms/models/pms_folio.py",
+                            "line": "1391",
+                            "func": "send_modification_email",
+                            "message": "Modification Mail Delivery Failed",
+                        }
+                    )
                 for reservation in folio.reservation_ids:
                     reservation.is_mail_send = True
 
@@ -1386,7 +1416,7 @@ class PmsFolio(models.Model):
         for folio in folios:
             reservations = folio.reservation_ids.filtered(lambda r: r.state in "cancel")
             for reservation in reservations:
-                if folio.email:
+                if reservation.email:
                     if (
                         not reservation.is_mail_send
                         and reservation.email
@@ -1419,7 +1449,20 @@ class PmsFolio(models.Model):
                                 }
                             )
                         )
-                        mail.send()
+                        try:
+                            mail.send()
+                        except MailDeliveryException:
+                            self.env["ir.logging"].create(
+                                {
+                                    "name": "Failed to send cancellation email to "
+                                    + reservation.email,
+                                    "type": "server",
+                                    "path": "pms/pms/models/pms_folio.py",
+                                    "line": "1450",
+                                    "func": "send_cancelation_email",
+                                    "message": "Cancellation Mail Delivery Failed",
+                                }
+                            )
                         reservation.is_mail_send = True
 
     def action_view_invoice(self):
