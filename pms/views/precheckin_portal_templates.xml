@@ -67,8 +67,8 @@
                                     for="gender"
                                 >Gender</label>
                                 <div class="d-none"><p id="genderId"><t
-                                    t-esc="checkin_partner.gender"
-                                /></p></div>
+                                            t-esc="checkin_partner.gender"
+                                        /></p></div>
                                 <select
                                     class="form-control"
                                     name="gender"
@@ -314,8 +314,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin for <span
-                            t-field="reservation.sudo().room_type_id.name"
-                        /> Room</th>
+                                t-field="reservation.sudo().room_type_id.name"
+                            /> Room</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -636,10 +636,10 @@
                                                                 for="gender"
                                                             >Gender</label>
                                                             <div class="d-none"><p
-                                                                id="genderId"
-                                                            ><t
-                                                                t-esc="checkin_partner.gender"
-                                                            /></p></div>
+                                                                    id="genderId"
+                                                                ><t
+                                                                        t-esc="checkin_partner.gender"
+                                                                    /></p></div>
                                                             <select
                                                                 class="form-control"
                                                                 name="gender"
@@ -805,8 +805,8 @@
                 <thead>
                     <tr class="active">
                         <th>PreCheckin in <span
-                            t-field="folio.pms_property_id.name"
-                        /></th>
+                                t-field="folio.pms_property_id.name"
+                            /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -965,9 +965,9 @@
                                                             style="color:#fff; height:36px;"
                                                         >
                                                             Send Invitation<span
-                                                            t-esc="checkin_partner.id"
-                                                            class="d-none"
-                                                        /></a>
+                                                                t-esc="checkin_partner.id"
+                                                                class="d-none"
+                                                            /></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1060,10 +1060,10 @@
                                                                     for="gender"
                                                                 >Gender</label>
                                                                 <div class="d-none"><p
-                                                                    id="genderId"
-                                                                ><t
-                                                                    t-esc="checkin_partner.gender"
-                                                                /></p></div>
+                                                                        id="genderId"
+                                                                    ><t
+                                                                            t-esc="checkin_partner.gender"
+                                                                        /></p></div>
                                                                 <select
                                                                     class="form-control"
                                                                     t-att-name="'gender-'+str(count)"
@@ -1530,10 +1530,10 @@
                                     <th class="col-1">Doc.Type</th>
                                     <th class="col-1">Doc.Number</th>
                                     <th class="col-1"><span
-                                        class="fa fa-question-circle  float-right "
-                                        data-toggle="tooltip"
-                                        title="You can enter the validity date of the document. The expedition date will be automatically calculated and entered depending on the document type."
-                                    /><center>Doc. Expedition Date</center></th>
+                                            class="fa fa-question-circle  float-right "
+                                            data-toggle="tooltip"
+                                            title="You can enter the validity date of the document. The expedition date will be automatically calculated and entered depending on the document type."
+                                        /><center>Doc. Expedition Date</center></th>
                                     <th class="col-1">Birthdate</th>
                                     <th class="col-1">Mobile</th>
                                     <th class="col-1">Email</th>
@@ -1797,7 +1797,7 @@
                                                         value=""
                                                     >Select an option</option>
                                                     <t
-                                                        t-foreach="free_rooms.filtered(lambda r: reservation.adults + reservation.children_occupying &lt;= reservation.preferred_room_id.capacity)"
+                                                        t-foreach="free_rooms.filtered(lambda r: reservation.adults + reservation.children_occupying &lt;= r.capacity)"
                                                         t-as='prefered_room'
                                                     >
                                                         <option
@@ -1842,46 +1842,103 @@
 
                     <tr>
                         <td>
-                            <div class="modal fade" id="modalRoom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div
+                                class="modal fade"
+                                id="modalRoom"
+                                tabindex="-1"
+                                role="dialog"
+                                aria-labelledby="exampleModalLabel"
+                                aria-hidden="true"
+                            >
+                                <div
+                                    class="modal-dialog modal-dialog-centered"
+                                    role="document"
+                                >
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Room Change</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true"/>
+                                            <h5
+                                                class="modal-title"
+                                                id="exampleModalLabel"
+                                            >Room Change</h5>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                                aria-label="Close"
+                                            >
+                                                <span aria-hidden="true" />
                                             </button>
                                         </div>
                                         <div class="modal-body">
                                             Do you want to swap rooms?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="button" id="btnRoom" class="btn btn-primary ">Change Room</button>
+                                            <button
+                                                type="button"
+                                                id="btnClose"
+                                                class="btn btn-secondary"
+                                                data-dismiss="modal"
+                                            >Close</button>
+                                            <button
+                                                type="button"
+                                                id="btnRoom"
+                                                class="btn btn-primary "
+                                            >Change Room</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div
+                                class="modal fade"
+                                id="exampleModal"
+                                tabindex="-1"
+                                role="dialog"
+                                aria-labelledby="exampleModalLabel"
+                                aria-hidden="true"
+                            >
+                                <div
+                                    class="modal-dialog modal-dialog-centered"
+                                    role="document"
+                                >
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true"/>
+                                            <h5
+                                                class="modal-title"
+                                                id="exampleModalLabel"
+                                            >Modal title</h5>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                                aria-label="Close"
+                                            >
+                                                <span aria-hidden="true" />
                                             </button>
                                         </div>
                                         <div class="modal-body">
                                             Do you want to save?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary ">Save changes</button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-secondary"
+                                                data-dismiss="modal"
+                                            >Close</button>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-primary "
+                                            >Save changes</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="clearfix">
-                                <button type="button" class="save_button btn btn-primary float-right mb32" data-toggle="modal" data-target="#exampleModal">
+                                <button
+                                    type="button"
+                                    class="save_button btn btn-primary float-right mb32"
+                                    data-toggle="modal"
+                                    data-target="#exampleModal"
+                                >
                                     Confirm
                                     <span class="fa fa-long-arrow-right" />
                                 </button>
@@ -1914,43 +1971,54 @@
             });
             });
 
-            var selectValueFocus;
-            var selectTextFocus;
+            var isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+            var valueRoomSelectBeforeChange;
+            var refToSelectChangingValue;
+            var refToSelectToUpdateValue;
 
             Array.from(document.getElementsByClassName("select-room")).forEach(select => {
+
                 select.addEventListener("focus", () => {
-                    selectValueFocus = select.value;
-                    selectTextFocus = select[select.selectedIndex].text
-                    console.log("focus", selectValueFocus);
+                    valueRoomSelectBeforeChange = select.value;
                 });
-                Array.from(select.children).forEach(option => {
-                    var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-                    option.addEventListener("click", () =>{
-                        console.log("option", option.value);
+                if (isChrome) {
+                    select.addEventListener("change", () => {
                         Array.from(document.getElementsByClassName("select-room")).forEach(selectNested => {
                             if (selectNested.value === select.value) {
                                 if (selectNested.id !== select.id) {
-                                    console.log("select", select.value);
+                                    refToSelectChangingValue = select;
+                                    refToSelectToUpdateValue = selectNested;
                                     $("#modalRoom").modal().show();
-
                                 }
                             }
                         });
-                    })
-                });
+                    });
+                } else {
+                    Array.from(select.children).forEach(option => {
+                        option.addEventListener("click", () => {
+                            Array.from(document.getElementsByClassName("select-room")).forEach(selectNested => {
+                                if (selectNested.value === select.value) {
+                                    if (selectNested.id !== select.id) {
+                                        refToSelectChangingValue = select;
+                                        refToSelectToUpdateValue = selectNested;
+                                        $("#modalRoom").modal().show();
+                                    }
+                                }
+                            });
+                        });
+                    });
+                }
             });
-            $("#btnRoom").click(function (event) {
-                selectNested.value = selectValueFocus;
-                console.log("selectNested", selectNested.value)
-                select.blur()
+
+            document.getElementById('btnRoom').addEventListener("click", () => {
+                refToSelectToUpdateValue.value = valueRoomSelectBeforeChange
                 $("#modalRoom").modal().hide();
                 $('body').removeClass('modal-open');
+
             });
-            $("#btnClose").click(function (event) {
-                select.value = selectValueFocus;
-                select.blur()
-                $("#modalRoom").modal().hide();
-                $('body').removeClass('modal-open');
+
+            document.getElementById('btnClose').addEventListener("click", () => {
+                refToSelectChangingValue.value = valueRoomSelectBeforeChange;
             });
         </script>
     </template>
