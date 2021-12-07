@@ -22,7 +22,7 @@ class ChannelWubookPmsReservationLineMapperImport(Component):
     @mapping
     def price(self, record):
         price = record["price"]
-        if record["board"]:
+        if record["board"] and record["board_included"]:
             room_type = get_room_type(self, record["room_id"])
             board_service_room = get_board_service_room_type(
                 self, room_type, record["board"]
