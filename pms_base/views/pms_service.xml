@@ -31,6 +31,7 @@
                         </group>
                         <group id="main-right">
                             <field name="sequence" />
+                            <field name="icon" />
                         </group>
                     </group>
                     <notebook />
