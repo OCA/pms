@@ -112,6 +112,19 @@
                                 <field name="floors_num" />
                                 <field name="unit_floor" />
                             </group>
+                            <group col="4">
+                                <field name="balcony" />
+                                <field name="laundry_room" />
+                                <field name="parking_lot" />
+                                <field name="pets" />
+                                <field name="terrace" />
+                            </group>
+                            <group col="4">
+                                <field name="qty_half_bathroom" />
+                                <field name="qty_living_room" />
+                                <field name="qty_dining_room" />
+                                <field name="qty_kitchen" />
+                            </group>
                             <field name="room_ids">
                                 <tree editable="bottom">
                                     <field name="name" />
