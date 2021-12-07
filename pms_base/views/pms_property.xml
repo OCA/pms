@@ -130,6 +130,7 @@
                                     <field name="name" />
                                     <field name="type_id" />
                                     <field name="capacity" />
+                                    <field name="area" />
                                 </tree>
                             </field>
                         </page>
