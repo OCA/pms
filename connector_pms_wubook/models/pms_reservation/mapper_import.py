@@ -50,7 +50,10 @@ class ChannelWubookPmsReservationMapperImport(Component):
 
     _apply_on = "channel.wubook.pms.reservation"
 
-    direct = [("occupancy", "adults")]
+    direct = [
+        ("occupancy", "adults"),
+        ("ota_reservation_code", "ota_reservation_code"),
+    ]
 
     children = [
         ("lines", "reservation_line_ids", "channel.wubook.pms.reservation.line"),
@@ -74,11 +77,6 @@ class ChannelWubookPmsReservationMapperImport(Component):
                     self, room_type, record["board"]
                 ).id
             }
-
-    @mapping
-    def ota_reservation_code(self, record):
-        if record["ota_reservation_code"]:
-            return {"ota_reservation_code": record["ota_reservation_code"]}
 
     @mapping
     def dates(self, record):
