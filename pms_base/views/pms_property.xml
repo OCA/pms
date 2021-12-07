@@ -90,13 +90,7 @@
                         <page string="Information" name="info">
                             <group id="info">
                                 <group id="info-left">
-                                    <label for="area" />
-                                    <div class="o_row" name="area">
-                                        <field name="area" />
-                                        <span>
-                                            <field name="area_uom_id" />
-                                        </span>
-                                    </div>
+                                    <field name="area" />
                                     <field name="heating" />
                                 </group>
                                 <group id="info-right" />
