@@ -72,7 +72,6 @@ class PmsProperty(models.Model):
         selection=_tz_get,
     )
     area = fields.Float(string="Area")
-    area_uom_id = fields.Many2one(string="Area UOM", comodel_name="uom.uom")
     heating = fields.Selection(
         string="Heating",
         selection=[
