@@ -276,6 +276,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                             "room_id": room_id,
                             "board": board,
                             "occupancy": occupancies_d[room_id],
+                            "board_included": id_channel != 0,
                         }
                     )
 
