@@ -36,3 +36,6 @@ class PmsService(models.Model):
     vendor_id = fields.Many2one(
         string="Vendor", required=True, comodel_name="res.partner", ondelete="restrict"
     )
+    icon = fields.Char(
+        string="Website Icon", help="Set Icon name from https://fontawesome.com/"
+    )
