@@ -86,6 +86,27 @@ class PmsProperty(models.Model):
     team_id = fields.Many2one("pms.team", string="Team")
     floors_num = fields.Integer(string="Floor")
     unit_floor = fields.Integer(string="Unit Floor")
+    balcony = fields.Boolean(string="Balcony", compute="_compute_balcony", store=True)
+    laundry_room = fields.Boolean(
+        string="Laundry Room", compute="_compute_laundry_room", store=True
+    )
+    parking_lot = fields.Boolean(
+        string="Parking Lot", compute="_compute_parking_lot", store=True
+    )
+    pets = fields.Boolean(string="Pets", compute="_compute_pets", store=True)
+    terrace = fields.Boolean(string="Terrace", compute="_compute_terrace", store=True)
+    qty_half_bathroom = fields.Integer(
+        string="Qty Half Bathroom", compute="_compute_qty_half_bathroom", store=True
+    )
+    qty_living_room = fields.Integer(
+        string="Qty Living Room", compute="_compute_qty_living_room", store=True
+    )
+    qty_dining_room = fields.Integer(
+        string="Qty Dining Room", compute="_compute_qty_dining_room", store=True
+    )
+    qty_kitchen = fields.Integer(
+        string="Qty Kitchen", compute="_compute_qty_kitchen", store=True
+    )
 
     @api.depends("property_child_ids")
     def _compute_childs_property(self):
@@ -95,6 +116,42 @@ class PmsProperty(models.Model):
     @api.depends("room_ids")
     def _compute_room_count(self):
         self.room_count = len(self.room_ids)
+
+    @api.depends("room_ids")
+    def _compute_balcony(self):
+        self.balcony = False
+
+    @api.depends("room_ids", "amenity_ids")
+    def _compute_laundry_room(self):
+        self.laundry_room = False
+
+    @api.depends("room_ids", "amenity_ids")
+    def _compute_parking_lot(self):
+        self.parking_lot = False
+
+    @api.depends("room_ids", "amenity_ids")
+    def _compute_pets(self):
+        self.pets = False
+
+    @api.depends("room_ids")
+    def _compute_terrace(self):
+        self.terrace = False
+
+    @api.depends("room_ids")
+    def _compute_qty_half_bathroom(self):
+        self.qty_half_bathroom = 0
+
+    @api.depends("room_ids")
+    def _compute_qty_living_room(self):
+        self.qty_living_room = 0
+
+    @api.depends("room_ids")
+    def _compute_qty_dining_room(self):
+        self.qty_dining_room = 0
+
+    @api.depends("room_ids")
+    def _compute_qty_kitchen(self):
+        self.qty_kitchen = 0
 
     def action_view_childs_property_list(self):
         action = self.env["ir.actions.actions"]._for_xml_id(
