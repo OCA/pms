@@ -12,4 +12,16 @@
         <field name="name">Kitchen facilities</field>
     </record>
 
+    <record id="pms_amenity_type_3" model="pms.amenity.type">
+        <field name="name">Laundry Room</field>
+    </record>
+
+    <record id="pms_amenity_type_4" model="pms.amenity.type">
+        <field name="name">Parking Lot</field>
+    </record>
+
+    <record id="pms_amenity_type_5" model="pms.amenity.type">
+        <field name="name">Pets</field>
+    </record>
+
 </odoo>

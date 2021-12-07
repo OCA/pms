@@ -75,4 +75,24 @@
         <field name="sequence">90</field>
     </record>
 
+    <record id="pms_room_type_laundry" model="pms.room.type">
+        <field name="name">Laundry Room</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="pms_room_type_parking_lot" model="pms.room.type">
+        <field name="name">Parking Lot</field>
+        <field name="sequence">110</field>
+    </record>
+
+    <record id="pms_room_type_pets" model="pms.room.type">
+        <field name="name">Pets</field>
+        <field name="sequence">120</field>
+    </record>
+
+    <record id="pms_room_type_half_bath" model="pms.room.type">
+        <field name="name">Half Bathroom</field>
+        <field name="sequence">130</field>
+    </record>
+
 </odoo>
