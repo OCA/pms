@@ -284,10 +284,7 @@ class ChannelWubookPmsFolioAdapter(Component):
                     {
                         "room_id": room_id,
                         "arrival_hour": value["arrival_hour"],
-                        # TODO: make this id_channel dependant
-                        "ota_reservation_code": room["ancillary"].get(
-                            "channel_roomreservation_id"
-                        ),
+                        "ota_reservation_code": value["channel_reservation_code"],
                         "board": board,
                         "occupancy": occupancies_d[room_id],
                         "rate_id": room_rate_id,
