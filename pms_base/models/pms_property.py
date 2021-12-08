@@ -197,7 +197,9 @@ class PmsProperty(models.Model):
     @api.depends("room_ids")
     def _compute_terrace(self):
         for rec in self:
-            type_id = self.env.ref("pms_base.pms_room_type_patio", raise_if_not_found=False)
+            type_id = self.env.ref(
+                "pms_base.pms_room_type_patio", raise_if_not_found=False
+            )
             terrace = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
             if terrace:
                 rec.terrace = True
