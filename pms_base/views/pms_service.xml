@@ -1,0 +1,85 @@
+<odoo>
+    <record model="ir.ui.view" id="view_pms_service_form">
+        <field name="name">pms.service.form</field>
+        <field name="model">pms.service</field>
+        <field name="arch" type="xml">
+            <form string="Service">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="toggle_active"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                            string="Archive"
+                        >
+                            <field
+                                name="active"
+                                widget="boolean_button"
+                                options='{"terminology": "archive"}'
+                                invisible="1"
+                            />
+                        </button>
+                    </div>
+                    <label for="name" class="oe_edit_only" />
+                    <h1>
+                        <field name="name" required="True" />
+                    </h1>
+                    <group id="main">
+                        <group id="main-left">
+                            <field name="vendor_id" />
+                            <field name="property_id" />
+                        </group>
+                        <group id="main-right">
+                            <field name="sequence" />
+                            <field name="icon" />
+                        </group>
+                    </group>
+                    <notebook />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pms_service_search">
+        <field name="name">pms.service.search</field>
+        <field name="model">pms.service</field>
+        <field name="arch" type="xml">
+            <search string="Service">
+                <field name="name" />
+                <field name="vendor_id" />
+                <field name="property_id" />
+                <newline />
+                <searchpanel>
+                    <field
+                        name="vendor_id"
+                        string="Vendors"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pms_service_tree">
+        <field name="name">pms.service.tree</field>
+        <field name="model">pms.service</field>
+        <field name="arch" type="xml">
+            <tree string="Services">
+                <field name="sequence" widget="handle" />
+                <field name="property_id" />
+                <field name="name" />
+                <field name="vendor_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_pms_service">
+        <field name="name">Services</field>
+        <field name="res_model">pms.service</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
