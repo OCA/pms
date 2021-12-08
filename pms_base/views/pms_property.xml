@@ -146,7 +146,7 @@
                             groups="pms_base.group_pms_show_service"
                         >
                             <field name="service_ids">
-                                <tree>
+                                <tree editable="bottom">
                                     <field name="name" />
                                     <field name="vendor_id" />
                                 </tree>

@@ -12,11 +12,13 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-archive"
+                            string="Archive"
                         >
                             <field
                                 name="active"
                                 widget="boolean_button"
                                 options='{"terminology": "archive"}'
+                                invisible="1"
                             />
                         </button>
                     </div>
