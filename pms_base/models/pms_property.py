@@ -119,118 +119,128 @@ class PmsProperty(models.Model):
 
     @api.depends("room_ids")
     def _compute_room_count(self):
-        self.room_count = len(self.room_ids)
+        for rec in self:
+            rec.room_count = len(rec.room_ids)
 
     @api.depends("room_ids")
     def _compute_balcony(self):
-        type_id = self.env.ref(
-            "pms_base.pms_room_type_balcony", raise_if_not_found=False
-        )
-        balcony = len(self.room_ids.filtered(lambda x: x.type_id == type_id))
-        if balcony:
-            self.balcony = True
-        else:
-            self.balcony = False
+        for rec in self:
+            type_id = self.env.ref(
+                "pms_base.pms_room_type_balcony", raise_if_not_found=False
+            )
+            balcony = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
+            if balcony:
+                rec.balcony = True
+            else:
+                rec.balcony = False
 
     @api.depends("room_ids", "amenity_ids")
     def _compute_laundry_room(self):
-        room_type_id = self.env.ref(
-            "pms_base.pms_room_type_laundry", raise_if_not_found=False
-        )
-        amenity_type_id = self.env.ref(
-            "pms_base.pms_amenity_type_3", raise_if_not_found=False
-        )
-        room_count_laundry = len(
-            self.room_ids.filtered(lambda x: x.type_id == room_type_id)
-        )
-        amenity_count_laundry = len(
-            self.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
-        )
-        if room_count_laundry or amenity_count_laundry:
-            self.laundry_room = True
-        else:
-            self.laundry_room = False
+        for rec in self:
+            room_type_id = self.env.ref(
+                "pms_base.pms_room_type_laundry", raise_if_not_found=False
+            )
+            amenity_type_id = self.env.ref(
+                "pms_base.pms_amenity_type_3", raise_if_not_found=False
+            )
+            room_count_laundry = len(
+                rec.room_ids.filtered(lambda x: x.type_id == room_type_id)
+            )
+            amenity_count_laundry = len(
+                rec.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
+            )
+            if room_count_laundry or amenity_count_laundry:
+                rec.laundry_room = True
+            else:
+                rec.laundry_room = False
 
     @api.depends("room_ids", "amenity_ids")
     def _compute_parking_lot(self):
-        room_type_id = self.env.ref(
-            "pms_base.pms_room_type_parking_lot", raise_if_not_found=False
-        )
-        amenity_type_id = self.env.ref(
-            "pms_base.pms_amenity_type_4", raise_if_not_found=False
-        )
-        room_count_parking = len(
-            self.room_ids.filtered(lambda x: x.type_id == room_type_id)
-        )
-        amenity_count_parking = len(
-            self.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
-        )
-        if room_count_parking or amenity_count_parking:
-            self.parking_lot = True
-        else:
-            self.parking_lot = False
+        for rec in self:
+            room_type_id = self.env.ref(
+                "pms_base.pms_room_type_parking_lot", raise_if_not_found=False
+            )
+            amenity_type_id = self.env.ref(
+                "pms_base.pms_amenity_type_4", raise_if_not_found=False
+            )
+            room_count_parking = len(
+                rec.room_ids.filtered(lambda x: x.type_id == room_type_id)
+            )
+            amenity_count_parking = len(
+                rec.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
+            )
+            if room_count_parking or amenity_count_parking:
+                rec.parking_lot = True
+            else:
+                rec.parking_lot = False
 
     @api.depends("room_ids", "amenity_ids")
     def _compute_pets(self):
-        room_type_id = self.env.ref(
-            "pms_base.pms_room_type_pets", raise_if_not_found=False
-        )
-        amenity_type_id = self.env.ref(
-            "pms_base.pms_amenity_type_5", raise_if_not_found=False
-        )
-        room_count_pets = len(
-            self.room_ids.filtered(lambda x: x.type_id == room_type_id)
-        )
-        amenity_count_pets = len(
-            self.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
-        )
-        if room_count_pets or amenity_count_pets:
-            self.pets = True
-        else:
-            self.pets = False
+        for rec in self:
+            room_type_id = self.env.ref(
+                "pms_base.pms_room_type_pets", raise_if_not_found=False
+            )
+            amenity_type_id = self.env.ref(
+                "pms_base.pms_amenity_type_5", raise_if_not_found=False
+            )
+            room_count_pets = len(
+                rec.room_ids.filtered(lambda x: x.type_id == room_type_id)
+            )
+            amenity_count_pets = len(
+                rec.amenity_ids.filtered(lambda x: x.type_id == amenity_type_id)
+            )
+            if room_count_pets or amenity_count_pets:
+                rec.pets = True
+            else:
+                rec.pets = False
 
     @api.depends("room_ids")
     def _compute_terrace(self):
-        type_id = self.env.ref("pms_base.pms_room_type_patio", raise_if_not_found=False)
-        terrace = len(self.room_ids.filtered(lambda x: x.type_id == type_id))
-        if terrace:
-            self.terrace = True
-        else:
-            self.terrace = False
+        for rec in self:
+            type_id = self.env.ref("pms_base.pms_room_type_patio", raise_if_not_found=False)
+            terrace = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
+            if terrace:
+                rec.terrace = True
+            else:
+                rec.terrace = False
 
     @api.depends("room_ids")
     def _compute_qty_half_bathroom(self):
-        type_id = self.env.ref(
-            "pms_base.pms_room_type_half_bath", raise_if_not_found=False
-        )
-        self.qty_half_bathroom = len(
-            self.room_ids.filtered(lambda x: x.type_id == type_id)
-        )
+        for rec in self:
+            type_id = self.env.ref(
+                "pms_base.pms_room_type_half_bath", raise_if_not_found=False
+            )
+            rec.qty_half_bathroom = len(
+                rec.room_ids.filtered(lambda x: x.type_id == type_id)
+            )
 
     @api.depends("room_ids")
     def _compute_qty_living_room(self):
-        type_id = self.env.ref(
-            "pms_base.pms_room_type_living", raise_if_not_found=False
-        )
-        self.qty_living_room = len(
-            self.room_ids.filtered(lambda x: x.type_id == type_id)
-        )
+        for rec in self:
+            type_id = self.env.ref(
+                "pms_base.pms_room_type_living", raise_if_not_found=False
+            )
+            rec.qty_living_room = len(
+                rec.room_ids.filtered(lambda x: x.type_id == type_id)
+            )
 
     @api.depends("room_ids")
     def _compute_qty_dining_room(self):
-        type_id = self.env.ref(
-            "pms_base.pms_room_type_dining", raise_if_not_found=False
-        )
-        self.qty_dining_room = len(
-            self.room_ids.filtered(lambda x: x.type_id == type_id)
-        )
+        for rec in self:
+            type_id = self.env.ref(
+                "pms_base.pms_room_type_dining", raise_if_not_found=False
+            )
+            rec.qty_dining_room = len(
+                rec.room_ids.filtered(lambda x: x.type_id == type_id)
+            )
 
     @api.depends("room_ids")
     def _compute_qty_kitchen(self):
-        type_id = self.env.ref(
-            "pms_base.pms_room_type_kitchen", raise_if_not_found=False
-        )
-        self.qty_kitchen = len(self.room_ids.filtered(lambda x: x.type_id == type_id))
+        for rec in self:
+            type_id = self.env.ref(
+                "pms_base.pms_room_type_kitchen", raise_if_not_found=False
+            )
+            rec.qty_kitchen = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
 
     def action_view_childs_property_list(self):
         action = self.env["ir.actions.actions"]._for_xml_id(
