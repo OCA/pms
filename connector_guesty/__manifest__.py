@@ -1,0 +1,21 @@
+{
+    "name": "PMS Guesty Connector",
+    "author": "Casai, Odoo Community Association (OCA)",
+    "website": "https://github.com/OCA/pms",
+    "version": "14.0.1.0.0",
+    "license": "AGPL-3",
+    "depends": ["pms_sale", "queue_job", "sale_automatic_workflow"],
+    "data": [
+        "views/backend_guesty.xml",
+        "views/pms_property.xml",
+        "views/pms_property_reservation.xml",
+        "views/pms_reservation.xml",
+        "views/pms_guesty_calendar_wizard.xml",
+        "views/res_partner.xml",
+        "security/ir.model.access.csv",
+        "data/queue.job.function.csv",
+    ],
+    "installable": True,
+    "development_status": "Beta",
+    "maintainers": ["JorgeJuarezCasai"],
+}

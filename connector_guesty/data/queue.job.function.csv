@@ -1,0 +1,5 @@
+"id","method","model_id/id","channel_id/id"
+"queue_job_function_guesty_pull_listing","guesty_pull_listing","pms_base.model_pms_property","queue_job.channel_root"
+"queue_job_function_guesty_push_property","guesty_push_property","pms_base.model_pms_property","queue_job.channel_root"
+"queue_job_function_guesty_pull_reservation","guesty_pull_reservation","pms_sale.model_pms_reservation","queue_job.channel_root"
+"queue_job_function_guesty_push_reservation","guesty_push_reservation","pms_sale.model_pms_reservation","queue_job.channel_root"

@@ -1,0 +1,56 @@
+<odoo>
+
+    <record id="guesty_view_pms_property_form" model="ir.ui.view">
+        <field name="name">pms.property.form</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_form" />
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button
+                    name="action_guesty_push_property"
+                    string="Publish to Guesty"
+                    type="object"
+                />
+                <button name="property_get_price" string="Test Date" type="object" />
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Guesty Technical Info">
+                    <group>
+                        <group>
+                            <field name="guesty_id" string="Guesty ID" readonly="1" />
+                        </group>
+                    </group>
+                </page>
+                <page string="Calendar">
+                    <field name="calendar_ids" readonly="1">
+                        <tree
+                            decoration-success="state=='available'"
+                            decoration-danger="state!='available'"
+                        >
+                            <field name="listing_date" />
+                            <field name="state" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_guesty_pms_property_search">
+        <field name="name">pms.property.search</field>
+        <field name="model">pms.property</field>
+        <field name="inherit_id" ref="pms_base.view_pms_property_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='active']" position="after">
+                <separator />
+                <filter
+                    string="In Guesty"
+                    name="guesty_ok"
+                    domain="[('guesty_id', '!=', False)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

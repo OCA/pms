@@ -1,0 +1,378 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* connector_guesty
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-23 19:29+0000\n"
+"PO-Revision-Date: 2021-12-23 19:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.form_view_guesty_connector_backend
+msgid "Actions"
+msgstr "Acciones"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__api_key
+msgid "Api Key"
+msgstr "Clave del API"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__api_secret
+msgid "Api Secret"
+msgstr "Contraseña del API"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__api_url
+msgid "Api Url"
+msgstr "Liga del API"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.form_view_guesty_connector_backend
+msgid "Check Credentials"
+msgstr "Comprobar credenciales"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__cleaning_product_id
+msgid "Cleaning Product"
+msgstr "Producto de limpieza"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_res_company
+msgid "Companies"
+msgstr "Empresas"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.form_view_guesty_connector_backend
+msgid "Configuration"
+msgstr "Configuración"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/backend_guesty.py:0
+#, python-format
+msgid "Connection Test Failed!"
+msgstr "¡Error en la prueba de conexión!"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/backend_guesty.py:0
+#, python-format
+msgid "Connection Test Succeeded! Everything seems properly set up!"
+msgstr "¡La prueba de conexión se realizó correctamente! ¡Todo parece estar bien configurado!"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__create_uid
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__create_date
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_reservation.py:0
+#, python-format
+msgid "Date {}, are not available to be blocked"
+msgstr "Las fechas {} no estan disponibles"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.view_res_config_settings_form
+msgid "Define your guesty connection environment"
+msgstr "Defina su entorno de conexión a Guesty"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property_reservation__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_reservation__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_res_company__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__display_name
+#: model:ir.model.fields,field_description:connector_guesty.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr "Nombre"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.form_view_guesty_connector_backend
+msgid "Download Reservations"
+msgstr "Descargar Reservas"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/backend_guesty.py:0
+#, python-format
+msgid "Failed to get customer data from guesty"
+msgstr "Error al obtener los datos de los clientes de Guesty"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property__guesty_id
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property__guesty_ids
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_reservation__guesty_id
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner__guesty_ids
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__guesty_id
+#: model:ir.model.fields,field_description:connector_guesty.field_res_users__guesty_ids
+#: model:ir.ui.menu,name:connector_guesty.menu_action_guesty_connector_backend
+#: model_terms:ir.ui.view,arch_db:connector_guesty.guesty_view_partner_form
+#: model_terms:ir.ui.view,arch_db:connector_guesty.view_res_config_settings_form
+msgid "Guesty"
+msgstr ""
+
+#. module: connector_guesty
+#: model:ir.actions.act_window,name:connector_guesty.action_guesty_connector_backend
+#: model:ir.model,name:connector_guesty.model_backend_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_res_company__guesty_backend_id
+msgid "Guesty Backend"
+msgstr ""
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.guesty_view_pms_property_form
+msgid "Guesty ID"
+msgstr "Id Guesty"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.guesty_view_reservation_form
+#: model_terms:ir.ui.view,arch_db:connector_guesty.view_res_config_settings_form
+msgid "Guesty Information"
+msgstr "Información de Guesty"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_res_partner_guesty
+msgid "Guesty Partner"
+msgstr "Contacto Guesty"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.guesty_view_pms_property_form
+msgid "Guesty Technical Info"
+msgstr "Información tecnicá de Guesty"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_res_config_settings__guesty_backend_id
+msgid "Guesty backend connector"
+msgstr "Conector a Guesty"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__id
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property__id
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property_reservation__id
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_reservation__id
+#: model:ir.model.fields,field_description:connector_guesty.field_res_company__id
+#: model:ir.model.fields,field_description:connector_guesty.field_res_config_settings__id
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner__id
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__id
+#: model:ir.model.fields,field_description:connector_guesty.field_sale_order_line__id
+msgid "ID"
+msgstr "In"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.view_guesty_pms_property_search
+msgid "In Guesty"
+msgstr "En Guesty"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/controllers/main.py:0
+#, python-format
+msgid "Invalid company"
+msgstr "Empresa no válida"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/sale_order_line.py:0
+#, python-format
+msgid "Invalid dates on SO reservation"
+msgstr "Fechas no válidas en la reserva del pedido"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property_reservation__is_guesty_price
+msgid "Is Guesty Price"
+msgstr "Es Precio Guesty"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_property_reservation____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_pms_reservation____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_res_company____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_res_config_settings____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty____last_update
+#: model:ir.model.fields,field_description:connector_guesty.field_sale_order_line____last_update
+msgid "Last Modified on"
+msgstr "Ultima modificación el"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__write_uid
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__write_uid
+msgid "Last Updated by"
+msgstr "Ultima modificación por"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__write_date
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__write_date
+msgid "Last Updated on"
+msgstr "Ultima modificación el"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/controllers/main.py:0
+#, python-format
+msgid "Listing data not found"
+msgstr "Datos de anuncios no encontrados"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_reservation.py:0
+#, python-format
+msgid "Listing: {} does not exist"
+msgstr "Anuncio: {} no existe"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_reservation.py:0
+#, python-format
+msgid "Missing guesty reservation type"
+msgstr "Falta el tipo de reserva Guesty"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_property_reservation.py:0
+#, python-format
+msgid "Multiple guesty prices are not allowed"
+msgstr "No se permiten múltiples precios de Guesty"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_reservation.py:0
+#, python-format
+msgid "No Backend defined"
+msgstr ""
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/sale_order_line.py:0
+#, python-format
+msgid "No backend defined"
+msgstr "Sin backend definido"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/controllers/main.py:0
+#, python-format
+msgid "No backend was defined"
+msgstr "No se definió ningún backend"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/controllers/main.py:0
+#, python-format
+msgid "No company was specified"
+msgstr "No se definió ningúna empresa"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/sale_order_line.py:0
+#, python-format
+msgid "No listing defined on property"
+msgstr "No hay un listing definido en la propiedad"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/sale_order_line.py:0
+#, python-format
+msgid "No property defined on SO for reservation"
+msgstr "No hay una propiedad definida en la reserva del pedido"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_res_partner_guesty__partner_id
+msgid "Partner"
+msgstr "Contacto"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_pms_property
+msgid "Property"
+msgstr "Propiedad"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_pms_property_reservation
+msgid "Property Reservation"
+msgstr "Reserva de propiedad"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_reservation.py:0
+#, python-format
+msgid "Property not linked to guesty"
+msgstr "Propiedad no vinculada a Guesty"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.guesty_view_pms_property_form
+msgid "Publish to Guesty"
+msgstr "Publicar en Guesty"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_pms_reservation
+msgid "Reservation"
+msgstr "Reservación"
+
+#. module: connector_guesty
+#: model:ir.model.fields,field_description:connector_guesty.field_backend_guesty__reservation_pull_start_date
+msgid "Reservation Pull Start Date"
+msgstr "Fecha de inicio de la extracción de reservas"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/controllers/main.py:0
+#, python-format
+msgid "Reservation data not found!"
+msgstr "¡No se encuentran los datos de la reserva!"
+
+#. module: connector_guesty
+#: model:ir.model,name:connector_guesty.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Línea de pedido de venta"
+
+#. module: connector_guesty
+#: model_terms:ir.ui.view,arch_db:connector_guesty.guesty_view_reservation_form
+msgid "Search Customer"
+msgstr "Buscar cliente"
+
+#. module: connector_guesty
+#: model:ir.actions.act_window,name:connector_guesty.action_guesty_config
+#: model:ir.ui.menu,name:connector_guesty.menu_guesty_backend_config_settings
+msgid "Settings"
+msgstr "Ajustes"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_reservation.py:0
+#, python-format
+msgid "Something went wrong"
+msgstr "Algo salió mal"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/backend_guesty.py:0
+#, python-format
+msgid "Unable to create customer"
+msgstr "No se puede crear cliente"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/pms_reservation.py:0
+#, python-format
+msgid "Unable to send to guesty"
+msgstr "No se puede mandar a Guesty"
+
+#. module: connector_guesty
+#: code:addons/connector_guesty/models/backend_guesty.py:0
+#, python-format
+msgid "Unable to sync data"
+msgstr "No se puede sincronizar datos"

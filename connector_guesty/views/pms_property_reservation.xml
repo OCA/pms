@@ -1,0 +1,23 @@
+<odoo>
+    <record id="guesty_pms_property_reservation_view_form" model="ir.ui.view">
+        <field name="name">pms.property.reservation.view.from</field>
+        <field name="model">pms.property.reservation</field>
+        <field name="inherit_id" ref="pms_sale.pms_property_reservation_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price']" position="after">
+                <field name="is_guesty_price" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="guesty_pms_property_reservation_view_tree" model="ir.ui.view">
+        <field name="name">pms.property.reservation.view.tree</field>
+        <field name="model">pms.property.reservation</field>
+        <field name="inherit_id" ref="pms_sale.pms_property_reservation_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price']" position="after">
+                <field name="is_guesty_price" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

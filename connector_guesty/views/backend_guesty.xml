@@ -1,0 +1,128 @@
+<odoo>
+
+    <record id="form_view_guesty_connector_backend" model="ir.ui.view">
+        <field name="name">Guesty Backend</field>
+        <field name="model">backend.guesty</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="check_credentials"
+                        type="object"
+                        string="Check Credentials"
+                        class="btn btn-primary"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="api_url" />
+                            <field name="api_key" />
+                            <field name="api_secret" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Actions">
+                            <button
+                                name="download_reservations"
+                                string="Download Reservations"
+                                type="object"
+                            />
+                            <button
+                                name="download_calendars"
+                                string="Download Calendars"
+                                type="object"
+                            />
+                            <button
+                                name="download_properties"
+                                string="Sync Property"
+                                type="object"
+                            />
+                        </page>
+                        <page string="Configuration">
+                            <group>
+                                <group>
+                                    <field name="reservation_pull_start_date" />
+                                    <field name="cleaning_product_id" />
+                                    <field name="extra_product_id" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_guesty_connector_backend" model="ir.actions.act_window">
+        <field name="name">Guesty Backend</field>
+        <field name="res_model">backend.guesty</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        name="Guesty"
+        id="menu_action_guesty_connector_backend"
+        action="action_guesty_connector_backend"
+        sequence="10"
+        parent="queue_job.menu_queue_job_root"
+    />
+
+
+    <!--  Settings  -->
+
+    <record id="view_res_config_settings_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.guesty.backend</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div
+                    class="app_settings_block"
+                    data-string="Property Management System"
+                    string="Guesty"
+                    data-key="backend_guesty"
+                    groups="pms_base.group_pms_manager"
+                >
+                    <h2>Guesty Information</h2>
+                    <div class="row mt16 o_settings_container" id="characteristics">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane" />
+                            <div class="o_setting_right_pane">
+                                <label for="guesty_backend_id" />
+                                <div class="text-muted">
+                                    Define your guesty connection environment
+                                </div>
+                                <field name="guesty_backend_id" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_guesty_config" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'backend_guesty'}</field>
+    </record>
+
+
+    <menuitem
+        id="menu_guesty_backend_config_settings"
+        name="Settings"
+        parent="queue_job.menu_queue_job_root"
+        sequence="50"
+        action="action_guesty_config"
+    />
+</odoo>

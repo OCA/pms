@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="form_view_pms_guesty_calendar_wizard" model="ir.ui.view">
+        <field name="name">form.pms.guesty.calendar.wizard</field>
+        <field name="model">pms.guesty.calendar.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="property_id" />
+                        <field name="start" />
+                        <field name="stop" />
+                    </group>
+                </group>
+                <footer>
+                    <button name="do_action" type="object" string="Do Action" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
