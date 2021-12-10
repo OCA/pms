@@ -643,7 +643,7 @@ class PmsReservation(models.Model):
         comodel_name="res.partner",
         inverse_name="reservation_possible_customer_id",
     )
-    is_mail_send = fields.Boolean(string="Mail Sent", default=False)
+    to_send_mail = fields.Boolean(string="Mail Sent", default=True)
 
     is_modified_reservation = fields.Boolean(
         string="Is A Modified Reservation",
@@ -1470,9 +1470,9 @@ class PmsReservation(models.Model):
         for record in self:
             if record.state in "draft":
                 record.is_modified_reservation = False
-            elif record.state in ("confirm", "onboard") and record.is_mail_send:
+            elif record.state in ("confirm", "onboard") and not record.to_send_mail:
                 record.is_modified_reservation = True
-                record.is_mail_send = False
+                record.to_send_mail = True
             else:
                 record.is_modified_reservation = False
 
@@ -1730,20 +1730,20 @@ class PmsReservation(models.Model):
         template = False
         pms_property = self.pms_property_id
         if (
-            not self.is_mail_send
+            self.to_send_mail
             and not self.is_modified_reservation
             and self.state not in "cancel"
         ):
             if pms_property.property_confirmed_template:
                 template = pms_property.property_confirmed_template
         elif (
-            not self.is_mail_send
+            self.to_send_mail
             and self.is_modified_reservation
             and self.state not in "cancel"
         ):
             if pms_property.property_modified_template:
                 template = pms_property.property_modified_template
-        elif not self.is_mail_send and self.state in "cancel":
+        elif self.to_send_mail and self.state in "cancel":
             if pms_property.property_canceled_template:
                 template = pms_property.property_canceled_template
         compose_form = self.env.ref(
@@ -1931,7 +1931,7 @@ class PmsReservation(models.Model):
             else:
                 record.state = "cancel"
                 record.folio_id._compute_amount()
-                record.is_mail_send = False
+                record.to_send_mail = True
 
     def action_assign(self):
         for record in self:
