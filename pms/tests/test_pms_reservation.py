@@ -3462,7 +3462,7 @@ class TestPmsReservations(TestPms):
         ----------------------
         A reservation is created. The checkin and checkout fields of
         the reservation are modified. The state of the boolean
-        is_mail_send is changed to True so that the compute of
+        to_send_mail is changed to False so that the compute of
         the is_modified_reservation field is activated correctly
         and it is verified that the state of this field is True.
         """
@@ -3482,7 +3482,7 @@ class TestPmsReservations(TestPms):
         # ACT
         writed_checkin = fields.date.today() + datetime.timedelta(days=4)
         writed_checkout = fields.date.today() + datetime.timedelta(days=6)
-        reservation.is_mail_send = True
+        reservation.to_send_mail = False
         reservation.update(
             {
                 "checkin": writed_checkin,
