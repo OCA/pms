@@ -12,3 +12,5 @@ from . import pms_reservation_info
 
 from . import pms_checkin_partner_info
 from . import pms_partner_info
+
+from . import pms_calendar_swap_info
