@@ -47,22 +47,22 @@
                         name="action_open_mail_composer"
                         string="Send Confirmation Email "
                         type="object"
-                        attrs="{'invisible':['|','|',('is_mail_send', '=', True),('is_modified_reservation', '=', True),('state', 'in', 'cancel')]}"
+                        attrs="{'invisible':['|','|',('to_send_mail', '=', False),('is_modified_reservation', '=', True),('state', 'in', 'cancel')]}"
                     />
                     <button
                         name="action_open_mail_composer"
                         string="Send Modification Email "
                         type="object"
-                        attrs="{'invisible':['|','|',('is_mail_send', '=', True), ('is_modified_reservation', '=', False), ('state', 'in', 'cancel')]}"
+                        attrs="{'invisible':['|','|',('to_send_mail', '=', False), ('is_modified_reservation', '=', False), ('state', 'in', 'cancel')]}"
                     />
                     <button
                         name="action_open_mail_composer"
                         string="Send Cancellation Email "
                         type="object"
-                        attrs="{'invisible':['|',('is_mail_send', '=', True), ('state', 'not in', 'cancel')]}"
+                        attrs="{'invisible':['|',('to_send_mail', '=', False), ('state', 'not in', 'cancel')]}"
                     />
                     <field name="state" widget="statusbar" />
-                    <field name="is_mail_send" invisible="1" />
+                    <field name="to_send_mail" invisible="1" />
                     <field name="is_modified_reservation" invisible="1" />
                 </header>
                 <div

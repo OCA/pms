@@ -21,19 +21,6 @@ class MailComposeMessage(models.TransientModel):
         return res
 
     def send_mail(self, auto_commit=False):
-        # if (
-        #     self._context.get("default_model") == "pms.folio"
-        #     and self._context.get("default_res_id")
-        #     and self._context.get("mark_so_as_sent")
-        # ):
-        #     # TODO: WorkFlow Mails
-        #     folio = self.env["pms.folio"].browse([self._context["default_res_id"]])
-        #     if folio:
-        #         cmds = [
-        #             (1, lid, {"to_send": False}) for lid in folio.reservation_ids.ids
-        #         ]
-        #         if any(cmds):
-        #             folio.reservation_ids = cmds
         res = super(MailComposeMessage, self).send_mail(auto_commit=auto_commit)
         if self._context.get("record_id"):
             folio = self.env["pms.folio"].search(
@@ -41,5 +28,5 @@ class MailComposeMessage(models.TransientModel):
             )
             reservations = folio.reservation_ids
             for reservation in reservations:
-                reservation.is_mail_send = True
+                reservation.to_send_mail = False
         return res
