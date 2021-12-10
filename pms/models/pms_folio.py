@@ -516,13 +516,6 @@ class PmsFolio(models.Model):
         compute="_compute_last_checkout",
     )
 
-    date_creation = fields.Date(
-        string="Creation Date",
-        readonly=False,
-        store=True,
-        compute="_compute_date_creation",
-    )
-
     def name_get(self):
         result = []
         for folio in self:
@@ -1302,18 +1295,17 @@ class PmsFolio(models.Model):
 
     @api.model
     def send_confirmation_mail(self):
-        today = fields.Date.today()
         folios = self.env["pms.folio"].search(
             [
                 ("reservation_type", "!=", "out"),
                 ("pms_property_id.is_confirmed_auto_mail", "=", True),
-                ("reservation_ids.is_mail_send", "=", False),
+                ("reservation_ids.to_send_mail", "=", True),
                 ("reservation_ids.is_modified_reservation", "=", False),
-                ("date_creation", "=", today),
+                ("reservation_ids.state", "!=", "cancel"),
             ]
         )
         for folio in folios:
-            if folio.email:
+            if folio.email and folio.create_date.date() == fields.Date.today():
                 template = folio.pms_property_id.property_confirmed_template
                 subject = template._render_field(
                     "subject",
@@ -1352,7 +1344,7 @@ class PmsFolio(models.Model):
                         }
                     )
                 for reservation in folio.reservation_ids:
-                    reservation.is_mail_send = True
+                    reservation.to_send_mail = False
 
     @api.model
     def send_modification_mail(self):
@@ -1360,8 +1352,9 @@ class PmsFolio(models.Model):
             [
                 ("reservation_type", "!=", "out"),
                 ("pms_property_id.is_modified_auto_mail", "=", True),
-                ("reservation_ids.is_mail_send", "=", False),
+                ("reservation_ids.to_send_mail", "=", True),
                 ("reservation_ids.is_modified_reservation", "=", True),
+                ("reservation_ids.state", "!=", "cancel"),
             ]
         )
         for folio in folios:
@@ -1406,7 +1399,7 @@ class PmsFolio(models.Model):
                         }
                     )
                 for reservation in folio.reservation_ids:
-                    reservation.is_mail_send = True
+                    reservation.to_send_mail = False
 
     @api.model
     def send_cancelation_mail(self):
@@ -1418,7 +1411,7 @@ class PmsFolio(models.Model):
             for reservation in reservations:
                 if reservation.email:
                     if (
-                        not reservation.is_mail_send
+                        not reservation.to_send_mail
                         and reservation.email
                         and reservation.state not in "out"
                     ):
@@ -1463,7 +1456,7 @@ class PmsFolio(models.Model):
                                     "message": "Cancellation Mail Delivery Failed",
                                 }
                             )
-                        reservation.is_mail_send = True
+                        reservation.to_send_mail = False
 
     def action_view_invoice(self):
         invoices = self.mapped("move_ids")
