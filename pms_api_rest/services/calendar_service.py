@@ -26,17 +26,12 @@ class PmsCalendarService(Component):
     )
     def get_calendar(self, calendar_search_param):
         domain = list()
-<<<<<<< HEAD
-        domain.append(("date", ">=", datetime.fromisoformat(calendar_search_param.date_from)))
-        domain.append(("date", "<=", datetime.fromisoformat(calendar_search_param.date_to)))
-=======
         domain.append(
             ("date", ">", datetime.fromisoformat(calendar_search_param.date_from))
         )
         domain.append(
             ("date", "<=", datetime.fromisoformat(calendar_search_param.date_to))
         )
->>>>>>> d6e6a667... [IMP] pms_api_rest: add get_reservation and get_checkin_partners
         result_lines = []
         PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
         for line in (
@@ -56,3 +51,44 @@ class PmsCalendarService(Component):
                 )
             )
         return result_lines
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/swap",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.calendar.swap.info", is_list=False),
+        auth="public",
+    )
+    def swap_reservation_slices(self, swap_info):
+        room_id_a = swap_info.roomIdA
+        room_id_b = swap_info.roomIdB
+
+        lines_room_a = self.env["pms.reservation.line"].search(
+            [
+                ("room_id", "=", room_id_a),
+                ("date", ">=", swap_info.swapFrom),
+                ("date", "<=", swap_info.swapTo),
+            ]
+        )
+
+        lines_room_b = self.env["pms.reservation.line"].search(
+            [
+                ("room_id", "=", room_id_b),
+                ("date", ">=", swap_info.swapFrom),
+                ("date", "<=", swap_info.swapTo),
+            ]
+        )
+        lines_room_a.occupies_availability = False
+        lines_room_b.occupies_availability = False
+        lines_room_a.flush()
+        lines_room_b.flush()
+        lines_room_a.room_id = room_id_b
+        lines_room_b.room_id = room_id_a
+
+        lines_room_a._compute_occupies_availability()
+        lines_room_b._compute_occupies_availability()
