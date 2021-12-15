@@ -643,7 +643,12 @@ class PmsReservation(models.Model):
         comodel_name="res.partner",
         inverse_name="reservation_possible_customer_id",
     )
-    to_send_mail = fields.Boolean(string="Mail Sent", default=True)
+    to_send_mail = fields.Boolean(
+        string="Mail Sent",
+        compute="_compute_to_send_mail",
+        readonly=False,
+        store=True,
+    )
 
     is_modified_reservation = fields.Boolean(
         string="Is A Modified Reservation",
@@ -1483,6 +1488,14 @@ class PmsReservation(models.Model):
                 record.lang = record.partner_id.lang
             else:
                 record.lang = self.env["res.lang"].get_installed()
+
+    @api.depends("reservation_type")
+    def _compute_to_send_mail(self):
+        for record in self:
+            if record.reservation_type == "out":
+                record.to_send_mail = False
+            else:
+                record.to_send_mail = True
 
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
