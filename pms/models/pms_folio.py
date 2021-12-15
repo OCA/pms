@@ -3,7 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
-from datetime import datetime
 from itertools import groupby
 
 from odoo import _, api, fields, models
@@ -1091,12 +1090,6 @@ class PmsFolio(models.Model):
                 checkouts = record.reservation_ids.mapped("checkout")
                 record.last_checkout = max(checkouts)
 
-    @api.depends("create_date")
-    def _compute_date_creation(self):
-        for record in self:
-            if record.create_date:
-                record.date_creation = datetime.strftime(record.create_date, "%Y-%m-%d")
-
     def _search_invoice_ids(self, operator, value):
         if operator == "in" and value:
             self.env.cr.execute(
@@ -1297,7 +1290,6 @@ class PmsFolio(models.Model):
     def send_confirmation_mail(self):
         folios = self.env["pms.folio"].search(
             [
-                ("reservation_type", "!=", "out"),
                 ("pms_property_id.is_confirmed_auto_mail", "=", True),
                 ("reservation_ids.to_send_mail", "=", True),
                 ("reservation_ids.is_modified_reservation", "=", False),
@@ -1350,7 +1342,6 @@ class PmsFolio(models.Model):
     def send_modification_mail(self):
         folios = self.env["pms.folio"].search(
             [
-                ("reservation_type", "!=", "out"),
                 ("pms_property_id.is_modified_auto_mail", "=", True),
                 ("reservation_ids.to_send_mail", "=", True),
                 ("reservation_ids.is_modified_reservation", "=", True),
