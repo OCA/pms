@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="channel_backend_log_view_form" model="ir.ui.view">
+        <field name="name">channel.backend.log.form</field>
+        <field name="model">channel.backend.log</field>
+        <field name="arch" type="xml">
+            <form string="PMS Channel Backend Log">
+                <header />
+                <sheet>
+                    <group>
+                        <field name="backend_id" />
+                        <field name="timestamp" />
+                    </group>
+                    <group>
+                        <field name="method_id" />
+                        <field name="arguments" />
+                    </group>
+                    <group>
+                        <field name="response_code" />
+                        <field name="response" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="channel_backend_log_view_tree" model="ir.ui.view">
+        <field name="name">channel.backend.log.tree</field>
+        <field name="model">channel.backend.log</field>
+        <field name="arch" type="xml">
+            <tree string="PMS Channel Backend Log">
+                <field name="backend_id" />
+                <field name="timestamp" />
+                <field name="method_id" />
+                <field name="arguments" />
+                <field name="response_code" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="channel_backend_log_action" model="ir.actions.act_window">
+        <field name="name">PMS Backend Log</field>
+        <field name="res_model">channel.backend.log</field>
+    </record>
+
+    <menuitem
+        id="channel_backend_log_menu"
+        name="Backend Log"
+        sequence="40"
+        parent="channel_menu"
+        action="channel_backend_log_action"
+    />
+</odoo>
