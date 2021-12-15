@@ -1639,9 +1639,10 @@ class PmsReservation(models.Model):
     @api.constrains("check_adults")
     def _check_capacity(self):
         for record in self:
-            self.env["pms.room"]._check_adults(
-                record, record.service_ids.service_line_ids
-            )
+            if record.reservation_type != "out":
+                self.env["pms.room"]._check_adults(
+                    record, record.service_ids.service_line_ids
+                )
 
     @api.constrains("reservation_type")
     def _check_same_reservation_type(self):
