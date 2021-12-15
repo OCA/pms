@@ -4,13 +4,68 @@ import datetime
 import logging
 import xmlrpc.client
 
-from odoo import _
+from odoo import _, fields
 from odoo.exceptions import ValidationError
 
 from odoo.addons.component.core import AbstractComponent
 from odoo.addons.connector_pms.components.adapter import ChannelAdapterError
 
 _logger = logging.getLogger(__name__)
+
+# TODO: move this auxiliary class to a library or connector_pms adapter
+class ChannelCallControl:
+    # https://tdocs.wubook.net/wired/policies.html#anti-flood-policies
+    def __init__(self, obj, funcname, args):
+        self.obj = obj
+        self.args = args
+        self.method = self.obj.env["channel.backend.method"].search(
+            [
+                ("name", "=", funcname),
+                (
+                    "backend_type_id",
+                    "=",
+                    self.obj.backend_record.backend_type_id.id,
+                ),
+            ]
+        )
+        if not self.method:
+            self.method = self.obj.env["channel.backend.method"].create(
+                {
+                    "name": funcname,
+                    "backend_type_id": self.obj.backend_record.backend_type_id.id,
+                }
+            )
+        self.exec_timestamp = fields.Datetime.now()
+        if self.method.limit > 0 and self.method.interval > 0:
+            calls_int = self.obj.env["channel.backend.log"].search_count(
+                [
+                    ("backend_id", "=", self.obj.backend_record.id),
+                    ("method_id", "=", self.method.id),
+                    (
+                        "timestamp",
+                        ">=",
+                        self.exec_timestamp
+                        - datetime.timedelta(minutes=self.method.interval),
+                    ),
+                ]
+            )
+            if calls_int >= self.method.limit:
+                raise ValidationError(
+                    _("Too many calls to '%s': %i in last %i minutes")
+                    % (funcname, calls_int, self.method.interval)
+                )
+
+    def add_result(self, res, data):
+        self.obj.env["channel.backend.log"].create(
+            {
+                "backend_id": self.obj.backend_record.id,
+                "timestamp": self.exec_timestamp,
+                "method_id": self.method.id,
+                "arguments": self.args,
+                "response_code": res,
+                "response": data,
+            }
+        )
 
 
 class ChannelWubookAdapter(AbstractComponent):
@@ -31,8 +86,7 @@ class ChannelWubookAdapter(AbstractComponent):
         self.property_code = self.backend_record.property_code
 
     def _exec(self, funcname, *args, pms_property=True):
-        # TODO: stats and call control
-        #   https://tdocs.wubook.net/wired/policies.html#anti-flood-policies
+        cc = ChannelCallControl(self, funcname, args)
         s = xmlrpc.client.Server(self.url)
         res, token = s.acquire_token(self.username, self.password, self.apikey)
         if res:
@@ -50,18 +104,7 @@ class ChannelWubookAdapter(AbstractComponent):
                     res = 0
                 else:
                     res, data = data
-                # DISABLEDONDEV
-                # print(" ===============", data)
-                # filename = f"wubook_api/wubook_{funcname}.log"
-                # dnow = datetime.datetime.now(
-                #     tz=pytz.timezone("Europe/Brussels")
-                # ).strftime("%d-%m-%Y %H:%M:%S")
-                # with open(filename, "a") as f:
-                #     f.write(dnow + "\n")
-                #     f.write(f"{funcname}({', '.join(map(str, args))})\n")
-                #     jdata = json.dumps(data, indent=4, sort_keys=True)
-                #     f.write(jdata + "\n")
-                #     f.write("-----------------------------------------------------\n")
+                cc.add_result(res, data)
             except xmlrpc.client.Fault as e:
                 if e.faultCode == 8002:
                     raise ChannelAdapterError(
