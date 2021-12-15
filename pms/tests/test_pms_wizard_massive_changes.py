@@ -424,6 +424,55 @@ class TestPmsWizardMassiveChanges(TestPms):
             "The wizard should create as many rules as properties given.",
         )
 
+    def test_create_rule_existing_previous(self):
+        """
+        If there's a previous rule with some value and new values are set
+        that contains date of previuos value should overwrite the value.
+        """
+        # ARRANGE
+        room_type_double = self.env["pms.room.type"].create(
+            {
+                "pms_property_ids": [self.pms_property1.id],
+                "name": "Double Test",
+                "default_code": "DBL_Test",
+                "class_id": self.room_type_class1.id,
+            }
+        )
+        date = fields.date.today()
+        initial_quota = 20
+        self.env["pms.availability.plan.rule"].create(
+            {
+                "availability_plan_id": self.availability_plan1.id,
+                "room_type_id": room_type_double.id,
+                "date": date,
+                "quota": initial_quota,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        vals_wizard = {
+            "massive_changes_on": "availability_plan",
+            "availability_plan_ids": [(6, 0, [self.availability_plan1.id])],
+            "start_date": date,
+            "end_date": fields.date.today() + datetime.timedelta(days=1),
+            "room_type_ids": [(6, 0, [room_type_double.id])],
+            "apply_quota": True,
+            "quota": 20,
+            "pms_property_ids": [self.pms_property1.id],
+        }
+
+        # ACT
+        self.env["pms.massive.changes.wizard"].create(
+            vals_wizard
+        ).apply_massive_changes()
+
+        # ASSERT
+        self.assertEqual(
+            self.availability_plan1.rule_ids[0].quota,
+            initial_quota,
+            "A rule value shouldnt overwrite with the default values "
+            "another rules for the same day and room type",
+        )
+
     # MASSIVE CHANGE WIZARD TESTS ON PRICELIST ITEMS
 
     def test_pricelist_items_create(self):

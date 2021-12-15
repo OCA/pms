@@ -1,7 +1,6 @@
 import datetime
 
 from odoo import _, api, fields, models
-from odoo.osv import expression
 
 
 class AvailabilityWizard(models.TransientModel):
@@ -391,14 +390,6 @@ class AvailabilityWizard(models.TransientModel):
         if self.end_date:
             domain.append(("date", "<=", self.end_date))
 
-        domain_overwrite = self.build_domain_rules()
-        if len(domain_overwrite):
-            if len(domain_overwrite) == 1:
-                domain.append(domain_overwrite[0][0])
-            else:
-                domain_overwrite = expression.OR(domain_overwrite)
-                domain.extend(domain_overwrite)
-
         rules = self.env["pms.availability.plan.rule"]
         if self.start_date and self.end_date:
             rules = rules.search(domain)
@@ -602,37 +593,6 @@ class AvailabilityWizard(models.TransientModel):
             self.num_pricelist_items_to_overwrite = len(
                 record.pricelist_items_to_overwrite
             )
-
-    def build_domain_rules(self):
-        for record in self:
-            domain_overwrite = []
-            if record.apply_min_stay:
-                domain_overwrite.append([("min_stay", "!=", record.min_stay)])
-            if record.apply_max_stay:
-                domain_overwrite.append([("max_stay", "!=", record.max_stay)])
-            if record.apply_min_stay_arrival:
-                domain_overwrite.append(
-                    [("min_stay_arrival", "!=", record.min_stay_arrival)]
-                )
-            if record.apply_max_stay_arrival:
-                domain_overwrite.append(
-                    [("max_stay_arrival", "!=", record.max_stay_arrival)]
-                )
-            if record.apply_quota:
-                domain_overwrite.append([("quota", "!=", record.quota)])
-            if record.apply_max_avail:
-                domain_overwrite.append([("max_avail", "!=", record.max_avail)])
-            if record.apply_closed:
-                domain_overwrite.append([("closed", "!=", record.closed)])
-            if record.apply_closed_arrival:
-                domain_overwrite.append(
-                    [("closed_arrival", "!=", record.closed_arrival)]
-                )
-            if record.apply_closed_departure:
-                domain_overwrite.append(
-                    [("closed_departure", "!=", record.closed_departure)]
-                )
-            return domain_overwrite
 
     @api.model
     def generate_product_ids_to_filter(
