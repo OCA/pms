@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 Eric Antones <eantones@nuobit.com>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="channel_backend_method_view_form" model="ir.ui.view">
+        <field name="name">channel.backend.method.form</field>
+        <field name="model">channel.backend.method</field>
+        <field name="arch" type="xml">
+            <form string="PMS Channel Backend Method">
+                <header />
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="backend_type_id" />
+                    </group>
+                    <group>
+                        <field name="limit" />
+                        <field name="interval" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="channel_backend_method_view_tree" model="ir.ui.view">
+        <field name="name">channel.backend.method.tree</field>
+        <field name="model">channel.backend.method</field>
+        <field name="arch" type="xml">
+            <tree string="PMS Channel Backend Method">
+                <field name="backend_type_id" />
+                <field name="name" />
+                <field name="limit" />
+                <field name="interval" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="channel_backend_method_action" model="ir.actions.act_window">
+        <field name="name">PMS Backend Method</field>
+        <field name="res_model">channel.backend.method</field>
+    </record>
+
+    <menuitem
+        id="channel_backend_method_menu"
+        name="Backend Methods"
+        sequence="30"
+        parent="channel_menu"
+        action="channel_backend_method_action"
+    />
+</odoo>
