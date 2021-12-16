@@ -14,8 +14,8 @@
                         <field name="backend_type_id" />
                     </group>
                     <group>
-                        <field name="limit" />
-                        <field name="interval" />
+                        <field name="max_calls" />
+                        <field name="time_window" />
                     </group>
                 </sheet>
             </form>
@@ -29,8 +29,8 @@
             <tree string="PMS Channel Backend Method">
                 <field name="backend_type_id" />
                 <field name="name" />
-                <field name="limit" />
-                <field name="interval" />
+                <field name="max_calls" />
+                <field name="time_window" />
             </tree>
         </field>
     </record>

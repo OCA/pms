@@ -22,14 +22,14 @@ class ChannelBackendMethod(models.Model):
         ondelete="restrict",
     )
 
-    limit = fields.Integer(
-        string="Limit",
-        help="Maximum number of calls to this method in the defined interval",
+    max_calls = fields.Integer(
+        string="Max Calls",
+        help="Maximum number of calls to this method in the defined time window",
     )
 
-    interval = fields.Integer(
-        string="Interval",
-        help="Interval in seconds",
+    time_window = fields.Integer(
+        string="Time Window (seconds)",
+        help="Time window in seconds",
     )
 
     _sql_constraints = [
