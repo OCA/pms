@@ -54,6 +54,15 @@ class TestWizardINE(TestPms):
                 "capacity": 3,
             }
         )
+        # room other property
+        self.room_double_property_2 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property2.id,
+                "name": "Room test, property 2",
+                "room_type_id": self.room_type.id,
+                "capacity": 2,
+            }
+        )
 
         # create document category
         self.id_category_passport = self.env["res.partner.id_category"].create(
@@ -262,6 +271,24 @@ class TestWizardINE(TestPms):
                 "reservation_id": self.reservation_3.id,
             }
         )
+        # Create reservation property 2
+        self.reservation_property_2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date.today() + datetime.timedelta(days=1),
+                "checkout": datetime.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room_double_property_2.id,
+                "partner_id": self.partner_5.id,
+                "adults": 1,
+                "pms_property_id": self.pms_property2.id,
+            }
+        )
+        self.checkin5 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.partner_5.id,
+                "reservation_id": self.reservation_property_2.id,
+            }
+        )
+
         # Create extra bed service
         product_extra_bed = self.env["product.product"].create(
             {
