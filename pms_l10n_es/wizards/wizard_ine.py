@@ -505,7 +505,12 @@ class WizardIne(models.TransientModel):
             header_tag, "CATEGORIA"
         ).text = self.pms_property_id.ine_category_id.category
         ET.SubElement(header_tag, "HABITACIONES").text = str(
-            self.env["pms.room"].search_count([("in_ine", "=", True)])
+            self.env["pms.room"].search_count(
+                [
+                    ("in_ine", "=", True),
+                    ("pms_property_id", "=", self.pms_property_id.id),
+                ]
+            )
         )
 
         ET.SubElement(header_tag, "PLAZAS_DISPONIBLES_SIN_SUPLETORIAS").text = str(
