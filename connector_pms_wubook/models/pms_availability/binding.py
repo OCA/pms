@@ -45,7 +45,7 @@ class ChannelWubookPmsAvailabilityBinding(models.Model):
                 in x.availability_plan_id.channel_wubook_bind_ids.backend_id
             )
             if not rules:
-                with self.backend_id.work_on("channel.wubook.pms.room.type") as work:
+                with record.backend_id.work_on("channel.wubook.pms.room.type") as work:
                     binder = work.component(usage="binder")
                 min_avail = min(
                     record.real_avail,
