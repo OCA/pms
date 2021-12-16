@@ -2,7 +2,12 @@
 <odoo>
 <template id="report_folio_document">
     <t t-call="web.external_layout">
-        <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)" />
+        <t t-if="doc">
+            <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)" />
+        </t>
+        <t t-if="folio">
+            <t t-set="doc" t-value="folio" />
+        </t>
         <t t-set="address">
             <div class="row">
                     <div class="col-xs-6">
