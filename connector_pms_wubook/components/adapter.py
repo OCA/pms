@@ -45,14 +45,14 @@ class ChannelCallControl:
                         "timestamp",
                         ">=",
                         self.exec_timestamp
-                        - datetime.timedelta(minutes=self.method.interval),
+                        - datetime.timedelta(seconds=self.method.interval),
                     ),
                 ]
             )
             if calls_int >= self.method.limit:
                 raise ValidationError(
                     _("Too many calls to '%s': %i in last %i minutes")
-                    % (funcname, calls_int, self.method.interval)
+                    % (funcname, calls_int, int(self.method.interval / 60))
                 )
 
     def add_result(self, res, data):
