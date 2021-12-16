@@ -12,3 +12,9 @@ class PmsRoomType(models.Model):
         inverse_name="odoo_id",
         string="Channel Wubook PMS Bindings",
     )
+
+    # def get_binding(self, backend):
+    #     self.ensure_one()
+    #     return self.channel_wubook_bind_ids.filtered(
+    #         lambda x: x.backend_id == backend
+    #     )
