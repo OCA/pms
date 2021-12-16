@@ -45,6 +45,10 @@ class GenericExporterCustom(AbstractComponent):
     def _mapper_options(self):
         return {"binding": self.binding}
 
+    def _force_binding_creation(self, relation):
+        if not self.binding:
+            self.binding = self.binder.wrap_record(relation, force=True)
+
     def run(self, relation, *args, **kwargs):
         """Run the synchronization
 
@@ -61,10 +65,10 @@ class GenericExporterCustom(AbstractComponent):
             )
 
         # if still not binding, create an empty one
-        if not self.binding:
-            self.binding = self.binder.wrap_record(relation, force=True)
+        self._force_binding_creation(relation)
 
-        self.external_id = self.binder.to_external(self.binding)
+        if self.binding:
+            self.external_id = self.binder.to_external(self.binding)
 
         try:
             should_import = self._should_import()
