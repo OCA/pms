@@ -63,6 +63,10 @@ class ChannelWubookProductPricelistChildBinderMapperExport(Component):
                 map_record.source.synced_export,
                 map_record.source.wubook_item_type == "standard"
                 and not map_record.source.odoo_id.wubook_date_valid(),
+                map_record.source.wubook_item_type == "standard"
+                and not map_record.source.product_id.room_type_id.channel_wubook_bind_ids.filtered(
+                    lambda x: x.backend_id == self.backend_record
+                ),
             ]
         )
 

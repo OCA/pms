@@ -25,7 +25,7 @@ class ChannelWubookPmsAvailabilityExporter(Component):
 
     _apply_on = "channel.wubook.pms.availability"
 
-    def _export_dependencies(self):
-        self._export_dependency(
-            self.binding.room_type_id, "channel.wubook.pms.room.type"
-        )
+    # def _export_dependencies(self):
+    #     self._export_dependency(
+    #         self.binding.room_type_id, "channel.wubook.pms.room.type"
+    #     )
