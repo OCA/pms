@@ -29,7 +29,7 @@ class ChannelBackendMethod(models.Model):
 
     interval = fields.Integer(
         string="Interval",
-        help="Interval in minutes",
+        help="Interval in seconds",
     )
 
     _sql_constraints = [
