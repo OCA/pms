@@ -5308,7 +5308,7 @@ msgid "Mail Information"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_reservation__is_mail_send
+#: model:ir.model.fields,field_description:pms.field_pms_reservation__to_send_mail
 msgid "Mail Sent"
 msgstr ""
 
