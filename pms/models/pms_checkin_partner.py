@@ -219,8 +219,6 @@ class PmsCheckinPartner(models.Model):
 
     possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
-        readonly=False,
-        store=True,
         compute="_compute_possible_existing_customer_ids",
         comodel_name="res.partner",
         inverse_name="checkin_partner_possible_customer_id",
