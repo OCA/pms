@@ -39,6 +39,9 @@ class ChannelWubookPmsAvailabilityPlanChildBinderMapperExport(Component):
                 != self.backend_record.pms_property_id,
                 map_record.source.synced_export,
                 not map_record.source.odoo_id.wubook_date_valid(),
+                not map_record.source.room_type_id.channel_wubook_bind_ids.filtered(
+                    lambda x: x.backend_id == self.backend_record
+                ),
             ]
         )
 

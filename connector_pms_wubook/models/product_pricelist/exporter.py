@@ -25,16 +25,16 @@ class ChannelWubookProductPricelistExporter(Component):
 
     _apply_on = "channel.wubook.product.pricelist"
 
-    def _export_dependencies(self):
-        for room_type in self.binding.item_ids.filtered(
-            lambda x: x.wubook_item_type == "standard"
-        ).mapped("product_id.room_type_id"):
-            self._export_dependency(room_type, "channel.wubook.pms.room.type")
-
-        for pricelist in self.binding.item_ids.filtered(
-            lambda x: x.wubook_item_type == "virtual"
-        ).mapped("base_pricelist_id"):
-            self._export_dependency(pricelist, "channel.wubook.product.pricelist")
+    # def _export_dependencies(self):
+    #     for room_type in self.binding.item_ids.filtered(
+    #         lambda x: x.wubook_item_type == "standard"
+    #     ).mapped("product_id.room_type_id"):
+    #         self._export_dependency(room_type, "channel.wubook.pms.room.type")
+    #
+    #     for pricelist in self.binding.item_ids.filtered(
+    #         lambda x: x.wubook_item_type == "virtual"
+    #     ).mapped("base_pricelist_id"):
+    #         self._export_dependency(pricelist, "channel.wubook.product.pricelist")
 
     def _has_to_skip(self):
         return any(
