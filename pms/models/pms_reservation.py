@@ -637,8 +637,6 @@ class PmsReservation(models.Model):
 
     possible_existing_customer_ids = fields.One2many(
         string="Possible existing customer",
-        readonly=False,
-        store=True,
         compute="_compute_possible_existing_customer_ids",
         comodel_name="res.partner",
         inverse_name="reservation_possible_customer_id",
