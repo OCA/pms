@@ -36,7 +36,7 @@ class ChannelCallControl:
                 }
             )
         self.exec_timestamp = fields.Datetime.now()
-        if self.method.limit > 0 and self.method.interval > 0:
+        if self.method.max_calls > 0 and self.method.time_window > 0:
             calls_int = self.obj.env["channel.backend.log"].search_count(
                 [
                     ("backend_id", "=", self.obj.backend_record.id),
@@ -45,14 +45,14 @@ class ChannelCallControl:
                         "timestamp",
                         ">=",
                         self.exec_timestamp
-                        - datetime.timedelta(seconds=self.method.interval),
+                        - datetime.timedelta(seconds=self.method.time_window),
                     ),
                 ]
             )
-            if calls_int >= self.method.limit:
+            if calls_int >= self.method.max_calls:
                 raise ValidationError(
                     _("Too many calls to '%s': %i in last %i minutes")
-                    % (funcname, calls_int, int(self.method.interval / 60))
+                    % (funcname, calls_int, int(self.method.time_window / 60))
                 )
 
     def add_result(self, res, data):
