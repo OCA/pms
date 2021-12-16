@@ -41,3 +41,6 @@ class ChannelWubookPmsRoomTypeExporter(Component):
                 in self.backend_record.backend_type_id.child_id.room_type_class_ids.get_nosync_shortnames(),
             ]
         )
+
+    def _force_binding_creation(self, relation):
+        pass
