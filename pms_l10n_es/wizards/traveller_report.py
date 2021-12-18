@@ -79,6 +79,7 @@ class TravellerReport(models.TransientModel):
                     ("state", "=", "onboard"),
                     ("arrival", ">=", str(date.today()) + " 0:00:00"),
                     ("arrival", "<=", str(date.today()) + " 23:59:59"),
+                    ("pms_property_id", "=", pms_property.id),
                 ]
             )
             # build the property info record
