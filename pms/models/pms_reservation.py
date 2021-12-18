@@ -940,9 +940,15 @@ class PmsReservation(models.Model):
                 reservation.pricelist_id = (
                     reservation.agency_id.property_product_pricelist
                 )
+            # only change de pricelist if the reservation is not yet saved
+            # and the partner has a pricelist default
             elif (
                 reservation.partner_id
                 and reservation.partner_id.property_product_pricelist
+                and (
+                    not reservation.pricelist_id
+                    or not isinstance(reservation.id, models.NewId)
+                )
             ):
                 reservation.pricelist_id = (
                     reservation.partner_id.property_product_pricelist
