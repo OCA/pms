@@ -83,7 +83,6 @@ msgid "%s: No room type available"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "&amp;nbsp;<span>on</span>&amp;nbsp;"
 msgstr ""
@@ -272,7 +271,6 @@ msgid "<span class=\"o_stat_text\">Pending Payment</span>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid ""
 "<span groups=\"account.group_show_line_subtotals_tax_excluded\">Amount</span>\n"
@@ -294,13 +292,11 @@ msgid "<span>Data saved successfully!</span>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<span>Disc.%</span>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong class=\"mr16\">Subtotal</strong>"
 msgstr ""
@@ -346,7 +342,6 @@ msgid "<strong>Departure hour:</strong>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong>Fiscal Position Remark:</strong>"
 msgstr ""
@@ -357,13 +352,11 @@ msgid "<strong>Message and communication history</strong>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong>Order Date:</strong>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong>Quotation Date:</strong>"
 msgstr ""
@@ -394,19 +387,16 @@ msgid "<strong>Service total:</strong>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong>Subtotal</strong>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong>Total</strong>"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "<strong>Your Reference:</strong>"
 msgstr ""
@@ -3058,7 +3048,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__name
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__description
 #: model:ir.model.fields,field_description:pms.field_room_closure_reason__description
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Description"
 msgstr ""
@@ -6081,7 +6070,6 @@ msgid "Operations in reservations"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Order #"
 msgstr ""
@@ -7200,7 +7188,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__product_uom_qty
 #: model:ir.model.fields,field_description:pms.field_pms_service__product_qty
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_detail
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Quantity"
@@ -7230,7 +7217,6 @@ msgid "Quotation"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Quotation #"
 msgstr ""
@@ -8728,7 +8714,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__tax_ids
 #: model:ir.model.fields,field_description:pms.field_pms_service__tax_ids
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__tax_ids
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Taxes"
 msgstr ""
@@ -9740,7 +9725,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__price_unit
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__price_unit
-#: model_terms:ir.ui.view,arch_db:pms.folio_portal_content
 #: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Unit Price"
 msgstr ""
