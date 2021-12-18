@@ -55,6 +55,8 @@ class ProductProduct(models.Model):
                         _("More than one room found for the same product")
                     )
                 rec.room_type_id = room_type
+            else:
+                rec.room_type_id = False
 
     def price_compute(self, price_type, uom=False, currency=False, company=None):
         if self._context.get("board_service"):
