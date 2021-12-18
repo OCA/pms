@@ -418,7 +418,7 @@ class PmsProperty(models.Model):
             tz_property = self.tz
             dt = pytz.timezone(tz_property).localize(dt)
             dt = dt.replace(tzinfo=None)
-            dt = pytz.timezone(self.env.user.tz).localize(dt)
+            dt = pytz.timezone(self.env.user.tz or "UTC").localize(dt)
             dt = dt.astimezone(pytz.utc)
             dt = dt.replace(tzinfo=None)
         return dt
