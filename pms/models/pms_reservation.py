@@ -22,8 +22,8 @@ class PmsReservation(models.Model):
     _check_company_auto = True
 
     name = fields.Text(
-        string="Reservation Id",
-        help="Reservation Name",
+        string="Reservation Code",
+        help="Reservation Code Identification",
         readonly=True,
     )
     priority = fields.Integer(
