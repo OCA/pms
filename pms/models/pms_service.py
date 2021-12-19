@@ -106,6 +106,7 @@ class PmsService(models.Model):
         string="State",
         help="Service status, it corresponds with folio status",
         related="folio_id.state",
+        store=True,
     )
     per_day = fields.Boolean(
         string="Per Day",

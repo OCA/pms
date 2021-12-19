@@ -4,7 +4,7 @@
         <field name="name">Checkins</field>
         <field name="res_model">pms.checkin.partner</field>
         <field name="view_mode">kanban,tree,form,calendar,graph,pivot</field>
-        <field name="context">{'search_default_future':1,}</field>
+        <field name="context">{'search_default_hide_strangers':1, }</field>
     </record>
     <menuitem
         id="menu_pms_checkin_partner"
@@ -390,7 +390,7 @@
                 <filter
                     string="Hide Strangers"
                     name="hide_strangers"
-                    domain="[('state', '!=', 'draft')]"
+                    domain="[('firstname', '!=', False)]"
                 />
                 <filter string="Out" name="out" domain="[('state', '=', 'done')]" />
                 <separator />
@@ -453,12 +453,24 @@
                 </group>
                 <searchpanel>
                     <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        icon="fa-h-square"
+                    />
+                    <field
                         name="state"
                         string="State"
                         enable_counters="1"
                         select="multi"
                     />
-                    <field name="pms_property_id" enable_counters="1" select="multi" />
+                    <field
+                        name="nationality_id"
+                        string="Country"
+                        enable_counters="1"
+                        icon="fa-globe"
+                        select="multi"
+                    />
                 </searchpanel>
             </search>
         </field>
