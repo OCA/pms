@@ -63,16 +63,8 @@
                 <field name="service_id" optional="show" />
                 <field name="reservation_id" />
                 <field name="tax_ids" optional="show" />
-                <field
-                    name="discount"
-                    optional="show"
-                    attrs="{'invisible':[('is_board_service','=', True)]}"
-                />
-                <field
-                    name="price_day_total"
-                    optional="show"
-                    attrs="{'invisible':[('is_board_service','=', True)]}"
-                />
+                <field name="discount" optional="show" />
+                <field name="price_day_total" optional="show" />
             </tree>
         </field>
     </record>
@@ -143,6 +135,20 @@
                         context="{'group_by':'product_id', 'default_order': 'product_id'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        icon="fa-h-square"
+                    />
+                    <field
+                        name="product_id"
+                        string="Product"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -212,6 +218,7 @@
             'search_default_date_by_day': 1,
             'search_default_group_product_id': 1,
         }</field>
+        <field name="domain">[('cancel_discount', '=', 0)]</field>
     </record>
 
     <menuitem
