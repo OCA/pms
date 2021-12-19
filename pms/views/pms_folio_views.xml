@@ -446,7 +446,7 @@
                                         string="UoM"
                                         groups="uom.group_uom"
                                         options='{"no_open": True}'
-                                        optional="show"
+                                        optional="hide"
                                     />
                                     <field name="price_unit" />
                                     <field
@@ -466,6 +466,7 @@
                                         name="price_subtotal"
                                         widget="monetary"
                                         groups="account.group_show_line_subtotals_tax_excluded"
+                                        optional="hide"
                                     />
                                     <field
                                         name="price_total"
@@ -616,11 +617,11 @@
                     decoration-info="reservation_type == 'staff'"
                     decoration-bf="reservation_type == 'out'"
                 />
-                <field name="partner_id" />
+                <field name="partner_id" invisible="1" />
                 <field name="partner_name" select="1" />
                 <field name="date_order" select="1" />
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />
-                <field name="reservation_ids" widget="many2many_tags" optional="show" />
+                <field name="reservation_ids" widget="many2many_tags" optional="hide" />
                 <field name="reservation_type" invisible="1" />
                 <field
                     name="amount_total"
@@ -631,10 +632,16 @@
                 />
                 <field
                     name="pending_amount"
-                    sum="Total debt"
+                    sum="Total Pending"
                     widget="monetary"
                     decoration-bf="1"
                     optional="show"
+                />
+                <field
+                    name="commission"
+                    sum="Commission"
+                    widget="monetary"
+                    optional="hide"
                 />
                 <field
                     name="state"
@@ -719,18 +726,36 @@
         <field name="model">pms.folio</field>
         <field name="arch" type="xml">
             <search string="Tables Detail">
+                <field
+                    name="name"
+                    string="Name"
+                    filter_domain="[
+                        '|', '|', '|', '|',
+                        ('name', 'ilike', self),
+                        ('partner_name', 'ilike', self),
+                        ('document_number', 'ilike', self),
+                        ('partner_id.vat', 'ilike', self),
+                        ('mobile', 'ilike', self),
+                    ]"
+                />
                 <field name="partner_id" />
+                <field name="pms_property_id" />
                 <field name="partner_invoice_ids" />
                 <field name="agency_id" />
                 <filter
                     name="to_invoice"
                     string="To invoice"
-                    domain="[('invoice_status', '=', '')]"
+                    domain="[('invoice_status', '=', 'to_invoice')]"
                 />
                 <filter
                     name="payment_pending"
                     string="Payment Pending"
                     domain="[('pending_amount', '&gt;', 0)]"
+                />
+                <filter
+                    string="Create Date"
+                    name="filter_create_date"
+                    date="create_date"
                 />
                 <group expand="0" string="Group By">
                     <filter
@@ -740,17 +765,69 @@
                         context="{'group_by':'partner_id'}"
                     />
                     <filter
-                        string="Invoice Contact"
-                        name="group_invoice_contact"
-                        context="{'group_by':'partner_invoice_ids'}"
+                        string="Channel"
+                        domain="[]"
+                        name="group_channel"
+                        context="{'group_by':'channel_type_id'}"
                     />
                     <filter
-                        string="Tour Operator"
+                        string="Agency"
                         domain="[]"
                         name="group_agency"
                         context="{'group_by':'agency_id'}"
                     />
+                    <filter
+                        string="Creation Date"
+                        domain="[]"
+                        name="creation_date"
+                        context="{'group_by':'create_date'}"
+                    />
+                    <filter
+                        string="Created By"
+                        domain="[]"
+                        name="created_by"
+                        context="{'group_by':'user_id'}"
+                    />
                 </group>
+                <searchpanel>
+                    <field
+                        name="company_id"
+                        string="Company"
+                        enable_counters="1"
+                        icon="fa-building"
+                    />
+                    <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        icon="fa-h-square"
+                    />
+                    <field
+                        name="state"
+                        string="State"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="payment_state"
+                        string="Payment State"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="invoice_status"
+                        string="Invoice Status"
+                        enable_counters="1"
+                        select="multi"
+                    />
+                    <field
+                        name="channel_type_id"
+                        string="Channel"
+                        enable_counters="1"
+                        icon="fa-sitemap"
+                        expand="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

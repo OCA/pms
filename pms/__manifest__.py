@@ -89,6 +89,7 @@
         "wizards/wizard_massive_changes.xml",
         "wizards/wizard_advanced_filters.xml",
         "views/payment_transaction_views.xml",
+        "views/account_move_line_views.xml",
     ],
     "demo": [
         "demo/pms_master_data.xml",
