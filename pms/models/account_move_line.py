@@ -32,6 +32,12 @@ class AccountMoveLine(models.Model):
         store=True,
         compute="_compute_name_changed_by_user",
     )
+    pms_property_id = fields.Many2one(
+        name="Property",
+        comodel_name="pms.property",
+        related="move_id.pms_property_id",
+        store=True,
+    )
 
     @api.depends("name")
     def _compute_name_changed_by_user(self):

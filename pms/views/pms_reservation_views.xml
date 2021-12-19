@@ -217,7 +217,8 @@
                                         widget="percentpie"
                                     />
                                 </span>
-                                <span class="o_stat_text">Datos Checkin</span>
+                                <span class="o_stat_text">Checkin</span>
+                                <span class="o_stat_text">Data</span>
                             </div>
                         </button>
                         <button
@@ -293,20 +294,12 @@
                         </div>
                     </div>
                     <h3 class="oe_right">
-                        <field nolabel="1" name="name" class="oe_inline" />
-                        <i
-                            class="fa fa-long-arrow-right mx-2"
-                            aria-label="Arrow icon"
-                            title="Arrow"
-                        />
                         <field
                             name="pms_property_id"
                             options="{'no_create': True,'no_open': True}"
                             attrs="{'readonly':[('name', '!=', False)]}"
-                            nolabel="1"
-                            class="oe_inline"
                         />
-
+                        <field name="name" />
                     </h3>
                     <h3>
                         <field
@@ -328,6 +321,7 @@
                             class="oe_inline"
                             options="{'related_start_date': 'checkin'}"
                         />
+                        (<field name="nights" /> Nights)
                     </h3>
                     <h3>
                         <field
@@ -337,6 +331,7 @@
                             nolabel="1"
                             context="{'checkin': checkin, 'checkout': checkout, 'pms_property_id':pms_property_id, 'pricelist_id':pricelist_id}"
                             options="{'no_create': True,'no_open': True}"
+                            class="oe_inline"
                         />
                         <i
                             class="fa fa-long-arrow-right mx-2"
@@ -350,17 +345,13 @@
                             options="{'no_create': True,'no_open': True}"
                             placeholder="Room"
                             style="margin-right: 30px;"
+                            class="oe_inline"
                             attrs="{'invisible': [('splitted','=',True)]}"
                         />
                     </h3>
-                    <group col="8">
-                        <group
-                            colspan="2"
-                            col="3"
-                            string="General Info"
-                            name="contact_details"
-                        >
-                            <field name="partner_id" invisible="1" />
+                    <group>
+                        <group string="General Info" name="contact_details">
+                            <field name="partner_id" />
                             <field
                                 name="document_type"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
@@ -401,16 +392,8 @@
                                 placeholder="Closure reason"
                                 attrs="{'invisible':[('reservation_type','not in',('out'))]}"
                             />
-                            <field name="nights" />
-                            <field placeholder="Arrival Hour" name="arrival_hour" />
-                            <field placeholder="Departure Hour" name="departure_hour" />
                         </group>
-                        <group
-                            colspan="2"
-                            col="3"
-                            string="Reservation Details"
-                            name="reservation_details"
-                        >
+                        <group string="Reservation Details" name="reservation_details">
                             <field name="show_update_pricelist" invisible="1" />
                             <field
                                 name="pricelist_id"
@@ -447,12 +430,6 @@
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
                             <field
-                                name="folio_internal_comment"
-                                colspan="2"
-                                nolabel="1"
-                                placeholder="Reservation Notes"
-                            />
-                            <field
                                 name="agency_id"
                                 attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
                             />
@@ -460,79 +437,18 @@
                                 name="channel_type_id"
                                 attrs="{'readonly':[('agency_id','!=', False)], 'invisible': [('reservation_type', '!=', 'normal')]}"
                             />
-                        </group>
-                        <group
-                            colspan="2"
-                            class="oe_subtotal_footer oe_right"
-                            name="reservation_total"
-                            string="Amounts"
-                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
-                        >
-                            <field
-                                name="price_services"
-                                string="Only Services"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field
-                                name="price_total"
-                                string="Only Room"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field
-                                name="discount"
-                                string="Discount Room"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field
-                                name="services_discount"
-                                string="Discount Services"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field name="price_subtotal" invisible="1" />
-                            <div
-                                class="oe_subtotal_footer_separator oe_inline o_td_label"
-                            >
-                                <label
-                                    for="price_room_services_set"
-                                    string="Reservation Total"
-                                />
-                            </div>
-                            <field
-                                name="price_room_services_set"
-                                nolabel="1"
-                                class="oe_subtotal_footer_separator"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field
-                                name="commission_percent"
-                                string="Commission percent (%)"
-                            />
-                            <field
-                                name="commission_amount"
-                                string="Commission Amount"
-                                widget='monetary'
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field name="invoice_status" invisible="1" />
-                            <field name="currency_id" invisible="1" />
-                            <field
-                                name="preconfirm"
-                                attrs="{'invisible':[('folio_id', '!=', False)]}"
-                            />
-                            <field
-                                name="credit_card_details"
-                                nolabel="1"
-                                placeholder="Credit Card Details"
-                                colspan="2"
-                                attrs="{'invisible':[('folio_id','!=',False),('folio_pending_amount','&lt;=',0)]}"
-                            />
+                            <field placeholder="Arrival Hour" name="arrival_hour" />
+                            <field placeholder="Departure Hour" name="departure_hour" />
                         </group>
                         <div class="oe_clear" />
+                    </group>
+                    <group>
+                        <field
+                            name="folio_internal_comment"
+                            colspan="12"
+                            nolabel="1"
+                            placeholder="Reservation Notes"
+                        />
                     </group>
                     <group invisible="1">
                         <field
@@ -540,7 +456,6 @@
                             options="{'no_create': True}"
                             groups="base.group_multi_company"
                         />
-                        <field name="pms_property_id" invisible="1" />
                         <!-- <field name="check_rooms" invisible="1"/> -->
                         <field name="checkin_partner_pending_count" invisible="1" />
                         <!-- <field name="product_uom" string="Rent(UOM)" invisible="1" /> -->
@@ -630,9 +545,13 @@
                                             name="open_service_ids"
                                             attrs="{'invisible': [('per_day','=',False)]}"
                                         />
-                                        <field name="tax_ids" widget="many2many_tags" />
-                                        <field name="price_subtotal" />
-                                        <field name="price_tax" />
+                                        <field
+                                            name="tax_ids"
+                                            widget="many2many_tags"
+                                            optional="hide"
+                                        />
+                                        <field name="price_subtotal" optional="hide" />
+                                        <field name="price_tax" optional="hide" />
                                         <field name="discount" />
                                         <field name="price_total" />
                                         <field name="service_line_ids" invisible="1">
@@ -654,6 +573,76 @@
                                     </tree>
                                 </field>
                             </group>
+                            <group
+                                class="oe_subtotal_footer oe_right"
+                                name="reservation_total"
+                                string="Amounts"
+                                attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
+                            >
+                            <field
+                                    name="price_services"
+                                    string="Only Services"
+                                    widget="monetary"
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                            <field
+                                    name="price_total"
+                                    string="Only Room"
+                                    widget="monetary"
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                            <field
+                                    name="discount"
+                                    string="Discount Room"
+                                    widget="monetary"
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                            <field
+                                    name="services_discount"
+                                    string="Discount Services"
+                                    widget="monetary"
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                            <field name="price_subtotal" invisible="1" />
+                            <div
+                                    class="oe_subtotal_footer_separator oe_inline o_td_label"
+                                >
+                                <label
+                                        for="price_room_services_set"
+                                        string="Reservation Total"
+                                    />
+                            </div>
+                            <field
+                                    name="price_room_services_set"
+                                    nolabel="1"
+                                    class="oe_subtotal_footer_separator"
+                                    widget="monetary"
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                            <field
+                                    name="commission_percent"
+                                    string="Commission percent (%)"
+                                />
+                            <field
+                                    name="commission_amount"
+                                    string="Commission Amount"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                            <field name="invoice_status" invisible="1" />
+                            <field name="currency_id" invisible="1" />
+                            <field
+                                    name="preconfirm"
+                                    attrs="{'invisible':[('folio_id', '!=', False)]}"
+                                />
+                            <field
+                                    name="credit_card_details"
+                                    nolabel="1"
+                                    placeholder="Credit Card Details"
+                                    colspan="2"
+                                    attrs="{'invisible':[('folio_id','!=',False),('folio_pending_amount','&lt;=',0)]}"
+                                />
+                        </group>
                         </page>
                         <page
                             name="persons"
@@ -768,7 +757,7 @@
                 <field name="partner_name" />
                 <field name="room_type_id" optional="show" />
                 <field name="adults" optional="show" />
-                <field name="ratio_checkin_data" widget="progressbar" optional="show" />
+                <field name="ratio_checkin_data" widget="progressbar" optional="hide" />
                 <field name="overbooking" invisible="1" />
                 <field name="activity_ids" widget="list_activity" optional="show" />
                 <field name="user_id" optional="show" widget="many2one_avatar_user" />
@@ -779,7 +768,8 @@
                 <field name="agency_id" optional="show" />
                 <field name="channel_type_id" optional="show" />
                 <field name="price_subtotal" invisible="1" />
-                <field name="price_total" />
+                <field name="price_total" optional="hide" sum="Total" />
+                <field name="commission_amount" optional="hide" sum="Commission" />
                 <field name="folio_pending_amount" string="Folio Pending Amount" />
                 <field
                     name="state"
@@ -801,11 +791,11 @@
                     widget="badge"
                     optional="show"
                 />
-                <field name="invoice_status" optional="show" />
+                <field name="invoice_status" optional="hide" />
                 <field
                     name="company_id"
                     groups="base.group_multi_company"
-                    optional="show"
+                    optional="hide"
                     readonly="1"
                 />
                 <field
@@ -871,8 +861,15 @@
             <search string="Reservation Detail">
                 <field
                     name="name"
-                    string="Customer"
-                    filter_domain="['|', '|', '|', ('partner_name', 'ilike', self), ('document_number', 'ilike', self), ('partner_id.vat', 'ilike', self), ('mobile', 'ilike', self)]"
+                    string="Name"
+                    filter_domain="[
+                        '|', '|', '|', '|',
+                        ('name', 'ilike', self),
+                        ('partner_name', 'ilike', self),
+                        ('document_number', 'ilike', self),
+                        ('partner_id.vat', 'ilike', self),
+                        ('mobile', 'ilike', self),
+                    ]"
                 />
                 <field name="partner_id" />
                 <field name="folio_id" />
@@ -905,6 +902,16 @@
                     domain="[('overbooking', '=', 'True')]"
                 />
                 <filter
+                    string="Splitted"
+                    name="splited"
+                    domain="[('splitted', '=', 'True')]"
+                />
+                <filter
+                    string="To Assign"
+                    name="to_assign"
+                    domain="[('to_assign','=',True)]"
+                />
+                <filter
                     string="Reservations to 7 days"
                     name="next_res_week"
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=7)).strftime('%Y-%m-%d')),
@@ -924,11 +931,6 @@
                     domain="[('checkin', '&lt;', (context_today()+datetime.timedelta(days=30)).strftime('%Y-%m-%d')),
                         ('state', 'in', ['confirm','onboard'])]"
                     help="Show all reservations for which date enter is before than aprox. 1 month"
-                />
-                <filter
-                    string="To Assign"
-                    name="to_assign"
-                    domain="[('to_assign','=',True)]"
                 />
                 <separator />
                 <!--<filter
@@ -982,6 +984,23 @@
                     <!-- <filter string="Room Type" domain="[]"
                         context="{'group_by':'room_type_id'}"/> -->
                     <filter
+                        string="Property"
+                        name="pms_property"
+                        context="{'group_by':'pms_property_id'}"
+                    />
+                    <filter
+                        string="Agency"
+                        domain="[]"
+                        name="agency"
+                        context="{'group_by':'agency_id'}"
+                    />
+                    <filter
+                        string="Channel"
+                        domain="[]"
+                        name="channel"
+                        context="{'group_by':'channel_type_id'}"
+                    />
+                    <filter
                         string="Room Type"
                         domain="[]"
                         name="room_type"
@@ -1007,6 +1026,12 @@
                     />
                 </group>
                 <searchpanel>
+                    <field
+                        name="pms_property_id"
+                        string="Property"
+                        enable_counters="1"
+                        icon="fa-h-square"
+                    />
                     <field
                         name="state"
                         string="State"

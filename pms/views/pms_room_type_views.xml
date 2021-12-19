@@ -86,6 +86,7 @@
             </form>
         </field>
     </record>
+
     <record model="ir.ui.view" id="pms_room_type_view_tree">
         <field name="name">pms.room_type.tree</field>
         <field name="model">pms.room.type</field>
@@ -96,16 +97,37 @@
                 <field name="name" />
                 <field name="default_code" />
                 <field name="list_price" />
-                <field name="room_ids" />
+                <field name="room_ids" widget="many2many_tags" />
                 <field name="total_rooms_count" />
             </tree>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="pms_room_type_view_search">
+        <field name="name">pms.room.type.search</field>
+        <field name="model">pms.room.type</field>
+        <field name="arch" type="xml">
+            <search string="Room Type">
+                <field name="name" />
+                <field
+                    name="pms_property_ids"
+                    string="Property"
+                    filter_domain="[
+                        '|',
+                        ('pms_property_ids', 'ilike', self),
+                        ('pms_property_ids', '=', False),
+                    ]"
+                />
+            </search>
+        </field>
+    </record>
+
     <record model="ir.actions.act_window" id="open_pms_room_type_form_tree">
         <field name="name">Room Type</field>
         <field name="res_model">pms.room.type</field>
         <field name="view_mode">tree,form</field>
     </record>
+
     <menuitem
         name="Room Types"
         id="menu_open_pms_room_type_form_tree"
