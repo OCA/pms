@@ -1581,9 +1581,12 @@
                                             />
                                         </td>
                                         <td>
+                                            <div class="d-none"><p id="genderId"><t
+                                                        t-esc="checkin.gender"
+                                                    /></p></div>
                                             <select
                                                 class="form-control"
-                                                t-att-name="'gender'"
+                                                t-att-name="'gender-'+str(count)"
                                                 t-att-value="checkin.gender"
                                             >
                                                 <option
@@ -1672,7 +1675,7 @@
                                         </td>
                                         <td>
                                             <select
-                                                class="form-control"
+                                                class="form-control nationality"
                                                 id="country"
                                                 t-att-name="'nationality_id-'+str(count)"
                                             >
@@ -1694,7 +1697,7 @@
                                         </td>
                                         <td>
                                             <select
-                                                class="form-control"
+                                                class="form-control state"
                                                 id="state"
                                                 t-att-name="'state-'+str(count)"
                                             >
@@ -1810,12 +1813,6 @@
                                                         </option>
                                                     </t>
                                                 </select>
-                                                <t t-if="error_message">
-                                                    <span
-                                                        class="text-danger"
-                                                        t-esc="error_message.get('room_capacity_error-'+str(count))"
-                                                    />
-                                                </t>
                                             </td>
                                         </tr>
                                     </t>
@@ -1878,19 +1875,19 @@
                                                 id="btnClose"
                                                 class="btn btn-secondary"
                                                 data-dismiss="modal"
-                                            >Close</button>
+                                            >Cancel</button>
                                             <button
                                                 type="button"
                                                 id="btnRoom"
                                                 class="btn btn-primary "
-                                            >Change Room</button>
+                                            >Swap</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div
                                 class="modal fade"
-                                id="exampleModal"
+                                id="saveModal"
                                 tabindex="-1"
                                 role="dialog"
                                 aria-labelledby="exampleModalLabel"
@@ -1905,7 +1902,7 @@
                                             <h5
                                                 class="modal-title"
                                                 id="exampleModalLabel"
-                                            >Modal title</h5>
+                                            >Save Changes</h5>
                                             <button
                                                 type="button"
                                                 class="close"
@@ -1923,11 +1920,51 @@
                                                 type="button"
                                                 class="btn btn-secondary"
                                                 data-dismiss="modal"
-                                            >Close</button>
+                                            >Cancel</button>
                                             <button
                                                 type="submit"
                                                 class="btn btn-primary "
-                                            >Save changes</button>
+                                            >Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="modal fade"
+                                id="errorModal"
+                                tabindex="-1"
+                                role="dialog"
+                                aria-labelledby="exampleModalLabel"
+                                aria-hidden="true"
+                            >
+                                <div
+                                    class="modal-dialog modal-dialog-centered"
+                                    role="document"
+                                >
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5
+                                                class="modal-title"
+                                                id="exampleModalLabel"
+                                            >Room Capacity Error</h5>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                                aria-label="Close"
+                                            >
+                                                <span aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Persons can't be higher than room capacity
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button
+                                                type="button"
+                                                class="btn btn-secondary"
+                                                data-dismiss="modal"
+                                            >Close</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1937,7 +1974,7 @@
                                     type="button"
                                     class="save_button btn btn-primary float-right mb32"
                                     data-toggle="modal"
-                                    data-target="#exampleModal"
+                                    data-target="#saveModal"
                                 >
                                     Confirm
                                     <span class="fa fa-long-arrow-right" />
@@ -1958,16 +1995,18 @@
             body { padding-right: 0!important }
         </style>
         <script>
-            let select_country = document.getElementById('country')
-
-            select_country.addEventListener("change", () => {
-            let country_value = select_country.value
-            Array.from(document.getElementById('state').options).forEach(element => {
+            Array.from(document.getElementsByClassName("nationality")).forEach(select => {
+            select.addEventListener("click", () => {
+            let country_value = select.value
+            Array.from(document.getElementsByClassName('state')).forEach(select_state => {
+            Array.from(select_state.options).forEach(element => {
             if (element.getAttribute('country_id') == country_value ) {
             element.style="";
             } else {
             element.style="display:none";
             }
+            });
+            });
             });
             });
 
@@ -2013,8 +2052,12 @@
             document.getElementById('btnRoom').addEventListener("click", () => {
                 refToSelectToUpdateValue.value = valueRoomSelectBeforeChange
                 $("#modalRoom").modal().hide();
+                if (refToSelectToUpdateValue.value == ""){
+                    $("#errorModal").modal().show();
+                    refToSelectToUpdateValue.value = refToSelectChangingValue.value
+                    refToSelectChangingValue.value = valueRoomSelectBeforeChange
+                }
                 $('body').removeClass('modal-open');
-
             });
 
             document.getElementById('btnClose').addEventListener("click", () => {

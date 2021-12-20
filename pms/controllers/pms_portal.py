@@ -811,24 +811,6 @@ class PortalPrecheckin(CustomerPortal):
                     lambda r: r.preferred_room_id != reservation.preferred_room_id
                 ):
                     if reservation_folio.preferred_room_id == preferred_room:
-                        if (
-                            reservation.adults + reservation.children_occupying
-                            > preferred_room.capacity
-                            or reservation_folio.adults
-                            + reservation_folio.children_occupying
-                            > reservation.preferred_room_id.capacity
-                        ):
-
-                            values["success"] = False
-                            values["error"][
-                                "room_capacity_error-" + str(count)
-                            ] = "error"
-                            values["error_message"][
-                                "room_capacity_error-" + str(count)
-                            ] = "Persons can't be higher than room capacity"
-                            return request.render(
-                                "pms.portal_my_folio_checkin_rooming", values
-                            )
                         request.env[
                             "pms.reservation.split.join.swap.wizard"
                         ].reservations_swap(
