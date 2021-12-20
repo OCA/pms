@@ -34,7 +34,9 @@ class PmsProperty(models.Model):
         "pms.property", "parent_id", string="Children Property"
     )
     company_id = fields.Many2one(string="Company", comodel_name="res.company")
-    team_id = fields.Many2one(string="Team", comodel_name="pms.team")
+    team_id = fields.Many2one(
+        "pms.team", string="Team", default=lambda self: self._default_team_id()
+    )
     room_ids = fields.One2many(
         string="Rooms",
         help="List of rooms in the property.",
@@ -85,9 +87,6 @@ class PmsProperty(models.Model):
     childs_property_count = fields.Integer(
         "Children Count", compute="_compute_childs_property"
     )
-    team_id = fields.Many2one(
-        "pms.team", string="Team", default=lambda self: self._default_team_id()
-    )
     floors_num = fields.Integer(string="Floor")
     unit_floor = fields.Integer(string="Unit Floor")
     balcony = fields.Boolean(string="Balcony", compute="_compute_balcony", store=True)
@@ -110,6 +109,9 @@ class PmsProperty(models.Model):
     )
     qty_kitchen = fields.Integer(
         string="Qty Kitchen", compute="_compute_qty_kitchen", store=True
+    )
+    qty_bedroom = fields.Integer(
+        string="Qty Bedroom", compute="_compute_qty_bedroom", store=True
     )
 
     @api.depends("property_child_ids")
@@ -243,6 +245,14 @@ class PmsProperty(models.Model):
                 "pms_base.pms_room_type_kitchen", raise_if_not_found=False
             )
             rec.qty_kitchen = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
+
+    @api.depends("room_ids")
+    def _compute_qty_bedroom(self):
+        for rec in self:
+            type_id = self.env.ref(
+                "pms_base.pms_room_type_bed", raise_if_not_found=False
+            )
+            rec.qty_bedroom = len(rec.room_ids.filtered(lambda x: x.type_id == type_id))
 
     def action_view_childs_property_list(self):
         action = self.env["ir.actions.actions"]._for_xml_id(

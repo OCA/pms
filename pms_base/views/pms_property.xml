@@ -77,7 +77,10 @@
                         <group id="main-right">
                             <field name="parent_id" domain="[('id', '!=', id)]" />
                             <field name="tz" />
-                            <field name="owner_id" domain="[('is_property', '=', False)]" />
+                            <field
+                                name="owner_id"
+                                domain="[('is_property', '=', False)]"
+                            />
                             <field
                                 name="company_id"
                                 groups="base.group_multi_company"
@@ -106,18 +109,30 @@
                                 <field name="floors_num" />
                                 <field name="unit_floor" />
                             </group>
-                            <group col="4">
-                                <field name="balcony" />
-                                <field name="laundry_room" />
-                                <field name="parking_lot" />
-                                <field name="pets" />
-                                <field name="terrace" />
-                            </group>
-                            <group col="4">
-                                <field name="qty_half_bathroom" />
-                                <field name="qty_living_room" />
-                                <field name="qty_dining_room" />
-                                <field name="qty_kitchen" />
+                            <group id="room">
+                                <group id="room-left" string="Quantities">
+                                    <field name="qty_bedroom" string="Bedroom(s)" />
+                                    <field
+                                        name="qty_half_bathroom"
+                                        string="Half Bathroom(s)"
+                                    />
+                                    <field
+                                        name="qty_living_room"
+                                        string="Living Rom(s)"
+                                    />
+                                    <field
+                                        name="qty_dining_room"
+                                        string="Dining Room(s)"
+                                    />
+                                    <field name="qty_kitchen" string="Kitchen(s)" />
+                                </group>
+                                <group id="room-right">
+                                    <field name="balcony" />
+                                    <field name="laundry_room" />
+                                    <field name="parking_lot" />
+                                    <field name="pets" />
+                                    <field name="terrace" />
+                                </group>
                             </group>
                             <field name="room_ids">
                                 <tree editable="bottom">
