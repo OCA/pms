@@ -34,6 +34,7 @@
                             <field name="name" required="True" />
                             <field name="id" invisible="True" />
                         </h1>
+                        <field name="ref" placeholder="Reference" />
                     </div>
                     <group id="main">
                         <group id="main-left">
@@ -187,7 +188,10 @@
         <field name="model">pms.property</field>
         <field name="arch" type="xml">
             <search string="Property">
-                <field name="name" />
+                <field
+                    name="name"
+                    filter_domain="['|', ('ref', 'ilike', self), ('name', 'ilike', self)]"
+                />
                 <field name="team_id" />
                 <separator />
                 <filter
@@ -234,6 +238,7 @@
         <field name="arch" type="xml">
             <tree string="Properties">
                 <field name="active" invisible="1" />
+                <field name="ref" />
                 <field name="name" />
                 <field name="owner_id" />
                 <field name="tag_ids" widget="many2many_tags" />

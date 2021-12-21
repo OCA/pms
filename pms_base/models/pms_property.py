@@ -265,3 +265,24 @@ class PmsProperty(models.Model):
     def create(self, vals):
         vals.update({"is_property": True})
         return super(PmsProperty, self).create(vals)
+
+    def name_get(self):
+        # Prefetch the fields used by the `name_get`, so `browse` doesn't fetch other fields
+        self.browse(self.ids).read(["name", "ref"])
+        return [
+            (
+                property.id,
+                "%s%s" % (property.ref and "[%s] " % property.ref or "", property.name),
+            )
+            for property in self
+        ]
+
+    @api.model
+    def _name_search(
+        self, name, args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        args = args or []
+        domain = []
+        if name:
+            domain = ["|", ("name", operator, name), ("ref", operator, name)]
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
