@@ -39,7 +39,7 @@ class PmsBoardServiceLine(models.Model):
         help="Price for this Board Service Line/Product",
         default=lambda self: self._get_default_price(),
         compute="_compute_amount",
-        inverse="_inverse_ir_pms_property",
+        inverse="_inverse_amount",
         digits=("Product Price"),
     )
 
@@ -69,7 +69,7 @@ class PmsBoardServiceLine(models.Model):
                     if ir_pms_property:
                         record.amount = ir_pms_property.value_float
 
-    def _inverse_ir_pms_property(self):
+    def _inverse_amount(self):
         for record in self:
             pms_property_id = self.env.user.get_active_property_ids()[0]
             if pms_property_id:
