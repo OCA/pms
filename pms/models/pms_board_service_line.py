@@ -38,12 +38,66 @@ class PmsBoardServiceLine(models.Model):
         string="Amount",
         help="Price for this Board Service Line/Product",
         default=lambda self: self._get_default_price(),
+        compute="_compute_amount",
+        inverse="_inverse_ir_pms_property",
         digits=("Product Price"),
     )
 
     def _get_default_price(self):
         if self.product_id:
             return self.product_id.list_price
+
+    @api.depends_context("allowed_pms_property_ids")
+    # @api.depends("pms_property_ids")
+    def _compute_amount(self):
+        for record in self:
+            pms_property_id = self.env.user.get_active_property_ids()[0]
+            if pms_property_id:
+                model_id = self.env["ir.model"].browse(self._name).id
+                model = self.env["ir.model"].search([("model", "=", model_id)])
+                if model:
+                    field_id = self.env["ir.model.fields"].search(
+                        [("name", "=", "amount"), ("model_id", "=", model.id)]
+                    )
+                    ir_pms_property = self.env["ir.pms.property"].search(
+                        [
+                            ("pms_property_id", "=", pms_property_id),
+                            ("field_id", "=", field_id[0].id),
+                            ("record", "=", record.id),
+                        ]
+                    )
+                    if ir_pms_property:
+                        record.amount = ir_pms_property.value_float
+
+    def _inverse_ir_pms_property(self):
+        for record in self:
+            pms_property_id = self.env.user.get_active_property_ids()[0]
+            if pms_property_id:
+                model_id = self.env["ir.model"].browse(self._name).id
+                model = self.env["ir.model"].search([("model", "=", model_id)])
+                if model:
+                    field_id = self.env["ir.model.fields"].search(
+                        [("name", "=", "amount"), ("model_id", "=", model.id)]
+                    )
+                    ir_pms_property = self.env["ir.pms.property"].search(
+                        [
+                            ("pms_property_id", "=", pms_property_id),
+                            ("field_id", "=", field_id[0].id),
+                            ("record", "=", record.id),
+                        ]
+                    )
+                    if ir_pms_property:
+                        ir_pms_property.value_float = record.amount
+                    else:
+                        self.env["ir.pms.property"].create(
+                            {
+                                "pms_property_id": pms_property_id,
+                                "model_id": model.id,
+                                "field_id": field_id[0].id,
+                                "value_float": record.amount,
+                                "record": record.id,
+                            }
+                        )
 
     @api.onchange("product_id")
     def onchange_product_id(self):
