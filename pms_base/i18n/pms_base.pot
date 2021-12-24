@@ -1,0 +1,1847 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pms_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-23 19:22+0000\n"
+"PO-Revision-Date: 2021-12-23 19:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
+msgid ""
+"<br/>\n"
+"                                                Properties"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Accounting"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_needaction
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__active
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__active
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__active
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__active
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__active
+msgid "Active"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__active_lang_count
+msgid "Active Lang Count"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_exception_decoration
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_state
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_type_icon
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__additional_info
+msgid "Additional info"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Address"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__type
+msgid "Address Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__lang
+msgid ""
+"All the emails and documents sent to this contact will be translated in this"
+" language."
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Allow customers to book reservations online"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_website_sale
+msgid "Allow online booking"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_amenity
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__amenity_ids
+#: model:ir.ui.menu,name:pms_base.menu_pms_data_amenity
+#: model_terms:ir.ui.view,arch_db:pms_base.pms_amenity_view_tree
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_search
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Amenities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__amenity_ids
+msgid "Amenities available in this property"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_form
+msgid "Amenity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_amenity_type
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_amenity_type_form
+msgid "Amenity Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_amenity_type
+#: model:ir.ui.menu,name:pms_base.menu_pms_config_property_amenity_type
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_type_tree
+msgid "Amenity Types"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_form
+msgid "Archive"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
+msgid "Archived"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__area
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__area
+msgid "Area"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Area (UoM)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_attachment_count
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.stage,name:pms_base.pms_stage_available
+msgid "Available"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__balcony
+#: model:pms.room.type,name:pms_base.pms_room_type_balcony
+msgid "Balcony"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__bank_ids
+msgid "Banks"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__barcode
+msgid "Barcode"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_basement
+msgid "Basement"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_bath
+msgid "Bathroom"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_bed
+msgid "Bedroom"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Bedroom(s)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_blacklisted
+msgid "Blacklist"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_bounce
+msgid "Bounce"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
+msgid "Building"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__boiler_building
+msgid "Building Boiler"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "CRM"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.stage,name:pms_base.pms_stage_cancelled
+msgid "Cancelled"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__capacity
+msgid "Capacity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__channel_ids
+msgid "Channels"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__is_company
+msgid "Check if the contact is a company, otherwise it is a person"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__employee
+msgid "Check this box if this contact is an Employee."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__country_enforce_cities
+msgid ""
+"Check this box to ensure every address created in that country has a 'City' "
+"chosen in the list of the country's cities."
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Child Property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__childs_property_count
+msgid "Children Count"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_child_ids
+msgid "Children Property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__city
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "City"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__city_id
+msgid "City of Address"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__custom_color
+msgid "Color Code"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__color
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__color
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__color
+msgid "Color Index"
+msgstr ""
+
+#. module: pms_base
+#: code:addons/pms_base/models/pms_stage.py:0
+#, python-format
+msgid "Color code should be Hex Code. Ex:-#FFFFFF"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__commercial_partner_id
+msgid "Commercial Entity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__company_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__company_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_name
+msgid "Company Name"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__commercial_company_name
+msgid "Company Name Entity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__company_type
+msgid "Company Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_gid
+msgid "Company database ID"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_tag__company_id
+msgid "Company related to this tag"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_team__company_id
+msgid "Company related to this team"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address
+msgid "Complete Address"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_4
+msgid "Conference Room"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.ui.menu,name:pms_base.menu_config
+msgid "Configuration"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_connector_guesty
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Connect with Guesty"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_connector_wubook
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Connect with Wubook"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.amenity.type,name:pms_base.pms_amenity_type_1
+msgid "Connectivity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_res_partner
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__child_ids
+msgid "Contact"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address_complete
+msgid "Contact Address Complete"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_bounce
+msgid "Counter of the number of bounced emails for this contact"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__country_id
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Country"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.actions.act_window,help:pms_base.action_pms_tag
+msgid "Create a tag."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__create_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__create_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__credit_limit
+msgid "Credit Limit"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__partner_id
+msgid "Current property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.ui.menu,name:pms_base.menu_board
+msgid "Dashboard"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__date
+msgid "Date"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.team,name:pms_base.pms_team_default
+msgid "Default Team"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Define your unit of measure when entering area"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__description
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__description
+msgid "Description"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_amenity__active
+msgid "Determines if amenity is active"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_amenity_type__active
+msgid "Determines if amenity type is active"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_room__active
+msgid "Determines if room is active"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_service__active
+msgid "Determines if service is active"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Dining Room(s)"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_dining
+msgid "Diningroom"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__display_name
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__display_name
+#: model:ir.model.fields,field_description:pms_base.field_res_company__display_name
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:pms_base.field_res_partner__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__street_number2
+msgid "Door"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_2
+msgid "Double"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_0
+msgid "Economic"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__partner_share
+msgid ""
+"Either customer (not a user), either shared user. Indicated the current "
+"partner is a customer without access or with a limited access created for "
+"sharing data."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__tankless_electric
+msgid "Electric (Tankless)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__boiler_electric
+msgid "Electric Boiler"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__email
+msgid "Email"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__employee
+msgid "Employee"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__country_enforce_cities
+msgid "Enforce Cities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_room__sequence
+#: model:ir.model.fields,help:pms_base.field_pms_service__sequence
+msgid ""
+"Field used to change the position of the rooms in tree view.Changing the "
+"position changes the sequence"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__floors_num
+msgid "Floor"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__fold
+msgid "Folded in Kanban"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_follower_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_channel_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_channel_ids
+msgid "Followers (Channels)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_partner_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__activity_type_icon
+#: model:ir.model.fields,help:pms_base.field_pms_team__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__email_formatted
+msgid "Format email address \"Name <email@domain>\""
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__email_formatted
+msgid "Formatted Email"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__full_name
+msgid "Full Name"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_garage
+msgid "Garage"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__tankless_gas
+msgid "Gas (Tankless)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields.selection,name:pms_base.selection__pms_property__heating__boiler_gas
+msgid "Gas Boiler"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_latitude
+msgid "Geo Latitude"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_longitude
+msgid "Geo Longitude"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__date_localization
+msgid "Geolocation Date"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
+msgid "Group By"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_search
+msgid "Group By..."
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_half_bath
+msgid "Half Bathroom"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Half Bathroom(s)"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_hall
+msgid "Hall"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__heating
+msgid "Heating"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__street_number
+msgid "House"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__id
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__id
+#: model:ir.model.fields,field_description:pms_base.field_res_company__id
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__id
+#: model:ir.model.fields,field_description:pms_base.field_res_partner__id
+msgid "ID"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__im_status
+msgid "IM Status"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_exception_icon
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__activity_exception_icon
+#: model:ir.model.fields,help:pms_base.field_pms_team__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_needaction
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_unread
+#: model:ir.model.fields,help:pms_base.field_pms_team__message_needaction
+#: model:ir.model.fields,help:pms_base.field_pms_team__message_unread
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_has_error
+#: model:ir.model.fields,help:pms_base.field_pms_team__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__is_blacklisted
+msgid ""
+"If the email address is on the blacklist, the contact won't receive mass "
+"mailing anymore, from any list"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__image_1920
+msgid "Image"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__image_1024
+msgid "Image 1024"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__image_128
+msgid "Image 128"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__image_256
+msgid "Image 256"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__image_512
+msgid "Image 512"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__industry_id
+msgid "Industry"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Information"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Integrations"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__default_code
+msgid "Internal Reference"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_amenity__default_code
+msgid "Internal unique identifier of the amenity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__type
+msgid ""
+"Invoice & Delivery addresses are used in sales orders. Private addresses are"
+" only visible by authorized users."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_is_follower
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_company
+msgid "Is a Company"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__is_property
+#: model:ir.model.fields,field_description:pms_base.field_res_partner__is_property
+#: model:ir.model.fields,field_description:pms_base.field_res_users__is_property
+msgid "Is a Property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__is_closed
+msgid "Is a close stage"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__is_default
+msgid "Is a default stage"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__function
+msgid "Job Position"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_kitchen
+msgid "Kitchen"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.amenity.type,name:pms_base.pms_amenity_type_2
+msgid "Kitchen facilities"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Kitchen(s)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__lang
+msgid "Language"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_property____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_room____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_service____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag____last_update
+#: model:ir.model.fields,field_description:pms_base.field_pms_team____last_update
+#: model:ir.model.fields,field_description:pms_base.field_res_company____last_update
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings____last_update
+#: model:ir.model.fields,field_description:pms_base.field_res_partner____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__write_uid
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__write_date
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__calendar_last_notif_ack
+msgid "Last notification marked as read from base Calendar"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__laundry_room
+#: model:pms.amenity.type,name:pms_base.pms_amenity_type_3
+#: model:pms.room.type,name:pms_base.pms_room_type_laundry
+msgid "Laundry Room"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_crm
+msgid "Link a property to a lead"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Link your leads to a property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__room_ids
+msgid "List of rooms in the property."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__service_ids
+msgid "List of services available in the property."
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Living Rom(s)"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_living
+msgid "Livingroom"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_main_attachment_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_account
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage Accounting"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_account_asset
+msgid "Manage Assets"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_contract
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage Contracts"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage Depreciation and Amortization"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_sale
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage Reservations"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage accounting related information"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage amenities related to your properties"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage assets related to your properties"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage reservations"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage rooms of your properties"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage services available at your properties"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Manage utility contracts and others recurring invoices/bills"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.ui.menu,name:pms_base.menu_data
+msgid "Master Data"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__image_medium
+msgid "Medium-sized image"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__mobile
+msgid "Mobile"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__name
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity_type__name
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__name
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__name
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__name
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__name
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__name
+msgid "Name"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_amenity__name
+msgid "Name of the amenity"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.stage,name:pms_base.pms_stage_new
+msgid "New"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_date_deadline
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_summary
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_type_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__email_normalized
+msgid "Normalized Email"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__comment
+msgid "Notes"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_needaction_counter
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error_counter
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_needaction_counter
+#: model:ir.model.fields,help:pms_base.field_pms_team__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_has_error_counter
+#: model:ir.model.fields,help:pms_base.field_pms_team__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__room_count
+msgid "Number of rooms"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_unread_counter
+#: model:ir.model.fields,help:pms_base.field_pms_team__message_unread_counter
+msgid "Number of unread messages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ocn_token
+msgid "OCN Token"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Online reservation"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.ui.menu,name:pms_base.menu_operations
+msgid "Operations"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_amenity__type_id
+msgid "Organize amenities by type (multimedia, comfort, etc ...)"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__owner_id
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
+msgid "Owner"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
+msgid "Owners"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_stage
+msgid "PMS Stage"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_stage
+msgid "PMS Stages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_tag
+msgid "PMS Tag"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_team
+msgid "PMS Team"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_team
+msgid "PMS Teams"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_tag__parent_id
+msgid "Parent"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__parent_id
+msgid "Parent Property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__parent_name
+msgid "Parent name"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__parking_lot
+#: model:pms.amenity.type,name:pms_base.pms_amenity_type_4
+#: model:pms.room.type,name:pms_base.pms_room_type_parking_lot
+msgid "Parking Lot"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__same_vat_partner_id
+msgid "Partner with same Tax ID"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__pets
+#: model:pms.amenity.type,name:pms_base.pms_amenity_type_5
+#: model:pms.room.type,name:pms_base.pms_room_type_pets
+msgid "Pets"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone
+msgid "Phone"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_play
+msgid "Playroom"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_product_pricelist
+msgid "Pricelist"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.ui.menu,name:pms_base.menu_pms_data_product
+msgid "Products"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_property
+#: model:ir.actions.act_window,name:pms_base.property_action_from_dashboard
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__property_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__property_ids
+#: model:ir.ui.menu,name:pms_base.menu_config_property
+#: model:ir.ui.menu,name:pms_base.menu_pms_data_property
+#: model:ir.ui.menu,name:pms_base.menu_root
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_tree
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Properties"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__property_count
+msgid "Properties Count"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_amenity__property_ids
+msgid "Properties with access to the amenity"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_property
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__property_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__property_id
+#: model:ir.model.fields.selection,name:pms_base.selection__pms_stage__stage_type__property
+#: model_terms:ir.ui.view,arch_db:pms_base.view_partner_form_inherit_pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_kanban
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_search
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_partner_filter_inherit_pms_base
+msgid "Property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_amenity
+msgid "Property Amenity"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Property Information"
+msgstr ""
+
+#. module: pms_base
+#: model:res.groups,name:pms_base.group_pms_user
+msgid "Property Management / User"
+msgstr ""
+
+#. module: pms_base
+#: model:res.groups,name:pms_base.group_pms_manager
+msgid "Property Management/ Manager"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_room
+msgid "Property Room"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_service
+msgid "Property Service"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__module_pms_website
+msgid "Publish properties"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Publish properties to https://guesty.com and get reservations"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Publish properties to https://wubook.com and get reservations"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Publish your properties on your website"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_bedroom
+msgid "Qty Bedroom"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_dining_room
+msgid "Qty Dining Room"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_half_bathroom
+msgid "Qty Half Bathroom"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_kitchen
+msgid "Qty Kitchen"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_living_room
+msgid "Qty Living Room"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Quantities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ref
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Reference"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.ui.menu,name:pms_base.menu_report
+msgid "Reporting"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Reservations"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__activity_user_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_search
+msgid "Room"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__name
+#: model:ir.model.fields,help:pms_base.field_pms_room__name
+msgid "Room Name"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model,name:pms_base.model_pms_room_type
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__type_id
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_type_form
+msgid "Room Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_room_type
+#: model:ir.ui.menu,name:pms_base.menu_pms_config_property_room_type
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_search
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_type_tree
+msgid "Room Types"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_room
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__room_ids
+#: model:ir.ui.menu,name:pms_base.menu_pms_data_room
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_room_tree
+msgid "Rooms"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__user_id
+msgid "Salesperson"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_stage_search
+msgid "Search Stages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__self
+msgid "Self"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_room__sequence
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__sequence
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__sequence
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__sequence
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__name
+#: model:ir.model.fields,help:pms_base.field_pms_service__name
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_search
+msgid "Service"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_service
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__service_ids
+#: model:ir.ui.menu,name:pms_base.menu_pms_data_service
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_tree
+msgid "Services"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_stage__is_closed
+msgid "Services in this stage are considered as closed."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_room_type__icon
+#: model:ir.model.fields,help:pms_base.field_pms_service__icon
+msgid "Set Icon name from https://fontawesome.com/"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_config
+#: model:ir.ui.menu,name:pms_base.menu_pms_config_settings
+msgid "Settings"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__partner_share
+msgid "Share Partner"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__group_pms_show_amenity
+#: model:res.groups,name:pms_base.group_pms_show_amenity
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Show Amenities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__group_pms_show_room
+#: model:res.groups,name:pms_base.group_pms_show_room
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Show Rooms"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__group_pms_show_service
+#: model:res.groups,name:pms_base.group_pms_show_service
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Show Services"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__group_pms_show_team
+#: model:res.groups,name:pms_base.group_pms_show_team
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Show Teams"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_expiration
+msgid "Signup Expiration"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_token
+msgid "Signup Token"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_type
+msgid "Signup Token Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_valid
+msgid "Signup Token is Valid"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__signup_url
+msgid "Signup URL"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_1
+msgid "Single"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Split your properties by Team"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields.selection,name:pms_base.selection__res_company__pms_uom__ft
+msgid "Square Foot"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields.selection,name:pms_base.selection__res_company__pms_uom__m
+msgid "Square Meter"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_stage_form
+msgid "Stage"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__stage_ids
+#: model:ir.ui.menu,name:pms_base.menu_config_stage
+#: model_terms:ir.ui.view,arch_db:pms_base.view_stage_tree
+msgid "Stages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__state_id
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "State"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__activity_state
+#: model:ir.model.fields,help:pms_base.field_pms_team__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__street
+msgid "Street"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Street 2..."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__street_name
+msgid "Street Name"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "Street..."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__street2
+msgid "Street2"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_tag_form
+msgid "Tag"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.constraint,message:pms_base.constraint_pms_tag_name_uniq
+msgid "Tag name already exists!"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.actions.act_window,name:pms_base.action_pms_tag
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__category_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__tag_ids
+#: model:ir.ui.menu,name:pms_base.menu_config_tag
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_tag_tree
+msgid "Tags"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__vat
+msgid "Tax ID"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__team_id
+#: model_terms:ir.ui.view,arch_db:pms_base.view_team_form
+msgid "Team"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.constraint,message:pms_base.constraint_pms_team_name_uniq
+msgid "Team name already exists!"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__team_ids
+#: model:ir.ui.menu,name:pms_base.menu_board_pms_team
+#: model:ir.ui.menu,name:pms_base.menu_config_team
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_search
+#: model_terms:ir.ui.view,arch_db:pms_base.view_team_tree
+msgid "Teams"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__terrace
+msgid "Terrace"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_patio
+msgid "Terrace/Patio"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__vat
+msgid ""
+"The Tax Identification Number. Complete it if the contact is subjected to "
+"government taxes. Used in some legal statements."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__user_id
+msgid "The internal user in charge of this contact."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_room__capacity
+msgid "The maximum number of people that can occupy a room"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__owner_id
+msgid "The owner of the property."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__tz
+msgid "This field is used to determine the timezone of the property."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__email_normalized
+msgid ""
+"This field is used to search on email address as the primary email field can"
+" contain more than strictly an email address."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_product_pricelist
+msgid ""
+"This pricelist will be used, instead of the default one, for sales to the "
+"current partner"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_stage__fold
+msgid ""
+"This stage is folded in the kanban view when there are no record in that "
+"stage to display."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__tz
+msgid "Timezone"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__tz_offset
+msgid "Timezone offset"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__title
+msgid "Title"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.amenity.type,name:pms_base.pms_amenity_type_0
+msgid "Toiletries"
+msgstr ""
+
+#. module: pms_base
+#: model:pms.room.type,name:pms_base.pms_room_type_3
+msgid "Triple"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_amenity__type_id
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__stage_type
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_amenity_form
+#: model_terms:ir.ui.view,arch_db:pms_base.view_stage_search
+msgid "Type"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__activity_exception_decoration
+#: model:ir.model.fields,help:pms_base.field_pms_team__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_room__type_id
+msgid "Unique room type for the rooms"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__unit_floor
+msgid "Unit Floor"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_res_company__pms_uom
+#: model:ir.model.fields,field_description:pms_base.field_res_config_settings__pms_uom
+msgid "Unit of Measure"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_unread
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_unread
+msgid "Unread Messages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_unread_counter
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_stage__custom_color
+msgid "Use Hex Code only Ex:-#FFFFFF"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__barcode
+msgid "Use a barcode to identify this contact."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_stage__is_default
+msgid "Used as default stage"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__ocn_token
+msgid "Used for sending notification to registered devices"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_team__sequence
+msgid "Used to sort teams. Lower is better."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__user_ids
+msgid "Users"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__vendor_id
+msgid "Vendor"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_service_search
+msgid "Vendors"
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
+msgid "Website"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_room_type__icon
+#: model:ir.model.fields,field_description:pms_base.field_pms_service__icon
+msgid "Website Icon"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website
+msgid "Website Link"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.constraint,message:pms_base.constraint_pms_room_room_property_unique
+msgid "You cannot have more 2 rooms with the same name in the same property."
+msgstr ""
+
+#. module: pms_base
+#: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
+msgid "ZIP"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__zip
+msgid "Zip"
+msgstr ""
