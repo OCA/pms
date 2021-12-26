@@ -1,0 +1,14 @@
+<odoo>
+    <record id="demo_validator" model="auth.jwt.validator">
+        <field name="name">api_pms</field>
+        <field name="audience">api_pms</field>
+        <field name="issuer">pms</field>
+        <field name="signature_type">secret</field>
+        <field name="secret_algorithm">HS256</field>
+        <field name="secret_key">pms_secret_key_example</field>
+        <field name="user_id_strategy">login</field>
+        <field name="static_user_id">1</field>
+        <field name="partner_id_strategy">email</field>
+        <field name="partner_id_required" eval="False" />
+    </record>
+</odoo>
