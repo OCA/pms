@@ -11,12 +11,13 @@
         "base_rest_datamodel",
         "web",
         "auth_signup",
+        "auth_jwt_login",
     ],
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow"],
     },
     "data": [
-        "security/ir.model.access.csv",
+        "security/ir.model.access.csv", "data/auth_jwt_validator.xml"
     ],
     "installable": True,
 }
