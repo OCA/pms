@@ -19,7 +19,6 @@ class PmsPartnerService(Component):
             )
         ],
         output_param=Datamodel("pms.partner.info", is_list=True),
-        auth="public",
     )
     def get_partners(self):
         domain = []
