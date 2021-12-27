@@ -5,4 +5,4 @@ from . import calendar_service
 from . import partner_services
 
 from . import reservation_services
-
+from . import property_services
