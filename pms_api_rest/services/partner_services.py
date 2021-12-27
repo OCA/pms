@@ -7,7 +7,7 @@ class PmsPartnerService(Component):
     _inherit = "base.rest.service"
     _name = "pms.partner.service"
     _usage = "partners"
-    _collection = "pms.private.services"
+    _collection = "pms.services"
 
     @restapi.method(
         [
@@ -19,6 +19,7 @@ class PmsPartnerService(Component):
             )
         ],
         output_param=Datamodel("pms.partner.info", is_list=True),
+        auth="jwt_api_pms",
     )
     def get_partners(self):
         domain = []
