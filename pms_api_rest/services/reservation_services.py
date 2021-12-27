@@ -9,7 +9,7 @@ class PmsRoomService(Component):
     _inherit = "base.rest.service"
     _name = "pms.reservation.service"
     _usage = "reservations"
-    _collection = "pms.private.services"
+    _collection = "pms.services"
 
     @restapi.method(
         [
@@ -21,6 +21,8 @@ class PmsRoomService(Component):
             )
         ],
         output_param=Datamodel("pms.reservation.info", is_list=True),
+        auth="jwt_api_pms",
+
     )
     def get_reservations(self):
         domain = []
@@ -54,6 +56,8 @@ class PmsRoomService(Component):
             )
         ],
         input_param=Datamodel("pms.calendar.changes", is_list=False),
+        auth="jwt_api_pms",
+
     )
     def move_reservation_line(self, reservation_id, reservation_lines_changes):
 
