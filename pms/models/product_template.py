@@ -56,107 +56,43 @@ class ProductTemplate(models.Model):
     )
 
     @api.depends_context("allowed_pms_property_ids")
-    # @api.depends("pms_property_ids")
     def _compute_daily_limit(self):
         for record in self:
             pms_property_id = self.env.user.get_active_property_ids()[0]
-            if pms_property_id:
-                model_id = self.env["ir.model"].browse(self._name).id
-                model = self.env["ir.model"].search([("model", "=", model_id)])
-                if model:
-                    field_id = self.env["ir.model.fields"].search(
-                        [("name", "=", "daily_limit"), ("model_id", "=", model.id)]
-                    )
-                    ir_pms_property = self.env["ir.pms.property"].search(
-                        [
-                            ("pms_property_id", "=", pms_property_id),
-                            ("field_id", "=", field_id[0].id),
-                            ("record", "=", record.id),
-                        ]
-                    )
-                    if ir_pms_property:
-                        record.daily_limit = ir_pms_property.value_integer
-                    else:
-                        record.daily_limit = False
+            record.daily_limit = self.env["ir.pms.property"].get_field_value(
+                pms_property_id,
+                self._name,
+                "daily_limit",
+                record.id,
+                type(record.daily_limit),
+            )
 
     @api.depends_context("allowed_pms_property_ids")
-    # @api.depends("pms_property_ids")
     def _compute_list_price(self):
         for record in self:
             pms_property_id = self.env.user.get_active_property_ids()[0]
-            if pms_property_id:
-                model_id = self.env["ir.model"].browse(self._name).id
-                model = self.env["ir.model"].search([("model", "=", model_id)])
-                if model:
-                    field_id = self.env["ir.model.fields"].search(
-                        [("name", "=", "list_price"), ("model_id", "=", model.id)]
-                    )
-                    ir_pms_property = self.env["ir.pms.property"].search(
-                        [
-                            ("pms_property_id", "=", pms_property_id),
-                            ("field_id", "=", field_id[0].id),
-                            ("record", "=", record.id),
-                        ]
-                    )
-                    if ir_pms_property:
-                        record.list_price = ir_pms_property.value_float
+            record.list_price = self.env["ir.pms.property"].get_field_value(
+                pms_property_id,
+                self._name,
+                "list_price",
+                record.id,
+                type(record.list_price),
+            )
 
     def _inverse_daily_limit(self):
         for record in self:
             pms_property_id = self.env.user.get_active_property_ids()[0]
-            if pms_property_id:
-                model_id = self.env["ir.model"].browse(self._name).id
-                model = self.env["ir.model"].search([("model", "=", model_id)])
-                if model:
-                    field_id = self.env["ir.model.fields"].search(
-                        [("name", "=", "daily_limit"), ("model_id", "=", model.id)]
-                    )
-                    ir_pms_property = self.env["ir.pms.property"].search(
-                        [
-                            ("pms_property_id", "=", pms_property_id),
-                            ("field_id", "=", field_id[0].id),
-                            ("record", "=", record.id),
-                        ]
-                    )
-                    if ir_pms_property:
-                        ir_pms_property.value_integer = record.daily_limit
-                    else:
-                        self.env["ir.pms.property"].create(
-                            {
-                                "pms_property_id": pms_property_id,
-                                "model_id": model.id,
-                                "field_id": field_id[0].id,
-                                "value_integer": record.daily_limit,
-                                "record": record.id,
-                            }
-                        )
+            self.env["ir.pms.property"].set_field_value(
+                pms_property_id,
+                self._name,
+                "daily_limit",
+                record.id,
+                record.daily_limit,
+            )
 
     def _inverse_list_price(self):
         for record in self:
             pms_property_id = self.env.user.get_active_property_ids()[0]
-            if pms_property_id:
-                model_id = self.env["ir.model"].browse(self._name).id
-                model = self.env["ir.model"].search([("model", "=", model_id)])
-                if model:
-                    field_id = self.env["ir.model.fields"].search(
-                        [("name", "=", "list_price"), ("model_id", "=", model.id)]
-                    )
-                    ir_pms_property = self.env["ir.pms.property"].search(
-                        [
-                            ("pms_property_id", "=", pms_property_id),
-                            ("field_id", "=", field_id[0].id),
-                            ("record", "=", record.id),
-                        ]
-                    )
-                    if ir_pms_property:
-                        ir_pms_property.value_float = record.list_price
-                    else:
-                        self.env["ir.pms.property"].create(
-                            {
-                                "pms_property_id": pms_property_id,
-                                "model_id": model.id,
-                                "field_id": field_id[0].id,
-                                "value_float": record.list_price,
-                                "record": record.id,
-                            }
-                        )
+            self.env["ir.pms.property"].set_field_value(
+                pms_property_id, self._name, "list_price", record.id, record.list_price
+            )

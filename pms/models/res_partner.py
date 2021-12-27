@@ -12,6 +12,12 @@ _logger = logging.getLogger(__name__)
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
+    property_product_pricelist = fields.Many2one(
+        string="Pricelist",
+        comodel_name="product.pricelist",
+        compute="_compute_product_pricelist",
+        inverse="_inverse_product_pricelist",
+    )
     reservations_count = fields.Integer(
         string="Number of Reservations",
         help="Number of reservations of the partner",
@@ -805,6 +811,31 @@ class ResPartner(models.Model):
             }
             action["context"] = context
         return action
+
+    @api.depends_context("allowed_pms_property_ids")
+    def _compute_product_pricelist(self):
+        for record in self:
+            pms_property_id = self.env.user.get_active_property_ids()[0]
+            record.property_product_pricelist = self.env[
+                "ir.pms.property"
+            ].get_field_value(
+                pms_property_id,
+                self._name,
+                "property_product_pricelist",
+                record.id,
+                type(record.property_product_pricelist),
+            )
+
+    def _inverse_product_pricelist(self):
+        for record in self:
+            pms_property_id = self.env.user.get_active_property_ids()[0]
+            self.env["ir.pms.property"].set_field_value(
+                pms_property_id,
+                self._name,
+                "property_product_pricelist",
+                record.id,
+                record.property_product_pricelist,
+            )
 
     @api.constrains("is_agency", "sale_channel_id")
     def _check_is_agency(self):
