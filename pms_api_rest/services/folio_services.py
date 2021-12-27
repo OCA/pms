@@ -9,7 +9,7 @@ class PmsFolioService(Component):
     _inherit = "base.rest.service"
     _name = "pms.folio.service"
     _usage = "folios"
-    _collection = "pms.private.services"
+    _collection = "pms.services"
 
     @restapi.method(
         [
