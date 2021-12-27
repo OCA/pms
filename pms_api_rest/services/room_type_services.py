@@ -20,7 +20,6 @@ class PmsRoomTypeService(Component):
         ],
         input_param=Datamodel("pms.room.search.param"),
         output_param=Datamodel("pms.room.info", is_list=True),
-        auth="public",
     )
     def get_room_types(self, room_type_search_param):
         domain = []

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
@@ -9,7 +7,7 @@ class PmsPropertyComponent(Component):
     _inherit = "base.rest.service"
     _name = "pms.property.service"
     _usage = "properties"
-    _collection = "pms.reservation.service"
+    _collection = "pms.private.services"
 
     @restapi.method(
         [
@@ -22,9 +20,8 @@ class PmsPropertyComponent(Component):
         ],
         input_param=Datamodel("pms.property.search.param"),
         output_param=Datamodel("pms.property.info", is_list=True),
-        auth="public",
     )
-    def get_properties(self,property_search_param):
+    def get_properties(self, property_search_param):
         domain = []
         if property_search_param.name:
             domain.append(("name", "like", property_search_param.name))
@@ -58,7 +55,6 @@ class PmsPropertyComponent(Component):
             )
         ],
         output_param=Datamodel("pms.property.info"),
-        auth="public",
     )
     def get_property(self, property_id):
         pms_property = (
@@ -86,8 +82,7 @@ class PmsPropertyComponent(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.account.journal.info",is_list=True),
-        auth="public",
+        output_param=Datamodel("pms.account.journal.info", is_list=True),
     )
     def get_method_payments_property(self, property_id):
 
