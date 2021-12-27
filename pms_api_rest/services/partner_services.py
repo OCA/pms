@@ -7,7 +7,7 @@ class PmsPartnerService(Component):
     _inherit = "base.rest.service"
     _name = "pms.partner.service"
     _usage = "partners"
-    _collection = "pms.reservation.service"
+    _collection = "pms.private.services"
 
     @restapi.method(
         [

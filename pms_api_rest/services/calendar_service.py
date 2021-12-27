@@ -7,7 +7,7 @@ from odoo.addons.component.core import Component
 
 class PmsCalendarService(Component):
     _inherit = "base.rest.service"
-    _name = "pms.calendar.service"
+    _name = "pms.private.services"
     _usage = "calendar"
     _collection = "pms.reservation.service"
 
