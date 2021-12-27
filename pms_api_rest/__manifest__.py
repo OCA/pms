@@ -16,8 +16,6 @@
     "external_dependencies": {
         "python": ["jwt", "simplejson", "marshmallow"],
     },
-    "data": [
-        "security/ir.model.access.csv", "data/auth_jwt_validator.xml"
-    ],
+    "data": ["data/auth_jwt_validator.xml"],
     "installable": True,
 }
