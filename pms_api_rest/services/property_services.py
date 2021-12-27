@@ -86,17 +86,13 @@ class PmsPropertyComponent(Component):
     )
     def get_method_payments_property(self, property_id):
 
-        property = (
-            self.env["pms.property"].sudo().search([("id", "=", property_id)])
-        )
+        pms_property = self.env["pms.property"].sudo().search([("id", "=", property_id)])
         PmsAccountJournalInfo = self.env.datamodels["pms.account.journal.info"]
         res = []
-        if not property:
+        if not pms_property:
             pass
         else:
-            for method in  property._get_payment_methods(
-                automatic_included=True
-            ):
+            for method in pms_property._get_payment_methods(automatic_included=True):
                 payment_method = (
                     self.env["account.journal"].sudo().search([("id", "=", method.id)])
                 )
