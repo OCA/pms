@@ -22,7 +22,6 @@ class PmsFolioService(Component):
         ],
         input_param=Datamodel("pms.folio.search.param"),
         output_param=Datamodel("pms.folio.info", is_list=True),
-        auth="public",
     )
     def get_folios(self, folio_search_param):
         domain = []
@@ -117,7 +116,6 @@ class PmsFolioService(Component):
             )
         ],
         output_param=Datamodel("pms.reservation.info"),
-        auth="public",
     )
     def get_reservation(self, folio_id, reservation_id):
         reservation = (
@@ -190,7 +188,6 @@ class PmsFolioService(Component):
             )
         ],
         output_param=Datamodel("pms.checkin.partner.info", is_list=True),
-        auth="public",
     )
     def get_checkin_partners(self, folio_id, reservation_id):
         reservation = (
@@ -236,7 +233,6 @@ class PmsFolioService(Component):
             )
         ],
         output_param=Datamodel("pms.payment.info", is_list=True),
-        auth="public",
     )
     def get_folio_payments(self, folio_id):
         folio = (

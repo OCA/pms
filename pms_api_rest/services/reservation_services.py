@@ -21,7 +21,6 @@ class PmsRoomService(Component):
             )
         ],
         output_param=Datamodel("pms.reservation.info", is_list=True),
-        auth="public",
     )
     def get_reservations(self):
         domain = []
@@ -55,7 +54,6 @@ class PmsRoomService(Component):
             )
         ],
         input_param=Datamodel("pms.calendar.changes", is_list=False),
-        auth="public",
     )
     def move_reservation_line(self, reservation_id, reservation_lines_changes):
 
