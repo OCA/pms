@@ -14,7 +14,7 @@ class PmsPartnerService(Component):
     _inherit = "base.rest.service"
     _name = "pms.auth.service"
     _usage = "login"
-    _collection = "pms.public.services"
+    _collection = "pms.services"
 
     @restapi.method(
         [
@@ -27,6 +27,7 @@ class PmsPartnerService(Component):
         ],
         input_param=Datamodel("pms.api.rest.user.input", is_list=False),
         output_param=Datamodel("pms.api.rest.user.output", is_list=False),
+        auth="public",
     )
     def login(self, user):
 

@@ -7,7 +7,7 @@ class PmsPropertyComponent(Component):
     _inherit = "base.rest.service"
     _name = "pms.property.service"
     _usage = "properties"
-    _collection = "pms.private.services"
+    _collection = "pms.services"
 
     @restapi.method(
         [
@@ -20,6 +20,8 @@ class PmsPropertyComponent(Component):
         ],
         input_param=Datamodel("pms.property.search.param"),
         output_param=Datamodel("pms.property.info", is_list=True),
+        auth="jwt_api_pms",
+
     )
     def get_properties(self, property_search_param):
         domain = []
@@ -55,6 +57,8 @@ class PmsPropertyComponent(Component):
             )
         ],
         output_param=Datamodel("pms.property.info"),
+        auth="jwt_api_pms",
+
     )
     def get_property(self, property_id):
         pms_property = (
@@ -83,6 +87,8 @@ class PmsPropertyComponent(Component):
             )
         ],
         output_param=Datamodel("pms.account.journal.info", is_list=True),
+        auth="jwt_api_pms",
+
     )
     def get_method_payments_property(self, property_id):
 
