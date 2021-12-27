@@ -99,6 +99,10 @@ class PmsFolioService(Component):
                     pendingAmount=folio.pending_amount,
                     reservations=[] if not reservations else reservations,
                     salesPerson=folio.user_id.name if folio.user_id else "",
+                    paymentState=dict(folio.fields_get(["payment_state"])["payment_state"]["selection"])[
+                        folio.payment_state
+                    ] if folio.payment_state else "",
+                    propertyId=folio.pms_property_id,
                 )
             )
         return result_folios
@@ -221,3 +225,53 @@ class PmsFolioService(Component):
                     )
                 )
         return checkin_partners
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/<int:id>/payments",
+                ],
+                "GET",
+            )
+        ],
+        output_param=Datamodel("pms.payment.info", is_list=True),
+        auth="public",
+    )
+    def get_folio_payments(self, folio_id):
+        folio = (
+            self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
+        )
+        payments = []
+        PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
+        if not folio:
+            pass
+        else:
+            if folio.payment_state == "not_paid":
+                pass
+                # si el folio está sin pagar no tendrá ningún pago o envíar []?
+            else:
+                if folio.statement_line_ids:
+                    for payment in folio.statement_line_ids:
+                        payments.append(
+                            PmsPaymentInfo(
+                                id=payment.id,
+                                amount=payment.amount,
+                                journalId=payment.journal_id,
+                                journalName=payment.journal_id.name,
+                                date=str(payment.date),
+                            )
+                        )
+                if folio.payment_ids:
+                    if folio.payment_ids:
+                        for payment in folio.payment_ids:
+                            payments.append(
+                                PmsPaymentInfo(
+                                    id=payment.id,
+                                    amount=payment.amount,
+                                    journalId=payment.journal_id,
+                                    journalName=payment.journal_id.name,
+                                    date=str(payment.date),
+                                )
+                            )
+        return payments
