@@ -98,9 +98,13 @@ class PmsFolioService(Component):
                     pendingAmount=folio.pending_amount,
                     reservations=[] if not reservations else reservations,
                     salesPerson=folio.user_id.name if folio.user_id else "",
-                    paymentState=dict(folio.fields_get(["payment_state"])["payment_state"]["selection"])[
-                        folio.payment_state
-                    ] if folio.payment_state else "",
+                    paymentState=dict(
+                        folio.fields_get(["payment_state"])["payment_state"][
+                            "selection"
+                        ]
+                    )[folio.payment_state]
+                    if folio.payment_state
+                    else "",
                     propertyId=folio.pms_property_id,
                 )
             )
@@ -235,9 +239,7 @@ class PmsFolioService(Component):
         output_param=Datamodel("pms.payment.info", is_list=True),
     )
     def get_folio_payments(self, folio_id):
-        folio = (
-            self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
-        )
+        folio = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
         payments = []
         PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
         if not folio:
