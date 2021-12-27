@@ -17,3 +17,4 @@ access_pms_tag_manager,access_pms_tag_manager,model_pms_tag,pms_base.group_pms_m
 access_pms_stage_manager,access_pms_stage,model_pms_stage,pms_base.group_pms_manager,1,1,1,1
 access_pms_team_manager,access_pms_team,model_pms_team,pms_base.group_pms_manager,1,1,1,1
 access_pms_property_manager,access_property_manager,model_pms_property,pms_base.group_pms_manager,1,1,1,1
+access_pms_stage_group_user,access_pms_stage_group_user,model_pms_stage,base.group_user,1,0,0,0
