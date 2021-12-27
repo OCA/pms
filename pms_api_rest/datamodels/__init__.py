@@ -15,3 +15,8 @@ from . import pms_partner_info
 
 from . import pms_calendar_swap_info
 from . import pms_calendar_changes
+
+from . import pms_property_info
+from . import pms_property_search_param
+from . import pms_account_journal_info
+from . import pms_payment_info
