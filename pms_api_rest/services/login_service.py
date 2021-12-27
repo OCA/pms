@@ -3,7 +3,7 @@ import time
 from jose import jwt
 
 from odoo import _
-from odoo.exceptions import ValidationError, AccessDenied, UserError
+from odoo.exceptions import ValidationError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
