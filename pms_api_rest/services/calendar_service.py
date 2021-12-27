@@ -9,7 +9,7 @@ class PmsCalendarService(Component):
     _inherit = "base.rest.service"
     _name = "pms.private.services"
     _usage = "calendar"
-    _collection = "pms.private.services"
+    _collection = "pms.services"
 
     @restapi.method(
         [
@@ -22,7 +22,8 @@ class PmsCalendarService(Component):
         ],
         input_param=Datamodel("pms.calendar.search.param"),
         output_param=Datamodel("pms.calendar.info", is_list=True),
-        auth="public",
+        auth="jwt_api_pms",
+
     )
     def get_calendar(self, calendar_search_param):
         domain = list()
@@ -62,6 +63,7 @@ class PmsCalendarService(Component):
             )
         ],
         input_param=Datamodel("pms.calendar.swap.info", is_list=False),
+        auth="jwt_api_pms",
     )
     def swap_reservation_slices(self, swap_info):
         room_id_a = swap_info.roomIdA

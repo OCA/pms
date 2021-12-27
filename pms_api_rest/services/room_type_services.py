@@ -7,7 +7,7 @@ class PmsRoomTypeService(Component):
     _inherit = "base.rest.service"
     _name = "pms.room.type.service"
     _usage = "room-types"
-    _collection = "pms.private.services"
+    _collection = "pms.services"
 
     @restapi.method(
         [
@@ -20,6 +20,8 @@ class PmsRoomTypeService(Component):
         ],
         input_param=Datamodel("pms.room.search.param"),
         output_param=Datamodel("pms.room.info", is_list=True),
+        auth="jwt_api_pms",
+
     )
     def get_room_types(self, room_type_search_param):
         domain = []
