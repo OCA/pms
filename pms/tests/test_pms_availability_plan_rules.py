@@ -104,7 +104,9 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
             }
         )
         # partner
-        self.partner1 = self.env["res.partner"].create({"name": "Charles"})
+        self.partner1 = self.env["res.partner"].create(
+            {"name": "Charles", "property_product_pricelist": self.pricelist1}
+        )
 
     def test_availability_rooms_all(self):
         """
