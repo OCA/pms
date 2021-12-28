@@ -13,3 +13,4 @@ class PmsCalendarInfo(Datamodel):
     isFirstDay = fields.Boolean(required=False, allow_none=True)
     isLastDay = fields.Boolean(required=False, allow_none=True)
     totalPrice = fields.Float(required=False, allow_none=True)
+    numNotifications = fields.Integer(required=False, allow_none=True)
