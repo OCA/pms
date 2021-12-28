@@ -44,15 +44,22 @@ class PmsCalendarService(Component):
             result_lines.append(
                 PmsCalendarInfo(
                     id=line.id,
-                    roomId=line.room_id.id,
+                    state=line.reservation_id.state,
                     date=datetime.combine(line.date, datetime.min.time()).isoformat(),
+                    roomId=line.room_id.id,
+                    toAssign=line.reservation_id.to_assign,
                     partnerId=line.reservation_id.partner_id.id or None,
+                    partnerName=line.reservation_id.partner_name or None,
                     reservationId=line.reservation_id,
+                    reservationName=line.reservation_id.name,
+                    reservationType=line.reservation_id.reservation_type,
                     isFirstDay=line.reservation_id.checkin == line.date,
                     isLastDay=line.reservation_id.checkout
                     == (line.date + timedelta(days=1)),
                     totalPrice=line.reservation_id.price_total,
+                    pendingPayment=line.reservation_id.folio_pending_amount,
                     numNotifications=len(line.reservation_id.message_ids),
+                    adults=line.reservation_id.adults,
                 )
             )
         return result_lines
