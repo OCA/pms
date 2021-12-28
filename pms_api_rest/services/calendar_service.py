@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -23,7 +23,6 @@ class PmsCalendarService(Component):
         input_param=Datamodel("pms.calendar.search.param"),
         output_param=Datamodel("pms.calendar.info", is_list=True),
         auth="jwt_api_pms",
-
     )
     def get_calendar(self, calendar_search_param):
         domain = list()
@@ -49,6 +48,10 @@ class PmsCalendarService(Component):
                     date=datetime.combine(line.date, datetime.min.time()).isoformat(),
                     partnerId=line.reservation_id.partner_id.id,
                     reservationId=line.reservation_id,
+                    isFirstDay=line.reservation_id.checkin == line.date,
+                    isLastDay=line.reservation_id.checkout
+                    == (line.date + timedelta(days=1)),
+                    totalPrice=line.reservation_id.price_total,
                 )
             )
         return result_lines

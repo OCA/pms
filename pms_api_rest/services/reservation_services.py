@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
@@ -22,7 +22,6 @@ class PmsRoomService(Component):
         ],
         output_param=Datamodel("pms.reservation.info", is_list=True),
         auth="jwt_api_pms",
-
     )
     def get_reservations(self):
         domain = []
@@ -57,7 +56,6 @@ class PmsRoomService(Component):
         ],
         input_param=Datamodel("pms.calendar.changes", is_list=False),
         auth="jwt_api_pms",
-
     )
     def move_reservation_line(self, reservation_id, reservation_lines_changes):
 
@@ -96,3 +94,17 @@ class PmsRoomService(Component):
                 and line_to_change.room_id.id != change_iterator["roomId"]
             ):
                 line_to_change.room_id = change_iterator["roomId"]
+
+        max_value = max(
+            first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
+                "date"
+            )
+        ) + timedelta(days=1)
+        min_value = min(
+            first_reservation_line_to_change.reservation_id.reservation_line_ids.mapped(
+                "date"
+            )
+        )
+        reservation = self.env["pms.reservation"].browse(reservation_id)
+        reservation.checkin = min_value
+        reservation.checkout = max_value
