@@ -21,7 +21,6 @@ class PmsRoomService(Component):
         input_param=Datamodel("pms.room.search.param"),
         output_param=Datamodel("pms.room.info", is_list=True),
         auth="jwt_api_pms",
-
     )
     def get_rooms(self, room_search_param):
         domain = []
