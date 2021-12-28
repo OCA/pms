@@ -24,18 +24,21 @@ class PmsFolioService(Component):
         output_param=Datamodel("pms.folio.info", is_list=True),
     )
     def get_folios(self, folio_search_param):
-        domain = []
-        if folio_search_param.name:
-            domain.append(("name", "like", folio_search_param.name))
-        if folio_search_param.id:
-            domain.append(("id", "=", folio_search_param.id))
+        domain = list()
+        domain.append(("checkin", ">=", folio_search_param.date_from))
+        domain.append(("checkout", "<", folio_search_param.date_to))
         result_folios = []
+
+        reservations_result = (
+            self.env["pms.reservation"].sudo().search(domain).mapped("folio_id").ids
+        )
+
         PmsFolioInfo = self.env.datamodels["pms.folio.info"]
         for folio in (
             self.env["pms.folio"]
             .sudo()
             .search(
-                domain,
+                [("id", "in", reservations_result)],
             )
         ):
             reservations = []
