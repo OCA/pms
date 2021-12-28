@@ -14,7 +14,7 @@
         "auth_jwt_login",
     ],
     "external_dependencies": {
-        "python": ["jwt", "simplejson", "marshmallow"],
+        "python": ["jwt", "simplejson", "marshmallow", "jose"],
     },
     "data": ["data/auth_jwt_validator.xml"],
     "installable": True,
