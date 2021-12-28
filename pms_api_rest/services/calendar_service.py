@@ -46,12 +46,13 @@ class PmsCalendarService(Component):
                     id=line.id,
                     roomId=line.room_id.id,
                     date=datetime.combine(line.date, datetime.min.time()).isoformat(),
-                    partnerId=line.reservation_id.partner_id.id,
+                    partnerId=line.reservation_id.partner_id.id or None,
                     reservationId=line.reservation_id,
                     isFirstDay=line.reservation_id.checkin == line.date,
                     isLastDay=line.reservation_id.checkout
                     == (line.date + timedelta(days=1)),
                     totalPrice=line.reservation_id.price_total,
+                    numNotifications=len(line.reservation_id.message_ids),
                 )
             )
         return result_lines
