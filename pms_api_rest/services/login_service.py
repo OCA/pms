@@ -36,7 +36,7 @@ class PmsPartnerService(Component):
         )
 
         if not user_record:
-            ValidationError(_("user or password not valid"))
+            raise ValidationError(_("user or password not valid"))
         user_record.with_user(user_record)._check_credentials(user.password, None)
         PmsApiRestUserOutput = self.env.datamodels["pms.api.rest.user.output"]
         expiration_date = time.time() + 36660
