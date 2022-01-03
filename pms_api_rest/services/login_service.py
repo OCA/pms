@@ -28,6 +28,7 @@ class PmsPartnerService(Component):
         input_param=Datamodel("pms.api.rest.user.input", is_list=False),
         output_param=Datamodel("pms.api.rest.user.output", is_list=False),
         auth="public",
+        cors="*",
     )
     def login(self, user):
 
