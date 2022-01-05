@@ -44,6 +44,7 @@
                         <group>
                             <field name="ine_tourism_number" />
                             <field name="ine_category_id" />
+                            <field name="website" />
                         </group>
                     </div>
                     <div class="col-6">
