@@ -37,10 +37,18 @@ class TestWizardINE(TestPms):
                 "capacity": 2,
             }
         )
-        self.room_single_1 = self.env["pms.room"].create(
+        self.room_double_3 = self.env["pms.room"].create(
             {
                 "pms_property_id": self.pms_property1.id,
                 "name": "Room test 3",
+                "room_type_id": self.room_type.id,
+                "capacity": 2,
+            }
+        )
+        self.room_single_1 = self.env["pms.room"].create(
+            {
+                "pms_property_id": self.pms_property1.id,
+                "name": "Room test 4",
                 "room_type_id": self.room_type.id,
                 "capacity": 1,
                 "extra_beds_allowed": 1,
@@ -49,7 +57,7 @@ class TestWizardINE(TestPms):
         self.room_triple1 = self.env["pms.room"].create(
             {
                 "pms_property_id": self.pms_property1.id,
-                "name": "Room test 4",
+                "name": "Room test 5",
                 "room_type_id": self.room_type.id,
                 "capacity": 3,
             }
@@ -79,6 +87,8 @@ class TestWizardINE(TestPms):
         self.country_italy.ensure_one()
         self.country_afghanistan = self.env["res.country"].search([("code", "=", "AF")])
         self.country_afghanistan.ensure_one()
+
+    def ideal_scenario(self):
         # Create partner 1 (italy)
         self.partner_1 = self.env["res.partner"].create(
             {
@@ -282,7 +292,7 @@ class TestWizardINE(TestPms):
                 "pms_property_id": self.pms_property2.id,
             }
         )
-        self.checkin5 = self.env["pms.checkin.partner"].create(
+        self.checkin5_other_property = self.env["pms.checkin.partner"].create(
             {
                 "partner_id": self.partner_5.id,
                 "reservation_id": self.reservation_property_2.id,
@@ -345,6 +355,117 @@ class TestWizardINE(TestPms):
         self.reservation_4.reservation_line_ids[0].price = 21.50
         self.reservation_4.reservation_line_ids[1].price = 21.50
 
+    def pending_checkins_scenario(self):
+        # Create 3 checkin partners from russia
+        self.partner_russia_1 = self.env["res.partner"].create(
+            {
+                "name": "partner1",
+                "country_id": self.country_russia.id,
+                "nationality_id": self.country_russia.id,
+                "birthdate_date": "2000-06-25",
+                "gender": "male",
+            }
+        )
+        self.partner_russia_2 = self.env["res.partner"].create(
+            {
+                "name": "partner2",
+                "country_id": self.country_russia.id,
+                "nationality_id": self.country_russia.id,
+                "birthdate_date": "2000-06-25",
+                "gender": "male",
+            }
+        )
+        self.partner_russia_3 = self.env["res.partner"].create(
+            {
+                "name": "partner3",
+                "country_id": self.country_russia.id,
+                "nationality_id": self.country_russia.id,
+                "birthdate_date": "2000-06-25",
+                "gender": "male",
+            }
+        )
+        # Create document for 3 checkin partners (russia)
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category_passport.id,
+                "name": "15103354T",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.partner_russia_1.id,
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category_passport.id,
+                "name": "25103354T",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.partner_russia_2.id,
+            }
+        )
+        self.env["res.partner.id_number"].create(
+            {
+                "category_id": self.id_category_passport.id,
+                "name": "35103354T",
+                "valid_from": datetime.date.today(),
+                "partner_id": self.partner_russia_3.id,
+            }
+        )
+
+        # Create 3 reservations
+        self.reservation_1 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date.today(),
+                "checkout": datetime.date.today() + datetime.timedelta(days=1),
+                "preferred_room_id": self.room_double_1.id,
+                "partner_id": self.partner_russia_1.id,
+                "adults": 2,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        self.reservation_2 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date.today() + datetime.timedelta(days=1),
+                "checkout": datetime.date.today() + datetime.timedelta(days=2),
+                "preferred_room_id": self.room_double_2.id,
+                "partner_id": self.partner_russia_2.id,
+                "adults": 2,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        self.reservation_3 = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date.today() + datetime.timedelta(days=1),
+                "checkout": datetime.date.today() + datetime.timedelta(days=3),
+                "preferred_room_id": self.room_double_3.id,
+                "partner_id": self.partner_russia_3.id,
+                "adults": 2,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        # Create 3 checkin partners (1 russian -> r1, 2 russian -> r3 )
+        self.checkin_partner_r1_1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.partner_russia_1.id,
+                "reservation_id": self.reservation_1.id,
+            }
+        )
+        self.checkin_partner_r3_1 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.partner_russia_2.id,
+                "reservation_id": self.reservation_3.id,
+            }
+        )
+        self.checkin_partner_r3_2 = self.env["pms.checkin.partner"].create(
+            {
+                "partner_id": self.partner_russia_3.id,
+                "reservation_id": self.reservation_3.id,
+            }
+        )
+        # checkin partners on board
+        self.checkin_partner_r1_1.action_on_board()
+        with freeze_time("2021-02-02"):
+            self.checkin_partner_r3_1.action_on_board()
+            self.checkin_partner_r3_2.action_on_board()
+
     def test_room_type_num_by_date(self):
         """
         +============================+==============+==============+=============+
@@ -365,6 +486,7 @@ class TestWizardINE(TestPms):
         +============================+==============+==============+=============+
         """
         # ARRANGE
+        self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
         second_date = datetime.date(2021, 2, 2)
         end_date = datetime.date(2021, 2, 3)
@@ -425,24 +547,13 @@ class TestWizardINE(TestPms):
         +===========================+==============+==============+=============+=============+
         """
         # ARRANGE
+        self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
         second_date = datetime.date(2021, 2, 2)
         third_date = datetime.date(2021, 2, 3)
         end_date = datetime.date(2021, 2, 4)
 
         expected_result = {
-            self.country_afghanistan.code: {
-                second_date: {
-                    "arrivals": 3,
-                    "pernoctations": 3,
-                },
-                third_date: {
-                    "pernoctations": 3,
-                },
-                end_date: {
-                    "departures": 3,
-                },
-            },
             self.country_italy.code: {
                 start_date: {
                     "arrivals": 1,
@@ -464,6 +575,18 @@ class TestWizardINE(TestPms):
                 },
                 second_date: {
                     "departures": 1,
+                },
+            },
+            self.country_afghanistan.code: {
+                second_date: {
+                    "arrivals": 3,
+                    "pernoctations": 3,
+                },
+                third_date: {
+                    "pernoctations": 3,
+                },
+                end_date: {
+                    "departures": 3,
                 },
             },
         }
@@ -504,6 +627,7 @@ class TestWizardINE(TestPms):
         +==========================+============+============+=========+========+
         """
         # ARRANGE
+        self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
         second_date = datetime.date(2021, 2, 2)
         third_date = datetime.date(2021, 2, 3)
@@ -615,6 +739,7 @@ class TestWizardINE(TestPms):
         +-------------+-------+-------+-------+
         """
         # ARRANGE
+        self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
         expected_monthly_adr = 23.58
 
@@ -640,13 +765,14 @@ class TestWizardINE(TestPms):
         +----------------+-------+-------+-------+
         | monthly revpar |        23.58          |
         +----------------+-------+-------+-------+
-        num rooms avail. = 4
+        num rooms avail. = 5
         income = 25.00 + 21.00 + 25.00 + 25.00 + 21.50 + 21.50 = 139
-        monthly revpar = 139 / (4 * 28)
+        monthly revpar = 139 / (5 * 28) = 0.99
         """
         # ARRANGE
+        self.ideal_scenario()
         start_date = datetime.date(2021, 2, 1)
-        expected_monthly_revpar = 1.24
+        expected_monthly_revpar = 0.99
 
         # ACT
         monthly_revpar = self.env["pms.ine.wizard"].ine_calculate_monthly_revpar(
@@ -657,3 +783,74 @@ class TestWizardINE(TestPms):
             expected_monthly_revpar,
             monthly_revpar,
         )
+
+    def test_arrivals_departures_pernoctations_by_date_pending_checkins(self):
+        """
+        if unknown checkin =>  Madrid
+        +==========================+============+============+=========+========+
+        |                          |     01     |     02     |   03    |   04   |
+        +==========================+============+============+=========+========+
+        | r1  2 adults             | Russia     | Russia     |         |        |
+        |                          | unknown    | unknown    |         |        |
+        +--------------------------+------------+------------+---------+--------+
+        | r2  2 adults             |            | unknown    | unknown |        |
+        |                          |            | unknown    | unknown |        |
+        +--------------------------+------------+------------+---------+--------+
+        | r3  2 adults             |            | Russia     | Russia  | Russia |
+        |                          |            | Russia     | Russia  | Russia |
+        +==========================+============+============+=========+========+
+        | arrivals  Russia         | 2          | 2          |         |        |
+        | arrivals  Madrid         |            | 2          |         |        |
+        +==========================+============+============+=========+========+
+        | pernoctations Russia     | 2          | 2          | 2       |        |
+        | pernoctations Madrid     |            | 2          |         |        |
+        0+=========================+============+============+=========+========+
+        | departures Russia        |            | 2          |         | 2      |
+        | departures Madrid        |            |            | 2       |        |
+        +==========================+============+============+=========+========+
+        """
+        # ARRANGE
+        self.pending_checkins_scenario()
+        start_date = datetime.date(2021, 2, 1)
+        second_date = datetime.date(2021, 2, 2)
+        third_date = datetime.date(2021, 2, 3)
+        end_date = datetime.date(2021, 2, 4)
+
+        country_spain = self.env["res.country"].search([("code", "=", "ES")])
+        state_madrid = self.env["res.country.state"].search([("name", "=", "Madrid")])
+        expected_result = {
+            self.country_russia.code: {
+                start_date: {
+                    "arrivals": 2,
+                    "pernoctations": 2,
+                },
+                second_date: {
+                    "arrivals": 2,
+                    "pernoctations": 2,
+                    "departures": 2,
+                },
+                third_date: {
+                    "pernoctations": 2,
+                },
+                end_date: {
+                    "departures": 2,
+                },
+            },
+            country_spain.code: {
+                state_madrid.ine_code: {
+                    second_date: {
+                        "arrivals": 2,
+                        "pernoctations": 2,
+                    },
+                    third_date: {
+                        "departures": 2,
+                    },
+                },
+            },
+        }
+        # ACT
+        nationalities = self.env["pms.ine.wizard"].ine_nationalities(
+            start_date, end_date, self.pms_property1.id
+        )
+        # ASSERT
+        self.assertDictEqual(nationalities, expected_result)
