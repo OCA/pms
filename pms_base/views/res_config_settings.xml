@@ -224,7 +224,7 @@
         <field name="res_model">res.config.settings</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
-        <field name="context">{'module': 'pms'}</field>
+        <field name="context">{'module': 'pms_base'}</field>
     </record>
 
 </odoo>

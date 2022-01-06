@@ -31,6 +31,7 @@
                                 name="company_id"
                                 groups="base.group_multi_company"
                             />
+                            <field name="active" />
                         </group>
                     </group>
                     <notebook />
@@ -49,6 +50,7 @@
                 <field name="stage_type" />
                 <field name="is_closed" />
                 <field name="custom_color" />
+                <field name="active" />
             </tree>
         </field>
     </record>
