@@ -1,7 +1,0 @@
-<odoo noupdate="1">
-
-    <record id="pms_team_default" model="pms.team">
-        <field name="name">Default Team</field>
-    </record>
-
-</odoo>
