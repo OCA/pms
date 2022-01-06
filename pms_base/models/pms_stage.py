@@ -39,6 +39,7 @@ class PMSStage(models.Model):
     custom_color = fields.Char(
         "Color Code", default="#FFFFFF", help="Use Hex Code only Ex:-#FFFFFF"
     )
+    active = fields.Boolean(string="Active", default=True)
 
     @api.constrains("custom_color")
     def _check_custom_color_hex_code(self):
