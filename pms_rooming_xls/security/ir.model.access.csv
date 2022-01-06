@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-user_access_import_rooming_xlsx,user_access_import_rooming_xlsx,model_import_rooming_xlsx,pms.group_pms_user,1,1,1,1

@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-user_access_traveller_report_wizard,user_access_traveller_report_wizard,model_traveller_report_wizard,pms.group_pms_user,1,1,1,1
-user_access_traveller_report_logs,user_access_traveller_report_logs,model_pms_log_institution_traveller_report,pms.group_pms_user,1,1,1,1
-user_access_pms_ine_tourism_type_category,user_access_pms_ine_tourism_type_category,model_pms_ine_tourism_type_category,pms.group_pms_user,1,1,1,1
-user_access_pms_ine_wizard,user_access_pms_ine_wizard,model_pms_ine_wizard,pms.group_pms_user,1,1,1,1
