@@ -22,6 +22,7 @@ class PmsFolioService(Component):
         ],
         input_param=Datamodel("pms.folio.search.param"),
         output_param=Datamodel("pms.folio.info", is_list=True),
+        auth="jwt_api_pms",
     )
     def get_folios(self, folio_search_param):
         domain = list()
@@ -123,6 +124,7 @@ class PmsFolioService(Component):
             )
         ],
         output_param=Datamodel("pms.reservation.info"),
+        auth="jwt_api_pms",
     )
     def get_reservation(self, folio_id, reservation_id):
         reservation = (
@@ -168,7 +170,7 @@ class PmsFolioService(Component):
                 preferredRoomId=reservation.preferred_room_id.name
                 if reservation.preferred_room_id
                 else "",
-                roomTypeId=reservation.room_type_id.name
+                roomTypeName=reservation.room_type_id.name
                 if reservation.room_type_id
                 else "",
                 name=reservation.name,
@@ -177,7 +179,7 @@ class PmsFolioService(Component):
                 if reservation.price_services
                 else 0.0,
                 priceOnlyRoom=reservation.price_total,
-                pricelist=reservation.pricelist_id.name
+                pricelistName=reservation.pricelist_id.name
                 if reservation.pricelist_id
                 else "",
                 services=services if services else [],
@@ -195,6 +197,7 @@ class PmsFolioService(Component):
             )
         ],
         output_param=Datamodel("pms.checkin.partner.info", is_list=True),
+        auth="jwt_api_pms",
     )
     def get_checkin_partners(self, folio_id, reservation_id):
         reservation = (
@@ -240,6 +243,7 @@ class PmsFolioService(Component):
             )
         ],
         output_param=Datamodel("pms.payment.info", is_list=True),
+        auth="jwt_api_pms",
     )
     def get_folio_payments(self, folio_id):
         folio = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
@@ -276,3 +280,30 @@ class PmsFolioService(Component):
                                 )
                             )
         return payments
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/",
+                ],
+                "POST",
+            )
+        ],
+        input_param=Datamodel("pms.reservation.info", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def create_reservation(self, pms_reservation_info):
+        reservation = self.env["pms.reservation"].sudo().create(
+            {
+                "partner_name": pms_reservation_info.partner,
+                "pms_property_id": pms_reservation_info.property,
+                "room_type_id": pms_reservation_info.roomTypeId,
+                "pricelist_id": pms_reservation_info.pricelistId,
+                "checkin": pms_reservation_info.checkin,
+                "checkout": pms_reservation_info.checkout,
+                "board_service_room_id": pms_reservation_info.boardServiceId,
+                "channel_type_id": pms_reservation_info.channelTypeId,
+            }
+        )
+        return reservation.id
