@@ -8741,6 +8741,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__vat
+#: model_terms:ir.ui.view,arch_db:pms.report_folio_document
 msgid "Tax ID"
 msgstr ""
 
