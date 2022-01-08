@@ -3,7 +3,6 @@ import datetime
 import io
 import json
 import time
-from datetime import date
 
 import PyPDF2
 import requests
@@ -71,13 +70,15 @@ class TravellerReport(models.TransientModel):
                 "view_type": "form",
             }
 
-    def generate_checkin_list(self, property_id, date_target: date.today()):
-
+    def generate_checkin_list(self, property_id, date_target=False):
+        if not date_target:
+            date_target = fields.date.today()
         # check if there's guests info pending to send
         if self.env["pms.checkin.partner"].search_count(
             [
                 ("state", "=", "onboard"),
                 ("arrival", ">=", str(date_target) + " 0:00:00"),
+                ("pms_property_id", "=", property_id),
             ]
         ):
             pms_property = (
@@ -91,6 +92,7 @@ class TravellerReport(models.TransientModel):
                     ("state", "=", "onboard"),
                     ("arrival", ">=", str(date_target) + " 0:00:00"),
                     ("arrival", "<=", str(date_target) + " 23:59:59"),
+                    ("pms_property_id", "=", property_id),
                 ]
             )
             # build the property info record
