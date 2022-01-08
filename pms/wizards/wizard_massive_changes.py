@@ -809,7 +809,7 @@ class AvailabilityWizard(models.TransientModel):
                     overwrite = rules_to_overwrite.filtered(
                         lambda x: x.room_type_id == room_type
                         and x.date == date
-                        and x.pms_propert_id.id == pms_property.id
+                        and x.pms_property_id.id == pms_property.id
                     )
                     overwrite.write(vals)
                     new_items += overwrite.ids
