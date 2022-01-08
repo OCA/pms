@@ -248,7 +248,9 @@ class PmsReservationLine(models.Model):
                 ):
                     if self.env.context.get("force_overbooking"):
                         reservation.overbooking = True
-                        line.room_id = reservation.room_type_id.room_ids[0]
+                        line.room_id = reservation.room_type_id.room_ids.filtered(
+                            lambda r: r.pms_property_id == line.pms_property_id
+                        )[0]
                     else:
                         raise ValidationError(
                             _("%s: No room type available")
