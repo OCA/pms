@@ -982,31 +982,30 @@ class PmsFolio(models.Model):
                     automatic_included=True
                 )
                 paid_out = 0
-                for journal in journals:
-                    paid_out += sum(
-                        self.env["account.move.line"]
-                        .search(
-                            [
-                                ("folio_ids", "in", record.id),
-                                (
-                                    "account_id",
-                                    "in",
-                                    tuple(
-                                        journal.default_account_id.ids
-                                        + journal.payment_debit_account_id.ids
-                                        + journal.payment_credit_account_id.ids
-                                    ),
+                paid_out += sum(
+                    self.env["account.move.line"]
+                    .search(
+                        [
+                            ("folio_ids", "in", record.id),
+                            (
+                                "account_id",
+                                "in",
+                                tuple(
+                                    journals.default_account_id.ids
+                                    + journals.payment_debit_account_id.ids
+                                    + journals.payment_credit_account_id.ids
                                 ),
-                                (
-                                    "display_type",
-                                    "not in",
-                                    ("line_section", "line_note"),
-                                ),
-                                ("move_id.state", "!=", "cancel"),
-                            ]
-                        )
-                        .mapped("balance")
+                            ),
+                            (
+                                "display_type",
+                                "not in",
+                                ("line_section", "line_note"),
+                            ),
+                            ("move_id.state", "!=", "cancel"),
+                        ]
                     )
+                    .mapped("balance")
+                )
                 total = record.amount_total
                 # REVIEW: Must We ignored services in cancelled folios
                 # pending amount?
