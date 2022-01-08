@@ -8,6 +8,10 @@
                 <field name="txt_filename" invisible="1" />
                 <div class="row">
                     <div class="col-12">
+                        <group>
+                            <field name="pms_property_id" />
+                            <field name="date_target" />
+                        </group>
                         <group attrs="{'invisible': [('txt_message','=',False)]}">
                             <field name="txt_message" readonly="1" />
                         </group>
