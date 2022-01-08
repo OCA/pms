@@ -1641,9 +1641,13 @@ class PmsFolio(models.Model):
         (making sure to call super() to establish a clean extension chain).
         """
         self.ensure_one()
+
         journal = (
             self.env["account.move"]
-            .with_context(default_move_type="out_invoice")
+            .with_context(
+                default_move_type="out_invoice",
+                default_company_id=self.company_id.id,
+            )
             ._get_default_journal()
         )
         if not journal:
