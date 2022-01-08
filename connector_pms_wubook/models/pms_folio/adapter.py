@@ -46,6 +46,7 @@ class ChannelWubookPmsFolioAdapter(Component):
             return False
         return values[0]
 
+    # flake8: noqa=C901
     def search_read(self, domain, ancillary=True, mark=False, only_codes=False):
         """
         * fetch_new_bookings(token, lcode[, ancillary=0, mark=1])
@@ -243,7 +244,8 @@ class ChannelWubookPmsFolioAdapter(Component):
                 if id_channel == 0:
                     board = boards_d.get(room_id)
                 elif id_channel == 2:
-                    # Board services can be included in the rate plan and detected by the WuBook API
+                    # Board services can be included in the rate
+                    # plan and detected by the WuBook API
                     detected_board = value.get("ancillary", {}).get("Detected Board")
                     board = detected_board != "nb" and detected_board or None
                     # Guests can differ from the Wubook ones???
@@ -251,9 +253,12 @@ class ChannelWubookPmsFolioAdapter(Component):
                     if guests:
                         occupancies_d[room_id] = min(occupancies_d[room_id], guests)
                 else:
-                    raise ValidationError(
-                        _("ID channel '%s' not supported yet") % id_channel
-                    )
+                    # REVIEW other OTAs: Generic interpretation to avoid importer blocking
+                    detected_board = value.get("ancillary", {}).get("Detected Board")
+                    board = detected_board != "nb" and detected_board or None
+                    guests = room.get("ancillary", {}).get("guests")
+                    if guests:
+                        occupancies_d[room_id] = min(occupancies_d[room_id], guests)
 
                 lines = []
                 room_rate_id = None
