@@ -380,6 +380,7 @@ class AvailabilityWizard(models.TransientModel):
     def _rules_to_overwrite_by_plans(self, availability_plans):
         self.ensure_one()
         domain = [
+            ("pms_property_id", "in", self.pms_property_ids.ids),
             ("availability_plan_id", "in", availability_plans.ids),
         ]
 
@@ -806,7 +807,9 @@ class AvailabilityWizard(models.TransientModel):
                     "date"
                 ) and room_type in rules_to_overwrite.mapped("room_type_id"):
                     overwrite = rules_to_overwrite.filtered(
-                        lambda x: x.room_type_id == room_type and x.date == date
+                        lambda x: x.room_type_id == room_type
+                        and x.date == date
+                        and x.pms_propert_id.id == pms_property.id
                     )
                     overwrite.write(vals)
                     new_items += overwrite.ids
