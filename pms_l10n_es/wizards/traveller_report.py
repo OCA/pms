@@ -21,12 +21,19 @@ class TravellerReport(models.TransientModel):
     txt_filename = fields.Text()
     txt_binary = fields.Binary(string="File Download")
     txt_message = fields.Char(string="File Preview")
+    date_target = fields.Date(
+        string="Date", required=True, default=lambda self: fields.Date.today()
+    )
+    pms_property_id = fields.Many2one(
+        comodel_name="pms.property",
+        string="Property",
+        required=True,
+        default=lambda self: self.env.user.get_active_property_ids()[0],
+    )
 
     def generate_file_from_user_action(self):
-
-        # get the active property
         pms_property = self.env["pms.property"].search(
-            [("id", "=", self.env.user.get_active_property_ids()[0])]
+            [("id", "=", self.pms_property_id.id)]
         )
         # check if there's institution settings properly established
         if (
@@ -40,7 +47,10 @@ class TravellerReport(models.TransientModel):
             )
 
         # build content
-        content = self.generate_checkin_list(pms_property.id)
+        content = self.generate_checkin_list(
+            property_id=pms_property.id,
+            date_target=self.date_target,
+        )
 
         if content:
             txt_binary = self.env["traveller.report.wizard"].create(
@@ -61,25 +71,26 @@ class TravellerReport(models.TransientModel):
                 "view_type": "form",
             }
 
-    def generate_checkin_list(self, property_id):
+    def generate_checkin_list(self, property_id, date_target: date.today()):
 
         # check if there's guests info pending to send
         if self.env["pms.checkin.partner"].search_count(
             [
                 ("state", "=", "onboard"),
-                ("arrival", ">=", str(date.today()) + " 0:00:00"),
+                ("arrival", ">=", str(date_target) + " 0:00:00"),
             ]
         ):
-
-            # get the active property
-            pms_property = self.env["pms.property"].search([("id", "=", property_id)])
+            pms_property = (
+                self.env["pms.property"]
+                .with_context(lang="es_ES")
+                .search([("id", "=", property_id)])
+            )
             # get checkin partners info to send
             lines = self.env["pms.checkin.partner"].search(
                 [
                     ("state", "=", "onboard"),
-                    ("arrival", ">=", str(date.today()) + " 0:00:00"),
-                    ("arrival", "<=", str(date.today()) + " 23:59:59"),
-                    ("pms_property_id", "=", pms_property.id),
+                    ("arrival", ">=", str(date_target) + " 0:00:00"),
+                    ("arrival", "<=", str(date_target) + " 23:59:59"),
                 ]
             )
             # build the property info record
@@ -98,7 +109,7 @@ class TravellerReport(models.TransientModel):
             # build each checkin partner line's record
             # 2|DNI nº|Doc.number|doc.type|exp.date|lastname|lastname2|name|...
             # ...gender|birthdate|nation.|checkin
-
+            lines = lines.with_context(lang="es_ES")
             for line in lines:
                 content += "2"
                 # [P|N|..]
