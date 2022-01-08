@@ -490,3 +490,58 @@ class PmsProperty(models.Model):
             vals.update({"checkin_sequence_id": checkin_sequence.id})
         record = super(PmsProperty, self).create(vals)
         return record
+
+    @api.model
+    def daily_closing(
+        self, pms_property_ids, room_type_ids=False, availability_plan_ids=False
+    ):
+        """
+        This method is used to close the daily availability of rooms
+        """
+        pms_properties = self.browse(pms_property_ids)
+        for pms_property in pms_properties:
+            if not room_type_ids:
+                room_type_ids = self.env["pms.room.type"].search(
+                    [
+                        "|",
+                        ("pms_property_id", "=", pms_property.id),
+                        ("pms_property_id", "=", False),
+                    ]
+                )
+            if not availability_plan_ids:
+                availability_plan_ids = self.env["pms.availability.plan"].search(
+                    [
+                        "|",
+                        ("pms_property_id", "=", pms_property.id),
+                        ("pms_property_id", "=", False),
+                    ]
+                )
+            for room_type in self.env["pms.room.type"].browse(room_type_ids):
+                for availability_plan in self.env["pms.availability.plan"].browse(
+                    availability_plan_ids
+                ):
+                    rule = self.env["pms.availability.plan.rule"].search(
+                        [
+                            ("pms_property_id", "=", pms_property.id),
+                            ("room_type_id", "=", room_type.id),
+                            ("availability_plan_id", "=", availability_plan.id),
+                        ]
+                    )
+                    if not rule:
+                        rule = self.env["pms.availability.plan.rule"].create(
+                            {
+                                "pms_property_id": pms_property.id,
+                                "room_type_id": room_type.id,
+                                "availability_plan_id": availability_plan.id,
+                                "date": fields.date.today(),
+                                "closed": True,
+                            }
+                        )
+                    elif not rule.closed:
+                        rule.write(
+                            {
+                                "closed": True,
+                            }
+                        )
+
+        return True
