@@ -121,6 +121,11 @@ msgid "DNI"
 msgstr ""
 
 #. module: pms_l10n_es
+#: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__date_target
+msgid "Date"
+msgstr ""
+
+#. module: pms_l10n_es
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_log_institution_traveller_report__date
 msgid "Date and time"
 msgstr ""
@@ -376,6 +381,7 @@ msgstr ""
 #. module: pms_l10n_es
 #: model:ir.model,name:pms_l10n_es.model_pms_property
 #: model:ir.model.fields,field_description:pms_l10n_es.field_pms_ine_wizard__pms_property_id
+#: model:ir.model.fields,field_description:pms_l10n_es.field_traveller_report_wizard__pms_property_id
 msgid "Property"
 msgstr ""
 
