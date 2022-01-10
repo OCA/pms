@@ -3,6 +3,7 @@
 import json
 
 from odoo import _, fields, models
+from odoo.exceptions import UserError
 from odoo.tools import float_is_zero
 
 
@@ -124,3 +125,36 @@ class AccountMove(models.Model):
             "type": "ir.actions.act_window",
             "domain": [("id", "in", payment_ids)],
         }
+
+    def _search_default_journal(self, journal_types):
+        """
+        Search for the default journal based on the journal type and property,
+        the parent method is overwritten to add the property filter if
+        default_pms_property_id is set in context
+        """
+        journal = super(AccountMove, self)._search_default_journal(journal_types)
+        if self._context.get("pms_property_id"):
+            property_id = self._context.get("default_pms_property_id")
+            domain = [
+                ("company_id", "=", property_id.company_id),
+                ("type", "in", journal_types),
+                ("pms_property_ids", "in", property_id),
+            ]
+            journal = self.env["account.journal"].search(domain, limit=1)
+            if not journal:
+                domain = [
+                    ("company_id", "=", property_id.company_id),
+                    ("type", "in", journal_types),
+                    ("pms_property_ids", "=", False),
+                ]
+                journal = self.env["account.journal"].search(domain, limit=1)
+            if not journal:
+                pms_property = self.env["res.company"].browse(property_id)
+                error_msg = _(
+                    """No journal could be found in property %(property_name)s
+                    for any of those types: %(journal_types)s""",
+                    property_name=pms_property.display_name,
+                    journal_types=", ".join(journal_types),
+                )
+                raise UserError(error_msg)
+        return journal
