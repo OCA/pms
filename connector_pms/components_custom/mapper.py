@@ -115,6 +115,7 @@ class ChannelChildMapperImport(AbstractComponent):
     def get_items(self, items, parent, to_attr, options):
         mapper = self._child_mapper()
         mapped = self.get_all_items(mapper, items, parent, to_attr, options)
+        import wdb; wdb.set_trace()
         return self.format_items(mapped)
 
     def _child_bind(self, map_record, item_values):

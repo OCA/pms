@@ -40,6 +40,7 @@ class ChannelWubookProductPriceBinding(models.Model):
             self.channel_wubook_item_ids.filtered(
                 lambda x: x.wubook_item_type == "standard"
                 and x.odoo_id.wubook_date_valid()
+                and self.backend_id in x.channel_wubook_bind_ids.backend_id
             ).mapped("synced_export")
         )
 

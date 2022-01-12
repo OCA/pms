@@ -270,30 +270,31 @@ class ChannelWubookBackend(models.Model):
 
     def generic_export(self):
         models_to_export = self._get_models_to_export()
-        backends = self.env["channel.wubook.backend"].search(
-            [("export_disabled", "=", False)]
-        )
+        backends = self.env["channel.wubook.backend"].search([])
+        #     [("export_disabled", "=", False)]
+        # )
         for backend in backends:
             i = 0
             for model in models_to_export:
                 self = self.with_company(backend.pms_property_id.company_id)
                 if backend.user_id:
                     self = self.with_user(backend.user_id)
-                with backend.work_on(model) as work:
-                    exporter = work.component(usage="direct.record.exporter")
-                relation_model = exporter.binder_for().unwrap_model()
-                for record in self.env[relation_model].search(
+                for record in self.env[model].search(
                     self._get_domain_for_export(backend, model)
                 ):
-                    exporter.binding = exporter.binder.wrap_record(record)
-                    if not exporter.binding._is_synced_export():
-                        with backend.work_on(model) as work:
-                            now = fields.Datetime.now()
-                            # Avoid concurrent export to the same backend
-                            eta = fields.Datetime.add(now, seconds=i)
+                    binding = record.channel_wubook_bind_ids.filtered(
+                        lambda r: r.backend_id == backend
+                    )
+                    if binding and not binding._is_synced_export():
+                        with backend.work_on(binding._name) as work:
                             exporter_delay = work.component(
                                 usage="delayed.batch.exporter"
                             )
+
+                            now = fields.Datetime.now()
+                            # Avoid concurrent export to the same backend
+                            eta = fields.Datetime.add(now, seconds=i)
+
                             exporter_delay._export_record(
                                 record,
                                 job_options={
@@ -304,9 +305,9 @@ class ChannelWubookBackend(models.Model):
 
     def _get_models_to_export(self):
         return [
-            "channel.wubook.pms.property.availability",
-            "channel.wubook.pms.availability.plan",
-            "channel.wubook.product.pricelist",
+            "pms.property",
+            "pms.availability.plan",
+            "product.pricelist",
         ]
 
     def _get_domain_for_export(self, backend, model):
