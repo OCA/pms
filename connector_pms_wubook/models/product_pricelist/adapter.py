@@ -186,7 +186,8 @@ class ChannelWubookProductPricelistAdapter(Component):
                 {"id": _id, **{k: values[k] for k in values if k in {"name"}}},
                 ["id", "name"],
             )
-            self._exec("update_plan_name", *params)
+            # HOTFIX: Avoid update
+            # self._exec("update_plan_name", *params)
 
         # pricelist item values
         items = values.get("items")
