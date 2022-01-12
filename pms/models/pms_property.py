@@ -501,20 +501,28 @@ class PmsProperty(models.Model):
         pms_properties = self.browse(pms_property_ids)
         for pms_property in pms_properties:
             if not room_type_ids:
-                room_type_ids = self.env["pms.room.type"].search(
-                    [
-                        "|",
-                        ("pms_property_id", "=", pms_property.id),
-                        ("pms_property_id", "=", False),
-                    ]
+                room_type_ids = (
+                    self.env["pms.room.type"]
+                    .search(
+                        [
+                            "|",
+                            ("pms_property_ids", "in", pms_property.id),
+                            ("pms_property_ids", "=", False),
+                        ]
+                    )
+                    .ids
                 )
             if not availability_plan_ids:
-                availability_plan_ids = self.env["pms.availability.plan"].search(
-                    [
-                        "|",
-                        ("pms_property_id", "=", pms_property.id),
-                        ("pms_property_id", "=", False),
-                    ]
+                availability_plan_ids = (
+                    self.env["pms.availability.plan"]
+                    .search(
+                        [
+                            "|",
+                            ("pms_property_ids", "in", pms_property.id),
+                            ("pms_property_ids", "=", False),
+                        ]
+                    )
+                    .ids
                 )
             for room_type in self.env["pms.room.type"].browse(room_type_ids):
                 for availability_plan in self.env["pms.availability.plan"].browse(
@@ -525,6 +533,7 @@ class PmsProperty(models.Model):
                             ("pms_property_id", "=", pms_property.id),
                             ("room_type_id", "=", room_type.id),
                             ("availability_plan_id", "=", availability_plan.id),
+                            ("date", "=", fields.date.today()),
                         ]
                     )
                     if not rule:
