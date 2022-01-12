@@ -34,10 +34,11 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
         )
         if newrules:
             return False
-
+        import wdb; wdb.set_trace()
         return all(
             self.channel_wubook_rule_ids.filtered(
                 lambda x: x.odoo_id.wubook_date_valid()
+                and self.backend_id in x.channel_wubook_bind_ids.backend_id
             ).mapped("synced_export")
         )
 
