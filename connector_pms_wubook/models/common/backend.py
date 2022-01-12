@@ -262,13 +262,59 @@ class ChannelWubookBackend(models.Model):
         """
         interval_sec = interval * 60
         now = fields.Datetime.now()
-        for backend in self.env["channel.wubook.backend"].search(
+        for i in range(0, interval_sec, int(interval_sec / count)):
+            eta = fields.Datetime.add(now, seconds=i)
+            self.with_delay(
+                eta=eta,
+            ).generic_export()
+
+    def generic_export(self):
+        models_to_export = self._get_models_to_export()
+        backends = self.env["channel.wubook.backend"].search(
             [("export_disabled", "=", False)]
-        ):
-            if backend.user_id:
-                backend = backend.with_user(self.user_id)
-            for i in range(0, interval_sec, int(interval_sec / count)):
-                eta = fields.Datetime.add(now, seconds=i)
-                backend.export_property_availability(eta=eta)
-            backend.export_availability_plans()
-            backend.export_pricelists()
+        )
+        for backend in backends:
+            i = 0
+            for model in models_to_export:
+                self = self.with_company(backend.pms_property_id.company_id)
+                if backend.user_id:
+                    self = self.with_user(backend.user_id)
+                with backend.work_on(model) as work:
+                    exporter = work.component(usage="direct.record.exporter")
+                relation_model = exporter.binder_for().unwrap_model()
+                for record in self.env[relation_model].search(
+                    self._get_domain_for_export(backend, model)
+                ):
+                    exporter.binding = exporter.binder.wrap_record(record)
+                    if not exporter.binding._is_synced_export():
+                        with backend.work_on(model) as work:
+                            now = fields.Datetime.now()
+                            # Avoid concurrent export to the same backend
+                            eta = fields.Datetime.add(now, seconds=i)
+                            exporter_delay = work.component(
+                                usage="delayed.batch.exporter"
+                            )
+                            exporter_delay._export_record(
+                                record,
+                                job_options={
+                                    "eta": eta,
+                                },
+                            )
+                            i += 1
+
+    def _get_models_to_export(self):
+        return [
+            "channel.wubook.pms.property.availability",
+            "channel.wubook.pms.availability.plan",
+            "channel.wubook.product.pricelist",
+        ]
+
+    def _get_domain_for_export(self, backend, model):
+        if model == "channel.wubook.pms.property.availability":
+            return [("channel_wubook_bind_ids.backend_id", "in", backend.ids)]
+        return [
+            ("channel_wubook_bind_ids.backend_id", "in", backend.ids),
+            "|",
+            ("pms_property_ids", "=", False),
+            ("pms_property_ids", "in", backend.pms_property_id.ids),
+        ]
