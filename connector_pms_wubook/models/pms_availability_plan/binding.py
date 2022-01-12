@@ -98,14 +98,15 @@ class ChannelWubookPmsAvailabilityPlanBinding(models.Model):
     @api.model
     def export_data(self, backend_record=None):
         """ Prepare the batch export of Availability Plan to Channel """
+        domain = [
+            ("channel_wubook_bind_ids.backend_id", "in", backend_record.ids),
+            "|",
+            ("pms_property_ids", "=", False),
+            ("pms_property_ids", "in", backend_record.pms_property_id.ids),
+        ]
         return self.export_batch(
             backend_record=backend_record,
-            domain=[
-                ("channel_wubook_bind_ids.backend_id", "in", backend_record.ids),
-                "|",
-                ("pms_property_ids", "=", False),
-                ("pms_property_ids", "in", backend_record.pms_property_id.ids),
-            ],
+            domain=domain,
         )
 
     def resync_import(self):

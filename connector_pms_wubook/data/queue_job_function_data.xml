@@ -273,4 +273,14 @@
         <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
     </record>
 
+    <record id="wubook_pms_generic_export_data_job_function" model="queue.job.function">
+        <field
+            name="model_id"
+            ref="connector_pms_wubook.model_channel_wubook_backend"
+        />
+        <field name="method">generic_export</field>
+        <field name="channel_id" ref="connector_pms_wubook.channel_wubook" />
+        <field name="retry_pattern" eval="{1: 10, 5: 30, 10: 60, 15: 300}" />
+    </record>
+
 </odoo>
