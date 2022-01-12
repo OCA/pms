@@ -133,23 +133,23 @@ class AccountMove(models.Model):
         default_pms_property_id is set in context
         """
         journal = super(AccountMove, self)._search_default_journal(journal_types)
-        if self._context.get("pms_property_id"):
+        if self._context.get("default_pms_property_id"):
             property_id = self._context.get("default_pms_property_id")
+            pms_property = self.env["pms.property"].browse(property_id)
             domain = [
-                ("company_id", "=", property_id.company_id),
+                ("company_id", "=", pms_property.company_id.id),
                 ("type", "in", journal_types),
                 ("pms_property_ids", "in", property_id),
             ]
             journal = self.env["account.journal"].search(domain, limit=1)
             if not journal:
                 domain = [
-                    ("company_id", "=", property_id.company_id),
+                    ("company_id", "=", pms_property.company_id.id),
                     ("type", "in", journal_types),
                     ("pms_property_ids", "=", False),
                 ]
                 journal = self.env["account.journal"].search(domain, limit=1)
             if not journal:
-                pms_property = self.env["res.company"].browse(property_id)
                 error_msg = _(
                     """No journal could be found in property %(property_name)s
                     for any of those types: %(journal_types)s""",
