@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 import json
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_is_zero
 
@@ -19,11 +19,7 @@ class AccountMove(models.Model):
         relation="account_move_folio_ids_rel",
         column1="account_move_id",
         column2="folio_ids_id",
-    )
-    pms_property_id = fields.Many2one(
-        string="Property",
-        help="Property with access to the element",
-        comodel_name="pms.property",
+        store=True,
     )
     outstanding_folios_debits_widget = fields.Text(
         compute="_compute_get_outstanding_folios_JSON"
@@ -31,13 +27,34 @@ class AccountMove(models.Model):
     has_folios_outstanding = fields.Boolean(
         compute="_compute_get_outstanding_folios_JSON"
     )
+    pms_property_id = fields.Many2one(
+        string="Property",
+        help="The property associated to the account move",
+        comodel_name="pms.property",
+        compute="_compute_pms_property_id",
+        store=True,
+        readonly=False,
+        check_pms_properties=True,
+    )
 
+    @api.depends("journal_id", "folio_ids")
+    def _compute_pms_property_id(self):
+        for move in self:
+            if move.folio_ids:
+                move.pms_property_id = move.folio_ids.mapped("pms_property_id")
+            elif len(move.journal_id.mapped("pms_property_ids")) == 1:
+                move.pms_property_id = move.journal_id.mapped("pms_property_ids")[0]
+            else:
+                move.pms_property_id = False
+
+    @api.depends("invoice_line_ids")
     def _compute_folio_origin(self):
-        for inv in self:
-            inv.folio_ids = False
-            folios = inv.mapped("invoice_line_ids.folio_ids")
-            if folios:
-                inv.folio_ids = [(6, 0, folios.ids)]
+        for move in self:
+            move.folio_ids = False
+            if move.invoice_line_ids:
+                move.folio_ids = move.mapped("invoice_line_ids.folio_ids.id")
+            elif move.line_ids and move.line_ids.sale_line_ids:
+                move.folio_ids = move.mapped("line_ids.sale_line_ids.folio_id.id")
 
     def _compute_get_outstanding_folios_JSON(self):
         self.ensure_one()
