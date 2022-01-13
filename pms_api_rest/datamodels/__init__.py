@@ -22,3 +22,7 @@ from . import pms_account_journal_info
 from . import pms_payment_info
 from . import user_input
 from . import user_output
+
+from . import pms_pricelist_info
+from . import pms_pricelist_item_search_param
+from . import pms_pricelist_item_info
