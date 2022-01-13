@@ -294,16 +294,20 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def create_reservation(self, pms_reservation_info):
-        reservation = self.env["pms.reservation"].sudo().create(
-            {
-                "partner_name": pms_reservation_info.partner,
-                "pms_property_id": pms_reservation_info.property,
-                "room_type_id": pms_reservation_info.roomTypeId,
-                "pricelist_id": pms_reservation_info.pricelistId,
-                "checkin": pms_reservation_info.checkin,
-                "checkout": pms_reservation_info.checkout,
-                "board_service_room_id": pms_reservation_info.boardServiceId,
-                "channel_type_id": pms_reservation_info.channelTypeId,
-            }
+        reservation = (
+            self.env["pms.reservation"]
+            .sudo()
+            .create(
+                {
+                    "partner_name": pms_reservation_info.partner,
+                    "pms_property_id": pms_reservation_info.property,
+                    "room_type_id": pms_reservation_info.roomTypeId,
+                    "pricelist_id": pms_reservation_info.pricelistId,
+                    "checkin": pms_reservation_info.checkin,
+                    "checkout": pms_reservation_info.checkout,
+                    "board_service_room_id": pms_reservation_info.boardServiceId,
+                    "channel_type_id": pms_reservation_info.channelTypeId,
+                }
+            )
         )
         return reservation.id
