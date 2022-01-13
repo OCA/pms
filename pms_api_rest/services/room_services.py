@@ -28,6 +28,9 @@ class PmsRoomService(Component):
             domain.append(("name", "like", room_search_param.name))
         if room_search_param.id:
             domain.append(("id", "=", room_search_param.id))
+        if room_search_param.pms_property_id:
+            domain.append(("pms_property_id", "=", room_search_param.pms_property_id))
+
         result_rooms = []
         PmsRoomInfo = self.env.datamodels["pms.room.info"]
         for room in (
