@@ -1668,6 +1668,21 @@ class PmsFolio(models.Model):
         """
         if not pay_type:
             pay_type = journal.type
+        vals = {
+            "journal_id": journal.id,
+            "partner_id": partner.id,
+            "amount": amount,
+            "date": fields.Date.today(),
+            "ref": folio.name,
+            "folio_ids": [(6, 0, [folio.id])],
+            "payment_type": "inbound",
+            "partner_type": "customer",
+            "state": "draft",
+        }
+        pay = self.env["account.payment"].create(vals)
+        pay.action_post()
+
+        # Automatic register payment in cash register
         if pay_type == "cash":
             line = self._get_statement_line_vals(
                 journal=journal,
@@ -1681,36 +1696,22 @@ class PmsFolio(models.Model):
                 date=date,
             )
             self.env["account.bank.statement.line"].sudo().create(line)
-        else:
-            vals = {
-                "journal_id": journal.id,
-                "partner_id": partner.id,
-                "amount": amount,
-                "date": fields.Date.today(),
-                "ref": folio.name,
-                "folio_ids": [(6, 0, [folio.id])],
-                "payment_type": "inbound",
-                "partner_type": "customer",
-                "state": "draft",
-            }
-            pay = self.env["account.payment"].create(vals)
-            pay.action_post()
 
-        folio.message_post(
-            body=_(
-                """Payment: <b>%s</b> by <b>%s</b>""",
-                amount,
-                journal.display_name,
-            )
-        )
-        for reservation in folio.reservation_ids:
-            reservation.message_post(
-                body=_(
-                    """Payment: <b>%s</b> by <b>%s</b>""",
-                    amount,
-                    journal.display_name,
-                )
-            )
+        # folio.message_post(
+        #     body=_(
+        #         """Payment: <b>%s</b> by <b>%s</b>""",
+        #         amount,
+        #         journal.display_name,
+        #     )
+        # )
+        # for reservation in folio.reservation_ids:
+        #     reservation.message_post(
+        #         body=_(
+        #             """Payment: <b>%s</b> by <b>%s</b>""",
+        #             amount,
+        #             journal.display_name,
+        #         )
+        #     )
         return True
 
     def do_refund(
@@ -1733,6 +1734,22 @@ class PmsFolio(models.Model):
         """
         if not pay_type:
             pay_type = journal.type
+
+        vals = {
+            "journal_id": journal.id,
+            "partner_id": partner.id,
+            "amount": amount if amount > 0 else -amount,
+            "date": fields.Date.today(),
+            "ref": folio.name,
+            "folio_ids": [(6, 0, [folio.id])],
+            "payment_type": "outbound",
+            "partner_type": "customer",
+            "state": "draft",
+        }
+        pay = self.env["account.payment"].create(vals)
+        pay.action_post()
+
+        # Automatic register refund in cash register
         if pay_type == "cash":
             line = self._get_statement_line_vals(
                 journal=journal,
@@ -1746,36 +1763,22 @@ class PmsFolio(models.Model):
                 date=date,
             )
             self.env["account.bank.statement.line"].sudo().create(line)
-        else:
-            vals = {
-                "journal_id": journal.id,
-                "partner_id": partner.id,
-                "amount": amount if amount > 0 else -amount,
-                "date": fields.Date.today(),
-                "ref": folio.name,
-                "folio_ids": [(6, 0, [folio.id])],
-                "payment_type": "outbound",
-                "partner_type": "customer",
-                "state": "draft",
-            }
-            pay = self.env["account.payment"].create(vals)
-            pay.action_post()
 
-        folio.message_post(
-            body=_(
-                """Refund: <b>%s</b> by <b>%s</b>""",
-                amount,
-                journal.display_name,
-            )
-        )
-        for reservation in folio.reservation_ids:
-            reservation.message_post(
-                body=_(
-                    """Refund: <b>%s</b> by <b>%s</b>""",
-                    amount,
-                    journal.display_name,
-                )
-            )
+        # folio.message_post(
+        #     body=_(
+        #         """Refund: <b>%s</b> by <b>%s</b>""",
+        #         amount,
+        #         journal.display_name,
+        #     )
+        # )
+        # for reservation in folio.reservation_ids:
+        #     reservation.message_post(
+        #         body=_(
+        #             """Refund: <b>%s</b> by <b>%s</b>""",
+        #             amount,
+        #             journal.display_name,
+        #         )
+        #     )
         return True
 
     def open_wizard_several_partners(self):
