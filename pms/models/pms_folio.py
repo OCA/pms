@@ -110,15 +110,6 @@ class PmsFolio(models.Model):
         comodel_name="res.company",
         compute="_compute_company_id",
     )
-    move_line_ids = fields.Many2many(
-        string="Payments",
-        help="Folio payments",
-        readonly=True,
-        comodel_name="account.move.line",
-        relation="payment_folio_rel",
-        column1="folio_id",
-        column2="move_id",
-    )
     analytic_account_id = fields.Many2one(
         string="Analytic Account",
         help="The analytic account related to a folio.",
@@ -962,10 +953,9 @@ class PmsFolio(models.Model):
         "amount_total",
         "reservation_type",
         "state",
-        "move_line_ids",
-        "move_line_ids.parent_state",
         "sale_line_ids.invoice_lines",
         "sale_line_ids.invoice_lines.move_id.payment_state",
+        "payment_ids",
     )
     def _compute_amount(self):
         for record in self:
@@ -986,7 +976,7 @@ class PmsFolio(models.Model):
                     self.env["account.move.line"]
                     .search(
                         [
-                            ("folio_ids", "in", record.id),
+                            ("move_id.folio_ids", "in", record.id),
                             (
                                 "account_id",
                                 "in",
@@ -1201,30 +1191,6 @@ class PmsFolio(models.Model):
         action = self.env.ref("pms.action_folio_changes").sudo().read()[0]
         action["context"] = ({"default_reservation_ids": [(6, 0, reservation_ids)]},)
         return action
-
-    # def action_return_payments(self):
-    #     self.ensure_one()
-    #     return_move_ids = []
-    #     acc_pay_obj = self.env["account.payment"]
-    #     payments = acc_pay_obj.search(
-    #         ["|", ("move_ids", "in", self.move_ids.ids), ("folio_id", "=", self.id)]
-    #     )
-    #     return_move_ids += self.move_ids.filtered(
-    #         lambda invoice: invoice.type == "out_refund"
-    #     ).mapped("payment_move_line_ids.move_id.id")
-    #     return_lines = self.env["payment.return.line"].search(
-    #         [("move_line_ids", "in", payments.mapped("move_line_ids.id")),]
-    #     )
-    #     return_move_ids += return_lines.mapped("return_id.move_id.id")
-
-    #     return {
-    #         "name": _("Returns"),
-    #         "view_type": "form",
-    #         "view_mode": "tree,form",
-    #         "res_model": "account.move",
-    #         "type": "ir.actions.act_window",
-    #         "domain": [("id", "in", return_move_ids)],
-    #     }
 
     def action_checks(self):
         self.ensure_one()

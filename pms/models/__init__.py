@@ -5,7 +5,6 @@
 from . import ir_http
 from . import ir_config_parameter
 
-# from . import payment_return
 from . import pms_board_service_room_type
 from . import pms_property
 from . import res_users

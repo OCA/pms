@@ -1,6 +1,6 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class AccountPayment(models.Model):
@@ -11,10 +11,34 @@ class AccountPayment(models.Model):
         string="Folios",
         comodel_name="pms.folio",
         ondelete="cascade",
+        compute="_compute_folio_ids",
+        store=True,
+        readonly=False,
         relation="account_payment_folio_rel",
         column1="payment_id",
         column2="folio_id",
     )
+
+    @api.depends("reconciled_invoice_ids", "reconciled_bill_ids")
+    def _compute_folio_ids(self):
+        for rec in self:
+            inv_folio_ids = rec.reconciled_invoice_ids.mapped(
+                "line_ids.folio_line_ids.folio_id.id"
+            )
+            bill_folio_ids = rec.reconciled_bill_ids.mapped(
+                "line_ids.folio_line_ids.folio_id.id"
+            )
+            folio_ids = list(set(inv_folio_ids + bill_folio_ids))
+            if folio_ids:
+                rec.write({"folio_ids": [(6, 0, folio_ids)]})
+            elif (
+                not rec.reconciled_invoice_ids
+                and not rec.reconciled_bill_ids
+                and rec.folio_ids
+            ):
+                rec.folio_ids = rec.folio_ids
+            else:
+                rec.folio_ids = False
 
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):
         line_vals_list = super(AccountPayment, self)._prepare_move_line_default_vals(
@@ -28,6 +52,16 @@ class AccountPayment(models.Model):
                     }
                 )
         return line_vals_list
+
+    def _synchronize_to_moves(self, changed_fields):
+        super(AccountPayment, self)._synchronize_to_moves(changed_fields)
+        if "folio_ids" in changed_fields:
+            for pay in self.with_context(skip_account_move_synchronization=True):
+                pay.move_id.write(
+                    {
+                        "folio_ids": [(6, 0, pay.folio_ids.ids)],
+                    }
+                )
 
     # Business methods
 
