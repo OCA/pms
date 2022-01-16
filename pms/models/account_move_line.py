@@ -19,8 +19,10 @@ class AccountMoveLine(models.Model):
         column2="sale_line_id",
     )
     folio_ids = fields.Many2many(
-        related="payment_id.folio_ids",
+        comodel_name="pms.folio",
         string="Folios",
+        compute="_compute_folio_ids",
+        store=True,
     )
     name_changed_by_user = fields.Boolean(
         string="Custom label",
@@ -50,6 +52,23 @@ class AccountMoveLine(models.Model):
         store=True,
         readonly=False,
     )
+
+    @api.depends(
+        "folio_line_ids",
+        "payment_id",
+        "payment_id.folio_ids",
+        "statement_line_id",
+        "statement_line_id.folio_ids",
+    )
+    def _compute_folio_ids(self):
+        if self.folio_line_ids:
+            self.folio_ids = self.folio_line_ids.mapped("folio_id")
+        elif self.payment_id:
+            self.folio_ids = self.payment_id.folio_ids
+        elif self.statement_line_id:
+            self.folio_ids = self.statement_line_id.folio_ids
+        else:
+            self.folio_ids = False
 
     @api.depends("quantity")
     def _compute_name(self):
