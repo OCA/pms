@@ -19,11 +19,8 @@ class AccountMoveLine(models.Model):
         column2="sale_line_id",
     )
     folio_ids = fields.Many2many(
+        related="payment_id.folio_ids",
         string="Folios",
-        comodel_name="pms.folio",
-        relation="payment_folio_rel",
-        column1="move_id",
-        column2="folio_id",
     )
     name_changed_by_user = fields.Boolean(
         string="Custom label",
