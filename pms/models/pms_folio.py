@@ -7,7 +7,7 @@ from itertools import groupby
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
-from odoo.tools import float_is_zero
+from odoo.tools import float_compare, float_is_zero
 
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 
@@ -951,11 +951,18 @@ class PmsFolio(models.Model):
     # TODO: Add return_ids to depends
     @api.depends(
         "amount_total",
+        "currency_id",
+        "company_id",
         "reservation_type",
         "state",
-        "sale_line_ids.invoice_lines",
-        "sale_line_ids.invoice_lines.move_id.payment_state",
-        "payment_ids",
+        "payment_ids.state",
+        "payment_ids.move_id",
+        "payment_ids.move_id.line_ids",
+        "payment_ids.move_id.line_ids.date",
+        "payment_ids.move_id.line_ids.debit",
+        "payment_ids.move_id.line_ids.credit",
+        "payment_ids.move_id.line_ids.currency_id",
+        "payment_ids.move_id.line_ids.amount_currency",
     )
     def _compute_amount(self):
         for record in self:
@@ -968,49 +975,49 @@ class PmsFolio(models.Model):
                 }
                 record.update(vals)
             else:
-                journals = record.pms_property_id._get_payment_methods(
-                    automatic_included=True
+                mls = record.payment_ids.mapped("move_id.line_ids").filtered(
+                    lambda x: x.account_id.internal_type == "receivable"
+                    and x.parent_state == "posted"
                 )
-                paid_out = 0
-                paid_out += sum(
-                    self.env["account.move.line"]
-                    .search(
-                        [
-                            ("move_id.folio_ids", "in", record.id),
-                            (
-                                "account_id",
-                                "in",
-                                tuple(
-                                    journals.default_account_id.ids
-                                    + journals.payment_debit_account_id.ids
-                                    + journals.payment_credit_account_id.ids
-                                ),
-                            ),
-                            (
-                                "display_type",
-                                "not in",
-                                ("line_section", "line_note"),
-                            ),
-                            ("move_id.state", "!=", "cancel"),
-                        ]
+                advance_amount = 0.0
+                for line in mls:
+                    line_currency = line.currency_id or line.company_id.currency_id
+                    line_amount = (
+                        line.amount_currency if line.currency_id else line.balance
                     )
-                    .mapped("balance")
-                )
+                    line_amount *= -1
+                    if line_currency != record.currency_id:
+                        advance_amount += line.currency_id._convert(
+                            line_amount,
+                            record.currency_id,
+                            record.company_id,
+                            line.date or fields.Date.today(),
+                        )
+                    else:
+                        advance_amount += line_amount
+                amount_residual = record.amount_total - advance_amount
+
                 total = record.amount_total
                 # REVIEW: Must We ignored services in cancelled folios
                 # pending amount?
                 if record.state == "cancel":
                     total = total - sum(record.service_ids.mapped("price_total"))
                 # Compute 'payment_state'.
-                if total <= paid_out:
-                    payment_state = "paid"
-                elif paid_out <= 0:
-                    payment_state = "not_paid"
-                else:
-                    payment_state = "partial"
+                payment_state = "not_paid"
+                if mls:
+                    has_due_amount = float_compare(
+                        amount_residual,
+                        0.0,
+                        precision_rounding=record.currency_id.rounding,
+                    )
+                    if has_due_amount <= 0:
+                        payment_state = "paid"
+                    elif has_due_amount > 0:
+                        payment_state = "partial"
+
                 vals = {
-                    "pending_amount": total - paid_out,
-                    "invoices_paid": paid_out,
+                    "pending_amount": amount_residual,
+                    "invoices_paid": advance_amount,
                     "payment_state": payment_state,
                 }
                 record.update(vals)
