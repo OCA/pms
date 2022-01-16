@@ -19,6 +19,7 @@ class AccountMove(models.Model):
         column1="account_move_id",
         column2="folio_ids_id",
         store=True,
+        readonly=False,
     )
     pms_property_id = fields.Many2one(
         string="Property",
@@ -40,14 +41,11 @@ class AccountMove(models.Model):
             else:
                 move.pms_property_id = False
 
-    @api.depends("invoice_line_ids")
+    @api.depends("line_ids", "line_ids.folio_ids")
     def _compute_folio_origin(self):
         for move in self:
             move.folio_ids = False
-            if move.invoice_line_ids:
-                move.folio_ids = move.mapped("invoice_line_ids.folio_ids.id")
-            elif move.line_ids and move.line_ids.sale_line_ids:
-                move.folio_ids = move.mapped("line_ids.sale_line_ids.folio_id.id")
+            move.folio_ids = move.mapped("line_ids.folio_ids.id")
 
     def _compute_payments_widget_to_reconcile_info(self):
         for move in self:
