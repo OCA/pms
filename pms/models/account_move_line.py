@@ -12,7 +12,7 @@ class AccountMoveLine(models.Model):
     folio_line_ids = fields.Many2many(
         string="Folio Lines",
         help="The folio lines in the account move lines",
-        copy=False,
+        copy=True,
         comodel_name="folio.sale.line",
         relation="folio_sale_line_invoice_rel",
         column1="invoice_line_id",
@@ -91,7 +91,3 @@ class AccountMoveLine(models.Model):
             #           qty=record.quantity)
             #     record.with_context(auto_name=True)
             #       ._compute_name_changed_by_user()
-
-    def _copy_data_extend_business_fields(self, values):
-        super(AccountMoveLine, self)._copy_data_extend_business_fields(values)
-        values["folio_line_ids"] = [(6, None, self.folio_line_ids.ids)]
