@@ -1004,7 +1004,15 @@ class PmsFolio(models.Model):
                     total = total - sum(record.service_ids.mapped("price_total"))
                 # Compute 'payment_state'.
                 payment_state = "not_paid"
-                if mls:
+                if (
+                    mls
+                    and float_compare(
+                        amount_residual,
+                        total,
+                        precision_rounding=record.currency_id.rounding,
+                    )
+                    != 0
+                ):
                     has_due_amount = float_compare(
                         amount_residual,
                         0.0,
@@ -1688,6 +1696,11 @@ class PmsFolio(models.Model):
         }
         pay = self.env["account.payment"].create(vals)
         pay.action_post()
+
+        # Review: force to autoreconcile payment with invoices already created
+        pay.flush()
+        for move in folio.move_ids:
+            move._autoreconcile_folio_payments()
 
         # Automatic register payment in cash register
         if pay_type == "cash":
