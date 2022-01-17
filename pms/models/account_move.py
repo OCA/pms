@@ -95,7 +95,6 @@ class AccountMove(models.Model):
                 else:
                     domain.append(("balance", ">", 0.0))
                     payments_widget_vals["title"] = _("Outstanding debits")
-
                 for line in self.env["account.move.line"].search(domain):
 
                     if line.currency_id == move.currency_id:
@@ -134,23 +133,6 @@ class AccountMove(models.Model):
                 )
                 move.invoice_has_outstanding = True
 
-    def action_folio_payments(self):
-        self.ensure_one()
-        sales = self.mapped("invoice_line_ids.sale_line_ids.order_id")
-        folios = self.env["pms.folio"].search([("order_id.id", "in", sales.ids)])
-        payments_obj = self.env["account.payment"]
-        payments = payments_obj.search([("folio_id", "in", folios.ids)])
-        payment_ids = payments.mapped("id")
-        return {
-            "name": _("Payments"),
-            "view_type": "form",
-            "view_mode": "tree,form",
-            "res_model": "account.payment",
-            "target": "new",
-            "type": "ir.actions.act_window",
-            "domain": [("id", "in", payment_ids)],
-        }
-
     def _search_default_journal(self, journal_types):
         """
         Search for the default journal based on the journal type and property,
@@ -183,3 +165,41 @@ class AccountMove(models.Model):
                 )
                 raise UserError(error_msg)
         return journal
+
+    def _autoreconcile_folio_payments(self):
+        """
+        Reconcile payments with the invoice
+        """
+        # TODO: Add setting option to enable automatic payment reconciliation
+        for move in self.filtered(lambda m: m.state == "posted"):
+            if move.is_invoice(include_receipts=True) and move.folio_ids:
+                to_reconcile_payments_widget_vals = json.loads(
+                    move.invoice_outstanding_credits_debits_widget
+                )
+                if not to_reconcile_payments_widget_vals:
+                    continue
+                current_amounts = {
+                    vals["move_id"]: vals["amount"]
+                    for vals in to_reconcile_payments_widget_vals["content"]
+                }
+                pay_term_lines = move.line_ids.filtered(
+                    lambda line: line.account_id.user_type_id.type
+                    in ("receivable", "payable")
+                )
+                to_reconcile = (
+                    self.env["account.move"]
+                    .browse(list(current_amounts.keys()))
+                    .line_ids.filtered(
+                        lambda line: line.account_id == pay_term_lines.account_id
+                        and line.folio_ids in move.folio_ids
+                    )
+                )
+                (pay_term_lines + to_reconcile).reconcile()
+
+    def _post(self, soft=True):
+        """
+        Overwrite the original method to add the folio_ids to the invoice
+        """
+        res = super(AccountMove, self)._post(soft)
+        self._autoreconcile_folio_payments()
+        return res
