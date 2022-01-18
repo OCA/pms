@@ -13,9 +13,9 @@ class PmsProperty(models.Model):
     _inherit = ["pms.property", "website.published.mixin", "website.multi.mixin"]
 
     def _compute_website_url(self):
-        for property in self:
-            if property.id:
-                property.website_url = "/property/%s" % slug(property)
+        for pms_property in self:
+            if pms_property.id:
+                pms_property.website_url = "/property/%s" % slug(pms_property)
 
     def google_map_link(self):
         property_partner = self.sudo().partner_id

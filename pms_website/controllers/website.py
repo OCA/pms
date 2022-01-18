@@ -16,19 +16,19 @@ class Website(Website):
         website=True,
         sitemap=True,
     )
-    def product(self, property, category="", search="", **kwargs):
-        if not property.can_access_from_current_website():
+    def product(self, pms_property, category="", search="", **kwargs):
+        if not pms_property.can_access_from_current_website():
             raise NotFound()
         return request.render(
             "pms_website.property",
-            self._prepare_property_values(property, category, search, **kwargs),
+            self._prepare_property_values(pms_property, category, search, **kwargs),
         )
 
-    def _prepare_property_values(self, property, category, search, **kwargs):
+    def _prepare_property_values(self, pms_property, category, search, **kwargs):
         keep = QueryURL("/property")
         return {
-            "property": property,
-            "main_object": property,
+            "property": pms_property,
+            "main_object": pms_property,
             # 'search': search,
             # 'category': category,
             # 'pricelist': pricelist,
