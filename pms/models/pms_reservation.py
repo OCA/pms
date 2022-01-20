@@ -1204,7 +1204,7 @@ class PmsReservation(models.Model):
             else:
                 reservation.commission_percent = 0
 
-    @api.depends("commission_percent", "price_total")
+    @api.depends("commission_percent", "price_total", "service_ids")
     def _compute_commission_amount(self):
         for reservation in self:
             if reservation.commission_percent > 0:
