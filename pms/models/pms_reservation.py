@@ -1211,6 +1211,15 @@ class PmsReservation(models.Model):
                 reservation.commission_amount = (
                     reservation.price_total * reservation.commission_percent / 100
                 )
+                if reservation.service_ids:
+                    for service in reservation.service_ids:
+                        if service.is_board_service:
+                            reservation.commission_amount = (
+                                reservation.commission_amount
+                                + service.price_total
+                                * reservation.commission_percent
+                                / 100
+                            )
             else:
                 reservation.commission_amount = 0
 
