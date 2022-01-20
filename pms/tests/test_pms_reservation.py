@@ -90,6 +90,18 @@ class TestPmsReservations(TestPms):
         self.id_category = self.env["res.partner.id_category"].create(
             {"name": "DNI", "code": "D"}
         )
+        self.sale_channel1 = self.env["pms.sale.channel"].create(
+            {"name": "saleChannel1", "channel_type": "indirect"}
+        )
+        self.agency1 = self.env["res.partner"].create(
+            {
+                "name": "partner1",
+                "is_agency": True,
+                "invoice_to_agency": True,
+                "default_commission": 15,
+                "sale_channel_id": self.sale_channel1.id,
+            }
+        )
 
     def test_reservation_dates_not_consecutive(self):
         """
@@ -3619,3 +3631,96 @@ class TestPmsReservations(TestPms):
             msg="A partner must be added to the reservation",
         ):
             several_partners_wizard.add_partner()
+
+    @freeze_time("1991-11-10")
+    def test_commission_amount_with_board_service(self):
+        """
+        Check if commission in reservation is correctly calculated
+        when reservation has services and board_services
+
+        Create a service that isn't board service.
+        Create a service that is board service.
+        Create a reservation with that service and board_service.
+
+        In this case when the reservation is made through an agency
+        that has a default commission, this commission is applied to the
+        price of the room and the price of services that correspond with
+        board service.
+
+        """
+        # ARRANGE
+        self.product1 = self.env["product.product"].create(
+            {
+                "name": "Product test1",
+                "per_day": True,
+                "consumed_on": "after",
+                "is_extra_bed": True,
+            }
+        )
+        self.service = self.env["pms.service"].create(
+            {
+                "is_board_service": False,
+                "product_id": self.product1.id,
+            }
+        )
+        self.service.flush()
+        self.product_test1 = self.env["product.product"].create(
+            {
+                "name": "Test Product 1",
+                "per_day": True,
+                "consumed_on": "after",
+            }
+        )
+        self.board_service_test = self.env["pms.board.service"].create(
+            {
+                "name": "Test Board Service",
+                "default_code": "TPS",
+            }
+        )
+        self.env["pms.board.service.line"].create(
+            {
+                "pms_board_service_id": self.board_service_test.id,
+                "product_id": self.product_test1.id,
+                "amount": 8,
+            }
+        )
+        self.board_service_room_type = self.env["pms.board.service.room.type"].create(
+            {
+                "pms_room_type_id": self.room_type_double.id,
+                "pms_board_service_id": self.board_service_test.id,
+            }
+        )
+        checkin = fields.date.today()
+        checkout = checkin + datetime.timedelta(days=11)
+        reservation_vals = {
+            "checkin": checkin,
+            "checkout": checkout,
+            "room_type_id": self.room_type_double.id,
+            "partner_id": self.partner1.id,
+            "pms_property_id": self.pms_property1.id,
+            "agency_id": self.agency1.id,
+            "service_ids": [self.service.id],
+        }
+        # ACT
+        reservation = self.env["pms.reservation"].create(reservation_vals)
+
+        reservation.write(
+            {
+                "board_service_room_id": self.board_service_room_type.id,
+            }
+        )
+
+        self.commission = (
+            reservation.price_total * self.agency1.default_commission / 100
+        )
+        for service in reservation.service_ids:
+            if service.is_board_service:
+                self.commission = (
+                    self.commission
+                    + service.price_total * self.agency1.default_commission / 100
+                )
+        self.assertEqual(
+            self.commission,
+            reservation.commission_amount,
+            "Reservation commission is wrong",
+        )
