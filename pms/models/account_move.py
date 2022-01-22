@@ -1,5 +1,6 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
+import itertools as it
 import json
 
 from odoo import _, api, fields, models
@@ -186,15 +187,33 @@ class AccountMove(models.Model):
                     lambda line: line.account_id.user_type_id.type
                     in ("receivable", "payable")
                 )
-                to_reconcile = (
+                to_propose = (
                     self.env["account.move"]
                     .browse(list(current_amounts.keys()))
                     .line_ids.filtered(
                         lambda line: line.account_id == pay_term_lines.account_id
                         and line.folio_ids in move.folio_ids
+                        and (
+                            line.move_id.partner_id == move.partner_id
+                            or not line.move_id.partner_id
+                        )
                     )
                 )
-                (pay_term_lines + to_reconcile).reconcile()
+                to_reconcile = self.match_pays_by_amount(
+                    payments=to_propose, invoice=move
+                )
+                if to_reconcile:
+                    (pay_term_lines + to_reconcile).reconcile()
+                    # Set partner in payment
+                    for record in to_reconcile:
+                        if record.payment_id and not record.payment_id.partner_id:
+                            record.payment_id.partner_id = move.partner_id
+                        if (
+                            record.statement_line_id
+                            and not record.statement_line_id.partner_id
+                        ):
+                            record.statement_line_id.partner_id = move.partner_id
+        return True
 
     def _post(self, soft=True):
         """
@@ -203,3 +222,17 @@ class AccountMove(models.Model):
         res = super(AccountMove, self)._post(soft)
         self._autoreconcile_folio_payments()
         return res
+
+    def match_pays_by_amount(self, payments, invoice):
+        """
+        Match payments by amount
+        """
+        for i in range(len(payments)):
+            combinations = list(it.combinations(payments, i + 1))
+            for combi in combinations:
+                # TODO: compare with currency differences
+                if sum(abs(item.balance) for item in combi) == invoice.amount_residual:
+                    return payments.filtered(
+                        lambda p: p.id in [item.id for item in combi]
+                    )
+        return []
