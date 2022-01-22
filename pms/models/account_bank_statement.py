@@ -48,9 +48,16 @@ class AccountBankStatement(models.Model):
                     statement_move_line = line.move_id.line_ids.filtered(
                         lambda line: line.account_id.reconcile
                     )
-                    payment_line = self.env["account.move.line"].browse(
+                    payment_lines = self.env["account.move.line"].browse(
                         to_reconcile_ids.ids
                     )[0]
+                    # We try to reconcile by amount
+                    for record in payment_lines:
+                        payment_line = (
+                            record if abs(record.balance) == line.amount else False
+                        )
+                    if not payment_line:
+                        payment_line = payment_lines[0]
                     if payment_line and statement_move_line:
                         statement_move_line.account_id = payment_line.account_id
                         lines_to_reconcile = payment_line + statement_move_line
