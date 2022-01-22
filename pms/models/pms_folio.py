@@ -184,7 +184,7 @@ class PmsFolio(models.Model):
     )
     payment_ids = fields.Many2many(
         string="Bank Payments",
-        help="Payments made by bank direct",
+        help="Payments",
         readonly=True,
         copy=False,
         comodel_name="account.payment",
@@ -194,7 +194,7 @@ class PmsFolio(models.Model):
     )
     statement_line_ids = fields.Many2many(
         string="Cash Payments",
-        help="Payments made by cash",
+        help="Statement lines",
         readonly=True,
         copy=False,
         comodel_name="account.bank.statement.line",
@@ -1687,7 +1687,7 @@ class PmsFolio(models.Model):
             "journal_id": journal.id,
             "partner_id": partner.id,
             "amount": amount,
-            "date": fields.Date.today(),
+            "date": date or fields.Date.today(),
             "ref": folio.name,
             "folio_ids": [(6, 0, [folio.id])],
             "payment_type": "inbound",
@@ -1759,7 +1759,7 @@ class PmsFolio(models.Model):
             "journal_id": journal.id,
             "partner_id": partner.id,
             "amount": amount if amount > 0 else -amount,
-            "date": fields.Date.today(),
+            "date": date or fields.Date.today(),
             "ref": folio.name,
             "folio_ids": [(6, 0, [folio.id])],
             "payment_type": "outbound",
@@ -1867,7 +1867,7 @@ class PmsFolio(models.Model):
             "folio_ids": [(6, 0, folios.ids)],
             "reservation_ids": [(6, 0, reservation_ids)],
             "service_ids": [(6, 0, service_ids)],
-            "payment_ref": folios.mapped("name"),
+            "payment_ref": ", ".join(folios.mapped("name")),
             "statement_id": statement.id,
             "journal_id": statement.journal_id.id,
             "counterpart_account_id": receivable_account.id,
