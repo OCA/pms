@@ -29,7 +29,7 @@
                                     <tr>
                                         <td align="center">
                                             <a
-                                                href="/my/precheckin/${object.id}?access_token=${object.access_token}"
+                                                href="${object.get_portal_url()}"
                                                 target="_blank"
                                                 style="text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px 20px 10px 20px;"
                                             >
@@ -42,7 +42,7 @@
                                                         alt="Hacer check-in"
                                                         width="80px"
                                                         height="80px"
-                                                        href="${object.url}"
+                                                        href="${object.get_portal_url()}"
                                                     /></center></a>
                                         </td>
                                     </tr>

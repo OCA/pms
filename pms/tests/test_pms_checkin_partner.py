@@ -1201,9 +1201,7 @@ class TestPmsCheckinPartner(TestPms):
         is = 20 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 5 years
         """
-        doc_type_id = (
-            self.env["res.partner.id_category"].search([("code", "=", "D")]).id
-        )
+        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "D")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1240,9 +1238,7 @@ class TestPmsCheckinPartner(TestPms):
         is = 40 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 10 years
         """
-        doc_type_id = (
-            self.env["res.partner.id_category"].search([("code", "=", "D")]).id
-        )
+        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "D")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1279,9 +1275,7 @@ class TestPmsCheckinPartner(TestPms):
         is = 20 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 5 years
         """
-        doc_type_id = (
-            self.env["res.partner.id_category"].search([("code", "=", "P")]).id
-        )
+        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "P")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1318,9 +1312,7 @@ class TestPmsCheckinPartner(TestPms):
         is = 40 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 10 years
         """
-        doc_type_id = (
-            self.env["res.partner.id_category"].search([("code", "=", "P")]).id
-        )
+        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "P")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1357,9 +1349,7 @@ class TestPmsCheckinPartner(TestPms):
         is = 40 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 10 years
         """
-        doc_type_id = (
-            self.env["res.partner.id_category"].search([("code", "=", "C")]).id
-        )
+        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "C")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1396,9 +1386,7 @@ class TestPmsCheckinPartner(TestPms):
         is = 20 years old and document_date = today - 1 year. The expected
         expedition date has to be the value of doc_date.
         """
-        doc_type_id = (
-            self.env["res.partner.id_category"].search([("code", "=", "D")]).id
-        )
+        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "D")])
         doc_date = fields.date.today() - datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
         birthdate = fields.date.today() - datetime.timedelta(days=7305)
@@ -1443,11 +1431,12 @@ class TestPmsCheckinPartner(TestPms):
         )
         checkin_partner_id = self.reservation.checkin_partner_ids[0]
         checkin_partner_vals = {
+            "checkin_partner_id": checkin_partner_id.id,
             "id": checkin_partner_id.id,
             "firstname": "Serafín",
             "lastname": "Rivas",
             "lastname2": "Gonzalez",
-            "document_type": self.id_category,
+            "document_type": self.id_category.name,
             "document_number": "18038946T",
             "document_expedition_date": "2015-10-07",
             "birthdate_date": "1983-10-05",
