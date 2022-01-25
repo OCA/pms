@@ -467,7 +467,10 @@ class PmsCheckinPartner(models.Model):
     def _compute_access_url(self):
         super(PmsCheckinPartner, self)._compute_access_url()
         for checkin in self:
-            checkin.access_url = "/my/precheckin/%s" % (checkin.id)
+            checkin.access_url = "/my/precheckin/%s/checkin/%s" % (
+                checkin.folio_id.id,
+                checkin.id,
+            )
 
     # Constraints and onchanges
 
@@ -665,16 +668,14 @@ class PmsCheckinPartner(models.Model):
             return datetime_doc_date
         datetime_birthdate = datetime.strptime(birthdate, DEFAULT_SERVER_DATE_FORMAT)
         age = today.year - datetime_birthdate.year
-        document_type = self.env["res.partner.id_category"].search(
-            [("id", "=", doc_type)]
-        )
+
         document_expedition_date = False
-        if document_type.code == "D" or document_type.code == "P":
+        if doc_type.code == "D" or doc_type.code == "P":
             if age < 30:
                 document_expedition_date = datetime_doc_date - relativedelta(years=5)
             else:
                 document_expedition_date = datetime_doc_date - relativedelta(years=10)
-        if document_type.code == "C":
+        if doc_type.code == "C":
             if age < 70:
                 document_expedition_date = datetime_doc_date - relativedelta(years=10)
         return document_expedition_date
@@ -736,7 +737,15 @@ class PmsCheckinPartner(models.Model):
         }
 
     def _save_data_from_portal(self, values):
-        checkin_partner = self.env["pms.checkin.partner"].browse(int(values.get("id")))
+        checkin_partner = self.env["pms.checkin.partner"].browse(
+            int(values.get("checkin_partner_id"))
+        )
+        if values.get("checkin_partner_id"):
+            values.pop("checkin_partner_id")
+        if values.get("checkin_pos"):
+            values.pop("checkin_pos")
+        if values.get("first"):
+            values.pop("first")
         if values.get("nationality_id"):
             nationality_id = self.env["res.country"].search(
                 [("id", "=", values.get("nationality_id"))]
@@ -754,6 +763,9 @@ class PmsCheckinPartner(models.Model):
             values.pop("state")
         if values.get("document_expedition_date"):
             doc_type = values.get("document_type")
+            doc_type = self.env["res.partner.id_category"].search(
+                [("name", "=", doc_type)]
+            )
             doc_date = values.get("document_expedition_date")
             birthdate = values.get("birthdate_date")
             document_expedition_date = (
@@ -761,7 +773,13 @@ class PmsCheckinPartner(models.Model):
                     doc_type, doc_date, birthdate
                 )
             )
-            values.update({"document_expedition_date": document_expedition_date})
+            values.update(
+                {
+                    "document_expedition_date": document_expedition_date,
+                    "document_type": doc_type,
+                }
+            )
+
         checkin_partner.sudo().write(values)
 
     def send_portal_invitation_email(self, invitation_firstname=None, email=None):
