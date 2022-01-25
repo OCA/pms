@@ -3,7 +3,7 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsPropertyComponent(Component):
+class PmsPropertyService(Component):
     _inherit = "base.rest.service"
     _name = "pms.property.service"
     _usage = "properties"
