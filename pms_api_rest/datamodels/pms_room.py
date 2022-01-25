@@ -8,3 +8,11 @@ class PmsRoomSearchParam(Datamodel):
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
     pms_property_id = fields.Integer(required=False, allow_none=True)
+
+
+class PmsRoomInfo(Datamodel):
+    _name = "pms.room.info"
+    id = fields.Integer(required=False, allow_none=True)
+    name = fields.String(required=False, allow_none=True)
+    roomTypeId = fields.Integer(required=False, allow_none=True)
+    capacity = fields.Integer(required=False, allow_none=True)
