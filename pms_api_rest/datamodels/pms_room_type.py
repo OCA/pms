@@ -7,3 +7,9 @@ class PmsRoomTypeSearchParam(Datamodel):
     _name = "pms.room.type.search.param"
     id = fields.Integer(required=False, allow_none=True)
     name = fields.String(required=False, allow_none=True)
+
+
+class PmsRoomTypeInfo(Datamodel):
+    _name = "pms.room.type.info"
+    id = fields.Integer(required=False, allow_none=True)
+    name = fields.String(required=False, allow_none=True)
