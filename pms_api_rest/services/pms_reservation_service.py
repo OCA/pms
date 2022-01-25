@@ -5,7 +5,7 @@ from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
-class PmsRoomService(Component):
+class PmsReservationService(Component):
     _inherit = "base.rest.service"
     _name = "pms.reservation.service"
     _usage = "reservations"
