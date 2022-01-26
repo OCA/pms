@@ -1,0 +1,66 @@
+<odoo>
+
+    <record id="view_pms_amenity_form" model="ir.ui.view">
+        <field name="name">pms.amenity.form</field>
+        <field name="model">pms.amenity</field>
+        <field name="arch" type="xml">
+            <form string="Amenities">
+                <header />
+                <sheet>
+                    <div class="oe_button_box" name="button_box" />
+                    <h1>
+                        <label for="name" string="Amenity" />
+                        <field name="name" select="1" />
+                    </h1>
+                    <group id="main">
+                        <group id="main-left">
+                            <field name="type_id" string="Type" />
+                        </group>
+                        <group id="main-right">
+                            <field name="default_code" select="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Properties">
+                            <field
+                                name="property_ids"
+                                options="{'no_create': True,'no_open': True}"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pms_amenity_search">
+        <field name="name">pms.amenity.search</field>
+        <field name="model">pms.amenity</field>
+        <field name="arch" type="xml">
+            <search string="Amenities">
+                <field name="name" />
+                <field name="type_id" select="1" />
+                <group expand="0" string="Group By..." />
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pms_amenity_view_tree">
+        <field name="name">pms.amenity.tree</field>
+        <field name="model">pms.amenity</field>
+        <field name="arch" type="xml">
+            <tree string="Amenities">
+                <field name="default_code" />
+                <field name="name" />
+                <field name="type_id" select="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_pms_amenity">
+        <field name="name">Amenities</field>
+        <field name="res_model">pms.amenity</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
