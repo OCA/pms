@@ -36,7 +36,7 @@ class PmsPricelistService(Component):
             )
         PmsPricelistInfo = self.env.datamodels["pms.pricelist.info"]
         result_pricelists = []
-        for pricelist in self.env["product.pricelist"].sudo().search(domain):
+        for pricelist in self.env["product.pricelist"].search(domain):
             result_pricelists.append(
                 PmsPricelistInfo(
                     id=pricelist.id,
@@ -60,65 +60,51 @@ class PmsPricelistService(Component):
     )
     def get_pricelists_items(self, pricelist_id, pricelist_item_search_param):
         result = []
-        record_pricelist_id = (
-            self.env["product.pricelist"].sudo().search([("id", "=", pricelist_id)])
+        record_pricelist_id = self.env["product.pricelist"].search(
+            [("id", "=", pricelist_id)]
         )
         if not record_pricelist_id:
             raise MissingError
         PmsPricelistItemInfo = self.env.datamodels["pms.pricelist.item.info"]
-        rooms = (
-            self.env["pms.room"]
-            .sudo()
-            .search(
-                [("pms_property_id", "=", pricelist_item_search_param.pms_property_id)]
-            )
+        rooms = self.env["pms.room"].search(
+            [("pms_property_id", "=", pricelist_item_search_param.pms_property_id)]
         )
-        for room_type in (
-            self.env["pms.room.type"]
-            .sudo()
-            .search([("id", "in", rooms.mapped("room_type_id").ids)])
+        for room_type in self.env["pms.room.type"].search(
+            [("id", "in", rooms.mapped("room_type_id").ids)]
         ):
-            for item in (
-                self.env["product.pricelist.item"]
-                .sudo()
-                .search(
+            for item in self.env["product.pricelist.item"].search(
+                [
+                    ("pricelist_id", "=", pricelist_id),
+                    ("applied_on", "=", "0_product_variant"),
+                    ("product_id", "=", room_type.product_id.id),
+                    (
+                        "date_start_consumption",
+                        ">=",
+                        pricelist_item_search_param.date_from,
+                    ),
+                    (
+                        "date_end_consumption",
+                        "<=",
+                        pricelist_item_search_param.date_to,
+                    ),
+                ]
+            ):
+                rule = self.env["pms.availability.plan.rule"].search(
                     [
-                        ("pricelist_id", "=", pricelist_id),
-                        ("applied_on", "=", "0_product_variant"),
-                        ("product_id", "=", room_type.product_id.id),
                         (
-                            "date_start_consumption",
-                            ">=",
-                            pricelist_item_search_param.date_from,
+                            "availability_plan_id",
+                            "=",
+                            record_pricelist_id.availability_plan_id.id,
                         ),
+                        ("date", "=", item.date_start_consumption),
+                        ("date", "=", item.date_end_consumption),
+                        ("room_type_id", "=", room_type.id),
                         (
-                            "date_end_consumption",
-                            "<=",
-                            pricelist_item_search_param.date_to,
+                            "pms_property_id",
+                            "=",
+                            pricelist_item_search_param.pms_property_id,
                         ),
                     ]
-                )
-            ):
-                rule = (
-                    self.env["pms.availability.plan.rule"]
-                    .sudo()
-                    .search(
-                        [
-                            (
-                                "availability_plan_id",
-                                "=",
-                                record_pricelist_id.availability_plan_id.id,
-                            ),
-                            ("date", "=", item.date_start_consumption),
-                            ("date", "=", item.date_end_consumption),
-                            ("room_type_id", "=", room_type.id),
-                            (
-                                "pms_property_id",
-                                "=",
-                                pricelist_item_search_param.pms_property_id,
-                            ),
-                        ]
-                    )
                 )
                 rule.ensure_one()
                 result.append(

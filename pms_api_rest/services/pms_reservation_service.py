@@ -24,9 +24,7 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def get_reservation(self, reservation_id):
-        reservation = (
-            self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
-        )
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
         res = []
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservation:
@@ -181,9 +179,7 @@ class PmsReservationService(Component):
         auth="jwt_api_pms",
     )
     def get_checkin_partners(self, reservation_id):
-        reservation = (
-            self.env["pms.reservation"].sudo().search([("id", "=", reservation_id)])
-        )
+        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
         checkin_partners = []
         PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
         if not reservation:
