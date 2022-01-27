@@ -34,12 +34,8 @@ class PmsCalendarService(Component):
         )
         result_lines = []
         PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
-        for line in (
-            self.env["pms.reservation.line"]
-            .sudo()
-            .search(
-                domain,
-            )
+        for line in self.env["pms.reservation.line"].search(
+            domain,
         ):
             result_lines.append(
                 PmsCalendarInfo(

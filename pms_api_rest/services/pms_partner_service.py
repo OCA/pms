@@ -25,12 +25,8 @@ class PmsPartnerService(Component):
         domain = []
         result_partners = []
         PmsPartnerInfo = self.env.datamodels["pms.partner.info"]
-        for partner in (
-            self.env["res.partner"]
-            .sudo()
-            .search(
-                domain,
-            )
+        for partner in self.env["res.partner"].search(
+            domain,
         ):
 
             result_partners.append(
