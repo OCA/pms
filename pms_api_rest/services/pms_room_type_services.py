@@ -30,12 +30,8 @@ class PmsRoomTypeService(Component):
             domain.append(("id", "=", room_type_search_param.id))
         result_rooms = []
         PmsRoomTypeInfo = self.env.datamodels["pms.room.type.info"]
-        for room in (
-            self.env["pms.room.type"]
-            .sudo()
-            .search(
-                domain,
-            )
+        for room in self.env["pms.room.type"].search(
+            domain,
         ):
 
             result_rooms.append(
