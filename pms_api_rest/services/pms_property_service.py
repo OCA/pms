@@ -30,12 +30,8 @@ class PmsPropertyService(Component):
             domain.append(("id", "=", property_search_param.id))
         result_properties = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
-        for prop in (
-            self.env["pms.property"]
-            .sudo()
-            .search(
-                domain,
-            )
+        for prop in self.env["pms.property"].search(
+            domain,
         ):
             result_properties.append(
                 PmsPropertyInfo(
@@ -59,9 +55,7 @@ class PmsPropertyService(Component):
         auth="jwt_api_pms",
     )
     def get_property(self, property_id):
-        pms_property = (
-            self.env["pms.property"].sudo().search([("id", "=", property_id)])
-        )
+        pms_property = self.env["pms.property"].search([("id", "=", property_id)])
         res = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
         if not pms_property:
@@ -89,17 +83,15 @@ class PmsPropertyService(Component):
     )
     def get_method_payments_property(self, property_id):
 
-        pms_property = (
-            self.env["pms.property"].sudo().search([("id", "=", property_id)])
-        )
+        pms_property = self.env["pms.property"].search([("id", "=", property_id)])
         PmsAccountJournalInfo = self.env.datamodels["pms.account.journal.info"]
         res = []
         if not pms_property:
             pass
         else:
             for method in pms_property._get_payment_methods(automatic_included=True):
-                payment_method = (
-                    self.env["account.journal"].sudo().search([("id", "=", method.id)])
+                payment_method = self.env["account.journal"].search(
+                    [("id", "=", method.id)]
                 )
                 res.append(
                     PmsAccountJournalInfo(
