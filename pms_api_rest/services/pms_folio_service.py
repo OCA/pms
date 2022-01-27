@@ -31,16 +31,12 @@ class PmsFolioService(Component):
         result_folios = []
 
         reservations_result = (
-            self.env["pms.reservation"].sudo().search(domain).mapped("folio_id").ids
+            self.env["pms.reservation"].search(domain).mapped("folio_id").ids
         )
 
         PmsFolioInfo = self.env.datamodels["pms.folio.info"]
-        for folio in (
-            self.env["pms.folio"]
-            .sudo()
-            .search(
-                [("id", "in", reservations_result)],
-            )
+        for folio in self.env["pms.folio"].search(
+            [("id", "in", reservations_result)],
         ):
             reservations = []
             for reservation in folio.reservation_ids:
@@ -127,7 +123,7 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def get_folio_payments(self, folio_id):
-        folio = self.env["pms.folio"].sudo().search([("id", "=", folio_id)])
+        folio = self.env["pms.folio"].search([("id", "=", folio_id)])
         payments = []
         PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
         if not folio:
@@ -175,20 +171,16 @@ class PmsFolioService(Component):
         auth="jwt_api_pms",
     )
     def create_reservation(self, pms_reservation_info):
-        reservation = (
-            self.env["pms.reservation"]
-            .sudo()
-            .create(
-                {
-                    "partner_name": pms_reservation_info.partner,
-                    "pms_property_id": pms_reservation_info.property,
-                    "room_type_id": pms_reservation_info.roomTypeId,
-                    "pricelist_id": pms_reservation_info.pricelistId,
-                    "checkin": pms_reservation_info.checkin,
-                    "checkout": pms_reservation_info.checkout,
-                    "board_service_room_id": pms_reservation_info.boardServiceId,
-                    "channel_type_id": pms_reservation_info.channelTypeId,
-                }
-            )
+        reservation = self.env["pms.reservation"].create(
+            {
+                "partner_name": pms_reservation_info.partner,
+                "pms_property_id": pms_reservation_info.property,
+                "room_type_id": pms_reservation_info.roomTypeId,
+                "pricelist_id": pms_reservation_info.pricelistId,
+                "checkin": pms_reservation_info.checkin,
+                "checkout": pms_reservation_info.checkout,
+                "board_service_room_id": pms_reservation_info.boardServiceId,
+                "channel_type_id": pms_reservation_info.channelTypeId,
+            }
         )
         return reservation.id

@@ -33,12 +33,8 @@ class PmsRoomService(Component):
 
         result_rooms = []
         PmsRoomInfo = self.env.datamodels["pms.room.info"]
-        for room in (
-            self.env["pms.room"]
-            .sudo()
-            .search(
-                domain,
-            )
+        for room in self.env["pms.room"].search(
+            domain,
         ):
 
             result_rooms.append(
