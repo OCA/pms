@@ -347,13 +347,16 @@ class PortalPrecheckin(CustomerPortal):
     )
     def portal_precheckin_submit(self, folio_id, checkin_partner_id, **kw):
         error, error_message = {}, {}
-        checkin_pos = int(kw.get("checkin_pos"))
+        if kw.get("checkin_pos"):
+            checkin_pos = int(kw.get("checkin_pos"))
+        else:
+            checkin_pos = -2
         folio_id = request.env["pms.folio"].browse(folio_id)
         country_ids = request.env["res.country"].search([])
         state_ids = request.env["res.country.state"].search([])
         doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
         values = kw
-        if not kw.get("first"):
+        if not kw.get("first") and kw.get("checkin_pos"):
             error, error_message = self.form_validate(kw, None)
         if not kw.get("first") and not error:
             kw.update({"checkin_partner_id": checkin_partner_id})
@@ -378,13 +381,21 @@ class PortalPrecheckin(CustomerPortal):
                 "checkin_pos": checkin_pos,
             }
         )
-        checkin_partner_id = folio_id.checkin_partner_ids[checkin_pos]
+        if checkin_pos >= 0:
+            checkin_partner_id = folio_id.checkin_partner_ids[checkin_pos]
+        elif checkin_pos == -2:
+            checkin_partner_id = request.env["pms.checkin.partner"].browse(
+                checkin_partner_id
+            )
+        elif checkin_pos == -1:
+            return
         access_token = checkin_partner_id.access_token
         if not checkin_partner_id.access_token:
             access_token = PortalMixin._portal_ensure_token(checkin_partner_id)
         values.update(
             self._precheckin_get_page_view_values(checkin_partner_id.id, access_token)
         )
+
         values.update({"no_breadcrumbs": True})
         return request.render("pms.portal_my_precheckin_detail", values)
 
