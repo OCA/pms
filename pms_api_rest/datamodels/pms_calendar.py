@@ -14,12 +14,14 @@ class PmsCalendarSwapInfo(Datamodel):
     swapTo = fields.String(required=True, allow_none=False)
     roomIdA = fields.Integer(required=True, allow_none=False)
     roomIdB = fields.Integer(required=True, allow_none=False)
+    pms_property_id = fields.Integer(required=True, allow_none=False)
 
 
 class PmsCalendarSearchParam(Datamodel):
     _name = "pms.calendar.search.param"
     date_from = fields.String(required=False, allow_none=True)
     date_to = fields.String(required=False, allow_none=True)
+    pms_property_id = fields.Integer(required=True, allow_none=False)
 
 
 class PmsCalendarInfo(Datamodel):

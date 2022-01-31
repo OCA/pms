@@ -6,6 +6,7 @@ from odoo.addons.datamodel.core import Datamodel
 class PmsFolioSearchParam(Datamodel):
     _name = "pms.folio.search.param"
 
+    pms_property_id = fields.Integer(required=True, allow_none=True)
     date_from = fields.String(required=False, allow_none=True)
     date_to = fields.String(required=False, allow_none=True)
 

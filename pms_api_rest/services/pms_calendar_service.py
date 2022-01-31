@@ -26,12 +26,9 @@ class PmsCalendarService(Component):
     )
     def get_calendar(self, calendar_search_param):
         domain = list()
-        domain.append(
-            ("date", ">", datetime.fromisoformat(calendar_search_param.date_from))
-        )
-        domain.append(
-            ("date", "<=", datetime.fromisoformat(calendar_search_param.date_to))
-        )
+        domain.append(("date", ">=", calendar_search_param.date_from))
+        domain.append(("date", "<=", calendar_search_param.date_to))
+        domain.append(("pms_property_id", "=", calendar_search_param.pms_property_id))
         result_lines = []
         PmsCalendarInfo = self.env.datamodels["pms.calendar.info"]
         for line in self.env["pms.reservation.line"].search(
@@ -83,6 +80,7 @@ class PmsCalendarService(Component):
                 ("room_id", "=", room_id_a),
                 ("date", ">=", swap_info.swapFrom),
                 ("date", "<=", swap_info.swapTo),
+                ("pms_property_id", "=", swap_info.pms_property_id),
             ]
         )
 
@@ -91,6 +89,7 @@ class PmsCalendarService(Component):
                 ("room_id", "=", room_id_b),
                 ("date", ">=", swap_info.swapFrom),
                 ("date", "<=", swap_info.swapTo),
+                ("pms_property_id", "=", swap_info.pms_property_id),
             ]
         )
         lines_room_a.occupies_availability = False
