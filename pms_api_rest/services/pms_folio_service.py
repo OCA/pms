@@ -28,6 +28,7 @@ class PmsFolioService(Component):
         domain = list()
         domain.append(("checkin", ">=", folio_search_param.date_from))
         domain.append(("checkout", "<", folio_search_param.date_to))
+        domain.append(("pms_property_id", "=", folio_search_param.pms_property_id))
         result_folios = []
 
         reservations_result = (
@@ -119,11 +120,15 @@ class PmsFolioService(Component):
                 "GET",
             )
         ],
+        input_param=Datamodel("pms.search.param"),
         output_param=Datamodel("pms.payment.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_folio_payments(self, folio_id):
-        folio = self.env["pms.folio"].search([("id", "=", folio_id)])
+    def get_folio_payments(self, folio_id, pms_search_param):
+        domain = list()
+        domain.append(("id", "=", folio_id))
+        domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
+        folio = self.env["pms.folio"].search(domain)
         payments = []
         PmsPaymentInfo = self.env.datamodels["pms.payment.info"]
         if not folio:
@@ -174,7 +179,7 @@ class PmsFolioService(Component):
         reservation = self.env["pms.reservation"].create(
             {
                 "partner_name": pms_reservation_info.partner,
-                "pms_property_id": pms_reservation_info.property,
+                "pms_property_id": pms_reservation_info.pms_property_id,
                 "room_type_id": pms_reservation_info.roomTypeId,
                 "pricelist_id": pms_reservation_info.pricelistId,
                 "checkin": pms_reservation_info.checkin,
