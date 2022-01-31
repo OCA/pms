@@ -9,7 +9,7 @@
                         <center>
                             <h5
                                 class="font-weight-bold mr-5 mt-2"
-                                t-esc="'Room: '+checkin_partner_id.reservation_id.room_type_id.name"
+                                t-esc="'Room: '+checkin_partner_id.reservation_id.sudo().room_type_id.name"
                             />
                         </center>
                         <input
@@ -278,8 +278,8 @@
                                     <t t-if="not error">
                                         <button
                                             class="btn btn-primary"
+                                            id="btnPrev1"
                                             type="button"
-                                            onclick="history.go(-2)"
                                         >
                                             <span class="fa fa-long-arrow-left" />
                                             Prev
@@ -288,6 +288,7 @@
                                     <t t-else="">
                                         <button
                                             class="btn btn-primary"
+                                            id="btnPrev2"
                                             type="button"
                                             onclick="history.go(-3)"
                                         >
@@ -392,18 +393,28 @@
             }
         </style>
         <script>
-            function launchSnackBar(element) {
+            var folio_id = document.getElementById("folio").value
+            var checkin_partner_id = document.getElementById("checkin").value
+            var access_token = document.getElementById("input_access_token").value
             var checkin_pos = document.getElementById("input_checkin_pos").value;
+            window.history.pushState(null, '', '/my/precheckin/'+folio_id+'/checkin/'+checkin_partner_id +'?access_token='+ access_token);
+            document.getElementById("btnPrev1").addEventListener("click", myFunction);
+            function myFunction() {
+                 if (checkin_pos >= 0){
+                    checkin_pos = checkin_pos -2
+                    checkin_partner_id = parseInt(checkin_partner_id) - 1
+                     url = document.referrer + '\u0026'+'checkin_pos='+ checkin_pos + '\u0026'+ 'back=1';
+                    window.location = url;
+                }
+            }
+            function launchSnackBar(element) {
             var x = document.getElementById("snackbar");
             if (checkin_pos == -1){
             x.className = "show";
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
             }
             }
-            var folio_id = document.getElementById("folio").value
-            var checkin_partner_id = document.getElementById("checkin").value
-            var access_token = document.getElementById("input_access_token").value
-            window.history.pushState(null, '', '/my/precheckin/'+folio_id+'/checkin/'+checkin_partner_id +'?access_token='+ access_token);
+
 
             let select_country = document.getElementById('country')
 
