@@ -356,9 +356,9 @@ class PortalPrecheckin(CustomerPortal):
         state_ids = request.env["res.country.state"].search([])
         doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
         values = kw
-        if not kw.get("first") and kw.get("checkin_pos"):
+        if not kw.get("first") and kw.get("checkin_pos") and not kw.get("back"):
             error, error_message = self.form_validate(kw, None)
-        if not kw.get("first") and not error:
+        if not kw.get("first") and not kw.get("back") and not error:
             kw.update({"checkin_partner_id": checkin_partner_id})
             request.env["pms.checkin.partner"]._save_data_from_portal(kw)
         if error:
