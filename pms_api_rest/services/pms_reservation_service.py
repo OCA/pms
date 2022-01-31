@@ -20,11 +20,15 @@ class PmsReservationService(Component):
                 "GET",
             )
         ],
-        output_param=Datamodel("pms.reservation.info"),
+        input_param=Datamodel("pms.search.param", is_list=False),
+        output_param=Datamodel("pms.reservation.info", is_list=False),
         auth="jwt_api_pms",
     )
-    def get_reservation(self, reservation_id):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+    def get_reservation(self, reservation_id, pms_search_param):
+        domain = list()
+        domain.append(("id", "=", reservation_id))
+        domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
+        reservation = self.env["pms.reservation"].search(domain)
         res = []
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
         if not reservation:
@@ -59,7 +63,7 @@ class PmsReservationService(Component):
                 )
             res = PmsReservationInfo(
                 id=reservation.id,
-                partner=reservation.partner_id.name,
+                partner=reservation.partner_id.name if reservation.partner_id else "",
                 checkin=str(reservation.checkin),
                 checkout=str(reservation.checkout),
                 preferredRoomId=reservation.preferred_room_id.id
@@ -175,11 +179,15 @@ class PmsReservationService(Component):
                 "GET",
             )
         ],
+        input_param=Datamodel("pms.search.param"),
         output_param=Datamodel("pms.checkin.partner.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_checkin_partners(self, reservation_id):
-        reservation = self.env["pms.reservation"].search([("id", "=", reservation_id)])
+    def get_checkin_partners(self, reservation_id, pms_search_param):
+        domain = list()
+        domain.append(("id", "=", reservation_id))
+        domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
+        reservation = self.env["pms.reservation"].search(domain)
         checkin_partners = []
         PmsCheckinPartnerInfo = self.env.datamodels["pms.checkin.partner.info"]
         if not reservation:
