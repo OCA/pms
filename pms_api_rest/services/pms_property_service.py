@@ -18,16 +18,11 @@ class PmsPropertyService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.property.search.param"),
         output_param=Datamodel("pms.property.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_properties(self, property_search_param):
+    def get_properties(self):
         domain = []
-        if property_search_param.name:
-            domain.append(("name", "like", property_search_param.name))
-        if property_search_param.id:
-            domain.append(("id", "=", property_search_param.id))
         result_properties = []
         PmsPropertyInfo = self.env.datamodels["pms.property.info"]
         for prop in self.env["pms.property"].search(
