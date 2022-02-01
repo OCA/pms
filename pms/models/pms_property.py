@@ -142,6 +142,35 @@ class PmsProperty(models.Model):
     is_modified_auto_mail = fields.Boolean(string="Auto Send Modification Mail")
     is_canceled_auto_mail = fields.Boolean(string="Auto Send Cancellation Mail")
 
+    default_invoicing_policy = fields.Selection(
+        string="Invoicing Policy",
+        selection=[
+            ("manual", "Manual"),
+            ("checkout", "Checkout"),
+        ],
+        default="manual",
+    )
+
+    journal_simplified_invoice_id = fields.Many2one(
+        string="Simplified Invoice Journal",
+        comodel_name="account.journal",
+        domain=[
+            ("type", "=", "sale"),
+        ],
+        help="Journal used to create the simplified invoice",
+        check_company=True,
+        check_pms_properties=True,
+    )
+
+    journal_normal_invoice_id = fields.Many2one(
+        string="Normal Invoice Journal",
+        comodel_name="account.journal",
+        domain=[("type", "=", "sale")],
+        help="Journal used to create the normal invoice",
+        check_company=True,
+        check_pms_properties=True,
+    )
+
     @api.depends_context(
         "checkin",
         "checkout",
