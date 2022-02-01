@@ -48,3 +48,33 @@ class AccountBankStatementLine(models.Model):
                     }
                 )
         return line_vals_list
+
+    def _get_payment_move_lines_to_reconcile(self):
+        self.ensure_one()
+        payment_move_line = False
+        folio_ids = self.folio_ids and self.folio_ids.ids or False
+        domain = [("move_id.folio_ids", "in", folio_ids)] if folio_ids else []
+        domain.extend(
+            [
+                ("move_id.ref", "=", self.payment_ref),
+                ("date", "=", self.date),
+                ("reconciled", "=", False),
+                "|",
+                (
+                    "account_id",
+                    "=",
+                    self.journal_id.payment_debit_account_id.id,
+                ),
+                (
+                    "account_id",
+                    "=",
+                    self.journal_id.payment_credit_account_id.id,
+                ),
+                ("journal_id", "=", self.journal_id.id),
+            ]
+        )
+        to_reconcile_move_lines = self.env["account.move.line"].search(domain)
+        # We try to reconcile by amount
+        for record in to_reconcile_move_lines:
+            payment_move_line = record if record.balance == self.amount else False
+        return payment_move_line

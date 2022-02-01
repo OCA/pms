@@ -34,40 +34,11 @@ class AccountBankStatement(models.Model):
         )
         super(AccountBankStatement, self).button_post()
         for line in lines_of_moves_to_post:
-            folio_ids = line.folio_ids.ids
-            if folio_ids:
-                to_reconcile_ids = self.env["account.move.line"].search(
-                    [
-                        ("move_id.folio_ids", "in", folio_ids),
-                        ("reconciled", "=", False),
-                        "|",
-                        (
-                            "account_id",
-                            "=",
-                            self.journal_id.payment_debit_account_id.id,
-                        ),
-                        (
-                            "account_id",
-                            "=",
-                            self.journal_id.payment_credit_account_id.id,
-                        ),
-                        ("journal_id", "=", self.journal_id.id),
-                    ]
-                )
-                if to_reconcile_ids:
-                    statement_move_line = line.move_id.line_ids.filtered(
-                        lambda line: line.account_id.reconcile
-                    )
-                    payment_lines = self.env["account.move.line"].browse(
-                        to_reconcile_ids.ids
-                    )
-                    # We try to reconcile by amount
-                    payment_line = False
-                    for record in payment_lines:
-                        payment_line = (
-                            record if abs(record.balance) == line.amount else False
-                        )
-                    if payment_line and statement_move_line:
-                        statement_move_line.account_id = payment_line.account_id
-                        lines_to_reconcile = payment_line + statement_move_line
-                        lines_to_reconcile.reconcile()
+            payment_move_line = line._get_payment_move_lines_to_reconcile(line)
+            statement_move_line = line.move_id.line_ids.filtered(
+                lambda line: line.account_id.reconcile
+            )
+            if payment_move_line and statement_move_line:
+                statement_move_line.account_id = payment_move_line.account_id
+                lines_to_reconcile = payment_move_line + statement_move_line
+                lines_to_reconcile.reconcile()
