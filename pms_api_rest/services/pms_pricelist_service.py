@@ -20,20 +20,31 @@ class PmsPricelistService(Component):
                 "GET",
             )
         ],
-        input_param=Datamodel("pms.pricelist.info", is_list=False),
+        input_param=Datamodel("pms.search.param", is_list=False),
         output_param=Datamodel("pms.pricelist.info", is_list=True),
         auth="jwt_api_pms",
     )
-    def get_pricelists(self, pricelist_info_search_param, **args):
-        domain = []
-        if pricelist_info_search_param.pms_property_id:
-            domain.append(
-                (
-                    "pms_property_ids",
-                    "in",
-                    [pricelist_info_search_param.pms_property_id],
-                )
+    def get_pricelists(self, pms_search_param, **args):
+
+        pricelists_all_properties = self.env["product.pricelist"].search(
+            [("pms_property_ids", "=", False)]
+        )
+        pricelists = set()
+        for index, prop in enumerate(pms_search_param.pms_property_ids):
+            pricelists_with_query_property = self.env["product.pricelist"].search(
+                [("pms_property_ids", "=", prop)]
             )
+            if index == 0:
+                pricelists = set(pricelists_with_query_property.ids)
+            else:
+                pricelists = pricelists.intersection(
+                    set(pricelists_with_query_property.ids)
+                )
+        pricelists_total = list(set(list(pricelists) + pricelists_all_properties.ids))
+        domain = [
+            ("id", "in", pricelists_total),
+        ]
+
         PmsPricelistInfo = self.env.datamodels["pms.pricelist.info"]
         result_pricelists = []
         for pricelist in self.env["product.pricelist"].search(domain):
@@ -41,6 +52,7 @@ class PmsPricelistService(Component):
                 PmsPricelistInfo(
                     id=pricelist.id,
                     name=pricelist.name,
+                    pms_property_ids=pricelist.pms_property_ids.mapped("id"),
                 )
             )
         return result_pricelists
