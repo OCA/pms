@@ -4,10 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0+e-20211202\n"
+"Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-23 19:22+0000\n"
-"PO-Revision-Date: 2021-12-23 19:22+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,6 +18,16 @@ msgstr ""
 msgid ""
 "<br/>\n"
 "                                                Properties"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_payable_id
+msgid "Account Payable"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_receivable_id
+msgid "Account Receivable"
 msgstr ""
 
 #. module: pms_base
@@ -39,6 +47,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__active
 #: model:ir.model.fields,field_description:pms_base.field_pms_room__active
 #: model:ir.model.fields,field_description:pms_base.field_pms_service__active
+#: model:ir.model.fields,field_description:pms_base.field_pms_stage__active
 msgid "Active"
 msgstr ""
 
@@ -176,6 +185,11 @@ msgid "Balcony"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__bank_account_count
+msgid "Bank"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__bank_ids
 msgid "Banks"
 msgstr ""
@@ -208,6 +222,16 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__is_blacklisted
 msgid "Blacklist"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__mobile_blacklisted
+msgid "Blacklisted Phone Is Mobile"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_blacklisted
+msgid "Blacklisted Phone is Phone"
 msgstr ""
 
 #. module: pms_base
@@ -256,13 +280,6 @@ msgid "Check this box if this contact is an Employee."
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__country_enforce_cities
-msgid ""
-"Check this box to ensure every address created in that country has a 'City' "
-"chosen in the list of the country's cities."
-msgstr ""
-
-#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Child Property"
 msgstr ""
@@ -281,11 +298,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__city
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "City"
-msgstr ""
-
-#. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__city_id
-msgid "City of Address"
 msgstr ""
 
 #. module: pms_base
@@ -314,6 +326,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model,name:pms_base.model_res_company
 msgid "Companies"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__ref_company_ids
+msgid "Companies that refers to partner"
 msgstr ""
 
 #. module: pms_base
@@ -398,8 +415,8 @@ msgid "Contact"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__contact_address_complete
-msgid "Contact Address Complete"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__payment_token_count
+msgid "Count Payment Token"
 msgstr ""
 
 #. module: pms_base
@@ -450,8 +467,23 @@ msgid "Credit Limit"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__partner_id
 msgid "Current property"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_payment_term_id
+msgid "Customer Payment Terms"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__customer_rank
+msgid "Customer Rank"
 msgstr ""
 
 #. module: pms_base
@@ -472,6 +504,11 @@ msgstr ""
 #. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Define your unit of measure when entering area"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__trust
+msgid "Degree of trust you have in this debtor"
 msgstr ""
 
 #. module: pms_base
@@ -527,11 +564,6 @@ msgid "Display Name"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__street_number2
-msgid "Door"
-msgstr ""
-
-#. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_2
 msgid "Double"
 msgstr ""
@@ -570,16 +602,23 @@ msgid "Employee"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__country_enforce_cities
-msgid "Enforce Cities"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_room__sequence
 #: model:ir.model.fields,help:pms_base.field_pms_service__sequence
 msgid ""
 "Field used to change the position of the rooms in tree view.Changing the "
 "position changes the sequence"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__phone_sanitized
+msgid ""
+"Field used to store sanitized phone number. Helps speeding up searches and "
+"comparisons."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_account_position_id
+msgid "Fiscal Position"
 msgstr ""
 
 #. module: pms_base
@@ -687,13 +726,13 @@ msgid "Hall"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__heating
-msgid "Heating"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__has_unreconciled_entries
+msgid "Has Unreconciled Entries"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__street_number
-msgid "House"
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__heating
+msgid "Heating"
 msgstr ""
 
 #. module: pms_base
@@ -739,7 +778,9 @@ msgstr ""
 
 #. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__message_has_error
+#: model:ir.model.fields,help:pms_base.field_pms_property__message_has_sms_error
 #: model:ir.model.fields,help:pms_base.field_pms_team__message_has_error
+#: model:ir.model.fields,help:pms_base.field_pms_team__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
@@ -748,6 +789,13 @@ msgstr ""
 msgid ""
 "If the email address is on the blacklist, the contact won't receive mass "
 "mailing anymore, from any list"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__phone_sanitized_blacklisted
+msgid ""
+"If the sanitized phone number is on the blacklist, the contact won't receive"
+" mass mailing sms anymore, from any list"
 msgstr ""
 
 #. module: pms_base
@@ -776,6 +824,22 @@ msgid "Image 512"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__mobile_blacklisted
+msgid ""
+"Indicates if a blacklisted sanitized phone number is a mobile number. Helps "
+"distinguish which number is blacklisted             when there is both a "
+"mobile and phone field in a model."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__phone_blacklisted
+msgid ""
+"Indicates if a blacklisted sanitized phone number is a phone number. Helps "
+"distinguish which number is blacklisted             when there is both a "
+"mobile and phone field in a model."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__industry_id
 msgid "Industry"
 msgstr ""
@@ -801,10 +865,20 @@ msgid "Internal unique identifier of the amenity"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_warn
+msgid "Invoice"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__type
 msgid ""
 "Invoice & Delivery addresses are used in sales orders. Private addresses are"
 " only visible by authorized users."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_ids
+msgid "Invoices"
 msgstr ""
 
 #. module: pms_base
@@ -838,6 +912,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__function
 msgid "Job Position"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__journal_item_count
+msgid "Journal Items"
 msgstr ""
 
 #. module: pms_base
@@ -903,8 +982,16 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__calendar_last_notif_ack
-msgid "Last notification marked as read from base Calendar"
+#: model:ir.model.fields,help:pms_base.field_pms_property__last_time_entries_checked
+msgid ""
+"Last time the invoices & payments matching was performed for this partner. "
+"It is set either if there's not at least an unreconciled debit and an "
+"unreconciled credit or if you click the \"Done\" button."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__last_time_entries_checked
+msgid "Latest Invoices & Payments Matching Date"
 msgstr ""
 
 #. module: pms_base
@@ -1019,14 +1106,14 @@ msgid "Master Data"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__image_medium
-msgid "Medium-sized image"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error
 msgid "Message Delivery error"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__invoice_warn_msg
+msgid "Message for Invoice"
 msgstr ""
 
 #. module: pms_base
@@ -1131,11 +1218,6 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__ocn_token
-msgid "OCN Token"
-msgstr ""
-
-#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_res_config_settings_form
 msgid "Online reservation"
 msgstr ""
@@ -1209,8 +1291,28 @@ msgid "Parking Lot"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__contract_ids
+msgid "Partner Contracts"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__debit_limit
+msgid "Payable Limit"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_payment_method_id
+msgid "Payment Method"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__payment_token_ids
+msgid "Payment Tokens"
 msgstr ""
 
 #. module: pms_base
@@ -1226,8 +1328,21 @@ msgid "Phone"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_sanitized_blacklisted
+msgid "Phone Blacklisted"
+msgstr ""
+
+#. module: pms_base
 #: model:pms.room.type,name:pms_base.pms_room_type_play
 msgid "Playroom"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_payment_method_id
+msgid ""
+"Preferred payment method when paying this vendor. This is used to filter "
+"vendor bills by preferred payment method to register payments in mass. Use "
+"cases: create bank files for batch wires, check runs."
 msgstr ""
 
 #. module: pms_base
@@ -1418,13 +1533,32 @@ msgid "Rooms"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_sms_error
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__user_id
 msgid "Salesperson"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__phone_sanitized
+msgid "Sanitized Number"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_stage_search
 msgid "Search Stages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__invoice_warn
+msgid ""
+"Selecting the \"Warning\" option will notify user with the message, "
+"Selecting \"Blocking Message\" will throw an exception with the message and "
+"block the flow. The Message has to be written in the next field."
 msgstr ""
 
 #. module: pms_base
@@ -1592,11 +1726,6 @@ msgid "Street 2..."
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__street_name
-msgid "Street Name"
-msgstr ""
-
-#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_property_form
 msgid "Street..."
 msgstr ""
@@ -1604,6 +1733,11 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__street2
 msgid "Street2"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__supplier_rank
+msgid "Supplier Rank"
 msgstr ""
 
 #. module: pms_base
@@ -1668,6 +1802,12 @@ msgid ""
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_account_position_id
+msgid ""
+"The fiscal position determines the taxes/accounts used for this contact."
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__user_id
 msgid "The internal user in charge of this contact."
 msgstr ""
@@ -1683,6 +1823,27 @@ msgid "The owner of the property."
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__has_unreconciled_entries
+msgid ""
+"The partner has at least one unreconciled debit and credit since last time "
+"the invoices & payments matching was performed."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_account_payable_id
+msgid ""
+"This account will be used instead of the default one as the payable account "
+"for the current partner"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_account_receivable_id
+msgid ""
+"This account will be used instead of the default one as the receivable "
+"account for the current partner"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__tz
 msgid "This field is used to determine the timezone of the property."
 msgstr ""
@@ -1692,6 +1853,20 @@ msgstr ""
 msgid ""
 "This field is used to search on email address as the primary email field can"
 " contain more than strictly an email address."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_supplier_payment_term_id
+msgid ""
+"This payment term will be used instead of the default one for purchase "
+"orders and vendor bills"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__property_payment_term_id
+msgid ""
+"This payment term will be used instead of the default one for sales orders "
+"and customer invoices"
 msgstr ""
 
 #. module: pms_base
@@ -1726,6 +1901,31 @@ msgstr ""
 #. module: pms_base
 #: model:pms.amenity.type,name:pms_base.pms_amenity_type_0
 msgid "Toiletries"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__total_invoiced
+msgid "Total Invoiced"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__debit
+msgid "Total Payable"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__credit
+msgid "Total Receivable"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__credit
+msgid "Total amount this customer owes you."
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__debit
+msgid "Total amount you have to pay to this vendor."
 msgstr ""
 
 #. module: pms_base
@@ -1791,11 +1991,6 @@ msgid "Used as default stage"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,help:pms_base.field_pms_property__ocn_token
-msgid "Used for sending notification to registered devices"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_team__sequence
 msgid "Used to sort teams. Lower is better."
 msgstr ""
@@ -1806,8 +2001,18 @@ msgid "Users"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__currency_id
+msgid "Utility field to express amount currency"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_service__vendor_id
 msgid "Vendor"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__property_supplier_payment_term_id
+msgid "Vendor Payment Terms"
 msgstr ""
 
 #. module: pms_base
@@ -1829,6 +2034,18 @@ msgstr ""
 #. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__website
 msgid "Website Link"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__website_message_ids
+#: model:ir.model.fields,field_description:pms_base.field_pms_team__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,help:pms_base.field_pms_property__website_message_ids
+#: model:ir.model.fields,help:pms_base.field_pms_team__website_message_ids
+msgid "Website communication history"
 msgstr ""
 
 #. module: pms_base
