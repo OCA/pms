@@ -19,12 +19,8 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[multi_pms_properties](multi_pms_properties/) | 14.0.1.0.0 |  | Multi Properties Manager
-[payment_acquirer_multi_pms_properties](payment_acquirer_multi_pms_properties/) | 14.0.1.0.1 |  | Payment Acquirer Multiproperty
-[pms](pms/) | 14.0.2.22.0 |  | A property management system
-[pms_housekeeping](pms_housekeeping/) | 14.0.1.0.1 |  | Housekeeping
-[pms_l10n_es](pms_l10n_es/) | 14.0.2.2.0 |  | PMS Spanish Adaptation
-[pms_rooming_xls](pms_rooming_xls/) | 14.0.1.0.0 |  | Rooming xlsx Management
+[pms_account](pms_account/) | 14.0.1.0.0 | [![eantones](https://github.com/eantones.png?size=30px)](https://github.com/eantones) | Manage the accounting aspects of your properties
+[pms_base](pms_base/) | 14.0.1.0.0 | [![eantones](https://github.com/eantones.png?size=30px)](https://github.com/eantones) | Manage properties
 
 [//]: # (end addons)
 
