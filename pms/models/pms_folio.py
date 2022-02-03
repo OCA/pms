@@ -767,8 +767,6 @@ class PmsFolio(models.Model):
             for reservation in folio.reservation_ids:
                 if reservation.commission_amount != 0:
                     folio.commission = folio.commission + reservation.commission_amount
-                else:
-                    folio.commission = 0
 
     @api.depends("agency_id")
     def _compute_channel_type_id(self):

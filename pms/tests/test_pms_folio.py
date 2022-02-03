@@ -187,7 +187,7 @@ class TestPmsFolio(TestPms):
 
     def test_folio_commission(self):
         """
-        Check commission of a folio with several reservations
+        Check commission of a folio with several reservations that have commission
         """
         # ARRANGE
         self.create_sale_channel_scenario()
@@ -235,10 +235,83 @@ class TestPmsFolio(TestPms):
 
         self.commission = 0
         for reservation in folio1.reservation_ids:
-            self.commission = (
-                self.commission
-                + reservation.price_total * self.agency1.default_commission / 100
-            )
+            if reservation.commission_amount != 0:
+                self.commission = (
+                    self.commission
+                    + reservation.price_total * self.agency1.default_commission / 100
+                )
+        self.folio_commission = folio1.commission
+        # ASSERT
+        self.assertEqual(
+            self.commission,
+            self.folio_commission,
+            "The folio compute commission is wrong",
+        )
+
+    def test_folio_commission_with_reservations_without_commission(self):
+        """
+        Check commission of a folio with several reservations,
+        of which the last hasn't commission
+
+        --- folio1:
+               -reservation1: commission 15% --> commission amount 3.00
+               -reservation2: commission 0%  --> commission amount 0.00
+
+            folio1 commission --> 3.00
+        """
+        # ARRANGE
+        self.create_sale_channel_scenario()
+
+        # ACT
+
+        folio1 = self.env["pms.folio"].create(
+            {
+                "agency_id": self.agency1.id,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "folio_id": folio1.id,
+                "room_type_id": self.room_type_double.id,
+                "reservation_line_ids": [
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today(),
+                            "price": 20,
+                        },
+                    ),
+                ],
+            }
+        )
+
+        self.env["pms.reservation"].create(
+            {
+                "folio_id": folio1.id,
+                "room_type_id": self.room_type_double.id,
+                "reservation_line_ids": [
+                    (
+                        0,
+                        False,
+                        {
+                            "date": fields.date.today(),
+                            "price": 40,
+                        },
+                    ),
+                ],
+                "commission_percent": 0,
+            }
+        )
+        self.commission = 0
+        for reservation in folio1.reservation_ids:
+            if reservation.commission_amount != 0:
+                self.commission = (
+                    self.commission
+                    + reservation.price_total * self.agency1.default_commission / 100
+                )
         self.folio_commission = folio1.commission
         # ASSERT
         self.assertEqual(
