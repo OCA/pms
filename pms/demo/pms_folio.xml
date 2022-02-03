@@ -248,7 +248,9 @@
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
-            <field name="internal_comment">Do not allow guests to pay anything. The company pays for everything.</field>
+            <field
+                name="internal_comment"
+            >Do not allow guests to pay anything. The company pays for everything.</field>
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
