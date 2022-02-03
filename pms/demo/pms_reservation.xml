@@ -1011,7 +1011,6 @@
             <field name="allowed_checkout">True</field>
             <field name="checkin_partner_pending_count">0</field>
             <field name="folio_payment_state">paid</field>
-            <field name="state">done</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
