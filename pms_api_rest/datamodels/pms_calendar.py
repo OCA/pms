@@ -14,7 +14,7 @@ class PmsCalendarSwapInfo(Datamodel):
     swapTo = fields.String(required=True, allow_none=False)
     roomIdA = fields.Integer(required=True, allow_none=False)
     roomIdB = fields.Integer(required=True, allow_none=False)
-    pms_property_id = fields.Integer(required=True, allow_none=False)
+    pms_property_id = fields.Integer(required=False, allow_none=True)
 
 
 class PmsCalendarSearchParam(Datamodel):
