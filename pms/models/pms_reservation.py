@@ -1883,7 +1883,7 @@ class PmsReservation(models.Model):
             )
 
         record = super(PmsReservation, self).create(vals)
-        if record.preconfirm:
+        if record.preconfirm and record.state == 'draft':
             record.confirm()
         return record
 
