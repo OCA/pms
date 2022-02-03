@@ -701,7 +701,7 @@ class PmsCheckinPartner(models.Model):
         for record in self.filtered(lambda c: c.state == "onboard"):
             vals = {
                 "state": "done",
-                "departure": fields.Datetime.now(),
+                "departure": record.reservation_id.checkout,
             }
             record.update(vals)
         return True
