@@ -26,18 +26,23 @@ class PmsRoomTypeService(Component):
         room_type_all_properties = self.env["pms.room.type"].search(
             [("pms_property_ids", "=", False)]
         )
-        room_types = set()
-        for index, prop in enumerate(room_type_search_param.pms_property_ids):
-            room_types_with_query_property = self.env["pms.room.type"].search(
-                [("pms_property_ids", "=", prop)]
-            )
-            if index == 0:
-                room_types = set(room_types_with_query_property.ids)
-            else:
-                room_types = room_types.intersection(
-                    set(room_types_with_query_property.ids)
+        if room_type_search_param.pms_property_ids:
+            room_types = set()
+            for index, prop in enumerate(room_type_search_param.pms_property_ids):
+                room_types_with_query_property = self.env["pms.room.type"].search(
+                    [("pms_property_ids", "=", prop)]
                 )
-        room_types_total = list(set(list(room_types) + room_type_all_properties.ids))
+                if index == 0:
+                    room_types = set(room_types_with_query_property.ids)
+                else:
+                    room_types = room_types.intersection(
+                        set(room_types_with_query_property.ids)
+                    )
+            room_types_total = list(
+                set(list(room_types) + room_type_all_properties.ids)
+            )
+        else:
+            room_types_total = list(room_type_all_properties.ids)
         domain = [
             ("id", "in", room_types_total),
         ]
