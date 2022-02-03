@@ -1,171 +1,260 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!--
+        pms.folio
+        folio demo data for bookings starting within 15 days
+    -->
     <data noupdate="1">
-        <!-- pms.folio -->
-        <!-- reservation of 1 economic room for 1 person -->
-        <record id="pms_folio_0" model="pms.folio">
+        <record id="pms_folio_eco_01" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
             <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_0" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_0'),
+                    'room_type_id': ref('pms_room_type_economic'),
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 2,
                     'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_1'),
+                    'board_service_room_id': ref('pms_board_service_room_eco_half_board'),
+                    'partner_requests': 'Vegan breakfast',
                     })]"
             />
-        </record>
-        <!-- reservation of 1 triple room for 3 people on behalf on the company -->
-        <record id="pms_folio_1" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_0" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
-                    'checkin': (DateTime.today() + timedelta(days=14)),
-                    'checkout': (DateTime.today() + timedelta(days=15)),
-                    'adults': 3,
-                    'board_service_room_id': ref('pms_board_service_room_3'),
-                    })]"
-            />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
         </record>
-        <!-- reservation of 3 single rooms for 3 people with 1 cancelled -->
-        <!-- TODO: The third reservation is marked from State: Cancelled to Pending arrival at Folio creation -->
-        <record id="pms_folio_2" model="pms.folio">
+        <record id="pms_folio_sngx3" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_0" />
+            <field name="agency_id" ref="pms.agency_booking" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
                     'state': 'confirm',
+                    'partner_requests': 'Quite room.'
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
                     'state': 'confirm',
+                    'partner_requests': 'Quite room.'
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=14)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
                     'state': 'cancel',
+                    'partner_requests': 'Quite room.'
                     })]"
             />
         </record>
-        <!-- reservation of the conference room for 1 day on behalf of a company -->
-        <record id="pms_folio_3" model="pms.folio">
+        <record id="pms_folio_trp_01" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_demo" />
+            <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_1" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_4'),
+                    'room_type_id': ref('pms_room_type_triple'),
+                    'checkin': (DateTime.today() + timedelta(days=14)),
+                    'checkout': (DateTime.today() + timedelta(days=15)),
+                    'adults': 3,
+                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_cancel_trp_01" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_15" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="agency_id" ref="pms.agency_airbnb" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_triple'),
+                    'preferred_room_id': ref('pms_room_triple_02'),
+                    'checkin': (DateTime.today() + timedelta(days=14)),
+                    'checkout': (DateTime.today() + timedelta(days=17)),
+                    'adults': 1,
+                    'children':1,
+                    })]"
+            />
+        </record>
+        <function model="pms.folio" name="action_cancel">
+            <value eval="[ref('pms_folio_cancel_trp_01')]" />
+        </function>
+        <record id="pms_folio_cancel_trp_02" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_15" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="agency_id" ref="pms.agency_airbnb" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_triple'),
+                    'preferred_room_id': ref('pms_room_triple_03'),
+                    'checkin': (DateTime.today() + timedelta(days=14)),
+                    'checkout': (DateTime.today() + timedelta(days=16)),
+                    'adults': 1,
+                    'children':1,
+                    })]"
+            />
+        </record>
+        <function model="pms.folio" name="action_cancel">
+            <value eval="[ref('pms_folio_cancel_trp_02')]" />
+        </function>
+        <record id="pms_folio_qdpx2" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_28" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="agency_id" ref="agency_booking" />
+            <field name="internal_comment">Each guest pays his bill</field>
+            <field
+                name="reservation_ids"
+                eval="[(5, 0),
+                    (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_quadruple'),
+                    'checkin': (DateTime.today() + timedelta(days=14)),
+                    'checkout': (DateTime.today() + timedelta(days=21)),
+                    'adults': 4,
+                    'partner_requests': '1 extra towel needed.'
+                    }),
+                    (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_quadruple'),
+                    'checkin': (DateTime.today() + timedelta(days=14)),
+                    'checkout': (DateTime.today() + timedelta(days=21)),
+                    'adults': 4,
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_dbl_01" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_15" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_double'),
+                    'checkin': (DateTime.today() + timedelta(days=15)),
+                    'checkout': (DateTime.today() + timedelta(days=16)),
+                    'adults': 1,
+                    'children':1,
+                    'state': 'confirm',
+                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'partner_requests': 'Vegan food.'
+
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_trp_02" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_4" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_triple'),
                     'checkin': (DateTime.today() + timedelta(days=15)),
                     'checkout': (DateTime.today() + timedelta(days=16)),
                     'adults': 1,
                     'state': 'confirm',
+                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
                     })]"
             />
         </record>
-        <!-- out of service room -->
-        <record id="pms_folio_4" model="pms.folio">
-            <field name="partner_id" ref="main_pms_property" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">out</field>
+        <record id="pms_folio_cnf_01" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
+            <field name="agency_id" ref="pms.agency_airbnb" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_conference_room'),
+                    'checkin': (DateTime.today() + timedelta(days=15)),
+                    'checkout': (DateTime.today() + timedelta(days=16)),
+                    'adults': 10,
+                    'state': 'confirm',
+                    'partner_requests': '10 bottles of water, 10 notebooks and 10 pens.'
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_out_01" model="pms.folio">
+            <field name="partner_id" ref="main_pms_property" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="reservation_type">out</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=16)),
                     'checkout': (DateTime.today() + timedelta(days=17)),
                     'adults': 1,
                     'state': 'confirm',
                     'reservation_type': 'out',
-                    'closure_reason_id': ref('pms_room_closure_reason_0'),
+                    'closure_reason_id': ref('pms_room_closure_reason_maintenance'),
                     'out_service_description': 'Change of lighting',
                     })]"
             />
         </record>
-        <!-- reservation of 1 double room for 1 day-->
-        <record id="pms_folio_5" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
+        <record id="pms_folio_trp_03" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
-                    'checkin': (DateTime.today() + timedelta(days=15)),
-                    'checkout': (DateTime.today() + timedelta(days=16)),
-                    'adults': 1,
+                    'room_type_id': ref('pms_room_type_triple'),
+                    'checkin': (DateTime.today() + timedelta(days=16)),
+                    'checkout': (DateTime.today() + timedelta(days=17)),
+                    'adults': 2,
                     'children':1,
-                    'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_1'),
+                    'board_service_room_id': ref('pms_board_service_room_triple_breakfast'),
+                    'partner_requests': 'Soy milf for breakfast.'
                     })]"
             />
         </record>
-        <!-- reservation of 1 triple room for for 1 person and 1 day-->
-        <record id="pms_folio_6" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_4" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_2" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
-                    'checkin': (DateTime.today() + timedelta(days=15)),
-                    'checkout': (DateTime.today() + timedelta(days=16)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_1'),
-                    })]"
-            />
-        </record>
-        <!-- reservation of all rooms for 1 day on behalf of a company -->
-        <record id="pms_folio_7" model="pms.folio">
+        <record id="pms_folio_eco_sngx3_dblx2_trp_cnf" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_10" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_0" />
+            <field name="agency_id" ref="pms.agency_booking" />
+            <field name="internal_comment">Do not allow guests to pay anything. The company pays for everything.</field>
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_0'),
+                    'room_type_id': ref('pms_room_type_economic'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 2,
@@ -173,7 +262,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
@@ -181,7 +270,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
@@ -189,7 +278,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
@@ -197,7 +286,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 2,
@@ -205,7 +294,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 2,
@@ -213,7 +302,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
+                    'room_type_id': ref('pms_room_type_triple'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 3,
@@ -221,7 +310,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_4'),
+                    'room_type_id': ref('pms_room_type_conference_room'),
                     'checkin': (DateTime.today() + timedelta(days=17)),
                     'checkout': (DateTime.today() + timedelta(days=18)),
                     'adults': 1,
@@ -229,85 +318,57 @@
                     })]"
             />
         </record>
-        <!-- out of service single-101 room -->
-        <record id="pms_folio_8" model="pms.folio">
-            <field name="partner_id" ref="main_pms_property" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">out</field>
+        <record id="pms_folio_eco_02" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_1" />
+            <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_0" />
+            <field name="agency_id" ref="pms.agency_booking" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_1'),
+                    'preferred_room_id': ref('pms_room_eco_01'),
+                    'checkin': (DateTime.today() + timedelta(days=19)),
+                    'checkout': (DateTime.today() + timedelta(days=20)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    'partner_requests': '2 extra towels needed.'
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_sng_out_01" model="pms.folio">
+            <field name="partner_id" ref="main_pms_property" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="reservation_type">out</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'preferred_room_id': ref('pms_room_single_01'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
                     'state': 'confirm',
                     'reservation_type': 'out',
-                    'closure_reason_id': ref('pms_room_closure_reason_0'),
+                    'closure_reason_id': ref('pms_room_closure_reason_maintenance'),
                     'out_service_description': 'Door arrangement',
                     })]"
             />
         </record>
-        <!--2 reservetions in diferent rooms and diferent days-->
-        <record id="pms_folio_9" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_33" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0),
-                    (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
-                    'checkin': (DateTime.today() + timedelta(days=19)),
-                    'checkout': (DateTime.today() + timedelta(days=20)),
-                    'adults': 2,
-                    'state': 'confirm',
-                    }),
-                    (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
-                    'checkin': (DateTime.today() + timedelta(days=20)),
-                    'checkout': (DateTime.today() + timedelta(days=21)),
-                    'adults': 2,
-                    'state': 'confirm',
-                    })]"
-            />
-        </record>
-        <!--reservation of the conference room for 3 days-->
-        <record id="pms_folio_10" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_main2" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_0" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_4'),
-                    'checkin': (DateTime.today() + timedelta(days=19)),
-                    'checkout': (DateTime.today() + timedelta(days=21)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    })]"
-            />
-        </record>
-        <!--reservation of 2 single rooms and 1 triple room-->
-        <record id="pms_folio_11" model="pms.folio">
+        <record id="pms_folio_sngx2_trp" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_10" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
@@ -315,7 +376,7 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 1,
@@ -323,128 +384,72 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
+                    'room_type_id': ref('pms_room_type_triple'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
                     'adults': 3,
                     'state': 'confirm',
+                    'partner_requests': '1 extra towel.'
                     })]"
             />
         </record>
-        <!--Reservation of economic room-->
-        <record id="pms_folio_12" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_1" />
-            <field name="user_id" ref="base.user_demo" />
+        <record id="pms_folio_dblx2_01" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_33" />
+            <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_0" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
+                eval="[(5, 0),
+                    (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_0'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=19)),
                     'checkout': (DateTime.today() + timedelta(days=20)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    })]"
-            />
-        </record>
-        <!--Reservation of the conference room with VIP privacy closure reason-->
-        <record id="pms_folio_13" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="reservation_type">normal</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_1" />
-            <field name="state">cancel</field>
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_7'),
-                    'checkin': (DateTime.today() + timedelta(days=21)),
-                    'checkout': (DateTime.today() + timedelta(days=22)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    'closure_reason_id': ref('pms_room_closure_reason_1'),
-                    })]"
-            />
-        </record>
-        <!--Reservation of triple room with 2 adults and 1 children-->
-        <record id="pms_folio_14" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_12" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_0" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
-                    'checkin': (DateTime.today() + timedelta(days=16)),
-                    'checkout': (DateTime.today() + timedelta(days=17)),
                     'adults': 2,
-                    'children':1,
-                    'board_service_room_id': ref('pms_board_service_room_3'),
-                    })]"
-            />
-        </record>
-        <!--Reservation of the conference room whit cancelled-->
-        <!-- TODO: The reservation is marked from State: Cancelled to Pending arrival at Folio creation -->
-        <record id="pms_folio_15" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_18" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="reservation_type">normal</field>
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_0" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
+                    'state': 'confirm',
+                    }),
+                    (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref ('pms_room_type_4'),
-                    'checkin': (DateTime.today() + timedelta(days=22)),
-                    'checkout': (DateTime.today() + timedelta(days=23)),
-                    'adults': 1,
+                    'room_type_id': ref('pms_room_type_double'),
+                    'checkin': (DateTime.today() + timedelta(days=20)),
+                    'checkout': (DateTime.today() + timedelta(days=21)),
+                    'adults': 2,
                     'state': 'cancel',
                     })]"
             />
+
         </record>
-        <!--Reservation of double room without default hours-->
-        <record id="pms_folio_16" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_18" />
+        <record id="pms_folio_cnf_02" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_main2" />
             <field name="user_id" ref="base.user_demo" />
-            <field name="reservation_type">normal</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_2" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
-                    'checkin': (DateTime.today() + timedelta(days=21)),
-                    'checkout': (DateTime.today() + timedelta(days=22)),
+                    'room_type_id': ref('pms_room_type_conference_room'),
+                    'checkin': (DateTime.today() + timedelta(days=19)),
+                    'checkout': (DateTime.today() + timedelta(days=21)),
                     'adults': 1,
-                    'children': 1,
                     'state': 'confirm',
-                    'arrival_hour': '12:00',
-                    'departure_hour': '12:30',
-                    'board_service_room_id': ref('pms_board_service_room_1'),
+                    'partner_requests': 'Smart screen, projector and sound system.'
                     })]"
             />
         </record>
-        <!--Reservation of triple room whit draft state-->
-        <!-- TODO: The reservation is marked from State: Pre-reservation to Pending arrival at Folio creation -->
-        <record id="pms_folio_17" model="pms.folio">
+        <record id="pms_folio_trp_04" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_32" />
             <field name="user_id" ref="base.user_admin" />
             <field name="reservation_type">normal</field>
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_2" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_6'),
+                    'preferred_room_id': ref('pms_room_triple_01'),
                     'checkin': (DateTime.today() + timedelta(days=20)),
                     'checkout': (DateTime.today() + timedelta(days=21)),
                     'adults': 3,
@@ -452,18 +457,136 @@
                     })]"
             />
         </record>
-        <!--Reservation of 2 double rooms and 1 triple room whith board service-->
-        <record id="pms_folio_18" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_30" />
+        <record id="pms_folio_dbl_02" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_18" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="reservation_type">normal</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_double'),
+                    'checkin': (DateTime.today() + timedelta(days=21)),
+                    'checkout': (DateTime.today() + timedelta(days=22)),
+                    'adults': 1,
+                    'children': 1,
+                    'state': 'confirm',
+                    'arrival_hour': '12:00',
+                    'departure_hour': '12:30',
+                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'partner_requests': 'allergic to nuts.'
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_cnf_03" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_12" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="reservation_type">normal</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="agency_id" ref="pms.agency_airbnb" />
+            <field name="state">cancel</field>
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'preferred_room_id': ref('pms_room_conference_01'),
+                    'checkin': (DateTime.today() + timedelta(days=21)),
+                    'checkout': (DateTime.today() + timedelta(days=22)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_cnf_04" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_18" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="reservation_type">normal</field>
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="agency_id" ref="pms.agency_booking" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref ('pms_room_type_conference_room'),
+                    'checkin': (DateTime.today() + timedelta(days=22)),
+                    'checkout': (DateTime.today() + timedelta(days=23)),
+                    'adults': 1,
+                    'state': 'cancel',
+                    'partner_requests': 'Sound system.'
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_eco_sngx3" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_18" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
+            <field name="agency_id" ref="pms.agency_booking" />
+            <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
+                    'room_type_id': ref('pms_room_type_economic'),
+                    'checkin': (DateTime.today() + timedelta(days=23)),
+                    'checkout': (DateTime.today() + timedelta(days=24)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    }),
+                    (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_single'),
+                    'checkin': (DateTime.today() + timedelta(days=23)),
+                    'checkout': (DateTime.today() + timedelta(days=24)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    'board_service_room_id': ref('pms_board_service_room_single_half_board'),
+                    }),
+                    (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_single'),
+                    'checkin': (DateTime.today() + timedelta(days=23)),
+                    'checkout': (DateTime.today() + timedelta(days=24)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    'board_service_room_id': ref('pms_board_service_room_single_breakfast'),
+                    }),
+                    (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_single'),
+                    'checkin': (DateTime.today() + timedelta(days=23)),
+                    'checkout': (DateTime.today() + timedelta(days=24)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_dblx2_trp" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_30" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
+            <field name="internal_comment">Each guest pays his bill</field>
+            <field
+                name="reservation_ids"
+                eval="[(5, 0),
+                    (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_double'),
+                    'checkin': (DateTime.today() + timedelta(days=23)),
+                    'checkout': (DateTime.today() + timedelta(days=24)),
+                    'adults': 1,
+                    'children': 1,
+                    'state': 'confirm',
+                    'partner_requests': '1 extra towel needed.'
+                    }),
+                    (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 1,
@@ -472,127 +595,73 @@
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
-                    'checkin': (DateTime.today() + timedelta(days=23)),
-                    'checkout': (DateTime.today() + timedelta(days=24)),
-                    'adults': 1,
-                    'children': 1,
-                    'state': 'confirm',
-                    }),
-                    (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
+                    'room_type_id': ref('pms_room_type_triple'),
                     'checkin': (DateTime.today() + timedelta(days=23)),
                     'checkout': (DateTime.today() + timedelta(days=24)),
                     'adults': 2,
                     'children': 1,
                     'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_2'),
+                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
                     })]"
             />
         </record>
-        <!--Reservation of economic room and 3 single rooms whith differents board services-->
-        <record id="pms_folio_19" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_18" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_0" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0),
-                    (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_0'),
-                    'checkin': (DateTime.today() + timedelta(days=23)),
-                    'checkout': (DateTime.today() + timedelta(days=24)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    }),
-                    (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=23)),
-                    'checkout': (DateTime.today() + timedelta(days=24)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_1'),
-                    }),
-                    (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=23)),
-                    'checkout': (DateTime.today() + timedelta(days=24)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_3'),
-                    }),
-                    (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
-                    'checkin': (DateTime.today() + timedelta(days=23)),
-                    'checkout': (DateTime.today() + timedelta(days=24)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_4'),
-                    })]"
-            />
-        </record>
-        <!--Reservation of 2 single rooms whith differents arrival and departure hours-->
-        <record id="pms_folio_20" model="pms.folio">
+        <record id="pms_folio_sngx2" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_25" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_2" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
                     'state': 'confirm',
                     'arrival_hour': '17:00',
                     'departure_hour': '12:15',
-                    'board_service_room_id': ref('pms_board_service_room_10'),
+                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
+                    'room_type_id': ref('pms_room_type_single'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
                     'state': 'confirm',
                     'arrival_hour': '16:00',
                     'departure_hour': '11:15',
-                    'board_service_room_id': ref('pms_board_service_room_10'),
+                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
                     })]"
             />
         </record>
-        <!--Reservation of 2 double rooms whith differents arrival and departure hours and one room whith board service-->
-        <record id="pms_folio_21" model="pms.folio">
+        <record id="pms_folio_dblx2_02" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_32" />
             <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_0" />
+            <field name="agency_id" ref="pms.agency_booking" />
+            <field name="internal_comment">Each guest pays his bill</field>
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
                     'state': 'confirm',
                     'arrival_hour': '17:00',
                     'departure_hour': '12:15',
-                    'board_service_room_id': ref('pms_board_service_room_1'),
+                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
+                    'partner_requests': 'Cold dinner 1st night'
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
@@ -602,190 +671,183 @@
                     })]"
             />
         </record>
-        <!--Reservation of conference room whith lunch and dinner services-->
-        <record id="pms_folio_22" model="pms.folio">
+        <record id="pms_folio_cnf_05" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_10" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_7'),
+                    'preferred_room_id': ref('pms_room_conference_01'),
                     'checkin': (DateTime.today() + timedelta(days=24)),
                     'checkout': (DateTime.today() + timedelta(days=25)),
                     'adults': 1,
                     'state': 'confirm',
                     'arrival_hour': '09:00',
                     'departure_hour': '12:00',
-                    'board_service_room_id': ref('pms_board_service_room_4'),
                     })]"
             />
         </record>
-        <!--Reservation of economic room for a week-->
-        <record id="pms_folio_23" model="pms.folio">
+        <record id="pms_folio_eco_03" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_4" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_2" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_0'),
+                    'preferred_room_id': ref('pms_room_eco_01'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
                     'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_2'),
+                    'board_service_room_id': ref('pms_board_service_room_eco_full_board'),
+                    'partner_requests': 'Vegan food.'
                     })]"
             />
         </record>
-        <!--Reservation of 1 single room for a week-->
-        <record id="pms_folio_24" model="pms.folio">
+        <record id="pms_folio_sng_01" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_1'),
-                    'preferred_room_id': ref('pms_room_1'),
+                    'room_type_id': ref('pms_room_type_single'),
+                    'preferred_room_id': ref('pms_room_single_01'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
                     'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_9'),
+                    'board_service_room_id': ref('pms_board_service_room_single_half_board'),
                     })]"
             />
         </record>
-        <!--Reservation of 1 single room for a week whith board service-->
-        <record id="pms_folio_25" model="pms.folio">
+        <record id="pms_folio_sng_02" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_12" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_2'),
+                    'preferred_room_id': ref('pms_room_single_02'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 1,
                     'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_4'),
+                    'board_service_room_id': ref('pms_board_service_room_single_full_board'),
+                    'partner_requests': 'picnic for 1st lunch'
                     })]"
             />
         </record>
-        <!--Reservation of 2 double rooms for a week whith diferent checkouts-->
-        <record id="pms_folio_26" model="pms.folio">
+        <record id="pms_folio_dblx2_03" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_27" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_1" />
+            <field name="agency_id" ref="pms.agency_airbnb" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=31)),
                     'adults': 2,
                     'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_6'),
+                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
                     }),
                     (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_2'),
+                    'room_type_id': ref('pms_room_type_double'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=32)),
                     'adults': 2,
                     'state': 'confirm',
-                    'board_service_room_id': ref('pms_board_service_room_7'),
+                    'board_service_room_id': ref('pms_board_service_room_double_half_board'),
                     })]"
             />
         </record>
-        <!--Reservation of the conference room with VIP privacy closure reason and board service-->
-        <record id="pms_folio_27" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_3" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_1" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'preferred_room_id': ref('pms_room_7'),
-                    'checkin': (DateTime.today() + timedelta(days=25)),
-                    'checkout': (DateTime.today() + timedelta(days=26)),
-                    'adults': 1,
-                    'state': 'confirm',
-                    'closure_reason_id': ref('pms_room_closure_reason_1'),
-                    'board_service_room_id': ref('pms_board_service_room_4'),
-                    })]"
-            />
-        </record>
-        <!--Reservation of 1 triple room for 1 adult and 2 children whith board service-->
-        <record id="pms_folio_28" model="pms.folio">
+        <record id="pms_folio_trp_05" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_17" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_0" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_door" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
+                    'room_type_id': ref('pms_room_type_triple'),
                     'checkin': (DateTime.today() + timedelta(days=25)),
                     'checkout': (DateTime.today() + timedelta(days=27)),
                     'adults': 1,
                     'children': 2,
-                    'board_service_room_id': ref('pms_board_service_room_2'),
+                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'partner_requests': 'Seafood meals are needed for at least one day'
                     })]"
             />
         </record>
-        <!--Reservation of 1 triple room for 1 adult and 2 children whith specific arrival and departure hours and whith board service-->
-        <record id="pms_folio_29" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_25" />
-            <field name="user_id" ref="base.user_demo" />
+        <record id="pms_folio_cnf_06" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_3" />
+            <field name="user_id" ref="base.user_admin" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="channel_type_id" ref="pms.main_pms_sale_channel_2" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_phone" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
+                    'preferred_room_id': ref('pms_room_conference_01'),
+                    'checkin': (DateTime.today() + timedelta(days=25)),
+                    'checkout': (DateTime.today() + timedelta(days=26)),
+                    'adults': 1,
+                    'state': 'confirm',
+                    'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
+                    })]"
+            />
+        </record>
+        <record id="pms_folio_trp_06" model="pms.folio">
+            <field name="partner_id" ref="base.res_partner_address_25" />
+            <field name="user_id" ref="base.user_demo" />
+            <field name="pms_property_id" ref="pms.main_pms_property" />
+            <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
+            <field
+                name="reservation_ids"
+                eval="[(5, 0), (0, 0, {
+                    'pricelist_id': ref('product.list0'),
+                    'room_type_id': ref('pms_room_type_triple'),
                     'checkin': (DateTime.today() + timedelta(days=27)),
                     'checkout': (DateTime.today() + timedelta(days=28)),
                     'adults': 1,
                     'children': 2,
                     'arrival_hour': '09:00',
                     'departure_hour': '11:00',
-                    'board_service_room_id': ref('pms_board_service_room_2'),
+                    'board_service_room_id': ref('pms_board_service_room_triple_full_board'),
+                    'partner_requests': '1 extra towel needed.'
                     })]"
             />
         </record>
-        <!-- reservation of 1 triple room for 1 day-->
-        <record id="pms_folio_30" model="pms.folio">
+        <record id="pms_folio_trp_07" model="pms.folio">
             <field name="partner_id" ref="base.res_partner_address_15" />
             <field name="user_id" ref="base.user_demo" />
             <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_1" />
+            <field name="agency_id" ref="pms.agency_airbnb" />
             <field
                 name="reservation_ids"
                 eval="[(5, 0), (0, 0, {
                     'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
-                    'preferred_room_id': ref('pms_room_6'),
+                    'room_type_id': ref('pms_room_type_triple'),
+                    'preferred_room_id': ref('pms_room_triple_01'),
                     'checkin': (DateTime.today() + timedelta(days=29)),
                     'checkout': (DateTime.today() + timedelta(days=30)),
                     'adults': 1,
@@ -794,48 +856,5 @@
                     })]"
             />
         </record>
-        <!-- Cancelled Folio-->
-        <record id="pms_folio_31" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_1" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
-                    'preferred_room_id': ref('pms_room_6'),
-                    'checkin': (DateTime.today() + timedelta(days=-5)),
-                    'checkout': (DateTime.today() + timedelta(days=-3)),
-                    'adults': 1,
-                    'children':1,
-                    })]"
-            />
-        </record>
-        <function model="pms.folio" name="action_cancel">
-            <value eval="[ref('pms_folio_31')]" />
-        </function>
-        <record id="pms_folio_32" model="pms.folio">
-            <field name="partner_id" ref="base.res_partner_address_15" />
-            <field name="user_id" ref="base.user_demo" />
-            <field name="pms_property_id" ref="pms.main_pms_property" />
-            <field name="agency_id" ref="pms.demo_agency_1" />
-            <field
-                name="reservation_ids"
-                eval="[(5, 0), (0, 0, {
-                    'pricelist_id': ref('product.list0'),
-                    'room_type_id': ref('pms_room_type_3'),
-                    'preferred_room_id': ref('pms_room_6'),
-                    'checkin': (DateTime.today() + timedelta(days=-10)),
-                    'checkout': (DateTime.today() + timedelta(days=-7)),
-                    'adults': 1,
-                    'children':1,
-                    })]"
-            />
-        </record>
-        <function model="pms.folio" name="action_cancel">
-            <value eval="[ref('pms_folio_31')]" />
-        </function>
     </data>
 </odoo>
