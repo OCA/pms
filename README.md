@@ -20,7 +20,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [pms_account](pms_account/) | 14.0.1.0.0 | [![eantones](https://github.com/eantones.png?size=30px)](https://github.com/eantones) | Manage the accounting aspects of your properties
-[pms_base](pms_base/) | 14.0.1.0.0 | [![eantones](https://github.com/eantones.png?size=30px)](https://github.com/eantones) | Manage properties
+[pms_base](pms_base/) | 14.0.1.0.0 | [![max3903](https://github.com/max3903.png?size=30px)](https://github.com/max3903) | Manage properties
 
 [//]: # (end addons)
 
