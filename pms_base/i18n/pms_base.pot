@@ -14,6 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__meeting_count
+msgid "# Meetings"
+msgstr ""
+
+#. module: pms_base
 #: model_terms:ir.ui.view,arch_db:pms_base.view_pms_team_kanban
 msgid ""
 "<br/>\n"
@@ -982,6 +987,11 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__calendar_last_notif_ack
+msgid "Last notification marked as read from base Calendar"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,help:pms_base.field_pms_property__last_time_entries_checked
 msgid ""
 "Last time the invoices & payments matching was performed for this partner. "
@@ -1106,6 +1116,11 @@ msgid "Master Data"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__meeting_ids
+msgid "Meetings"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_error
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_error
 msgid "Message Delivery error"
@@ -1225,6 +1240,16 @@ msgstr ""
 #. module: pms_base
 #: model:ir.ui.menu,name:pms_base.menu_operations
 msgid "Operations"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__opportunity_ids
+msgid "Opportunities"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__opportunity_count
+msgid "Opportunity"
 msgstr ""
 
 #. module: pms_base
