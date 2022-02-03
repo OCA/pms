@@ -2,10 +2,16 @@
 <odoo>
     <template id="portal_my_precheckin_detail" name="My Precheckin">
         <t t-call="portal.portal_layout">
-            <t t-set="additional_title">Contact Details</t>
             <form t-att-action="checkin_partner_id.get_portal_url()" method="post">
                 <div class="row o_portal_details">
-                    <div t-attf-class="form-group col-xl-6">
+                    <div id="title" class="form-group col-xl-12">
+                        <center>
+                                <h4 class="font-weight-bold">PreCheckin in <span
+                                    t-field="folio.pms_property_id.name"
+                                /></h4>
+                        </center>
+                    </div>
+                    <div class="form-group col-xl-6">
                         <center>
                             <h5
                                 class="font-weight-bold mr-5 mt-2"
@@ -34,8 +40,16 @@
                             t-att-value="folio.id"
                         />
                     </div>
+                    <t t-if="checkin_pos >= 0">
+                        <div class="col-4 mt-2">
+                            <h5 class="float-right font-weight-bold">
+                                Check-in
+                                <span t-esc="int(checkin_pos) + 1" />
+                             </h5>
+                        </div>
+                    </t>
                     <div class="row justify-content-center">
-                        <div class="col-11 col-md-8 row pt-5">
+                        <div class="col-11 col-md-8 row pt-3">
                             <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                     class="col-form-label"
@@ -62,7 +76,7 @@
                                 <input
                                     type="text"
                                     name="lastname"
-                                    t-attf-class="form-control "
+                                    t-attf-class="form-control"
                                     t-att-value="checkin_partner_id.lastname"
                                 />
                             </div>
@@ -242,6 +256,7 @@
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6 pt-5">
                                 <label
+                                    id="label_mobile"
                                     class="col-form-label"
                                     for="mobile"
                                 >Mobile</label>
@@ -259,7 +274,11 @@
                                 </t>
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
-                                <label class="col-form-label" for="email">Email</label>
+                                <label
+                                    id="label_email"
+                                    class="col-form-label"
+                                    for="email"
+                                >Email</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -443,7 +462,11 @@
         <t t-call="portal.portal_layout">
             <thead style="background-color: white;">
                 <tr class="active">
-                    <th>PreCheckin in <span t-field="folio.pms_property_id.name" /></th>
+                    <center>
+                        <h4>PreCheckin in <span
+                                t-field="folio.pms_property_id.name"
+                            /></h4>
+                    </center>
                 </tr>
             </thead>
             <center>
@@ -530,6 +553,9 @@
 
             </center>
         </t>
+        <style>
+
+        </style>
     </template>
     <template id="portal_my_folio_invitations" name="Precheckin Folio">
         <t t-call="portal.portal_layout">
@@ -635,7 +661,7 @@
                                                     <a
                                                     t-att-id="'btn_show_invitation_whatsapp'+str(checkin_partner.id)"
                                                     class="' btn btn-secondary"
-                                                    t-att-href="'whatsapp://send?text='+checkin_partner.get_portal_url()"
+                                                    t-att-href="'whatsapp://send?text='+web_url+checkin_partner.get_portal_url()"
                                                     style="color:#fff;margin-top:20px;"
                                                     t-attf-onclick="show_invitation(this)"
                                                 >
@@ -1047,6 +1073,20 @@
                     </t>
                 </table>
             </table>
+        </t>
+        <style />
+    </template>
+    <template id="portal_not_checkin" name="Not Checkin">
+        <t t-call="portal.portal_layout">
+            <center>
+                The quick registration system is not available because the date of your reservation has already passed.<br
+                />
+                If you have any questions, you can contact us by phone: <span><t
+                        t-esc="folio.pms_property_id.phone"
+                    /></span> or by email: <span><t
+                        t-esc="folio.pms_property_id.email"
+                    /></span>
+            </center>
         </t>
     </template>
 </odoo>

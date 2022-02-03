@@ -334,9 +334,13 @@ class PortalPrecheckin(CustomerPortal):
                 "doc_type_ids": doc_type_ids,
                 "folio": folio_sudo,
                 "checkin_partner_id": checkin_partner,
+                "checkin_pos": 0,
             }
         )
-        return request.render("pms.portal_my_reservation_precheckin", values)
+        if checkin_partner.state == "draft" or checkin_partner.state == "confirm":
+            return request.render("pms.portal_my_reservation_precheckin", values)
+        else:
+            return request.render("pms.portal_not_checkin", values)
 
     @http.route(
         ["/my/precheckin/<int:folio_id>/checkin/<int:checkin_partner_id>"],
@@ -351,7 +355,7 @@ class PortalPrecheckin(CustomerPortal):
             checkin_pos = int(kw.get("checkin_pos"))
         else:
             checkin_pos = -2
-        folio_id = request.env["pms.folio"].browse(folio_id)
+        folio_id = request.env["pms.folio"].sudo().browse(folio_id)
         country_ids = request.env["res.country"].search([])
         state_ids = request.env["res.country.state"].search([])
         doc_type_ids = request.env["res.partner.id_category"].sudo().search([])
@@ -415,8 +419,11 @@ class PortalPrecheckin(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
+        web_url = request.env["ir.config_parameter"].search(
+            [("key", "=", "web.base.url")]
+        )
         values = self._folio_get_page_view_values(folio_sudo, access_token, **kw)
-        values.update({"no_breadcrumbs": True, "error": {}})
+        values.update({"no_breadcrumbs": True, "error": {}, "web_url": web_url.value})
         return request.render("pms.portal_my_folio_invitations", values)
 
     def form_validate(self, data, counter):
