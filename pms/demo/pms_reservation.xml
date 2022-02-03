@@ -41,13 +41,15 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="channel_type_id" ref="pms.main_pms_sale_channel_mail" />
             <field name="state">done</field>
-            <field name="partner_requests">Lactose intolerant, soy milk for breakfast.</field>
+            <field
+                name="partner_requests"
+            >Lactose intolerant, soy milk for breakfast.</field>
         </record>
         <record id="pms_checkin_partner_r_eco_01" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_28"></field>
-            <field name="reservation_id" ref="pms_reservation_eco_01"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-8)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-6)"></field>
+            <field name="partner_id" ref="base.res_partner_address_28" />
+            <field name="reservation_id" ref="pms_reservation_eco_01" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-8)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-6)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -71,10 +73,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_eco_02" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_1"></field>
-            <field name="reservation_id" ref="pms_reservation_eco_02"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-7)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-5)"></field>
+            <field name="partner_id" ref="base.res_partner_address_1" />
+            <field name="reservation_id" ref="pms_reservation_eco_02" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-7)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-5)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -103,10 +105,10 @@
 
 
         <record id="pms_checkin_partner_r_eco_03" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_2"></field>
-            <field name="reservation_id" ref="pms_reservation_eco_03"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-7)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-5)"></field>
+            <field name="partner_id" ref="base.res_partner_address_2" />
+            <field name="reservation_id" ref="pms_reservation_eco_03" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-7)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-5)" />
             <field name="state">onboard</field>
         </record>
 
@@ -134,10 +136,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_eco_04" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_4"></field>
-            <field name="reservation_id" ref="pms_reservation_eco_04"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-7)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-6)"></field>
+            <field name="partner_id" ref="base.res_partner_address_4" />
+            <field name="reservation_id" ref="pms_reservation_eco_04" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-7)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-6)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -161,10 +163,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_eco_05" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_5"></field>
-            <field name="reservation_id" ref="pms_reservation_eco_05"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-7)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-3)"></field>
+            <field name="partner_id" ref="base.res_partner_address_5" />
+            <field name="reservation_id" ref="pms_reservation_eco_05" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-7)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-3)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -189,10 +191,10 @@
             <field name="partner_requests">Need lunchs to take away.</field>
         </record>
         <record id="pms_checkin_partner_r_eco_06" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_16"></field>
-            <field name="reservation_id" ref="pms_reservation_eco_06"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-4)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-1)"></field>
+            <field name="partner_id" ref="base.res_partner_address_16" />
+            <field name="reservation_id" ref="pms_reservation_eco_06" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-4)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-1)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -344,10 +346,10 @@
             <field name="partner_requests">Late for dinner. Cold dinner needed.</field>
         </record>
         <record id="pms_checkin_partner_r_sng_01" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_33"></field>
-            <field name="reservation_id" ref="pms_reservation_sng_01"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-9)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-4)"></field>
+            <field name="partner_id" ref="base.res_partner_address_33" />
+            <field name="reservation_id" ref="pms_reservation_sng_01" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-9)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-4)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -371,10 +373,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_sng_02" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_32"></field>
-            <field name="reservation_id" ref="pms_reservation_sng_02"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-5)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-1)"></field>
+            <field name="partner_id" ref="base.res_partner_address_32" />
+            <field name="reservation_id" ref="pms_reservation_sng_02" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-5)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-1)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -734,10 +736,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_trp_01" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_15"></field>
-            <field name="reservation_id" ref="pms_reservation_trp_01"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-9)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-2)"></field>
+            <field name="partner_id" ref="base.res_partner_address_15" />
+            <field name="reservation_id" ref="pms_reservation_trp_01" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-9)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-2)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -890,10 +892,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_qdp_01" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_34"></field>
-            <field name="reservation_id" ref="pms_reservation_qdp_01"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-10)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-7)"></field>
+            <field name="partner_id" ref="base.res_partner_address_34" />
+            <field name="reservation_id" ref="pms_reservation_qdp_01" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-10)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-7)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -909,13 +911,15 @@
             <field name="pms_property_id" ref="pms.main_pms_property" />
             <field name="agency_id" ref="pms.agency_booking" />
             <field name="state">done</field>
-            <field name="partner_requests">Italian guests, they don't speak english</field>
+            <field
+                name="partner_requests"
+            >Italian guests, they don't speak english</field>
         </record>
         <record id="pms_checkin_partner_r_qdp_02" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_11"></field>
-            <field name="reservation_id" ref="pms_reservation_qdp_02"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-8)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-5)"></field>
+            <field name="partner_id" ref="base.res_partner_address_11" />
+            <field name="reservation_id" ref="pms_reservation_qdp_02" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-8)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-5)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -933,10 +937,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_qdp_03" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_13"></field>
-            <field name="reservation_id" ref="pms_reservation_qdp_03"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-4)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-2)"></field>
+            <field name="partner_id" ref="base.res_partner_address_13" />
+            <field name="reservation_id" ref="pms_reservation_qdp_03" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-4)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-2)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -955,10 +959,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_qdp_04" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_25"></field>
-            <field name="reservation_id" ref="pms_reservation_qdp_04"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-3)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-1)"></field>
+            <field name="partner_id" ref="base.res_partner_address_25" />
+            <field name="reservation_id" ref="pms_reservation_qdp_04" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-3)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-1)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -1014,10 +1018,10 @@
             <field name="partner_requests">2 bottles of water each 2 hours.</field>
         </record>
         <record id="pms_checkin_partner_r_cnf_01" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_1"></field>
-            <field name="reservation_id" ref="pms_reservation_cnf_01"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-10)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-5)"></field>
+            <field name="partner_id" ref="base.res_partner_address_1" />
+            <field name="reservation_id" ref="pms_reservation_cnf_01" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-10)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-5)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -1070,10 +1074,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_grsui_01" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_18"></field>
-            <field name="reservation_id" ref="pms_reservation_grsui_01"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-9)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-6)"></field>
+            <field name="partner_id" ref="base.res_partner_address_18" />
+            <field name="reservation_id" ref="pms_reservation_grsui_01" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-9)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-6)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -1092,10 +1096,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_grsui_02" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_28"></field>
-            <field name="reservation_id" ref="pms_reservation_grsui_02"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-8)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-5)"></field>
+            <field name="partner_id" ref="base.res_partner_address_28" />
+            <field name="reservation_id" ref="pms_reservation_grsui_02" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-8)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-5)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -1113,10 +1117,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_grsui_03" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_2"></field>
-            <field name="reservation_id" ref="pms_reservation_grsui_03"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-6)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-3)"></field>
+            <field name="partner_id" ref="base.res_partner_address_2" />
+            <field name="reservation_id" ref="pms_reservation_grsui_03" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-6)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-3)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -1167,10 +1171,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_jrsui_01" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_5"></field>
-            <field name="reservation_id" ref="pms_reservation_jrsui_01"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-10)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-7)"></field>
+            <field name="partner_id" ref="base.res_partner_address_5" />
+            <field name="reservation_id" ref="pms_reservation_jrsui_01" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-10)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-7)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -1189,10 +1193,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_r_jrsui_02" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_30"></field>
-            <field name="reservation_id" ref="pms_reservation_jrsui_02"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-8)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-3)"></field>
+            <field name="partner_id" ref="base.res_partner_address_30" />
+            <field name="reservation_id" ref="pms_reservation_jrsui_02" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-8)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-3)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
@@ -1210,10 +1214,10 @@
             <field name="state">done</field>
         </record>
         <record id="pms_checkin_partner_jrsui_03" model="pms.checkin.partner">
-            <field name="partner_id" ref="base.res_partner_address_2"></field>
-            <field name="reservation_id" ref="pms_reservation_jrsui_03"></field>
-            <field name="arrival" eval="DateTime.today() + timedelta(-6)"></field>
-            <field name="departure" eval="DateTime.today() + timedelta(-2)"></field>
+            <field name="partner_id" ref="base.res_partner_address_2" />
+            <field name="reservation_id" ref="pms_reservation_jrsui_03" />
+            <field name="arrival" eval="DateTime.today() + timedelta(-6)" />
+            <field name="departure" eval="DateTime.today() + timedelta(-2)" />
             <field name="state">onboard</field>
         </record>
         <function model="pms.checkin.partner" name="action_done">
