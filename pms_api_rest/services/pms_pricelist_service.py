@@ -29,18 +29,23 @@ class PmsPricelistService(Component):
         pricelists_all_properties = self.env["product.pricelist"].search(
             [("pms_property_ids", "=", False)]
         )
-        pricelists = set()
-        for index, prop in enumerate(pms_search_param.pms_property_ids):
-            pricelists_with_query_property = self.env["product.pricelist"].search(
-                [("pms_property_ids", "=", prop)]
-            )
-            if index == 0:
-                pricelists = set(pricelists_with_query_property.ids)
-            else:
-                pricelists = pricelists.intersection(
-                    set(pricelists_with_query_property.ids)
+        if pms_search_param.pms_property_ids:
+            pricelists = set()
+            for index, prop in enumerate(pms_search_param.pms_property_ids):
+                pricelists_with_query_property = self.env["product.pricelist"].search(
+                    [("pms_property_ids", "=", prop)]
                 )
-        pricelists_total = list(set(list(pricelists) + pricelists_all_properties.ids))
+                if index == 0:
+                    pricelists = set(pricelists_with_query_property.ids)
+                else:
+                    pricelists = pricelists.intersection(
+                        set(pricelists_with_query_property.ids)
+                    )
+            pricelists_total = list(
+                set(list(pricelists) + pricelists_all_properties.ids)
+            )
+        else:
+            pricelists_total = list(pricelists_all_properties.ids)
         domain = [
             ("id", "in", pricelists_total),
         ]
