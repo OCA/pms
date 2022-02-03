@@ -10,7 +10,7 @@
     "category": "Generic Modules/Property Management System",
     "website": "https://github.com/OCA/pms",
     "author": "Commit [Sun], Open Source Integrators, Odoo Community Association (OCA)",
-    "maintainers": ["eantones"],
+    "maintainers": ["max3903"],
     "license": "AGPL-3",
     "application": True,
     "depends": ["base_geolocalize", "mail", "product"],
