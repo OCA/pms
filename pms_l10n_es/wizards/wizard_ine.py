@@ -194,10 +194,24 @@ class WizardIne(models.TransientModel):
             date = date to add the entry to dic
             type_of_entry =  'arrivals' | 'departures' | 'pernoctations'
             read_group_result = result of read_group by type_of_entry
-
             """
 
             for entry in read_group_result:
+                if not entry["nationality_id"]:
+                    guests_with_no_nationality = self.env["res.partner"].search(
+                        entry["__domain"]
+                    )
+                    guests_with_no_nationality = (
+                        str(guests_with_no_nationality.mapped("name"))
+                        .replace("[", "")
+                        .replace("]", "")
+                    )
+                    raise ValidationError(
+                        _(
+                            "The following guests have no nationality set :%s.",
+                            guests_with_no_nationality,
+                        )
+                    )
                 # get nationality_id from group set read_group results
                 nationality_id_code = (
                     self.env["res.country"]
@@ -226,6 +240,21 @@ class WizardIne(models.TransientModel):
                     )
                     # iterate read_group results from Spain
                     for entry_from_spain in read_by_arrivals_spain:
+                        if not entry_from_spain["state_id"]:
+                            spanish_guests_with_no_state = self.env[
+                                "res.partner"
+                            ].search(entry_from_spain["__domain"])
+                            spanish_guests_with_no_state = (
+                                str(spanish_guests_with_no_state.mapped("name"))
+                                .replace("[", "")
+                                .replace("]", "")
+                            )
+                            raise ValidationError(
+                                _(
+                                    "The following spanish guests have no state set :%s.",
+                                    spanish_guests_with_no_state,
+                                )
+                            )
                         state_id = self.env["res.country.state"].browse(
                             entry_from_spain["state_id"][0]
                         )  # .ine_code
