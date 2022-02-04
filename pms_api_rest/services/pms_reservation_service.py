@@ -27,7 +27,8 @@ class PmsReservationService(Component):
     def get_reservation(self, reservation_id, pms_search_param):
         domain = list()
         domain.append(("id", "=", reservation_id))
-        domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
+        if pms_search_param.pms_property_id:
+            domain.append(("pms_property_id", "=", pms_search_param.pms_property_id))
         reservation = self.env["pms.reservation"].search(domain)
         res = []
         PmsReservationInfo = self.env.datamodels["pms.reservation.info"]
