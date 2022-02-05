@@ -34,7 +34,7 @@ class AccountBankStatement(models.Model):
         )
         super(AccountBankStatement, self).button_post()
         for line in lines_of_moves_to_post:
-            payment_move_line = line._get_payment_move_lines_to_reconcile(line)
+            payment_move_line = line._get_payment_move_lines_to_reconcile()
             statement_move_line = line.move_id.line_ids.filtered(
                 lambda line: line.account_id.reconcile
             )

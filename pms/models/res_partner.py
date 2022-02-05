@@ -42,7 +42,7 @@ class ResPartner(models.Model):
     )
     pms_property_ids = fields.Many2many(
         string="Properties",
-        help="Properties with access to the element;"
+        help="Properties with access to the element"
         " if not set, all properties can access",
         required=False,
         comodel_name="pms.property",
@@ -133,6 +133,60 @@ class ResPartner(models.Model):
         string="Possible Customer In Checkin Partner",
         comodel_name="pms.checkin.partner",
     )
+    invoicing_policy = fields.Selection(
+        string="Invoicing Policy",
+        help="The invoicing policy of the partner, set Property to user the policy configured in the Property",
+        selection=[
+            ("property", "Property Policy Invoice"),
+            ("manual", "Manual"),
+            ("checkout", "From Checkout"),
+            ("month_day", "Month Day Invoice"),
+        ],
+        default="property",
+    )
+    invoicing_month_day = fields.Integer(
+        string="Invoicing Month Day",
+        help="The day of the month to invoice",
+    )
+    margin_days_autoinvoice = fields.Integer(
+        string="Days from Checkout",
+        help="Days from Checkout to generate the invoice",
+    )
+    default_invoice_lines = fields.Selection(
+        string="Invoice...",
+        help="""Use to preconfigure the sale lines to autoinvoice
+        for this partner. All (invoice reservations and services),
+        Only overnights to invoice only the reservations
+        with overnight and board services(exclude parkings, salon, etc...),
+        All reservations to include all reservations,
+        and Services only include services not boards""",
+        selection=[
+            ("all", "All"),
+            ("overnights", "Only Overnights"),
+            ("reservations", "All reservations"),
+            ("services", "Services"),
+        ],
+        default="all",
+    )
+    document_number_to_invoice = fields.Char(
+        string="Document Number to invoices",
+        help="""Technical field to compute the partner reference to invoice,
+        it can be the VAT, if its set, or the document number, if its set,
+        else it will be False""",
+        compute="_compute_document_number_to_invoice",
+        readonly=False,
+        store=True,
+    )
+
+    @api.depends("vat", "id_numbers", "id_numbers.name")
+    def _compute_document_number_to_invoice(self):
+        for partner in self:
+            if partner.vat:
+                partner.document_number_to_invoice = partner.vat
+            elif partner.id_numbers:
+                partner.document_number_to_invoice = partner.id_numbers[0].name
+            else:
+                partner.document_number_to_invoice = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):

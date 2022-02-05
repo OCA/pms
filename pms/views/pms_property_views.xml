@@ -89,6 +89,10 @@
                             <group>
                                 <field name="default_invoicing_policy" />
                                 <field
+                                    name="margin_days_autoinvoice"
+                                    attrs="{'invisible': [('default_invoicing_policy', '=', 'manual')]}"
+                                />
+                                <field
                                     name="journal_simplified_invoice_id"
                                     attrs="{'required': [('default_invoicing_policy', '!=', 'manual')]}"
                                     domain="[

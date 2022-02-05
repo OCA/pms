@@ -3,6 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import datetime
+from dateutil import relativedelta
+from datetime import timedelta
 import logging
 from itertools import groupby
 
@@ -505,6 +507,11 @@ class PmsFolio(models.Model):
         store=True,
         compute="_compute_last_checkout",
     )
+    autoinvoice_date = fields.Date(
+        string="Autoinvoice Date",
+        compute="_compute_autoinvoice_date",
+        store=True,
+    )
 
     def name_get(self):
         result = []
@@ -539,68 +546,114 @@ class PmsFolio(models.Model):
         )
         invoice_vals_list = []
         invoice_item_sequence = 0
-        for order in self:
-            order = order.with_company(order.company_id)
-            current_section_vals = None
-            down_payments = order.env["folio.sale.line"]
-
-            # Invoice values.
-            invoice_vals = order._prepare_invoice(partner_invoice_id=partner_invoice_id)
-
-            # Invoice line values (keep only necessary sections).
-            invoice_lines_vals = []
-            for line in order.sale_line_ids.filtered(
+        for folio in self:
+            folio_lines_to_invoice = folio.sale_line_ids.filtered(
                 lambda l: l.id in list(lines_to_invoice.keys())
-            ):
-                if line.display_type == "line_section":
-                    current_section_vals = line._prepare_invoice_line(
-                        sequence=invoice_item_sequence + 1
-                    )
-                    continue
-                if line.display_type != "line_note" and float_is_zero(
-                    line.qty_to_invoice, precision_digits=precision
-                ):
-                    continue
-                if (
-                    line.qty_to_invoice > 0
-                    or (line.qty_to_invoice < 0 and final)
-                    or line.display_type == "line_note"
-                ):
-                    if line.is_downpayment:
-                        down_payments += line
-                        continue
-                    if current_section_vals:
-                        invoice_item_sequence += 1
-                        invoice_lines_vals.append(current_section_vals)
-                        current_section_vals = None
-                    invoice_item_sequence += 1
-                    prepared_line = line._prepare_invoice_line(
-                        sequence=invoice_item_sequence, qty=lines_to_invoice[line.id]
-                    )
-                    invoice_lines_vals.append(prepared_line)
+            )
 
-            # If down payments are present in SO, group them under common section
-            if down_payments:
-                invoice_item_sequence += 1
-                down_payments_section = order._prepare_down_payment_section_line(
-                    sequence=invoice_item_sequence
+            folio_partner_invoice_id = partner_invoice_id
+            if not folio_partner_invoice_id:
+                if folio.partner_id and folio.partner_id.document_number_to_invoice:
+                    folio_partner_invoice_id = folio.partner_id.id
+                else:
+                    folio_partner_invoice_id = (
+                        self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
+                    )
+
+            target_lines = folio_lines_to_invoice
+            if self._context.get("lines_auto_add") and folio_partner_invoice_id:
+                if folio_partner_invoice_id.default_invoice_lines == 'overnights':
+                    target_lines = target_lines.filtered(
+                        lambda r: r.is_board_service or r.reservation_id.overnight_room
+                    )
+                elif folio_partner_invoice_id.default_invoice_lines == 'reservations':
+                    target_lines = target_lines.filtered(
+                        lambda r: r.is_board_service or r.reservation_id
+                    )
+                elif folio_partner_invoice_id.default_invoice_lines == 'services':
+                    target_lines = target_lines.filtered(
+                        lambda r: not r.is_board_service or r.service_id
+                    )
+            groups_invoice_lines = [
+                {
+                    "partner_id": folio_partner_invoice_id,
+                    "lines": target_lines,
+                }
+            ]
+            if (
+                folio.autoinvoice_date
+                and folio.autoinvoice_date <= fields.Date.today()
+                and len(target_lines) < len(folio_lines_to_invoice)
+            ):
+                second_partner_to_invoice = folio.partner_invoice_ids.filtered(
+                    lambda p: p.id != folio_partner_invoice_id
                 )
-                invoice_lines_vals.append(down_payments_section)
-                for down_payment in down_payments:
+                groups_invoice_lines.append(
+                    {
+                        "partner_id": second_partner_to_invoice and second_partner_to_invoice.id,
+                        "lines": folio_lines_to_invoice - target_lines
+                    }
+                )
+            for group in groups_invoice_lines:
+                folio = folio.with_company(folio.company_id)
+                down_payments = folio.env["folio.sale.line"]
+
+                # Invoice values.
+                invoice_vals = folio._prepare_invoice(partner_invoice_id=group["partner_id"])
+
+                # Invoice line values (keep only necessary sections).
+                current_section_vals = None
+                invoice_lines_vals = []
+                for line in group["lines"]:
+                    if line.display_type == "line_section":
+                        current_section_vals = line._prepare_invoice_line(
+                            sequence=invoice_item_sequence + 1
+                        )
+                        continue
+                    if line.display_type != "line_note" and float_is_zero(
+                        line.qty_to_invoice, precision_digits=precision
+                    ):
+                        continue
+                    if (
+                        line.qty_to_invoice > 0
+                        or (line.qty_to_invoice < 0 and final)
+                        or line.display_type == "line_note"
+                    ):
+                        if line.is_downpayment:
+                            down_payments += line
+                            continue
+                        if current_section_vals:
+                            invoice_item_sequence += 1
+                            invoice_lines_vals.append(current_section_vals)
+                            current_section_vals = None
+                        invoice_item_sequence += 1
+                        prepared_line = line._prepare_invoice_line(
+                            sequence=invoice_item_sequence, qty=lines_to_invoice[line.id]
+                        )
+                        invoice_lines_vals.append(prepared_line)
+
+                # If down payments are present in SO, group them under common section
+                if down_payments:
                     invoice_item_sequence += 1
-                    invoice_down_payment_vals = down_payment._prepare_invoice_line(
+                    down_payments_section = folio._prepare_down_payment_section_line(
                         sequence=invoice_item_sequence
                     )
-                    invoice_lines_vals.append(invoice_down_payment_vals)
+                    invoice_lines_vals.append(down_payments_section)
+                    for down_payment in down_payments:
+                        invoice_item_sequence += 1
+                        invoice_down_payment_vals = down_payment._prepare_invoice_line(
+                            sequence=invoice_item_sequence
+                        )
+                        invoice_lines_vals.append(invoice_down_payment_vals)
 
-            if not any(
-                new_line["display_type"] is False for new_line in invoice_lines_vals
-            ):
-                raise self._nothing_to_invoice_error()
+                if not any(
+                    new_line["display_type"] is False for new_line in invoice_lines_vals
+                ):
+                    raise self._nothing_to_invoice_error()
 
-            invoice_vals["invoice_line_ids"] = [
-                (0, 0, invoice_line_id) for invoice_line_id in invoice_lines_vals
-            ]
+                invoice_vals["invoice_line_ids"] = [
+                    (0, 0, invoice_line_id) for invoice_line_id in invoice_lines_vals
+                ]
 
             invoice_vals_list.append(invoice_vals)
         return invoice_vals_list
@@ -626,6 +679,28 @@ class PmsFolio(models.Model):
             (line[0].name, line[1]["amount"], line[1]["base"], len(res)) for line in res
         ]
         return res
+
+    @api.depends("partner_id", "invoice_status", "last_checkout")
+    def _compute_autoinvoice_date(self):
+        self.autoinvoice_date = False
+        for record in self.filtered(lambda r: r.invoice_status == "to_invoice"):
+            record.autoinvoice_date = record._get_to_invoice_date()
+
+    def _get_to_invoice_date(self):
+        self.ensure_one()
+        partner = self.partner_id
+        invoicing_policy = self.pms_property_id.default_invoicing_policy if not partner or partner.invoicing_policy == "property" else partner.invoicing_policy
+        if invoicing_policy == "manual":
+            return False
+        if invoicing_policy == "checkout":
+            margin_days = self.pms_property_id.margin_days_autoinvoice if not partner or partner.invoicing_policy == "property" else partner.margin_days_autoinvoice
+            return self.checkout + timedelta(days=margin_days)
+        if invoicing_policy == "month_day":
+            month_day = self.pms_property_id.invoicing_month_day if not partner or partner.invoicing_policy == "property" else partner.invoicing_month_day
+            if self.checkout.day <= month_day:
+                self.autoinvoice_date = self.checkout.replace(day=month_day)
+            else:
+                self.autoinvoice_date = (self.checkout + relativedelta.relativedelta(months=1)).replace(day=month_day)
 
     @api.depends("reservation_ids", "reservation_ids.state")
     def _compute_number_of_rooms(self):
@@ -1508,6 +1583,7 @@ class PmsFolio(models.Model):
                 return self.env["account.move"]
         # 1) Create invoices.
         if not lines_to_invoice:
+            self = self.with_context(lines_auto_add=True)
             lines_to_invoice = dict()
             for line in self.sale_line_ids:
                 lines_to_invoice[line.id] = (
@@ -1630,29 +1706,31 @@ class PmsFolio(models.Model):
         (making sure to call super() to establish a clean extension chain).
         """
         self.ensure_one()
-        journal = (
-            self.env["account.move"]
-            .with_context(
-                default_move_type="out_invoice",
-                default_company_id=self.company_id.id,
-                default_pms_property_id=self.pms_property_id.id,
+        if not partner_invoice_id:
+            partner_invoice_id = (
+                self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
             )
-            ._get_default_journal()
-        )
+
+        journal = self._get_folio_default_journal(partner_invoice_id)
+        if not journal:
+            journal = (
+                self.env["account.move"]
+                .with_context(
+                    default_move_type="out_invoice",
+                    default_company_id=self.company_id.id,
+                    default_pms_property_id=self.pms_property_id.id,
+                )
+                ._get_default_journal()
+            )
         if not journal:
             raise UserError(
                 _("Please define an accounting sales journal for the company %s (%s).")
                 % (self.company_id.name, self.company_id.id)
             )
 
-        if not partner_invoice_id:
-            partner_invoice_id = (
-                self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
-            )
-
         invoice_vals = {
             "ref": self.client_order_ref or "",
-            "move_type": "out_invoice",
+            "move_type": self._get_default_move_type(partner_invoice_id),
             "narration": self.note,
             "currency_id": self.pricelist_id.currency_id.id,
             # 'campaign_id': self.campaign_id.id,
@@ -1671,6 +1749,21 @@ class PmsFolio(models.Model):
             "company_id": self.company_id.id,
         }
         return invoice_vals
+
+    def _get_folio_default_journal(self, partner_invoice_id):
+        self.ensure_one()
+        pms_property = self.pms_property_id
+        partner = self.env["res.partner"].browse(partner_invoice_id)
+        if partner.document_number_to_invoice:
+            return pms_property.journal_normal_invoice_id
+        return pms_property.journal_simplified_invoice_id
+
+    def _get_default_move_type(self, partner_invoice_id):
+        self.ensure_one()
+        partner = self.env["res.partner"].browse(partner_invoice_id)
+        if partner.document_number_to_invoice:
+            return "out_invoice"
+        return "entry"
 
     def do_payment(
         self,
