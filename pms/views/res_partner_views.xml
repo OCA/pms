@@ -93,6 +93,29 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">view.partner.property.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr='//group[@name="accounting_entries"]' position='after'>
+                <group string="PMS Invoice policy" name="pms_invoice_policy">
+                    <field name="invoicing_policy" />
+                    <field
+                        name="invoicing_month_day"
+                        attrs="{'invisible': [('invoicing_policy', '!=', 'month_day')]}"
+                    />
+                    <field
+                        name="margin_days_autoinvoice"
+                        attrs="{'invisible': [('invoicing_policy', '!=', 'checkout')]}"
+                    />
+                    <field name="default_invoice_lines" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
     <record id="view_partner_data_form" model="ir.ui.view">
             <field name="name">res.partner.form.data</field>
             <field name="model">res.partner</field>
