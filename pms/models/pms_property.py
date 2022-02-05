@@ -598,9 +598,11 @@ class PmsProperty(models.Model):
         """
         This method is used to autoinvoicing the folios
         """
-        folios = self.env["pms.folio"].search([
-            ("autoinvoice_date", "=" , fields.date.today()),
-        ])
+        folios = self.env["pms.folio"].search(
+            [
+                ("autoinvoice_date", "=", fields.date.today()),
+            ]
+        )
         if folios:
             invoices = folios.with_context(autoinvoice=True)._create_invoices(
                 grouped=True,
