@@ -147,8 +147,19 @@ class PmsProperty(models.Model):
         selection=[
             ("manual", "Manual"),
             ("checkout", "Checkout"),
+            ("month_day", "Month Day Invoice"),
         ],
         default="manual",
+    )
+
+    margin_days_autoinvoice = fields.Integer(
+        string="Margin Days",
+        help="Days from Checkout to generate the invoice",
+    )
+
+    invoicing_month_day = fields.Integer(
+        string="Invoicing Month Day",
+        help="The day of the month to invoice",
     )
 
     journal_simplified_invoice_id = fields.Many2one(
@@ -580,5 +591,20 @@ class PmsProperty(models.Model):
                                 "closed": True,
                             }
                         )
+        return True
 
+    @api.model
+    def autoinvoicing(self):
+        """
+        This method is used to autoinvoicing the folios
+        """
+        folios = self.env["pms.folio"].search([
+            ("autoinvoice_date", "=" , fields.date.today()),
+        ])
+        if folios:
+            invoices = folios.with_context(autoinvoice=True)._create_invoices(
+                grouped=True,
+            )
+            if invoices:
+                invoices.action_post()
         return True
