@@ -4,8 +4,8 @@
 
 import datetime
 from dateutil import relativedelta
-from datetime import timedelta
 import logging
+from datetime import timedelta
 from itertools import groupby
 
 from odoo import _, api, fields, models
@@ -557,20 +557,22 @@ class PmsFolio(models.Model):
                     folio_partner_invoice_id = folio.partner_id.id
                 else:
                     folio_partner_invoice_id = (
-                        self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
+                        self.partner_invoice_ids[0].id
+                        if self.partner_invoice_ids
+                        else False
                     )
 
             target_lines = folio_lines_to_invoice
             if self._context.get("lines_auto_add") and folio_partner_invoice_id:
-                if folio_partner_invoice_id.default_invoice_lines == 'overnights':
+                if folio_partner_invoice_id.default_invoice_lines == "overnights":
                     target_lines = target_lines.filtered(
                         lambda r: r.is_board_service or r.reservation_id.overnight_room
                     )
-                elif folio_partner_invoice_id.default_invoice_lines == 'reservations':
+                elif folio_partner_invoice_id.default_invoice_lines == "reservations":
                     target_lines = target_lines.filtered(
                         lambda r: r.is_board_service or r.reservation_id
                     )
-                elif folio_partner_invoice_id.default_invoice_lines == 'services':
+                elif folio_partner_invoice_id.default_invoice_lines == "services":
                     target_lines = target_lines.filtered(
                         lambda r: not r.is_board_service or r.service_id
                     )
@@ -590,8 +592,9 @@ class PmsFolio(models.Model):
                 )
                 groups_invoice_lines.append(
                     {
-                        "partner_id": second_partner_to_invoice and second_partner_to_invoice.id,
-                        "lines": folio_lines_to_invoice - target_lines
+                        "partner_id": second_partner_to_invoice
+                        and second_partner_to_invoice.id,
+                        "lines": folio_lines_to_invoice - target_lines,
                     }
                 )
             for group in groups_invoice_lines:
@@ -599,7 +602,9 @@ class PmsFolio(models.Model):
                 down_payments = folio.env["folio.sale.line"]
 
                 # Invoice values.
-                invoice_vals = folio._prepare_invoice(partner_invoice_id=group["partner_id"])
+                invoice_vals = folio._prepare_invoice(
+                    partner_invoice_id=group["partner_id"]
+                )
 
                 # Invoice line values (keep only necessary sections).
                 current_section_vals = None
@@ -628,7 +633,8 @@ class PmsFolio(models.Model):
                             current_section_vals = None
                         invoice_item_sequence += 1
                         prepared_line = line._prepare_invoice_line(
-                            sequence=invoice_item_sequence, qty=lines_to_invoice[line.id]
+                            sequence=invoice_item_sequence,
+                            qty=lines_to_invoice[line.id],
                         )
                         invoice_lines_vals.append(prepared_line)
 
@@ -689,18 +695,32 @@ class PmsFolio(models.Model):
     def _get_to_invoice_date(self):
         self.ensure_one()
         partner = self.partner_id
-        invoicing_policy = self.pms_property_id.default_invoicing_policy if not partner or partner.invoicing_policy == "property" else partner.invoicing_policy
+        invoicing_policy = (
+            self.pms_property_id.default_invoicing_policy
+            if not partner or partner.invoicing_policy == "property"
+            else partner.invoicing_policy
+        )
         if invoicing_policy == "manual":
             return False
         if invoicing_policy == "checkout":
-            margin_days = self.pms_property_id.margin_days_autoinvoice if not partner or partner.invoicing_policy == "property" else partner.margin_days_autoinvoice
+            margin_days = (
+                self.pms_property_id.margin_days_autoinvoice
+                if not partner or partner.invoicing_policy == "property"
+                else partner.margin_days_autoinvoice
+            )
             return self.checkout + timedelta(days=margin_days)
         if invoicing_policy == "month_day":
-            month_day = self.pms_property_id.invoicing_month_day if not partner or partner.invoicing_policy == "property" else partner.invoicing_month_day
+            month_day = (
+                self.pms_property_id.invoicing_month_day
+                if not partner or partner.invoicing_policy == "property"
+                else partner.invoicing_month_day
+            )
             if self.checkout.day <= month_day:
                 self.autoinvoice_date = self.checkout.replace(day=month_day)
             else:
-                self.autoinvoice_date = (self.checkout + relativedelta.relativedelta(months=1)).replace(day=month_day)
+                self.autoinvoice_date = (
+                    self.checkout + relativedelta.relativedelta(months=1)
+                ).replace(day=month_day)
 
     @api.depends("reservation_ids", "reservation_ids.state")
     def _compute_number_of_rooms(self):
