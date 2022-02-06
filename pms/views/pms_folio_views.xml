@@ -177,6 +177,15 @@
                             <span class="o_stat_text">New Booking Group</span>
                         </button>
                         <button
+                            type="action"
+                            class="oe_stat_button"
+                            name="%(action_booking_duplicate)d"
+                            icon="fa-clone"
+                            context="{'default_reference_folio_id': id}"
+                        >
+                            <span class="o_stat_text">Duplicate Booking</span>
+                        </button>
+                        <button
                             name="preview_folio"
                             type="object"
                             class="oe_stat_button"
@@ -213,16 +222,48 @@
                         bg_color="bg-dark"
                         attrs="{'invisible': [('reservation_type', 'not in', 'out')]}"
                     />
-                    <h2>
-                        <field name="name" />
-                    </h2>
-                    <group col="8">
+                    <group>
+                        <group>
+                            <h2>
+                                <field name="name" />
+                            </h2>
+                        </group>
                         <group
-                            colspan="2"
-                            col="3"
-                            string="General Info"
-                            name="contact_details"
+                            class="oe_subtotal_footer oe_right oe_inline"
+                            name="folio_total"
+                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
                         >
+                            <field
+                                name="amount_untaxed"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                            <field
+                                name="amount_tax"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                            <div
+                                class="oe_subtotal_footer_separator oe_inline o_td_label"
+                            >
+                                <label for="amount_total" />
+                            </div>
+                            <field
+                                name="amount_total"
+                                nolabel="1"
+                                class="oe_subtotal_footer_separator"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                            <field
+                                name="commission"
+                                widget='monetary'
+                                options="{'currency_field': 'currency_id'}"
+                            />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="General Info" name="contact_details">
                             <field
                                 name="document_type"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
@@ -269,13 +310,8 @@
                             />
                             <field name="internal_comment" />
                         </group>
-                        <group
-                            colspan="2"
-                            col="3"
-                            string="Sale Details"
-                            name="sale_details"
-                        >
-                            <field name="pms_property_id" invisible="0" />
+                        <group string="Sale Details" name="sale_details">
+                            <field name="pms_property_id" />
                             <field
                                 name="pricelist_id"
                                 attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
@@ -296,40 +332,6 @@
                             <field
                                 name="channel_type_id"
                                 attrs="{'readonly':[('agency_id','!=', False)], 'invisible':[('reservation_type', 'not in', 'normal')]}"
-                            />
-                        </group>
-                        <group
-                            class="oe_subtotal_footer oe_right"
-                            colspan="2"
-                            name="folio_total"
-                            attrs="{'invisible':[('reservation_type', '!=', 'normal')]}"
-                        >
-                            <field
-                                name="amount_untaxed"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field
-                                name="amount_tax"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <div
-                                class="oe_subtotal_footer_separator oe_inline o_td_label"
-                            >
-                                <label for="amount_total" />
-                            </div>
-                            <field
-                                name="amount_total"
-                                nolabel="1"
-                                class="oe_subtotal_footer_separator"
-                                widget="monetary"
-                                options="{'currency_field': 'currency_id'}"
-                            />
-                            <field
-                                name="commission"
-                                widget='monetary'
-                                options="{'currency_field': 'currency_id'}"
                             />
                         </group>
                         <div class="oe_clear" />
