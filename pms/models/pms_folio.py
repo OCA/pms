@@ -605,7 +605,6 @@ class PmsFolio(models.Model):
                 invoice_vals = folio._prepare_invoice(
                     partner_invoice_id=group["partner_id"]
                 )
-
                 # Invoice line values (keep only necessary sections).
                 current_section_vals = None
                 invoice_lines_vals = []
@@ -656,7 +655,6 @@ class PmsFolio(models.Model):
                     new_line["display_type"] is False for new_line in invoice_lines_vals
                 ):
                     raise self._nothing_to_invoice_error()
-
                 invoice_vals["invoice_line_ids"] = [
                     (0, 0, invoice_line_id) for invoice_line_id in invoice_lines_vals
                 ]
@@ -877,7 +875,8 @@ class PmsFolio(models.Model):
         # directly linked to the SO.
         for order in self:
             invoices = order.sale_line_ids.invoice_lines.move_id.filtered(
-                lambda r: r.move_type in ("out_invoice", "out_refund")
+                lambda r: r.move_type
+                in ("out_invoice", "out_refund", "out_receipt", "in_receipt")
             )
             order.move_ids = invoices
             order.invoice_count = len(invoices)
@@ -1201,7 +1200,7 @@ class PmsFolio(models.Model):
                     JOIN account_move_line aml ON aml.id = soli_rel.invoice_line_id
                     JOIN account_move am ON am.id = aml.move_id
                 WHERE
-                    am.move_type in ('out_invoice', 'out_refund') AND
+                    am.move_type in ('out_invoice', 'out_refund', 'in_receipt') AND
                     am.id = ANY(%s)
             """,
                 (list(value),),
@@ -1213,7 +1212,7 @@ class PmsFolio(models.Model):
             (
                 "sale_line_ids.invoice_lines.move_id.move_type",
                 "in",
-                ("out_invoice", "out_refund"),
+                ("out_invoice", "out_refund", "in_receipt"),
             ),
             ("sale_line_ids.invoice_lines.move_id", operator, value),
         ]
@@ -1692,12 +1691,22 @@ class PmsFolio(models.Model):
         # a salesperson must be able to generate an invoice from a
         # sale order without "billing" access rights.
         # However, he should not be able to create an invoice from scratch.
-        moves = (
-            self.env["account.move"]
-            .sudo()
-            .with_context(default_move_type="out_invoice", auto_name=True)
-            .create(invoice_vals_list)
-        )
+        moves = self.env["account.move"]
+        for invoice_vals in invoice_vals_list:
+            if invoice_vals["partner_id"]:
+                move = (
+                    self.env["account.move"]
+                    .sudo()
+                    .with_context(default_move_type="out_invoice", auto_name=True)
+                    .create(invoice_vals)
+                )
+            else:
+                move = (
+                    self.env["account.move"]
+                    .with_context(default_move_type="out_receipt", auto_name=True)
+                    .create(invoice_vals)
+                )
+            moves += move
 
         # 4) Some moves might actually be refunds: convert
         # them if the total amount is negative
@@ -1783,7 +1792,7 @@ class PmsFolio(models.Model):
         partner = self.env["res.partner"].browse(partner_invoice_id)
         if partner.document_number_to_invoice:
             return "out_invoice"
-        return "entry"
+        return "out_receipt"
 
     def do_payment(
         self,
