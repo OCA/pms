@@ -3,9 +3,12 @@ from marshmallow import fields
 from odoo.addons.datamodel.core import Datamodel
 
 
-class PmsCalendarChanges(Datamodel):
-    _name = "pms.calendar.changes"
+class PmsReservationUpdates(Datamodel):
+    _name = "pms.reservation.updates"
     reservationLinesChanges = fields.List(fields.Dict(required=False, allow_none=True))
+    preferredRoomId = fields.Integer(required=False, allow_none=True)
+    boardServiceId = fields.Integer(required=False, allow_none=True)
+    pricelistId = fields.Integer(required=False, allow_none=True)
 
 
 class PmsCalendarSwapInfo(Datamodel):
