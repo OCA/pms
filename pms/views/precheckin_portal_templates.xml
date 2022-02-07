@@ -317,7 +317,7 @@
                                     </t>
                                 </div>
 
-                                <div class="col-4 pt-3">
+                                <div id="pager_count" class="col-4 pt-3">
                                     <center>
                                         Page
                                         <span t-esc="int(checkin_pos) + 1" />
@@ -1079,11 +1079,9 @@
     <template id="portal_not_checkin" name="Not Checkin">
         <t t-call="portal.portal_layout">
             <center>
-                The quick registration system is not available because the date of your reservation has already passed.<br
-                />
-                If you have any questions, you can contact us by phone: <span><t
-                        t-esc="folio.pms_property_id.phone"
-                    /></span> or by email: <span><t
+                The quick registration system is not available.<br />
+                If you have any questions, you can contact us: <br /><br />Phone: <span
+                ><t t-esc="folio.pms_property_id.phone" /></span> <br /> Email: <span><t
                         t-esc="folio.pms_property_id.email"
                     /></span>
             </center>
