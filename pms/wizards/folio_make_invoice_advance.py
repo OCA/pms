@@ -243,7 +243,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
             folios._create_invoices(
                 final=self.deduct_down_payments,
                 lines_to_invoice=lines_to_invoice,
-                partner_invoice_id=self.partner_invoice_id
+                partner_invoice_id=self.partner_invoice_id.id
                 if self.partner_invoice_id
                 else False,
             )

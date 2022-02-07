@@ -395,7 +395,7 @@ class FolioSaleLine(models.Model):
                     invoice_date = (
                         invoice_line.move_id.invoice_date or fields.Date.today()
                     )
-                    if invoice_line.move_id.move_type == "out_invoice":
+                    if invoice_line.move_id.move_type in ["out_invoice", "out_receipt"]:
                         amount_invoiced += invoice_line.currency_id._convert(
                             invoice_line.price_subtotal,
                             line.currency_id,
@@ -650,7 +650,7 @@ class FolioSaleLine(models.Model):
             qty_invoiced = 0.0
             for invoice_line in line.invoice_lines:
                 if invoice_line.move_id.state != "cancel":
-                    if invoice_line.move_id.move_type == "out_invoice":
+                    if invoice_line.move_id.move_type in ["out_invoice", "out_receipt"]:
                         qty_invoiced += invoice_line.product_uom_id._compute_quantity(
                             invoice_line.quantity, line.product_uom
                         )
