@@ -337,10 +337,9 @@ class PortalPrecheckin(CustomerPortal):
                 "checkin_pos": 0,
             }
         )
-        if checkin_partner.state == "draft" or checkin_partner.state == "confirm":
-            return request.render("pms.portal_my_reservation_precheckin", values)
-        else:
+        if checkin_partner.state != "draft":
             return request.render("pms.portal_not_checkin", values)
+        return request.render("pms.portal_my_reservation_precheckin", values)
 
     @http.route(
         ["/my/precheckin/<int:folio_id>/checkin/<int:checkin_partner_id>"],
@@ -399,8 +398,9 @@ class PortalPrecheckin(CustomerPortal):
         values.update(
             self._precheckin_get_page_view_values(checkin_partner_id.id, access_token)
         )
-
         values.update({"no_breadcrumbs": True})
+        if checkin_partner_id.state != "draft":
+            return request.render("pms.portal_not_checkin", values)
         return request.render("pms.portal_my_precheckin_detail", values)
 
     @http.route(
