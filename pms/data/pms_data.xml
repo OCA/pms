@@ -36,19 +36,19 @@
             <field name="groups_id" eval="[(4,ref('pms.group_pms_manager'))]" />
         </record>
         <!-- pms.sale.channel-->
-        <record id="main_pms_sale_channel_0" model="pms.sale.channel">
+        <record id="main_pms_sale_channel_door" model="pms.sale.channel">
             <field name="name">Door</field>
             <field name="channel_type">direct</field>
         </record>
-        <record id="main_pms_sale_channel_1" model="pms.sale.channel">
+        <record id="main_pms_sale_channel_phone" model="pms.sale.channel">
             <field name="name">Phone</field>
             <field name="channel_type">direct</field>
         </record>
-        <record id="main_pms_sale_channel_2" model="pms.sale.channel">
+        <record id="main_pms_sale_channel_mail" model="pms.sale.channel">
             <field name="name">Mail</field>
             <field name="channel_type">direct</field>
         </record>
-        <record id="main_pms_sale_channel_3" model="pms.sale.channel">
+        <record id="main_pms_sale_channel_agency" model="pms.sale.channel">
             <field name="name">Agency</field>
             <field name="channel_type">indirect</field>
         </record>
