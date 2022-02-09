@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo14-addon-pms_account',
+        'odoo14-addon-pms_account_asset',
         'odoo14-addon-pms_base',
     ],
     classifiers=[
