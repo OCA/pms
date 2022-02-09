@@ -11,6 +11,7 @@ setuptools.setup(
         'odoo14-addon-pms_account',
         'odoo14-addon-pms_account_asset',
         'odoo14-addon-pms_base',
+        'odoo14-addon-pms_crm',
     ],
     classifiers=[
         'Programming Language :: Python',
