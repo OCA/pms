@@ -1883,6 +1883,11 @@ class PmsFolio(models.Model):
                     {
                         "name": reservation.name,
                         "display_type": "line_section",
+                        "product_id": False,
+                        "product_uom_qty": 0,
+                        "discount": 0,
+                        "price_unit": 0,
+                        "tax_ids": False,
                         "folio_id": folio.id,
                     },
                 )
@@ -2026,6 +2031,11 @@ class PmsFolio(models.Model):
                         False,
                         {
                             "display_type": "line_section",
+                            "product_id": False,
+                            "product_uom_qty": 0,
+                            "discount": 0,
+                            "price_unit": 0,
+                            "tax_ids": False,
                             "name": _("Others"),
                         },
                     )
