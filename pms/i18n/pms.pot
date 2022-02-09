@@ -14,18 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pms
-#: model:room.closure.reason,description:pms.pms_room_closure_reason_1
+#: model:room.closure.reason,description:pms.pms_room_closure_reason_vip_privacy
 msgid ""
 "\n"
-"                Used for closing of rooms for extra privacy.\n"
+"                Used for closing rooms for extra privacy.\n"
 "            "
 msgstr ""
 
 #. module: pms
-#: model:room.closure.reason,description:pms.pms_room_closure_reason_0
+#: model:room.closure.reason,description:pms.pms_room_closure_reason_maintenance
 msgid ""
 "\n"
-"                Used for closing of rooms which require a maintenance. You can specify\n"
+"                Used for closing rooms which requires a maintenance. You can specify\n"
 "                the reason in the own reservation.\n"
 "            "
 msgstr ""
@@ -1602,7 +1602,6 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_property__bank_account_count
-#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Bank"
 msgstr ""
 
@@ -1828,13 +1827,13 @@ msgid "Bounce"
 msgstr ""
 
 #. module: pms
-#: model:pms.board.service,name:pms.pms_board_service_0
+#: model:pms.board.service,name:pms.pms_board_service_breakfast
 msgid "BreakFast"
 msgstr ""
 
 #. module: pms
-#: model:product.product,name:pms.pms_service_0
-#: model:product.template,name:pms.pms_service_0_product_template
+#: model:product.product,name:pms.pms_service_breakfast_buffet
+#: model:product.template,name:pms.pms_service_breakfast_buffet_product_template
 msgid "Breakfast Buffet"
 msgstr ""
 
@@ -1984,11 +1983,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.company_view_form
 msgid "Cardex Settings"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
-msgid "Cash"
 msgstr ""
 
 #. module: pms
@@ -2456,13 +2450,13 @@ msgid "Complete cardex"
 msgstr ""
 
 #. module: pms
-#: model:pms.room.type.class,name:pms.pms_room_type_class_1
+#: model:pms.room.type.class,name:pms.pms_room_type_class_conference_room
 msgid "Conference"
 msgstr ""
 
 #. module: pms
-#: model:pms.room.type,name:pms.pms_room_type_4
-#: model:product.product,name:pms.pms_room_type_4_product_product
+#: model:pms.room.type,name:pms.pms_room_type_conference_room
+#: model:product.product,name:pms.pms_room_type_conference_room_product_product
 msgid "Conference Room"
 msgstr ""
 
@@ -2523,7 +2517,7 @@ msgid "Confirmed"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity.type,name:pms.pms_amenity_type_1
+#: model:pms.amenity.type,name:pms.pms_amenity_type_connectivity
 msgid "Connectivity"
 msgstr ""
 
@@ -3114,8 +3108,8 @@ msgid "Dinamic Selection based on avails room"
 msgstr ""
 
 #. module: pms
-#: model:product.product,name:pms.pms_service_5
-#: model:product.template,name:pms.pms_service_5_product_template
+#: model:product.product,name:pms.pms_service_dinner
+#: model:product.template,name:pms.pms_service_dinner_product_template
 msgid "Dinner"
 msgstr ""
 
@@ -3320,8 +3314,8 @@ msgid "Door"
 msgstr ""
 
 #. module: pms
-#: model:pms.room.type,name:pms.pms_room_type_2
-#: model:product.product,name:pms.pms_room_type_2_product_product
+#: model:pms.room.type,name:pms.pms_room_type_double
+#: model:product.product,name:pms.pms_room_type_double_product_product
 msgid "Double"
 msgstr ""
 
@@ -3417,8 +3411,8 @@ msgid "E-mail"
 msgstr ""
 
 #. module: pms
-#: model:pms.room.type,name:pms.pms_room_type_0
-#: model:product.product,name:pms.pms_room_type_0_product_product
+#: model:pms.room.type,name:pms.pms_room_type_economic
+#: model:product.product,name:pms.pms_room_type_economic_product_product
 msgid "Economic"
 msgstr ""
 
@@ -3548,8 +3542,8 @@ msgid "Explanation of the reason for closing a room"
 msgstr ""
 
 #. module: pms
-#: model:product.product,name:pms.pms_service_1
-#: model:product.template,name:pms.pms_service_1_product_template
+#: model:product.product,name:pms.pms_service_extra_bed
+#: model:product.template,name:pms.pms_service_extra_bed_product_template
 msgid "Extra Bed"
 msgstr ""
 
@@ -3672,11 +3666,6 @@ msgid "First Day"
 msgstr ""
 
 #. module: pms
-#: model:pms.ubication,name:pms.pms_ubication_1
-msgid "First Floor"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_folio__first_checkin
 msgid "First Folio Checkin"
 msgstr ""
@@ -3684,6 +3673,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__firstname
 msgid "First Name"
+msgstr ""
+
+#. module: pms
+#: model:pms.ubication,name:pms.pms_ubication_1st_floor
+msgid "First floor"
 msgstr ""
 
 #. module: pms
@@ -3809,11 +3803,6 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_pms_folio__move_line_ids
-msgid "Folio payments"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_folio_sale_line__invoice_lines
 msgid "Folio sale line invoice lines"
 msgstr ""
@@ -3931,8 +3920,13 @@ msgid "Formatted Email"
 msgstr ""
 
 #. module: pms
-#: model:product.product,name:pms.pms_service_6
-#: model:product.template,name:pms.pms_service_6_product_template
+#: model:pms.ubication,name:pms.pms_ubication_4st_floor
+msgid "Fourth floor"
+msgstr ""
+
+#. module: pms
+#: model:product.product,name:pms.pms_service_free_bar
+#: model:product.template,name:pms.pms_service_free_bar_product_template
 msgid "Free Bar"
 msgstr ""
 
@@ -3954,8 +3948,8 @@ msgid "From:"
 msgstr ""
 
 #. module: pms
-#: model:pms.board.service,name:pms.pms_board_service_2
-msgid "FullBoard"
+#: model:pms.board.service,name:pms.pms_board_service_full_board
+msgid "Full Board"
 msgstr ""
 
 #. module: pms
@@ -4028,8 +4022,14 @@ msgid "Gives the different ways to package the same product."
 msgstr ""
 
 #. module: pms
-#: model:pms.ubication,name:pms.pms_ubication_0
-msgid "Ground Floor"
+#: model:pms.room.type,name:pms.demo_pms_room_type_grand_suite
+#: model:product.product,name:pms.demo_pms_room_type_grand_suite_product_product
+msgid "Grand suite"
+msgstr ""
+
+#. module: pms
+#: model:pms.ubication,name:pms.pms_ubication_ground_floor
+msgid "Ground floor"
 msgstr ""
 
 #. module: pms
@@ -4075,25 +4075,18 @@ msgid "HTTP Routing"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity,name:pms.pms_amenity_2
+#: model:pms.amenity,name:pms.pms_amenity_hair_dryer
 msgid "Hair Dryer"
 msgstr ""
 
 #. module: pms
-#: model:pms.board.service,name:pms.pms_board_service_1
+#: model:pms.board.service,name:pms.pms_board_service_half_board
 msgid "Half Board"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity,name:pms.pms_amenity_6
+#: model:pms.amenity,name:pms.pms_amenity_half_sized_refrigerator
 msgid "Half-sized Refrigerator"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__has_folios_outstanding
-#: model:ir.model.fields,field_description:pms.field_account_move__has_folios_outstanding
-#: model:ir.model.fields,field_description:pms.field_account_payment__has_folios_outstanding
-msgid "Has Folios Outstanding"
 msgstr ""
 
 #. module: pms
@@ -4125,12 +4118,12 @@ msgid "Hide Strangers"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity,name:pms.pms_amenity_3
+#: model:pms.amenity,name:pms.pms_amenity_high_speed_wired_internet_connection
 msgid "High speed Wired Internet access"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity,name:pms.pms_amenity_1
+#: model:pms.amenity,name:pms.pms_amenity_high_quality_shampoo_and_sopa_essential_herbs
 msgid "High-quality Shampoo and Soap Essential Herbs"
 msgstr ""
 
@@ -4389,7 +4382,7 @@ msgstr ""
 #: model:ir.model.fields,help:pms.field_pms_room_type__standard_price
 msgid ""
 "In Standard Price & AVCO: value of the product (automatically computed in AVCO).\n"
-"        In FIFO: value of the last unit that left the stock (automatically computed).\n"
+"        In FIFO: value of the next unit that will leave the stock (automatically computed).\n"
 "        Used to value the product when the purchase cost is not known (e.g. inventory adjustment).\n"
 "        Used to compute margins on sale orders."
 msgstr ""
@@ -5026,6 +5019,12 @@ msgid "Journal Items"
 msgstr ""
 
 #. module: pms
+#: model:pms.room.type,name:pms.demo_pms_room_type_junior_suite
+#: model:product.product,name:pms.demo_pms_room_type_junior_suite_product_product
+msgid "Junior suite"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_room_type__property_account_income_id
 msgid ""
 "Keep this field empty to use the default value from the product category."
@@ -5040,7 +5039,7 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity.type,name:pms.pms_amenity_type_2
+#: model:pms.amenity.type,name:pms.pms_amenity_type_kitchen_facilities
 msgid "Kitchen facilities"
 msgstr ""
 
@@ -5235,8 +5234,8 @@ msgid "Late"
 msgstr ""
 
 #. module: pms
-#: model:product.product,name:pms.pms_service_3
-#: model:product.template,name:pms.pms_service_3_product_template
+#: model:product.product,name:pms.pms_service_late_checkout
+#: model:product.template,name:pms.pms_service_late_checkout_product_template
 msgid "Late Check-out"
 msgstr ""
 
@@ -5291,8 +5290,8 @@ msgid "Locked"
 msgstr ""
 
 #. module: pms
-#: model:product.product,name:pms.pms_service_4
-#: model:product.template,name:pms.pms_service_4_product_template
+#: model:product.product,name:pms.pms_service_lunch
+#: model:product.template,name:pms.pms_service_lunch_product_template
 msgid "Lunch"
 msgstr ""
 
@@ -5326,7 +5325,7 @@ msgid "Main Attachment"
 msgstr ""
 
 #. module: pms
-#: model:room.closure.reason,name:pms.pms_room_closure_reason_0
+#: model:room.closure.reason,name:pms.pms_room_closure_reason_maintenance
 msgid "Maintenance"
 msgstr ""
 
@@ -5497,7 +5496,7 @@ msgid "Messages"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity,name:pms.pms_amenity_5
+#: model:pms.amenity,name:pms.pms_amenity_microwave_oven
 msgid "Microwave oven"
 msgstr ""
 
@@ -5760,6 +5759,14 @@ msgstr ""
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "No checkin was made for this reservation"
+msgstr ""
+
+#. module: pms
+#: code:addons/pms/models/account_move.py:0
+#, python-format
+msgid ""
+"No journal could be found in property %(property_name)s\n"
+"                    for any of those types: %(journal_types)s"
 msgstr ""
 
 #. module: pms
@@ -6168,16 +6175,9 @@ msgid "Out service description"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__outstanding_folios_debits_widget
-#: model:ir.model.fields,field_description:pms.field_account_move__outstanding_folios_debits_widget
-#: model:ir.model.fields,field_description:pms.field_account_payment__outstanding_folios_debits_widget
-msgid "Outstanding Folios Debits Widget"
-msgstr ""
-
-#. module: pms
 #: code:addons/pms/models/account_move.py:0
 #, python-format
-msgid "Outstanding credits in Folio"
+msgid "Outstanding credits"
 msgstr ""
 
 #. module: pms
@@ -6420,29 +6420,11 @@ msgid "Payment terms for current folio."
 msgstr ""
 
 #. module: pms
-#: code:addons/pms/models/pms_folio.py:0 code:addons/pms/models/pms_folio.py:0
-#, python-format
-msgid "Payment: <b>%s</b> by <b>%s</b>"
-msgstr ""
-
-#. module: pms
-#: code:addons/pms/models/account_move.py:0
 #: model:ir.model,name:pms.model_account_payment
 #: model:ir.model,name:pms.model_wizard_payment_folio
-#: model:ir.model.fields,field_description:pms.field_pms_folio__move_line_ids
-#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
-#, python-format
-msgid "Payments"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__payment_ids
-msgid "Payments made by bank direct"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_pms_folio__statement_line_ids
-msgid "Payments made by cash"
+#: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
+msgid "Payments"
 msgstr ""
 
 #. module: pms
@@ -6966,18 +6948,6 @@ msgid "Products"
 msgstr ""
 
 #. module: pms
-#: model:pms.room.type,name:pms.demo_pms_room_type_0
-#: model:product.product,name:pms.demo_pms_room_type_0_product_product
-msgid "Prop. Demo Suite"
-msgstr ""
-
-#. module: pms
-#: model:pms.room.type,name:pms.demo_pms_room_type_1
-#: model:product.product,name:pms.demo_pms_room_type_1_product_product
-msgid "Prop. Demo Views"
-msgstr ""
-
-#. module: pms
 #: model:ir.actions.act_window,name:pms.pms_property_action
 #: model:ir.model.fields,field_description:pms.field_account_journal__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_amenity__pms_property_ids
@@ -7171,14 +7141,6 @@ msgid "Property to which the service belongs"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_account_bank_statement_line__pms_property_id
-#: model:ir.model.fields,help:pms.field_account_move__pms_property_id
-#: model:ir.model.fields,help:pms.field_account_move_line__pms_property_id
-#: model:ir.model.fields,help:pms.field_account_payment__pms_property_id
-msgid "Property with access to the element"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__pms_property_id
 msgid ""
 "Property with access to the element; if not set, all properties can access"
@@ -7212,6 +7174,12 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__auto_qty
 msgid "Qty automated setted"
+msgstr ""
+
+#. module: pms
+#: model:pms.room.type,name:pms.pms_room_type_quadruple
+#: model:product.product,name:pms.pms_room_type_quadruple_product_product
+msgid "Quadruple"
 msgstr ""
 
 #. module: pms
@@ -7634,7 +7602,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation_line__room_id
 #: model:ir.model.fields,field_description:pms.field_pms_service__reservation_id
 #: model:ir.model.fields,field_description:pms.field_pms_wizard_reservation_lines_split__room_id
-#: model:pms.room.type.class,name:pms.pms_room_type_class_0
+#: model:pms.room.type.class,name:pms.pms_room_type_class_bedroom
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
@@ -8086,11 +8054,6 @@ msgid "Search"
 msgstr ""
 
 #. module: pms
-#: model:pms.ubication,name:pms.pms_ubication_2
-msgid "Second Floor"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__lastname2
 msgid "Second Last Name"
 msgstr ""
@@ -8100,6 +8063,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Second Lastname"
+msgstr ""
+
+#. module: pms
+#: model:pms.ubication,name:pms.pms_ubication_2nd_floor
+msgid "Second floor"
 msgstr ""
 
 #. module: pms
@@ -8422,7 +8390,7 @@ msgid "Sevice included in folio sale line"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity,name:pms.pms_amenity_0
+#: model:pms.amenity,name:pms.pms_amenity_shampoo_and_soap
 msgid "Shampoo and Soap"
 msgstr ""
 
@@ -8511,8 +8479,8 @@ msgid "Signup URL"
 msgstr ""
 
 #. module: pms
-#: model:pms.room.type,name:pms.pms_room_type_1
-#: model:product.product,name:pms.pms_room_type_1_product_product
+#: model:pms.room.type,name:pms.pms_room_type_single
+#: model:product.product,name:pms.pms_room_type_single_product_product
 msgid "Single"
 msgstr ""
 
@@ -8610,6 +8578,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_reservation_line__state
 msgid "State of the reservation line."
+msgstr ""
+
+#. module: pms
+#: model:ir.model.fields,help:pms.field_pms_folio__statement_line_ids
+msgid "Statement lines"
 msgstr ""
 
 #. module: pms
@@ -9126,6 +9099,14 @@ msgid "The properties allowed for this user"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_account_bank_statement_line__pms_property_id
+#: model:ir.model.fields,help:pms.field_account_move__pms_property_id
+#: model:ir.model.fields,help:pms.field_account_move_line__pms_property_id
+#: model:ir.model.fields,help:pms.field_account_payment__pms_property_id
+msgid "The property associated to the account move"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__pms_property_id
 msgid "The property for folios"
 msgstr ""
@@ -9315,6 +9296,11 @@ msgstr ""
 msgid ""
 "They are the lines of the reservation into a reservation,they corresponds to"
 " the nights"
+msgstr ""
+
+#. module: pms
+#: model:pms.ubication,name:pms.pms_ubication_3rd_floor
+msgid "Third floor"
 msgstr ""
 
 #. module: pms
@@ -9520,7 +9506,7 @@ msgid "Today"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity.type,name:pms.pms_amenity_type_0
+#: model:pms.amenity.type,name:pms.pms_amenity_type_toiletries
 msgid "Toiletries"
 msgstr ""
 
@@ -9661,8 +9647,8 @@ msgid "Traveller Report"
 msgstr ""
 
 #. module: pms
-#: model:pms.room.type,name:pms.pms_room_type_3
-#: model:product.product,name:pms.pms_room_type_3_product_product
+#: model:pms.room.type,name:pms.pms_room_type_triple
+#: model:product.product,name:pms.pms_room_type_triple_product_product
 msgid "Triple"
 msgstr ""
 
@@ -9799,32 +9785,34 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_service_line__day_qty
-#: model:pms.room.type,uom_name:pms.demo_pms_room_type_0
-#: model:pms.room.type,uom_name:pms.demo_pms_room_type_1
-#: model:pms.room.type,uom_name:pms.pms_room_type_0
-#: model:pms.room.type,uom_name:pms.pms_room_type_1
-#: model:pms.room.type,uom_name:pms.pms_room_type_2
-#: model:pms.room.type,uom_name:pms.pms_room_type_3
-#: model:pms.room.type,uom_name:pms.pms_room_type_4
-#: model:product.product,uom_name:pms.demo_pms_room_type_0_product_product
-#: model:product.product,uom_name:pms.demo_pms_room_type_1_product_product
-#: model:product.product,uom_name:pms.pms_room_type_0_product_product
-#: model:product.product,uom_name:pms.pms_room_type_1_product_product
-#: model:product.product,uom_name:pms.pms_room_type_2_product_product
-#: model:product.product,uom_name:pms.pms_room_type_3_product_product
-#: model:product.product,uom_name:pms.pms_room_type_4_product_product
-#: model:product.product,uom_name:pms.pms_service_0
-#: model:product.product,uom_name:pms.pms_service_1
-#: model:product.product,uom_name:pms.pms_service_3
-#: model:product.product,uom_name:pms.pms_service_4
-#: model:product.product,uom_name:pms.pms_service_5
-#: model:product.product,uom_name:pms.pms_service_6
-#: model:product.template,uom_name:pms.pms_service_0_product_template
-#: model:product.template,uom_name:pms.pms_service_1_product_template
-#: model:product.template,uom_name:pms.pms_service_3_product_template
-#: model:product.template,uom_name:pms.pms_service_4_product_template
-#: model:product.template,uom_name:pms.pms_service_5_product_template
-#: model:product.template,uom_name:pms.pms_service_6_product_template
+#: model:pms.room.type,uom_name:pms.demo_pms_room_type_grand_suite
+#: model:pms.room.type,uom_name:pms.demo_pms_room_type_junior_suite
+#: model:pms.room.type,uom_name:pms.pms_room_type_conference_room
+#: model:pms.room.type,uom_name:pms.pms_room_type_double
+#: model:pms.room.type,uom_name:pms.pms_room_type_economic
+#: model:pms.room.type,uom_name:pms.pms_room_type_quadruple
+#: model:pms.room.type,uom_name:pms.pms_room_type_single
+#: model:pms.room.type,uom_name:pms.pms_room_type_triple
+#: model:product.product,uom_name:pms.demo_pms_room_type_grand_suite_product_product
+#: model:product.product,uom_name:pms.demo_pms_room_type_junior_suite_product_product
+#: model:product.product,uom_name:pms.pms_room_type_conference_room_product_product
+#: model:product.product,uom_name:pms.pms_room_type_double_product_product
+#: model:product.product,uom_name:pms.pms_room_type_economic_product_product
+#: model:product.product,uom_name:pms.pms_room_type_quadruple_product_product
+#: model:product.product,uom_name:pms.pms_room_type_single_product_product
+#: model:product.product,uom_name:pms.pms_room_type_triple_product_product
+#: model:product.product,uom_name:pms.pms_service_breakfast_buffet
+#: model:product.product,uom_name:pms.pms_service_dinner
+#: model:product.product,uom_name:pms.pms_service_extra_bed
+#: model:product.product,uom_name:pms.pms_service_free_bar
+#: model:product.product,uom_name:pms.pms_service_late_checkout
+#: model:product.product,uom_name:pms.pms_service_lunch
+#: model:product.template,uom_name:pms.pms_service_breakfast_buffet_product_template
+#: model:product.template,uom_name:pms.pms_service_dinner_product_template
+#: model:product.template,uom_name:pms.pms_service_extra_bed_product_template
+#: model:product.template,uom_name:pms.pms_service_free_bar_product_template
+#: model:product.template,uom_name:pms.pms_service_late_checkout_product_template
+#: model:product.template,uom_name:pms.pms_service_lunch_product_template
 msgid "Units"
 msgstr ""
 
@@ -9920,7 +9908,7 @@ msgid "Utility field to express amount currency"
 msgstr ""
 
 #. module: pms
-#: model:room.closure.reason,name:pms.pms_room_closure_reason_1
+#: model:room.closure.reason,name:pms.pms_room_closure_reason_vip_privacy
 msgid "VIP Privacy"
 msgstr ""
 
@@ -10065,7 +10053,7 @@ msgid "Weight unit of measure label"
 msgstr ""
 
 #. module: pms
-#: model:pms.amenity,name:pms.pms_amenity_4
+#: model:pms.amenity,name:pms.pms_amenity_wi_fi
 msgid "Wi-Fi"
 msgstr ""
 
