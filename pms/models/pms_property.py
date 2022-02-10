@@ -143,7 +143,7 @@ class PmsProperty(models.Model):
     is_canceled_auto_mail = fields.Boolean(string="Auto Send Cancellation Mail")
 
     default_invoicing_policy = fields.Selection(
-        string="Invoicing Policy",
+        string="Default Invoicing Policy",
         selection=[
             ("manual", "Manual"),
             ("checkout", "Checkout"),
