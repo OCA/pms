@@ -564,17 +564,21 @@ class PmsFolio(models.Model):
 
             target_lines = folio_lines_to_invoice
             if self._context.get("lines_auto_add") and folio_partner_invoice_id:
-                if folio_partner_invoice_id.default_invoice_lines == "overnights":
+                folio_partner_invoice = self.env["res.partner"].browse(
+                    folio_partner_invoice_id
+                )
+                if folio_partner_invoice.default_invoice_lines == "overnights":
                     target_lines = target_lines.filtered(
-                        lambda r: r.is_board_service or r.reservation_id.overnight_room
+                        lambda r: r.is_board_service
+                        or (r.reservation_line_ids and r.reservation_id.overnight_room)
                     )
-                elif folio_partner_invoice_id.default_invoice_lines == "reservations":
+                elif folio_partner_invoice.default_invoice_lines == "reservations":
                     target_lines = target_lines.filtered(
-                        lambda r: r.is_board_service or r.reservation_id
+                        lambda r: r.is_board_service or r.reservation_line_ids
                     )
-                elif folio_partner_invoice_id.default_invoice_lines == "services":
+                elif folio_partner_invoice.default_invoice_lines == "services":
                     target_lines = target_lines.filtered(
-                        lambda r: not r.is_board_service or r.service_id
+                        lambda r: not r.is_board_service or r.service_line_ids
                     )
             groups_invoice_lines = [
                 {
@@ -659,7 +663,7 @@ class PmsFolio(models.Model):
                     (0, 0, invoice_line_id) for invoice_line_id in invoice_lines_vals
                 ]
 
-            invoice_vals_list.append(invoice_vals)
+                invoice_vals_list.append(invoice_vals)
         return invoice_vals_list
 
     def _get_tax_amount_by_group(self):
@@ -684,7 +688,7 @@ class PmsFolio(models.Model):
         ]
         return res
 
-    @api.depends("partner_id", "invoice_status", "last_checkout")
+    @api.depends("partner_id", "invoice_status", "last_checkout", "partner_invoice_ids")
     def _compute_autoinvoice_date(self):
         self.autoinvoice_date = False
         for record in self.filtered(lambda r: r.invoice_status == "to_invoice"):
@@ -706,18 +710,18 @@ class PmsFolio(models.Model):
                 if not partner or partner.invoicing_policy == "property"
                 else partner.margin_days_autoinvoice
             )
-            return self.checkout + timedelta(days=margin_days)
+            return self.last_checkout + timedelta(days=margin_days)
         if invoicing_policy == "month_day":
             month_day = (
                 self.pms_property_id.invoicing_month_day
                 if not partner or partner.invoicing_policy == "property"
                 else partner.invoicing_month_day
             )
-            if self.checkout.day <= month_day:
-                self.autoinvoice_date = self.checkout.replace(day=month_day)
+            if self.last_checkout.day <= month_day:
+                self.autoinvoice_date = self.last_checkout.replace(day=month_day)
             else:
                 self.autoinvoice_date = (
-                    self.checkout + relativedelta.relativedelta(months=1)
+                    self.last_checkout + relativedelta.relativedelta(months=1)
                 ).replace(day=month_day)
 
     @api.depends("reservation_ids", "reservation_ids.state")
@@ -1613,7 +1617,6 @@ class PmsFolio(models.Model):
             lines_to_invoice=lines_to_invoice,
             partner_invoice_id=partner_invoice_id,
         )
-
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
 
@@ -1693,7 +1696,7 @@ class PmsFolio(models.Model):
         # However, he should not be able to create an invoice from scratch.
         moves = self.env["account.move"]
         for invoice_vals in invoice_vals_list:
-            if invoice_vals["partner_id"]:
+            if invoice_vals["move_type"] == "out_invoice":
                 move = (
                     self.env["account.move"]
                     .sudo()
@@ -1735,11 +1738,6 @@ class PmsFolio(models.Model):
         (making sure to call super() to establish a clean extension chain).
         """
         self.ensure_one()
-        if not partner_invoice_id:
-            partner_invoice_id = (
-                self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
-            )
-
         journal = self._get_folio_default_journal(partner_invoice_id)
         if not journal:
             journal = (
