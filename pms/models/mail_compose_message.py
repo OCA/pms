@@ -13,6 +13,7 @@ class MailComposeMessage(models.TransientModel):
         template = self.env["mail.template"].browse(self._context.get("template_id"))
         res.update(
             {
+                "model": "pms.folio",
                 "composition_mode": "comment",
                 "attachment_ids": False,
                 "template_id": template.id,
