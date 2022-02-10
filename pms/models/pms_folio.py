@@ -1428,6 +1428,68 @@ class PmsFolio(models.Model):
                             )
                         reservation.to_send_mail = False
 
+    def action_open_mail_composer(self):
+        self.ensure_one()
+        template = False
+        pms_property = self.pms_property_id
+        if (
+            all(reservation.to_send_mail for reservation in self.reservation_ids)
+            and not all(
+                reservation.is_modified_reservation
+                for reservation in self.reservation_ids
+            )
+            and all(
+                reservation.state not in "cancel"
+                for reservation in self.reservation_ids
+            )
+        ):
+            if pms_property.property_confirmed_template:
+                template = pms_property.property_confirmed_template
+        elif (
+            any(reservation.to_send_mail for reservation in self.reservation_ids)
+            and any(
+                reservation.is_modified_reservation
+                for reservation in self.reservation_ids
+            )
+            and all(
+                reservation.state not in "cancel"
+                for reservation in self.reservation_ids
+            )
+        ):
+            if pms_property.property_modified_template:
+                template = pms_property.property_modified_template
+        elif any(
+            reservation.to_send_mail for reservation in self.reservation_ids
+        ) and any(
+            reservation.state in "cancel" for reservation in self.reservation_ids
+        ):
+            if pms_property.property_canceled_template:
+                template = pms_property.property_canceled_template
+        compose_form = self.env.ref(
+            "mail.email_compose_message_wizard_form", raise_if_not_found=False
+        )
+        ctx = dict(
+            model="pms.folio",
+            default_res_model="pms.folio",
+            default_res_id=self.id,
+            template_id=template and template.id or False,
+            composition_mode="comment",
+            partner_ids=[self.partner_id.id],
+            force_email=True,
+            record_id=self.id,
+        )
+        return {
+            "name": _("Send Mail "),
+            "type": "ir.actions.act_window",
+            "view_type": "form",
+            "view_mode": "form",
+            "res_model": "mail.compose.message",
+            "views": [(compose_form.id, "form")],
+            "view_id": compose_form.id,
+            "target": "new",
+            "context": ctx,
+        }
+
     def action_view_invoice(self):
         invoices = self.mapped("move_ids")
         action = self.env["ir.actions.actions"]._for_xml_id(
