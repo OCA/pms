@@ -1278,30 +1278,8 @@ class PmsFolio(models.Model):
         for folio in folios:
             if folio.email and folio.create_date.date() == fields.Date.today():
                 template = folio.pms_property_id.property_confirmed_template
-                subject = template._render_field(
-                    "subject",
-                    [6, 0, folio.id],
-                    compute_lang=True,
-                )[folio.id]
-                body = template._render_field(
-                    "body_html",
-                    [6, 0, folio.id],
-                    compute_lang=True,
-                )[folio.id]
-                mail = (
-                    folio.env["mail.mail"]
-                    .sudo()
-                    .create(
-                        {
-                            "subject": subject,
-                            "body_html": body,
-                            "email_from": folio.pms_property_id.partner_id.email,
-                            "email_to": folio.email,
-                        }
-                    )
-                )
                 try:
-                    mail.send()
+                    template.send_mail(folio.id, force_send=True)
                 except MailDeliveryException:
                     self.env["ir.logging"].create(
                         {
@@ -1309,7 +1287,7 @@ class PmsFolio(models.Model):
                             + folio.email,
                             "type": "server",
                             "path": "pms/pms/models/pms_folio.py",
-                            "line": "1339",
+                            "line": "1281",
                             "func": "send_confirmation_email",
                             "message": "Confirmation Mail Delivery Failed",
                         }
@@ -1330,32 +1308,8 @@ class PmsFolio(models.Model):
         for folio in folios:
             if folio.email:
                 template = folio.pms_property_id.property_modified_template
-                subject = template._render_field(
-                    "subject",
-                    [6, 0, folio.id],
-                    compute_lang=True,
-                    post_process=True,
-                )[folio.id]
-                body = template._render_field(
-                    "body_html",
-                    [6, 0, folio.id],
-                    compute_lang=True,
-                    post_process=True,
-                )[folio.id]
-                mail = (
-                    folio.env["mail.mail"]
-                    .sudo()
-                    .create(
-                        {
-                            "subject": subject,
-                            "body_html": body,
-                            "email_from": folio.pms_property_id.partner_id.email,
-                            "email_to": folio.email,
-                        }
-                    )
-                )
                 try:
-                    mail.send()
+                    template.send_mail(folio.id, force_send=True)
                 except MailDeliveryException:
                     self.env["ir.logging"].create(
                         {
@@ -1363,7 +1317,7 @@ class PmsFolio(models.Model):
                             + folio.email,
                             "type": "server",
                             "path": "pms/pms/models/pms_folio.py",
-                            "line": "1391",
+                            "line": "1311",
                             "func": "send_modification_email",
                             "message": "Modification Mail Delivery Failed",
                         }
@@ -1388,32 +1342,8 @@ class PmsFolio(models.Model):
                         template = (
                             reservation.pms_property_id.property_canceled_template
                         )
-                        subject = template._render_field(
-                            "subject",
-                            [6, 0, reservation.id],
-                            compute_lang=True,
-                            post_process=True,
-                        )[reservation.id]
-                        body = template._render_field(
-                            "body_html",
-                            [6, 0, reservation.id],
-                            compute_lang=True,
-                            post_process=True,
-                        )[reservation.id]
-                        mail = (
-                            folio.env["mail.mail"]
-                            .sudo()
-                            .create(
-                                {
-                                    "subject": subject,
-                                    "body_html": body,
-                                    "email_from": folio.pms_property_id.partner_id.email,
-                                    "email_to": reservation.email,
-                                }
-                            )
-                        )
                         try:
-                            mail.send()
+                            template.send_mail(reservation.id, force_send=True)
                         except MailDeliveryException:
                             self.env["ir.logging"].create(
                                 {
@@ -1421,7 +1351,7 @@ class PmsFolio(models.Model):
                                     + reservation.email,
                                     "type": "server",
                                     "path": "pms/pms/models/pms_folio.py",
-                                    "line": "1450",
+                                    "line": "1345",
                                     "func": "send_cancelation_email",
                                     "message": "Cancellation Mail Delivery Failed",
                                 }
