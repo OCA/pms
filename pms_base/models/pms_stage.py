@@ -30,7 +30,7 @@ class PMSStage(models.Model):
         string="Company",
         required=False,
         index=True,
-        default=lambda self: self.env.user.company_id,
+        default=lambda self: self.env.company.id,
     )
     team_ids = fields.Many2many(
         "pms.team", string="Teams", default=lambda self: self._default_team_ids()
