@@ -4,9 +4,10 @@
         <field name="model">account.bank.statement</field>
         <field name="inherit_id" ref="account.view_bank_statement_form" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='ref']" position="after">
 
-            <xpath expr="//field[@name='company_id']" position="after">
-                <field name="pms_property_id" />
+                <field name="pms_property_id" invisible="1" />
+                <field name="folio_ids" widget="many2many_tags" optional="hidden" />
             </xpath>
 
             <xpath expr="//field[@name='ref']" position="after">
