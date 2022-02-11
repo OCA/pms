@@ -65,7 +65,7 @@
                                             <div>
                                                 Hello ${object.partner_id.name or ''},<br
                                                             />
-                                                Your reservation at ${object.pms_property_id.name} has been successfully canceled.
+                                                Your reservation at ${object.pms_property_id.name} has been cancelled.
                                             </div>
                                         </td></tr>
                                     </table>

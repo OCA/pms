@@ -1118,7 +1118,7 @@
         <field name="res_model">mail.compose.message</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="pms.model_pms_reservation" />
+        <field name="binding_model_id" ref="pms.model_pms_folio" />
         <field name="binding_view_types">form</field>
         <field
             name="context"
@@ -1132,7 +1132,7 @@
         <field name="res_model">mail.compose.message</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="pms.model_pms_reservation" />
+        <field name="binding_model_id" ref="pms.model_pms_folio" />
         <field name="binding_view_types">form</field>
         <field
             name="context"
