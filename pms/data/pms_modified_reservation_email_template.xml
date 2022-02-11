@@ -3,7 +3,7 @@
     <data>
         <record id="modified_reservation_email" model="mail.template">
             <field name="name">Modified Reservation</field>
-            <field name="model_id" ref="pms.model_pms_reservation" />
+            <field name="model_id" ref="pms.model_pms_folio" />
             <field
                 name="subject"
             >Your reservation in ${object.pms_property_id.name} has been modified</field>
@@ -106,7 +106,7 @@
                                             >
                                         <tr><td valign="top" style="font-size: 14px;">
                                             <table style="width:50%;">
-                                                <tr>
+                                                 <tr>
                                                     <td>
                                                         <div
                                                                         class="far fa-calendar-alt fa-2x"
@@ -117,11 +117,9 @@
                                                                     style="margin: 16px 0px 16px 0px; font-size: 14px;"
                                                                 >
                                                         <div><strong
-                                                                        >From</strong> ${object.checkin} <strong
-                                                                        >At</strong> ${object.arrival_hour}</div>
+                                                                        >From</strong> ${object.first_checkin}</div>
                                                         <div><strong
-                                                                        >To</strong> ${object.checkout} <strong
-                                                                        >At</strong> ${object.departure_hour}</div>
+                                                                        >To</strong> ${object.last_checkout}</div>
                                                         <div
                                                                         style="font-size:12px;color:#9e9e9e"
                                                                     ><i><strong
@@ -141,7 +139,12 @@
                                                     <td style="vertical-align:top;">
                                                         <br />
                                                         <div><strong
-                                                                        >Room: </strong> ${object.room_type_id.name}</div>
+                                                                        >Rooms: </strong></div><div
+                                                                    >
+                                                            % for reservation in object.reservation_ids:
+                                                            ${reservation.room_type_id.name}<br
+                                                                        /></div>
+                                                            % endfor
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -158,8 +161,8 @@
                                                                     style="margin: 16px 0px 16px 0px; font-size: 14px;"
                                                                 >
                                                         <br />
-                                                        <div><strong
-                                                                        >Price: </strong> ${object.price_total} ${object.pms_property_id.country_id.currency_id.symbol}</div>
+                                                            <div><strong
+                                                                        >Price: </strong> ${object.amount_total} ${object.pms_property_id.country_id.currency_id.symbol}</div>
                                                     </td>
                                                 </tr>
                                             </table>
