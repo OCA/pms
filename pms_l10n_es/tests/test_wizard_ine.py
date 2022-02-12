@@ -2,6 +2,8 @@ import datetime
 
 from freezegun import freeze_time
 
+from odoo.exceptions import ValidationError
+
 from .common import TestPms
 
 
@@ -854,3 +856,133 @@ class TestWizardINE(TestPms):
         )
         # ASSERT
         self.assertDictEqual(nationalities, expected_result)
+
+    def test_arrivals_departures_pernoctations_by_date_no_nationality_raises_error(
+        self,
+    ):
+        """
+        +===========================+==============+==============+=============+=============+
+        |                           |      01      |      02      |     03      |   04        |
+        +===========================+==============+==============+=============+=============+
+        | r1  2 adults              | italy, False | italy, False |             |             |
+        +---------------------------+--------------+--------------+-------------+-------------+
+        | r2  2 adults              |              | italy,italy  | italy,italy |             |
+        +---------------------------+--------------+--------------+-------------+-------------+
+        | r3  1 adult               |              | afghanistan  | afghanistan | afghanistan |
+        +---------------------------+--------------+--------------+-------------+-------------+
+        | r4  2 adults              |              | afghanistan  | afghanistan | afghanistan |
+        |                           |              | afghanistan  | afghanistan | afghanistan |
+        +===========================+==============+==============+=============+=============+
+        | arrivals  Afghanistan     |              | 3            |             |             |
+        | arrivals  Italy           | 1            | 2            |             |             |
+        | arrivals  Russia          | 1            |              |             |             |
+        +===========================+==============+==============+=============+=============+
+        | pernoctations Afghanistan |              | 3            | 3           |             |
+        | pernoctations Italy       | 1            | 2            |             |             |
+        | pernoctations Russia      | 1            |              |             |             |
+        +===========================+==============+==============+=============+=============+
+        | departures Afghanistan    |              |              |             | 3           |
+        | departures Italy          |              | 1            | 2           |             |
+        | departures Russia         |              | 1            |             |             |
+        +===========================+==============+==============+=============+=============+
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        self.partner_2.nationality_id = False
+        start_date = datetime.date(2021, 2, 1)
+        end_date = datetime.date(2021, 2, 4)
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Cannot generate INE if some checkin partner has no nationality",
+        ):
+            self.env["pms.ine.wizard"].ine_nationalities(
+                start_date, end_date, self.pms_property1.id
+            )
+
+    def test_spain_arrivals_departures_pernoctations_by_date_no_state_raises_error(
+        self,
+    ):
+        """
+        +==========================+============+============+=========+========+
+        |                          |     01     |     02     |   03    |   04   |
+        +==========================+============+============+=========+========+
+        | r1  2 adults             | Ourense    | Ourense    |         |        |
+        |                          | False      | False      |         |        |
+        +--------------------------+------------+------------+---------+--------+
+        | r2  2 adults             |            | Ourense    | Ourense |        |
+        |                          |            | Ourense    | Ourense |        |
+        +--------------------------+------------+------------+---------+--------+
+        | r3  1 adult              |            | Madrid     | Madrid  | Madrid |
+        +--------------------------+------------+------------+---------+--------+
+        | r4  2 adults             |            | Madrid     | Madrid  | Madrid |
+        |                          |            | Madrid     | Madrid  | Madrid |
+        +==========================+============+============+=========+========+
+        | arrivals  Madrid         |            | 3          |         |        |
+        | arrivals  Ourense        | 1          | 2          |         |        |
+        | arrivals  Pontevedra     | 1          |            |         |        |
+        +==========================+============+============+=========+========+
+        | pernoctations Madrid     |            | 3          | 3       |        |
+        | pernoctations Ourense    | 1          | 2          |         |        |
+        | pernoctations Pontevedra | 1          |            |         |        |
+        0+=========================+============+============+=========+========+
+        | departures Madrid        |            |            |         | 3      |
+        | departures Ourense       |            | 1          | 2       |        |
+        | departures Pontevedra    |            | 1          |         |        |
+        +==========================+============+============+=========+========+
+        """
+        # ARRANGE
+        self.ideal_scenario()
+        start_date = datetime.date(2021, 2, 1)
+        end_date = datetime.date(2021, 2, 4)
+
+        country_spain = self.env["res.country"].search([("code", "=", "ES")])
+        state_madrid = self.env["res.country.state"].search([("name", "=", "Madrid")])
+        state_ourense = self.env["res.country.state"].search(
+            [("name", "=", "Ourense (Orense)")]
+        )
+
+        self.checkin1.nationality_id = country_spain
+        self.partner_1.nationality_id = country_spain
+        self.checkin1.state_id = state_ourense
+        self.partner_1.state_id = state_ourense
+
+        self.checkin2.nationality_id = country_spain
+        self.partner_2.nationality_id = country_spain
+        self.checkin2.state_id = False
+        self.partner_2.state_id = False
+
+        self.checkin3.nationality_id = country_spain
+        self.partner_3.nationality_id = country_spain
+        self.checkin3.state_id = state_ourense
+        self.partner_3.state_id = state_ourense
+
+        self.checkin4.nationality_id = country_spain
+        self.partner_4.nationality_id = country_spain
+        self.checkin4.state_id = state_ourense
+        self.partner_4.state_id = state_ourense
+
+        self.checkin5.nationality_id = country_spain
+        self.partner_5.nationality_id = country_spain
+        self.checkin5.state_id = state_madrid
+        self.partner_5.state_id = state_madrid
+
+        self.checkin6.nationality_id = country_spain
+        self.partner_6.nationality_id = country_spain
+        self.checkin6.state_id = state_madrid
+        self.partner_6.state_id = state_madrid
+
+        self.checkin7.nationality_id = country_spain
+        self.partner_7.nationality_id = country_spain
+        self.checkin7.state_id = state_madrid
+        self.partner_7.state_id = state_madrid
+
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="Cannot generate INE if some checkin partner from Spain has no nationality",
+        ):
+            self.env["pms.ine.wizard"].ine_nationalities(
+                start_date, end_date, self.pms_property1.id
+            )
