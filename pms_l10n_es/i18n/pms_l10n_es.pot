@@ -468,6 +468,18 @@ msgid "The date range must belong to the same month."
 msgstr ""
 
 #. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
+#, python-format
+msgid "The following guests have no nationality set :%s."
+msgstr ""
+
+#. module: pms_l10n_es
+#: code:addons/pms_l10n_es/wizards/wizard_ine.py:0
+#, python-format
+msgid "The following spanish guests have no state set :%s."
+msgstr ""
+
+#. module: pms_l10n_es
 #: code:addons/pms_l10n_es/wizards/traveller_report.py:0
 #, python-format
 msgid "The guest information sending settings is not complete."
