@@ -157,13 +157,18 @@ class AccountMove(models.Model):
         default_pms_property_id is set in context
         """
         journal = super(AccountMove, self)._search_default_journal(journal_types)
-        if self._context.get("default_pms_property_id"):
-            property_id = self._context.get("default_pms_property_id")
-            pms_property = self.env["pms.property"].browse(property_id)
+        company_id = self._context.get("default_company_id", self.env.company.id)
+        company = self.env["res.company"].browse(company_id)
+        pms_property_id = self.pms_property_id.id or (
+            self.env.user.get_active_property_ids
+            and self.env.user.get_active_property_ids()[0]
+        )
+        pms_property = self.env["pms.property"].browse(pms_property_id)
+        if pms_property:
             domain = [
                 ("company_id", "=", pms_property.company_id.id),
                 ("type", "in", journal_types),
-                ("pms_property_ids", "in", property_id),
+                ("pms_property_ids", "in", pms_property.id),
             ]
             journal = self.env["account.journal"].search(domain, limit=1)
             if not journal:
@@ -173,15 +178,40 @@ class AccountMove(models.Model):
                     ("pms_property_ids", "=", False),
                 ]
                 journal = self.env["account.journal"].search(domain, limit=1)
-            if not journal:
+        else:
+            domain = [
+                ("company_id", "=", company_id),
+                ("type", "in", journal_types),
+                ("pms_property_ids", "=", False),
+            ]
+            journal = self.env["account.journal"].search(domain, limit=1)
+        if not journal:
+            if pms_property:
                 error_msg = _(
                     """No journal could be found in property %(property_name)s
                     for any of those types: %(journal_types)s""",
                     property_name=pms_property.display_name,
                     journal_types=", ".join(journal_types),
                 )
-                raise UserError(error_msg)
+            else:
+                error_msg = _(
+                    """No journal could be found in company %(company_name)s
+                    for any of those types: %(journal_types)s""",
+                    company_name=company.display_name,
+                    journal_types=", ".join(journal_types),
+                )
+            raise UserError(error_msg)
         return journal
+
+    @api.depends("pms_property_id")
+    def _compute_suitable_journal_ids(self):
+        super(AccountMove, self)._compute_suitable_journal_ids()
+        for move in self:
+            if move.pms_property_id:
+                move.suitable_journal_ids = move.suitable_journal_ids.filtered(
+                    lambda j: not j.pms_property_ids
+                    or move.pms_property_id.id in j.pms_property_ids.ids
+                )
 
     def _autoreconcile_folio_payments(self):
         """
