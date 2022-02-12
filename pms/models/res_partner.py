@@ -135,7 +135,8 @@ class ResPartner(models.Model):
     )
     invoicing_policy = fields.Selection(
         string="Invoicing Policy",
-        help="The invoicing policy of the partner, set Property to user the policy configured in the Property",
+        help="""The invoicing policy of the partner,
+         set Property to user the policy configured in the Property""",
         selection=[
             ("property", "Property Policy Invoice"),
             ("manual", "Manual"),
