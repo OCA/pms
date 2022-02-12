@@ -64,10 +64,11 @@
                     <field name="is_agency" />
                 </group>
             </xpath>
-            <xpath expr="//field[@name='company_id']" position="after">
-                <group>
-                    <field name="pms_property_ids" />
-                </group>
+            <xpath
+                expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='company_id']"
+                position="after"
+            >
+                <field name="pms_property_ids" widget="many2many_tags" />
             </xpath>
             <xpath expr="//page[@name='internal_notes']" position="after">
                 <page
