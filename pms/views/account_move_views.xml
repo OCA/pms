@@ -5,8 +5,16 @@
         <field name="inherit_id" ref="account.view_move_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_date']" position="after">
-                <field name="folio_ids" widget="many2many_tags" />
-                <field name="pms_property_id" />
+                <field
+                    name="folio_ids"
+                    widget="many2many_tags"
+                    readonly="1"
+                    attrs="{'invisible':[('move_type','not in',('out_invoice','out_refund','out_receipt'))]}"
+                />
+                <field
+                    name="pms_property_id"
+                    domain="[('company_id','=',company_id)]"
+                />
             </xpath>
 
             <xpath expr="//field[@name='quantity']" position="before">
