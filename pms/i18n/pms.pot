@@ -101,6 +101,20 @@ msgid ", at"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+".<br/>\n"
+"                            Your check-in has been successful."
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
+msgid ""
+".<br/>\n"
+"                    Do your check-in now and save time."
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 msgid "<b>Days:</b>"
 msgstr ""
@@ -108,6 +122,26 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.massive_changes_wizard
 msgid "<b>Rules to apply:</b>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"<br/>\n"
+"                        You can check if all the data has been saved correctly"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
+msgid ""
+"<br/>\n"
+"                This is our<strong> quick registration system</strong>. In a few steps you will be able to register your data in an agile, simple and secure way,<strong> avoiding queues at reception</strong>.\n"
+"                If you register your data in our system, <strong> your passage through reception will be much faster</strong>, being able to enjoy the comfort of your room right away."
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_not_checkin
+msgid "<br/> Email:"
 msgstr ""
 
 #. module: pms
@@ -124,10 +158,10 @@ msgid ""
 "                                <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
 "                                    <tr>\n"
 "                                        <td align=\"center\">\n"
-"                                            <a href=\"/my/precheckin/${object.id}?access_token=${object.access_token}\" target=\"_blank\" style=\"text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px 20px 10px 20px;\">\n"
+"                                            <a href=\"${object.get_portal_url()}\" target=\"_blank\" style=\"text-decoration: none; color: #FFFFFF; font-size: 2em; padding: 10px 20px 10px 20px;\">\n"
 "                                                <div style=\"padding: 0.5em; background-color: #45C2B1; border-color: #45C2B1; border-width: 2px;border-style:solid; border-bottom-style: solid;border-left-style: solid;border-right-style: solid;border-top-style: solid;-webkit-border-radius: 10; -moz-border-radius: 10; border-radius: 10px;font-size: 12px;\">Check-in\n"
 "                                                </div>\n"
-"                                                <center><img src=\"https://www.aldahotels.es/firma/email/llegada/check-in.png\" alt=\"Hacer check-in\" width=\"80px\" height=\"80px\" href=\"${object.url}\"/></center></a>\n"
+"                                                <center><img src=\"https://www.aldahotels.es/firma/email/llegada/check-in.png\" alt=\"Hacer check-in\" width=\"80px\" height=\"80px\" href=\"${object.get_portal_url()}\"/></center></a>\n"
 "                                        </td>\n"
 "                                    </tr>\n"
 "                                </table>\n"
@@ -139,10 +173,18 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid ""
 "<em class=\"font-weight-normal text-muted\">\n"
 "                                        Room Type:\n"
+"                                    </em>"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"<em class=\"font-weight-normal text-muted\">\n"
+"                                        Room:\n"
 "                                    </em>"
 msgstr ""
 
@@ -214,6 +256,34 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
+msgid ""
+"<span class=\"fa fa-envelope\"/>\n"
+"                                                        Resend Email Invitation"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
+msgid ""
+"<span class=\"fa fa-envelope\"/>\n"
+"                                                        Send Email Invitation"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
+msgid ""
+"<span class=\"fa fa-info\"/>\n"
+"                        Reservation Info"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid ""
+"<span class=\"fa fa-long-arrow-left\"/>\n"
+"                                            Prev"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 msgid ""
 "<span class=\"fa fa-question-circle fa-lg ml-4\" data-toggle=\"tooltip\" "
@@ -223,13 +293,24 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid ""
-"<span class=\"fa fa-question-circle fa-lg\" data-toggle=\"tooltip\" "
-"title=\"If you enter the validity date of the document, the expedition date "
-"will be automatically calculated and entered depending on the document "
-"type.\"/>"
+"<span class=\"fa fa-share-square\"/>\n"
+"                                Send Invitations"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
+msgid ""
+"<span class=\"fa fa-whatsapp\"/>\n"
+"                                                        Send Whatsapp Invitation"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
+msgid ""
+"<span class=\"fa fa-wpforms\"/>\n"
+"                        CHECK IN NOW!"
 msgstr ""
 
 #. module: pms
@@ -280,17 +361,10 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid ""
 "<span style=\"color:red\" class=\"d-none error_inv_email\">Mandatory "
 "Email</span>"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
-msgid "<span>Data saved successfully!</span>"
 msgstr ""
 
 #. module: pms
@@ -1664,9 +1738,7 @@ msgid "Billing contact"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Birth Date"
 msgstr ""
 
@@ -1677,6 +1749,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_res_users__birthdate_date
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Birthdate"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Birthdate:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -2048,6 +2127,11 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_pms_property__employee
 msgid "Check this box if this contact is an Employee."
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Check-in"
 msgstr ""
 
 #. module: pms
@@ -2471,21 +2555,6 @@ msgid "Confirm"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
-msgid ""
-"Confirm\n"
-"                                        <span class=\"fa fa-long-arrow-right\"/>"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid ""
-"Confirm\n"
-"                                    <span class=\"fa fa-long-arrow-right\"/>"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "Confirm Assigned Room"
 msgstr ""
@@ -2542,11 +2611,6 @@ msgid "Contact"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-msgid "Contact Details"
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 msgid "Contact Invoiced"
 msgstr ""
@@ -2590,10 +2654,15 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__state_id
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Country State"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Country State:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -2879,6 +2948,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_product_product__daily_limit
 #: model:ir.model.fields,field_description:pms.field_product_template__daily_limit
 msgid "Daily limit"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Data Saved Successfully"
 msgstr ""
 
 #. module: pms
@@ -3246,24 +3320,39 @@ msgid "Display Type"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Doc. Expedition Date/Doc. Validity Date"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Doc. Expedition Date:\n"
+"                                                        <br/>"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Doc. Number"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Doc. Number:\n"
+"                                                        <br/>"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Doc. Type"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Doc. Type:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -3428,9 +3517,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_property__email
 #: model:ir.model.fields,field_description:pms.field_res_partner__email
 #: model:ir.model.fields,field_description:pms.field_res_users__email
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Email"
 msgstr ""
 
@@ -3447,6 +3535,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model,name:pms.model_mail_compose_message
 msgid "Email composition wizard"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Email:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -3570,9 +3665,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__female
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Female"
 msgstr ""
 
@@ -3969,11 +4062,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__gender
 #: model:ir.model.fields,field_description:pms.field_pms_property__gender
 #: model:ir.model.fields,field_description:pms.field_res_partner__gender
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Gender"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Gender:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -4050,6 +4148,7 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid "Guest"
 msgstr ""
 
@@ -4113,6 +4212,11 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
+msgid "Hi,"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.pms_checkin_partner_view_search
 msgid "Hide Strangers"
 msgstr ""
@@ -4130,12 +4234,6 @@ msgstr ""
 #. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.folio_portal_template
 msgid "History"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
-msgid "Host"
 msgstr ""
 
 #. module: pms
@@ -4335,6 +4433,13 @@ msgstr ""
 msgid ""
 "If we store your payment information on our server, subscription payments "
 "will be made automatically."
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
+msgid ""
+"If you wish, you can share with the rest of the guests the access to their "
+"check-in so that they can fill it out."
 msgstr ""
 
 #. module: pms
@@ -4714,7 +4819,7 @@ msgid "Invalid token found! Token partner %s != %s"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid "Invitation email sent"
 msgstr ""
 
@@ -5216,10 +5321,15 @@ msgid ""
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Lastname"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Lastname:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -5331,14 +5441,12 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__male
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Male"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid "Mandatory Firstname"
 msgstr ""
 
@@ -5551,10 +5659,15 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__mobile
 #: model:ir.model.fields,field_description:pms.field_res_partner__mobile
 #: model:ir.model.fields,field_description:pms.field_res_users__mobile
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Mobile"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Mobile:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -5628,9 +5741,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_search
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_form
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.traveller_report
 msgid "Name"
 msgstr ""
@@ -5661,14 +5773,26 @@ msgid "Name of who made the reservation"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Name:\n"
+"                                                        <br/>"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,field_description:pms.field_pms_checkin_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__nationality_id
 #: model:ir.model.fields,field_description:pms.field_res_partner__nationality_id
 #: model:ir.model.fields,field_description:pms.field_res_users__nationality_id
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Nationality"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Nationality:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -5696,6 +5820,13 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,field_description:pms.field_wizard_folio_changes__new_price
 msgid "New Price"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid ""
+"Next\n"
+"                                        <span class=\"fa fa-long-arrow-right\"/>"
 msgstr ""
 
 #. module: pms
@@ -6132,9 +6263,7 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model.fields.selection,name:pms.selection__pms_checkin_partner__gender__other
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Other"
 msgstr ""
 
@@ -6204,6 +6333,11 @@ msgstr ""
 #. module: pms
 #: model:ir.ui.menu,name:pms.pms_management_menu
 msgid "PMS Management"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Page"
 msgstr ""
 
 #. module: pms
@@ -6573,12 +6707,8 @@ msgid "Pre-reservation"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
-msgid "PreCheckin for"
-msgstr ""
-
-#. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 msgid "PreCheckin in"
 msgstr ""
 
@@ -7343,11 +7473,6 @@ msgid "Report Folio"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
-msgid "Resend Invitation"
-msgstr ""
-
-#. module: pms
 #: model:ir.actions.act_window,name:pms.action_resend_cancellation_email
 msgid "Resend cancellation email"
 msgstr ""
@@ -7607,7 +7732,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_room_view_search
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.reservation_wizard
 msgid "Room"
 msgstr ""
@@ -8049,6 +8173,11 @@ msgid "Saturday"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "Save"
+msgstr ""
+
+#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.advanced_filters_wizard
 msgid "Search"
 msgstr ""
@@ -8059,10 +8188,15 @@ msgid "Second Last Name"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Second Lastname"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid ""
+"Second Lastname:\n"
+"                                                        <br/>"
 msgstr ""
 
 #. module: pms
@@ -8129,9 +8263,7 @@ msgid "Select a valid document type"
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
 msgid "Select an option"
 msgstr ""
 
@@ -8183,8 +8315,7 @@ msgid "Send Confirmed Reservation Mail "
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid "Send Invitation"
 msgstr ""
 
@@ -8826,6 +8957,11 @@ msgid "Terms and conditions"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid "Thank you,"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "The Property are mandatory in the reservation"
@@ -9131,6 +9267,13 @@ msgid ""
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_not_checkin
+msgid ""
+"The quick registration system is not available.<br/>\n"
+"                If you have any questions, you can contact us: <br/><br/>Phone:"
+msgstr ""
+
+#. module: pms
 #: code:addons/pms/models/pms_reservation.py:0
 #, python-format
 msgid "The reservation type must be the same for all reservations in folio"
@@ -9248,18 +9391,12 @@ msgid "There are currently no folios for your account."
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation_precheckin
-msgid ""
-"There are currently no precheckins in this reservation for your account."
-msgstr ""
-
-#. module: pms
 #: model_terms:ir.ui.view,arch_db:pms.portal_my_reservation
 msgid "There are currently no reservations for your account."
 msgstr ""
 
 #. module: pms
-#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_precheckin
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_folio_invitations
 msgid "There are currently no reservations in this folio for your account."
 msgstr ""
 
@@ -10156,6 +10293,11 @@ msgid "email"
 msgstr ""
 
 #. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_end
+msgid "here"
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_checkin_partner__birthdate_date
 msgid "host birthdate"
 msgstr ""
@@ -10215,6 +10357,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_form
 #: model_terms:ir.ui.view,arch_db:pms.pms_reservation_view_form
 msgid "mobile"
+msgstr ""
+
+#. module: pms
+#: model_terms:ir.ui.view,arch_db:pms.portal_my_precheckin_detail
+msgid "of"
 msgstr ""
 
 #. module: pms
