@@ -13,6 +13,7 @@ odoo.define("pms_sale.product_configurator", function (require) {
      *
      */
     ProductConfiguratorWidget.include({
+
         /**
          * @returns {Boolean}
          *

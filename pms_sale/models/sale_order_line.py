@@ -92,9 +92,13 @@ class SaleOrderLine(models.Model):
                 reserv_vals.update({"guest_ids": values.get("guest_ids")})
             self.pms_reservation_id.sudo().write(reserv_vals)
         if (
-            values.get("product_id")
-            or (values.get("reservation_id") and values.get("property_id"))
-        ) and self.product_id.reservation_ok and not self.pms_reservation_id:
+            (
+                values.get("product_id")
+                or (values.get("reservation_id") and values.get("property_id"))
+            )
+            and self.product_id.reservation_ok
+            and not self.pms_reservation_id
+        ):
             reservation_vals = {
                 "partner_id": self.order_id.partner_id.id,
                 "sale_order_id": self.order_id.id,

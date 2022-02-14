@@ -11,6 +11,7 @@ odoo.define("pms_sale.PMSConfiguratorFormController", function (require) {
      * those 2 fields ('property_id' + 'reservation_id')
      */
     var PMSConfiguratorFormController = FormController.extend({
+
         /**
          * We let the regular process take place to allow the validation of the required fields
          * to happen.
