@@ -8,6 +8,7 @@ from odoo.exceptions import ValidationError
 
 _log = logging.getLogger(__name__)
 
+
 class PMSConfigurator(models.TransientModel):
     _inherit = "pms.configurator"
 
@@ -17,7 +18,13 @@ class PMSConfigurator(models.TransientModel):
         if self.reservation_id and self.stop < self.start:
             raise ValidationError(_("'Check Out' cannot be before 'Check In'"))
         if self.reservation_id and self.start.date() < today:
-            raise ValidationError(_("Cannot create a reservation with a 'Check In' before today ({})".format(today)))
+            raise ValidationError(
+                _(
+                    "Cannot create a reservation with a 'Check In' before today ({})".format(
+                        today
+                    )
+                )
+            )
 
     @api.onchange("start", "stop")
     def _onchange_reservation_dates(self):

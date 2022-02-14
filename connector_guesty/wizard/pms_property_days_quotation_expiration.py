@@ -13,12 +13,16 @@ class PmsPropertyDaysQuotationExpiration(models.TransientModel):
     _description = "PMS Property Days Quotation Expiration"
 
     property_ids = fields.Many2many(string="Properties", comodel_name="pms.property")
-    days_quotation_expiration = fields.Integer(string="Days to quotation expiration", default=1)
+    days_quotation_expiration = fields.Integer(
+        string="Days to quotation expiration", default=1
+    )
 
     @api.constrains("days_quotation_expiration")
     def check_days_quotation_expiration(self):
         if self.days_quotation_expiration > 2:
-            raise ValidationError(_("Maximum of  2 days for 'Days to quotation expiration'"))
+            raise ValidationError(
+                _("Maximum of  2 days for 'Days to quotation expiration'")
+            )
 
     @api.onchange("days_quotation_expiration")
     def _onchange_days_quotation_expiration(self):
@@ -26,4 +30,6 @@ class PmsPropertyDaysQuotationExpiration(models.TransientModel):
 
     def update_property_days_quotation_expiration(self):
         for property_id in self.property_ids:
-            property_id.write({'days_quotation_expiration': self.days_quotation_expiration})
+            property_id.write(
+                {"days_quotation_expiration": self.days_quotation_expiration}
+            )

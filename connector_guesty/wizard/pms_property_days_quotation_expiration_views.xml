@@ -6,19 +6,27 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="days_quotation_expiration"/>
-                    <field name="property_ids"/>
+                    <field name="days_quotation_expiration" />
+                    <field name="property_ids" />
                 </group>
 
                 <footer>
-                    <button string="Confirm" class="btn-primary" type="object" name="update_property_days_quotation_expiration" />
+                    <button
+                        string="Confirm"
+                        class="btn-primary"
+                        type="object"
+                        name="update_property_days_quotation_expiration"
+                    />
                     <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
 
-    <record id="pms_property_days_quotation_expiration_action" model="ir.actions.act_window">
+    <record
+        id="pms_property_days_quotation_expiration_action"
+        model="ir.actions.act_window"
+    >
         <field name="name">Configure Property Days Quotation Expiration</field>
         <field name="res_model">pms.property.days.quotation.expiration</field>
         <field name="view_mode">form</field>

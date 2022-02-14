@@ -6,10 +6,14 @@
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
-                <attribute name="confirm">Are you sure you wish to confirm without payment?</attribute>
+                <attribute
+                    name="confirm"
+                >Are you sure you wish to confirm without payment?</attribute>
             </xpath>
             <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
-                <attribute name="confirm">Are you sure you wish to confirm without payment?</attribute>
+                <attribute
+                    name="confirm"
+                >Are you sure you wish to confirm without payment?</attribute>
             </xpath>
         </field>
     </record>

@@ -25,12 +25,16 @@ class PmsProperty(models.Model):
 
     guesty_id = fields.Char(copy=False)
     calendar_ids = fields.One2many("pms.guesty.calendar", "property_id")
-    days_quotation_expiration = fields.Integer(string="Days to quotation expiration", default=1)
+    days_quotation_expiration = fields.Integer(
+        string="Days to quotation expiration", default=1
+    )
 
     @api.constrains("days_quotation_expiration")
     def check_days_quotation_expiration(self):
         if self.days_quotation_expiration > 2:
-            raise ValidationError(_("Maximum of  2 days for 'Days to quotation expiration'"))
+            raise ValidationError(
+                _("Maximum of  2 days for 'Days to quotation expiration'")
+            )
 
     @api.onchange("days_quotation_expiration")
     def _onchange_days_quotation_expiration(self):
