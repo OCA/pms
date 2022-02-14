@@ -420,6 +420,11 @@ msgid "Contact"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__contract_ids
+msgid "Contracts"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__payment_token_count
 msgid "Count Payment Token"
 msgstr ""
@@ -1316,11 +1321,6 @@ msgid "Parking Lot"
 msgstr ""
 
 #. module: pms_base
-#: model:ir.model.fields,field_description:pms_base.field_pms_property__contract_ids
-msgid "Partner Contracts"
-msgstr ""
-
-#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__same_vat_partner_id
 msgid "Partner with same Tax ID"
 msgstr ""
@@ -1470,6 +1470,11 @@ msgid "Publish your properties on your website"
 msgstr ""
 
 #. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__purchase_contract_count
+msgid "Purchase Contracts"
+msgstr ""
+
+#. module: pms_base
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__qty_bedroom
 msgid "Qty Bedroom"
 msgstr ""
@@ -1561,6 +1566,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms_base.field_pms_property__message_has_sms_error
 #: model:ir.model.fields,field_description:pms_base.field_pms_team__message_has_sms_error
 msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pms_base
+#: model:ir.model.fields,field_description:pms_base.field_pms_property__sale_contract_count
+msgid "Sale Contracts"
 msgstr ""
 
 #. module: pms_base
