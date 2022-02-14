@@ -1,0 +1,37 @@
+<odoo>
+
+    <record id="pms_property_days_quotation_expiration_view_form" model="ir.ui.view">
+        <field name="name">pms.property.days.quotation.expiration.view.form</field>
+        <field name="model">pms.property.days.quotation.expiration</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="days_quotation_expiration"/>
+                    <field name="property_ids"/>
+                </group>
+
+                <footer>
+                    <button string="Confirm" class="btn-primary" type="object" name="update_property_days_quotation_expiration" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="pms_property_days_quotation_expiration_action" model="ir.actions.act_window">
+        <field name="name">Configure Property Days Quotation Expiration</field>
+        <field name="res_model">pms.property.days.quotation.expiration</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="pms_property_days_quotation_expiration_view_form" />
+    </record>
+
+    <menuitem
+        id="menu_pms_property_days_quotation_expiration"
+        name="Days Quotation Expiration"
+        parent="pms_base.menu_config_property"
+        sequence="90"
+        action="pms_property_days_quotation_expiration_action"
+        groups="pms_base.group_pms_manager"
+    />
+</odoo>

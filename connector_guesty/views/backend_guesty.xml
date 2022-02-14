@@ -1,0 +1,212 @@
+<odoo>
+
+    <record id="form_view_guesty_connector_backend" model="ir.ui.view">
+        <field name="name">Guesty Backend</field>
+        <field name="model">backend.guesty</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="active" invisible="1" />
+                <field name="is_default" invisible="1" />
+                <header>
+                    <button
+                        name="check_credentials"
+                        type="object"
+                        string="Check Credentials"
+                        class="btn btn-primary"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <button
+                        name="reset_credentials"
+                        type="object"
+                        string="Reset Credentials"
+                        class="btn btn-muted"
+                        attrs="{'invisible': [('active', '=', False)]}"
+                    />
+                    <button
+                        name="set_as_default"
+                        type="object"
+                        string="Set as default"
+                        class="btn btn-primary"
+                        attrs="{'invisible': ['|', ('active', '=', False), ('is_default', '=', True)]}"
+                    />
+                </header>
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="guesty_environment"
+                                attrs="{'readonly': [('active', '=', True)]}"
+                            />
+                            <field
+                                name="api_key"
+                                attrs="{'readonly': [('active', '=', True)]}"
+                            />
+                            <field
+                                name="api_secret"
+                                password="1"
+                                attrs="{'readonly': [('active', '=', True)]}"
+                            />
+                            <field name="is_default" readonly="1" />
+                        </group>
+                    </group>
+                    <notebook attrs="{'invisible': [('active', '=', False)]}">
+                        <page string="Account Information">
+                            <group>
+                                <group>
+                                    <field name="guesty_account_id" readonly="1" />
+                                    <field name="api_url" readonly="1" />
+                                    <field name="base_url" readonly="1" />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Actions">
+                            <group>
+                                <group>
+                                    <field name="reservation_pull_start_date" />
+                                    <button
+                                        name="download_reservations"
+                                        string="Download Reservations"
+                                        type="object"
+                                    />
+                                </group>
+                                <group>
+                                    <field name="cleaning_product_id" />
+                                    <field name="extra_product_id" />
+                                </group>
+                            </group>
+                            <button
+                                name="download_calendars"
+                                string="Download Calendars"
+                                type="object"
+                            />
+                            <button
+                                name="download_properties"
+                                string="Sync Property"
+                                type="object"
+                            />
+                        </page>
+                        <page string="Configuration">
+                            <group>
+                                <group>
+                                    <field name="currency_id" />
+                                    <field name="timezone" />
+                                </group>
+                                <group>
+                                    <field name="stage_canceled_id" />
+                                    <field name="stage_inquiry_id" />
+                                    <field name="stage_reserved_id" />
+                                    <field name="stage_confirmed_id" />
+                                    <field name="cancel_expired_quotes" />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="CRM Rules">
+                            <field name="crm_lead_rule_ids">
+                                <tree create="1">
+                                    <field name="expression_string" />
+                                    <field name="lead_field" />
+                                    <field name="is_html" />
+                                </tree>
+                                <form>
+                                    <label for="expression_string" />
+                                    <field name="expression_string" />
+                                    <group>
+                                        <group>
+                                            <field name="lead_field" />
+                                            <field name="is_html" />
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tree_view_guesty_connector_backend" model="ir.ui.view">
+        <field name="name">Guesty Backend</field>
+        <field name="model">backend.guesty</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="(not active)">
+                <field name="name" />
+                <field name="api_url" />
+                <field name="base_url" />
+                <field name="active" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_backend_guesty_search" model="ir.ui.view">
+        <field name="name">backend.guesty.search</field>
+        <field name="model">backend.guesty</field>
+        <field name="arch" type="xml">
+            <search string="Search Integrations">
+                <field name="name" />
+                <filter
+                    string="All"
+                    domain="[('active', 'in', [True, False])]"
+                    name="all_active"
+                />
+            </search>
+        </field>
+    </record>
+
+    <record id="action_guesty_connector_backend" model="ir.actions.act_window">
+        <field name="name">Guesty Backend</field>
+        <field name="res_model">backend.guesty</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_all_active': 1}</field>
+    </record>
+
+    <menuitem
+        name="Guesty"
+        id="menu_action_guesty_connector_backend"
+        action="action_guesty_connector_backend"
+        sequence="10"
+        parent="queue_job.menu_queue_job_root"
+    />
+
+    <!--  Settings  -->
+    <record id="view_res_config_settings_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.guesty.backend</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40" />
+        <field name="inherit_id" ref="pms_base.view_res_config_settings_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//div[@id='connect']/div[1]/div[hasclass('o_setting_right_pane')]"
+                position="inside"
+            >
+                <div class="text-muted">
+                    Define your Guesty connection environment:
+                </div>
+                <field name="guesty_backend_id" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_guesty_config" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'backend_guesty'}</field>
+    </record>
+
+    <menuitem
+        id="menu_guesty_backend_config_settings"
+        name="Settings"
+        parent="queue_job.menu_queue_job_root"
+        sequence="50"
+        action="action_guesty_config"
+    />
+</odoo>

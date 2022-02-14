@@ -1,0 +1,21 @@
+<odoo>
+    <record id="guesty_view_partner_form" model="ir.ui.view">
+        <field name="name">guesty.view.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='internal_notes']" position="before">
+                <page string="Guesty">
+                    <label for="guesty_ids" />
+                    <field name="guesty_ids">
+                        <tree>
+                            <field name="partner_id" />
+                            <field name="guesty_id" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

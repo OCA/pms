@@ -1,0 +1,27 @@
+<odoo>
+    <record id="guesty_view_reservation_form" model="ir.ui.view">
+        <field name="name">guesty.view.reservation.form</field>
+        <field name="model">pms.reservation</field>
+        <field name="inherit_id" ref="pms_sale.view_reservation_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_guesty_reservation"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-globe"
+                    string="Guesty"
+                />
+            </xpath>
+            <xpath expr="//page[@name='guest_ids']" position="after">
+                <page name="guesty_info" string="Guesty Information">
+                    <group>
+                        <group>
+                            <field name="guesty_id" />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

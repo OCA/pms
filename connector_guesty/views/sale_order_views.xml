@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="sale_order_view_form_confirmation" model="ir.ui.view">
+        <field name="name">sale.order.form.confirmation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                <attribute name="confirm">Are you sure you wish to confirm without payment?</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="confirm">Are you sure you wish to confirm without payment?</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
