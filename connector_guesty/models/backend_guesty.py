@@ -198,7 +198,8 @@ class BackendGuesty(models.Model):
                     country = self.env["res.country"].search(
                         [("name", "=", country_name)], limit=1
                     )
-                    body_payload["country_id"] = country.id
+                    if country.exists():
+                        body_payload["country_id"] = country.id
                 else:
                     city = hometown
                 body_payload["city"] = city

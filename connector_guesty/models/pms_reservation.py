@@ -84,6 +84,13 @@ class PmsReservation(models.Model):
         return res
 
     def action_book(self):
+        if (
+            self.env.company.guesty_backend_id
+            and self.stage_id.id
+            != self.env.company.guesty_backend_id.stage_inquiry_id.id
+        ):
+            return False
+
         res = super(PmsReservation, self).action_book()
         if self.env.company.guesty_backend_id and not self.env.context.get(
             "ignore_guesty_push", False

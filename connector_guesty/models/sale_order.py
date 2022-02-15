@@ -3,13 +3,28 @@
 import logging
 from datetime import datetime, timedelta
 
-from odoo import api, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _log = logging.getLogger(__name__)
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
+
+    pms_reservation_id = fields.Many2one(
+        "pms.reservation", compute="_compute_pms_reservation_id", store=True
+    )
+    pms_property_id = fields.Many2one(
+        "pms.property", compute="_compute_pms_reservation_id", store=True
+    )
+
+    @api.depends("order_line")
+    def _compute_pms_reservation_id(self):
+        for sale in self:
+            reservation_line = sale.order_line.filtered(lambda s: s.reservation_ok)
+            sale.pms_reservation_id = reservation_line.pms_reservation_id.id
+            sale.pms_property_id = reservation_line.pms_reservation_id.property_id.id
 
     @api.model
     def create(self, values):
@@ -26,6 +41,7 @@ class SaleOrder(models.Model):
                 reservation = self.env["pms.reservation"].search(
                     [("sale_order_id", "=", sale.id)]
                 )
+
                 if reservation and reservation.guesty_id:
                     reservation.with_delay().guesty_push_reservation_update()
         return res
@@ -71,3 +87,19 @@ class SaleOrder(models.Model):
         )
 
         return _reservation
+
+    def action_reserve(self):
+        reservation = self.sale_get_active_reservation()
+        if (
+            reservation.stage_id.id
+            == self.env.company.guesty_backend_id.stage_inquiry_id.id
+        ):
+            reservation.action_book()
+            self.message_post(body=_("Reservation successfully reserved"))
+        elif (
+            reservation.stage_id.id
+            == self.env.company.guesty_backend_id.stage_reserved_id.id
+        ):
+            raise UserError(_("Reservation is already reserved"))
+        else:
+            raise UserError(_("Unable to reserve"))
