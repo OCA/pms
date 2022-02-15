@@ -42,13 +42,17 @@ class PmsGuestyCalendar(models.Model):
     ]
 
     def guesty_pull_calendar(self, backend, property_id, start_date, stop_date):
+        # todo: Fix Calendar
         success, result = backend.call_get_request(
-            url_path="/listings/{}/calendar".format(property_id.guesty_id),
-            params={"from": start_date, "to": stop_date},
+            url_path="availability-pricing/api/calendar/listings/{}".format(
+                property_id.guesty_id
+            ),
+            params={"startDate": start_date, "endDate": stop_date},
         )
 
         if success:
-            for record in result:
+            calendar_data = result.get("data", {}).get("days", [])
+            for record in calendar_data:
                 calendar_id = self.sudo().search(
                     [
                         ("listing_id", "=", property_id.guesty_id),

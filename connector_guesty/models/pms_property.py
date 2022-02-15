@@ -242,19 +242,22 @@ class PmsProperty(models.Model):
         stop_localized = utc.localize(stop).astimezone(tz)
 
         backend = self.env.company.guesty_backend_id
+        # todo: Fix Calendar
         success, results = backend.call_get_request(
-            url_path="listings/{}/calendar".format(self.guesty_id),
+            url_path="availability-pricing/api/calendar/listings/{}".format(
+                self.guesty_id
+            ),
             params={
                 "fields": ", ".join(["status"]),
-                "from": start_localized.strftime("%Y-%m-%d"),
-                "to": stop_localized.strftime("%Y-%m-%d"),
+                "startDate": start_localized.strftime("%Y-%m-%d"),
+                "endDate": stop_localized.strftime("%Y-%m-%d"),
             },
         )
 
         if not success:
             raise ValidationError(_("Unable to get calendar information"))
 
-        return results
+        return results.get("data").get("days")
 
     def odoo_get_calendars(self, start, stop):
         utc = pytz.UTC

@@ -25,21 +25,24 @@ class SaleOrderLine(models.Model):
             and self.start
             and self.stop
         ):
+            # todo: Fix Calendar
             success, result = self.sudo().company_id.guesty_backend_id.call_get_request(
-                url_path="listings/{}/calendar".format(
+                url_path="availability-pricing/api/calendar/listings/{}".format(
                     self.sudo().property_id.guesty_id
                 ),
                 params={
-                    "from": self.start.strftime("%Y-%m-%d"),
-                    "to": self.stop.strftime("%Y-%m-%d"),
+                    "startDate": self.start.strftime("%Y-%m-%d"),
+                    "endDate": self.stop.strftime("%Y-%m-%d"),
                 },
             )
 
-            if success and len(result) > 0:
-                prices = [calendar.get("price") for calendar in result]
+            # todo: Fix Calendar
+            if success:
+                calendar_data = result.get("data", {}).get("days", [])
+                prices = [calendar.get("price") for calendar in calendar_data]
                 avg_price = sum(prices) / len(prices)
 
-                currency_name = result[0]["currency"]
+                currency_name = calendar_data[0]["currency"]
                 currency_id = (
                     self.env["res.currency"]
                     .sudo()
