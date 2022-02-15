@@ -76,7 +76,7 @@ class TravellerReport(models.TransientModel):
         # check if there's guests info pending to send
         if self.env["pms.checkin.partner"].search_count(
             [
-                ("state", "=", "onboard"),
+                ("state", "=", "onboard", "done"),
                 ("arrival", ">=", str(date_target) + " 0:00:00"),
                 ("pms_property_id", "=", property_id),
             ]
@@ -89,7 +89,7 @@ class TravellerReport(models.TransientModel):
             # get checkin partners info to send
             lines = self.env["pms.checkin.partner"].search(
                 [
-                    ("state", "=", "onboard"),
+                    ("state", "=", "onboard", "done"),
                     ("arrival", ">=", str(date_target) + " 0:00:00"),
                     ("arrival", "<=", str(date_target) + " 23:59:59"),
                     ("pms_property_id", "=", property_id),
