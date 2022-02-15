@@ -261,19 +261,17 @@ class ReservationSplitJoinSwapWizard(models.TransientModel):
 
     @api.model
     def reservations_swap(self, checkin, checkout, source, target):
-        reservations = self.env["pms.reservation"].search(
-            [("checkin", ">=", checkin), ("checkout", "<=", checkout)]
-        )
+        dates = [
+            checkin + datetime.timedelta(days=x)
+            for x in range(0, (checkout - checkin).days + 1)
+        ]
         lines = self.env["pms.reservation.line"].search_count(
-            [("room_id", "=", source), ("reservation_id", "in", reservations.ids)]
+            [("room_id", "=", source), ("date", "in", dates)]
         )
         if not lines:
             raise UserError(_("There's no reservations lines with provided room"))
 
-        for date_iterator in [
-            checkin + datetime.timedelta(days=x)
-            for x in range(0, (checkout - checkin).days)
-        ]:
+        for date_iterator in dates:
             line_room_source = self.env["pms.reservation.line"].search(
                 [("date", "=", date_iterator), ("room_id", "=", source)]
             )

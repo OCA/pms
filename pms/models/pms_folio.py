@@ -2,12 +2,14 @@
 # Copyright 2017  Dario Lodeiros
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import datetime
 import logging
 from itertools import groupby
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_compare, float_is_zero
+from odoo.tools.misc import get_lang
 
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 
@@ -1833,17 +1835,15 @@ class PmsFolio(models.Model):
         if len(property_folio_id) != 1:
             raise ValidationError(_("Only can payment by property"))
         ctx = dict(self.env.context, company_id=folios[0].company_id.id)
-        statement = (
-            self.env["account.bank.statement"]
-            .sudo()
-            .search(
-                [
-                    ("journal_id", "=", journal.id),
-                    ("pms_property_id", "=", property_folio_id[0]),
-                    ("state", "=", "open"),
-                ]
-            )
-        )
+        if not date:
+            date = fields.Date.today()
+        domain = [
+            ("journal_id", "=", journal.id),
+            ("pms_property_id", "=", property_folio_id[0]),
+            ("state", "=", "open"),
+            ("date", "=", date),
+        ]
+        statement = self.env["account.bank.statement"].sudo().search(domain, limit=1)
         reservation_ids = reservations.ids if reservations else []
         service_ids = services.ids if services else []
         if not statement:
@@ -1852,7 +1852,9 @@ class PmsFolio(models.Model):
                 "journal_id": journal.id,
                 "user_id": self.env.user.id,
                 "pms_property_id": property_folio_id[0],
-                "name": str(fields.Datetime.now()),
+                "name": datetime.datetime.today().strftime(
+                    get_lang(self.env).date_format
+                ),
             }
             statement = (
                 self.env["account.bank.statement"]
