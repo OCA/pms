@@ -10,7 +10,7 @@ from odoo.addons.website.controllers.main import QueryURL, Website
 
 class Website(Website):
     @http.route(
-        ['/property/<model("pms.property"):property>'],
+        ['/property/<model("pms.property"):pms_property>'],
         type="http",
         auth="public",
         website=True,
