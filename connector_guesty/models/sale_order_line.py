@@ -30,6 +30,7 @@ class SaleOrderLine(models.Model):
                 url_path="availability-pricing/api/calendar/listings/{}".format(
                     self.sudo().property_id.guesty_id
                 ),
+                paginate=False,
                 params={
                     "startDate": self.start.strftime("%Y-%m-%d"),
                     "endDate": self.stop.strftime("%Y-%m-%d"),

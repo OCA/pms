@@ -247,6 +247,7 @@ class PmsProperty(models.Model):
             url_path="availability-pricing/api/calendar/listings/{}".format(
                 self.guesty_id
             ),
+            paginate=False,
             params={
                 "fields": ", ".join(["status"]),
                 "startDate": start_localized.strftime("%Y-%m-%d"),

@@ -47,6 +47,7 @@ class PmsGuestyCalendar(models.Model):
             url_path="availability-pricing/api/calendar/listings/{}".format(
                 property_id.guesty_id
             ),
+            paginate=False,
             params={"startDate": start_date, "endDate": stop_date},
         )
 

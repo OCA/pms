@@ -249,7 +249,7 @@ class PmsReservation(models.Model):
                     raise ValidationError(
                         _("Invalid dates {} - {}".format(self.start, self.stop))
                     )
-                raise UserError(_("Unable to send to guesty"))
+                raise UserError(_("Unable to send to guesty") + ": " + str(res))
 
             guesty_id = res.get("_id")
             self.with_context(ignore_guesty_push=True).write({"guesty_id": guesty_id})
@@ -260,6 +260,7 @@ class PmsReservation(models.Model):
                 url_path="availability-pricing/api/calendar/listings/{}".format(
                     self.property_id.guesty_id
                 ),
+                paginate=False,
                 params={
                     "startDate": self.start.strftime("%Y-%m-%d"),
                     "endDate": self.stop.strftime("%Y-%m-%d"),

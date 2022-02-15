@@ -305,7 +305,7 @@ class BackendGuesty(models.Model):
             )
 
     def call_get_request(
-        self, url_path, params=None, skip=0, limit=25, success_codes=None
+        self, url_path, params=None, skip=0, limit=25, success_codes=None, paginate=True
     ):
         if success_codes is None:
             success_codes = [200, 201]
@@ -313,7 +313,8 @@ class BackendGuesty(models.Model):
         if params is None:
             params = {}
 
-        params.update({"skip": str(skip), "limit": str(limit)})
+        if paginate:
+            params.update({"skip": str(skip), "limit": str(limit)})
 
         url = "{}/{}".format(self.api_url, url_path)
         try:
@@ -399,6 +400,7 @@ class BackendGuesty(models.Model):
                 url_path="availability-pricing/api/calendar/listings/{}".format(
                     listing_id
                 ),
+                paginate=False,
                 params={"startDate": check_in, "endDate": check_out},
             )
             if success:
