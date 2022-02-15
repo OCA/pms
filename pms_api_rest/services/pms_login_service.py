@@ -52,4 +52,12 @@ class PmsLoginService(Component):
             key="pms_secret_key_example",
             algorithm=jwt.ALGORITHMS.HS256,
         )
-        return PmsApiRestUserOutput(token=token)
+
+        return PmsApiRestUserOutput(
+            token=token,
+            userId=user_record.id,
+            userName=user_record.name,
+            defaultPropertyId=user_record.pms_property_id.id,
+            defaultPropertyName=user_record.pms_property_id.name,
+            userImageBase64=user_record.partner_id.image_1024,
+        )
