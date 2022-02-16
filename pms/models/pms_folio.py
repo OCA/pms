@@ -1400,7 +1400,7 @@ class PmsFolio(models.Model):
         )
         ctx = dict(
             model="pms.folio",
-            default_res_model="pms.folio",
+            default_model="pms.folio",
             default_res_id=self.id,
             template_id=template and template.id or False,
             composition_mode="comment",
@@ -1419,6 +1419,13 @@ class PmsFolio(models.Model):
             "target": "new",
             "context": ctx,
         }
+
+    def _message_post_after_hook(self, message, msg_vals):
+        res = super(PmsFolio, self)._message_post_after_hook(message, msg_vals)
+        for folio in self:
+            for follower in folio.message_follower_ids:
+                follower.unlink()
+        return res
 
     def action_view_invoice(self):
         invoices = self.mapped("move_ids")
