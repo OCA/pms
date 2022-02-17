@@ -567,11 +567,14 @@ class FolioSaleLine(models.Model):
     @api.depends("reservation_id.tax_ids", "service_id.tax_ids")
     def _compute_tax_ids(self):
         for record in self:
-            record.tax_ids = (
-                record.service_id.tax_ids
-                if record.service_id
-                else record.reservation_id.tax_ids
-            )
+            if not record.display_type:
+                record.tax_ids = (
+                    record.service_id.tax_ids
+                    if record.service_id
+                    else record.reservation_id.tax_ids
+                )
+            else:
+                record.tax_ids = False
 
     @api.depends(
         "service_id",
@@ -593,7 +596,7 @@ class FolioSaleLine(models.Model):
 
     @api.depends("reservation_id.room_type_id", "service_id.product_id")
     def _compute_product_id(self):
-        for record in self:
+        for record in self.filtered("display_type"):
             if record.reservation_id and not record.service_id:
                 record.product_id = record.reservation_id.room_type_id.product_id
             elif record.service_id:
