@@ -34,6 +34,30 @@ class PmsCalendarService(Component):
         for line in self.env["pms.reservation.line"].search(
             domain,
         ):
+            next_line_splitted = False
+            next_line = self.env['pms.reservation.line'].search(
+                [
+                    ("reservation_id", "=", line.reservation_id.id),
+                    ("date", "=", line.date + timedelta(days=1))
+                ]
+            )
+            if next_line:
+                next_line_splitted = next_line.room_id != line.room_id
+
+            previous_line_splitted = False
+            previous_line = self.env['pms.reservation.line'].search(
+                [
+                    ("reservation_id", "=", line.reservation_id.id),
+                    ("date", "=", line.date + timedelta(days=-1))
+                ]
+            )
+            if previous_line:
+                previous_line_splitted = previous_line.room_id != line.room_id
+
+            closureReason= ''
+            if line.reservation_id.reservation_type == 'out':
+                print(line.reservation_id.closure_reason_id)
+
             result_lines.append(
                 PmsCalendarInfo(
                     id=line.id,
@@ -48,13 +72,16 @@ class PmsCalendarService(Component):
                     reservationId=line.reservation_id,
                     reservationName=line.reservation_id.name,
                     reservationType=line.reservation_id.reservation_type,
-                    isFirstDay=line.reservation_id.checkin == line.date,
-                    isLastDay=line.reservation_id.checkout
-                    == (line.date + timedelta(days=1)),
+                    isFirstNight=line.reservation_id.checkin == line.date,
+                    isLastNight=line.reservation_id.checkout + timedelta(days=-1) == line.date,
                     totalPrice=line.reservation_id.price_total,
                     pendingPayment=line.reservation_id.folio_pending_amount,
                     numNotifications=len(line.reservation_id.message_ids),
                     adults=line.reservation_id.adults,
+                    nextLineSplitted=next_line_splitted,
+                    previousLineSplitted=previous_line_splitted,
+                    hasNextLine=bool(next_line),
+                    closureReason='',
                 )
             )
         return result_lines
