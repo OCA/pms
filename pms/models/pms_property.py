@@ -32,7 +32,6 @@ class PmsProperty(models.Model):
         help="The company that owns or operates this property.",
         comodel_name="res.company",
         required=True,
-        check_pms_properties=True,
     )
     user_ids = fields.Many2many(
         string="Accepted Users",

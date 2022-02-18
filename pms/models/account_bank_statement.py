@@ -15,7 +15,6 @@ class AccountBankStatement(models.Model):
         copy=False,
         check_pms_properties=True,
     )
-    company_id = fields.Many2one(check_pms_properties=True)
     journal_id = fields.Many2one(check_pms_properties=True)
 
     @api.depends("journal_id")
@@ -23,7 +22,7 @@ class AccountBankStatement(models.Model):
         for record in self:
             if len(record.journal_id.pms_property_ids) == 1:
                 record.pms_property_id = record.journal_id.pms_property_ids[0]
-            else:
+            elif not record.pms_property_id:
                 record.pms_property_id = False
 
     def button_post(self):

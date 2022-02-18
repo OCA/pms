@@ -6,6 +6,7 @@ from odoo import fields, models
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
+    _check_pms_properties_auto = True
 
     pms_property_ids = fields.Many2many(
         string="Properties",
@@ -17,9 +18,6 @@ class ProductTemplate(models.Model):
         column1="product_tmpl_id",
         column2="pms_property_id",
         ondelete="restrict",
-        check_pms_properties=True,
-    )
-    company_id = fields.Many2one(
         check_pms_properties=True,
     )
     per_day = fields.Boolean(

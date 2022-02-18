@@ -6,7 +6,6 @@ from odoo import api, fields, models
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
-    # Fields declaration
     folio_ids = fields.Many2many(
         string="Folios",
         comodel_name="pms.folio",

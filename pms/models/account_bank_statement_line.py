@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class AccountBankStatementLine(models.Model):
     _inherit = "account.bank.statement.line"
+    _check_pms_properties_auto = True
 
     folio_ids = fields.Many2many(
         string="Folios",
@@ -11,6 +12,7 @@ class AccountBankStatementLine(models.Model):
         relation="account_bank_statement_folio_rel",
         column1="account_journal_id",
         column2="folio_id",
+        check_pms_properties=True,
     )
     reservation_ids = fields.Many2many(
         string="Reservations",
@@ -20,6 +22,7 @@ class AccountBankStatementLine(models.Model):
         relation="account_bank_statement_reservation_rel",
         column1="account_bank_statement_id",
         column2="reservation_id",
+        check_pms_properties=True,
     )
     service_ids = fields.Many2many(
         string="Services",
@@ -29,6 +32,7 @@ class AccountBankStatementLine(models.Model):
         relation="account_bank_statement_service_rel",
         column1="account_bank_statement_id",
         column2="service_id",
+        check_pms_properties=True,
     )
 
     @api.model
