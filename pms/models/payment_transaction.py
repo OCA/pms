@@ -3,6 +3,7 @@ from odoo import _, fields, models
 
 class PaymentTransaction(models.Model):
     _inherit = "payment.transaction"
+    _check_pms_properties_auto = True
 
     folio_ids = fields.Many2many(
         string="Folios",

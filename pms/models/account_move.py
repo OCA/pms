@@ -9,8 +9,8 @@ from odoo.exceptions import UserError
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+    _check_pms_properties_auto = True
 
-    # Field Declarations
     folio_ids = fields.Many2many(
         string="Folios",
         help="Folios where the account move are included",
@@ -31,6 +31,12 @@ class AccountMove(models.Model):
         readonly=False,
         check_pms_properties=True,
     )
+    journal_id = fields.Many2one(check_pms_properties=True)
+
+    @api.onchange("pms_property_id")
+    def _onchange_pms_property_id(self):
+        for move in self:
+            move.journal_id = move._get_default_journal()
 
     @api.depends("journal_id", "folio_ids")
     def _compute_pms_property_id(self):
@@ -39,7 +45,7 @@ class AccountMove(models.Model):
                 move.pms_property_id = move.folio_ids.mapped("pms_property_id")
             elif len(move.journal_id.mapped("pms_property_ids")) == 1:
                 move.pms_property_id = move.journal_id.mapped("pms_property_ids")[0]
-            else:
+            elif not move.pms_property_id:
                 move.pms_property_id = False
 
     @api.depends("line_ids", "line_ids.folio_ids")
