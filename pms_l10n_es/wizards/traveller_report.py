@@ -89,7 +89,7 @@ class TravellerReport(models.TransientModel):
             # get checkin partners info to send
             lines = self.env["pms.checkin.partner"].search(
                 [
-                    ("state", "=", "onboard", "done"),
+                    ("state", "in", ["onboard", "done"]),
                     ("arrival", ">=", str(date_target) + " 0:00:00"),
                     ("arrival", "<=", str(date_target) + " 23:59:59"),
                     ("pms_property_id", "=", property_id),
