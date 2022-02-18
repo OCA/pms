@@ -52,9 +52,6 @@ class ResPartner(models.Model):
         ondelete="restrict",
         check_pms_properties=True,
     )
-    company_id = fields.Many2one(
-        check_pms_properties=True,
-    )
     pms_checkin_partner_ids = fields.One2many(
         string="Checkin Partners",
         help="Associated checkin partners",

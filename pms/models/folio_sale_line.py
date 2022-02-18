@@ -12,7 +12,6 @@ class FolioSaleLine(models.Model):
     _name = "folio.sale.line"
     _description = "Folio Sale Line"
     _order = "folio_id, sequence, reservation_order desc, service_order, date_order"
-
     _check_company_auto = True
 
     folio_id = fields.Many2one(
@@ -254,7 +253,6 @@ class FolioSaleLine(models.Model):
         store=True,
         index=True,
         related="folio_id.company_id",
-        check_pms_properties=True,
     )
     folio_partner_id = fields.Many2one(
         string="Customer",

@@ -6,6 +6,7 @@ from odoo import api, fields, models
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
+    _check_pms_properties_auto = True
 
     # Fields declaration
     # TODO: REVIEW why not a Many2one?
@@ -17,12 +18,14 @@ class AccountMoveLine(models.Model):
         relation="folio_sale_line_invoice_rel",
         column1="invoice_line_id",
         column2="sale_line_id",
+        check_pms_properties=True,
     )
     folio_ids = fields.Many2many(
         comodel_name="pms.folio",
         string="Folios",
         compute="_compute_folio_ids",
         store=True,
+        check_pms_properties=True,
     )
     name_changed_by_user = fields.Boolean(
         string="Custom label",
@@ -34,9 +37,20 @@ class AccountMoveLine(models.Model):
     pms_property_id = fields.Many2one(
         name="Property",
         comodel_name="pms.property",
-        related="move_id.pms_property_id",
+        compute="_compute_pms_property_id",
         store=True,
+        readonly=False,
+        check_pms_properties=True,
     )
+    move_id = fields.Many2one(check_pms_properties=True)
+
+    @api.depends("move_id")
+    def _compute_pms_property_id(self):
+        for rec in self:
+            if rec.move_id and rec.move_id.pms_property_id:
+                rec.pms_property_id = rec.move_id.pms_property_id
+            elif not rec.pms_property_id:
+                rec.pms_property_id = False
 
     @api.depends("name")
     def _compute_name_changed_by_user(self):
