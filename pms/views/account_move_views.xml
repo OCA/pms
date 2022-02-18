@@ -6,10 +6,15 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_date']" position="after">
                 <field name="folio_ids" widget="many2many_tags" />
-                <field name="pms_property_id" invisible="1" />
+                <field name="pms_property_id" />
             </xpath>
+
             <xpath expr="//field[@name='quantity']" position="before">
                 <field name="name_changed_by_user" invisible="1" />
+                <field
+                    name="pms_property_id"
+                    attrs="{'column_invisible':[('parent.pms_property_id','!=',False)]}"
+                />
             </xpath>
         </field>
     </record>

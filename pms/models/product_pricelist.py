@@ -33,7 +33,6 @@ class ProductPricelist(models.Model):
     company_id = fields.Many2one(
         string="Company",
         help="Company to which the pricelist belongs",
-        check_pms_properties=True,
     )
     cancelation_rule_id = fields.Many2one(
         string="Cancelation Policy",
