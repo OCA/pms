@@ -35,7 +35,7 @@ class PmsRoomService(Component):
         PmsRoomInfo = self.env.datamodels["pms.room.info"]
         for room in self.env["pms.room"].search(
             domain,
-        ):
+        ).sorted("capacity"):
 
             result_rooms.append(
                 PmsRoomInfo(
