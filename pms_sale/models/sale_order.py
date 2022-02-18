@@ -37,7 +37,7 @@ class SaleOrder(models.Model):
             )
             if reservation:
                 reservation.action_book()
-            # Set reservation confirm when payment is done by Generate a Payment Link
-            if not sale.has_to_be_paid():
-                reservation.action_confirm()
+                # Set reservation confirm when payment is done by Generate a Payment Link
+                if not sale.has_to_be_paid():
+                    reservation.action_confirm()
         return res
