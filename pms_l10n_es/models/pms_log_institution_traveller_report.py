@@ -20,3 +20,4 @@ class PmsLogInstitutionTravellerReport(models.Model):
         string="Detailed file",
     )
     txt_filename = fields.Text()
+    txt_message = fields.Char(string="Log Message")
