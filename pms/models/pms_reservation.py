@@ -1752,50 +1752,7 @@ class PmsReservation(models.Model):
         }
 
     def action_open_mail_composer(self):
-        self.ensure_one()
-        template = False
-        pms_property = self.pms_property_id
-        if (
-            self.to_send_mail
-            and not self.is_modified_reservation
-            and self.state not in "cancel"
-        ):
-            if pms_property.property_confirmed_template:
-                template = pms_property.property_confirmed_template
-        elif (
-            self.to_send_mail
-            and self.is_modified_reservation
-            and self.state not in "cancel"
-        ):
-            if pms_property.property_modified_template:
-                template = pms_property.property_modified_template
-        elif self.to_send_mail and self.state in "cancel":
-            if pms_property.property_canceled_template:
-                template = pms_property.property_canceled_template
-        compose_form = self.env.ref(
-            "mail.email_compose_message_wizard_form", raise_if_not_found=False
-        )
-        ctx = dict(
-            model="pms.folio",
-            default_res_model="pms.folio",
-            default_res_id=self.folio_id.id,
-            template_id=template and template.id or False,
-            composition_mode="comment",
-            partner_ids=[self.partner_id.id],
-            force_email=True,
-            record_id=self.folio_id.id,
-        )
-        return {
-            "name": _("Send Confirmed Reservation Mail "),
-            "type": "ir.actions.act_window",
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": "mail.compose.message",
-            "views": [(compose_form.id, "form")],
-            "view_id": compose_form.id,
-            "target": "new",
-            "context": ctx,
-        }
+        return self.folio_id.action_open_mail_composer()
 
     def open_wizard_several_partners(self):
         ctx = dict(

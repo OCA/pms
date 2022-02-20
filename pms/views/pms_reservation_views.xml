@@ -47,19 +47,19 @@
                         name="action_open_mail_composer"
                         string="Send Confirmation Email "
                         type="object"
-                        attrs="{'invisible':['|','|',('to_send_mail', '=', False),('is_modified_reservation', '=', True),('state', 'in', 'cancel')]}"
+                        attrs="{'invisible':['|','|','|',('to_send_mail', '=', False),('is_modified_reservation', '=', True),('state', 'in', 'cancel'),('reservation_type', 'in', 'out')]}"
                     />
                     <button
                         name="action_open_mail_composer"
                         string="Send Modification Email "
                         type="object"
-                        attrs="{'invisible':['|','|',('to_send_mail', '=', False), ('is_modified_reservation', '=', False), ('state', 'in', 'cancel')]}"
+                        attrs="{'invisible':['|','|','|',('to_send_mail', '=', False), ('is_modified_reservation', '=', False), ('state', 'in', 'cancel'),('reservation_type', 'in', 'out')]}"
                     />
                     <button
                         name="action_open_mail_composer"
                         string="Send Cancellation Email "
                         type="object"
-                        attrs="{'invisible':['|',('to_send_mail', '=', False), ('state', 'not in', 'cancel')]}"
+                        attrs="{'invisible':['|','|',('to_send_mail', '=', False), ('state', 'not in', 'cancel'),('reservation_type', 'in', 'out')]}"
                     />
                     <field name="state" widget="statusbar" />
                     <field name="to_send_mail" invisible="1" />
@@ -1118,7 +1118,7 @@
         <field name="res_model">mail.compose.message</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="pms.model_pms_reservation" />
+        <field name="binding_model_id" ref="pms.model_pms_folio" />
         <field name="binding_view_types">form</field>
         <field
             name="context"
@@ -1132,7 +1132,7 @@
         <field name="res_model">mail.compose.message</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="pms.model_pms_reservation" />
+        <field name="binding_model_id" ref="pms.model_pms_folio" />
         <field name="binding_view_types">form</field>
         <field
             name="context"
