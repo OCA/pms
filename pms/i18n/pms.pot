@@ -2472,8 +2472,6 @@ msgid "Companies that refers to partner"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_account_bank_statement__company_id
-#: model:ir.model.fields,field_description:pms.field_account_journal__company_id
 #: model:ir.model.fields,field_description:pms.field_folio_sale_line__company_id
 #: model:ir.model.fields,field_description:pms.field_pms_folio__company_id
 #: model:ir.model.fields,field_description:pms.field_pms_property__company_id
@@ -2481,9 +2479,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__company_id
 #: model:ir.model.fields,field_description:pms.field_pms_service__company_id
 #: model:ir.model.fields,field_description:pms.field_product_pricelist__company_id
-#: model:ir.model.fields,field_description:pms.field_product_product__company_id
-#: model:ir.model.fields,field_description:pms.field_product_template__company_id
-#: model:ir.model.fields,field_description:pms.field_res_partner__company_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_folio_view_search
 msgid "Company"
 msgstr ""
@@ -5105,11 +5100,16 @@ msgstr ""
 
 #. module: pms
 #: model:ir.model,name:pms.model_account_journal
+#: model:ir.model.fields,field_description:pms.field_account_bank_statement__journal_id
+#: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__journal_id
+#: model:ir.model.fields,field_description:pms.field_account_move__journal_id
+#: model:ir.model.fields,field_description:pms.field_account_payment__journal_id
 msgid "Journal"
 msgstr ""
 
 #. module: pms
 #: model:ir.model,name:pms.model_account_move
+#: model:ir.model.fields,field_description:pms.field_account_move_line__move_id
 msgid "Journal Entry"
 msgstr ""
 
@@ -6657,6 +6657,7 @@ msgid "Please define an accounting sales journal for the company %s (%s)."
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,field_description:pms.field_account_move_line__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_reservation__pms_property_id
 msgid "Pms Property"
 msgstr ""
@@ -7150,7 +7151,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_account_bank_statement_line__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_account_move__pms_property_id
-#: model:ir.model.fields,field_description:pms.field_account_move_line__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_account_payment__pms_property_id
 #: model:ir.model.fields,field_description:pms.field_pms_automated_mails__pms_property_ids
 #: model:ir.model.fields,field_description:pms.field_pms_availability__pms_property_id
@@ -9039,16 +9039,6 @@ msgid "The closure reason for a closure room"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,help:pms.field_account_bank_statement__company_id
-msgid "The company for Account Bank Statement"
-msgstr ""
-
-#. module: pms
-#: model:ir.model.fields,help:pms.field_account_journal__company_id
-msgid "The company for Account Jouarnal"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_folio__company_id
 msgid "The company for folio"
 msgstr ""
@@ -9152,6 +9142,11 @@ msgid "The moment for this action cannot be 'Before'"
 msgstr ""
 
 #. module: pms
+#: model:ir.model.fields,help:pms.field_account_move_line__move_id
+msgid "The move of this entry line."
+msgstr ""
+
+#. module: pms
 #: model:ir.model.fields,help:pms.field_pms_sale_channel__name
 msgid "The name of the sale channel"
 msgstr ""
@@ -9237,7 +9232,6 @@ msgstr ""
 #. module: pms
 #: model:ir.model.fields,help:pms.field_account_bank_statement_line__pms_property_id
 #: model:ir.model.fields,help:pms.field_account_move__pms_property_id
-#: model:ir.model.fields,help:pms.field_account_move_line__pms_property_id
 #: model:ir.model.fields,help:pms.field_account_payment__pms_property_id
 msgid "The property associated to the account move"
 msgstr ""
