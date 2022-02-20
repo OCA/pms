@@ -167,6 +167,11 @@ msgid "Exit"
 msgstr ""
 
 #. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_0
+msgid "Full clean"
+msgstr ""
+
+#. module: pms_housekeeping
 #: model:ir.ui.menu,name:pms_housekeeping.menu_action_pms_house_keeping_tasks_view_form
 msgid "House Keeping Tasks"
 msgstr ""
@@ -218,6 +223,12 @@ msgstr ""
 #. module: pms_housekeeping
 #: model:ir.model.fields.selection,name:pms_housekeeping.selection__pms_housekeeping__state__in_progress
 msgid "In Progress"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_3
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_4
+msgid "Inspect"
 msgstr ""
 
 #. module: pms_housekeeping
@@ -297,6 +308,11 @@ msgid "Reservation"
 msgstr ""
 
 #. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_2
+msgid "Review"
+msgstr ""
+
+#. module: pms_housekeeping
 #: model:ir.model.fields,field_description:pms_housekeeping.field_pms_housekeeping__room_id
 #: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_housekeeping_rack
 msgid "Room"
@@ -310,6 +326,11 @@ msgstr ""
 #. module: pms_housekeeping
 #: model_terms:ir.ui.view,arch_db:pms_housekeeping.view_filter_room_rack
 msgid "Room type"
+msgstr ""
+
+#. module: pms_housekeeping
+#: model:pms.housekeeping.task,name:pms_housekeeping.pms_housekeeping_task_1
+msgid "Soft clean"
 msgstr ""
 
 #. module: pms_housekeeping
