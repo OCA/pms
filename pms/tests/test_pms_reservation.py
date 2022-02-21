@@ -3062,6 +3062,12 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
+        closure_reason = self.env["room.closure.reason"].create(
+            {
+                "name": "test closure reason",
+                "description": "test clopsure reason description",
+            }
+        )
         # ACT
         self.room_type_double.write({"list_price": 30})
         reservation = self.env["pms.reservation"].create(
@@ -3073,6 +3079,7 @@ class TestPmsReservations(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "pricelist_id": self.pricelist1.id,
                 "reservation_type": "out",
+                "closure_reason_id": closure_reason.id,
             }
         )
         # ASSERT
@@ -3119,6 +3126,12 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
+        closure_reason = self.env["room.closure.reason"].create(
+            {
+                "name": "test closure reason",
+                "description": "test clopsure reason description",
+            }
+        )
         # ACT
         self.room_type_double.write({"list_price": 30})
         reservation = self.env["pms.reservation"].create(
@@ -3129,6 +3142,7 @@ class TestPmsReservations(TestPms):
                 "partner_id": self.partner1.id,
                 "pms_property_id": self.pms_property1.id,
                 "reservation_type": "out",
+                "closure_reason_id": closure_reason.id,
             }
         )
 
@@ -3176,7 +3190,7 @@ class TestPmsReservations(TestPms):
             "The reservation type of the folio should be 'staff'",
         )
 
-    def test_no_partner_id_out_reservation(self):
+    def _test_no_partner_id_out_reservation(self):
         """
         Check that a reservation of type out of service does not
         have a partner_id.
@@ -3188,6 +3202,12 @@ class TestPmsReservations(TestPms):
         # ARRANGE
         checkin = fields.date.today()
         checkout = fields.date.today() + datetime.timedelta(days=3)
+        closure_reason = self.env["room.closure.reason"].create(
+            {
+                "name": "test closure reason",
+                "description": "test clopsure reason description",
+            }
+        )
         # ACT
         reservation = self.env["pms.reservation"].create(
             {
@@ -3196,6 +3216,7 @@ class TestPmsReservations(TestPms):
                 "room_type_id": self.room_type_double.id,
                 "pms_property_id": self.pms_property1.id,
                 "reservation_type": "out",
+                "closure_reason_id": closure_reason.id,
                 "partner_name": "Install furniture",
             }
         )
@@ -3765,7 +3786,9 @@ class TestPmsReservations(TestPms):
         closure_reason = self.env["room.closure.reason"].create(
             {
                 "name": "Room revision",
-                "description": "Revision of lights, fire extinguishers, smoke detectors and emergency lights",
+                "description": "Revision of lights, "
+                "fire extinguishers, smoke detectors and "
+                "emergency lights",
             }
         )
         # ACT
