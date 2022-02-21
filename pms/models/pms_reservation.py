@@ -1674,12 +1674,14 @@ class PmsReservation(models.Model):
     @api.constrains("closure_reason_id")
     def _check_closure_reason_id(self):
         for record in self:
-            if record.reservation_type == "out" and not record.closure_reason_id:
-                raise ValidationError(
-                    _(
-                        "A closure reason is mandatory when reservation type is 'out of service'"
+            if record.reservation_type == "out":
+                if not record.closure_reason_id:
+                    raise ValidationError(
+                        _(
+                            "A closure reason is mandatory when reservation"
+                            " type is 'out of service'"
+                        )
                     )
-                )
 
     @api.constrains("reservation_type")
     def _check_same_reservation_type(self):
@@ -1836,6 +1838,15 @@ class PmsReservation(models.Model):
             # (To allow to create reservations direct)
             if vals.get("reservation_type"):
                 folio_vals["reservation_type"] = vals.get("reservation_type")
+                if vals.get("reservation_type") == "out" and not vals.get(
+                    "closure_reason_id"
+                ):
+                    raise ValidationError(
+                        _(
+                            "A closure reason is mandatory when reservation"
+                            " type is 'out of service'"
+                        )
+                    )
             folio = self.env["pms.folio"].create(folio_vals)
             vals.update(
                 {
@@ -1843,6 +1854,7 @@ class PmsReservation(models.Model):
                     "reservation_type": vals.get("reservation_type"),
                 }
             )
+
         else:
             raise ValidationError(_("The Property are mandatory in the reservation"))
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
