@@ -354,8 +354,8 @@
                     'adults': 1,
                     'state': 'confirm',
                     'reservation_type': 'out',
-                    'closure_reason_id': ref('pms_room_closure_reason_maintenance'),
-                    'out_service_description': 'Door arrangement',
+                    'closure_reason_id': ref('pms_room_closure_reason_vip_privacy'),
+                    'out_service_description': 'Room next to noisy guests.',
                     })]"
             />
         </record>
