@@ -1137,7 +1137,7 @@ class PmsFolio(models.Model):
     @api.constrains("name")
     def _check_required_partner_name(self):
         for record in self:
-            if not record.partner_name:
+            if not record.partner_name and record.reservation_type != 'out':
                 raise models.ValidationError(_("You must assign a customer name"))
 
     @api.model
