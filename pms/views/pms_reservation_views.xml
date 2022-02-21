@@ -351,7 +351,10 @@
                     </h3>
                     <group>
                         <group string="General Info" name="contact_details">
-                            <field name="partner_id" attrs="{'invisible':[('reservation_type','in',('out'))]}" />
+                            <field
+                                name="partner_id"
+                                attrs="{'invisible':[('reservation_type','in',('out'))]}"
+                            />
                             <field
                                 name="document_type"
                                 attrs="{'invisible':[('reservation_type','in',('out'))]}"
