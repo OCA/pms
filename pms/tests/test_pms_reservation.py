@@ -3724,3 +3724,65 @@ class TestPmsReservations(TestPms):
             reservation.commission_amount,
             "Reservation commission is wrong",
         )
+
+    def test_closure_reason_out_of_service_mandatory_not(self):
+        """
+        Ouf of service reservation should contain a closure reason id.
+        -------------
+        Create a reservation of type out of service and check if there's no
+        closure reason id should raises an exception.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=1)
+        # ACT & ASSERT
+        with self.assertRaises(
+            ValidationError,
+            msg="The reservation has been created and it shouldn't, "
+            "because it doesn't have a closure reason.",
+        ):
+            self.env["pms.reservation"].create(
+                {
+                    "checkin": checkin,
+                    "checkout": checkout,
+                    "room_type_id": self.room_type_double.id,
+                    "partner_id": self.partner1.id,
+                    "pms_property_id": self.pms_property1.id,
+                    "reservation_type": "out",
+                }
+            )
+
+    def test_closure_reason_out_of_service_mandatory(self):
+        """
+        Ouf of service reservation should contain a closure reason id.
+        -------------
+        Create a reservation of type out of service and with a closure reason.
+        """
+        # ARRANGE
+        checkin = fields.date.today()
+        checkout = fields.date.today() + datetime.timedelta(days=1)
+
+        closure_reason = self.env["room.closure.reason"].create(
+            {
+                "name": "Room revision",
+                "description": "Revision of lights, fire extinguishers, smoke detectors and emergency lights",
+            }
+        )
+        # ACT
+        reservation_out = self.env["pms.reservation"].create(
+            {
+                "checkin": checkin,
+                "checkout": checkout,
+                "room_type_id": self.room_type_double.id,
+                "partner_id": self.partner1.id,
+                "pms_property_id": self.pms_property1.id,
+                "reservation_type": "out",
+                "closure_reason_id": closure_reason,
+            }
+        )
+        # ASSERT
+        self.assertTrue(
+            reservation_out.closure_reason_id,
+            "The out of service reservation should be created properly with "
+            "a closure reason.",
+        )
