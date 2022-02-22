@@ -36,7 +36,15 @@ class AccountMove(models.Model):
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
         for move in self:
-            move.journal_id = move._get_default_journal()
+            journals = self.env["account.journal"].search(
+                [
+                    ("pms_property_ids", "=", move.pms_property_id.id),
+                ]
+            )
+            if journals:
+                move.journal_id = journals[0]
+            else:
+                move.journal_id = False
 
     @api.depends("journal_id", "folio_ids")
     def _compute_pms_property_id(self):
@@ -45,6 +53,8 @@ class AccountMove(models.Model):
                 move.pms_property_id = move.folio_ids.mapped("pms_property_id")
             elif len(move.journal_id.mapped("pms_property_ids")) == 1:
                 move.pms_property_id = move.journal_id.mapped("pms_property_ids")[0]
+            elif not move.journal_id.pms_property_ids:
+                move.pms_property_id = False
             elif not move.pms_property_id:
                 move.pms_property_id = False
 
