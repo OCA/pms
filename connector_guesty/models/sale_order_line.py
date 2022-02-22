@@ -1,5 +1,6 @@
 # Copyright (C) 2021 Casai (https://www.casai.com)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
 import logging
 
 from odoo import fields, models
@@ -26,6 +27,7 @@ class SaleOrderLine(models.Model):
             and self.stop
         ):
             # todo: Fix Calendar
+            real_stop = self.stop - datetime.timedelta(days=1)
             success, result = self.sudo().company_id.guesty_backend_id.call_get_request(
                 url_path="availability-pricing/api/calendar/listings/{}".format(
                     self.sudo().property_id.guesty_id
@@ -33,7 +35,7 @@ class SaleOrderLine(models.Model):
                 paginate=False,
                 params={
                     "startDate": self.start.strftime("%Y-%m-%d"),
-                    "endDate": self.stop.strftime("%Y-%m-%d"),
+                    "endDate": real_stop.strftime("%Y-%m-%d"),
                 },
             )
 
