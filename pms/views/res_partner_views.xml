@@ -38,9 +38,9 @@
             <xpath expr='//div[@name="button_box"]' position='inside'>
                 <button
                     class="oe_stat_button"
-                    type="action"
+                    type="object"
                     icon="fa-bed"
-                    name="%(pms.pms_partner_reservations)d"
+                    name="action_partner_reservations"
                     help="Reservations related with this contact"
                 >
                     <field
@@ -51,9 +51,9 @@
                 </button>
                 <button
                     class="oe_stat_button"
-                    type="action"
+                    type="object"
                     icon="fa-file"
-                    name="%(pms.pms_partner_folios)d"
+                    name="action_partner_folios"
                     help="Folios related with this contact"
                 >
                     <field string="Folios" name="folios_count" widget="statinfo" />

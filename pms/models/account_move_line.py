@@ -18,7 +18,6 @@ class AccountMoveLine(models.Model):
         relation="folio_sale_line_invoice_rel",
         column1="invoice_line_id",
         column2="sale_line_id",
-        check_pms_properties=True,
     )
     folio_ids = fields.Many2many(
         comodel_name="pms.folio",
