@@ -17,7 +17,8 @@
                 <page name="guesty_info" string="Guesty Information">
                     <group>
                         <group>
-                            <field name="guesty_id" />
+                            <field name="guesty_id" readonly="1" />
+                            <field name="sale_order_id" readonly="1" />
                         </group>
                     </group>
                 </page>

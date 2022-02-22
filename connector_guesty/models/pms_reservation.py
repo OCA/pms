@@ -104,6 +104,11 @@ class PmsReservation(models.Model):
 
     def action_confirm(self):
         res = super(PmsReservation, self).action_confirm()
+
+        # If the reservation is already confirmed, we don´t do more
+        if self.stage_id.id == self.env.company.guesty_backend_id.stage_confirmed_id.id:
+            return res
+
         if self.env.company.guesty_backend_id and not self.env.context.get(
             "ignore_guesty_push", False
         ):
@@ -196,7 +201,7 @@ class PmsReservation(models.Model):
         )
 
         if not success:
-            raise UserError(_("Unable to confirm reservation"))
+            raise UserError(_("Unable to confirm reservation : {}".format(result)))
 
         self.message_post(body=_("Reservation confirmed successfully on guesty!"))
 
