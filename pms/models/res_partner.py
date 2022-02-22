@@ -554,3 +554,16 @@ class ResPartner(models.Model):
         key_fields = super(ResPartner, self)._get_key_fields()
         key_fields.extend(["document_number"])
         return key_fields
+
+    def _enought_invoice_data(self):
+        self.ensure_one()
+        if (
+            self.document_number_to_invoice
+            and not self.country_id
+            and not self.state_id
+            and not self.city
+            and not self.zip
+            and not self.street
+        ):
+            return True
+        return False
