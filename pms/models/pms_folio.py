@@ -1402,7 +1402,7 @@ class PmsFolio(models.Model):
             model="pms.folio",
             default_model="pms.folio",
             default_res_id=self.id,
-            template_id=template and template.id or False,
+            default_template_id=template and template.id or False,
             composition_mode="comment",
             partner_ids=[self.partner_id.id],
             force_email=True,
