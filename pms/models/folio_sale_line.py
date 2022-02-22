@@ -506,7 +506,7 @@ class FolioSaleLine(models.Model):
             "Product Unit of Measure"
         )
         for line in self:
-            if line.state == "draft":
+            if line.state == "draft" or line.price_total == 0.0:
                 line.invoice_status = "no"
             # REVIEW: if qty_to_invoice < 0 (invoice qty > sale qty),
             # why status to_invoice?? this behavior is copied from sale order
@@ -625,7 +625,7 @@ class FolioSaleLine(models.Model):
         Otherwise, the quantity delivered is used.
         """
         for line in self:
-            if line.folio_id.state not in ["draft"]:
+            if line.folio_id.state not in ["draft"] and line.price_total > 0.0:
                 line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
             else:
                 line.qty_to_invoice = 0

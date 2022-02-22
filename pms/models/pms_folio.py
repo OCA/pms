@@ -814,9 +814,10 @@ class PmsFolio(models.Model):
         - to_invoice: if any SO line is 'to_invoice', the whole SO is 'to_invoice'
         - invoiced: if all SO lines are invoiced, the SO is invoiced.
         """
-        unconfirmed_orders = self.filtered(lambda so: so.state in ["draft"])
+        unconfirmed_orders = self.filtered(lambda folio: folio.state in ["draft"])
         unconfirmed_orders.invoice_status = "no"
-        confirmed_orders = self - unconfirmed_orders
+        zero_orders = self.filtered(lambda folio: folio.amount_total == 0)
+        confirmed_orders = self - unconfirmed_orders - zero_orders
         if not confirmed_orders:
             return
         line_invoice_status_all = [
