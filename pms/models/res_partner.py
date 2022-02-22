@@ -328,31 +328,132 @@ class ResPartner(models.Model):
                 record.lastname2 = False
 
     def _compute_reservations_count(self):
-        # TODO: recuperar las reservas de los folios del partner
+        # Return reservation with partner included in reservation and/or checkin
         pms_reservation_obj = self.env["pms.reservation"]
         for record in self:
+            checkin_reservation_ids = (
+                self.env["pms.checkin.partner"]
+                .search([("partner_id", "=", record.id)])
+                .mapped("reservation_id.id")
+            )
             record.reservations_count = pms_reservation_obj.search_count(
                 [
+                    "|",
                     (
                         "partner_id.id",
                         "child_of",
                         record.id if isinstance(record.id, int) else False,
-                    )
+                    ),
+                    ("id", "in", checkin_reservation_ids),
                 ]
             )
 
+    def action_partner_reservations(self):
+        self.ensure_one()
+        checkin_reservation_ids = (
+            self.env["pms.checkin.partner"]
+            .search([("partner_id", "=", self.id)])
+            .mapped("reservation_id.id")
+        )
+        reservations = self.env["pms.reservation"].search(
+            [
+                "|",
+                (
+                    "partner_id.id",
+                    "child_of",
+                    self.id if isinstance(self.id, int) else False,
+                ),
+                ("id", "in", checkin_reservation_ids),
+            ]
+        )
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "pms.open_pms_reservation_form_tree_all"
+        )
+        if len(reservations) > 1:
+            action["domain"] = [("id", "in", reservations.ids)]
+        elif len(reservations) == 1:
+            form_view = [(self.env.ref("pms.pms_reservation_view_form").id, "form")]
+            if "views" in action:
+                action["views"] = form_view + [
+                    (state, view) for state, view in action["views"] if view != "form"
+                ]
+            else:
+                action["views"] = form_view
+            action["res_id"] = reservations.id
+        else:
+            action = {"type": "ir.actions.act_window_close"}
+
+        if len(self) == 1:
+            context = {
+                "default_partner_id": self.id,
+                "default_user_id": self.user_id.id,
+            }
+            action["context"] = context
+        return action
+
     def _compute_folios_count(self):
+        # Return folios count with partner included in folio and/or folio checkins
         pms_folio_obj = self.env["pms.folio"]
         for record in self:
+            checkin_folio_ids = (
+                self.env["pms.checkin.partner"]
+                .search([("partner_id", "=", record.id)])
+                .mapped("folio_id.id")
+            )
             record.folios_count = pms_folio_obj.search_count(
                 [
+                    "|",
                     (
                         "partner_id.id",
                         "=",
                         record.id if isinstance(record.id, int) else False,
-                    )
+                    ),
+                    ("id", "in", checkin_folio_ids),
                 ]
             )
+
+    def action_partner_folios(self):
+        self.ensure_one()
+        checkin_folio_ids = (
+            self.env["pms.checkin.partner"]
+            .search([("partner_id", "=", self.id)])
+            .mapped("folio_id.id")
+        )
+        folios = self.env["pms.folio"].search(
+            [
+                "|",
+                (
+                    "partner_id.id",
+                    "child_of",
+                    self.id if isinstance(self.id, int) else False,
+                ),
+                ("id", "in", checkin_folio_ids),
+            ]
+        )
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "pms.open_pms_folio1_form_tree_all"
+        )
+        if len(folios) > 1:
+            action["domain"] = [("id", "in", folios.ids)]
+        elif len(folios) == 1:
+            form_view = [(self.env.ref("pms.pms_folio_view_form").id, "form")]
+            if "views" in action:
+                action["views"] = form_view + [
+                    (state, view) for state, view in action["views"] if view != "form"
+                ]
+            else:
+                action["views"] = form_view
+            action["res_id"] = folios.id
+        else:
+            action = {"type": "ir.actions.act_window_close"}
+
+        if len(self) == 1:
+            context = {
+                "default_partner_id": self.id,
+                "default_user_id": self.user_id.id,
+            }
+            action["context"] = context
+        return action
 
     @api.constrains("is_agency", "sale_channel_id")
     def _check_is_agency(self):
