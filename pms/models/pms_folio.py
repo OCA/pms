@@ -1797,14 +1797,14 @@ class PmsFolio(models.Model):
         self.ensure_one()
         pms_property = self.pms_property_id
         partner = self.env["res.partner"].browse(partner_invoice_id)
-        if not partner.document_number_to_invoice and self._context.get("autoinvoice"):
+        if not partner._enought_invoice_data() and self._context.get("autoinvoice"):
             return pms_property.journal_simplified_invoice_id
         return pms_property.journal_normal_invoice_id
 
     def _get_default_move_type(self, partner_invoice_id):
         self.ensure_one()
         partner = self.env["res.partner"].browse(partner_invoice_id)
-        if not partner.document_number_to_invoice and self._context.get("autoinvoice"):
+        if not partner._enought_invoice_data() and self._context.get("autoinvoice"):
             return "out_receipt"
         return "out_invoice"
 
