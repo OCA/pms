@@ -26,13 +26,26 @@ class CrmLead(models.Model):
         for expression_id in expression_ids:
             _log.info(expression_id.expression_string)
             if expression_id.lead_field in custom_values:
-                break
+                continue
             value_list = re.findall(
                 expression_id.expression_string, body_data, flags=re.MULTILINE
             )
             for value in value_list:
                 custom_values[expression_id.lead_field] = str(value).strip()
                 break
+
+        if "email_from" not in custom_values:
+            if msg_dict.get("email_from"):
+                _email_ = msg_dict["email_from"]
+                lst_mail = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", _email_)
+                if lst_mail:
+                    _email_ = lst_mail.group(0)
+
+                # Todo(jorge.juarez@casai.com): found a way to have a black list
+                if _email_ and (
+                    "casai.com" not in _email_ and "casai.zendesk.com" not in _email_
+                ):
+                    custom_values["email_from"] = _email_
 
         if "email_from" not in custom_values:
             custom_values["email_from"] = "{}@odoo.casai.com".format(
