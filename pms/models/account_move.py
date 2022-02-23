@@ -29,9 +29,9 @@ class AccountMove(models.Model):
         compute="_compute_pms_property_id",
         store=True,
         readonly=False,
-        check_pms_properties=True,
+        # check_pms_properties=True,
     )
-    journal_id = fields.Many2one(check_pms_properties=True)
+    # journal_id = fields.Many2one(check_pms_properties=True)
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):

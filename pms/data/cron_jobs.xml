@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- Set reservation like No Show if the client does not show up  -->
         <record model="ir.cron" id="noshow_reservations">
             <field name="name">Automatic No Show Reservation</field>
