@@ -70,7 +70,7 @@ class PmsReservation(models.Model):
         if self.env.company.guesty_backend_id and not self.env.context.get(
             "ignore_guesty_push", False
         ):
-            res.with_delay().guesty_push_reservation()
+            res.guesty_push_reservation()
         return res
 
     def write(self, values):
@@ -103,11 +103,11 @@ class PmsReservation(models.Model):
         return res
 
     def action_confirm(self):
-        res = super(PmsReservation, self).action_confirm()
-
         # If the reservation is already confirmed, we don´t do more
         if self.stage_id.id == self.env.company.guesty_backend_id.stage_confirmed_id.id:
-            return res
+            return None
+
+        res = super(PmsReservation, self).action_confirm()
 
         if self.env.company.guesty_backend_id and not self.env.context.get(
             "ignore_guesty_push", False

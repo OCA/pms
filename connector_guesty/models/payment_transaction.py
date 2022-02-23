@@ -23,6 +23,9 @@ class PaymentTransaction(models.Model):
             if sale.state == "cancel":
                 raise ValidationError(_("Order was canceled"))
 
+            if sale.state == "waiting_approval":
+                raise ValidationError(_("Order needs an approval"))
+
             reservation_id = (
                 self.env["pms.reservation"]
                 .sudo()
@@ -73,6 +76,9 @@ class PaymentTransaction(models.Model):
                     )
                 )
                 if reservation_id:
+                    # If reservation is not confirmed, we do it
+                    if sale.state in ["approved"]:
+                        sale.action_confirm()
                     reservation_id.guesty_push_payment()
 
         return res

@@ -249,7 +249,6 @@ class PmsProperty(models.Model):
             ),
             paginate=False,
             params={
-                "fields": ", ".join(["status"]),
                 "startDate": start_localized.strftime("%Y-%m-%d"),
                 "endDate": stop_localized.strftime("%Y-%m-%d"),
             },
