@@ -26,3 +26,4 @@ class PmsFolioInfo(Datamodel):
     salesPerson = fields.String(required=False, allow_none=True)
     paymentState = fields.String(required=False, allow_none=True)
     propertyId = fields.Integer(required=False, allow_none=True)
+    agencyImage = fields.String(required=False, allow_none=True)
