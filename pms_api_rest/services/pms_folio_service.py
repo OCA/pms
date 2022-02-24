@@ -80,6 +80,15 @@ class PmsFolioService(Component):
                         "folioId": reservation.folio_id.id
                         if reservation.folio_id
                         else "",
+                        "saleChannel": reservation.channel_type_id.name
+                        if reservation.channel_type_id
+                        else "",
+                        "agency": reservation.agency_id.name
+                        if reservation.agency_id
+                        else "",
+                        "agencyImage": reservation.agency_id.image_1024.decode("utf-8")
+                        if reservation.agency_id
+                        else "",
                     }
                 )
             result_folios.append(
@@ -107,6 +116,7 @@ class PmsFolioService(Component):
                     if folio.payment_state
                     else "",
                     propertyId=folio.pms_property_id,
+                    agencyImage=folio.agency_id.image_1024 if folio.agency_id else "",
                 )
             )
         return result_folios
