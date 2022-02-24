@@ -3190,7 +3190,7 @@ class TestPmsReservations(TestPms):
             "The reservation type of the folio should be 'staff'",
         )
 
-    def _test_no_partner_id_out_reservation(self):
+    def test_no_partner_id_out_reservation(self):
         """
         Check that a reservation of type out of service does not
         have a partner_id.
