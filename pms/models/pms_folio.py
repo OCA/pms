@@ -1923,6 +1923,8 @@ class PmsFolio(models.Model):
                     "price_unit": item["price"],
                     "discount": final_discount,
                     "folio_id": folio.id,
+                    "product_id": reservation.room_type_id.product_id.id,
+                    "tax_ids": [(6, 0, reservation.tax_ids.ids)],
                     "reservation_line_ids": [(6, 0, lines_to.ids)],
                 }
                 reservation.sale_line_ids = [(0, 0, new)]
@@ -2009,6 +2011,8 @@ class PmsFolio(models.Model):
                         "discount": final_discount,
                         "folio_id": folio.id,
                         "service_line_ids": [(6, 0, lines_to.ids)],
+                        "product_id": service.product_id.id,
+                        "tax_ids": [(6, 0, service.tax_ids.ids)],
                     }
                     reservation.sale_line_ids = [(0, 0, new)]
             if len(expected_reservation_services) < len(current_sale_service_ids):
@@ -2077,6 +2081,8 @@ class PmsFolio(models.Model):
                             "discount": final_discount,
                             "folio_id": folio.id,
                             "service_line_ids": [(6, 0, lines_to.ids)],
+                            "product_id": folio_service.product_id.id,
+                            "tax_ids": [(6, 0, folio_service.tax_ids.ids)],
                         }
                         folio.sale_line_ids = [(0, 0, new)]
                 if len(expected_folio_services) < len(current_folio_service_ids):
