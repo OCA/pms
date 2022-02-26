@@ -4,7 +4,7 @@ import itertools as it
 import json
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountMove(models.Model):
@@ -265,6 +265,8 @@ class AccountMove(models.Model):
         """
         Overwrite the original method to add the folio_ids to the invoice
         """
+        for record in self:
+            record._check_pms_valid_invoice(record)
         res = super(AccountMove, self)._post(soft)
         self._autoreconcile_folio_payments()
         return res
@@ -282,3 +284,35 @@ class AccountMove(models.Model):
                         lambda p: p.id in [item.id for item in combi]
                     )
         return []
+
+    def _check_pms_valid_invoice(self, move):
+        """
+        Check invoice and receipts legal status
+        """
+        self.ensure_one()
+        if self.move_type == "out_invoice" and (
+            not self.partner_id or not self.partner_id._check_enought_invoice_data()
+        ):
+            raise UserError(
+                _(
+                    "You cannot validate this invoice. Please check the "
+                    " partner has the complete information required."
+                )
+            )
+        if self.move_type == "out_receipt":
+            self._check_receipt_restrictions()
+        return True
+
+    def _check_receipt_restrictions(self):
+        self.ensure_one()
+        if (
+            self.pms_property_id
+            and self.total_amount > self.pms_property_id.max_amount_simplified_invoice
+        ):
+            mens = _(
+                "The total amount of the receipt is higher than the "
+                "maximum amount allowed for simplified invoices."
+            )
+            self.folio_ids.message_post(body=mens)
+            raise ValidationError(mens)
+        return True

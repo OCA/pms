@@ -182,6 +182,12 @@ class PmsProperty(models.Model):
         check_pms_properties=True,
     )
 
+    max_amount_simplified_invoice = fields.Float(
+        string="Max Amount Simplified Invoice",
+        help="Maximum amount to create the simplified invoice",
+        default=400.0,
+    )
+
     @api.depends_context(
         "checkin",
         "checkout",
