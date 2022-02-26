@@ -3,9 +3,12 @@
 
 from math import ceil
 
+import babel.dates
+
 from odoo import _, api, fields, models
 from odoo.osv import expression
 from odoo.tools import float_compare, float_is_zero
+from odoo.tools.misc import get_lang
 
 
 class FolioSaleLine(models.Model):
@@ -779,7 +782,12 @@ class FolioSaleLine(models.Model):
                     break
                 if date.month != month:
                     name = name + "\n" if name else ""
-                    name += date.strftime("%B-%Y") + ": "
+                    name += (
+                        babel.dates.format_date(
+                            date=date, format="MMMM y", locale=get_lang(self.env).code
+                        )
+                        + ": "
+                    )
                     name += date.strftime("%d")
                     month = date.month
                 else:
@@ -798,7 +806,12 @@ class FolioSaleLine(models.Model):
                     break
                 if date.month != month:
                     name = name + "\n" if name else ""
-                    name += date.strftime("%B-%Y") + ": "
+                    name += (
+                        babel.dates.format_date(
+                            date=date, format="MMMM y", locale=get_lang(self.env).code
+                        )
+                        + ": "
+                    )
                     name += date.strftime("%d")
                     month = date.month
                 else:
