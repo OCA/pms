@@ -27,3 +27,13 @@ class ResPartner(models.Model):
                 if not record.state_id:
                     record.ine_code = False
                 record.ine_code = record.state_id.ine_code
+
+    def _check_enought_invoice_data(self):
+        self.ensure_one()
+        res = super(ResPartner, self)._check_enought_invoice_data()
+        if not res:
+            return res
+        if self.country_id.code == "ES":
+            if not self.state_id and not self.zip:
+                return False
+        return True
