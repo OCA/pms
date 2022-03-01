@@ -35,28 +35,24 @@ class PmsCalendarService(Component):
             domain,
         ):
             next_line_splitted = False
-            next_line = self.env['pms.reservation.line'].search(
+            next_line = self.env["pms.reservation.line"].search(
                 [
                     ("reservation_id", "=", line.reservation_id.id),
-                    ("date", "=", line.date + timedelta(days=1))
+                    ("date", "=", line.date + timedelta(days=1)),
                 ]
             )
             if next_line:
                 next_line_splitted = next_line.room_id != line.room_id
 
             previous_line_splitted = False
-            previous_line = self.env['pms.reservation.line'].search(
+            previous_line = self.env["pms.reservation.line"].search(
                 [
                     ("reservation_id", "=", line.reservation_id.id),
-                    ("date", "=", line.date + timedelta(days=-1))
+                    ("date", "=", line.date + timedelta(days=-1)),
                 ]
             )
             if previous_line:
                 previous_line_splitted = previous_line.room_id != line.room_id
-
-            closureReason= ''
-            if line.reservation_id.reservation_type == 'out':
-                print(line.reservation_id.closure_reason_id)
 
             result_lines.append(
                 PmsCalendarInfo(
@@ -73,7 +69,8 @@ class PmsCalendarService(Component):
                     reservationName=line.reservation_id.name,
                     reservationType=line.reservation_id.reservation_type,
                     isFirstNight=line.reservation_id.checkin == line.date,
-                    isLastNight=line.reservation_id.checkout + timedelta(days=-1) == line.date,
+                    isLastNight=line.reservation_id.checkout + timedelta(days=-1)
+                    == line.date,
                     totalPrice=line.reservation_id.price_total,
                     pendingPayment=line.reservation_id.folio_pending_amount,
                     numNotifications=len(line.reservation_id.message_ids),
@@ -81,7 +78,7 @@ class PmsCalendarService(Component):
                     nextLineSplitted=next_line_splitted,
                     previousLineSplitted=previous_line_splitted,
                     hasNextLine=bool(next_line),
-                    closureReason='',
+                    closureReason="",
                 )
             )
         return result_lines
@@ -157,17 +154,25 @@ class PmsCalendarService(Component):
             ]
         )
 
-        date_from = datetime.strptime(pms_calendar_search_param.date_from, '%Y-%m-%d').date()
-        date_to = datetime.strptime(pms_calendar_search_param.date_to, '%Y-%m-%d').date()
+        date_from = datetime.strptime(
+            pms_calendar_search_param.date_from, "%Y-%m-%d"
+        ).date()
+        date_to = datetime.strptime(
+            pms_calendar_search_param.date_to, "%Y-%m-%d"
+        ).date()
 
         result = []
-        for day in (date_from + timedelta(d) for d in range((date_to-date_from).days+1)):
-            reservation_lines_by_day = reservation_lines.filtered(lambda d: d.date == day)
+        for day in (
+            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
+        ):
+            reservation_lines_by_day = reservation_lines.filtered(
+                lambda d: d.date == day
+            )
             service_lines_by_day = service_lines.filtered(lambda d: d.date == day)
             daily_invoicing = {
                 "date": str(day),
-                "invoicing_total":
-                    sum(reservation_lines_by_day.mapped("price"))+sum(service_lines_by_day.mapped("price_day_total"))
+                "invoicing_total": sum(reservation_lines_by_day.mapped("price"))
+                + sum(service_lines_by_day.mapped("price_day_total")),
             }
             result.append(daily_invoicing)
 
