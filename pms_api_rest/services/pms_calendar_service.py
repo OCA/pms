@@ -128,3 +128,47 @@ class PmsCalendarService(Component):
 
         lines_room_a._compute_occupies_availability()
         lines_room_b._compute_occupies_availability()
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/daily-invoicing",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.calendar.search.param", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_daily_invoincing(self, pms_calendar_search_param):
+        reservation_lines = self.env["pms.reservation.line"].search(
+            [
+                ("date", ">=", pms_calendar_search_param.date_from),
+                ("date", "<=", pms_calendar_search_param.date_to),
+                ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
+            ]
+        )
+        service_lines = self.env["pms.service.line"].search(
+            [
+                ("date", ">=", pms_calendar_search_param.date_from),
+                ("date", "<=", pms_calendar_search_param.date_to),
+                ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
+            ]
+        )
+
+        date_from = datetime.strptime(pms_calendar_search_param.date_from, '%Y-%m-%d').date()
+        date_to = datetime.strptime(pms_calendar_search_param.date_to, '%Y-%m-%d').date()
+
+        result = []
+        for day in (date_from + timedelta(d) for d in range((date_to-date_from).days+1)):
+            reservation_lines_by_day = reservation_lines.filtered(lambda d: d.date == day)
+            service_lines_by_day = service_lines.filtered(lambda d: d.date == day)
+            daily_invoicing = {
+                "date": str(day),
+                "invoicing_total":
+                    sum(reservation_lines_by_day.mapped("price"))+sum(service_lines_by_day.mapped("price_day_total"))
+            }
+            result.append(daily_invoicing)
+
+        return result
