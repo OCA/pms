@@ -171,7 +171,7 @@ class PmsCalendarService(Component):
             service_lines_by_day = service_lines.filtered(lambda d: d.date == day)
             daily_invoicing = {
                 "date": str(day),
-                "invoicing_total": sum(reservation_lines_by_day.mapped("price"))
+                "invoicingTotal": sum(reservation_lines_by_day.mapped("price"))
                 + sum(service_lines_by_day.mapped("price_day_total")),
             }
             result.append(daily_invoicing)
