@@ -177,3 +177,61 @@ class PmsCalendarService(Component):
             result.append(daily_invoicing)
 
         return result
+
+    @restapi.method(
+        [
+            (
+                [
+                    "/free-rooms",
+                ],
+                "GET",
+            )
+        ],
+        input_param=Datamodel("pms.calendar.search.param", is_list=False),
+        auth="jwt_api_pms",
+    )
+    def get_free_rooms(self, pms_calendar_search_param):
+
+        date_from = datetime.strptime(
+            pms_calendar_search_param.date_from, "%Y-%m-%d"
+        ).date()
+        date_to = datetime.strptime(
+            pms_calendar_search_param.date_to, "%Y-%m-%d"
+        ).date()
+
+        self.env.cr.execute(
+            """
+            SELECT date,
+            (SELECT COUNT(1) FROM pms_room WHERE pms_property_id = %s) - COUNT(1) free_rooms
+             FROM pms_reservation_line
+            WHERE occupies_availability = true
+            AND pms_property_id = %s
+            AND date >= %s
+            AND date <= %s
+            GROUP BY date
+            ORDER BY date;
+            """,
+            (
+                pms_calendar_search_param.pms_property_id,
+                pms_calendar_search_param.pms_property_id,
+                date_from,
+                date_to,
+            ),
+        )
+        reservation_lines = self.env.cr.fetchall()
+
+        all_property_rooms = self.env["pms.room"].search(
+            [
+                ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
+            ]
+        )
+        result = []
+        for date, free_rooms in reservation_lines:
+            daily_free_rooms = {
+                "date": datetime.combine(date, datetime.min.time()).isoformat(),
+                "freeRooms": free_rooms,
+                "totalRooms": len(all_property_rooms),
+            }
+            result.append(daily_free_rooms)
+
+        return result
