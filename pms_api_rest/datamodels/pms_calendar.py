@@ -25,6 +25,7 @@ class PmsCalendarSearchParam(Datamodel):
     date_from = fields.String(required=False, allow_none=True)
     date_to = fields.String(required=False, allow_none=True)
     pms_property_id = fields.Integer(required=True, allow_none=False)
+    pricelist_id = fields.Integer(required=False, allow_none=True)
 
 
 class PmsCalendarInfo(Datamodel):
