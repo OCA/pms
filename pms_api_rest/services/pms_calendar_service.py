@@ -220,17 +220,11 @@ class PmsCalendarService(Component):
         )
         reservation_lines = self.env.cr.fetchall()
 
-        all_property_rooms = self.env["pms.room"].search(
-            [
-                ("pms_property_id", "=", pms_calendar_search_param.pms_property_id),
-            ]
-        )
         result = []
         for date, free_rooms in reservation_lines:
             daily_free_rooms = {
                 "date": datetime.combine(date, datetime.min.time()).isoformat(),
                 "freeRooms": free_rooms,
-                "totalRooms": len(all_property_rooms),
             }
             result.append(daily_free_rooms)
 
