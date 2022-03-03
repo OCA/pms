@@ -84,22 +84,6 @@ class AccountMove(models.Model):
                     in ("receivable", "payable")
                 )
 
-                domain = [
-                    ("account_id", "in", pay_term_lines.account_id.ids),
-                    ("parent_state", "=", "posted"),
-                    ("reconciled", "=", False),
-                    "|",
-                    ("amount_residual", "!=", 0.0),
-                    ("amount_residual_currency", "!=", 0.0),
-                    "|",
-                    (
-                        "folio_ids",
-                        "in",
-                        move.line_ids.mapped("folio_line_ids.folio_id.id"),
-                    ),
-                    ("partner_id", "=", move.commercial_partner_id.id),
-                ]
-
                 payments_widget_vals = {
                     "outstanding": True,
                     "content": [],
@@ -107,13 +91,31 @@ class AccountMove(models.Model):
                 }
 
                 if move.is_inbound():
-                    domain.append(("balance", "<", 0.0))
+                    domain = [("balance", "<", 0.0)]
                     payments_widget_vals["title"] = _("Outstanding credits")
                 else:
-                    domain.append(("balance", ">", 0.0))
+                    domain = [("balance", ">", 0.0)]
                     payments_widget_vals["title"] = _("Outstanding debits")
-                for line in self.env["account.move.line"].search(domain):
 
+                domain.extend(
+                    [
+                        ("account_id", "in", pay_term_lines.account_id.ids),
+                        ("parent_state", "=", "posted"),
+                        ("reconciled", "=", False),
+                        "|",
+                        ("amount_residual", "!=", 0.0),
+                        ("amount_residual_currency", "!=", 0.0),
+                        "|",
+                        (
+                            "folio_ids",
+                            "in",
+                            move.line_ids.mapped("folio_line_ids.folio_id.id"),
+                        ),
+                        ("partner_id", "=", move.commercial_partner_id.id),
+                    ]
+                )
+
+                for line in self.env["account.move.line"].search(domain):
                     if line.currency_id == move.currency_id:
                         # Same foreign currency.
                         amount = abs(line.amount_residual_currency)
@@ -307,7 +309,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         if (
             self.pms_property_id
-            and self.total_amount > self.pms_property_id.max_amount_simplified_invoice
+            and self.amount_total > self.pms_property_id.max_amount_simplified_invoice
         ):
             mens = _(
                 "The total amount of the receipt is higher than the "
