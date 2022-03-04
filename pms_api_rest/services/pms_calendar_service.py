@@ -78,7 +78,9 @@ class PmsCalendarService(Component):
                     nextLineSplitted=next_line_splitted,
                     previousLineSplitted=previous_line_splitted,
                     hasNextLine=bool(next_line),
-                    closureReason="",
+                    closureReason=line.reservation_id.closure_reason_id.name
+                    if line.reservation_id.closure_reason_id
+                    else "",
                 )
             )
         return result_lines
@@ -136,6 +138,7 @@ class PmsCalendarService(Component):
             )
         ],
         input_param=Datamodel("pms.calendar.search.param", is_list=False),
+        output_param=Datamodel("pms.calendar.daily.invoicing", is_list=True),
         auth="jwt_api_pms",
     )
     def get_daily_invoincing(self, pms_calendar_search_param):
@@ -162,6 +165,7 @@ class PmsCalendarService(Component):
         ).date()
 
         result = []
+        PmsCalendarDailyInvoicing = self.env.datamodels["pms.calendar.daily.invoicing"]
         for day in (
             date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
         ):
@@ -169,12 +173,13 @@ class PmsCalendarService(Component):
                 lambda d: d.date == day
             )
             service_lines_by_day = service_lines.filtered(lambda d: d.date == day)
-            daily_invoicing = {
-                "date": datetime.combine(day, datetime.min.time()).isoformat(),
-                "invoicingTotal": sum(reservation_lines_by_day.mapped("price"))
-                + sum(service_lines_by_day.mapped("price_day_total")),
-            }
-            result.append(daily_invoicing)
+            result.append(
+                PmsCalendarDailyInvoicing(
+                    date=datetime.combine(day, datetime.min.time()).isoformat(),
+                    invoicingTotal=sum(reservation_lines_by_day.mapped("price"))
+                    + sum(service_lines_by_day.mapped("price_day_total")),
+                )
+            )
 
         return result
 
@@ -188,6 +193,7 @@ class PmsCalendarService(Component):
             )
         ],
         input_param=Datamodel("pms.calendar.search.param", is_list=False),
+        output_param=Datamodel("pms.calendar.free.daily.rooms.by.type", is_list=True),
         auth="jwt_api_pms",
     )
     def get_free_rooms(self, pms_calendar_search_param):
@@ -198,34 +204,54 @@ class PmsCalendarService(Component):
         date_to = datetime.strptime(
             pms_calendar_search_param.date_to, "%Y-%m-%d"
         ).date()
-
-        self.env.cr.execute(
-            """
-            SELECT date,
-            (SELECT COUNT(1) FROM pms_room WHERE pms_property_id = %s) - COUNT(1) free_rooms
-             FROM pms_reservation_line
-            WHERE occupies_availability = true
-            AND pms_property_id = %s
-            AND date >= %s
-            AND date <= %s
-            GROUP BY date
-            ORDER BY date;
-            """,
-            (
-                pms_calendar_search_param.pms_property_id,
-                pms_calendar_search_param.pms_property_id,
-                date_from,
-                date_to,
-            ),
-        )
-        reservation_lines = self.env.cr.fetchall()
-
         result = []
-        for date, free_rooms in reservation_lines:
-            daily_free_rooms = {
-                "date": datetime.combine(date, datetime.min.time()).isoformat(),
-                "freeRooms": free_rooms,
-            }
-            result.append(daily_free_rooms)
-
+        PmsCalendarFreeDailyRoomsByType = self.env.datamodels[
+            "pms.calendar.free.daily.rooms.by.type"
+        ]
+        for date in (
+            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
+        ):
+            rooms = self.env["pms.room"].search(
+                [("pms_property_id", "=", pms_calendar_search_param.pms_property_id)]
+            )
+            for room_type_iterator in self.env["pms.room.type"].search(
+                [("id", "in", rooms.mapped("room_type_id").ids)]
+            ):
+                reservation_lines_room_type = self.env["pms.reservation.line"].search(
+                    [
+                        ("date", "=", date),
+                        ("occupies_availability", "=", True),
+                        ("room_id.room_type_id", "=", room_type_iterator.id),
+                        (
+                            "pms_property_id",
+                            "=",
+                            pms_calendar_search_param.pms_property_id,
+                        ),
+                    ]
+                )
+                num_rooms_room_type = self.env["pms.room"].search_count(
+                    [
+                        (
+                            "pms_property_id",
+                            "=",
+                            pms_calendar_search_param.pms_property_id,
+                        ),
+                        ("room_type_id", "=", room_type_iterator.id),
+                    ]
+                )
+                if not reservation_lines_room_type:
+                    free_rooms_room_type = num_rooms_room_type
+                else:
+                    free_rooms_room_type = num_rooms_room_type - len(
+                        reservation_lines_room_type
+                    )
+                result.append(
+                    PmsCalendarFreeDailyRoomsByType(
+                        date=str(
+                            datetime.combine(date, datetime.min.time()).isoformat()
+                        ),
+                        roomType=room_type_iterator.id,
+                        freeRooms=free_rooms_room_type,
+                    )
+                )
         return result
