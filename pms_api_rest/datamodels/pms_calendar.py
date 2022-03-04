@@ -28,6 +28,19 @@ class PmsCalendarSearchParam(Datamodel):
     pricelist_id = fields.Integer(required=False, allow_none=True)
 
 
+class PmsCalendarFreeDailyRoomsByType(Datamodel):
+    _name = "pms.calendar.free.daily.rooms.by.type"
+    date = fields.String(required=True, allow_none=False)
+    roomType = fields.Integer(required=True, allow_none=False)
+    freeRooms = fields.Integer(required=True, allow_none=False)
+
+
+class PmsCalendarDailyInvoicing(Datamodel):
+    _name = "pms.calendar.daily.invoicing"
+    date = fields.String(required=True, allow_none=False)
+    invoicingTotal = fields.Float(required=True, allow_none=False)
+
+
 class PmsCalendarInfo(Datamodel):
     _name = "pms.calendar.info"
     id = fields.Integer(required=False, allow_none=True)
