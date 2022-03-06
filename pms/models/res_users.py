@@ -1,8 +1,7 @@
 # Copyright 2019 Pablo Quesada
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-from odoo.http import request
+from odoo.exceptions import AccessError, ValidationError
 
 
 class ResUsers(models.Model):
@@ -29,16 +28,17 @@ class ResUsers(models.Model):
     def get_active_property_ids(self):
         # TODO: Require performance test and security (dont allow any property id)
         # checks (Review lazy_property decorator?)
-        user_property_ids = self.env.user.pms_property_ids.ids
-        if request and request.httprequest.cookies.get("pms_pids"):
-            active_property_ids = list(
-                map(int, request.httprequest.cookies.get("pms_pids", "").split(","))
-            )
-            active_property_ids = [
-                pid for pid in active_property_ids if pid in user_property_ids
-            ]
+        user_property_ids = self.pms_property_ids.ids
+        active_property_ids = self._context.get("allowed_pms_property_ids", [])
+        if active_property_ids:
+            if not self.env.su:
+                user_property_ids = self.pms_property_ids.ids
+                if any(pid not in user_property_ids for pid in active_property_ids):
+                    raise AccessError(
+                        _("Access to unauthorized or invalid properties.")
+                    )
             return self.env["pms.property"].browse(active_property_ids).ids
-        return user_property_ids
+        return self.pms_property_ids.ids
 
     @api.constrains("pms_property_id", "pms_property_ids")
     def _check_property_in_allowed_properties(self):

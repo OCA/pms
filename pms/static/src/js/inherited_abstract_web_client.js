@@ -32,7 +32,9 @@ odoo.define("pms.AbstractWebClient", function (require) {
                 statePmsPropertyIDS = [current_pms_property_id];
             }
             session.user_context.allowed_pms_property_ids = statePmsPropertyIDS;
-
+            state.pms_pids = statePmsPropertyIDS.join(",");
+            utils.set_cookie("pms_pids", state.pms_pids);
+            $.bbq.pushState({pms_pids: state.pms_pids}, 0);
             return this._super.apply(this, arguments);
         },
     });
