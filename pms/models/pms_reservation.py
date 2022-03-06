@@ -1597,13 +1597,33 @@ class PmsReservation(models.Model):
                 )
 
     @api.constrains("reservation_line_ids")
-    def check_consecutive_dates(self):
+    def checkin_checkout_consecutive_dates(self):
         """
         simply convert date objects to integers using the .toordinal() method
         of datetime objects. The difference between the maximum and minimum value
         of the set of ordinal dates is one more than the length of the set
         """
         for record in self:
+            if min(record.reservation_line_ids.mapped("date")) != record.checkin:
+                raise UserError(
+                    _(
+                        """
+                        Compute error: The first room line date should
+                        be the same as the checkin date!
+                        """
+                    )
+                )
+            if max(
+                record.reservation_line_ids.mapped("date")
+            ) != record.checkout - datetime.timedelta(days=1):
+                raise UserError(
+                    _(
+                        """
+                        Compute error: The last room line date should
+                        be the previous day of the checkout date!
+                        """
+                    )
+                )
             if record.reservation_line_ids and len(record.reservation_line_ids) > 1:
                 dates = record.reservation_line_ids.mapped("date")
                 date_ints = {d.toordinal() for d in dates}
