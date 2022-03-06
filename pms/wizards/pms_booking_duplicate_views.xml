@@ -12,6 +12,7 @@
                     <div class="col-6 ">
                         <group>
                             <field name="pms_property_id" invisible="0" />
+                            <field name="used_room_ids" invisible="1" />
                             <field name="reservation_type" />
                             <field
                                 name="agency_id"
@@ -74,34 +75,46 @@
                 <div class="row">
                     <div class="col-12">
                         <group>
-                            <field name="rooms" nolabel="1">
+                            <field name="line_ids" nolabel="1">
                                  <tree
                                     editable="bottom"
                                     create="false"
                                     delete="false"
-                                    decoration-muted="checkin == 0"
-                                    decoration-danger="available == 0"
+                                    decoration-muted="checkin == False"
+                                    decoration-danger="checkin != False and occupied_room == True"
+                                    decoration-success="checkin != False and occupied_room == False"
                                 >
                                     <field
                                         name="reference_reservation_id"
                                         invisible="1"
                                     />
                                     <field name="booking_duplicate_id" invisible="1" />
-                                    <field name="available" invisible="1" />
                                     <field name="pms_property_id" invisible="1" />
                                     <field name="adults" />
+                                    <field name="allowed_room_ids" invisible="1" />
                                     <field
                                         name="room_type_id"
                                         readonly="1"
                                         options="{'no_open': True}"
                                         force_save="1"
                                     />
-                                    <field name="preferred_room_id" />
+                                    <field
+                                        name="pricelist_id"
+                                        optional="hidden"
+                                        options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="preferred_room_id"
+                                        options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                    />
+                                    <field name="occupied_room" invisible="1" />
+                                    <field name="used_room_ids" invisible="1" />
                                     <field name="checkin" force_save="1" />
                                     <field name="checkout" force_save="1" />
                                     <field
                                         name="board_service_room_id"
                                         attrs="{'column_invisible': [('parent.reservation_type','!=','normal')]}"
+                                        options="{'no_create': True, 'no_edit': True, 'no_open': True}"
                                     />
                                     <field
                                         name="service_ids"
