@@ -1,6 +1,7 @@
 import datetime
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class BookingDuplicate(models.TransientModel):
@@ -19,7 +20,11 @@ class BookingDuplicate(models.TransientModel):
         help="Date from first copy Checkin (reference min checkin folio reservation)",
         required=True,
     )
-
+    used_room_ids = fields.Many2many(
+        string="Used Rooms",
+        comodel_name="pms.room",
+        compute="_compute_used_room_ids",
+    )
     pricelist_id = fields.Many2one(
         string="Pricelist",
         help="Pricelist applied in folio",
@@ -107,14 +112,14 @@ class BookingDuplicate(models.TransientModel):
         help="Folios already created",
         comodel_name="pms.folio",
     )
-    rooms = fields.One2many(
+    line_ids = fields.One2many(
         string="Rooms",
         help="Rooms to create",
         readonly=False,
         store=True,
         comodel_name="pms.reservation.duplicate",
         inverse_name="booking_duplicate_id",
-        compute="_compute_rooms",
+        compute="_compute_line_ids",
         check_pms_properties=True,
     )
     recompute_prices = fields.Boolean(
@@ -124,6 +129,11 @@ class BookingDuplicate(models.TransientModel):
         of what is marked in the rate""",
         default=False,
     )
+
+    @api.depends("line_ids", "line_ids.preferred_room_id")
+    def _compute_used_room_ids(self):
+        for record in self:
+            record.used_room_ids = record.line_ids.mapped("preferred_room_id.id")
 
     @api.depends("reference_folio_id")
     def _compute_pricelist_id(self):
@@ -176,23 +186,23 @@ class BookingDuplicate(models.TransientModel):
             elif not record.partner_name:
                 record.partner_name = False
 
-    @api.depends("rooms.price_total")
+    @api.depends("line_ids.price_total")
     def _compute_total_price_folio(self):
         for record in self:
             record.total_price_folio = 0
-            for line in record.rooms:
+            for line in record.line_ids:
                 record.total_price_folio += line.price_total
             record.total_price_folio = record.total_price_folio
 
     @api.depends(
         "reference_folio_id",
     )
-    def _compute_rooms(self):
+    def _compute_line_ids(self):
         self.ensure_one()
         reference_folio = self.reference_folio_id
 
         if not reference_folio:
-            self.rooms = False
+            self.line_ids = False
             return
 
         cmds = [(5, 0)]
@@ -209,8 +219,9 @@ class BookingDuplicate(models.TransientModel):
                         "booking_duplicate_id": self.id,
                         "checkin": False,
                         "checkout": False,
-                        "preferred_room_id": reservation.preferred_room_id,
-                        "room_type_id": reservation.room_type_id,
+                        "preferred_room_id": reservation.preferred_room_id.id,
+                        "room_type_id": reservation.room_type_id.id,
+                        "pricelist_id": reservation.pricelist_id.id,
                         # "arrival_hour": reservation.arrival_hour,
                         # "departure_hour": reservation.departure_hour,
                         # "partner_internal_comment": reservation.partner_internal_comment,
@@ -219,7 +230,7 @@ class BookingDuplicate(models.TransientModel):
                     },
                 )
             )
-        self.rooms = cmds
+        self.line_ids = cmds
 
     def create_and_new(self):
         self.create_folio()
@@ -275,6 +286,13 @@ class BookingDuplicate(models.TransientModel):
         return action
 
     def create_folio(self):
+        if any(room.occupied_room for room in self.line_ids):
+            raise UserError(
+                _(
+                    """You can not create a new folio because there are rooms already occupied.
+                    Please, check the rooms marked in red and try again."""
+                )
+            )
         folio = self.env["pms.folio"].create(
             {
                 "reservation_type": self.reservation_type,
@@ -288,7 +306,10 @@ class BookingDuplicate(models.TransientModel):
                 "internal_comment": self.internal_comment,
             }
         )
-        for res in self.rooms:
+        for res in self.line_ids:
+            displacement_days = (
+                res.checkin - res.reference_reservation_id.checkin
+            ).days
             res_vals = {
                 "folio_id": folio.id,
                 "checkin": res.checkin,
@@ -296,10 +317,11 @@ class BookingDuplicate(models.TransientModel):
                 "room_type_id": res.room_type_id.id,
                 "partner_id": self.partner_id.id if self.partner_id else False,
                 "partner_name": self.partner_name,
-                "pricelist_id": self.pricelist_id.id,
+                "pricelist_id": res.pricelist_id.id,
                 "pms_property_id": folio.pms_property_id.id,
                 "board_service_room_id": res.board_service_room_id.id,
                 "adults": res.adults,
+                "preferred_room_id": res.preferred_room_id.id,
             }
             ser_vals = [(5, 0)]
             for service in res.reference_reservation_id.service_ids.filtered(
@@ -317,12 +339,7 @@ class BookingDuplicate(models.TransientModel):
                                     "price_unit": ser_line.price_unit,
                                     "discount": ser_line.discount,
                                     "date": ser_line.date
-                                    + datetime.timedelta(
-                                        days=(
-                                            res.reference_reservation_id.checkin
-                                            - self.start_date
-                                        ).days
-                                    )
+                                    + datetime.timedelta(days=displacement_days)
                                     if service.per_day
                                     else fields.Date.today(),
                                 },
@@ -351,14 +368,9 @@ class BookingDuplicate(models.TransientModel):
                             {
                                 "price": line.price,
                                 "discount": line.discount,
-                                "room_id": line.room_id.id,
+                                "room_id": res.preferred_room_id.id,
                                 "date": line.date
-                                + datetime.timedelta(
-                                    days=(
-                                        res.reference_reservation_id.checkin
-                                        - self.start_date
-                                    ).days
-                                ),
+                                + datetime.timedelta(days=displacement_days),
                             },
                         )
                     )
@@ -372,8 +384,8 @@ class BookingDuplicate(models.TransientModel):
                     )
                 )
                 if origin_services_board:
-                    service.service_line_ids.price = (
-                        origin_services_board.service_line_ids[0].price
+                    service.service_line_ids.price_unit = (
+                        origin_services_board.service_line_ids[0].price_unit
                     )
         self.created_folio_ids = [(4, folio.id)]
 
@@ -413,6 +425,16 @@ class PmsReservationDuplicate(models.TransientModel):
         help="Room reserved",
         comodel_name="pms.room",
         check_pms_properties=True,
+        domain="["
+        "('id', 'in', allowed_room_ids),"
+        "('id', 'not in', used_room_ids),"
+        "('pms_property_id', '=', pms_property_id),"
+        "]",
+    )
+    used_room_ids = fields.Many2many(
+        string="Used Rooms",
+        comodel_name="pms.room",
+        compute="_compute_used_room_ids",
     )
     allowed_room_ids = fields.Many2many(
         string="Allowed Rooms",
@@ -420,10 +442,16 @@ class PmsReservationDuplicate(models.TransientModel):
         comodel_name="pms.room",
         compute="_compute_allowed_room_ids",
     )
-    available = fields.Boolean(
-        string="Available room",
-        store="true",
-        compute="_compute_available",
+    occupied_room = fields.Boolean(
+        string="Occupied Room",
+        help="Check if the room is occupied",
+        compute="_compute_occupied_room",
+    )
+    pricelist_id = fields.Many2one(
+        string="Pricelist",
+        help="Pricelist used for this reservation",
+        comodel_name="product.pricelist",
+        check_pms_properties=True,
     )
     price_total = fields.Float(
         string="Total price",
@@ -469,7 +497,7 @@ class PmsReservationDuplicate(models.TransientModel):
                 else:
                     dif_days = (
                         record.reference_reservation_id.checkin - checkin_ref
-                    ).nights
+                    ).days
                     record.checkin = start_date + datetime.timedelta(days=dif_days)
 
     @api.depends("checkin")
@@ -478,20 +506,6 @@ class PmsReservationDuplicate(models.TransientModel):
         for record in self.filtered("checkin"):
             res_days = record.reference_reservation_id.nights
             record.checkout = record.checkin + datetime.timedelta(days=res_days)
-
-    @api.depends("preferred_room_id", "checkin", "checkout")
-    def _compute_available(self):
-        self.available = True
-        for record in self:
-            lines = self.env["pms.reservation.line"].search(
-                [
-                    ("date", ">=", record.checkin),
-                    ("date", "<", record.checkout),
-                    ("occupies_availability", "=", True),
-                ]
-            )
-            if lines:
-                record.available = False
 
     @api.depends(
         "checkin",
@@ -513,13 +527,27 @@ class PmsReservationDuplicate(models.TransientModel):
                 else False,
                 real_avail=True,
             )
-            allowed_room_ids = (
-                pms_property.free_room_ids.ids
-                - reservation.booking_duplicate_id.room_ids.mapped(
-                    "preferred_room_id.id"
-                )
+            allowed_room_ids = pms_property.free_room_ids.ids
+            reservation.allowed_room_ids = self.env["pms.room"].browse(allowed_room_ids)
+
+    @api.depends("allowed_room_ids", "preferred_room_id")
+    def _compute_occupied_room(self):
+        self.occupied_room = False
+        for record in self.filtered("preferred_room_id"):
+            if (
+                record.preferred_room_id.id not in record.allowed_room_ids.ids
+                or record.preferred_room_id.id in record.used_room_ids.ids
+            ):
+                record.occupied_room = True
+
+    @api.depends("preferred_room_id", "booking_duplicate_id.used_room_ids")
+    def _compute_used_room_ids(self):
+        self.used_room_ids = False
+        for record in self:
+            record.used_room_ids = list(
+                set(record.booking_duplicate_id.used_room_ids.ids)
+                - {record.preferred_room_id.id}
             )
-            reservation.allowed_room_ids = self.env["room.id"].browse(allowed_room_ids)
 
     @api.depends("room_type_id", "board_service_room_id", "checkin", "checkout")
     def _compute_price_total(self):
