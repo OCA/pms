@@ -124,6 +124,24 @@ class WizardFolioChanges(models.TransientModel):
         string="New Discount %",
     )
 
+    apply_partner_id = fields.Boolean(
+        string="Apply Customer",
+        default=False,
+    )
+    new_partner_id = fields.Many2one(
+        string="Customer",
+        comodel_name="res.partner",
+    )
+
+    apply_pricelist_id = fields.Boolean(
+        string="Apply Pricelist",
+        default=False,
+    )
+    new_pricelist_id = fields.Many2one(
+        string="Pricelist",
+        comodel_name="product.pricelist",
+    )
+
     apply_board_service = fields.Boolean(
         string="Add Board Service to reservations",
         default=False,
@@ -144,7 +162,7 @@ class WizardFolioChanges(models.TransientModel):
     )
 
     apply_day_qty = fields.Boolean(
-        string="Add Service to reservations",
+        string="Change cuantity service per day",
         help="If not set, it will use the default product day qty",
         default=False,
     )
@@ -319,6 +337,13 @@ class WizardFolioChanges(models.TransientModel):
                         new_service_id=self.new_service_id.id,
                         day_qty=self.day_qty if self.apply_day_qty else -1,
                     )
+                if self.apply_pricelist_id and self.new_pricelist_id:
+                    self.reservation_ids.pricelist_id = self.new_pricelist_id
+                    self.folio_id.pricelist_id = self.new_pricelist_id
+                if self.apply_partner_id and self.new_partner_id:
+                    self.reservation_ids.partner_id = self.new_partner_id
+                    if not self.folio_id.partner_id:
+                        self.folio_id.partner_id = self.new_partner_id
             elif self.modification_type == "services":
                 service_lines = self.service_ids.service_line_ids
                 if not self.apply_on_all_week:
