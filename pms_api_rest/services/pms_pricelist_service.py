@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from odoo.exceptions import MissingError
 
 from odoo.addons.base_rest import restapi
@@ -86,35 +88,45 @@ class PmsPricelistService(Component):
         rooms = self.env["pms.room"].search(
             [("pms_property_id", "=", pricelist_item_search_param.pms_property_id)]
         )
-        for room_type in self.env["pms.room.type"].search(
-            [("id", "in", rooms.mapped("room_type_id").ids)]
+        date_from = datetime.strptime(
+            pricelist_item_search_param.date_from, "%Y-%m-%d"
+        ).date()
+        date_to = datetime.strptime(
+            pricelist_item_search_param.date_to, "%Y-%m-%d"
+        ).date()
+
+        for date in (
+            date_from + timedelta(d) for d in range((date_to - date_from).days + 1)
         ):
-            for item in self.env["product.pricelist.item"].search(
-                [
-                    ("pricelist_id", "=", pricelist_id),
-                    ("applied_on", "=", "0_product_variant"),
-                    ("product_id", "=", room_type.product_id.id),
-                    (
-                        "date_start_consumption",
-                        ">=",
-                        pricelist_item_search_param.date_from,
-                    ),
-                    (
-                        "date_end_consumption",
-                        "<=",
-                        pricelist_item_search_param.date_to,
-                    ),
-                ]
+            for room_type in self.env["pms.room.type"].search(
+                [("id", "in", rooms.mapped("room_type_id").ids)]
             ):
+                item = self.env["product.pricelist.item"].search(
+                    [
+                        ("pricelist_id", "=", pricelist_id),
+                        ("applied_on", "=", "0_product_variant"),
+                        ("product_id", "=", room_type.product_id.id),
+                        (
+                            "date_start_consumption",
+                            ">=",
+                            date,
+                        ),
+                        (
+                            "date_end_consumption",
+                            "<=",
+                            date,
+                        ),
+                    ]
+                )
+
                 rule = self.env["pms.availability.plan.rule"].search(
                     [
+                        ("date", "=", date),
                         (
                             "availability_plan_id",
                             "=",
                             record_pricelist_id.availability_plan_id.id,
                         ),
-                        ("date", "=", item.date_start_consumption),
-                        ("date", "=", item.date_end_consumption),
                         ("room_type_id", "=", room_type.id),
                         (
                             "pms_property_id",
@@ -123,23 +135,32 @@ class PmsPricelistService(Component):
                         ),
                     ]
                 )
-                rule.ensure_one()
-                result.append(
-                    PmsPricelistItemInfo(
-                        pricelist_item_id=item.id,
-                        availability_rule_id=rule.id,
+
+                if item or rule:
+                    pricelist_info = PmsPricelistItemInfo(
                         room_type_id=room_type.id,
-                        fixed_price=item.fixed_price,
-                        min_stay=rule.min_stay,
-                        min_stay_arrival=rule.min_stay_arrival,
-                        max_stay=rule.max_stay,
-                        max_stay_arrival=rule.max_stay_arrival,
-                        closed=rule.closed,
-                        closed_departure=rule.closed_departure,
-                        closed_arrival=rule.closed_arrival,
-                        quota=rule.quota,
-                        max_avail=rule.max_avail,
-                        date=str(item.date_start_consumption),
+                        date=str(
+                            datetime.combine(date, datetime.min.time()).isoformat()
+                        ),
                     )
-                )
+
+                    if item:
+                        pricelist_info.pricelist_item_id = item.id
+                        pricelist_info.fixed_price = item.fixed_price
+
+                    if rule:
+
+                        pricelist_info.availability_rule_id = rule.id
+                        pricelist_info.min_stay = 8
+                        pricelist_info.min_stay_arrival = rule.min_stay_arrival
+                        pricelist_info.max_stay = rule.max_stay
+                        pricelist_info.max_stay_arrival = rule.max_stay_arrival
+                        pricelist_info.closed = rule.closed
+                        pricelist_info.closed_departure = rule.closed_departure
+                        pricelist_info.closed_arrival = rule.closed_arrival
+                        pricelist_info.quota = rule.quota
+                        pricelist_info.max_avail = rule.max_avail
+
+                    result.append(pricelist_info)
+
         return result
