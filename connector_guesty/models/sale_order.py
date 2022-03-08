@@ -19,12 +19,16 @@ class SaleOrder(models.Model):
         "pms.property", compute="_compute_pms_reservation_id", store=True
     )
 
+    check_in = fields.Datetime(related="pms_reservation_id.start")
+    check_out = fields.Datetime(related="pms_reservation_id.stop")
+
     @api.depends("order_line")
     def _compute_pms_reservation_id(self):
         for sale in self:
-            reservation_line = sale.order_line.filtered(lambda s: s.reservation_ok)
-            sale.pms_reservation_id = reservation_line.pms_reservation_id.id
-            sale.pms_property_id = reservation_line.pms_reservation_id.property_id.id
+            reservation = sale.sale_get_active_reservation()
+            if reservation:
+                sale.pms_reservation_id = reservation.id
+                sale.pms_property_id = reservation.property_id.id
 
     @api.model
     def create(self, values):
@@ -32,18 +36,23 @@ class SaleOrder(models.Model):
 
     def write(self, values):
         res = super().write(values)
+        _fields = [f for f in values if f in ["order_line", "state"]]
+
         if (
             self.company_id.guesty_backend_id
             and not self.env.context.get("ignore_guesty_push", False)
-            and "order_line" in values
+            and len(_fields) > 0
         ):
             for sale in self:
+                if self.state == "draft":
+                    continue
+
                 reservation = self.env["pms.reservation"].search(
                     [("sale_order_id", "=", sale.id)]
                 )
 
                 if reservation and reservation.guesty_id:
-                    reservation.with_delay().guesty_push_reservation_update()
+                    reservation.guesty_push_reservation_update()
         return res
 
     def action_cancel(self):
@@ -103,3 +112,17 @@ class SaleOrder(models.Model):
             raise UserError(_("Reservation is already reserved"))
         else:
             raise UserError(_("Unable to reserve"))
+
+    def action_send_multi_quote(self):
+        for sale in self:
+            try:
+                template_id = sale._find_mail_template()
+                if template_id:
+                    sale.with_context(force_send=True).message_post_with_template(
+                        template_id,
+                        composition_mode="comment",
+                        email_layout_xmlid="mail.mail_notification_paynow",
+                    )
+                    sale.action_quotation_sent()
+            except Exception as ex:
+                _log.error(ex)

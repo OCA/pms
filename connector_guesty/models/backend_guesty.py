@@ -42,6 +42,7 @@ class BackendGuesty(models.Model):
 
     cleaning_product_id = fields.Many2one("product.product")
     extra_product_id = fields.Many2one("product.product")
+    reservation_product_id = fields.Many2one("product.product")
 
     api_url = fields.Char(required=True, compute="_compute_environment_fields")
     base_url = fields.Char(compute="_compute_environment_fields", required=True)
@@ -394,6 +395,7 @@ class BackendGuesty(models.Model):
     def guesty_get_calendar_info(self, check_in, check_out, property_ids):
         listing_ids = property_ids.mapped("guesty_id")
         result = {}
+        real_stop_date = check_out - datetime.timedelta(days=1)
         for listing_id in listing_ids:
             # todo: Fix Calendar
             success, res = self.call_get_request(
@@ -401,14 +403,22 @@ class BackendGuesty(models.Model):
                     listing_id
                 ),
                 paginate=False,
-                params={"startDate": check_in, "endDate": check_out},
+                params={"startDate": check_in, "endDate": real_stop_date},
             )
             if success:
-                calendar_data = result.get("data", {}).get("days", [])
+                calendar_data = res.get("data", {}).get("days", [])
+                if len(calendar_data) == 0:
+                    raise ValidationError(_("Unable to validate dates in guesty"))
+
                 currency = calendar_data[0]["currency"]
                 avg_price = sum(a.get("price") for a in calendar_data) / len(
                     calendar_data
                 )
-                result[listing_id] = {"currency": currency, "price": avg_price}
+                status_list = [a["status"] for a in calendar_data]
+                result[listing_id] = {
+                    "currency": currency,
+                    "price": avg_price,
+                    "status": list(set(status_list)),
+                }
 
         return result

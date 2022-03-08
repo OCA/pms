@@ -96,6 +96,7 @@
                                 <group>
                                     <field name="currency_id" />
                                     <field name="timezone" />
+                                    <field name="reservation_product_id" />
                                 </group>
                                 <group>
                                     <field name="stage_canceled_id" />

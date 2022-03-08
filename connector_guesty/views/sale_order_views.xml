@@ -8,8 +8,32 @@
         <field name="arch" type="xml">
             <xpath expr="//tree/field[@name='name']" position="after">
                 <field name="pms_property_id" />
+                <field name="check_in" widget="date" />
+                <field name="check_out" widget="date" />
             </xpath>
         </field>
+    </record>
+
+    <record id="view_order_tree_guesty" model="ir.ui.view">
+        <field name="name">sale.order.tree.guesty</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='name']" position="after">
+                <field name="pms_property_id" />
+                <field name="check_in" widget="date" />
+                <field name="check_out" widget="date" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_send_multi_quote" model="ir.actions.server">
+        <field name="name">Send Quotes</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field name="binding_model_id" ref="sale.model_sale_order" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action=records.action_send_multi_quote()</field>
     </record>
 
 
@@ -24,6 +48,7 @@
             </xpath>
         </field>
     </record>
+
 
     <record id="sale_order_view_form_confirmation" model="ir.ui.view">
         <field name="name">sale.order.form.confirmation</field>

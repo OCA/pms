@@ -21,6 +21,7 @@
         "views/res_partner.xml",
         "views/sale_order_views.xml",
         "wizard/pms_property_days_quotation_expiration_views.xml",
+        "wizard/crm_lead_new_reservation.xml",
         "security/ir.model.access.csv",
         "data/queue.job.function.csv",
         "data/ir_cron.xml",

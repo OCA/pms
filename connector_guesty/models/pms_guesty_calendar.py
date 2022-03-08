@@ -109,3 +109,34 @@ class PmsGuestyCalendar(models.Model):
         for calendar_day in calendars:
             _log.info(calendar_day.listing_date)
         raise ValidationError(_("Looks fine"))
+
+    def guesty_pull_calendar_event(self, calendar_info):
+        calendar_id = self.sudo().search(
+            [
+                ("listing_id", "=", calendar_info["listingId"]),
+                ("listing_date", "=", calendar_info["date"]),
+            ]
+        )
+
+        property_id = (
+            self.env["pms.property"]
+            .sudo()
+            .search([("guesty_id", "=", calendar_info["listingId"])], limit=1)
+        )
+
+        if not property_id:
+            raise ValidationError(_("Property not found"))
+
+        payload = {
+            "listing_id": calendar_info["listingId"],
+            "listing_date": calendar_info["date"],
+            "state": calendar_info["status"],
+            "price": calendar_info["price"],
+            "currency": calendar_info["currency"],
+            "property_id": property_id.id,
+        }
+
+        if not calendar_id.exists():
+            return self.sudo().create(payload)
+        else:
+            return calendar_id.sudo().write(payload)

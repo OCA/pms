@@ -15,6 +15,7 @@ class PmsReservation(models.Model):
     _inherit = "pms.reservation"
 
     guesty_id = fields.Char()
+    guesty_last_updated_date = fields.Datetime()
 
     def _cancel_expired_cron(self):
         if not self.env.company.guesty_backend_id.cancel_expired_quotes:
@@ -75,10 +76,14 @@ class PmsReservation(models.Model):
 
     def write(self, values):
         res = super(PmsReservation, self).write(values)
+        _black_list = ["workflow_process_id", "analytic_account_id"]
+        _fields = [a for a in values.keys() if a not in _black_list]
+
         if (
             self.env.company.guesty_backend_id
             and self.guesty_id
             and not self.env.context.get("ignore_guesty_push", False)
+            and len(_fields) > 0
         ):
             self.with_delay().guesty_push_reservation_update()
         return res
@@ -217,6 +222,11 @@ class PmsReservation(models.Model):
         if not success:
             raise UserError(_("Unable to send to guesty") + str(res))
 
+        context = {"ignore_overlap": True, "ignore_guesty_push": True}
+        self.with_context(context).write(
+            {"guesty_last_updated_date": datetime.datetime.now()}
+        )
+
     def guesty_push_payment(self):
         backend = self.env.company.guesty_backend_id
         # give 5 minutes of overdue
@@ -314,8 +324,16 @@ class PmsReservation(models.Model):
                 .create(reservation)
             )
         else:
-            _log.info("Update reservation: {}".format(reservation_id.guesty_id))
-            reservation_id.sudo().with_context(context).write(reservation)
+            str_updated_date = payload.get("lastUpdatedAt")[0:19].replace("T", " ")
+            update_date = datetime.datetime.strptime(
+                str_updated_date, "%Y-%m-%d %H:%M:%S"
+            )
+            last_date = reservation_id.sudo().guesty_last_updated_date
+            if not last_date or update_date > last_date:
+                _log.info("Update reservation: {}".format(reservation_id.guesty_id))
+                reservation_id.sudo().with_context(context).write(reservation)
+            else:
+                return _("Ignore Update {} {} - {}").format(_id, update_date, last_date)
 
         invoice_lines = payload.get("money", {}).get("invoiceItems")
         no_nights = payload.get("nightsCount", 0)
@@ -333,6 +351,7 @@ class PmsReservation(models.Model):
         check_in = reservation.get("checkIn")
         check_out = reservation.get("checkOut")
         guest_id = reservation.get("guestId")
+        guesty_last_updated_date = reservation.get("lastUpdatedAt")
 
         property_id = self.env["pms.property"].search(
             [("guesty_id", "=", listing_id)], limit=1
@@ -348,12 +367,17 @@ class PmsReservation(models.Model):
             check_out[0:19], "%Y-%m-%dT%H:%M:%S"
         )
 
+        guesty_last_updated_time = datetime.datetime.strptime(
+            guesty_last_updated_date[0:19], "%Y-%m-%dT%H:%M:%S"
+        )
+
         return guesty_id, {
             "guesty_id": guesty_id,
             "property_id": property_id.id,
             "start": check_in_time,
             "stop": check_out_time,
             "partner_id": pms_guest.partner_id.id,
+            "guesty_last_updated_date": guesty_last_updated_time,
         }
 
     def parse_push_reservation_data(self, backend):
@@ -397,7 +421,10 @@ class PmsReservation(models.Model):
             }
 
             if reservation_line.discount != 0:
-                discount_amount = fare_accomodation / 100.0 * reservation_line.discount
+                # discount_amount = fare_accomodation / 100.0 * reservation_line.discount
+                discount_amount = fare_accomodation - (
+                    fare_accomodation * (1.0 - reservation_line.discount / 100.0)
+                )
                 if "invoiceItems" not in body["money"]:
                     body["money"]["invoiceItems"] = []
 
@@ -420,7 +447,7 @@ class PmsReservation(models.Model):
         if cleaning_line and reservation_line:
             fare_cleaning = self.sale_order_id.currency_id._convert(
                 cleaning_line.price_subtotal,
-                guesty_listing_price.currency_id,
+                guesty_currency,
                 self.sale_order_id.company_id,
                 self.sale_order_id.date_order,
             )

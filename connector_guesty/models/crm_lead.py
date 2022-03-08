@@ -1,12 +1,13 @@
 # Copyright (C) 2021 Casai (https://www.casai.com)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import datetime
 import logging
 import re
 import uuid
 
 import html2text
 
-from odoo import models
+from odoo import _, models
 
 _log = logging.getLogger(__name__)
 
@@ -54,3 +55,23 @@ class CrmLead(models.Model):
 
         lead = super().message_new(msg_dict, custom_values=custom_values)
         return lead
+
+    def action_new_quotation(self):
+        if self.partner_id and self.env.company.guesty_backend_id:
+            action = self.action_new_quotation_reservation()
+            action["context"] = {}
+            action["context"]["default_crm_lead_id"] = self.id
+            action["context"]["default_check_in"] = datetime.datetime.today()
+            action["context"]["default_check_out"] = datetime.datetime.today()
+            return action
+
+    def action_new_quotation_reservation(self):
+        action = {
+            "type": "ir.actions.act_window",
+            "name": _("New quotation"),
+            "res_model": "wiz.crm.lead.new.reservation",
+            "view_mode": "form",
+            "target": "new",
+        }
+
+        return action
