@@ -105,6 +105,11 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_mobile",
     )
+    phone = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_phone",
+    )
     firstname = fields.Char(
         readonly=False,
         store=True,
@@ -182,6 +187,51 @@ class ResPartner(models.Model):
         selection=lambda self: self._selection_vat_document_type(),
         compute="_compute_vat_document_type",
         store=True,
+    )
+    residence_street = fields.Char(
+        string="Street of residence",
+        help="Street of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_street",
+    )
+    residence_street2 = fields.Char(
+        string="Second street of residence",
+        help="Second street of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_street2",
+    )
+    residence_zip = fields.Char(
+        string="Zip of residence",
+        help="Zip of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_zip",
+        change_default=True,
+    )
+    residence_city = fields.Char(
+        string="city of residence",
+        help="City of the guest's residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_city",
+    )
+    residence_country_id = fields.Many2one(
+        string="Country of residence",
+        help="Partner country of residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_country_id",
+        comodel_name="res.country",
+    )
+    residence_state_id = fields.Many2one(
+        string="State of residence",
+        help="Partner state of residence",
+        readonly=False,
+        store=True,
+        compute="_compute_residence_state_id",
+        comodel_name="res.country.state",
     )
 
     @api.model
@@ -270,6 +320,146 @@ class ResPartner(models.Model):
                     record.state_id = False
             elif not record.state_id:
                 record.state_id = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.phone")
+    def _compute_phone(self):
+        if hasattr(super(), "_compute_phone"):
+            super()._compute_phone()
+        for record in self:
+            if not record.phone and record.pms_checkin_partner_ids:
+                phone = list(
+                    filter(None, set(record.pms_checkin_partner_ids.mapped("phone")))
+                )
+                if len(phone) == 1:
+                    record.phone = phone[0]
+                else:
+                    record.phone = False
+            elif not record.phone:
+                record.phone = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street")
+    def _compute_residence_street(self):
+        if hasattr(super(), "_compute_residence_street"):
+            super()._compute_residence_street()
+        for record in self:
+            if not record.residence_street and record.pms_checkin_partner_ids:
+                residence_street = list(
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("residence_street")),
+                    )
+                )
+                if len(residence_street) == 1:
+                    record.residence_street = residence_street[0]
+                else:
+                    record.residence_street = False
+            elif not record.residence_street:
+                record.residence_street = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_street2")
+    def _compute_residence_street2(self):
+        if hasattr(super(), "_compute_residence_street2"):
+            super()._compute_residence_street2()
+        for record in self:
+            if not record.residence_street2 and record.pms_checkin_partner_ids:
+                residence_street2 = list(
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("residence_street2")),
+                    )
+                )
+                if len(residence_street2) == 1:
+                    record.residence_street2 = residence_street2[0]
+                else:
+                    record.residence_street2 = False
+            elif not record.residence_street2:
+                record.residence_street2 = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_zip")
+    def _compute_residence_zip(self):
+        if hasattr(super(), "_compute_residence_zip"):
+            super()._compute_residence_zip()
+        for record in self:
+            if not record.residence_zip and record.pms_checkin_partner_ids:
+                residence_zip = list(
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("residence_zip")),
+                    )
+                )
+                if len(residence_zip) == 1:
+                    record.residence_zip = residence_zip[0]
+                else:
+                    record.residence_zip = False
+            elif not record.residence_zip:
+                record.residence_zip = False
+
+    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_city")
+    def _compute_residence_city(self):
+        if hasattr(super(), "_compute_residence_city"):
+            super()._compute_residence_city()
+        for record in self:
+            if not record.residence_city and record.pms_checkin_partner_ids:
+                residence_city = list(
+                    filter(
+                        None,
+                        set(record.pms_checkin_partner_ids.mapped("residence_city")),
+                    )
+                )
+                if len(residence_city) == 1:
+                    record.residence_city = residence_city[0]
+                else:
+                    record.residence_city = False
+            elif not record.residence_city:
+                record.residence_city = False
+
+    @api.depends(
+        "pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_country_id"
+    )
+    def _compute_residence_country_id(self):
+        if hasattr(super(), "_compute_residence_country_id"):
+            super()._compute_residence_country_id()
+        for record in self:
+            if not record.residence_country_id and record.pms_checkin_partner_ids:
+                residence_country_id = list(
+                    filter(
+                        None,
+                        set(
+                            record.pms_checkin_partner_ids.mapped(
+                                "residence_country_id"
+                            )
+                        ),
+                    )
+                )
+                if len(residence_country_id) == 1:
+                    record.residence_country_id = residence_country_id[0]
+                else:
+                    record.residence_country_id = False
+            elif not record.residence_country_id:
+                record.residence_country_id = False
+
+    @api.depends(
+        "pms_checkin_partner_ids", "pms_checkin_partner_ids.residence_state_id"
+    )
+    def _compute_residence_state_id(self):
+        if hasattr(super(), "_compute_residence_state_id"):
+            super()._compute_residence_state_id()
+        for record in self:
+            if not record.residence_state_id and record.pms_checkin_partner_ids:
+                residence_state_id = list(
+                    filter(
+                        None,
+                        set(
+                            record.pms_checkin_partner_ids.mapped("residence_state_id")
+                        ),
+                    )
+                )
+                if len(residence_state_id) == 1:
+                    record.residence_state_id = residence_state_id[0]
+                else:
+                    record.residence_state_id = False
+            elif not record.residence_state_id:
+                record.residence_state_id = False
 
     @api.depends(
         "pms_checkin_partner_ids",
