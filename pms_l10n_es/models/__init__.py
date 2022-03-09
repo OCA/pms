@@ -7,3 +7,4 @@ from . import pms_ine_tourism_type_category
 from . import pms_room
 from . import res_partner
 from . import pms_checkin_partner
+from . import res_partner_id_number
