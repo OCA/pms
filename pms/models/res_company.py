@@ -14,6 +14,8 @@ class ResCompany(models.Model):
         inverse_name="company_id",
     )
 
+    url_advert = fields.Char(string="Url Advert", help="Url to identify the ad")
+
     privacy_policy = fields.Text(
         string="Privacy Policy",
         help="Authorization by the user for the" "manage of their personal data",
