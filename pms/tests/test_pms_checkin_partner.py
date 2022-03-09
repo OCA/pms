@@ -1464,3 +1464,67 @@ class TestPmsCheckinPartner(TestPms):
                     checkin_partner_vals[key],
                     "The value of " + key + " is not correctly established",
                 )
+
+    def test_compute_partner_fields(self):
+        """
+        Check that the computes of the checkin_partner fields related to your partner correctly
+        add these fields to the checkin_partner.
+        ---------------------------------------
+        A reservation is created with an adult (checkin_partner) ql which is saved in the
+        checkin_partner_id variable, a partner is also created with all the fields that are
+        related to the checkin_partner fields. The partner is added to the partner_id field
+        of the checkin_partner and, through subtests, it is verified that the fields of the
+        partner and the associated checkin_partner match.
+        """
+        self.reservation = self.env["pms.reservation"].create(
+            {
+                "checkin": datetime.date.today() + datetime.timedelta(days=1),
+                "checkout": datetime.date.today() + datetime.timedelta(days=2),
+                "room_type_id": self.room_type1.id,
+                "partner_id": self.host1.id,
+                "adults": 1,
+                "pms_property_id": self.pms_property1.id,
+            }
+        )
+        checkin_partner_id = self.reservation.checkin_partner_ids[0]
+        nationality_id = self.env["res.country"].browse(1)
+        state_id = self.env["res.country.state"].browse(1)
+        partner_vals = {
+            "firstname": "Paz",
+            "lastname": "Valenzuela",
+            "lastname2": "Soto",
+            "email": "paz@example.com",
+            "birthdate_date": datetime.date(1980, 10, 5),
+            "gender": "female",
+            "mobile": "666555444",
+            "phone": "123456789",
+            "nationality_id": nationality_id.id,
+            "state_id": state_id.id,
+            "residence_street": "Calle 123",
+            "residence_street2": "Avda. Constitución 123",
+            "residence_zip": "15700",
+            "residence_city": "City Residence",
+            "residence_country_id": nationality_id.id,
+            "residence_state_id": state_id.id,
+            # "pms_checkin_partner_ids": checkin_partner_id,
+        }
+        self.partner_id = self.env["res.partner"].create(partner_vals)
+
+        partner_vals.update(
+            {
+                "nationality_id": nationality_id,
+                "residence_country_id": nationality_id,
+                "state_id": state_id,
+                "residence_state_id": state_id,
+            }
+        )
+
+        checkin_partner_id.partner_id = self.partner_id.id
+        for key in partner_vals:
+            if key != "pms_checkin_partner_ids":
+                with self.subTest(k=key):
+                    self.assertEqual(
+                        self.reservation.checkin_partner_ids[0][key],
+                        self.partner_id[key],
+                        "The value of " + key + " is not correctly established",
+                    )
