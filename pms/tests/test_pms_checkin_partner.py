@@ -1201,7 +1201,6 @@ class TestPmsCheckinPartner(TestPms):
         is = 20 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 5 years
         """
-        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "D")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1213,7 +1212,7 @@ class TestPmsCheckinPartner(TestPms):
         expected_exp_date = doc_date - datetime.timedelta(days=1826.25)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                doc_type_id, doc_date_str, birthdate_str
+                self.id_category, doc_date_str, birthdate_str
             )
         )
         date_expedition_date = datetime.date(
@@ -1238,7 +1237,6 @@ class TestPmsCheckinPartner(TestPms):
         is = 40 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 10 years
         """
-        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "D")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1250,7 +1248,7 @@ class TestPmsCheckinPartner(TestPms):
         expected_exp_date = doc_date - datetime.timedelta(days=3652.5)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                doc_type_id, doc_date_str, birthdate_str
+                self.id_category, doc_date_str, birthdate_str
             )
         )
         date_expedition_date = datetime.date(
@@ -1275,7 +1273,6 @@ class TestPmsCheckinPartner(TestPms):
         is = 20 years old and document_date = today + 1 year. The expected
         expedition date has to be doc_date - 5 years
         """
-        doc_type_id = self.env["res.partner.id_category"].search([("code", "=", "P")])
         doc_date = fields.date.today() + datetime.timedelta(days=366)
         doc_date_str = str(doc_date)
 
@@ -1287,7 +1284,7 @@ class TestPmsCheckinPartner(TestPms):
         expected_exp_date = doc_date - datetime.timedelta(days=1826.25)
         expedition_date = (
             self.checkin1.calculate_doc_type_expedition_date_from_validity_date(
-                doc_type_id, doc_date_str, birthdate_str
+                self.id_category, doc_date_str, birthdate_str
             )
         )
         date_expedition_date = datetime.date(
@@ -1436,7 +1433,7 @@ class TestPmsCheckinPartner(TestPms):
             "firstname": "Serafín",
             "lastname": "Rivas",
             "lastname2": "Gonzalez",
-            "document_type": self.id_category.name,
+            "document_type": self.id_category.code,
             "document_number": "18038946T",
             "document_expedition_date": "2015-10-07",
             "birthdate_date": "1983-10-05",

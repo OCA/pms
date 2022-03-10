@@ -275,6 +275,25 @@
                             </div>
                             <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
                                 <label
+                                    id="label_phone"
+                                    class="col-form-label"
+                                    for="phone"
+                                >Phone</label>
+                                <input
+                                    type="phone"
+                                    name="phone"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-att-value="checkin_partner_id.phone"
+                                />
+                                <t t-if="error_message">
+                                    <span
+                                        class="text-danger"
+                                        t-esc="error_message.get('phone')"
+                                    />
+                                </t>
+                            </div>
+                            <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
+                                <label
                                     id="label_email"
                                     class="col-form-label"
                                     for="email"
@@ -291,6 +310,103 @@
                                         t-esc="error_message.get('email')"
                                     />
                                 </t>
+                            </div>
+                            <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
+                                <label
+                                    id="label_relationship"
+                                    class="col-form-label"
+                                    for="partner_relationship"
+                                >Partner Relationship</label>
+                                <input
+                                    type="text"
+                                    name="partner_relationship"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-att-value="checkin_partner_id.partner_relationship"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-md-12 pt-md-5 ">
+                                <b>Residence Address</b>
+                            </div>
+                            <div t-attf-class="form-group col-md-12">
+                                <input
+                                    type="text"
+                                    placeholder="Street"
+                                    name="residence_street"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-att-value="checkin_partner_id.residence_street"
+                                />
+                            </div>
+                             <div t-attf-class="form-group col-md-12">
+                                <input
+                                    type="text"
+                                    placeholder="Second Street"
+                                    name="residence_street2"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-att-value="checkin_partner_id.residence_street2"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-md-4">
+                                <input
+                                    type="text"
+                                    placeholder="City"
+                                    name="residence_city"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-att-value="checkin_partner_id.residence_city"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-md-4">
+                                <input
+                                    type="text"
+                                    placeholder="Zip"
+                                    name="residence_zip"
+                                    t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}"
+                                    t-att-value="checkin_partner_id.residence_zip"
+                                />
+                            </div>
+                            <div t-attf-class="form-group col-md-4">
+                                <select
+                                    class="form-control"
+                                    id="residence-country"
+                                    name='residence_country_id'
+                                    onclick="changeCountryFormClass()"
+                                >
+                                    <option
+                                        id="country_placeholder"
+                                        hidden="1"
+                                        value="placeholder"
+                                    >Country</option>
+                                    <t t-foreach="country_ids" t-as='country_id'>
+                                        <option
+                                            t-att-value="country_id.id"
+                                            t-att-selected="country_id.id == checkin_partner_id.residence_country_id.id if checkin_partner_id.residence_country_id.id else placeholder"
+                                        >
+                                            <t t-esc='country_id.name' />
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div t-attf-class="form-group col-md-12">
+                                <select
+                                    class="form-control"
+                                    id="residence-state"
+                                    name='residence_state_id'
+                                    onclick="changeFormClass()"
+                                >
+                                    <option
+                                        id="placeholder"
+                                        hidden="1"
+                                        value="placeholder"
+                                    >State</option>
+                                    <t t-foreach="state_ids" t-as='state'>
+                                        <option
+                                            t-att-value="state.id"
+                                            t-att-country_id="state.country_id.id"
+                                            t-att-selected="state.id == checkin_partner_id.residence_state_id.id if checkin_partner_id.residence_state_id.id else placeholder"
+                                        >
+                                            <t t-esc="state.name" />
+                                        </option>
+                                    </t>
+                                </select>
                             </div>
                             <t t-if="checkin_pos >= 0">
                                 <div class="col-4">
@@ -410,8 +526,69 @@
             from {top: 100px; opacity: 1;}
             to {top: 0; opacity: 0;}
             }
+
+            .placeholder-class{
+            display: block;
+            width: 100%;
+            height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: grey;
+            background-color: #FFFFFF;
+            background-clip: padding-box;
+            border: 1px solid #CED4DA;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
         </style>
         <script>
+            var placeholder_country = document.getElementById("country_placeholder")
+            function changeCountryFormClass() {
+                let select_value = placeholder_country.parentNode.value
+                if (placeholder_country.parentNode.value == 'placeholder'){
+                    placeholder_country.parentNode.classList.add('placeholder-class')
+                }else{
+                    placeholder_country.parentNode.classList.remove('placeholder-class')
+                }
+            };
+            this.changeCountryFormClass()
+
+            var placeholder = document.getElementById("placeholder")
+            function changeFormClass() {
+                let select_value = placeholder.parentNode.value
+                if (placeholder.parentNode.value == 'placeholder'){
+                    placeholder.parentNode.classList.remove('form-control')
+                    placeholder.parentNode.classList.add('placeholder-class')
+                }else{
+                    placeholder.parentNode.classList.remove('placeholder-class')
+                    placeholder.parentNode.classList.add('form-control')
+                }
+            };
+            this.changeFormClass()
+
+            let select_residence_country = document.getElementById('residence-country')
+
+            select_residence_country.addEventListener("change", () => {
+            let country_value = select_residence_country.value
+            Array.from(document.getElementById('residence-state').options).forEach(element => {
+            if (element.getAttribute('country_id') == country_value) {
+            element.style="";
+            } else {
+            element.style="display:none";
+            }
+            });
+            });
+
+            var select_doc_type = document.getElementById("doc_type")
+            var document_type_value = document.getElementById("docTypeId").textContent
+            for (let i=0;i&lt;select_doc_type.length;i++){
+            if (select_doc_type[i].value == document_type_value){
+            select_doc_type[i].setAttribute("selected","True")
+            }
+            }
+
             var folio_id = document.getElementById("folio").value
             var checkin_partner_id = document.getElementById("checkin").value
             var access_token = document.getElementById("input_access_token").value
