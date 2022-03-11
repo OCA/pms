@@ -4,8 +4,8 @@ odoo.define("pms_sale.PMSConfiguratorFormController", function (require) {
     var FormController = require("web.FormController");
 
     /**
-     * This controller is overridden to allow configuring sale_order_lines through a popup
-     * window when a product with 'reservation_ok' is selected.
+     * This controller is overridden to allow configuring sale_order_lines through a
+     * popup window when a product with 'reservation_ok' is selected.
      *
      * This allows keeping an editable list view for sales order and remove the noise of
      * those 2 fields ('property_id' + 'reservation_id')
@@ -13,10 +13,11 @@ odoo.define("pms_sale.PMSConfiguratorFormController", function (require) {
     var PMSConfiguratorFormController = FormController.extend({
 
         /**
-         * We let the regular process take place to allow the validation of the required fields
-         * to happen.
+         * We let the regular process take place to allow the validation of the required
+         * fields to happen.
          *
-         * Then we can manually close the window, providing event information to the caller.
+         * Then we can manually close the window, providing event information to the
+         * caller.
          *
          * @override
          */

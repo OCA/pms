@@ -4,8 +4,8 @@ odoo.define("pms_sale.product_configurator", function (require) {
     var ProductConfiguratorWidget = require("sale.product_configurator");
 
     /**
-     * Extension of the ProductConfiguratorWidget to support event product configuration.
-     * It opens when an event product_product is set.
+     * Extension of the ProductConfiguratorWidget to support event product
+     * configuration. It opens when an event product_product is set.
      *
      * The event information include:
      * - property_id
@@ -26,8 +26,9 @@ odoo.define("pms_sale.product_configurator", function (require) {
 
         /**
          * @param {integer} productId
-         * @param {String} dataPointID
-         * @returns {Promise<Boolean>} stopPropagation true if a suitable configurator has been found.
+         * @param {String} dataPointId
+         * @returns {Promise<Boolean>} stopPropagation true if a suitable configurator
+         * has been found.
          *
          * @override
          * @private
@@ -60,8 +61,9 @@ odoo.define("pms_sale.product_configurator", function (require) {
          * This method will check if the productId needs configuration or not:
          *
          * @param {integer} productId
-         * @param {String} dataPointID
-         * @returns {Promise<Boolean>} stopPropagation true if the product is an event ticket.
+         * @param {String} dataPointId
+         * @returns {Promise<Boolean>} stopPropagation true if the product is an event
+         * ticket.
          *
          * @private
          */
@@ -139,13 +141,14 @@ odoo.define("pms_sale.product_configurator", function (require) {
         },
 
         /**
-         * Opens the event configurator to allow configuring the SO line with events information.
+         * Opens the event configurator to allow configuring the SO line with events
+         * information.
          *
-         * When the window is closed, configured values are used to trigger a 'field_changed'
-         * event to modify the current SO line.
+         * When the window is closed, configured values are used to trigger a
+         * 'field_changed' event to modify the current SO line.
          *
-         * If the window is closed without providing the required values 'property_id' and
-         * 'reservation_id', the product_id field is cleaned.
+         * If the window is closed without providing the required values 'property_id'
+         * and 'reservation_id', the product_id field is cleaned.
          *
          * @param {Object} data various "default_" values
          * @param {String} dataPointId
@@ -183,6 +186,5 @@ odoo.define("pms_sale.product_configurator", function (require) {
             });
         },
     });
-
     return ProductConfiguratorWidget;
 });

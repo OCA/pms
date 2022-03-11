@@ -87,7 +87,7 @@ odoo.define("pms_sale.timeline", function (require) {
             }
         },
         _onsearchbutton: function () {
-            if (this.$el.find(".oe_timeline_select_city").val() != "Select City") {
+            if (this.$el.find(".oe_timeline_select_city").val() !== "Select City") {
                 this.city_value = this.$el.find(".oe_timeline_select_city").val();
             } else {
                 this.city_value = false;
