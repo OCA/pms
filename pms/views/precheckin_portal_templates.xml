@@ -126,7 +126,10 @@
                                     </option>
                                 </select>
                             </div>
-                            <div t-attf-class="form-group col-12 col-md-6">
+                            <div
+                                name="document_type_div"
+                                t-attf-class="form-group col-12 col-md-6"
+                            >
                                 <label
                                     class="col-form-label"
                                     for="document_type"
@@ -156,7 +159,10 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="col-12 col-md-6">
+                            <div
+                                name="document_number_div"
+                                t-attf-class="col-12 col-md-6"
+                            >
                                 <label
                                     class="col-form-label"
                                     for="document_number"
@@ -292,7 +298,7 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
+                            <div t-attf-class="form-group col-12 col-md-6">
                                 <label
                                     id="label_email"
                                     class="col-form-label"
@@ -311,7 +317,7 @@
                                     />
                                 </t>
                             </div>
-                            <div t-attf-class="form-group col-12 col-md-6 pt-md-5">
+                            <div t-attf-class="form-group col-12 col-md-6 ">
                                 <label
                                     id="label_relationship"
                                     class="col-form-label"
@@ -324,10 +330,11 @@
                                     t-att-value="checkin_partner_id.partner_relationship"
                                 />
                             </div>
-                            <div t-attf-class="form-group col-md-12 pt-md-5 ">
-                                <b>Residence Address</b>
-                            </div>
-                            <div t-attf-class="form-group col-md-12">
+                            <div t-attf-class="form-group col-md-12 pt-md-5">
+                                <label
+                                    class="col-form-label"
+                                    for="residence_street"
+                                >Residence Address</label>
                                 <input
                                     type="text"
                                     placeholder="Street"
@@ -385,7 +392,7 @@
                                     </t>
                                 </select>
                             </div>
-                            <div t-attf-class="form-group col-md-12">
+                            <div t-attf-class="form-group col-md-12 pb-md-3">
                                 <select
                                     class="form-control"
                                     id="residence-state"
@@ -1176,6 +1183,7 @@
                                                         </span>
                                                     </div>
                                                     <div
+                                                        name="birthdate_div"
                                                         t-attf-class="form-group col-12 col-md-6 font-weight-bold"
                                                     >
                                                         Birthdate:
@@ -1198,6 +1206,19 @@
                                                         >
                                                             <t
                                                                 t-esc="checkin_partner.mobile"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        Phone:
+                                                        <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-esc="checkin_partner.phone"
                                                             />
                                                         </span>
                                                     </div>
@@ -1237,6 +1258,118 @@
                                                         >
                                                             <t
                                                                 t-esc="checkin_partner.state_id.name"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        Partner Relationship:
+                                                        <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-esc="checkin_partner.partner_relationship"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 mt-3 font-italic font-weight-bold"
+                                                    >
+                                                        Residence Address
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        Street:
+                                                         <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-esc="checkin_partner.residence_street"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        Second Street:
+                                                         <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-esc="checkin_partner.residence_street2"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        City:
+                                                         <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-esc="checkin_partner.residence_city"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        ZIP:
+                                                         <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-esc="checkin_partner.residence_zip"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        State:
+                                                         <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-set="residence_state_id"
+                                                                t-value="int(checkin_partner.residence_state_id.id)"
+                                                            />
+                                                            <t
+                                                                t-set="residence_state"
+                                                                t-value="folio.env['res.country.state'].browse(residence_state_id)"
+                                                            />
+                                                            <t
+                                                                t-esc="residence_state.name"
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
+                                                    >
+                                                        Country:
+                                                         <br />
+                                                        <span
+                                                            class="font-weight-normal ml-3"
+                                                        >
+                                                            <t
+                                                                t-set="residence_country_id"
+                                                                t-value="int(checkin_partner.residence_country_id.id)"
+                                                            />
+                                                            <t
+                                                                t-set="residence_country"
+                                                                t-value="folio.env['res.country'].browse(residence_country_id)"
+                                                            />
+                                                            <t
+                                                                t-esc="residence_country.name"
                                                             />
                                                         </span>
                                                     </div>
