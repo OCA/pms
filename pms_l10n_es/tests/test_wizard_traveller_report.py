@@ -56,6 +56,7 @@ class TestWizardTravellerReport(TestPms):
                 "name": "partner1",
                 "country_id": self.country_italy.id,
                 "nationality_id": self.country_italy.id,
+                "residence_country_id": self.country_italy.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -75,6 +76,7 @@ class TestWizardTravellerReport(TestPms):
                 "name": "partner2",
                 "country_id": self.country_italy.id,
                 "nationality_id": self.country_italy.id,
+                "residence_country_id": self.country_italy.id,
                 "birthdate_date": "2000-06-25",
                 "gender": "male",
             }
@@ -175,6 +177,7 @@ class TestWizardTravellerReport(TestPms):
                 "reservation_id": self.reservation_1.id,
                 "firstname": "John",
                 "lastname": "Doe",
+                "residence_country_id": self.country_italy.id,
             }
         )
         # Create reservation 2
