@@ -8,11 +8,11 @@ odoo.define("pms_sale.timeline", function (require) {
 
     const _t = core._t;
     TimelineView.prototype.jsLibs.push(
-        "/web/static/lib/daterangepicker/daterangepicker.js",
+        "/web/static/lib/daterangepicker/daterangepicker.js"
     );
     TimelineView.prototype.jsLibs.push("/web/static/src/js/libs/daterangepicker.js");
     TimelineView.prototype.cssLibs.push(
-        "/web/static/lib/daterangepicker/daterangepicker.css",
+        "/web/static/lib/daterangepicker/daterangepicker.css"
     );
     TimelineRenderer.include({
         willStart: function () {
@@ -64,7 +64,7 @@ odoo.define("pms_sale.timeline", function (require) {
             this._super.apply(this, arguments);
             if (this.modelName === "pms.reservation") {
                 const $filter_reservation = $(
-                    core.qweb.render("TimelineReservationFilter"),
+                    core.qweb.render("TimelineReservationFilter")
                 );
                 self.$filter_reservation = $filter_reservation;
                 _.each(this.city, function (city) {
@@ -117,7 +117,7 @@ odoo.define("pms_sale.timeline", function (require) {
                     if (group_name instanceof Array) {
                         const group = _.find(
                             groups,
-                            (existing_group) => existing_group.id === group_name[0],
+                            (existing_group) => existing_group.id === group_name[0]
                         );
                         if (_.isUndefined(group)) {
                             groups.push({
@@ -190,7 +190,7 @@ odoo.define("pms_sale.timeline", function (require) {
                                     if (groups[i].id === self.property_ids[u]) {
                                         if (
                                             !res_user_groups_ids.includes(
-                                                self.property_ids[u],
+                                                self.property_ids[u]
                                             )
                                         ) {
                                             res_user_groups.push({
@@ -198,7 +198,7 @@ odoo.define("pms_sale.timeline", function (require) {
                                                 content: _t(user_name),
                                             });
                                             res_user_groups_ids.push(
-                                                self.property_ids[u],
+                                                self.property_ids[u]
                                             );
                                         }
                                     }
@@ -206,7 +206,7 @@ odoo.define("pms_sale.timeline", function (require) {
                                 if (!is_available) {
                                     if (
                                         !res_user_groups_ids.includes(
-                                            self.property_ids[u],
+                                            self.property_ids[u]
                                         )
                                     ) {
                                         res_user_groups.push({
@@ -259,7 +259,7 @@ odoo.define("pms_sale.timeline", function (require) {
                                 color.opt +
                                 " '" +
                                 color.value +
-                                "'",
+                                "'"
                         )
                     ) {
                         self.color = color.color;
@@ -271,7 +271,7 @@ odoo.define("pms_sale.timeline", function (require) {
                                 color.opt +
                                 " '" +
                                 color.value +
-                                "'",
+                                "'"
                         )
                     ) {
                         self.color = color.color;
