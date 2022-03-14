@@ -137,7 +137,7 @@ odoo.define("pms_sale.timeline", function (require) {
                 bedrooms_value: this.bedrooms_value,
             };
         },
-        on_data_loaded_2: function (events, group_bys, adjust_window) {
+        on_data_loaded_2: function (events, group_bys) {
             var self = this;
             if (this.modelName === "pms.reservation") {
                 var data = [];
@@ -220,8 +220,6 @@ odoo.define("pms_sale.timeline", function (require) {
                         }
                         self.timeline.setGroups(res_user_groups);
                         self.timeline.setItems(data);
-                        var mode = !self.mode || self.mode === "fit";
-                        var adjust = _.isUndefined(adjust_window) || adjust_window;
                         self.timeline.setOptions({
                             orientation: "top",
                         });
@@ -252,20 +250,20 @@ odoo.define("pms_sale.timeline", function (require) {
                 }
                 _.each(self.colors, function (color) {
                     if (
-                        eval(
-                            "'" +
+                        Function(
+                            '"use strict";return\'' +
                                 evt[color.field] +
                                 "' " +
                                 color.opt +
                                 " '" +
                                 color.value +
                                 "'"
-                        )
+                        )()
                     ) {
                         self.color = color.color;
                     } else if (
-                        eval(
-                            "'" +
+                        Function(
+                            '"use strict";return\'' +
                                 evt[color.field][1] +
                                 "' " +
                                 color.opt +
