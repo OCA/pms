@@ -5,7 +5,7 @@
         <field name="model">pms.checkin.partner</field>
         <field name="inherit_id" ref="pms.pms_checkin_partner_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='state_id']" position="after">
+            <xpath expr="//field[@name='document_expedition_date']" position="after">
                 <field name="support_number" />
             </xpath>
         </field>
