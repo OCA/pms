@@ -1,6 +1,7 @@
 account-financial-tools
-partner-contact
-reporting-engine
-queue
 community-data-files
 contract
+partner-contact
+queue
+reporting-engine
+web
