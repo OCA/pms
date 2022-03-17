@@ -132,12 +132,16 @@ class BackendGuesty(models.Model):
         guesty_partner = self.env["res.partner.guesty"].search(
             [("partner_id", "=", partner.id)], limit=1
         )
+
+        first_name, last_name = partner.split_name()
+
         if not guesty_partner:
             # create on guesty
             body = {
+                "firstName": first_name,
+                "lastName": last_name,
                 "fullName": partner.name,
                 "email": partner.email,
-                "phone": partner.phone,
             }
             success, res = self.call_post_request(url_path="guests", body=body)
 
@@ -151,6 +155,7 @@ class BackendGuesty(models.Model):
 
             return customer
         else:
+            guesty_partner.guesty_push_update()
             return guesty_partner
 
     def guesty_search_pull_customer(self, guesty_id):

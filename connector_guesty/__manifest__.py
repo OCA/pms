@@ -20,6 +20,8 @@
         "views/pms_guesty_calendar_wizard.xml",
         "views/res_partner.xml",
         "views/sale_order_views.xml",
+        "views/sale_order_report_custom.xml",
+        "views/sales_order_portal_template_custom.xml",
         "wizard/pms_property_days_quotation_expiration_views.xml",
         "wizard/crm_lead_new_reservation.xml",
         "security/ir.model.access.csv",

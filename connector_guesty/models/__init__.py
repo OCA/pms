@@ -5,6 +5,7 @@ from . import (
     pms_property_reservation,
     pms_guesty_calendar,
     pms_configurator,
+    product,
     res_company,
     res_config_settings,
     res_partner_guesty,
