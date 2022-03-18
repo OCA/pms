@@ -442,16 +442,24 @@
                                 attrs="{'invisible': [('reservation_type','in',('out'))]}"
                             />
                             <field
-                                name="agency_id"
-                                attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
-                            />
-                            <field
                                 name="external_reference"
                                 attrs="{'invisible': [('agency_id', '=', False)]}"
                             />
                             <field
-                                name="channel_type_id"
-                                attrs="{'readonly':[('agency_id','!=', False)], 'invisible': [('reservation_type', '!=', 'normal')]}"
+                                name="agency_id"
+                                attrs="{'invisible': [('reservation_type', '!=', 'normal')]}"
+                            />
+                            <field name="sale_channel_origin_id" />
+                            <field
+                                class="oe_edit_only"
+                                name="force_update_origin"
+                                attrs="{'invisible': [('is_origin_channel_check_visible','=',False)]}"
+                            />
+                            <field name="is_origin_channel_check_visible" invisible="1" />
+                            <field
+                                name="sale_channel_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
                             />
                             <field placeholder="Arrival Hour" name="arrival_hour" />
                             <field placeholder="Departure Hour" name="departure_hour" />
@@ -491,6 +499,7 @@
                                         name="cancel_discount"
                                         attrs="{'column_invisible': [('parent.state','!=','cancel')]}"
                                     />
+                                    <field name="sale_channel_id" />
                                     <field name="pms_property_id" invisible="1" />
                                 </tree>
                             </field>
@@ -786,7 +795,8 @@
                 <field name="checkin_partner_pending_count" invisible="1" />
                 <field name="tax_ids" invisible="1" />
                 <field name="agency_id" optional="show" />
-                <field name="channel_type_id" optional="show" />
+                <field name="sale_channel_origin_id" optional="show" />
+                <field name="sale_channel_ids" optional="show" />
                 <field name="price_subtotal" invisible="1" />
                 <field name="price_total" optional="hide" sum="Total" />
                 <field name="commission_amount" optional="hide" sum="Commission" />
@@ -1014,12 +1024,12 @@
                         name="agency"
                         context="{'group_by':'agency_id'}"
                     />
-                    <filter
-                        string="Channel"
-                        domain="[]"
-                        name="channel"
-                        context="{'group_by':'channel_type_id'}"
-                    />
+<!--                    <filter-->
+<!--                        string="Channel"-->
+<!--                        domain="[]"-->
+<!--                        name="channel"-->
+<!--                        context="{'group_by':'sale_channel_ids'}"-->
+<!--                    />-->
                     <filter
                         string="Room Type"
                         domain="[]"
@@ -1078,13 +1088,13 @@
                         icon="fa-bookmark"
                         color="#875A7B"
                     />
-                    <field
-                        name="channel_type_id"
-                        string="Channel"
-                        enable_counters="1"
-                        icon="fa-sitemap"
-                        expand="1"
-                    />
+<!--                    <field-->
+<!--                        name="channel_type_id"-->
+<!--                        string="Channel"-->
+<!--                        enable_counters="1"-->
+<!--                        icon="fa-sitemap"-->
+<!--                        expand="1"-->
+<!--                    />-->
                 </searchpanel>
             </search>
         </field>
