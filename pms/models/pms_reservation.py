@@ -124,13 +124,37 @@ class PmsReservation(models.Model):
         depends=["folio_id.agency_id"],
         tracking=True,
     )
-    channel_type_id = fields.Many2one(
-        string="Channel Type",
-        help="Sales Channel through which the reservation was managed",
-        readonly=False,
+    sale_channel_ids = fields.Many2many(
+        string="Sale Channels",
+        help="Sale Channels through which reservation lines were managed",
         store=True,
-        related="folio_id.channel_type_id",
-        tracking=True,
+        compute="_compute_sale_channel_ids",
+        comodel_name="pms.sale.channel",
+    )
+    sale_channel_origin_id = fields.Many2one(
+        string="Sale Channel Origin",
+        help="Sale Channel through which reservation was created, the original",
+        store=True,
+        readonly=False,
+        compute="_compute_sale_channel_origin_id",
+        default=lambda self: self._get_default_sale_channel_origin(),
+        comodel_name="pms.sale.channel",
+    )
+    force_update_origin = fields.Boolean(
+        string="Update Sale Channel Origin",
+        help="This field is for force update in sale channel "
+        "origin of folio and another reservations",
+        store=True,
+        readonly=False,
+        compute="_compute_force_update_origin",
+    )
+    is_origin_channel_check_visible = fields.Boolean(
+        string="Update Sale Channel Origin",
+        help="This field is for force update in sale channel "
+        "origin of folio and another reservations",
+        store=True,
+        readonly=False,
+        compute="_compute_is_origin_channel_check_visible",
     )
     closure_reason_id = fields.Many2one(
         string="Closure Reason",
@@ -1608,6 +1632,38 @@ class PmsReservation(models.Model):
             else:
                 record.lang = self.env["res.lang"].get_installed()
 
+
+    @api.depends("reservation_line_ids", "reservation_line_ids.sale_channel_id")
+    def _compute_sale_channel_ids(self):
+        for record in self:
+            record.sale_channel_ids = [
+                (6, 0, record.mapped("reservation_line_ids.sale_channel_id.id"))
+            ]
+
+    @api.depends("agency_id")
+    def _compute_sale_channel_origin_id(self):
+        for record in self:
+            # if record.folio_id.sale_channel_origin_id and not record.sale_channel_origin_id:
+            #     record.sale_channel_origin_id = record.folio_id.sale_channel_origin_id
+            if record.agency_id:
+                record.sale_channel_origin_id = record.agency_id.sale_channel_id
+
+    @api.depends("sale_channel_origin_id")
+    def _compute_is_origin_channel_check_visible(self):
+        for record in self:
+            if (
+                record.sale_channel_origin_id != record.folio_id.sale_channel_origin_id
+                and record.folio_id
+            ):
+                record.is_origin_channel_check_visible = True
+            else:
+                record.is_origin_channel_check_visible = False
+
+    @api.depends("sale_channel_origin_id")
+    def _compute_force_update_origin(self):
+        for record in self:
+            record.force_update_origin = True
+
     def _search_allowed_checkin(self, operator, value):
         if operator not in ("=",):
             raise UserError(
@@ -1673,6 +1729,17 @@ class PmsReservation(models.Model):
         if folio and folio.segmentation_ids:
             segmentation_ids = folio.segmentation_ids
         return segmentation_ids
+
+    def _get_default_sale_channel_origin(self):
+        folio = False
+        sale_channel_origin_id = False
+        if "default_folio_id" in self._context:
+            folio = self.env["pms.folio"].search(
+                [("id", "=", self._context["default_folio_id"])]
+            )
+        if folio and folio.sale_channel_origin_id:
+            sale_channel_origin_id = folio.sale_channel_origin_id
+        return sale_channel_origin_id
 
     def check_in_out_dates(self):
         """
@@ -1943,12 +2010,18 @@ class PmsReservation(models.Model):
             elif vals.get("reservation_type") != "out":
                 raise ValidationError(_("Partner contact name is required"))
             vals.update(default_vals)
-        elif "pms_property_id" in vals and (
-            "partner_name" in vals or "partner_id" in vals or "agency_id" in vals
+        elif (
+            "pms_property_id" in vals
+            and ("sale_channel_origin_id" in vals or "agency_id" in vals)
+            and ("partner_name" in vals or "partner_id" in vals or "agency_id" in vals)
         ):
             folio_vals = {
                 "pms_property_id": vals["pms_property_id"],
             }
+            if vals.get("sale_channel_origin_id"):
+                folio_vals["sale_channel_origin_id"] = vals.get(
+                    "sale_channel_origin_id"
+                )
             if vals.get("partner_id"):
                 folio_vals["partner_id"] = vals.get("partner_id")
             elif vals.get("agency_id"):
@@ -1981,7 +2054,11 @@ class PmsReservation(models.Model):
             )
 
         else:
-            raise ValidationError(_("The Property are mandatory in the reservation"))
+            raise ValidationError(
+                _(
+                    "The Property and Sale Channel Origin are mandatory in the reservation"
+                )
+            )
         if vals.get("name", _("New")) == _("New") or "name" not in vals:
             folio_sequence = (
                 max(folio.mapped("reservation_ids.folio_sequence")) + 1
@@ -2004,13 +2081,24 @@ class PmsReservation(models.Model):
         return record
 
     def write(self, vals):
-        asset = super(PmsReservation, self).write(vals)
+        folios_to_update_channel = self.env["pms.folio"]
+        lines_to_update_channel = self.env["pms.reservation.line"]
+        if "sale_channel_origin_id" in vals:
+            folios_to_update_channel = self.get_folios_to_update_channel(vals)
+        lines_to_update_channel = self.get_lines_to_update_channel(vals)
+        res = super(PmsReservation, self).write(vals)
+        if folios_to_update_channel:
+            folios_to_update_channel.sale_channel_origin_id = vals[
+                "sale_channel_origin_id"
+            ]
+        if lines_to_update_channel:
+            lines_to_update_channel.sale_channel_id = vals["sale_channel_origin_id"]
         self._check_services(vals)
         # Only check if adult to avoid to check capacity in intermediate states (p.e. flush)
         # that not take access to possible extra beds service in vals
         if "adults" in vals:
             self._check_capacity()
-        return asset
+        return res
 
     def _check_services(self, vals):
         # If we create a reservation with board service and other service at the same time,
@@ -2018,6 +2106,30 @@ class PmsReservation(models.Model):
         # and we must force it to compute the services linked with the board service:
         if "board_service_room_id" in vals and "service_ids" in vals:
             self._compute_service_ids()
+
+    def get_folios_to_update_channel(self, vals):
+        folios_to_update_channel = self.env["pms.folio"]
+        for folio in self.mapped("folio_id"):
+            if (
+                any(
+                    res.sale_channel_origin_id == folio.sale_channel_origin_id
+                    for res in self.filtered(lambda r: r.folio_id == folio)
+                )
+                and vals["sale_channel_origin_id"] != folio.sale_channel_origin_id.id
+                and ("force_update_origin" in vals and vals.get("force_update_origin"))
+            ):
+                folios_to_update_channel += folio
+        return folios_to_update_channel
+
+    def get_lines_to_update_channel(self, vals):
+        lines_to_update_channel = self.env["pms.reservation.line"]
+        for record in self:
+            for line in record.reservation_line_ids:
+                if line.sale_channel_id == record.sale_channel_origin_id and (
+                    vals["sale_channel_origin_id"] != line.sale_channel_id.id
+                ):
+                    lines_to_update_channel += line
+        return lines_to_update_channel
 
     def update_prices(self):
         self.ensure_one()
