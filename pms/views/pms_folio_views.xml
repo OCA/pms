@@ -348,9 +348,15 @@
                                 name="agency_id"
                                 attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
                             />
+                            <field name="sale_channel_origin_id" />
                             <field
                                 name="external_reference"
                                 attrs="{'invisible': [('agency_id', '=', False)]}"
+                            />
+                            <field
+                                name="sale_channel_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True,'no_open': True}"
                             />
                             <field
                                 name="channel_type_id"
@@ -786,12 +792,12 @@
                         name="group_customer"
                         context="{'group_by':'partner_id'}"
                     />
-                    <filter
-                        string="Channel"
-                        domain="[]"
-                        name="group_channel"
-                        context="{'group_by':'channel_type_id'}"
-                    />
+<!--                    <filter-->
+<!--                        string="Channel"-->
+<!--                        domain="[]"-->
+<!--                        name="group_channel"-->
+<!--                        context="{'group_by':'sale_channel_ids'}"-->
+<!--                    />-->
                     <filter
                         string="Agency"
                         domain="[]"
@@ -842,13 +848,13 @@
                         enable_counters="1"
                         select="multi"
                     />
-                    <field
-                        name="channel_type_id"
-                        string="Channel"
-                        enable_counters="1"
-                        icon="fa-sitemap"
-                        expand="1"
-                    />
+<!--                    <field-->
+<!--                        name="channel_type_id"-->
+<!--                        string="Channel"-->
+<!--                        enable_counters="1"-->
+<!--                        icon="fa-sitemap"-->
+<!--                        expand="1"-->
+<!--                    />-->
                 </searchpanel>
             </search>
         </field>

@@ -204,17 +204,32 @@ class PmsFolio(models.Model):
         ondelete="restrict",
         check_pms_properties=True,
     )
-    channel_type_id = fields.Many2one(
-        string="Direct Sale Channel",
-        help="Only allowed if the field of sale channel channel_type is 'direct'",
-        readonly=False,
+    # channel_type_id = fields.Many2one(
+    #     string="Direct Sale Channel",
+    #     help="Only allowed if the field of sale channel channel_type is 'direct'",
+    #     readonly=False,
+    #     store=True,
+    #     comodel_name="pms.sale.channel",
+    #     domain=[("channel_type", "=", "direct")],
+    #     ondelete="restrict",
+    #     compute="_compute_channel_type_id",
+    #     check_pms_properties=True,
+    # )
+    sale_channel_ids = fields.Many2many(
+        string="Sale Channels",
+        help="Sale Channels through which reservations were managed",
         store=True,
+        compute="_compute_sale_channel_ids",
         comodel_name="pms.sale.channel",
-        domain=[("channel_type", "=", "direct")],
-        ondelete="restrict",
-        compute="_compute_channel_type_id",
-        check_pms_properties=True,
     )
+    sale_channel_origin_id = fields.Many2one(
+        string="Sale Channel Origin",
+        help="Sale Channel through which folio was created, the original",
+        comodel_name="pms.sale.channel",
+        store=True,
+        compute="_compute_sale_channel_origin_id",
+    )
+
     transaction_ids = fields.Many2many(
         string="Transactions",
         help="Payments made through payment acquirer",
@@ -1049,10 +1064,17 @@ class PmsFolio(models.Model):
                     folio.commission = folio.commission + reservation.commission_amount
 
     @api.depends("agency_id")
-    def _compute_channel_type_id(self):
+    def _compute_sale_channel_origin_id(self):
         for folio in self:
             if folio.agency_id:
-                folio.channel_type_id = folio.agency_id.sale_channel_id.id
+                folio.sale_channel_origin_id = folio.agency_id.sale_channel_id.id
+
+    @api.depends("reservation_ids", "reservation_ids.sale_channel_ids")
+    def _compute_sale_channel_ids(self):
+        for record in self:
+            record.sale_channel_ids = [
+                (6, 0, record.mapped("reservation_ids.sale_channel_origin_id.id"))
+            ]
 
     @api.depends("sale_line_ids.invoice_lines")
     def _compute_get_invoiced(self):
@@ -1491,17 +1513,17 @@ class PmsFolio(models.Model):
             ("sale_line_ids.invoice_lines.move_id", operator, value),
         ]
 
-    @api.constrains("agency_id", "channel_type_id")
-    def _check_only_one_channel(self):
-        for record in self:
-            if (
-                record.agency_id
-                and record.channel_type_id.channel_type
-                != record.agency_id.sale_channel_id.channel_type
-            ):
-                raise models.ValidationError(
-                    _("The Sale Channel does not correspond to the agency's")
-                )
+    # @api.constrains("agency_id", "channel_type_id")
+    # def _check_only_one_channel(self):
+    #     for record in self:
+    #         if (
+    #             record.agency_id
+    #             and record.channel_type_id.channel_type
+    #             != record.agency_id.sale_channel_id.channel_type
+    #         ):
+    #             raise models.ValidationError(
+    #                 _("The Sale Channel does not correspond to the agency's")
+    #             )
 
     @api.constrains("name")
     def _check_required_partner_name(self):
@@ -1522,6 +1544,23 @@ class PmsFolio(models.Model):
         result = super(PmsFolio, self).create(vals)
         result.access_token = result._portal_ensure_token()
         return result
+
+    def write(self, vals):
+        reservations_to_update = self.env["pms.reservation"]
+        if "sale_channel_origin_id" in vals:
+            for record in self:
+                for reservation in record.reservation_ids:
+                    if (
+                        reservation.sale_channel_origin_id
+                        == self.sale_channel_origin_id
+                    ):
+                        reservations_to_update += reservation
+        res = super(PmsFolio, self).write(vals)
+        if reservations_to_update:
+            reservations_to_update.sale_channel_origin_id = vals[
+                "sale_channel_origin_id"
+            ]
+        return res
 
     def action_pay(self):
         self.ensure_one()

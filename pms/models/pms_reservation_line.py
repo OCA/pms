@@ -112,6 +112,12 @@ class PmsReservationLine(models.Model):
         store=True,
         readonly=False,
         compute="_compute_overbooking",
+    sale_channel_id = fields.Many2one(
+        string="Sale Channel",
+        help="Sale Channel through which reservation line was created",
+        comodel_name="pms.sale.channel",
+        ondelete="restrict",
+        check_pms_properties=True,
     )
     _sql_constraints = [
         (
@@ -483,6 +489,10 @@ class PmsReservationLine(models.Model):
         records = super().create(vals_list)
         for line in records:
             reservation = line.reservation_id
+            # Set default channel
+            if not line.sale_channel_id:
+                line.sale_channel_id = reservation.sale_channel_origin_id.id
+            # Update quota
             self.env["pms.availability.plan"].update_quota(
                 pricelist_id=reservation.pricelist_id.id,
                 room_type_id=reservation.room_type_id.id,
