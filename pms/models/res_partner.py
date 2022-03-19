@@ -4,6 +4,7 @@
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -120,6 +121,11 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_lastname2",
     )
+    vat = fields.Char(
+        readonly=False,
+        store=True,
+        compute="_compute_vat",
+    )
     comment = fields.Text(
         tracking=True,
     )
@@ -178,6 +184,24 @@ class ResPartner(models.Model):
         readonly=False,
         store=True,
     )
+    vat_document_type = fields.Selection(
+        string="Document Type",
+        help="""The vat document type of the partner,
+        set if is a fiscal document, passport, etc...""",
+        selection=lambda self: self._selection_vat_document_type(),
+        compute="_compute_vat_document_type",
+        store=True,
+    )
+
+    @api.model
+    def _selection_vat_document_type(self):
+        vat_document_types = [
+            ("vat", _("VAT")),
+        ]
+        document_categories = self.env["res.partner.id_category"].search([])
+        for doc_type in document_categories:
+            vat_document_types.append((doc_type.name, doc_type.name))
+        return vat_document_types
 
     @api.depends("vat", "id_numbers", "id_numbers.name")
     def _compute_document_number_to_invoice(self):
@@ -382,6 +406,17 @@ class ResPartner(models.Model):
             elif not record.lastname2:
                 record.lastname2 = False
 
+    @api.depends("id_numbers", "id_numbers.name")
+    def _compute_vat(self):
+        if hasattr(super(), "_compute_vat"):
+            super()._compute_vat()
+        for record in self:
+            if not record.vat and record.id_numbers:
+                vat = list(filter(None, set(record.id_numbers.mapped("name"))))
+                record.vat = vat[0]
+            elif not record.vat:
+                record.vat = False
+
     def _compute_reservations_count(self):
         # Return reservation with partner included in reservation and/or checkin
         pms_reservation_obj = self.env["pms.reservation"]
@@ -402,6 +437,22 @@ class ResPartner(models.Model):
                     ("id", "in", checkin_reservation_ids),
                 ]
             )
+
+    @api.depends(
+        "vat", "id_numbers", "id_numbers.category_id", "id_numbers.vat_syncronized"
+    )
+    def _compute_vat_document_type(self):
+        self.vat_document_type = False
+        for record in self.filtered("vat"):
+            record.vat_document_type = "vat"
+            document = record.id_numbers.filtered("vat_syncronized")
+            if document:
+                if len(document) > 1:
+                    raise ValidationError(
+                        _("There is more than one document with vat syncronized")
+                    )
+                if record.vat:
+                    record.vat_document_type = document.category_id.name
 
     def action_partner_reservations(self):
         self.ensure_one()
@@ -565,3 +616,15 @@ class ResPartner(models.Model):
         ):
             return True
         return False
+
+    @api.constrains("vat_document_type")
+    def check_vat(self):
+        """
+        Inherit constrain to allow set vat in
+        document ids like passport, etc...
+        """
+        for partner in self:
+            if partner.vat_document_type and partner.vat_document_type != "vat":
+                continue
+            else:
+                super(ResPartner, partner).check_vat()
