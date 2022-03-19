@@ -198,7 +198,11 @@ class ResPartner(models.Model):
         vat_document_types = [
             ("vat", _("VAT")),
         ]
-        document_categories = self.env["res.partner.id_category"].search([])
+        document_categories = self.env["res.partner.id_category"].search(
+            [
+                ("is_vat_equivalent", "=", False),
+            ]
+        )
         for doc_type in document_categories:
             vat_document_types.append((doc_type.name, doc_type.name))
         return vat_document_types
@@ -444,7 +448,6 @@ class ResPartner(models.Model):
     def _compute_vat_document_type(self):
         self.vat_document_type = False
         for record in self.filtered("vat"):
-            record.vat_document_type = "vat"
             document = record.id_numbers.filtered("vat_syncronized")
             if document:
                 if len(document) > 1:
@@ -452,7 +455,13 @@ class ResPartner(models.Model):
                         _("There is more than one document with vat syncronized")
                     )
                 if record.vat:
-                    record.vat_document_type = document.category_id.name
+                    record.vat_document_type = (
+                        document.category_id.name
+                        if not document.category_id.is_vat_equivalent
+                        else "vat"
+                    )
+            else:
+                record.vat_document_type = "vat"
 
     def action_partner_reservations(self):
         self.ensure_one()
@@ -624,7 +633,7 @@ class ResPartner(models.Model):
         document ids like passport, etc...
         """
         for partner in self:
-            if partner.vat_document_type and partner.vat_document_type != "vat":
+            if not partner.vat_document_type or partner.vat_document_type != "vat":
                 continue
             else:
                 super(ResPartner, partner).check_vat()
