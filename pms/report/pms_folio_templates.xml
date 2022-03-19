@@ -43,9 +43,9 @@
             </h2>
 
             <div class="row mt32 mb32" id="informations">
-                <div t-if="doc.client_order_ref" class="col-auto col-3 mw-100 mb-2">
+                <div t-if="doc.name" class="col-auto col-3 mw-100 mb-2">
                     <strong>Your Reference:</strong>
-                    <p class="m-0" t-field="doc.client_order_ref" />
+                    <p class="m-0" t-field="doc.name" />
                 </div>
                 <div
                         t-if="doc.date_order and doc.state not in ['draft','sent']"

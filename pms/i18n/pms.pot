@@ -2921,11 +2921,6 @@ msgid "Customer Ref"
 msgstr ""
 
 #. module: pms
-#: model:ir.model.fields,field_description:pms.field_pms_folio__client_order_ref
-msgid "Customer Reference"
-msgstr ""
-
-#. module: pms
 #: model:ir.model.fields,field_description:pms.field_folio_advance_payment_inv__deposit_taxes_id
 #: model:ir.model.fields,field_description:pms.field_pms_room_type__taxes_id
 #: model_terms:ir.ui.view,arch_db:pms.pms_amenity_view_form

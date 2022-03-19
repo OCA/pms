@@ -330,6 +330,10 @@
                                 attrs="{'invisible': [('reservation_type', 'not in', 'normal')]}"
                             />
                             <field
+                                name="external_reference"
+                                attrs="{'invisible': [('agency_id', '=', False)]}"
+                            />
+                            <field
                                 name="channel_type_id"
                                 attrs="{'readonly':[('agency_id','!=', False)], 'invisible':[('reservation_type', 'not in', 'normal')]}"
                             />
@@ -564,7 +568,6 @@
                         <page string="Other data">
                             <group>
                                 <field name="user_id" />
-                                <field name="client_order_ref" />
                             </group>
                         </page>
                         <!-- <page string="Foreign Exchange" name="foreign exchange" invisible="1">

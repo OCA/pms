@@ -153,7 +153,7 @@ class FolioAdvancePaymentInv(models.TransientModel):
 
     def _prepare_invoice_values(self, order, name, amount, line):
         invoice_vals = {
-            "ref": order.client_order_ref,
+            "ref": order.name,
             "move_type": "out_invoice",
             "invoice_origin": order.name,
             "invoice_user_id": order.user_id.id,

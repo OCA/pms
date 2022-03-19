@@ -26,6 +26,10 @@ class AccountPayment(models.Model):
         store=True,
         readonly=True,
     )
+    origin_reference = fields.Char(
+        string="Origin Reference",
+        help="The reference of the payment origin",
+    )
 
     @api.depends("reconciled_invoice_ids", "reconciled_bill_ids")
     def _compute_origin_agency_id(self):
