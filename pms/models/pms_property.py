@@ -176,7 +176,10 @@ class PmsProperty(models.Model):
     journal_normal_invoice_id = fields.Many2one(
         string="Normal Invoice Journal",
         comodel_name="account.journal",
-        domain=[("type", "=", "sale")],
+        domain=[
+            ("type", "=", "sale"),
+            ("is_simplified_invoice", "=", False),
+        ],
         help="Journal used to create the normal invoice",
         check_company=True,
         check_pms_properties=True,
@@ -616,3 +619,12 @@ class PmsProperty(models.Model):
             if invoices:
                 invoices.action_post()
         return True
+
+    @api.constrains("journal_normal_invoice_id")
+    def _check_journal_normal_invoice(self):
+        for pms_property in self.filtered("journal_normal_invoice_id"):
+            if pms_property.journal_normal_invoice_id.is_simplified_invoice:
+                raise ValidationError(
+                    _("Journal %s is not allowed to be used for normal invoices")
+                    % pms_property.journal_normal_invoice_id.name
+                )

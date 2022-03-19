@@ -1703,12 +1703,6 @@ class PmsFolio(models.Model):
                     .with_context(default_move_type="out_invoice", auto_name=True)
                     .create(invoice_vals)
                 )
-            else:
-                move = (
-                    self.env["account.move"]
-                    .with_context(default_move_type="out_receipt", auto_name=True)
-                    .create(invoice_vals)
-                )
             moves += move
         return moves
 
@@ -1773,7 +1767,7 @@ class PmsFolio(models.Model):
 
         invoice_vals = {
             "ref": self.client_order_ref or "",
-            "move_type": self._get_default_move_type(partner_invoice_id),
+            "move_type": "out_invoice",
             "narration": self.note,
             "currency_id": self.pricelist_id.currency_id.id,
             # 'campaign_id': self.campaign_id.id,
@@ -1802,15 +1796,6 @@ class PmsFolio(models.Model):
         ):
             return pms_property.journal_simplified_invoice_id
         return pms_property.journal_normal_invoice_id
-
-    def _get_default_move_type(self, partner_invoice_id):
-        self.ensure_one()
-        partner = self.env["res.partner"].browse(partner_invoice_id)
-        if not partner._check_enought_invoice_data() and self._context.get(
-            "autoinvoice"
-        ):
-            return "out_receipt"
-        return "out_invoice"
 
     def do_payment(
         self,

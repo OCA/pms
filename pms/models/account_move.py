@@ -32,6 +32,11 @@ class AccountMove(models.Model):
         # check_pms_properties=True,
     )
     # journal_id = fields.Many2one(check_pms_properties=True)
+    is_simplified_invoice = fields.Boolean(
+        help="Technical field to know if the invoice is simplified",
+        related="journal_id.is_simplified_invoice",
+        store=True,
+    )
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
@@ -292,7 +297,7 @@ class AccountMove(models.Model):
         Check invoice and receipts legal status
         """
         self.ensure_one()
-        if self.move_type == "out_invoice" and (
+        if not self.journal_id.is_simplified_invoice and (
             not self.partner_id or not self.partner_id._check_enought_invoice_data()
         ):
             raise UserError(
@@ -301,18 +306,18 @@ class AccountMove(models.Model):
                     " partner has the complete information required."
                 )
             )
-        if self.move_type == "out_receipt":
-            self._check_receipt_restrictions()
+        if self.journal_id.is_simplified_invoice:
+            self._check_simplified_restrictions()
         return True
 
-    def _check_receipt_restrictions(self):
+    def _check_simplified_restrictions(self):
         self.ensure_one()
         if (
             self.pms_property_id
             and self.amount_total > self.pms_property_id.max_amount_simplified_invoice
         ):
             mens = _(
-                "The total amount of the receipt is higher than the "
+                "The total amount of the simplified invoice is higher than the "
                 "maximum amount allowed for simplified invoices."
             )
             self.folio_ids.message_post(body=mens)
