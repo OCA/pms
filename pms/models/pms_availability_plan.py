@@ -81,13 +81,16 @@ class PmsAvailabilityPlan(models.Model):
         )
 
     @api.model
-    def update_quota(self, pricelist_id, room_type_id, date, impacts_quota_id=False):
+    def update_quota(
+        self, pricelist_id, room_type_id, date, pms_property_id, impacts_quota_id=False
+    ):
         if pricelist_id and room_type_id and date:
             rule = self.env["pms.availability.plan.rule"].search(
                 [
-                    ("availability_plan_id.pms_pricelist_ids", "=", pricelist_id.id),
-                    ("room_type_id", "=", room_type_id.id),
+                    ("availability_plan_id.pms_pricelist_ids", "=", pricelist_id),
+                    ("room_type_id", "=", room_type_id),
                     ("date", "=", date),
+                    ("pms_property_id", "=", pms_property_id),
                 ]
             )
             # applies a rule
