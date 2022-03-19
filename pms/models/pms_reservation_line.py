@@ -346,9 +346,10 @@ class PmsReservationLine(models.Model):
             else:
                 impacts_quota = line.impacts_quota
             line.impacts_quota = self.env["pms.availability.plan"].update_quota(
-                pricelist_id=reservation.pricelist_id,
-                room_type_id=reservation.room_type_id,
+                pricelist_id=reservation.pricelist_id.id,
+                room_type_id=reservation.room_type_id.id,
                 date=line.date,
+                pms_property_id=reservation.pms_property_id.id,
                 impacts_quota_id=impacts_quota,
             )
 
