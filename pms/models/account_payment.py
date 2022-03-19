@@ -17,6 +17,42 @@ class AccountPayment(models.Model):
         column1="payment_id",
         column2="folio_id",
     )
+    origin_agency_id = fields.Many2one(
+        string="Origin Agency",
+        help="The agency where the folio account move originates",
+        comodel_name="res.partner",
+        domain="[('is_agency', '=', True)]",
+        compute="_compute_origin_agency_id",
+        store=True,
+        readonly=True,
+    )
+
+    @api.depends("reconciled_invoice_ids", "reconciled_bill_ids")
+    def _compute_origin_agency_id(self):
+        """
+        Compute the origin agency of the sale line,
+        if the line has multiple agencies in origin,
+        (p.e. nights with different agencies in origin),
+        the first one is returned (REVIEW: is this correct?)
+        """
+        for rec in self:
+            inv_agency_ids = rec.reconciled_invoice_ids.mapped(
+                "line_ids.folio_line_ids.origin_agency_id.id"
+            )
+            bill_agency_ids = rec.reconciled_bill_ids.mapped(
+                "line_ids.folio_line_ids.origin_agency_id.id"
+            )
+            agency_ids = list(set(inv_agency_ids + bill_agency_ids))
+            if agency_ids:
+                rec.write({"origin_agency_id": agency_ids[0]})
+            elif (
+                not rec.reconciled_invoice_ids
+                and not rec.reconciled_bill_ids
+                and rec.folio_ids
+            ):
+                rec.origin_agency_id = rec.origin_agency_id
+            else:
+                rec.origin_agency_id = False
 
     @api.depends("reconciled_invoice_ids", "reconciled_bill_ids")
     def _compute_folio_ids(self):

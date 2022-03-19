@@ -37,6 +37,15 @@ class AccountMove(models.Model):
         related="journal_id.is_simplified_invoice",
         store=True,
     )
+    origin_agency_id = fields.Many2one(
+        string="Origin Agency",
+        help="The agency where the folio account move originates",
+        comodel_name="res.partner",
+        domain="[('is_agency', '=', True)]",
+        compute="_compute_origin_agency_id",
+        store=True,
+        readonly=False,
+    )
 
     @api.onchange("pms_property_id")
     def _onchange_pms_property_id(self):
@@ -68,6 +77,19 @@ class AccountMove(models.Model):
         for move in self:
             move.folio_ids = False
             move.folio_ids = move.mapped("line_ids.folio_ids.id")
+
+    @api.depends("line_ids", "line_ids.origin_agency_id")
+    def _compute_origin_agency_id(self):
+        """
+        Compute the origin agency of the account move
+        if the move has multiple agencies in origin,
+        the first one is returned (REVIEW: is this correct?)
+        """
+        self.origin_agency_id = False
+        for move in self:
+            agencies = move.mapped("line_ids.origin_agency_id")
+            if agencies:
+                move.origin_agency_id = agencies[0]
 
     def _compute_payments_widget_to_reconcile_info(self):
         for move in self:
