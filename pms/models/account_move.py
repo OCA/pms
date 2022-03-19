@@ -319,8 +319,12 @@ class AccountMove(models.Model):
         Check invoice and receipts legal status
         """
         self.ensure_one()
-        if not self.journal_id.is_simplified_invoice and (
-            not self.partner_id or not self.partner_id._check_enought_invoice_data()
+        if (
+            move.is_invoice(include_receipts=True)
+            and not self.journal_id.is_simplified_invoice
+            and (
+                not self.partner_id or not self.partner_id._check_enought_invoice_data()
+            )
         ):
             raise UserError(
                 _(

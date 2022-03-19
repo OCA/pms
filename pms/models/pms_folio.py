@@ -35,6 +35,10 @@ class PmsFolio(models.Model):
         index=True,
         default=lambda self: _("New"),
     )
+    external_reference = fields.Char(
+        string="External Reference",
+        help="Reference of this folio in an external system",
+    )
     pms_property_id = fields.Many2one(
         string="Property",
         help="The property for folios",
@@ -296,7 +300,6 @@ class PmsFolio(models.Model):
         comodel_name="res.partner.category",
         ondelete="restrict",
     )
-    client_order_ref = fields.Char(string="Customer Reference", help="", copy=False)
     reservation_type = fields.Selection(
         string="Type",
         help="The type of the reservation. "
@@ -1766,7 +1769,7 @@ class PmsFolio(models.Model):
             )
 
         invoice_vals = {
-            "ref": self.client_order_ref or "",
+            "ref": self.name or "",
             "move_type": "out_invoice",
             "narration": self.note,
             "currency_id": self.pricelist_id.currency_id.id,
@@ -1779,11 +1782,11 @@ class PmsFolio(models.Model):
             "journal_id": journal.id,  # company comes from the journal
             "invoice_origin": self.name,
             "invoice_payment_term_id": self.payment_term_id.id,
-            "payment_reference": self.reference,
             "transaction_ids": [(6, 0, self.transaction_ids.ids)],
             "folio_ids": [(6, 0, [self.id])],
             "invoice_line_ids": [],
             "company_id": self.company_id.id,
+            "payment_reference": self.external_reference or self.reference,
         }
         return invoice_vals
 
@@ -1822,13 +1825,23 @@ class PmsFolio(models.Model):
             "partner_id": partner.id,
             "amount": amount,
             "date": date or fields.Date.today(),
-            "ref": folio.name,
+            "ref": folio.name + " - " + folio.external_reference,
             "folio_ids": [(6, 0, [folio.id])],
             "payment_type": "inbound",
             "partner_type": "customer",
             "state": "draft",
+            "origin_reference": folio.external_reference,
         }
         pay = self.env["account.payment"].create(vals)
+        pay.message_post_with_view(
+            "mail.message_origin_link",
+            values={
+                "self": pay,
+                "origin": folio,
+            },
+            subtype_id=self.env.ref("mail.mt_note").id,
+        )
+
         pay.action_post()
 
         # Review: force to autoreconcile payment with invoices already created
@@ -1901,6 +1914,14 @@ class PmsFolio(models.Model):
             "state": "draft",
         }
         pay = self.env["account.payment"].create(vals)
+        pay.message_post_with_view(
+            "mail.message_origin_link",
+            values={
+                "self": pay,
+                "origin": folio,
+            },
+            subtype_id=self.env.ref("mail.mt_note").id,
+        )
         pay.action_post()
 
         # Automatic register refund in cash register
