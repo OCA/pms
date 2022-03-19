@@ -42,6 +42,7 @@
         "report/pms_folio.xml",
         "report/pms_folio_templates.xml",
         "report/traveller_report_action.xml",
+        "report/invoice.xml",
         # "templates/pms_email_template.xml",
         "data/menus.xml",
         "wizards/wizard_payment_folio.xml",
