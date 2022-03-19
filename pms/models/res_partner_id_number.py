@@ -19,6 +19,11 @@ class ResPartnerIdNumber(models.Model):
         store=True,
         compute="_compute_valid_from",
     )
+    vat_syncronized = fields.Boolean(
+        help="Technical field to know if vat partner is syncronized with this document",
+        compute="_compute_vat_syncronized",
+        store=True,
+    )
 
     @api.depends(
         "partner_id", "partner_id.pms_checkin_partner_ids.document_expedition_date"
@@ -53,3 +58,15 @@ class ResPartnerIdNumber(models.Model):
             )
             if len(id_number) > 1:
                 raise ValidationError(_("Partner already has this document type"))
+
+    @api.depends("partner_id", "partner_id.vat", "name")
+    def _compute_vat_syncronized(self):
+        self.vat_syncronized = False
+        for record in self:
+            if record.partner_id and record.partner_id.vat and record.name:
+                if record.name.upper() == record.partner_id.vat.upper():
+                    record.vat_syncronized = True
+            elif not record.partner_id.vat and record.name:
+                record.vat_syncronized = True
+            else:
+                record.vat_syncronized = False
