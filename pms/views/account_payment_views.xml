@@ -14,6 +14,10 @@
                     name="origin_agency_id"
                     attrs="{'invisible':[('origin_agency_id','=',False)]}"
                 />
+                <field
+                    name="origin_reference"
+                    attrs="{'invisible':[('origin_agency_id','=',False)]}"
+                />
             </xpath>
         </field>
     </record>
@@ -26,6 +30,7 @@
                 <field name="folio_ids" optional="hidden" />
                 <field name="pms_property_id" optional="hidden" />
                 <field name="origin_agency_id" optional="hidden" />
+                <field name="origin_reference" optional="hidden" />
             </xpath>
         </field>
     </record>
@@ -37,6 +42,7 @@
             <xpath expr="//field[@name='journal_id']" position="after">
                 <field name="pms_property_id" />
                 <field name="origin_agency_id" />
+                <field name="origin_reference" />
             </xpath>
             <xpath expr="//filter[@name='company']" position="after">
                 <filter
