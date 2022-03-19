@@ -264,6 +264,15 @@ class FolioSaleLine(models.Model):
         store=True,
         related="folio_id.partner_id",
     )
+    origin_agency_id = fields.Many2one(
+        string="Origin Agency",
+        help="The agency where the folio sale line originates",
+        comodel_name="res.partner",
+        domain="[('is_agency', '=', True)]",
+        compute="_compute_origin_agency_id",
+        store=True,
+        readonly=False,
+    )
     analytic_tag_ids = fields.Many2many(
         string="Analytic Tags",
         comodel_name="account.analytic.tag",
@@ -319,6 +328,14 @@ class FolioSaleLine(models.Model):
         store=True,
         compute="_compute_date_order",
     )
+
+    @api.depends(
+        "reservation_line_ids",
+        "reservation_id.agency_id",
+    )
+    def _compute_origin_agency_id(self):
+        for rec in self:
+            rec.origin_agency_id = rec.folio_id.agency_id
 
     @api.depends("qty_to_invoice")
     def _compute_service_order(self):
