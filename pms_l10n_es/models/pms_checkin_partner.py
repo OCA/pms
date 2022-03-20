@@ -49,5 +49,5 @@ class PmsCheckinParnert(models.Model):
             ]
         )
         if depends or (country and country.code == CODE_SPAIN):
-            mandatory_fields.append("state_id")
+            mandatory_fields.append("residence_state_id")
         return mandatory_fields
