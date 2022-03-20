@@ -67,7 +67,6 @@
                             <field name="document_number" />
                             <field name="document_expedition_date" />
                             <field name="nationality_id" />
-                            <field name="state_id" />
                             <field name="email" />
                             <field name="mobile" />
                             <field name="phone" />
@@ -163,7 +162,7 @@
                 <field name="document_number" />
                 <field name="document_expedition_date" />
                 <field name="nationality_id" />
-                <field name="state_id" />
+                <field name="residence_state_id" />
                 <field name="mobile" />
                 <field name="email" />
                 <field name="arrival" />
@@ -209,7 +208,7 @@
                 <field name="document_number" />
                 <field name="document_expedition_date" />
                 <field name="nationality_id" />
-                <field name="state_id" />
+                <field name="residence_state_id" />
                 <field name="mobile" />
                 <field name="email" />
                 <field name="arrival" invisible="1" />
@@ -252,7 +251,7 @@
                 <field name="document_number" />
                 <field name="document_expedition_date" />
                 <field name="nationality_id" />
-                <field name="state_id" />
+                <field name="residence_state_id" />
                 <field name="mobile" />
                 <field name="email" />
                 <field name="arrival" />
@@ -291,7 +290,7 @@
                 <field name="document_number" />
                 <field name="document_expedition_date" />
                 <field name="nationality_id" />
-                <field name="state_id" />
+                <field name="residence_state_id" />
                 <field name="email" />
                 <field name="mobile" />
                 <field name="arrival" />
