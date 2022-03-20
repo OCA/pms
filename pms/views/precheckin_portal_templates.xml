@@ -242,24 +242,6 @@
                                     </t>
                                 </select>
                             </div>
-                            <div class="form-group col-12 col-md-6">
-                                <label
-                                    class="col-form-label"
-                                    for="state"
-                                >Country State</label>
-                                <select class="form-control" id="state" name='state'>
-                                    <option value="">Select an option</option>
-                                    <t t-foreach="state_ids" t-as='state'>
-                                        <option
-                                            t-att-value="state.id"
-                                            t-att-country_id="state.country_id.id"
-                                            t-att-selected="state.id == checkin_partner_id.state_id.id"
-                                        >
-                                            <t t-esc="state.name" />
-                                        </option>
-                                    </t>
-                                </select>
-                            </div>
                             <div t-attf-class="form-group col-12 col-md-6 pt-5">
                                 <label
                                     id="label_mobile"
@@ -1245,19 +1227,6 @@
                                                         >
                                                             <t
                                                                 t-esc="checkin_partner.nationality_id.name"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        t-attf-class="form-group col-12 col-md-6 font-weight-bold"
-                                                    >
-                                                        Country State:
-                                                        <br />
-                                                        <span
-                                                            class="font-weight-normal ml-3"
-                                                        >
-                                                            <t
-                                                                t-esc="checkin_partner.state_id.name"
                                                             />
                                                         </span>
                                                     </div>

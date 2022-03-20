@@ -255,10 +255,10 @@ class WizardIne(models.TransientModel):
                                     spanish_guests_with_no_state,
                                 )
                             )
-                        state_id = self.env["res.country.state"].browse(
+                        residence_state_id = self.env["res.country.state"].browse(
                             entry_from_spain["residence_state_id"][0]
                         )  # .ine_code
-                        ine_code = state_id.ine_code
+                        ine_code = residence_state_id.ine_code
 
                         # get count of each result
                         num_spain = entry_from_spain["__count"]

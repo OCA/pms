@@ -86,15 +86,6 @@ class ResPartner(models.Model):
         store=True,
         compute="_compute_nationality_id",
     )
-    # TODO: Use new partner contact "other or "private" with
-    # personal contact address complete??
-    # to avoid user country_id on companies contacts.
-    # view to checkin partner state_id field
-    state_id = fields.Many2one(
-        readonly=False,
-        store=True,
-        compute="_compute_state_id",
-    )
     email = fields.Char(
         readonly=False,
         store=True,
@@ -301,25 +292,6 @@ class ResPartner(models.Model):
                     record.nationality_id = False
             elif not record.nationality_id:
                 record.nationality_id = False
-
-    @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.state_id")
-    def _compute_state_id(self):
-        if hasattr(super(), "_compute_state_id"):
-            super()._compute_state_id()
-        for record in self:
-            if not record.state_id and record.pms_checkin_partner_ids:
-                state_id = list(
-                    filter(
-                        None,
-                        set(record.pms_checkin_partner_ids.mapped("state_id")),
-                    )
-                )
-                if len(state_id) == 1:
-                    record.state_id = state_id[0]
-                else:
-                    record.state_id = False
-            elif not record.state_id:
-                record.state_id = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.phone")
     def _compute_phone(self):
