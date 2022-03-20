@@ -175,15 +175,6 @@ class ResPartner(models.Model):
         ],
         default="all",
     )
-    document_number_to_invoice = fields.Char(
-        string="Document Number to invoices",
-        help="""Technical field to compute the partner reference to invoice,
-        it can be the VAT, if its set, or the document number, if its set,
-        else it will be False""",
-        compute="_compute_document_number_to_invoice",
-        readonly=False,
-        store=True,
-    )
     vat_document_type = fields.Selection(
         string="Document Type",
         help="""The vat document type of the partner,
@@ -206,16 +197,6 @@ class ResPartner(models.Model):
         for doc_type in document_categories:
             vat_document_types.append((doc_type.name, doc_type.name))
         return vat_document_types
-
-    @api.depends("vat", "id_numbers", "id_numbers.name")
-    def _compute_document_number_to_invoice(self):
-        for partner in self:
-            if partner.vat:
-                partner.document_number_to_invoice = partner.vat
-            elif partner.id_numbers:
-                partner.document_number_to_invoice = partner.id_numbers[0].name
-            else:
-                partner.document_number_to_invoice = False
 
     @api.depends("pms_checkin_partner_ids", "pms_checkin_partner_ids.gender")
     def _compute_gender(self):
@@ -617,12 +598,7 @@ class ResPartner(models.Model):
 
     def _check_enought_invoice_data(self):
         self.ensure_one()
-        if (
-            self.document_number_to_invoice
-            and self.country_id
-            and self.city
-            and self.street
-        ):
+        if self.vat and self.country_id and self.city and self.street:
             return True
         return False
 
@@ -637,3 +613,11 @@ class ResPartner(models.Model):
                 continue
             else:
                 super(ResPartner, partner).check_vat()
+
+    def unlink(self):
+        dummy, various_partner_id = self.env["ir.model.data"].get_object_reference(
+            "pms", "various_pms_partner"
+        )
+        if various_partner_id in self.ids:
+            raise ValidationError(_("The partner 'Various Clients' cannot be deleted"))
+        return super().unlink()

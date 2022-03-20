@@ -20,6 +20,13 @@
             <field name="checkin_sequence_id" ref="pms.seq_pms_checkin" />
             <field name="reservation_sequence_id" ref="pms.seq_pms_reservation" />
         </record>
+        <!-- default partner simplified invoices -->
+        <record id="various_pms_partner" model="res.partner">
+            <field name="name">Various Clients</field>
+            <field
+                name="comment"
+            >Contact used for simplified invoices where no customer is available</field>
+        </record>
         <!-- pms.users -->
         <record id="base.user_root" model="res.users">
             <field name="company_id" ref="base.main_company" />
