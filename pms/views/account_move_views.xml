@@ -19,11 +19,25 @@
             <xpath expr="//field[@name='invoice_user_id']" position="before">
                 <field name="origin_agency_id" />
             </xpath>
-            <xpath expr="//field[@name='quantity']" position="before">
+            <xpath
+                expr="//field[@name='invoice_line_ids']/tree/field[@name='quantity']"
+                position="before"
+            >
                 <field name="name_changed_by_user" invisible="1" />
                 <field
                     name="pms_property_id"
                     attrs="{'column_invisible':[('parent.pms_property_id','!=',False)]}"
+                />
+            </xpath>
+            <xpath
+                expr="//notebook//field[@name='line_ids']/tree/field[@name='date_maturity']"
+                position="after"
+            >
+                <field name="name_changed_by_user" invisible="1" />
+                <field
+                    name="pms_property_id"
+                    attrs="{'column_invisible':[('parent.pms_property_id','!=',False)]}"
+                    optional="hide"
                 />
             </xpath>
         </field>
