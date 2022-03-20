@@ -314,16 +314,16 @@ class AccountMove(models.Model):
                     )
         return []
 
+    @api.model
     def _check_pms_valid_invoice(self, move):
         """
         Check invoice and receipts legal status
         """
-        self.ensure_one()
         if (
             move.is_invoice(include_receipts=True)
-            and not self.journal_id.is_simplified_invoice
+            and not move.journal_id.is_simplified_invoice
             and (
-                not self.partner_id or not self.partner_id._check_enought_invoice_data()
+                not move.partner_id or not move.partner_id._check_enought_invoice_data()
             )
         ):
             raise UserError(
@@ -332,8 +332,8 @@ class AccountMove(models.Model):
                     " partner has the complete information required."
                 )
             )
-        if self.journal_id.is_simplified_invoice:
-            self._check_simplified_restrictions()
+        if move.journal_id.is_simplified_invoice:
+            move._check_simplified_restrictions()
         return True
 
     def _check_simplified_restrictions(self):
