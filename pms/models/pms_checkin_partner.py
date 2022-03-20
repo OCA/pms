@@ -143,18 +143,6 @@ class PmsCheckinPartner(models.Model):
         compute="_compute_nationality_id",
         comodel_name="res.country",
     )
-    # TODO: Use new partner contact "other or "private" with
-    # personal contact address complete??
-    # to avoid user country_id on companies contacts.
-    # View to res.partner state_id inherit
-    state_id = fields.Many2one(
-        string="Country State",
-        help="host state",
-        readonly=False,
-        store=True,
-        compute="_compute_state_id",
-        comodel_name="res.country.state",
-    )
     residence_street = fields.Char(
         string="Street",
         help="Street of the guest's residence",
@@ -359,14 +347,6 @@ class PmsCheckinPartner(models.Model):
                 record.nationality_id = record.partner_id.nationality_id
             elif not record.nationality_id:
                 record.nationality_id = False
-
-    @api.depends("partner_id")
-    def _compute_state_id(self):
-        for record in self:
-            if not record.state_id and record.partner_id.state_id:
-                record.state_id = record.partner_id.state_id
-            elif not record.state_id:
-                record.state_id = False
 
     @api.depends("partner_id")
     def _compute_residence_street(self):
@@ -876,10 +856,10 @@ class PmsCheckinPartner(models.Model):
         if not values.get("document_type"):
             values.update({"document_type": False})
         if values.get("state"):
-            state_id = self.env["res.country.state"].search(
+            residence_state_id = self.env["res.country.state"].search(
                 [("id", "=", values.get("state"))]
             )
-            values.update({"state_id": state_id})
+            values.update({"residence_state_id": residence_state_id})
             values.pop("state")
         if values.get("document_expedition_date"):
             doc_type = values.get("document_type")
