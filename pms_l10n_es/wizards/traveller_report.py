@@ -130,7 +130,7 @@ class TravellerReport(models.TransientModel):
                 else:
                     content += "M|"
                 content += line.birthdate_date.strftime("%Y%m%d") + "|"
-                content += line.residence_country_id.name.upper() + "|"
+                content += line.nationality_id.name.upper() + "|"
                 content += line.arrival.strftime("%Y%m%d") + "\n"
 
             return content

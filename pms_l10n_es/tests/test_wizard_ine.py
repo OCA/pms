@@ -654,38 +654,38 @@ class TestWizardINE(TestPms):
             [("name", "=", "Pontevedra")]
         )
 
-        self.checkin1.residence_country_id = country_spain
-        self.partner_1.residence_country_id = country_spain
+        self.checkin1.nationality_id = country_spain
+        self.partner_1.nationality_id = country_spain
         self.checkin1.residence_state_id = state_ourense
         self.partner_1.residence_state_id = state_ourense
 
-        self.checkin2.residence_country_id = country_spain
-        self.partner_2.residence_country_id = country_spain
+        self.checkin2.nationality_id = country_spain
+        self.partner_2.nationality_id = country_spain
         self.checkin2.residence_state_id = state_pontevedra
         self.partner_2.residence_state_id = state_pontevedra
 
-        self.checkin3.residence_country_id = country_spain
-        self.partner_3.residence_country_id = country_spain
+        self.checkin3.nationality_id = country_spain
+        self.partner_3.nationality_id = country_spain
         self.checkin3.residence_state_id = state_ourense
         self.partner_3.residence_state_id = state_ourense
 
-        self.checkin4.residence_country_id = country_spain
-        self.partner_4.residence_country_id = country_spain
+        self.checkin4.nationality_id = country_spain
+        self.partner_4.nationality_id = country_spain
         self.checkin4.residence_state_id = state_ourense
         self.partner_4.residence_state_id = state_ourense
 
-        self.checkin5.residence_country_id = country_spain
-        self.partner_5.residence_country_id = country_spain
+        self.checkin5.nationality_id = country_spain
+        self.partner_5.nationality_id = country_spain
         self.checkin5.residence_state_id = state_madrid
         self.partner_5.residence_state_id = state_madrid
 
-        self.checkin6.residence_country_id = country_spain
-        self.partner_6.residence_country_id = country_spain
+        self.checkin6.nationality_id = country_spain
+        self.partner_6.nationality_id = country_spain
         self.checkin6.residence_state_id = state_madrid
         self.partner_6.residence_state_id = state_madrid
 
-        self.checkin7.residence_country_id = country_spain
-        self.partner_7.residence_country_id = country_spain
+        self.checkin7.nationality_id = country_spain
+        self.partner_7.nationality_id = country_spain
         self.checkin7.residence_state_id = state_madrid
         self.partner_7.residence_state_id = state_madrid
 
@@ -898,7 +898,7 @@ class TestWizardINE(TestPms):
         """
         # ARRANGE
         self.ideal_scenario()
-        self.partner_2.residence_country_id = False
+        self.partner_2.nationality_id = False
         start_date = datetime.date(2021, 2, 1)
         end_date = datetime.date(2021, 2, 4)
 
@@ -953,38 +953,38 @@ class TestWizardINE(TestPms):
             [("name", "=", "Ourense (Orense)")]
         )
 
-        self.checkin1.residence_country_id = country_spain
-        self.partner_1.residence_country_id = country_spain
+        self.checkin1.nationality_id = country_spain
+        self.partner_1.nationality_id = country_spain
         self.checkin1.residence_state_id = state_ourense
         self.partner_1.residence_state_id = state_ourense
 
-        self.checkin2.residence_country_id = country_spain
-        self.partner_2.residence_country_id = country_spain
+        self.checkin2.nationality_id = country_spain
+        self.partner_2.nationality_id = country_spain
         self.checkin2.residence_state_id = False
         self.partner_2.residence_state_id = False
 
-        self.checkin3.residence_country_id = country_spain
-        self.partner_3.residence_country_id = country_spain
+        self.checkin3.nationality_id = country_spain
+        self.partner_3.nationality_id = country_spain
         self.checkin3.residence_state_id = state_ourense
         self.partner_3.residence_state_id = state_ourense
 
-        self.checkin4.residence_country_id = country_spain
-        self.partner_4.residence_country_id = country_spain
+        self.checkin4.nationality_id = country_spain
+        self.partner_4.nationality_id = country_spain
         self.checkin4.residence_state_id = state_ourense
         self.partner_4.residence_state_id = state_ourense
 
-        self.checkin5.residence_country_id = country_spain
-        self.partner_5.residence_country_id = country_spain
+        self.checkin5.nationality_id = country_spain
+        self.partner_5.nationality_id = country_spain
         self.checkin5.residence_state_id = state_madrid
         self.partner_5.residence_state_id = state_madrid
 
-        self.checkin6.residence_country_id = country_spain
-        self.partner_6.residence_country_id = country_spain
+        self.checkin6.nationality_id = country_spain
+        self.partner_6.nationality_id = country_spain
         self.checkin6.residence_state_id = state_madrid
         self.partner_6.residence_state_id = state_madrid
 
-        self.checkin7.residence_country_id = country_spain
-        self.partner_7.residence_country_id = country_spain
+        self.checkin7.nationality_id = country_spain
+        self.partner_7.nationality_id = country_spain
         self.checkin7.residence_state_id = state_madrid
         self.partner_7.residence_state_id = state_madrid
 
