@@ -628,3 +628,9 @@ class PmsProperty(models.Model):
                     _("Journal %s is not allowed to be used for normal invoices")
                     % pms_property.journal_normal_invoice_id.name
                 )
+
+    @api.constrains("journal_simplified_invoice_id")
+    def _check_journal_simplified_invoice(self):
+        for pms_property in self.filtered("journal_simplified_invoice_id"):
+            if not pms_property.journal_simplified_invoice_id.is_simplified_invoice:
+                pms_property.journal_simplified_invoice_id.is_simplified_invoice = True

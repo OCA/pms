@@ -656,13 +656,14 @@ class PmsFolio(models.Model):
             and self.autoinvoice_date <= fields.Date.today()
             and len(target_lines) < len(lines_to_invoice)
         ):
-            second_partner_to_invoice = self.partner_invoice_ids.filtered(
+            other_partner_to_invoice = self.partner_invoice_ids.filtered(
                 lambda p: p.id != partner_invoice_id
             )
+            if not other_partner_to_invoice:
+                other_partner_to_invoice = self.env.ref("pms.various_pms_partner")
             groups_invoice_lines.append(
                 {
-                    "partner_id": second_partner_to_invoice
-                    and second_partner_to_invoice.id,
+                    "partner_id": other_partner_to_invoice.id,
                     "lines": lines_to_invoice - target_lines,
                 }
             )
@@ -670,12 +671,15 @@ class PmsFolio(models.Model):
 
     def _get_default_partner_invoice_id(self):
         self.ensure_one()
-        if self.partner_id and self.partner_id.document_number_to_invoice:
+        folio_partner_invoice_id = False
+        if self.partner_id and self.partner_id.vat:
             folio_partner_invoice_id = self.partner_id.id
-        else:
+        if not folio_partner_invoice_id:
             folio_partner_invoice_id = (
                 self.partner_invoice_ids[0].id if self.partner_invoice_ids else False
             )
+        if not folio_partner_invoice_id:
+            folio_partner_invoice_id = self.env.ref("pms.various_pms_partner").id
         return folio_partner_invoice_id
 
     def _get_tax_amount_by_group(self):
@@ -1794,8 +1798,9 @@ class PmsFolio(models.Model):
         self.ensure_one()
         pms_property = self.pms_property_id
         partner = self.env["res.partner"].browse(partner_invoice_id)
-        if not partner._check_enought_invoice_data() and self._context.get(
-            "autoinvoice"
+        if not partner or (
+            not partner._check_enought_invoice_data()
+            and self._context.get("autoinvoice")
         ):
             return pms_property.journal_simplified_invoice_id
         return pms_property.journal_normal_invoice_id
@@ -1820,12 +1825,15 @@ class PmsFolio(models.Model):
         """
         if not pay_type:
             pay_type = journal.type
+        reference = folio.name
+        if folio.external_reference:
+            reference += " - " + folio.external_reference
         vals = {
             "journal_id": journal.id,
             "partner_id": partner.id,
             "amount": amount,
             "date": date or fields.Date.today(),
-            "ref": folio.name + " - " + folio.external_reference,
+            "ref": reference,
             "folio_ids": [(6, 0, [folio.id])],
             "payment_type": "inbound",
             "partner_type": "customer",
@@ -1901,13 +1909,15 @@ class PmsFolio(models.Model):
         """
         if not pay_type:
             pay_type = journal.type
-
+        reference = folio.name
+        if folio.external_reference:
+            reference += " - " + folio.external_reference
         vals = {
             "journal_id": journal.id,
             "partner_id": partner.id,
             "amount": amount if amount > 0 else -amount,
             "date": date or fields.Date.today(),
-            "ref": folio.name,
+            "ref": reference,
             "folio_ids": [(6, 0, [folio.id])],
             "payment_type": "outbound",
             "partner_type": "customer",
