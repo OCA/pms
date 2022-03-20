@@ -197,7 +197,7 @@ class WizardIne(models.TransientModel):
             """
 
             for entry in read_group_result:
-                if not entry["residence_country_id"]:
+                if not entry["nationality_id"]:
                     guests_with_no_nationality = self.env["res.partner"].search(
                         entry["__domain"]
                     )
@@ -212,10 +212,10 @@ class WizardIne(models.TransientModel):
                             guests_with_no_nationality,
                         )
                     )
-                # get residence_country_id from group set read_group results
+                # get nationality_id from group set read_group results
                 nationality_id_code = (
                     self.env["res.country"]
-                    .search([("id", "=", entry["residence_country_id"][0])])
+                    .search([("id", "=", entry["nationality_id"][0])])
                     .code
                 )
                 # all countries except Spain
@@ -318,7 +318,7 @@ class WizardIne(models.TransientModel):
                     if chk_part_same_reserv_with_checkin:
                         # create partner with same country & state
                         country_other = (
-                            chk_part_same_reserv_with_checkin.partner_id.residence_country_id.id
+                            chk_part_same_reserv_with_checkin.partner_id.nationality_id.id
                         )
                         state_other = (
                             chk_part_same_reserv_with_checkin.partner_id.residence_state_id.id
@@ -327,7 +327,7 @@ class WizardIne(models.TransientModel):
                             {
                                 "name": "partner1",
                                 "country_id": country_other,
-                                "residence_country_id": country_other,
+                                "nationality_id": country_other,
                                 "residence_state_id": state_other,
                             }
                         )
@@ -338,7 +338,7 @@ class WizardIne(models.TransientModel):
                             {
                                 "name": "partner1",
                                 "country_id": country_spain.id,
-                                "residence_country_id": country_spain.id,
+                                "nationality_id": country_spain.id,
                                 "residence_state_id": state_madrid.id,
                             }
                         )
@@ -351,12 +351,12 @@ class WizardIne(models.TransientModel):
             # arrivals
             arrivals = hosts.filtered(lambda x: x.checkin == p_date)
 
-            # arrivals grouped by residence_country_id
+            # arrivals grouped by nationality_id
             read_by_arrivals = self.env["res.partner"].read_group(
                 [("id", "in", arrivals.mapped("partner_id").ids)],
-                ["residence_country_id"],
-                ["residence_country_id"],
-                orderby="residence_country_id",
+                ["nationality_id"],
+                ["nationality_id"],
+                orderby="nationality_id",
                 lazy=False,
             )
 
@@ -366,21 +366,21 @@ class WizardIne(models.TransientModel):
             # departures grouped by nationality_id
             read_by_departures = self.env["res.partner"].read_group(
                 [("id", "in", departures.mapped("partner_id").ids)],
-                ["residence_country_id"],
-                ["residence_country_id"],
-                orderby="residence_country_id",
+                ["nationality_id"],
+                ["nationality_id"],
+                orderby="nationality_id",
                 lazy=False,
             )
 
             # pernoctations
             pernoctations = hosts - departures
 
-            # pernoctations grouped by residence_country_id
+            # pernoctations grouped by nationality_id
             read_by_pernoctations = self.env["res.partner"].read_group(
                 [("id", "in", pernoctations.mapped("partner_id").ids)],
-                ["residence_country_id"],
-                ["residence_country_id"],
-                orderby="residence_country_id",
+                ["nationality_id"],
+                ["nationality_id"],
+                orderby="nationality_id",
                 lazy=False,
             )
 
