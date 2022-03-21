@@ -1,0 +1,21 @@
+<odoo>
+
+    <record id="view_putaway_inherit_pms_purchase" model="ir.ui.view">
+        <field name="name">stock.putaway.rule.form.method</field>
+        <field name="model">stock.putaway.rule</field>
+        <field name="inherit_id" ref="stock_putaway_method.view_putaway" />
+        <field name="arch" type="xml">
+            <field name="location_out_id" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('method', 'not in', ['fixed','move_to_property'])]}</attribute>
+            </field>
+            <field name="location_in_id" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('method', 'not in', ['fixed','move_to_property'])]}</attribute>
+            </field>
+        </field>
+    </record>
+
+</odoo>
