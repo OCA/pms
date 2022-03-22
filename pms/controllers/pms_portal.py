@@ -363,6 +363,10 @@ class PortalPrecheckin(CustomerPortal):
             error, error_message = self.form_validate(kw, None)
         if not kw.get("first") and not kw.get("back") and not error:
             kw.update({"checkin_partner_id": checkin_partner_id})
+            if kw.get("residence_state_id") == "placeholder":
+                kw["residence_state_id"] = False
+            if kw.get("residence_country_id") == "placeholder":
+                kw["residence_country_id"] = False
             request.env["pms.checkin.partner"]._save_data_from_portal(kw)
         if error:
             checkin_pos = checkin_pos - 1
