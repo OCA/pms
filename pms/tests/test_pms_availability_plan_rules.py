@@ -25,7 +25,13 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 ],
             }
         )
-
+        # pms.sale.channel
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
         # pms.availability.plan
         self.test_room_type_availability1 = self.env["pms.availability.plan"].create(
             {
@@ -164,6 +170,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "checkout": checkout,
                 "partner_id": self.partner1.id,
                 "room_type_id": room_type.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         result = self.test_room_type_availability_rule1.plan_avail
@@ -209,6 +216,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "checkout": checkout,
                 "partner_id": self.partner1.id,
                 "room_type_id": room_type.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         self.env["pms.reservation"].create(
@@ -218,6 +226,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "checkout": checkout,
                 "partner_id": self.partner1.id,
                 "room_type_id": room_type.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         result = self.test_room_type_availability_rule1.plan_avail
@@ -258,6 +267,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "checkin": checkin,
                 "checkout": checkout,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
 
@@ -586,6 +596,7 @@ class TestPmsRoomTypeAvailabilityRules(TestPms):
                 "room_type_id": self.test_room_type_double.id,
                 "pricelist_id": self.pricelist2.id,
                 "partner_id": self.partner1.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id,
             }
         )
         r1.flush()
