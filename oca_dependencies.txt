@@ -1,3 +1,4 @@
 account-financial-tools
 contract
+stock-logistics-warehouse
 web
