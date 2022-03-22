@@ -237,7 +237,7 @@ class BookingEngine(models.TransientModel):
                         "partner_name": record.partner_name,
                         "pms_property_id": record.pms_property_id.id,
                         "agency_id": record.agency_id.id,
-                        "channel_type_id": record.channel_type_id.id,
+                        "sale_channel_origin_id": record.channel_type_id.id,
                         "segmentation_ids": [(6, 0, record.segmentation_ids.ids)],
                         "internal_comment": record.internal_comment,
                     }

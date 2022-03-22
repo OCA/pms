@@ -31,6 +31,13 @@ class TestProductTemplate(TestPms):
                 "default_code": "BST",
             }
         )
+        # create a sale channel
+        self.sale_channel_direct1 = self.env["pms.sale.channel"].create(
+            {
+                "name": "Door",
+                "channel_type": "direct",
+            }
+        )
 
     def test_bs_consumed_on_after(self):
         """
@@ -69,6 +76,7 @@ class TestProductTemplate(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
                 "board_service_room_id": board_service_room_type.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         # ASSERT
@@ -115,6 +123,7 @@ class TestProductTemplate(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
                 "board_service_room_id": board_service_room_type.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         # ASSERT
@@ -162,6 +171,7 @@ class TestProductTemplate(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
                 "board_service_room_id": board_service_room_type.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         reservation.flush()
@@ -211,6 +221,7 @@ class TestProductTemplate(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
                 "board_service_room_id": board_service_room_type.id,
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         reservation.flush()
@@ -267,6 +278,7 @@ class TestProductTemplate(TestPms):
                     "partner_id": self.partner.id,
                     "board_service_room_id": board_service_room_type.id,
                     "adults": 2,
+                    "sale_channel_origin_id": self.sale_channel_direct1.id
                 }
             )
 
@@ -298,6 +310,7 @@ class TestProductTemplate(TestPms):
                 "pms_property_id": self.pms_property1.id,
                 "partner_id": self.partner.id,
                 "service_ids": [extra_bed_service.id],
+                "sale_channel_origin_id": self.sale_channel_direct1.id
             }
         )
         reservation._check_adults()
